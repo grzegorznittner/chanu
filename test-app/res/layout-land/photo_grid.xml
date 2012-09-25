@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 The Android Open Source Project
+<!-- Copyright (C) 2007 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -13,16 +13,17 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-
-<!-- Top-level content view for the layout fragment sample.  This version is
-     for display when not in landscape: we can only fit the list of titles. -->
-
-
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
-    <fragment class="com.chanapps.four.test.TitlesFragment"
-            android:id="@+id/titles"
-            android:layout_width="match_parent" android:layout_height="match_parent" />
-
-</FrameLayout>
-
+<GridView xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:id="@+id/myGrid"
+	android:layout_width="match_parent" 
+	android:layout_height="match_parent"
+    android:padding="10dp"
+    
+    android:verticalSpacing="15dp"
+    android:horizontalSpacing="15dp"
+    
+    android:numColumns="3"
+    android:stretchMode="columnWidth"
+    
+    android:gravity="center"
+    />

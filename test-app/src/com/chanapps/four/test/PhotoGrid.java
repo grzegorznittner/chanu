@@ -42,7 +42,7 @@ public class PhotoGrid extends Activity implements OnItemClickListener {
 
         GridView g = (GridView) findViewById(R.id.myGrid);
         g.setAdapter(new ImageAdapter(this));
-        g.setOnItemClickListener(this);
+        g.setOnItemClickListener(this);        
     }
 
     
@@ -50,7 +50,8 @@ public class PhotoGrid extends Activity implements OnItemClickListener {
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     	Intent intent = new Intent();
         intent.setClass(getApplicationContext(), FragmentLayout.class);
-        //intent.putExtra("index", index);
+        intent.putExtra("board", "diy");
+        intent.putExtra("thread", 287252);
         startActivity(intent);
 	}
 

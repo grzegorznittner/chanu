@@ -7,26 +7,27 @@
         android:minSdkVersion="15"
         android:targetSdkVersion="15" />
 
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
-        <activity android:name=".PhotoGrid" android:label="4ChannerTest">
+        
+		<activity android:name=".ThreadListActivity" android:label="4Channer Test">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-		<activity android:name=".FragmentLayout" android:label="@string/fragment_layout">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-			</intent-filter>
-		</activity>
-	
-		<activity android:name="com.chanapps.four.test.FragmentLayout$DetailsActivity"/>
         
+        <activity android:name=".PhotoGrid" android:label="4ChannerTest">
+            <intent-filter>            
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
