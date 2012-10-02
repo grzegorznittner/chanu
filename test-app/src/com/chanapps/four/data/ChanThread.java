@@ -96,6 +96,7 @@ public class ChanThread {
 		try {
 			URL chanApi = new URL("http://api.4chan.org/" + board + "/res/" + number + ".json");
 	        URLConnection tc = chanApi.openConnection();
+            Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength());
 	        in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
 	        Gson gson = new GsonBuilder().create();
 	        
