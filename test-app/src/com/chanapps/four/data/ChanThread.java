@@ -127,7 +127,6 @@ public class ChanThread {
 				}
 		        handler.sendEmptyMessage(posts.size());
 		        Thread.sleep(100);
-<<<<<<< .merge_file_FidhCv
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Error parsing Chan thread json. " + e.getMessage(), e);
@@ -139,19 +138,6 @@ public class ChanThread {
 			} catch (Exception e) {
 				Log.e(TAG, "Error closing reader", e);
 			}
-=======
-			}
-		} catch (Exception e) {
-			Log.e(TAG, "Error parsing Chan thread json. " + e.getMessage(), e);
-		} finally {
-			try {
-				if (in != null) {
-					in.close();
-				}
-			} catch (Exception e) {
-				Log.e(TAG, "Error closing reader", e);
-			}
->>>>>>> .merge_file_njtXLY
 		}
 	}
 	
