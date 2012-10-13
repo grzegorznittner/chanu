@@ -13,9 +13,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +37,9 @@ public class ChanBoard {
 	
 	public String board;
 	public boolean loaded = false;
-	
+	public String name;
+    public String link;
+    public int iconId;
 	public int no;
 
 	public List<ChanThread> threads = Collections.synchronizedList(new ArrayList<ChanThread>());
@@ -143,7 +143,7 @@ public class ChanBoard {
 		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Cute/Male", "cm", 0, true, true, false));
 		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Transportation", "n", 0, true, true, false));
 		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Otaku Culture", "jp", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Pokémon", "vp", 0, true, true, false));
+		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Pokï¿½mon", "vp", 0, true, true, false));
 		boardsByType.put(Type.JAPANESE_CULTURE, boardType);
 		boards.addAll(boardType);
 		
