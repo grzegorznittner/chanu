@@ -119,17 +119,7 @@ public class ChanBoard {
 
 	private static List<ChanBoard> boards = null;
 	private static Map<Type, List<ChanBoard>> boardsByType = null;
-	
-	public static List<ChanBoard> getBoards() {
-		if (boards == null) {
-			initBoards();
-		}
-		return boards;
-	}
-	
-	private static List<ChanBoard> boards = null;
-	private static Map<Type, List<ChanBoard>> boardsByType = null;
-	
+
 	public static List<ChanBoard> getBoards() {
 		if (boards == null) {
 			initBoards();
