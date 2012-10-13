@@ -18,12 +18,25 @@
 		<activity android:name=".ThreadListActivity" android:label="4Channer Test">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         
-        <activity android:name=".PhotoGrid" android:label="4ChannerTest">
+        <activity android:name=".BoardGridActivity" android:label="4ChannerTest"
+        	android:theme="@style/tabTheme">
             <intent-filter>            
+				<category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
+		<activity android:name=".FragmentLayout" android:label="GridView">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
+		<activity android:name=".FragmentLayout$DetailsActivity" android:label="DetailsView">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>

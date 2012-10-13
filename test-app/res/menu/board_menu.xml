@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/japanese_culture"
+          android:title="@string/japanese_culture"
+          android:showAsAction="always"
+          />
+    <item android:id="@+id/interests"
+          android:title="@string/interests"
+          android:showAsAction="always"
+          />
+    <item android:id="@+id/creative"
+          android:title="@string/creative"
+          android:showAsAction="always"
+          />
+    <item android:id="@+id/adult"
+          android:title="@string/adult"
+          android:showAsAction="always"
+          />
+    <item android:id="@+id/other"
+          android:title="@string/other"
+          android:showAsAction="always"
+          />
+    <item android:id="@+id/misc"
+          android:title="@string/misc"
+          android:showAsAction="always"
+          />
+</menu>

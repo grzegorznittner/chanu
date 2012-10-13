@@ -21,7 +21,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class ThreadListActivity extends ListActivity {
-	public static final String TAG = "TestListActivity";
+	public static final String TAG = "ThreadListActivity";
 	
 	public static class MyCursorAdapter extends SimpleCursorAdapter {
 		ImageLoader imageLoader = null;
@@ -33,7 +33,7 @@ public class ThreadListActivity extends ListActivity {
 			this.imageLoader = imageLoader;
 			this.options = options;
 		}
-
+		
 		@Override
 		public void setViewImage(ImageView v, String value) {
 			try {
@@ -52,9 +52,12 @@ public class ThreadListActivity extends ListActivity {
 	
     final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
-        	Log.i(TAG, "############# Updating list view ...");
+        	Log.i(TAG, "Notifying adapter change for " + msg.arg1);
     		adapter.notifyDataSetChanged();
-    		getListView().requestLayout();
+    		if (new Date().getTime() - lastUpdate > 500) {
+    			Log.i(TAG, "######## Updating list view for " + msg.arg1);
+    			getListView().requestLayout();
+    		}
         }
     };
     
@@ -80,6 +83,7 @@ public class ThreadListActivity extends ListActivity {
         
         setListAdapter(adapter);
         startManagingCursor(cursor);
+        lastUpdate = new Date().getTime();
         
         Thread thread = new Thread()
         {
