@@ -35,7 +35,7 @@ public class ThreadListActivity extends ListActivity {
 			this.imageLoader = imageLoader;
 			this.options = options;
 		}
-
+		
 		@Override
 		public void setViewImage(ImageView v, String value) {
 			try {
@@ -56,9 +56,12 @@ public class ThreadListActivity extends ListActivity {
 
     final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
-        	Log.i(TAG, "############# Updating list view ...");
+        	Log.i(TAG, "Notifying adapter change for " + msg.arg1);
     		adapter.notifyDataSetChanged();
-    		getListView().requestLayout();
+    		if (new Date().getTime() - lastUpdate > 500) {
+    			Log.i(TAG, "######## Updating list view for " + msg.arg1);
+    			getListView().requestLayout();
+    		}
         }
     };
     
@@ -99,6 +102,8 @@ public class ThreadListActivity extends ListActivity {
             return;
         }
 
+        lastUpdate = new Date().getTime();
+        
         Thread thread = new Thread()
         {
             @Override

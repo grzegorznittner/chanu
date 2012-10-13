@@ -18,7 +18,6 @@
         <activity android:name=".BoardListActivity" android:label="@string/title_board_activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
@@ -33,7 +32,27 @@
         </activity>
         
         <activity android:name=".PhotoGrid" android:label="@string/title_photogrid_activity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".BoardGridActivity" android:label="@string/app_name"
+        	android:theme="@style/tabTheme">
             <intent-filter>            
+				<category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
+		<activity android:name=".FragmentLayout" android:label="GridView">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
+		<activity android:name=".FragmentLayout$DetailsActivity" android:label="DetailsView">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>

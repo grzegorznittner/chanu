@@ -7,5 +7,11 @@
     <string name="title_thread_activity">Thread</string>
     <string name="title_board_activity">Board</string>
     <string name="title_photogrid_activity">PhotoGrid</string>
+    <string name="japanese_culture">Japanese Culture</string>
+    <string name="interests">Interests</string>
+    <string name="creative">Creative</string>
+    <string name="adult">Adult</string>
+    <string name="other">Other</string>
+    <string name="misc">Misc.</string>
 
 </resources>
