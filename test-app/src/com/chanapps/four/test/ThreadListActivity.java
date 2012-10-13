@@ -1,5 +1,7 @@
 package com.chanapps.four.test;
 
+import java.util.Date;
+
 import android.app.ListActivity;
 import android.content.Context;
 import android.database.Cursor;
@@ -46,6 +48,7 @@ public class ThreadListActivity extends ListActivity {
     DisplayImageOptions options = null;
     MyCursorAdapter adapter = null;
     MatrixCursor cursor = new MatrixCursor(new String[] {"_id", "image_url", "text"});
+    long lastUpdate = 0;
 	
     final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -84,7 +87,7 @@ public class ThreadListActivity extends ListActivity {
             public void run() {
             	ChanThread chanThread = new ChanThread();
             	chanThread.cursor = cursor;
-                chanThread.loadChanThread(handler, "c", 1889391);
+                chanThread.loadChanThread(handler, "sp", 26412947);
                 
                 refresh();
             }
@@ -97,7 +100,6 @@ public class ThreadListActivity extends ListActivity {
                 		Log.i(TAG, "Data loaded ...");
                 		adapter.notifyDataSetChanged();
                 		getListView().requestLayout();
-                		//adapter.changeCursor(cursor);
                 	}
                 });
             }
