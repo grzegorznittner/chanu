@@ -18,6 +18,9 @@ public class ChanText {
                 .replaceAll("&lt;", "<")
                 .replaceAll("&gt;", ">")
                 .replaceAll("&amp;", "&")
+                .replaceAll("&quot;", "\"")
+                .replaceAll("&#44;", ",")
+                .replaceAll("&#[0-9abcdef]*;", "")
                 .replaceAll(" +", " ")
                 .trim()
             : "";

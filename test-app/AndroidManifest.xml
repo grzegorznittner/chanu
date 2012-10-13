@@ -17,7 +17,11 @@
 
         <activity android:name=".BoardListActivity" android:label="@string/title_board_activity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="android"
+                      android:host="api.chanapps.com"
+                      android:pathPattern="/board/.*/page/.*" />
             </intent-filter>
         </activity>
 
@@ -27,7 +31,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="android"
                       android:host="api.chanapps.com"
-                      android:pathPattern="/.*/res/.*" />
+                      android:pathPattern="/board/.*/thread/.*" />
             </intent-filter>
         </activity>
         

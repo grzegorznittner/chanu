@@ -20,6 +20,10 @@ import java.util.Map;
 public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();
 
+    public ChanBoard() {
+
+    }
+
 	private ChanBoard(Type type, String name, String link, int iconId,
 			boolean workSafe, boolean classic, boolean textOnly) {
 		this.type = type;

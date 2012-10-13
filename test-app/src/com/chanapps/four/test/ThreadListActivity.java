@@ -6,6 +6,8 @@ import java.util.List;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -17,6 +19,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanThread;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -92,12 +95,12 @@ public class ThreadListActivity extends ListActivity {
         Intent intent = getIntent();
         Uri data = intent.getData();
         if (data == null) {
-            data = Uri.parse("android://api.chanapps.com/sp/res/26837084");
+            data = Uri.parse("android://api.chanapps.com/board/sp/thread/26837084");
         }
         List<String> pathSegments = data.getPathSegments();
-        if (pathSegments.size() == 3) {
-            setBoardCode(pathSegments.get(0));
-            threadId = Integer.parseInt(pathSegments.get(2));
+        if (pathSegments.size() == 4) {
+            setBoardCode(pathSegments.get(1));
+            threadId = Integer.parseInt(pathSegments.get(3));
         }
         else {
             return;
@@ -154,9 +157,17 @@ public class ThreadListActivity extends ListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent intent = new Intent(this, BoardListActivity.class);
+                int pageNo = 0;
+                Uri uri = Uri.parse("android://api.chanapps.com/board/" + boardCode + "/page/" + pageNo);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                PackageManager packageManager = getPackageManager();
+                List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+                boolean isIntentSafe = activities.size() > 0;
+                if (isIntentSafe) {
+                    Log.i(TAG, "Received click, calling intent " + uri + " ...");
+                    startActivity(intent);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

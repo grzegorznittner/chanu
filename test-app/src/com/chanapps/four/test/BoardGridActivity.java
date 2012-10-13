@@ -19,7 +19,10 @@ package com.chanapps.four.test;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -40,6 +43,8 @@ import android.widget.TextView;
 
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanBoard.Type;
+
+import java.util.List;
 
 /**
  * A grid that displays a set of framed photos.
@@ -103,12 +108,19 @@ public class BoardGridActivity extends TabActivity implements OnItemClickListene
     
     @Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    	Intent intent = new Intent();
-        intent.setClass(getApplicationContext(), FragmentLayout.class);
-        intent.putExtra("board", "diy");
-        intent.putExtra("thread", 287252);
-        startActivity(intent);
-	}
+        ChanBoard board = ChanBoard.getBoardsByType(selectedBoardType).get(position);
+        String boardCode = board.link;
+        int pageNo = 0;
+        Uri uri = Uri.parse("android://api.chanapps.com/board/" + boardCode + "/page/" + pageNo);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        PackageManager packageManager = getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+        boolean isIntentSafe = activities.size() > 0;
+        if (isIntentSafe) {
+            Log.i(TAG, "Received click, calling intent " + uri + " ...");
+            startActivity(intent);
+        }
+    }
     
 	public static class ImageAdapter extends BaseAdapter {
 		LayoutInflater infater = null;

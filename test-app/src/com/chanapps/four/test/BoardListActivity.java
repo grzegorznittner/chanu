@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -55,6 +56,7 @@ public class BoardListActivity extends ListActivity {
     MatrixCursor cursor = new MatrixCursor(new String[] {"_id", "image_url", "text"});
     ChanBoard chanBoard = null;
     String boardCode = null;
+    int pageNo = 0;
     long lastUpdate = 0;
 	
     final Handler handler = new Handler() {
@@ -88,7 +90,19 @@ public class BoardListActivity extends ListActivity {
         setListAdapter(adapter);
         startManagingCursor(cursor);
 
-        setBoardCode("sp");
+        Intent intent = getIntent();
+        Uri data = intent.getData();
+        if (data == null) {
+            data = Uri.parse("android://api.chanapps.com/board/sp/page/0");
+        }
+        List<String> pathSegments = data.getPathSegments();
+        if (pathSegments.size() == 4) {
+            setBoardCode(pathSegments.get(1));
+            pageNo = Integer.parseInt(pathSegments.get(3));
+        }
+        else {
+            return;
+        }
 
         Thread thread = new Thread()
         {
@@ -96,7 +110,7 @@ public class BoardListActivity extends ListActivity {
             public void run() {
            	    chanBoard = new ChanBoard();
        	        chanBoard.cursor = cursor;
-                chanBoard.loadChanBoard(handler, boardCode, 0);
+                chanBoard.loadChanBoard(handler, boardCode, pageNo);
                 refresh();
             }
             
@@ -150,7 +164,7 @@ public class BoardListActivity extends ListActivity {
                 }
                 String board = thread.board;
                 int no = thread.no;
-                Uri uri = Uri.parse("android://api.chanapps.com/" + board + "/res/" + no);
+                Uri uri = Uri.parse("android://api.chanapps.com/board/" + board + "/thread/" + no);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 PackageManager packageManager = getPackageManager();
                 List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
@@ -163,10 +177,24 @@ public class BoardListActivity extends ListActivity {
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent intent = new Intent(this, BoardGridActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void setBoardCode(String code) {
         boardCode = code;
         if (getActionBar() != null) {
             getActionBar().setTitle("/" + boardCode + " board");
+            getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 
