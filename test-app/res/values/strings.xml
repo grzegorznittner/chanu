@@ -1,8 +1,11 @@
 <resources>
 
-    <string name="app_name">Greg Test</string>
+    <string name="app_name">4channer</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="title_item_list">Items</string>
     <string name="fragment_layout">2 Pane Layout</string>
-    
+    <string name="title_thread_activity">Thread</string>
+    <string name="title_board_activity">Board</string>
+    <string name="title_photogrid_activity">PhotoGrid</string>
+
 </resources>
