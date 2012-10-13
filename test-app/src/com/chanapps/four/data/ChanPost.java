@@ -1,6 +1,7 @@
 package com.chanapps.four.data;
 
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class ChanPost {
 	public String board;
@@ -20,7 +21,7 @@ public class ChanPost {
 	public String md5;
 	public int fsize;
 	public int resto;
-	
+
 	public String getThumbnailUrl() {
 		if (tim != null) {
 			return "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg";
@@ -34,7 +35,20 @@ public class ChanPost {
 		}
 		return null;
 	}
-	
+
+    public String getFullText() {
+        String sanitized = com
+                .replaceAll("<a[^>]*class=\"quotelink\">[^<]*</a>", "")
+                .replaceAll("<br */?>", "\n")
+                .replaceAll("<[^>]+>", "")
+                .replaceAll("&lt;", "<")
+                .replaceAll("&gt;", ">")
+                .replaceAll("&amp;", "&")
+                .replaceAll(" +", " ")
+                .trim();
+        return sanitized;
+    }
+
 	public String toString() {
 		return "Post " + no + " " + com + ", filename: " + filename;
 	}

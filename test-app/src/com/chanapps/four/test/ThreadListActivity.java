@@ -87,7 +87,7 @@ public class ThreadListActivity extends ListActivity {
             public void run() {
             	ChanThread chanThread = new ChanThread();
             	chanThread.cursor = cursor;
-                chanThread.loadChanThread(handler, "sp", 26412947);
+                chanThread.loadChanThread(handler, "sp", 26830831);
                 
                 refresh();
             }

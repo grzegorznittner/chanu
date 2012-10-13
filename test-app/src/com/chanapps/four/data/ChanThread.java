@@ -86,7 +86,7 @@ public class ChanThread {
 	private void addPost(ChanPost post) {
 		posts.add(post);
 		if (cursor != null) {
-            cursor.addRow(new Object[] {post.no, post.getThumbnailUrl(), post.com});
+            cursor.addRow(new Object[] {post.no, post.getThumbnailUrl(), post.getFullText()});
 		}
 	}
 	
