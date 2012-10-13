@@ -27,7 +27,7 @@
                 android:layout_marginLeft="20dip"
                 android:textSize="12dip"
                 android:textColor="#efefef"
-                android:autoLink="all" />
+                android:autoLink="none" />
 
 
         </LinearLayout>
