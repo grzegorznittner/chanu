@@ -147,7 +147,7 @@ public class ChanBoard {
 		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Cute/Male", "cm", 0, true, true, false));
 		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Transportation", "n", 0, true, true, false));
 		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Otaku Culture", "jp", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Pok�mon", "vp", 0, true, true, false));
+		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Pokemon", "vp", 0, true, true, false));
 		boardsByType.put(Type.JAPANESE_CULTURE, boardType);
 		boards.addAll(boardType);
 		
