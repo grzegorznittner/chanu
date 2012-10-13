@@ -13,16 +13,53 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b3492763-7884-4c6a-8ffb-17a5ff808231" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/res/layout/list_item.xml" afterPath="$PROJECT_DIR$/res/layout/thread_activity_list_item.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/res/layout/list_layout.xml" afterPath="$PROJECT_DIR$/res/layout/thread_activity_list_layout.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/a.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/an.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/board_3.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/board_int.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/c.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/cgl.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/ck.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/cm.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/co.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/diy.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/fa.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/g.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/i.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/ic.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/jp.jpeg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/k.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/m.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/mu.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/n.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/o.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/p.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/po.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/sci.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/sp.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/tg.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/toy.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/tv.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/v.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/vg.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/vp.jpeg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/w.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/drawable/wg.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/layout/board_grid_view.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/layout/grid_item.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/menu/board_menu.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/res/menu/list_item.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/chanapps/four/data/ChanDatabaseHelper.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/chanapps/four/test/BoardGridActivity.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/chanapps/four/test/PhotoGrid.java" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AndroidManifest.xml" afterPath="$PROJECT_DIR$/AndroidManifest.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/fragment_layout.xml" afterPath="$PROJECT_DIR$/res/layout/fragment_layout.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/photo_grid.xml" afterPath="$PROJECT_DIR$/res/layout/photo_grid.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/values/strings.xml" afterPath="$PROJECT_DIR$/res/values/strings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/values/styles.xml" afterPath="$PROJECT_DIR$/res/values/styles.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/chanapps/four/data/ChanBoard.java" afterPath="$PROJECT_DIR$/src/com/chanapps/four/data/ChanBoard.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/chanapps/four/data/ChanPost.java" afterPath="$PROJECT_DIR$/src/com/chanapps/four/data/ChanPost.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/chanapps/four/data/ChanThread.java" afterPath="$PROJECT_DIR$/src/com/chanapps/four/data/ChanThread.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/chanapps/four/test/FragmentLayout.java" afterPath="$PROJECT_DIR$/src/com/chanapps/four/test/FragmentLayout.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/chanapps/four/test/ThreadListActivity.java" afterPath="$PROJECT_DIR$/src/com/chanapps/four/test/ThreadListActivity.java" />
     </list>
     <ignored path="test-app.iws" />
@@ -150,27 +187,29 @@
       <file leaf-file-name="ChanThread.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/data/ChanThread.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="23" selection-start="172" selection-end="173" vertical-scroll-proportion="-3.4615386">
+            <state line="2" column="23" selection-start="172" selection-end="173" vertical-scroll-proportion="-1.1538461">
               <folding>
-                <element signature="e#1291#1301#0" expanded="true" />
+                <element signature="e#1264#1274#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ChanBoard.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="ChanBoard.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/data/ChanBoard.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="63" column="0" selection-start="2280" selection-end="2280" vertical-scroll-proportion="-6.730769">
-              <folding />
+            <state line="91" column="0" selection-start="3001" selection-end="3001" vertical-scroll-proportion="-2.4149857">
+              <folding>
+                <element signature="e#4493#4504#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ThreadListActivity.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ThreadListActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/ThreadListActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="153" column="28" selection-start="5392" selection-end="5392" vertical-scroll-proportion="1.9942364">
+            <state line="159" column="28" selection-start="5599" selection-end="5599" vertical-scroll-proportion="-26.615385">
               <folding />
             </state>
           </provider>
@@ -682,13 +721,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/data/ChanBoard.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="0" selection-start="2280" selection-end="2280" vertical-scroll-proportion="-6.730769">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/gen/com/chanapps/four/test/R.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="33" column="30" selection-start="1256" selection-end="1256" vertical-scroll-proportion="0.3324397">
@@ -745,9 +777,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/data/ChanThread.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="23" selection-start="172" selection-end="173" vertical-scroll-proportion="-3.4615386">
+        <state line="2" column="23" selection-start="172" selection-end="173" vertical-scroll-proportion="-1.1538461">
           <folding>
-            <element signature="e#1291#1301#0" expanded="true" />
+            <element signature="e#1264#1274#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -795,8 +827,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/ThreadListActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="153" column="28" selection-start="5392" selection-end="5392" vertical-scroll-proportion="1.9942364">
+        <state line="159" column="28" selection-start="5599" selection-end="5599" vertical-scroll-proportion="-26.615385">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/data/ChanBoard.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="91" column="0" selection-start="3001" selection-end="3001" vertical-scroll-proportion="-2.4149857">
+          <folding>
+            <element signature="e#4493#4504#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
