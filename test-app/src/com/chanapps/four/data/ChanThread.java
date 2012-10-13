@@ -79,14 +79,14 @@ public class ChanThread {
 		resto = t.resto;
 		
 		if (cursor != null) {
-            cursor.addRow(new Object[] {no, getThumbnailUrl(), sub});
+            cursor.addRow(new Object[] {no, getThumbnailUrl(), ChanText.sanitizeText(sub)});
 		}
 	}
 	
 	private void addPost(ChanPost post) {
 		posts.add(post);
 		if (cursor != null) {
-            cursor.addRow(new Object[] {post.no, post.getThumbnailUrl(), post.getFullText()});
+            cursor.addRow(new Object[] {post.no, post.getThumbnailUrl(), ChanText.sanitizeText(post.com)});
 		}
 	}
 	
@@ -95,8 +95,9 @@ public class ChanThread {
 		BufferedReader in = null;
 		try {
 			URL chanApi = new URL("http://api.4chan.org/" + board + "/res/" + number + ".json");
-	        URLConnection tc = chanApi.openConnection();
-            Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength());
+            Log.i(TAG, "Calling API " + chanApi + " ...");
+            URLConnection tc = chanApi.openConnection();
+            Log.i(TAG, "Opened API " + chanApi + " response length=" + tc.getContentLength());
 	        in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
 	        Gson gson = new GsonBuilder().create();
 	        
@@ -104,7 +105,7 @@ public class ChanThread {
 			JsonReader reader = new JsonReader(in);
 			reader.setLenient(true);
 			reader.beginObject();
-			String name = reader.nextName();
+			reader.nextName(); // "posts"
 			reader.beginArray();
 			while (reader.hasNext()) {
 				if (!threadRead) {
@@ -119,7 +120,7 @@ public class ChanThread {
 					addPost(post);
 				}
 		        handler.sendEmptyMessage(posts.size());
-		        Thread.sleep(500);
+		        Thread.sleep(100);
 			}
 			
 			

@@ -36,19 +36,6 @@ public class ChanPost {
 		return null;
 	}
 
-    public String getFullText() {
-        String sanitized = com
-                .replaceAll("<a[^>]*class=\"quotelink\">[^<]*</a>", "")
-                .replaceAll("<br */?>", "\n")
-                .replaceAll("<[^>]+>", "")
-                .replaceAll("&lt;", "<")
-                .replaceAll("&gt;", ">")
-                .replaceAll("&amp;", "&")
-                .replaceAll(" +", " ")
-                .trim();
-        return sanitized;
-    }
-
 	public String toString() {
 		return "Post " + no + " " + com + ", filename: " + filename;
 	}

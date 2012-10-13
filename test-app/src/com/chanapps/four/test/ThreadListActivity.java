@@ -1,9 +1,10 @@
 package com.chanapps.four.test;
 
-import java.util.Date;
+import java.util.List;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 
@@ -21,7 +23,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class ThreadListActivity extends ListActivity {
-	public static final String TAG = "TestListActivity";
+	public static final String TAG = ThreadListActivity.class.getSimpleName();
 	
 	public static class MyCursorAdapter extends SimpleCursorAdapter {
 		ImageLoader imageLoader = null;
@@ -49,7 +51,9 @@ public class ThreadListActivity extends ListActivity {
     MyCursorAdapter adapter = null;
     MatrixCursor cursor = new MatrixCursor(new String[] {"_id", "image_url", "text"});
     long lastUpdate = 0;
-	
+    String boardCode = null;
+    int threadId = 0;
+
     final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
         	Log.i(TAG, "############# Updating list view ...");
@@ -63,7 +67,7 @@ public class ThreadListActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         
         options = new DisplayImageOptions.Builder()
-			.showImageForEmptyUri(R.drawable.stub_image)
+//			.showImageForEmptyUri(R.drawable.stub_image)
 			.cacheOnDisc()
 			.imageScaleType(ImageScaleType.EXACT)
 			.build();
@@ -72,7 +76,7 @@ public class ThreadListActivity extends ListActivity {
         imageLoader.init(ImageLoaderConfiguration.createDefault(getApplicationContext()));
 
         adapter = new MyCursorAdapter(getApplicationContext(),
-                R.layout.list_item,
+                R.layout.thread_activity_list_item,
                 cursor,
                 new String[] {"image_url", "text"},
                 new int[] {R.id.list_item_image, R.id.list_item_text},
@@ -80,15 +84,28 @@ public class ThreadListActivity extends ListActivity {
         
         setListAdapter(adapter);
         startManagingCursor(cursor);
-        
+
+        Intent intent = getIntent();
+        Uri data = intent.getData();
+        if (data == null) {
+            data = Uri.parse("android://api.chanapps.com/sp/res/26837084");
+        }
+        List<String> pathSegments = data.getPathSegments();
+        if (pathSegments.size() == 3) {
+            setBoardCode(pathSegments.get(0));
+            threadId = Integer.parseInt(pathSegments.get(2));
+        }
+        else {
+            return;
+        }
+
         Thread thread = new Thread()
         {
             @Override
             public void run() {
             	ChanThread chanThread = new ChanThread();
             	chanThread.cursor = cursor;
-                chanThread.loadChanThread(handler, "sp", 26830831);
-                
+                chanThread.loadChanThread(handler, boardCode, threadId);
                 refresh();
             }
             
@@ -108,7 +125,7 @@ public class ThreadListActivity extends ListActivity {
         
         // We'll define a custom screen layout here (the one shown above), but
         // typically, you could just use the standard ListActivity layout.
-        setContentView(R.layout.list_layout);
+        setContentView(R.layout.thread_activity_list_layout);
 
         // Query for all people contacts using the Contacts.People convenience class.
         // Put a managed wrapper around the retrieved cursor so we don't have to worry about
@@ -119,11 +136,34 @@ public class ThreadListActivity extends ListActivity {
         // Now create a new list adapter bound to the cursor.
         // SimpleListAdapter is designed for binding to a Cursor.
         adapter = new MyCursorAdapter(this,
-                R.layout.list_item,
+                R.layout.thread_activity_list_item,
                 cursor,
                 new String[] {"image_url", "text"},
                 new int[] {R.id.list_item_image, R.id.list_item_text},
                 imageLoader, options);
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent intent = new Intent(this, BoardListActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void setBoardCode(String code) {
+        boardCode = code;
+        if (getActionBar() != null) {
+            getActionBar().setTitle("/" + boardCode + " thread");
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+
 }
