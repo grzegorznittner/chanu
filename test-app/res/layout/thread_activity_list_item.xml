@@ -26,7 +26,7 @@
                 android:layout_gravity="left|center_vertical"
                 android:layout_marginLeft="20dip"
                 android:textSize="12dip"
-                android:textColor="#efefef"
+                android:textColor="#121212"
                 android:autoLink="none" />
 
 
@@ -35,7 +35,7 @@
     <View
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:background="#efefef"
+            android:background="#323232"
             android:layout_marginBottom="4dp"
             />
 

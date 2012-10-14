@@ -7,7 +7,7 @@
          android:paddingRight="16dp"
          android:paddingTop="16dp"
          android:paddingBottom="16dp"
-        android:background="#000">
+        >
 
      <ListView android:id="@android:id/list"
                android:layout_width="match_parent"

@@ -23,6 +23,6 @@
         android:textColorHint="#555555"
         android:paddingBottom="5dp"
         android:gravity="bottom|center"
-        android:textSize="24dp"
+        android:textSize="18dp"
     />
 </RelativeLayout>
