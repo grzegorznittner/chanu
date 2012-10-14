@@ -60,7 +60,7 @@ public class BoardGridActivity extends TabActivity implements OnItemClickListene
 	
 	private ChanBoard.Type selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
 	private ImageAdapter adapter;
-	
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +73,7 @@ public class BoardGridActivity extends TabActivity implements OnItemClickListene
         Log.i(TAG, "width: " + width + ", height: " + height);
 
 	    setContentView(R.layout.photo_grid);
-	    
+
         numColumns = width / 300 == 1 ? 2 : width / 300;
         columnWidth = (width - 15) / numColumns;
         
@@ -85,7 +85,7 @@ public class BoardGridActivity extends TabActivity implements OnItemClickListene
         }
         setDefaultTab(0);
     }
-    
+
     /** {@inheritDoc} */
     public View createTabContent(String tag) {
     	selectedBoardType = ChanBoard.Type.valueOf(tag);
@@ -102,8 +102,8 @@ public class BoardGridActivity extends TabActivity implements OnItemClickListene
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(TAG, "onCreateOptionsMenu called");
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.board_menu, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.board_grid_menu, menu);
         return true;
     }
     

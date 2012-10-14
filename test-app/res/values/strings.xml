@@ -1,5 +1,6 @@
 <resources>
 
+    <!-- titles -->
     <string name="app_name">4channer</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="title_item_list">Items</string>
@@ -7,6 +8,15 @@
     <string name="title_thread_activity">Thread</string>
     <string name="title_board_activity">Board</string>
     <string name="title_photogrid_activity">PhotoGrid</string>
+
+    <!-- menus -->
+    <string name="settings_menu">Settings</string>
+    <string name="help_menu">Help</string>
+    <string name="refresh_menu">Refresh</string>
+    <string name="new_thread_menu">New Thread</string>
+    <string name="post_reply_menu">Post Reply</string>
+
+    <!-- board grid tab -->
     <string name="japanese_culture">Japanese Culture</string>
     <string name="interests">Interests</string>
     <string name="creative">Creative</string>
