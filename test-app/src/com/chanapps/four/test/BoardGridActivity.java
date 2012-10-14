@@ -16,6 +16,7 @@
 
 package com.chanapps.four.test;
 
+import android.app.ActionBar;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -70,7 +71,7 @@ public class BoardGridActivity extends TabActivity implements OnItemClickListene
         width = size.x;
         height = size.y;
         Log.i(TAG, "width: " + width + ", height: " + height);
-                
+
 	    setContentView(R.layout.photo_grid);
 	    
         numColumns = width / 300 == 1 ? 2 : width / 300;
@@ -79,7 +80,7 @@ public class BoardGridActivity extends TabActivity implements OnItemClickListene
 	    TabHost tabHost = getTabHost();
         for (ChanBoard.Type type : ChanBoard.Type.values()) {
             tabHost.addTab(tabHost.newTabSpec(type.toString())
-                    .setIndicator(type.toString())
+                    .setIndicator(type.toString().replaceAll("_", " "))
                     .setContent(this));
         }
         setDefaultTab(0);
@@ -101,8 +102,8 @@ public class BoardGridActivity extends TabActivity implements OnItemClickListene
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(TAG, "onCreateOptionsMenu called");
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.board_menu, menu);
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.board_menu, menu);
         return true;
     }
     

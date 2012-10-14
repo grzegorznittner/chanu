@@ -41,8 +41,8 @@
             </intent-filter>
         </activity>
         
-        <activity android:name=".BoardGridActivity" android:label="@string/app_name"
-        	android:theme="@style/tabTheme">
+        <activity android:name=".BoardGridActivity" android:label="@string/app_name">
+      <!--  	android:theme="@style/tabTheme">                                         -->
             <intent-filter>            
 				<category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.MAIN" />
