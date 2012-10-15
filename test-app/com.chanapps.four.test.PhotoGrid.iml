@@ -31,10 +31,8 @@
         <option name="PACK_TEST_CODE" value="false" />
         <option name="RUN_PROGUARD" value="false" />
         <option name="PROGUARD_CFG_PATH" value="/proguard-project.txt" />
-        <resOverlayFolders>
-          <path>/res-overlay</path>
-        </resOverlayFolders>
-        <includeSystemProguardFile>true</includeSystemProguardFile>
+        <resOverlayFolders />
+        <includeSystemProguardFile>false</includeSystemProguardFile>
         <additionalNativeLibs />
       </configuration>
     </facet>

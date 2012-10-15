@@ -7,8 +7,16 @@
             />
     <item android:id="@+id/new_thread_menu"
           android:title="@string/new_thread_menu"
-          android:icon="@drawable/social_send_now"
+          android:icon="@drawable/content_new"
           android:showAsAction="always"
+            />
+    <item android:id="@+id/add_to_favorites_menu"
+          android:title="@string/add_to_favorites_menu"
+          android:icon="@drawable/rating_important"
+            />
+    <item android:id="@+id/download_all_threads_menu"
+          android:title="@string/download_all_threads_menu"
+          android:icon="@drawable/content_save"
             />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"

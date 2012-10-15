@@ -14,7 +14,10 @@
     <string name="help_menu">Help</string>
     <string name="refresh_menu">Refresh</string>
     <string name="new_thread_menu">New Thread</string>
-    <string name="post_reply_menu">Post Reply</string>
+    <string name="add_to_favorites_menu">Add to Favorites</string>
+    <string name="download_all_threads_menu">Download All Threads</string>
+    <string name="post_new_picture_menu">Post New Picture</string>
+    <string name="post_new_text_menu">Post New Message</string>
 
     <!-- board grid tab -->
     <string name="japanese_culture">Japanese Culture</string>
