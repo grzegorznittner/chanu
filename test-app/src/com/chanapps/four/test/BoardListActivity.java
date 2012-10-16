@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,7 +29,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import java.util.List;
 
-public class BoardListActivity extends ListActivity {
+public class BoardListActivity extends ListActivity implements AdapterView.OnItemClickListener {
 	public static final String TAG = BoardListActivity.class.getSimpleName();
 	
 	public static class MyCursorAdapter extends SimpleCursorAdapter {
@@ -93,17 +94,13 @@ public class BoardListActivity extends ListActivity {
         startManagingCursor(cursor);
 
         Intent intent = getIntent();
-        Uri data = intent.getData();
-        if (data == null) {
-            data = Uri.parse("android://api.chanapps.com/board/sp/page/0");
-        }
-        List<String> pathSegments = data.getPathSegments();
-        if (pathSegments.size() == 4) {
-            setBoardCode(pathSegments.get(1));
-            pageNo = Integer.parseInt(pathSegments.get(3));
+        if (intent.hasExtra("boardCode")) {
+            setBoardCode(intent.getStringExtra("boardCode"));
+            pageNo = intent.getIntExtra("pageNo", 0);
         }
         else {
-            return;
+            setBoardCode("sp");
+            pageNo = 0;
         }
 
         Thread thread = new Thread()
@@ -124,7 +121,6 @@ public class BoardListActivity extends ListActivity {
                 		Log.i(TAG, "Data loaded ...");
                 		adapter.notifyDataSetChanged();
                 		getListView().requestLayout();
-                        setOnItemClickListener();
                     }
                 });
             }
@@ -134,6 +130,9 @@ public class BoardListActivity extends ListActivity {
         // We'll define a custom screen layout here (the one shown above), but
         // typically, you could just use the standard ListActivity layout.
         setContentView(R.layout.board_activity_list_layout);
+
+        getListView().setClickable(true);
+        getListView().setOnItemClickListener(this);
 
         // Query for all people contacts using the Contacts.People convenience class.
         // Put a managed wrapper around the retrieved cursor so we don't have to worry about
@@ -152,31 +151,19 @@ public class BoardListActivity extends ListActivity {
 
     }
 
-    private void setOnItemClickListener() {
-        getListView().setClickable(true);
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (chanBoard == null || chanBoard.threads == null) {
-                    return;
-                }
-                ChanThread thread = chanBoard.threads.get(i);
-                if (thread == null) {
-                    return;
-                }
-                String board = thread.board;
-                int no = thread.no;
-                Uri uri = Uri.parse("android://api.chanapps.com/board/" + board + "/thread/" + no);
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                PackageManager packageManager = getPackageManager();
-                List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-                boolean isIntentSafe = activities.size() > 0;
-                if (isIntentSafe) {
-                    Log.i(TAG, "Received click, calling intent " + uri + " ...");
-                    startActivity(intent);
-                }
-            }
-        });
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        if (chanBoard == null || chanBoard.threads == null) {
+            return;
+        }
+        ChanThread thread = chanBoard.threads.get(i);
+        if (thread == null) {
+            return;
+        }
+        Intent intent = new Intent(this, ThreadListActivity.class);
+        intent.putExtra("boardCode", thread.board);
+        intent.putExtra("threadNo", thread.no);
+        startActivity(intent);
     }
 
     @Override
@@ -184,8 +171,7 @@ public class BoardListActivity extends ListActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = new Intent(this, BoardGridActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                NavUtils.navigateUpTo(this, intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

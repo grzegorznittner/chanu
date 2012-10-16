@@ -51,7 +51,10 @@ import java.util.List;
  * A grid that displays a set of framed photos.
  *
  */
-public class BoardGridActivity extends TabActivity implements OnItemClickListener, TabHost.TabContentFactory {
+public class BoardGridActivity
+        extends TabActivity
+        implements OnItemClickListener, TabHost.TabContentFactory
+{
 	public static final String TAG = "BoardGridActivity";
 	
 	private int width, height;
@@ -112,15 +115,10 @@ public class BoardGridActivity extends TabActivity implements OnItemClickListene
         ChanBoard board = ChanBoard.getBoardsByType(selectedBoardType).get(position);
         String boardCode = board.link;
         int pageNo = 0;
-        Uri uri = Uri.parse("android://api.chanapps.com/board/" + boardCode + "/page/" + pageNo);
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        PackageManager packageManager = getPackageManager();
-        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-        boolean isIntentSafe = activities.size() > 0;
-        if (isIntentSafe) {
-            Log.i(TAG, "Received click, calling intent " + uri + " ...");
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, BoardListActivity.class);
+        intent.putExtra("boardCode", boardCode);
+        intent.putExtra("pageNo", pageNo);
+        startActivity(intent);
     }
     
 	public static class ImageAdapter extends BaseAdapter {

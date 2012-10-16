@@ -14,21 +14,23 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 
-import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanThread;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class ThreadListActivity extends ListActivity {
+public class ThreadListActivity extends ListActivity implements AdapterView.OnItemClickListener {
+
 	public static final String TAG = ThreadListActivity.class.getSimpleName();
 	
 	public static class MyCursorAdapter extends SimpleCursorAdapter {
@@ -52,13 +54,14 @@ public class ThreadListActivity extends ListActivity {
 		}
 	}
 	
+    ChanThread chanThread = null;
 	ImageLoader imageLoader = null;
     DisplayImageOptions options = null;
     MyCursorAdapter adapter = null;
     MatrixCursor cursor = new MatrixCursor(new String[] {"_id", "image_url", "text"});
     long lastUpdate = 0;
     String boardCode = null;
-    int threadId = 0;
+    int threadNo = 0;
 
     final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -95,17 +98,13 @@ public class ThreadListActivity extends ListActivity {
         startManagingCursor(cursor);
 
         Intent intent = getIntent();
-        Uri data = intent.getData();
-        if (data == null) {
-            data = Uri.parse("android://api.chanapps.com/board/sp/thread/26837084");
-        }
-        List<String> pathSegments = data.getPathSegments();
-        if (pathSegments.size() == 4) {
-            setBoardCode(pathSegments.get(1));
-            threadId = Integer.parseInt(pathSegments.get(3));
+        if (intent.hasExtra("threadNo")) {
+            setBoardCode(intent.getStringExtra("boardCode"));
+            threadNo = intent.getIntExtra("threadNo", 0);
         }
         else {
-            return;
+            boardCode = "sp";
+            threadNo = 26837084;
         }
 
         lastUpdate = new Date().getTime();
@@ -114,9 +113,9 @@ public class ThreadListActivity extends ListActivity {
         {
             @Override
             public void run() {
-            	ChanThread chanThread = new ChanThread();
+                chanThread = new ChanThread();
             	chanThread.cursor = cursor;
-                chanThread.loadChanThread(handler, boardCode, threadId);
+                chanThread.loadChanThread(handler, boardCode, threadNo);
                 refresh();
             }
             
@@ -160,16 +159,10 @@ public class ThreadListActivity extends ListActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 int pageNo = 0;
-                Uri uri = Uri.parse("android://api.chanapps.com/board/" + boardCode + "/page/" + pageNo);
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                PackageManager packageManager = getPackageManager();
-                List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-                boolean isIntentSafe = activities.size() > 0;
-                if (isIntentSafe) {
-                    Log.i(TAG, "Received click, calling intent " + uri + " ...");
-                    startActivity(intent);
-                }
+                Intent upIntent = new Intent(this, BoardListActivity.class);
+                upIntent.putExtra("boardCode", boardCode);
+                upIntent.putExtra("pageNo", pageNo);
+                NavUtils.navigateUpTo(this, upIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -182,6 +175,31 @@ public class ThreadListActivity extends ListActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.thread_list_menu, menu);
         return true;
+    }
+
+    @Override
+    public void onItemClick(android.widget.AdapterView<?> adapterView, android.view.View view, int position, long id) {
+        if (chanThread == null || chanThread.posts == null) {
+            return;
+        }
+
+        int postNo = (position == 0)
+                ? chanThread.no
+                : chanThread.posts.get(position - 1).no;
+
+        String imageUrl = (position == 0)
+                ? chanThread.getImageUrl()
+                : chanThread.posts.get(position - 1).getImageUrl();
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            return;
+        }
+
+        Intent intent = new Intent(this, FullScreenImageActivity.class);
+        intent.putExtra("boardCode", chanThread.board);
+        intent.putExtra("threadNo", chanThread.no);
+        intent.putExtra("postNo",postNo);
+        intent.putExtra("imageUrl", imageUrl);
+        startActivity(intent);
     }
 
     private void setBoardCode(String code) {

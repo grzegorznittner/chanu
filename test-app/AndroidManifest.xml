@@ -15,13 +15,17 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
 
+        <activity android:name=".FullScreenImageActivity" android:label="@string/full_screen_image_activity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".BoardListActivity" android:label="@string/title_board_activity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="android"
-                      android:host="api.chanapps.com"
-                      android:pathPattern="/board/.*/page/.*" />
             </intent-filter>
         </activity>
 
@@ -29,23 +33,14 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="android"
-                      android:host="api.chanapps.com"
-                      android:pathPattern="/board/.*/thread/.*" />
             </intent-filter>
         </activity>
         
-        <activity android:name=".PhotoGrid" android:label="@string/title_photogrid_activity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-        
+
         <activity android:name=".BoardGridActivity" android:label="@string/app_name">
-      <!--  	android:theme="@style/tabTheme">                                         -->
-            <intent-filter>            
-				<category android:name="android.intent.category.LAUNCHER" />
-                <action android:name="android.intent.action.MAIN" />
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+	            <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 

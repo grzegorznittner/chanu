@@ -8,6 +8,7 @@
     <string name="title_thread_activity">Thread</string>
     <string name="title_board_activity">Board</string>
     <string name="title_photogrid_activity">PhotoGrid</string>
+    <string name="full_screen_image_activity">Image</string>
 
     <!-- menus -->
     <string name="settings_menu">Settings</string>
@@ -16,8 +17,12 @@
     <string name="new_thread_menu">New Thread</string>
     <string name="add_to_favorites_menu">Add to Favorites</string>
     <string name="download_all_threads_menu">Download All Threads</string>
+    <string name="watch_thread_menu">Watch Thread</string>
     <string name="post_new_picture_menu">Post New Picture</string>
     <string name="post_new_text_menu">Post New Message</string>
+    <string name="download_all_images_menu">Download All Images</string>
+    <string name="download_image_menu">Download Image</string>
+    <string name="share_image_menu">Share Image</string>
 
     <!-- board grid tab -->
     <string name="japanese_culture">Japanese Culture</string>

@@ -15,6 +15,14 @@
           android:icon="@drawable/content_new_email"
           android:showAsAction="always"
             />
+    <item android:id="@+id/download_all_images_menu"
+          android:title="@string/download_all_images_menu"
+          android:icon="@drawable/content_save"
+            />
+    <item android:id="@+id/watch_thread_menu"
+          android:title="@string/watch_thread_menu"
+          android:icon="@drawable/rating_important"
+            />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"
