@@ -6,6 +6,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.database.MatrixCursor;
 import android.os.Handler;
@@ -54,9 +56,17 @@ public class ChanThread {
 		}
 		return null;
 	}
-	
+
+    public String getText() {
+        return sub != null && sub.trim().length() > 0
+                  ? sub + (com != null && com.trim().length() > 0 ? "<br/>" + com : "")
+                  : com;
+    }
+
 	public ArrayList<ChanPost> posts = new ArrayList<ChanPost>();
-	
+
+    public Map<String, String> thumbnailToImageMap = new HashMap<String, String>();
+
 	private void copy(ChanThread t) {
 		no = t.no;
 		sticky = t.sticky;
@@ -76,20 +86,24 @@ public class ChanThread {
 		md5 = t.md5;
 		fsize = t.fsize;
 		resto = t.resto;
-		
-		if (cursor != null) {
-            cursor.addRow(new Object[] {no, getThumbnailUrl(), ChanText.sanitizeText(sub)});
-		}
+        addItemToCursor(no, getThumbnailUrl(), getText());
+        thumbnailToImageMap.put(getThumbnailUrl(), getImageUrl());
 	}
 	
 	private void addPost(ChanPost post) {
 		posts.add(post);
-		if (cursor != null) {
-            cursor.addRow(new Object[] {post.no, post.getThumbnailUrl(), ChanText.sanitizeText(post.com)});
-		}
+        addItemToCursor(post.no, post.getThumbnailUrl(), post.getText());
+        thumbnailToImageMap.put(post.getThumbnailUrl(), post.getImageUrl());
 	}
-	
+
+    private void addItemToCursor(int no, String thumbnailUrl, String text) {
+        if (cursor != null) {
+            cursor.addRow(new Object[] {no, thumbnailUrl, ChanText.sanitizeText(text)});
+        }
+    }
+
 	public void loadChanThread(Handler handler, String board, int number) {
+        posts.clear();
 		this.board = board;
 		BufferedReader in = null;
 		try {
@@ -111,19 +125,12 @@ public class ChanThread {
 					ChanThread thread = gson.fromJson(reader, ChanThread.class);
 					copy(thread);
 					Log.i(TAG, this.toString());
-					if (cursor != null) {
-			            cursor.addRow(new Object[] {no, getThumbnailUrl(), sub});
-					}
 					threadRead = true;
 				} else {
 					ChanPost post = gson.fromJson(reader, ChanPost.class);
 					post.board = board;
 					Log.i(TAG, post.toString());
-					// adding post to the cursor
-					posts.add(post);
-					if (cursor != null) {
-			            cursor.addRow(new Object[] {post.no, post.getThumbnailUrl(), post.com});
-					}
+                    addPost(post);
 				}
 		        handler.sendEmptyMessage(posts.size());
 		        Thread.sleep(100);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/refresh_menu"
-          android:title="@string/refresh_menu"
+    <item android:id="@+id/refresh_thread_menu"
+          android:title="@string/refresh_board_menu"
           android:icon="@drawable/navigation_refresh"
           android:showAsAction="always"
             />
@@ -10,8 +10,8 @@
           android:icon="@drawable/content_new_picture"
           android:showAsAction="always"
             />
-    <item android:id="@+id/post_new_text_menu"
-          android:title="@string/post_new_text_menu"
+    <item android:id="@+id/post_new_message_menu"
+          android:title="@string/post_new_message_menu"
           android:icon="@drawable/content_new_email"
           android:showAsAction="always"
             />

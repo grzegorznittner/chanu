@@ -1,7 +1,9 @@
 package com.chanapps.four.test;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -19,9 +21,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.SimpleCursorAdapter;
+import android.view.View;
+import android.widget.*;
 
 import com.chanapps.four.data.ChanThread;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -29,25 +30,50 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class ThreadListActivity extends ListActivity implements AdapterView.OnItemClickListener {
+public class ThreadListActivity extends ListActivity {
 
 	public static final String TAG = ThreadListActivity.class.getSimpleName();
 	
 	public static class MyCursorAdapter extends SimpleCursorAdapter {
 		ImageLoader imageLoader = null;
 	    DisplayImageOptions options = null;
-	    
+	    ThreadListActivity activity = null;
+
 		public MyCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to,
 				ImageLoader imageLoader, DisplayImageOptions options) {
 			super(context, layout, c, from, to);
 			this.imageLoader = imageLoader;
 			this.options = options;
 		}
-		
+
+        @Override
+        public void setViewText(TextView v, String text) {
+            v.setText(text);
+        }
+
 		@Override
 		public void setViewImage(ImageView v, String value) {
 			try {
 				this.imageLoader.displayImage(value, v, options);
+                final String thumbnailImageUrl = value;
+                v.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (activity == null || activity.chanThread == null || activity.chanThread.thumbnailToImageMap == null) {
+                            return;
+                        }
+                        String fullImageUrl = activity.chanThread.thumbnailToImageMap.get(thumbnailImageUrl);
+                        if (fullImageUrl == null || fullImageUrl.trim().length() == 0) {
+                            return;
+                        }
+                        Toast.makeText(view.getContext(), "Loading image " + fullImageUrl, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(activity, FullScreenImageActivity.class);
+                        intent.putExtra("boardCode", activity.chanThread.board);
+                        intent.putExtra("threadNo", activity.chanThread.no);
+                        intent.putExtra("imageUrl", fullImageUrl);
+                        activity.startActivity(intent);
+                    }
+                });
 	        } catch (NumberFormatException nfe) {
 	            v.setImageURI(Uri.parse(value));
 	        }
@@ -58,6 +84,7 @@ public class ThreadListActivity extends ListActivity implements AdapterView.OnIt
 	ImageLoader imageLoader = null;
     DisplayImageOptions options = null;
     MyCursorAdapter adapter = null;
+    ThreadLoader threadLoader = null;
     MatrixCursor cursor = new MatrixCursor(new String[] {"_id", "image_url", "text"});
     long lastUpdate = 0;
     String boardCode = null;
@@ -93,7 +120,8 @@ public class ThreadListActivity extends ListActivity implements AdapterView.OnIt
                 new String[] {"image_url", "text"},
                 new int[] {R.id.list_item_image, R.id.list_item_text},
         		imageLoader, options);
-        
+        adapter.activity = this;
+
         setListAdapter(adapter);
         startManagingCursor(cursor);
 
@@ -103,36 +131,16 @@ public class ThreadListActivity extends ListActivity implements AdapterView.OnIt
             threadNo = intent.getIntExtra("threadNo", 0);
         }
         else {
-            boardCode = "sp";
-            threadNo = 26837084;
+            boardCode = "trv";
+            threadNo = 609350;
         }
+        Log.e(TAG, "Threadno: " + threadNo);
 
         lastUpdate = new Date().getTime();
-        
-        Thread thread = new Thread()
-        {
-            @Override
-            public void run() {
-                chanThread = new ChanThread();
-            	chanThread.cursor = cursor;
-                chanThread.loadChanThread(handler, boardCode, threadNo);
-                refresh();
-            }
-            
-            private void refresh() {
-                runOnUiThread(new Runnable() {
-                	@Override
-                    public void run() {
-                        // Bind to our new adapter.
-                		Log.i(TAG, "Data loaded ...");
-                		adapter.notifyDataSetChanged();
-                		getListView().requestLayout();
-                	}
-                });
-            }
-        };
-        thread.start();
-        
+
+        threadLoader = new ThreadLoader();
+        threadLoader.start();
+
         // We'll define a custom screen layout here (the one shown above), but
         // typically, you could just use the standard ListActivity layout.
         setContentView(R.layout.thread_activity_list_layout);
@@ -152,6 +160,7 @@ public class ThreadListActivity extends ListActivity implements AdapterView.OnIt
                 new int[] {R.id.list_item_image, R.id.list_item_text},
                 imageLoader, options);
 
+
     }
 
     @Override
@@ -164,6 +173,29 @@ public class ThreadListActivity extends ListActivity implements AdapterView.OnIt
                 upIntent.putExtra("pageNo", pageNo);
                 NavUtils.navigateUpTo(this, upIntent);
                 return true;
+            case R.id.refresh_thread_menu:
+                if (threadLoader != null) {
+                    Toast.makeText(getApplicationContext(), "Refreshing...", Toast.LENGTH_SHORT).show();
+                    threadLoader.refresh();
+                }
+                return true;
+            case R.id.post_new_picture_menu:
+                Toast.makeText(getApplicationContext(), "New Picture", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.post_new_message_menu:
+                Toast.makeText(getApplicationContext(), "New Message", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.download_all_images_menu:
+                Toast.makeText(getApplicationContext(), "Starting download...", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.watch_thread_menu:
+                Toast.makeText(getApplicationContext(), "Watch this thread", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.settings_menu:
+                Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.help_menu:
+                Toast.makeText(getApplicationContext(), "Help", Toast.LENGTH_SHORT).show();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -177,31 +209,6 @@ public class ThreadListActivity extends ListActivity implements AdapterView.OnIt
         return true;
     }
 
-    @Override
-    public void onItemClick(android.widget.AdapterView<?> adapterView, android.view.View view, int position, long id) {
-        if (chanThread == null || chanThread.posts == null) {
-            return;
-        }
-
-        int postNo = (position == 0)
-                ? chanThread.no
-                : chanThread.posts.get(position - 1).no;
-
-        String imageUrl = (position == 0)
-                ? chanThread.getImageUrl()
-                : chanThread.posts.get(position - 1).getImageUrl();
-        if (imageUrl == null || imageUrl.isEmpty()) {
-            return;
-        }
-
-        Intent intent = new Intent(this, FullScreenImageActivity.class);
-        intent.putExtra("boardCode", chanThread.board);
-        intent.putExtra("threadNo", chanThread.no);
-        intent.putExtra("postNo",postNo);
-        intent.putExtra("imageUrl", imageUrl);
-        startActivity(intent);
-    }
-
     private void setBoardCode(String code) {
         boardCode = code;
         if (getActionBar() != null) {
@@ -210,5 +217,25 @@ public class ThreadListActivity extends ListActivity implements AdapterView.OnIt
         }
     }
 
+    private class ThreadLoader extends Thread {
+            @Override
+            public void run() {
+                chanThread = new ChanThread();
+            	chanThread.cursor = cursor;
+                chanThread.loadChanThread(handler, boardCode, threadNo);
+                refresh();
+            }
 
+            private void refresh() {
+                runOnUiThread(new Runnable() {
+                	@Override
+                    public void run() {
+                        // Bind to our new adapter.
+                		Log.i(TAG, "Data loaded ...");
+                		adapter.notifyDataSetChanged();
+                		getListView().requestLayout();
+                	}
+                });
+            }
+    }
 }

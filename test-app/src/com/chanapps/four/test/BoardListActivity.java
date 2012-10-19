@@ -99,7 +99,7 @@ public class BoardListActivity extends ListActivity implements AdapterView.OnIte
             pageNo = intent.getIntExtra("pageNo", 0);
         }
         else {
-            setBoardCode("sp");
+            setBoardCode("trv");
             pageNo = 0;
         }
 

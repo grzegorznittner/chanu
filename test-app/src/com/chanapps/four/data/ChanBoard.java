@@ -56,7 +56,7 @@ public class ChanBoard {
 	private void addThread(ChanThread thread) {
 		threads.add(thread);
 		if (cursor != null) {
-            cursor.addRow(new Object[] {thread.no, thread.getThumbnailUrl(), ChanText.sanitizeText(thread.com)});
+            cursor.addRow(new Object[] {thread.no, thread.getThumbnailUrl(), ChanText.sanitizeText(thread.getText())});
 		}
 	}
 

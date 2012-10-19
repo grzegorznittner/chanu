@@ -6,8 +6,8 @@
     <ImageView
         android:id="@+id/full_screen_image"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY" />
+        android:layout_height="fill_parent"
+        android:scaleType="centerInside"
+        android:contentDescription="Full Screen Image"/>
 
 </LinearLayout>

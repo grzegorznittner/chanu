@@ -39,7 +39,6 @@ public class FullScreenImageActivity extends Activity implements View.OnClickLis
 
     String boardCode = null;
     int threadNo = 0;
-    int postNo = 0;
     String imageUrl = null;
 
     ImageView imageView = null;
@@ -61,15 +60,13 @@ public class FullScreenImageActivity extends Activity implements View.OnClickLis
 
         Intent intent = getIntent();
         if (!intent.hasExtra("imageUrl")) {
-            setBoardCode("sp");
-            threadNo = 26970740;
-            postNo = 26970740;
-            imageUrl = "http://images.4chan.org/sp/src/1350401171622.png";
+            setBoardCode("trv");
+            threadNo = 609350;
+            imageUrl = "http://images.4chan.org/trv/src/1341267758351.png";
         }
         else {
             setBoardCode(intent.getStringExtra("boardCode"));
             threadNo = intent.getIntExtra("threadNo", 0);
-            postNo = intent.getIntExtra("postNo", 0);
             imageUrl = intent.getStringExtra("imageUrl");
         }
 

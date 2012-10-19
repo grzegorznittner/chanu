@@ -13,13 +13,14 @@
     <!-- menus -->
     <string name="settings_menu">Settings</string>
     <string name="help_menu">Help</string>
-    <string name="refresh_menu">Refresh</string>
+    <string name="refresh_board_menu">Refresh Board</string>
+    <string name="refresh_thread_menu">Refresh Thread</string>
     <string name="new_thread_menu">New Thread</string>
     <string name="add_to_favorites_menu">Add to Favorites</string>
     <string name="download_all_threads_menu">Download All Threads</string>
     <string name="watch_thread_menu">Watch Thread</string>
     <string name="post_new_picture_menu">Post New Picture</string>
-    <string name="post_new_text_menu">Post New Message</string>
+    <string name="post_new_message_menu">Post New Message</string>
     <string name="download_all_images_menu">Download All Images</string>
     <string name="download_image_menu">Download Image</string>
     <string name="share_image_menu">Share Image</string>

@@ -36,6 +36,12 @@ public class ChanPost {
 		return null;
 	}
 
+    public String getText() {
+        return sub != null && sub.trim().length() > 0
+                  ? sub + (com != null && com.trim().length() > 0 ? "<br/>" + com : "")
+                  : com;
+    }
+
 	public String toString() {
 		return "Post " + no + " " + com + ", filename: " + filename;
 	}
