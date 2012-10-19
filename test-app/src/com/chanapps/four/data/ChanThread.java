@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.database.MatrixCursor;
+import android.graphics.Point;
 import android.os.Handler;
 import android.util.Log;
 
@@ -37,8 +38,10 @@ public class ChanThread {
 	public String tim;
 	public String filename;
 	public String ext;
-	public int w, h;
-	public int tn_w, tn_h;
+	public int w = 0;
+    public int h = 0;
+	public int tn_w = 0;
+    public int tn_h = 0;
 	public String md5;
 	public int fsize;
 	public int resto;
@@ -66,6 +69,8 @@ public class ChanThread {
 	public ArrayList<ChanPost> posts = new ArrayList<ChanPost>();
 
     public Map<String, String> thumbnailToImageMap = new HashMap<String, String>();
+    public Map<String, Point> thumbnailToPointMap = new HashMap<String, Point>();
+    public Map<String, Point> thumbnailToFullPointMap = new HashMap<String, Point>();
 
 	private void copy(ChanThread t) {
 		no = t.no;
@@ -88,12 +93,16 @@ public class ChanThread {
 		resto = t.resto;
         addItemToCursor(no, getThumbnailUrl(), getText());
         thumbnailToImageMap.put(getThumbnailUrl(), getImageUrl());
+        thumbnailToPointMap.put(getThumbnailUrl(), new Point(tn_w, tn_h));
+        thumbnailToFullPointMap.put(getThumbnailUrl(), new Point(w, h));
 	}
 	
 	private void addPost(ChanPost post) {
 		posts.add(post);
         addItemToCursor(post.no, post.getThumbnailUrl(), post.getText());
         thumbnailToImageMap.put(post.getThumbnailUrl(), post.getImageUrl());
+        thumbnailToPointMap.put(post.getThumbnailUrl(), new Point(post.tn_w, post.tn_h));
+        thumbnailToFullPointMap.put(post.getThumbnailUrl(), new Point(post.w, post.h));
 	}
 
     private void addItemToCursor(int no, String thumbnailUrl, String text) {

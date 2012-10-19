@@ -16,8 +16,10 @@ public class ChanPost {
 	public String tim;
 	public String filename;
 	public String ext;
-	public int w, h;
-	public int tn_w, tn_h;
+	public int w = 0;
+    public int h = 0;
+	public int tn_w = 0;
+    public int tn_h = 0;
 	public String md5;
 	public int fsize;
 	public int resto;

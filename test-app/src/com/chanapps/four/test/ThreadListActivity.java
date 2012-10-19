@@ -12,16 +12,19 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NavUtils;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ImageSpan;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.*;
 
 import com.chanapps.four.data.ChanThread;
@@ -47,16 +50,32 @@ public class ThreadListActivity extends ListActivity {
 		}
 
         @Override
-        public void setViewText(TextView v, String text) {
-            v.setText(text);
+        public void setViewText(TextView textView, String text) {
+            Cursor cursor = getCursor();
+            if (cursor == null ||
+                    activity == null ||
+                    activity.chanThread == null ||
+                    activity.chanThread.thumbnailToPointMap == null) {
+                return;
+            }
+            String thumbnailImageUrl = cursor.getString(cursor.getColumnIndex("image_url"));
+            final Point imageDimensions = thumbnailImageUrl != null
+                ? activity.chanThread.thumbnailToPointMap.get(thumbnailImageUrl)
+                    : null;
+            if (imageDimensions != null && imageDimensions.x > 0 && imageDimensions.y > 0) {
+                FlowTextHelper.tryFlowText(text, imageDimensions, textView);
+            }
+            else {
+                textView.setText(text);
+            }
+            //textView.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
-		@Override
-		public void setViewImage(ImageView v, String value) {
-			try {
-				this.imageLoader.displayImage(value, v, options);
-                final String thumbnailImageUrl = value;
-                v.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void setViewImage(ImageView imageView, final String thumbnailImageUrl) {
+            try {
+                this.imageLoader.displayImage(thumbnailImageUrl, imageView, options);
+                imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (activity == null || activity.chanThread == null || activity.chanThread.thumbnailToImageMap == null) {
@@ -66,20 +85,25 @@ public class ThreadListActivity extends ListActivity {
                         if (fullImageUrl == null || fullImageUrl.trim().length() == 0) {
                             return;
                         }
-                        Toast.makeText(view.getContext(), "Loading image " + fullImageUrl, Toast.LENGTH_SHORT).show();
+                        Point fullImageDimensions = activity.chanThread.thumbnailToFullPointMap.get(thumbnailImageUrl);
+                        int imageWidth = fullImageDimensions != null ? fullImageDimensions.x : 0;
+                        int imageHeight = fullImageDimensions != null ? fullImageDimensions.y : 0;
+                        //Toast.makeText(view.getContext(), "Loading image " + fullImageUrl, Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(activity, FullScreenImageActivity.class);
                         intent.putExtra("boardCode", activity.chanThread.board);
                         intent.putExtra("threadNo", activity.chanThread.no);
                         intent.putExtra("imageUrl", fullImageUrl);
+                        intent.putExtra("imageWidth", imageWidth);
+                        intent.putExtra("imageHeight", imageHeight);
                         activity.startActivity(intent);
                     }
                 });
-	        } catch (NumberFormatException nfe) {
-	            v.setImageURI(Uri.parse(value));
-	        }
-		}
-	}
-	
+            } catch (NumberFormatException nfe) {
+                imageView.setImageURI(Uri.parse(thumbnailImageUrl));
+            }
+        }
+    }
+
     ChanThread chanThread = null;
 	ImageLoader imageLoader = null;
     DisplayImageOptions options = null;

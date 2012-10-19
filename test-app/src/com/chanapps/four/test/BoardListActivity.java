@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,9 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.SimpleCursorAdapter;
+import android.widget.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanThread;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -35,6 +34,7 @@ public class BoardListActivity extends ListActivity implements AdapterView.OnIte
 	public static class MyCursorAdapter extends SimpleCursorAdapter {
 		ImageLoader imageLoader = null;
 	    DisplayImageOptions options = null;
+        BoardListActivity activity = null;
 	    
 		public MyCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to,
 				ImageLoader imageLoader, DisplayImageOptions options) {
@@ -43,14 +43,35 @@ public class BoardListActivity extends ListActivity implements AdapterView.OnIte
 			this.options = options;
 		}
 
-		@Override
-		public void setViewImage(ImageView v, String value) {
-			try {
-				this.imageLoader.displayImage(value, v, options);
-	        } catch (NumberFormatException nfe) {
-	            v.setImageURI(Uri.parse(value));
-	        }
-		}
+        @Override
+        public void setViewText(TextView textView, String text) {
+            Cursor cursor = getCursor();
+            if (cursor == null ||
+                    activity == null ||
+                    activity.chanBoard == null ||
+                    activity.chanBoard.thumbnailToPointMap == null) {
+                return;
+            }
+            String thumbnailImageUrl = cursor.getString(cursor.getColumnIndex("image_url"));
+            final Point imageDimensions = thumbnailImageUrl != null
+                ? activity.chanBoard.thumbnailToPointMap.get(thumbnailImageUrl)
+                    : null;
+            if (imageDimensions != null && imageDimensions.x > 0 && imageDimensions.y > 0) {
+                FlowTextHelper.tryFlowText(text, imageDimensions, textView);
+            }
+            else {
+                textView.setText(text);
+            }
+        }
+
+        @Override
+        public void setViewImage(ImageView imageView, final String thumbnailImageUrl) {
+            try {
+                this.imageLoader.displayImage(thumbnailImageUrl, imageView, options);
+            } catch (NumberFormatException nfe) {
+                imageView.setImageURI(Uri.parse(thumbnailImageUrl));
+            }
+        }
 	}
 	
 	ImageLoader imageLoader = null;
@@ -89,7 +110,8 @@ public class BoardListActivity extends ListActivity implements AdapterView.OnIte
                 new String[] {"image_url", "text"},
                 new int[] {R.id.list_item_image, R.id.list_item_text},
         		imageLoader, options);
-        
+        adapter.activity = this;
+
         setListAdapter(adapter);
         startManagingCursor(cursor);
 

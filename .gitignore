@@ -9,6 +9,7 @@
 *.class
 
 .DS_Store
+.idea
 
 # generated files
 bin/

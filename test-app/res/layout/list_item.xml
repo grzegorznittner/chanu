@@ -5,8 +5,8 @@
 
     <ImageView
         android:id="@+id/list_item_image"
-        android:layout_width="128dip"
-        android:layout_height="128dip"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop" />
 

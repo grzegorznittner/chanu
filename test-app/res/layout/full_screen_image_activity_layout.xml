@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="fill_parent" >
 
-    <ImageView
-        android:id="@+id/full_screen_image"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:scaleType="centerInside"
-        android:contentDescription="Full Screen Image"/>
+    <WebView android:id="@+id/full_screen_image_web_view"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    />
 
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.chanapps.four.data;
 
 import android.database.MatrixCursor;
+import android.graphics.Point;
 import android.os.Handler;
 import android.util.Log;
 import com.google.gson.Gson;
@@ -47,7 +48,9 @@ public class ChanBoard {
 	public int no;
 
 	public List<ChanThread> threads = Collections.synchronizedList(new ArrayList<ChanThread>());
-	
+
+    public Map<String, Point> thumbnailToPointMap = new HashMap<String, Point>();
+
 	public Type type;
 	public boolean workSafe;
 	public boolean classic;
@@ -58,6 +61,7 @@ public class ChanBoard {
 		if (cursor != null) {
             cursor.addRow(new Object[] {thread.no, thread.getThumbnailUrl(), ChanText.sanitizeText(thread.getText())});
 		}
+        thumbnailToPointMap.put(thread.getThumbnailUrl(), new Point(thread.tn_w, thread.tn_h));
 	}
 
 	public void loadChanBoard(Handler handler, String board, int number) {
