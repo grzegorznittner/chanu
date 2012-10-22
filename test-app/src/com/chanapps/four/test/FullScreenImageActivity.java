@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.regex.Matcher;
 
 public class FullScreenImageActivity extends Activity {
 
@@ -59,6 +60,7 @@ public class FullScreenImageActivity extends Activity {
         webView.setScrollbarFadingEnabled(false);
         //webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setBuiltInZoomControls(true);
+        setDefaultZoom();
         //webView.setBackgroundColor(0);
         /*
         final Activity activity = this;
@@ -76,39 +78,61 @@ public class FullScreenImageActivity extends Activity {
         loadImage();
     }
 
-    public void loadImage() {
-        //DisplayMetrics displayMetrics = new DisplayMetrics();
-        //getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        //int screenHeight  = getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT
-        //        ? displayMetrics.heightPixels
-        //        : displayMetrics.widthPixels;
-        //int vSpace = screenHeight / 2 - imageHeight / 2;
-        // String html = "<html><body><center><img src=\"" + imageUrl +  "\" vspace=\"" + vSpace + "\"/></center></body></html>";
+    private void setDefaultZoom() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        double screenWidth = getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT
+            ? displayMetrics.widthPixels
+            : displayMetrics.heightPixels;
+        double screenHeight  = getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT
+            ? displayMetrics.heightPixels
+            : displayMetrics.widthPixels;
+        double trialWidth = imageWidth;
+        double trialHeight = imageHeight;
+        Log.e(TAG, "screenWidth,screenHeight = " + screenWidth + ", " + screenHeight);
+        Log.e(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        if (trialWidth > screenWidth) { // need to scale width down
+            double scale = screenWidth / trialWidth;
+            trialWidth = screenWidth;
+            trialHeight = (int)(Math.floor(scale * trialHeight));
+        }
+        Log.e(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        if (trialHeight > screenHeight) { // need to scale height down
+            double scale = screenHeight / trialHeight;
+            trialWidth = (int)(Math.floor(scale * trialWidth));
+            trialHeight = screenHeight;
+        }
+        Log.e(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        if (trialWidth < screenWidth) { // try and scale up to width
+            double scale = screenWidth / trialWidth;
+            Log.e(TAG, "scale = " + scale);
+            int testHeight = (int)(Math.floor(scale * trialHeight));
+            Log.e(TAG, "testHeight = " + testHeight);
+            if (testHeight <= screenHeight) {
+                trialWidth = screenWidth;
+                trialHeight = testHeight;
+            }
+        }
+        Log.e(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        if (trialHeight < screenHeight) { // try and scale up to height
+            double scale = screenHeight / trialHeight;
+            int testWidth = (int)(Math.floor(scale * trialWidth));
+            if (testWidth <= screenWidth) {
+                trialWidth = testWidth;
+                trialHeight = screenHeight;
+            }
+        }
+        Log.e(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        int initialScalePct = (int)Math.floor(100 * screenWidth / imageWidth);
+        webView.setInitialScale(initialScalePct);
+        Log.e(TAG, "initial Scale = " + initialScalePct);
+    }
 
-        int halfWidth = imageWidth / 2;
-        int halfHeight = imageHeight / 2;
-        String html = "<html style=\"" +
-                //"width: 100%; height: 100%;" +
-                "background: #000 url(" + imageUrl + ") no-repeat center center;" +
-                "\" />" +
-                //"<body>" +
-                //"<div style=\"" +
-                //"position: absolute; " +
-                //"top: 50%; " +
-                //"left: 50%; " +
-                //"margin-top: -" + halfHeight +"px; " +
-                //"margin-left: -" + halfWidth + "px; " +
-                //"width:" + imageWidth + "px; " +
-                //"height: " + imageHeight + "px; " +
-                //"background: url(" + imageUrl + ") center center no-repeat;" +
-                //"\" />" +
-                //"<img " +
-                //"style=\"left: 50%; top: 50%; margin-left:-" + halfWidth + "px; margin-top:-" + halfHeight + "px;\" " +
-                //"style=\"display: block; margin: auto;\" " +
-                //"src=\"" + imageUrl + "\"/>" +
-                //"</body>" +
-                "</html>";
-
+    private void loadImage() {
+        //String html = "<html style=\"" +
+        //        "background: #000 url(" + imageUrl + ") no-repeat center center;" +
+        //        "\" />" +
+        //        "</html>";
         //webView.loadData(html, "text/html", "UTF-8");
         webView.setBackgroundColor(Color.BLACK);
         webView.loadUrl(imageUrl);
