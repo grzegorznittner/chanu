@@ -25,7 +25,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.widget.TextView;
 
-import com.chanapps.four.data.ChanCursorLoader;
+import com.chanapps.four.data.ChanThreadCursorLoader;
 import com.chanapps.four.data.ChanDatabaseHelper;
 import com.chanapps.four.data.ChanText;
 import com.chanapps.four.data.ChanThreadService;
@@ -41,16 +41,10 @@ public class BoardListActivity extends ListActivity
 	public static class MyCursorAdapter extends SimpleCursorAdapter implements ViewBinder {
 		ImageLoader imageLoader = null;
 	    DisplayImageOptions options = null;
-        BoardListActivity activity = null;
-        int[] to;
-        String[] from;
-        int[] mFrom;
 	    
 		public MyCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to,
 				ImageLoader imageLoader, DisplayImageOptions options) {
 			super(context, layout, c, from, to, 0);
-			this.from = from;
-			this.to = to;
 			this.imageLoader = imageLoader;
 			this.options = options;
 			setViewBinder(this);
@@ -178,7 +172,7 @@ public class BoardListActivity extends ListActivity
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.d(TAG, ">>>>>>>>>>> onCreateLoader");
 
-		return new ChanCursorLoader(getBaseContext(), db, boardCode);
+		return new ChanThreadCursorLoader(getBaseContext(), db, boardCode);
 	}
 
 	@Override

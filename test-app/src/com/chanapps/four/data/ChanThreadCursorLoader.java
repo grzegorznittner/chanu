@@ -17,14 +17,24 @@ import android.database.sqlite.SQLiteDatabase;
  * query on a background thread so that it does not block the application's UI.
  * 
  */
-public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
+public class ChanThreadCursorLoader extends AsyncTaskLoader<Cursor> {
     final ForceLoadContentObserver mObserver;
 
-    String boardName;
-    int threadNo;
+    protected SQLiteDatabase db;
+    protected Cursor mCursor;
 
-    SQLiteDatabase db;
-    Cursor mCursor;
+    private String boardName;
+    
+    protected ChanThreadCursorLoader(Context context, SQLiteDatabase db) {
+        super(context);
+        mObserver = new ForceLoadContentObserver();
+        this.db = db;
+    }
+
+    public ChanThreadCursorLoader(Context context, SQLiteDatabase db, String boardName) {
+        this(context, db);
+        this.boardName = boardName;
+    }
 
     /* Runs on a worker thread */
     @Override
@@ -32,11 +42,11 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
     	String query = "SELECT " + ChanDatabaseHelper.POST_ID + ", "
 				+ "'http://0.thumbs.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
 					+ " || '/thumb/' || " + ChanDatabaseHelper.POST_TIM + " || 's.jpg' 'image_url', "
-				+ " " + ChanDatabaseHelper.POST_COM + " 'text', "
+				+ ChanDatabaseHelper.POST_NOW + " || ' ' || " + ChanDatabaseHelper.POST_COM + " 'text', "
 				+ ChanDatabaseHelper.POST_TN_W + " 'tn_w', " + ChanDatabaseHelper.POST_TN_H + " 'tn_h'"
 				+ " FROM " + ChanDatabaseHelper.POST_TABLE
 				+ " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "' AND "
-					+ ChanDatabaseHelper.POST_RESTO + "=0 ORDER BY " + ChanDatabaseHelper.POST_TIM;
+					+ ChanDatabaseHelper.POST_RESTO + "=0 ORDER BY " + ChanDatabaseHelper.POST_TIM + " DESC";
     	if (db != null && db.isOpen()) {
     		Cursor cursor = db.rawQuery(query, null);
     		if (cursor != null) {
@@ -77,13 +87,6 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
         if (oldCursor != null && oldCursor != cursor && !oldCursor.isClosed()) {
             oldCursor.close();
         }
-    }
-
-    public ChanCursorLoader(Context context, SQLiteDatabase db, String boardName) {
-        super(context);
-        mObserver = new ForceLoadContentObserver();
-        this.db = db;
-        this.boardName = boardName;
     }
 
     /**

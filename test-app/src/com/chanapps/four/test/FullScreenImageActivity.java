@@ -1,40 +1,37 @@
 package com.chanapps.four.test;
 
+import java.io.InputStream;
+import java.net.URL;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+
 import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.Toast;
-import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.sql.Connection;
+import com.chanapps.four.data.ChanDatabaseHelper;
 
 public class FullScreenImageActivity extends Activity {
 
@@ -79,22 +76,62 @@ public class FullScreenImageActivity extends Activity {
             imageHeight = 433;
         }
     }
+    
+    private boolean loadPostData() {
+    	ChanDatabaseHelper h = new ChanDatabaseHelper(getBaseContext());
+		try {
+			// "http://images.4chan.org/" + board + "/src/" + tim + ext;
+			String query = "SELECT " + ChanDatabaseHelper.POST_ID + ", "
+					+ "'http://images.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
+						+ " || '/src/' || " + ChanDatabaseHelper.POST_TIM
+						+ " || " + ChanDatabaseHelper.POST_EXT + " 'imageurl', "
+					+ ChanDatabaseHelper.POST_W + " 'imagewidth', "
+					+ ChanDatabaseHelper.POST_H + " 'imageheight'"
+					+ " FROM " + ChanDatabaseHelper.POST_TABLE
+					+ " WHERE " + ChanDatabaseHelper.POST_ID + "=" + threadNo;
+			Cursor c = h.getWritableDatabase().rawQuery(query, null);
+			int imageurlIdx = c.getColumnIndex("imageurl");
+			int imagewidthIdx = c.getColumnIndex("imagewidth");
+			int imageheightIdx = c.getColumnIndex("imageheight");
+			if (c.moveToFirst()) {
+				imageUrl = c.getString(imageurlIdx);
+				imageWidth = c.getInt(imagewidthIdx);
+				imageHeight = c.getInt(imageheightIdx);
+				if (c.moveToNext()) {
+					Log.w(TAG, "Post with id " + threadNo + " for board " + boardCode + " is not unique across boards!");
+				}
+			} else {
+				Log.w(TAG, "Post with id " + threadNo + " for board " + boardCode + " has not been found!");
+			}
+			c.close();
+			h.close();
+			return true;
+		} catch (Exception e) {
+			Log.e(TAG, "Error querying chan DB. " + e.getMessage(), e);
+		}
+		return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        if (!intent.hasExtra("imageUrl")) {
-            randomizeImage();
-        }
-        else {
+        if (intent.hasExtra("threadNo")) {
             setBoardCode(intent.getStringExtra("boardCode"));
             threadNo = intent.getIntExtra("threadNo", 0);
-            imageUrl = intent.getStringExtra("imageUrl");
-            imageWidth = intent.getIntExtra("imageWidth", 280);
-            imageHeight = intent.getIntExtra("imageHeight", 280);
+            loadPostData();
+        } else {
+            randomizeImage();
         }
+        
+//        else {
+//            setBoardCode(intent.getStringExtra("boardCode"));
+//            threadNo = intent.getIntExtra("threadNo", 0);
+//            imageUrl = intent.getStringExtra("imageUrl");
+//            imageWidth = intent.getIntExtra("imageWidth", 280);
+//            imageHeight = intent.getIntExtra("imageHeight", 280);
+//        }
 
         webView = new WebView(this);
         setContentView(webView);

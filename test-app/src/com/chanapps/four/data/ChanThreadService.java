@@ -117,13 +117,6 @@ public class ChanThreadService extends BaseChanService {
 		}
 		
 		try {
-//			String query = "SELECT " + ChanDatabaseHelper.POST_ID + ", "
-//					+ "'http://0.thumbs.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
-//						+ " || '/thumb/' || " + ChanDatabaseHelper.POST_TIM + " || 's.jpg' 'thumbnail', "
-//					+ " " + ChanDatabaseHelper.POST_COM + " 'text', " + ChanDatabaseHelper.POST_LAST_UPDATE
-//					+ " FROM " + ChanDatabaseHelper.POST_TABLE
-//					+ " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "' AND "
-//						+ ChanDatabaseHelper.POST_RESTO + "=0";
 			String query = "SELECT count(*) 'num_threads'"
 					+ " FROM " + ChanDatabaseHelper.POST_TABLE
 					+ " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "' AND "
@@ -134,9 +127,10 @@ public class ChanThreadService extends BaseChanService {
 			    Log.i(TAG, "Number of threads: " + c.getString(numIdx));
 			}
 			c.close();
-			h.close();
 		} catch (Exception e) {
 			Log.e(TAG, "Error querying chan DB. " + e.getMessage(), e);
+		} finally {
+			h.close();
 		}
 	}
 	
