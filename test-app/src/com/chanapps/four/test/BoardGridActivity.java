@@ -16,12 +16,9 @@
 
 package com.chanapps.four.test;
 
-import android.app.LoaderManager;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;

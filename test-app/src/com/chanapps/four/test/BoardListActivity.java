@@ -121,7 +121,7 @@ public class BoardListActivity extends ListActivity
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			Log.i(TAG, ">>>>>>>>>>> refresh message received");
+			Log.d(TAG, ">>>>>>>>>>> refresh message received");
 			getLoaderManager().restartLoader(0, null, BoardListActivity.this);
 		}
 
@@ -129,7 +129,7 @@ public class BoardListActivity extends ListActivity
 	
     @Override
     protected void onCreate(Bundle savedInstanceState){
-		Log.i(TAG, "************ onCreate");
+		Log.d(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         
         options = new DisplayImageOptions.Builder()
@@ -176,27 +176,27 @@ public class BoardListActivity extends ListActivity
     
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
+		Log.d(TAG, ">>>>>>>>>>> onCreateLoader");
 
 		return new ChanCursorLoader(getBaseContext(), db, boardCode);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
+		Log.d(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
 		handler.sendEmptyMessageDelayed(0, 2000);
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.i(TAG, ">>>>>>>>>>> onLoaderReset");
+		Log.d(TAG, ">>>>>>>>>>> onLoaderReset");
 		adapter.swapCursor(null);
 	}
 
 	@Override
 	protected void onDestroy() {
-		Log.i(TAG, "************ onDestroy");
+		Log.d(TAG, "************ onDestroy");
 		adapter.swapCursor(null);
 		super.onDestroy();
 		if (db != null) {
@@ -215,7 +215,7 @@ public class BoardListActivity extends ListActivity
     	Log.i(TAG, "onItemClick id=" + id + ", position=" + position);
         Intent intent = new Intent(this, ThreadListActivity.class);
         intent.putExtra("boardCode", boardCode);
-        intent.putExtra("threadNo", id);
+        intent.putExtra("threadNo", (int)id);
         startActivity(intent);
     }
 

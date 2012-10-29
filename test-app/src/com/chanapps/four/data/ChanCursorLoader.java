@@ -4,13 +4,11 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 
 import android.content.AsyncTaskLoader;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Loader;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 
 /**
  * A loader that queries the ChanDatabaseHelper and returns a {@link Cursor}.
