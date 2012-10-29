@@ -203,6 +203,12 @@ public class ThreadListActivity extends ListActivity {
                     threadLoader.refresh();
                 }
                 return true;
+            case R.id.view_as_grid_menu:
+                Toast.makeText(getApplicationContext(), "View as Grid", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.view_as_list_menu:
+                Toast.makeText(getApplicationContext(), "View as List", Toast.LENGTH_SHORT).show();
+                return true;
             case R.id.post_new_picture_menu:
                 Toast.makeText(getApplicationContext(), "New Picture", Toast.LENGTH_SHORT).show();
                 return true;
