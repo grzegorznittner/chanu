@@ -1,12 +1,12 @@
 package com.chanapps.four.test;
 
 import android.app.ListActivity;
+import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
+import android.content.Loader;
 import android.database.Cursor;
-import android.database.MatrixCursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,54 +18,88 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.*;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanThread;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.SimpleCursorAdapter.ViewBinder;
+import android.widget.TextView;
+
+import com.chanapps.four.data.ChanCursorLoader;
+import com.chanapps.four.data.ChanDatabaseHelper;
+import com.chanapps.four.data.ChanText;
+import com.chanapps.four.data.ChanThreadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-import java.util.List;
-
-public class BoardListActivity extends ListActivity implements AdapterView.OnItemClickListener {
+public class BoardListActivity extends ListActivity
+		implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 	public static final String TAG = BoardListActivity.class.getSimpleName();
 	
-	public static class MyCursorAdapter extends SimpleCursorAdapter {
+	public static class MyCursorAdapter extends SimpleCursorAdapter implements ViewBinder {
 		ImageLoader imageLoader = null;
 	    DisplayImageOptions options = null;
         BoardListActivity activity = null;
+        int[] to;
+        String[] from;
+        int[] mFrom;
 	    
 		public MyCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to,
 				ImageLoader imageLoader, DisplayImageOptions options) {
-			super(context, layout, c, from, to);
+			super(context, layout, c, from, to, 0);
+			this.from = from;
+			this.to = to;
 			this.imageLoader = imageLoader;
 			this.options = options;
+			setViewBinder(this);
 		}
 
-        @Override
+		@Override
+		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+			if (view instanceof TextView) {
+				String text = cursor.getString(columnIndex);
+				text = ChanText.sanitizeText(text);
+                setViewText((TextView) view, text, cursor);
+                return true;
+            } else if (view instanceof ImageView) {
+            	String text = cursor.getString(columnIndex);
+                setViewImage((ImageView) view, text, cursor);
+                return true;
+            } else {
+            	return false;
+            }
+		}
+
+		@Override
         public void setViewText(TextView textView, String text) {
-            Cursor cursor = getCursor();
-            if (cursor == null ||
-                    activity == null ||
-                    activity.chanBoard == null ||
-                    activity.chanBoard.thumbnailToPointMap == null) {
+			Log.w(TAG, "setViewText - This should not be called");
+		}
+
+        public void setViewText(TextView textView, String text, Cursor cursor) {
+            if (cursor == null) {
+            	Log.w(TAG, "setViewText - Why is cursor null?");
                 return;
             }
-            String thumbnailImageUrl = cursor.getString(cursor.getColumnIndex("image_url"));
-            final Point imageDimensions = thumbnailImageUrl != null
-                ? activity.chanBoard.thumbnailToPointMap.get(thumbnailImageUrl)
-                    : null;
+            int tn_w = cursor.getInt(cursor.getColumnIndex("tn_w"));
+            int tn_h = cursor.getInt(cursor.getColumnIndex("tn_h"));
+            //Log.i(TAG, "tn_w=" + tn_w + ", tn_h=" + tn_h);
+            Point imageDimensions = new Point(tn_w, tn_h);
             if (imageDimensions != null && imageDimensions.x > 0 && imageDimensions.y > 0) {
+            	text = text == null ? "" : text;
                 FlowTextHelper.tryFlowText(text, imageDimensions, textView);
-            }
-            else {
+            } else {
                 textView.setText(text);
             }
         }
-
+        
         @Override
         public void setViewImage(ImageView imageView, final String thumbnailImageUrl) {
+        	Log.w(TAG, "setViewImage - This should not be called");
+        }
+
+        public void setViewImage(ImageView imageView, final String thumbnailImageUrl, Cursor cursor) {
             try {
                 this.imageLoader.displayImage(thumbnailImageUrl, imageView, options);
             } catch (NumberFormatException nfe) {
@@ -74,25 +108,28 @@ public class BoardListActivity extends ListActivity implements AdapterView.OnIte
         }
 	}
 	
+	SQLiteDatabase db = null;
 	ImageLoader imageLoader = null;
     DisplayImageOptions options = null;
     MyCursorAdapter adapter = null;
-    MatrixCursor cursor = new MatrixCursor(new String[] {"_id", "image_url", "text"});
-    ChanBoard chanBoard = null;
     String boardCode = null;
     int pageNo = 0;
     long lastUpdate = 0;
-	
-    final Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
-        	Log.i(TAG, "############# Updating list view ...");
-    		adapter.notifyDataSetChanged();
-    		getListView().requestLayout();
-        }
-    };
     
+	private Handler handler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			Log.i(TAG, ">>>>>>>>>>> refresh message received");
+			getLoaderManager().restartLoader(0, null, BoardListActivity.this);
+		}
+
+	};
+	
     @Override
     protected void onCreate(Bundle savedInstanceState){
+		Log.i(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         
         options = new DisplayImageOptions.Builder()
@@ -104,17 +141,6 @@ public class BoardListActivity extends ListActivity implements AdapterView.OnIte
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(getApplicationContext()));
 
-        adapter = new MyCursorAdapter(getApplicationContext(),
-                R.layout.thread_activity_list_item,
-                cursor,
-                new String[] {"image_url", "text"},
-                new int[] {R.id.list_item_image, R.id.list_item_text},
-        		imageLoader, options);
-        adapter.activity = this;
-
-        setListAdapter(adapter);
-        startManagingCursor(cursor);
-
         Intent intent = getIntent();
         if (intent.hasExtra("boardCode")) {
             setBoardCode(intent.getStringExtra("boardCode"));
@@ -125,66 +151,71 @@ public class BoardListActivity extends ListActivity implements AdapterView.OnIte
             pageNo = 0;
         }
 
-        Thread thread = new Thread()
-        {
-            @Override
-            public void run() {
-           	    chanBoard = new ChanBoard();
-       	        chanBoard.cursor = cursor;
-                chanBoard.loadChanBoard(handler, boardCode, pageNo);
-                refresh();
-            }
-            
-            private void refresh() {
-                runOnUiThread(new Runnable() {
-                	@Override
-                    public void run() {
-                        // Bind to our new adapter.
-                		Log.i(TAG, "Data loaded ...");
-                		adapter.notifyDataSetChanged();
-                		getListView().requestLayout();
-                    }
-                });
-            }
-        };
-        thread.start();
+        Log.i(TAG, "Starting ChanThreadService");
+        Intent threadIntent = new Intent(this, ChanThreadService.class);
+        threadIntent.putExtra("board", intent.getStringExtra("boardCode"));
+        threadIntent.putExtra("page", 0);
+        startService(threadIntent);
         
-        // We'll define a custom screen layout here (the one shown above), but
-        // typically, you could just use the standard ListActivity layout.
-        setContentView(R.layout.board_activity_list_layout);
+        db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
 
-        getListView().setClickable(true);
-        getListView().setOnItemClickListener(this);
-
-        // Query for all people contacts using the Contacts.People convenience class.
-        // Put a managed wrapper around the retrieved cursor so we don't have to worry about
-        // requerying or closing it as the activity changes state.
-        startManagingCursor(cursor);
-        
-
-        // Now create a new list adapter bound to the cursor.
-        // SimpleListAdapter is designed for binding to a Cursor.
         adapter = new MyCursorAdapter(this,
                 R.layout.board_activity_list_item,
-                cursor,
+                null,
                 new String[] {"image_url", "text"},
                 new int[] {R.id.list_item_image, R.id.list_item_text},
                 imageLoader, options);
+        setListAdapter(adapter);
+        setContentView(R.layout.board_activity_list_layout);
+        
+        getListView().setClickable(true);
+        getListView().setOnItemClickListener(this);
+        
+        getLoaderManager().initLoader(0, null, this);
+    }
+    
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
 
+		return new ChanCursorLoader(getBaseContext(), db, boardCode);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
+		adapter.swapCursor(data);
+		handler.sendEmptyMessageDelayed(0, 2000);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		Log.i(TAG, ">>>>>>>>>>> onLoaderReset");
+		adapter.swapCursor(null);
+	}
+
+	@Override
+	protected void onDestroy() {
+		Log.i(TAG, "************ onDestroy");
+		adapter.swapCursor(null);
+		super.onDestroy();
+		if (db != null) {
+			db.close();
+			db = null;
+		}
+	}
+	
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+        Log.i(TAG, "onListItemClick: " + id);
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        if (chanBoard == null || chanBoard.threads == null) {
-            return;
-        }
-        ChanThread thread = chanBoard.threads.get(i);
-        if (thread == null) {
-            return;
-        }
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+    	Log.i(TAG, "onItemClick id=" + id + ", position=" + position);
         Intent intent = new Intent(this, ThreadListActivity.class);
-        intent.putExtra("boardCode", thread.board);
-        intent.putExtra("threadNo", thread.no);
+        intent.putExtra("boardCode", boardCode);
+        intent.putExtra("threadNo", id);
         startActivity(intent);
     }
 

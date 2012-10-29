@@ -1,7 +1,6 @@
 package com.chanapps.four.data;
 
 import java.util.Date;
-import java.util.regex.Pattern;
 
 public class ChanPost {
 	public String board;

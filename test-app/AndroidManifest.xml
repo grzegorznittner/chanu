@@ -61,6 +61,8 @@
             </intent-filter>
         </activity>
 
+		<service android:name="com.chanapps.four.data.ChanThreadService" />
+		<service android:name="com.chanapps.four.data.ChanPostService" />
     </application>
 
 </manifest>

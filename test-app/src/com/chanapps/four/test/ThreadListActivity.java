@@ -168,6 +168,9 @@ public class ThreadListActivity extends ListActivity {
         // We'll define a custom screen layout here (the one shown above), but
         // typically, you could just use the standard ListActivity layout.
         setContentView(R.layout.thread_activity_list_layout);
+        
+        //getListView().setClickable(true);
+        //getListView().setOnItemClickListener(this);
 
         // Query for all people contacts using the Contacts.People convenience class.
         // Put a managed wrapper around the retrieved cursor so we don't have to worry about

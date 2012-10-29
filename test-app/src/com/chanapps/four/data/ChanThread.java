@@ -26,12 +26,12 @@ public class ChanThread {
 	public String board;
 	public boolean loaded = false;
 	
-	public int no;
-	public int sticky;
-	public int closed;
+	public int no = -1;
+	public int sticky = -1;
+	public int closed = -1;
 	public String now;
 	public Date created;
-	public long time;
+	public long time = -1;
 	public String name;
 	public String sub;
 	public String com;
@@ -43,8 +43,8 @@ public class ChanThread {
 	public int tn_w = 0;
     public int tn_h = 0;
 	public String md5;
-	public int fsize;
-	public int resto;
+	public int fsize = -1;
+	public int resto = -1;
 
 	public String getThumbnailUrl() {
 		if (tim != null) {
@@ -178,6 +178,6 @@ public class ChanThread {
 	}
 	
 	public String toString() {
-		return "Thread " + no + " " + sub + ", thumb: " + getThumbnailUrl();
+		return "Thread " + no + " " + com + ", thumb: " + getThumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
 	}
 }

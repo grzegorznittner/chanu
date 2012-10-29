@@ -13,17 +13,30 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<GridView xmlns:android="http://schemas.android.com/apk/res/android" 
-    android:id="@+id/myGrid"
-	android:layout_width="match_parent" 
-	android:layout_height="match_parent"
-    android:padding="10dp"
-    
-    android:verticalSpacing="15dp"
-    android:horizontalSpacing="15dp"
-    
-    android:numColumns="3"
-    android:stretchMode="columnWidth"
-    
-    android:gravity="center"
-    />
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabhost"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="0dp">
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+            />
+        </HorizontalScrollView>
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="0dp" >
+		</FrameLayout>
+    </LinearLayout>
+</TabHost>

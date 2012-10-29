@@ -16,14 +16,13 @@
 
 package com.chanapps.four.test;
 
-import android.app.ActionBar;
+import android.app.LoaderManager;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
+import android.content.Loader;
+import android.database.Cursor;
 import android.graphics.Point;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -44,8 +43,6 @@ import android.widget.TextView;
 
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanBoard.Type;
-
-import java.util.List;
 
 /**
  * A grid that displays a set of framed photos.

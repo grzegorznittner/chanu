@@ -5,7 +5,6 @@ package com.chanapps.four.data;
 
 import android.content.Context;
 import android.database.DatabaseErrorHandler;
-import android.database.DatabaseUtils.InsertHelper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -20,30 +19,13 @@ public class ChanDatabaseHelper extends SQLiteOpenHelper {
 	public static final String DB_NAME = "4Channer";
 	public static final int DB_VERSION = 1;
 	
-	public static final String THREAD_TABLE = "thread";
-	public static final String THREAD_ID = "_id";
-	public static final String THREAD_BOARD_NAME = "board_name";
-	public static final String THREAD_NAME = "no";
-	public static final String THREAD_AUTHOR = "author";
-	public static final String THREAD_TIME = "time";
-	public static final String THREAD_SUB = "sub";
-	public static final String THREAD_COM = "com";
-	public static final String THREAD_TIM = "tim";
-	public static final String THREAD_FILENAME = "filename";
-	public static final String THREAD_EXT = "ext";
-	public static final String THREAD_W = "w";
-	public static final String THREAD_H = "h";
-	public static final String THREAD_TN_W = "tn_w";
-	public static final String THREAD_TN_H = "tn_h";
-	public static final String THREAD_FSIZE = "fsize";
-	public static final String THREAD_LAST_UPDATE = "last_update";
-	
 	public static final String POST_TABLE = "post";
 	public static final String POST_ID = "_id";
-	public static final String POST_THREAD_ID = "thread_id";
 	public static final String POST_BOARD_NAME = "board_name";
-	public static final String POST_AUTHOR = "author";
+	public static final String POST_NOW = "now";
 	public static final String POST_TIME = "time";
+	public static final String POST_NAME = "name";
+	public static final String POST_SUB = "sub";
 	public static final String POST_COM = "com";
 	public static final String POST_TIM = "tim";
 	public static final String POST_FILENAME = "filename";
@@ -53,9 +35,14 @@ public class ChanDatabaseHelper extends SQLiteOpenHelper {
 	public static final String POST_TN_W = "tn_w";
 	public static final String POST_TN_H = "tn_h";
 	public static final String POST_FSIZE = "fsize";
+	public static final String POST_RESTO = "resto";
 	public static final String POST_LAST_UPDATE = "last_update";
+	// version 2
+	public static final String POST_STICKY = "sticky";
+	public static final String POST_CLOSED = "closed";
+	public static final String POST_OMITTED_POSTS = "omitted_posts";
+	public static final String POST_OMITTED_IMAGES = "omitted_images";
 	
-		
 	public ChanDatabaseHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION, new ErrorHandler());
 	}
@@ -71,51 +58,33 @@ public class ChanDatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		String sql = "CREATE TABLE " + THREAD_TABLE + " ("
-				+ THREAD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-				+ THREAD_BOARD_NAME + " TEXT NOT NULL, "
-				+ THREAD_NAME + " TEXT, "
-				+ THREAD_AUTHOR + " TEXT, "
-				+ THREAD_TIME + " INTEGER NOT NULL, "
-				+ THREAD_SUB + " TEXT NOT NULL, "
-				+ THREAD_COM + " TEXT NOT NULL, "
-				+ THREAD_TIM + " INTEGER NOT NULL, "
-				+ THREAD_FILENAME + " TEXT NOT NULL, "
-				+ THREAD_EXT + " TEXT NOT NULL, "
-				+ THREAD_W + " INTEGER NOT NULL, "
-				+ THREAD_H + " INTEGER NOT NULL, "
-				+ THREAD_TN_W + " INTEGER NOT NULL, "
-				+ THREAD_TN_H + " INTEGER NOT NULL, "
-				+ THREAD_FSIZE + " INTEGER NOT NULL, "
-				+ THREAD_LAST_UPDATE + " INTEGER NOT NULL "
+		String sql = "CREATE TABLE " + POST_TABLE + " ("
+				+ POST_ID + " INTEGER PRIMARY KEY, "
+				+ POST_RESTO + " INTEGER NOT NULL, "
+				+ POST_BOARD_NAME + " TEXT NOT NULL, "
+				+ POST_NAME + " TEXT, "
+				+ POST_NOW + " TEXT, "
+				+ POST_TIME + " INTEGER NOT NULL, "
+				+ POST_SUB + " TEXT, "
+				+ POST_COM + " TEXT, "
+				+ POST_TIM + " INTEGER, "
+				+ POST_FILENAME + " TEXT, "
+				+ POST_EXT + " TEXT, "
+				+ POST_W + " INTEGER, "
+				+ POST_H + " INTEGER, "
+				+ POST_TN_W + " INTEGER, "
+				+ POST_TN_H + " INTEGER, "
+				+ POST_FSIZE + " INTEGER, "
+				+ POST_LAST_UPDATE + " INTEGER "
 				+ ");";
 		Log.e(TAG, "Executing: " + sql);
 		db.execSQL(sql);
 		
-		sql = "CREATE INDEX " + THREAD_TABLE + "_tim " + "ON " + THREAD_TABLE + "(_id, tim);";
+		sql = "CREATE INDEX " + POST_TABLE + "_resto_board " + "ON " + POST_TABLE + "(" + POST_RESTO + ", " + POST_BOARD_NAME + ");";
 		Log.e(TAG, "Executing: " + sql);
 		db.execSQL(sql);
-
-		sql = "CREATE TABLE " + POST_TABLE + " ("
-			+ POST_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-			+ "FOREIGN KEY (" + POST_THREAD_ID + ") REFERENCES " + THREAD_TABLE + " (" + THREAD_ID + "), "
-			+ POST_BOARD_NAME + " TEXT NOT NULL, "
-			+ POST_AUTHOR + " TEXT, "
-			+ POST_TIME + " INTEGER NOT NULL, "
-			+ POST_COM + " TEXT NOT NULL, "
-			+ POST_TIM + " INTEGER NOT NULL, "
-			+ POST_FILENAME + " TEXT NOT NULL, "
-			+ POST_EXT + " TEXT NOT NULL, "
-			+ POST_W + " INTEGER NOT NULL, "
-			+ POST_H + " INTEGER NOT NULL, "
-			+ POST_TN_W + " INTEGER NOT NULL, "
-			+ POST_TN_H + " INTEGER NOT NULL, "
-			+ POST_FSIZE + " INTEGER NOT NULL "
-			+ ");";
-		Log.e(TAG, "Executing: " + sql);
-		db.execSQL(sql);
-
-		sql = "CREATE INDEX " + POST_TABLE + "_tim " + "ON " + POST_TABLE + "(_id, tim);";
+		
+		sql = "CREATE INDEX " + POST_TABLE + "_resto_time " + "ON " + POST_TABLE + "(" + POST_RESTO + ", " + POST_TIME + ");";
 		Log.e(TAG, "Executing: " + sql);
 		db.execSQL(sql);
 	}
