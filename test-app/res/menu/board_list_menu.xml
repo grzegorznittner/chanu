@@ -5,6 +5,11 @@
           android:icon="@drawable/navigation_refresh"
           android:showAsAction="always"
             />
+    <item android:id="@+id/view_as_grid_menu"
+          android:title="@string/view_as_grid_menu"
+          android:icon="@drawable/collections_view_as_grid"
+          android:showAsAction="always"
+            />
     <item android:id="@+id/new_thread_menu"
           android:title="@string/new_thread_menu"
           android:icon="@drawable/content_new_picture"

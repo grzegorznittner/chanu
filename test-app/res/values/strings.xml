@@ -17,12 +17,15 @@
     <string name="refresh_thread_menu">Refresh Thread</string>
     <string name="new_thread_menu">New Thread</string>
     <string name="add_to_favorites_menu">Add to Favorites</string>
-    <string name="download_all_threads_menu">Download All Threads</string>
+    <string name="download_all_threads_menu">Prefetch All Threads</string>
     <string name="watch_thread_menu">Watch Thread</string>
+    <string name="view_as_grid_menu">View As Grid</string>
+    <string name="view_as_list_menu">View As List</string>
     <string name="post_new_picture_menu">Post New Picture</string>
     <string name="post_new_message_menu">Post New Message</string>
-    <string name="download_all_images_menu">Download All Images</string>
-    <string name="download_image_menu">Download Image</string>
+    <string name="download_all_images_menu">Save All Images</string>
+    <string name="download_image_menu">Save Image</string>
+    <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
     <string name="share_image_menu">Share Image</string>
 
     <!-- board grid tab -->

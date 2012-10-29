@@ -5,9 +5,9 @@
           android:icon="@drawable/navigation_refresh"
           android:showAsAction="always"
             />
-    <item android:id="@+id/view_as_grid_menu"
-          android:title="@string/view_as_grid_menu"
-          android:icon="@drawable/collections_view_as_grid"
+    <item android:id="@+id/view_as_list_menu"
+          android:title="@string/view_as_list_menu"
+          android:icon="@drawable/collections_view_as_list"
           android:showAsAction="always"
             />
     <item android:id="@+id/post_new_picture_menu"
