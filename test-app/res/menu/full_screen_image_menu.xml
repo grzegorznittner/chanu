@@ -5,15 +5,14 @@
           android:icon="@drawable/content_save"
           android:showAsAction="always"
             />
-    <item android:id="@+id/set_as_wallpaper_menu"
-          android:title="@string/set_as_wallpaper_menu"
-          android:icon="@drawable/content_picture"
-          android:showAsAction="always"
-            />
     <item android:id="@+id/share_image_menu"
           android:title="@string/share_image_menu"
           android:icon="@drawable/social_share"
           android:showAsAction="always"
+            />
+    <item android:id="@+id/set_as_wallpaper_menu"
+          android:title="@string/set_as_wallpaper_menu"
+          android:icon="@drawable/content_picture"
             />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"

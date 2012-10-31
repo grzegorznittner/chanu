@@ -233,11 +233,11 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
             case R.id.view_as_list_menu:
                 Toast.makeText(getApplicationContext(), "View as List", Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.post_new_picture_menu:
-                Toast.makeText(getApplicationContext(), "New Picture", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.post_new_message_menu:
-                Toast.makeText(getApplicationContext(), "New Message", Toast.LENGTH_SHORT).show();
+            case R.id.post_reply_menu:
+                Intent replyIntent = new Intent(this, PostReplyActivity.class);
+                replyIntent.putExtra("boardCode", boardCode);
+                replyIntent.putExtra("threadNo", threadNo);
+                startActivity(replyIntent);
                 return true;
             case R.id.download_all_images_menu:
                 Toast.makeText(getApplicationContext(), "Starting download...", Toast.LENGTH_SHORT).show();
@@ -266,7 +266,7 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
     private void setBoardCode(String code) {
         boardCode = code;
         if (getActionBar() != null) {
-            getActionBar().setTitle("/" + boardCode + " thread");
+            getActionBar().setTitle("/" + boardCode + " " + getString(R.string.thread_list_activity));
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }

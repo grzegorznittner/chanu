@@ -412,6 +412,7 @@ public class FullScreenImageActivity extends Activity {
 
     private String shareImage(String url) {
         Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("image/*");
         String result = "Couldn't share image, try later";
         try {
 /*
@@ -448,17 +449,10 @@ public class FullScreenImageActivity extends Activity {
         return true;
     }
 
-    /*
-    @Override
-    public void onClick(View view) {
-        navigateUp();
-    }
-    */
-
     private void setBoardCode(String code) {
         boardCode = code;
         if (getActionBar() != null) {
-            getActionBar().setTitle("/" + boardCode + " image");
+            getActionBar().setTitle("/" + boardCode + " " + getString(R.string.full_screen_image_activity));
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }

@@ -236,7 +236,7 @@ public class BoardListActivity extends ListActivity
     private void setBoardCode(String code) {
         boardCode = code;
         if (getActionBar() != null) {
-            getActionBar().setTitle("/" + boardCode + " board");
+            getActionBar().setTitle("/" + boardCode + " " + getString(R.string.board_list_activity));
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }

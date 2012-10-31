@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/post_reply_scroll_view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+            <!--
+            <TextView
+                android:id="@+id/post_reply_title"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/post_reply_title"
+                android:textSize="22sp"
+                android:textColor="#121212"
+                android:layout_gravity="top"
+                android:paddingBottom="16dp">
+            </TextView>
+            -->
+            <EditText
+                android:id="@+id/post_reply_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/post_reply_text_hint"
+                android:inputType="textMultiLine"
+                android:lines="5"
+                android:textSize="18sp"
+                android:paddingBottom="16dp"
+                android:scrollbars="vertical"
+                android:gravity="top|left"
+                    >
+            </EditText>
+
+            <ImageView
+                android:id="@+id/post_reply_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                    android:paddingBottom="16dp">
+            </ImageView>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                    android:paddingBottom="16dp">
+
+                <ImageButton
+                    android:id="@+id/post_reply_camera_button"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:hint="@string/post_reply_camera_hint"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/device_access_camera">
+                </ImageButton>
+
+                <ImageButton
+                    android:id="@+id/post_reply_picture_button"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:scaleType="centerInside"
+                    android:hint="@string/post_reply_picture_hint"
+                    android:src="@drawable/content_picture">
+                </ImageButton>
+
+            </LinearLayout>
+
+            <WebView
+                android:id="@+id/post_reply_recaptcha_webview"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            </WebView>
+
+            <EditText
+                android:id="@+id/post_reply_recaptcha_response"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/post_reply_recaptcha_hint"
+                android:textSize="18sp"
+                android:gravity="top|left"
+                android:inputType="textNoSuggestions"
+                    android:paddingTop="16dp">
+            </EditText>
+
+        </LinearLayout>
+
+    </ScrollView>
