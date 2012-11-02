@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -32,55 +33,58 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.chanapps.four.data.ChanDatabaseHelper;
+import com.chanapps.four.data.ChanHelper;
 
 public class FullScreenImageActivity extends Activity {
 
 	public static final String TAG = FullScreenImageActivity.class.getSimpleName();
 
-    WebView webView = null;
+	private WebView webView = null;
+	
+	private SharedPreferences prefs = null;
 
-    String boardCode = null;
-    int threadNo = 0;
-    String imageUrl = null;
-    int imageWidth = 0;
-    int imageHeight = 0;
+    private String boardCode = null;
+    private long  threadNo = 0;
+    private long  postNo = 0;
+    private String imageUrl = null;
+    private int imageWidth = 0;
+    private int imageHeight = 0;
 
     private void randomizeImage() {
         double d = Math.random();
         if (d >= 0.75) {
             setBoardCode("trv");
-            threadNo = 609350;
+            postNo = 609350;
             imageUrl = "http://images.4chan.org/trv/src/1341267758351.png";
             imageWidth = 280;
             imageHeight = 280;
         }
         else if (d >= 0.5) {
             setBoardCode("diy");
-            threadNo = 100304;
+            postNo = 100304;
             imageUrl = "http://images.4chan.org/diy/src/1324490988301.jpg";
             imageWidth = 324;
             imageHeight = 433;
         }
         else if (d >= 0.25) {
             setBoardCode("fit");
-            threadNo = 4820056;
+            postNo = 4820056;
             imageUrl = "http://images.4chan.org/fit/src/1286894765253.jpg";
             imageWidth = 368;
             imageHeight = 600;
         }
         else {
             setBoardCode("po");
-            threadNo = 430177;
+            postNo = 430177;
             imageUrl = "http://images.4chan.org/po/src/1304652991998.jpg";
             imageWidth = 652;
             imageHeight = 433;
         }
     }
     
-    private boolean loadPostData() {
+    private boolean loadChanPostData() {
     	ChanDatabaseHelper h = new ChanDatabaseHelper(getBaseContext());
 		try {
-			// "http://images.4chan.org/" + board + "/src/" + tim + ext;
 			String query = "SELECT " + ChanDatabaseHelper.POST_ID + ", "
 					+ "'http://images.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
 						+ " || '/src/' || " + ChanDatabaseHelper.POST_TIM
@@ -88,7 +92,7 @@ public class FullScreenImageActivity extends Activity {
 					+ ChanDatabaseHelper.POST_W + " 'imagewidth', "
 					+ ChanDatabaseHelper.POST_H + " 'imageheight'"
 					+ " FROM " + ChanDatabaseHelper.POST_TABLE
-					+ " WHERE " + ChanDatabaseHelper.POST_ID + "=" + threadNo;
+					+ " WHERE " + ChanDatabaseHelper.POST_ID + "=" + postNo;
 			Cursor c = h.getWritableDatabase().rawQuery(query, null);
 			int imageurlIdx = c.getColumnIndex("imageurl");
 			int imagewidthIdx = c.getColumnIndex("imagewidth");
@@ -98,10 +102,10 @@ public class FullScreenImageActivity extends Activity {
 				imageWidth = c.getInt(imagewidthIdx);
 				imageHeight = c.getInt(imageheightIdx);
 				if (c.moveToNext()) {
-					Log.w(TAG, "Post with id " + threadNo + " for board " + boardCode + " is not unique across boards!");
+					Log.w(TAG, "Post with id " + postNo + " for board " + boardCode + " is not unique across boards!");
 				}
 			} else {
-				Log.w(TAG, "Post with id " + threadNo + " for board " + boardCode + " has not been found!");
+				Log.w(TAG, "Post with id " + postNo + " for board " + boardCode + " has not been found!");
 			}
 			c.close();
 			h.close();
@@ -115,24 +119,20 @@ public class FullScreenImageActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        
+        prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
 
         Intent intent = getIntent();
-        if (intent.hasExtra("threadNo")) {
-            setBoardCode(intent.getStringExtra("boardCode"));
-            threadNo = intent.getIntExtra("threadNo", 0);
-            loadPostData();
+        if (intent.hasExtra(ChanHelper.POST_NO)) {
+        	postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
+        	threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+            setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
+            Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
+            loadChanPostData();
         } else {
             randomizeImage();
         }
         
-//        else {
-//            setBoardCode(intent.getStringExtra("boardCode"));
-//            threadNo = intent.getIntExtra("threadNo", 0);
-//            imageUrl = intent.getStringExtra("imageUrl");
-//            imageWidth = intent.getIntExtra("imageWidth", 280);
-//            imageHeight = intent.getIntExtra("imageHeight", 280);
-//        }
-
         webView = new WebView(this);
         setContentView(webView);
         webView.getSettings().setLoadWithOverviewMode(true);
@@ -154,6 +154,15 @@ public class FullScreenImageActivity extends Activity {
         loadImage();
     }
 
+    protected void onPause() {
+        super.onPause();
+
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putLong(ChanHelper.POST_NO, postNo);
+        Log.i(TAG, "Stored in prefs, post no: " + postNo);
+        ed.commit();
+    }
+    
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         loadImage();
@@ -436,7 +445,7 @@ public class FullScreenImageActivity extends Activity {
     private void navigateUp() {
         Intent upIntent = new Intent(this, ThreadListActivity.class);
         upIntent.putExtra("boardCode", boardCode);
-        upIntent.putExtra("threadNo", threadNo);
+        upIntent.putExtra("threadNo", postNo);
         NavUtils.navigateUpTo(this, upIntent);
     }
 
@@ -462,6 +471,5 @@ public class FullScreenImageActivity extends Activity {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
-
 
 }

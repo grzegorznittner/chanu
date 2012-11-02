@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.chanapps.four.component.BaseChanService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -62,8 +63,8 @@ public class ChanThreadService extends BaseChanService {
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		String boardName = intent.getStringExtra("board");
-		int boardPage = intent.getIntExtra("page", 0);
+		String boardName = intent.getStringExtra(ChanHelper.BOARD_CODE);
+		int boardPage = intent.getIntExtra(ChanHelper.PAGE, 0);
 		Log.i(TAG, "Handling board=" + boardName + " page=" + boardPage);
 
 		BufferedReader in = null;

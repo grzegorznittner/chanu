@@ -31,11 +31,12 @@ public class ChanPostService extends ChanThreadService {
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		String boardName = intent.getStringExtra("board");
-		int threadNo = intent.getIntExtra("thread", 0);
+		String boardName = intent.getStringExtra(ChanHelper.BOARD_CODE);
+		long threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
 
 		if (threadNo == 0) {
 			Log.w(TAG, "Thread number not passed!");
+			return;
 		}
 		
 		BufferedReader in = null;
@@ -86,7 +87,7 @@ public class ChanPostService extends ChanThreadService {
 					+ " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "' AND "
 					+ "(" + ChanDatabaseHelper.POST_ID + "=" + threadNo + " OR " + ChanDatabaseHelper.POST_RESTO + "=" + threadNo + ")";
 			Cursor c = h.getWritableDatabase().rawQuery(query, null);
-			int numIdx = c.getColumnIndex("num_threads");
+			int numIdx = c.getColumnIndex("num_posts");
 			for (boolean hasItem = c.moveToFirst(); hasItem; hasItem = c.moveToNext()) {
 			    Log.i(TAG, "Thread " + threadNo + " has " + c.getString(numIdx) + " posts");
 			}

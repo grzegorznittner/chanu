@@ -19,6 +19,7 @@ package com.chanapps.four.test;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,6 +40,7 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanBoard.Type;
 
 /**
@@ -57,10 +59,14 @@ public class BoardGridActivity
 	
 	private ChanBoard.Type selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
 	private ImageAdapter adapter;
+	private SharedPreferences prefs = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        selectedBoardType = ChanBoard.Type.valueOf(prefs.getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
         
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -80,9 +86,24 @@ public class BoardGridActivity
                     .setIndicator(type.toString().replaceAll("_", " "))
                     .setContent(this));
         }
-        setDefaultTab(0);
+        int selectedTab = 0;
+        for (ChanBoard.Type type : ChanBoard.Type.values()) {
+        	if (type == selectedBoardType) {
+        		break;
+        	}
+        	selectedTab++;
+        }
+        setDefaultTab(selectedTab);
     }
 
+    protected void onPause() {
+        super.onPause();
+
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putString(ChanHelper.BOARD_TYPE, selectedBoardType.toString());
+        ed.commit();
+    }
+    
     /** {@inheritDoc} */
     public View createTabContent(String tag) {
     	selectedBoardType = ChanBoard.Type.valueOf(tag);

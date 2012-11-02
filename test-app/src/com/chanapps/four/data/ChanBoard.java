@@ -131,6 +131,15 @@ public class ChanBoard {
 		return boards;
 	}
 	
+	public static boolean isValidBoardCode(String boardCode) {
+		for (ChanBoard board : getBoards()) {
+			if (board.link.equals(boardCode)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public static List<ChanBoard> getBoardsByType(Type type) {
 		if (boards == null) {
 			initBoards();

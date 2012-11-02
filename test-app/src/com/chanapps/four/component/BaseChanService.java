@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.chanapps.four.data;
+package com.chanapps.four.component;
 
 import android.app.Service;
 import android.content.Intent;
