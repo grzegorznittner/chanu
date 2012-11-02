@@ -5,10 +5,11 @@
     <string name="title_item_detail">Item Detail</string>
     <string name="title_item_list">Items</string>
     <string name="fragment_layout">2 Pane Layout</string>
-    <string name="title_thread_activity">Thread</string>
-    <string name="title_board_activity">Board</string>
+    <string name="thread_list_activity">Thread</string>
+    <string name="board_list_activity">Board</string>
     <string name="title_photogrid_activity">PhotoGrid</string>
-    <string name="full_screen_image_activity">Image</string>
+    <string name="full_screen_image_activity">View Image</string>
+    <string name="post_reply_activity">Post Reply</string>
 
     <!-- menus -->
     <string name="settings_menu">Settings</string>
@@ -21,12 +22,12 @@
     <string name="watch_thread_menu">Watch Thread</string>
     <string name="view_as_grid_menu">View As Grid</string>
     <string name="view_as_list_menu">View As List</string>
-    <string name="post_new_picture_menu">Post New Picture</string>
-    <string name="post_new_message_menu">Post New Message</string>
+    <string name="post_reply_menu">Post Reply</string>
     <string name="download_all_images_menu">Save All Images</string>
     <string name="download_image_menu">Save Image</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
     <string name="share_image_menu">Share Image</string>
+    <string name="post_reply_send_menu">Post Reply</string>
 
     <!-- board grid tab -->
     <string name="japanese_culture">Japanese Culture</string>
@@ -35,5 +36,12 @@
     <string name="adult">Adult</string>
     <string name="other">Other</string>
     <string name="misc">Misc.</string>
+
+    <!-- forms -->
+    <string name="post_reply_title">Post Reply</string>
+    <string name="post_reply_text_hint">Type message here...</string>
+    <string name="post_reply_camera_hint">Camera</string>
+    <string name="post_reply_picture_hint">Gallery</string>
+    <string name="post_reply_recaptcha_hint">Type recaptcha text here...</string>
 
 </resources>

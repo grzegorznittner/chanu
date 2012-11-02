@@ -15,7 +15,7 @@
             android:scaleType="centerInside"/>
 
     <TextView
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:id="@+id/list_item_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
