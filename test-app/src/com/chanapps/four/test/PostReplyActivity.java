@@ -17,15 +17,25 @@ import android.util.Log;
 import android.view.*;
 import android.webkit.WebView;
 import android.widget.*;
+import com.chanapps.four.component.*;
 import com.chanapps.four.data.Captcha;
 import com.chanapps.four.data.Recaptcha;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.HttpEntityWrapper;
+import org.apache.http.message.BasicNameValuePair;
 
 import javax.security.auth.login.LoginException;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PostReplyActivity extends Activity {
 
@@ -36,6 +46,9 @@ public class PostReplyActivity extends Activity {
     public static final String RECAPTCHA_URL = RECAPTCHA_NOSCRIPT_URL + RECAPTCHA_PUBLIC_KEY;
     public static final String CAPTCHA_DEFAULT_URL = "file:///android_res/drawable/captcha.png";
 
+    public static final String POST_URL_ROOT = "https://sys.4chan.org/";
+    public static final String MAX_FILE_SIZE = "3145728";
+
     private static final int IMAGE_CAPTURE = 0;
     private static final int IMAGE_GALLERY = 1;
 
@@ -44,7 +57,11 @@ public class PostReplyActivity extends Activity {
     private ImageButton rotateLeftButton;
     private ImageButton rotateRightButton;
 
+    String recaptchaChallenge;
     WebView recaptchaView;
+
+    private EditText messageText;
+    private EditText recaptchaText;
 
     private ImageView imagePreview;
     private int angle = 0;
@@ -95,6 +112,9 @@ public class PostReplyActivity extends Activity {
         rotateLeftButton = (ImageButton)findViewById(R.id.post_reply_rotate_left_button);
         rotateRightButton = (ImageButton)findViewById(R.id.post_reply_rotate_right_button);
 
+        messageText = (EditText)findViewById(R.id.post_reply_text);
+        recaptchaText = (EditText)findViewById(R.id.post_reply_recaptcha_response);
+
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,6 +142,7 @@ public class PostReplyActivity extends Activity {
 
         recaptchaView = (WebView) findViewById(R.id.post_reply_recaptcha_webview);
         recaptchaView.getSettings().setAllowFileAccess(true);
+
         LoadCaptchaTask loadCaptchaTask = new LoadCaptchaTask(getApplicationContext());
         loadCaptchaTask.execute(RECAPTCHA_URL);
     }
@@ -284,12 +305,37 @@ public class PostReplyActivity extends Activity {
             case android.R.id.home:
                 navigateUp();
                 return true;
-            case R.id.download_image_menu:
+            case R.id.post_reply_send_menu:
+                String validMsg = validatePost();
+                if (validMsg != null) {
+                    Toast.makeText(getApplicationContext(), validMsg, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
                 Toast.makeText(getApplicationContext(), "Posting reply...", Toast.LENGTH_SHORT).show();
+                PostReplyTask postReplyTask = new PostReplyTask(getApplicationContext());
+                postReplyTask.execute();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private String validatePost() {
+        if (recaptchaChallenge == null || recaptchaChallenge.trim().isEmpty()) {
+            return "Can't post without captca, try later";
+        }
+        String recaptcha = recaptchaText.getText().toString();
+        if (recaptcha == null || recaptcha.trim().isEmpty()) {
+            return "Enter captcha to post";
+        }
+        String message = messageText.getText().toString();
+        String image = imageUri != null ? imageUri.getPath() : null;
+        boolean hasMessage = message != null && !message.trim().isEmpty();
+        boolean hasImage = image != null && !image.trim().isEmpty();
+        if (!hasMessage && !hasImage) {
+            return "Enter text or image to post";
+        }
+        return null;
     }
 
     private void navigateUp() {
@@ -366,9 +412,12 @@ public class PostReplyActivity extends Activity {
                     s.append(line);
                 }
                 Captcha c = Recaptcha.GetCaptcha(s.toString());
+                String challenge = c.Challenge;
                 String url = c.ImageUrl;
-                if (url != null && !url.equalsIgnoreCase("false")) {
+                if (url != null && !url.equalsIgnoreCase("false")
+                        && challenge != null && !challenge.equalsIgnoreCase("false")) {
                     Log.e(TAG, "Found recaptcha url: " + url);
+                    recaptchaChallenge = challenge;
                     recaptchaView.loadUrl(c.ImageUrl);
                 }
                 else {
@@ -380,6 +429,88 @@ public class PostReplyActivity extends Activity {
                 Log.e(TAG, "Error reading recaptcha response", e);
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                 recaptchaView.loadUrl(CAPTCHA_DEFAULT_URL);
+            }
+        }
+    }
+
+    private class PostReplyTask extends AsyncTask<String, Void, HttpResponse> {
+
+        private Context context = null;
+
+        public PostReplyTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected HttpResponse doInBackground(String... params) {
+            AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
+            try {
+                String url = POST_URL_ROOT + boardCode + "/post";
+                HttpPost request = new HttpPost(url);
+
+                String message = messageText.getText().toString();
+                String recaptcha = recaptchaText.getText().toString();
+
+                List<Part> partsList = new ArrayList<Part>();
+                partsList.add(new StringPart("MAX-FILE-SIZE", MAX_FILE_SIZE));
+                partsList.add(new StringPart("mode", "regist"));
+                partsList.add(new StringPart("resto", Integer.toString(threadNo)));
+                partsList.add(new StringPart("recaptcha_challenge_field", recaptchaChallenge));
+                partsList.add(new StringPart("recaptcha_response_field", recaptcha));
+                partsList.add(new StringPart("com", message));
+                if (imageUri != null) {
+                    String contentType = getContentResolver().getType(imageUri);
+                    File file = new File(new URI(imageUri.toString()));
+                    FilePart filePart = new FilePart("upfile", file.getName(), file, contentType, "UTF-8");
+                    partsList.add(filePart);
+                }
+
+                Part[] parts = partsList.toArray(new Part[partsList.size()]);
+                MultipartEntity entity = new MultipartEntity(parts);
+                request.setEntity(entity);
+
+                return client.execute(request);
+            } catch (Exception e) {
+                String msg = "Couldn't post";
+                Log.e(TAG, "Error posting", e);
+            }
+            finally {
+                if (client != null) {
+                    client.close();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            String msg = "Couldn't post";
+            Log.e(TAG, msg);
+            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+            recaptchaView.loadUrl(CAPTCHA_DEFAULT_URL);
+        }
+
+        @Override
+        protected void onPostExecute(HttpResponse response) {
+            String msg = "Couldn't post";
+            if (response == null) {
+                Log.e(TAG, "Null response posting");
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode != 200) {
+                    Log.e(TAG, "Error received in post response: " + statusCode + " " + response.getStatusLine().getReasonPhrase());
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Posted reply", Toast.LENGTH_SHORT).show();
+                }
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Exception posting reply", e);
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
             }
         }
     }
