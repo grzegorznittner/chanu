@@ -2,14 +2,11 @@ package com.chanapps.four.test;
 
 import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
-import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
@@ -17,37 +14,18 @@ import android.util.Log;
 import android.view.*;
 import android.webkit.WebView;
 import android.widget.*;
-import com.chanapps.four.component.*;
-import com.chanapps.four.data.Captcha;
-import com.chanapps.four.data.Recaptcha;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.entity.HttpEntityWrapper;
-import org.apache.http.message.BasicNameValuePair;
+import com.chanapps.four.data.LoadCaptchaTask;
+import com.chanapps.four.data.PostReplyTask;
 
-import javax.security.auth.login.LoginException;
 import java.io.*;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PostReplyActivity extends Activity {
 
-	public static final String TAG = PostReplyActivity.class.getSimpleName();
+    public static final String TAG = PostReplyActivity.class.getSimpleName();
 
     public static final String RECAPTCHA_NOSCRIPT_URL = "http://www.google.com/recaptcha/api/noscript?k=";
     public static final String RECAPTCHA_PUBLIC_KEY = "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc";
     public static final String RECAPTCHA_URL = RECAPTCHA_NOSCRIPT_URL + RECAPTCHA_PUBLIC_KEY;
-    public static final String CAPTCHA_DEFAULT_URL = "file:///android_res/drawable/captcha.png";
-
-    public static final String POST_URL_ROOT = "https://sys.4chan.org/";
-    public static final String MAX_FILE_SIZE = "3145728";
 
     private static final int IMAGE_CAPTURE = 0;
     private static final int IMAGE_GALLERY = 1;
@@ -56,9 +34,10 @@ public class PostReplyActivity extends Activity {
     private ImageButton pictureButton;
     private ImageButton rotateLeftButton;
     private ImageButton rotateRightButton;
+    private ImageButton refreshCaptchaButton;
 
-    String recaptchaChallenge;
-    WebView recaptchaView;
+    private WebView recaptchaView;
+    private LoadCaptchaTask loadCaptchaTask;
 
     private EditText messageText;
     private EditText recaptchaText;
@@ -68,10 +47,13 @@ public class PostReplyActivity extends Activity {
 
     private String fileName;
     private Uri imageUri;
-    String boardCode = null;
-    int threadNo = 0;
+    public String boardCode = null;
+    public int threadNo = 0;
 
     private void randomizeThread() {
+        setBoardCode("diy");
+        threadNo = 325344;
+        /*
         double d = Math.random();
         if (d >= 0.75) {
             setBoardCode("trv");
@@ -89,6 +71,7 @@ public class PostReplyActivity extends Activity {
             setBoardCode("po");
             threadNo = 430177;
         }
+        */
     }
 
     @Override
@@ -111,6 +94,7 @@ public class PostReplyActivity extends Activity {
         pictureButton = (ImageButton)findViewById(R.id.post_reply_picture_button);
         rotateLeftButton = (ImageButton)findViewById(R.id.post_reply_rotate_left_button);
         rotateRightButton = (ImageButton)findViewById(R.id.post_reply_rotate_right_button);
+        refreshCaptchaButton = (ImageButton)findViewById(R.id.post_reply_reload_captcha);
 
         messageText = (EditText)findViewById(R.id.post_reply_text);
         recaptchaText = (EditText)findViewById(R.id.post_reply_recaptcha_response);
@@ -139,11 +123,22 @@ public class PostReplyActivity extends Activity {
                 rotateRight();
             }
         });
+        refreshCaptchaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                reloadCaptcha();
+            }
+        });
 
         recaptchaView = (WebView) findViewById(R.id.post_reply_recaptcha_webview);
         recaptchaView.getSettings().setAllowFileAccess(true);
 
-        LoadCaptchaTask loadCaptchaTask = new LoadCaptchaTask(getApplicationContext());
+        reloadCaptcha();
+    }
+
+
+    public void reloadCaptcha() {
+        loadCaptchaTask = new LoadCaptchaTask(getApplicationContext(), recaptchaView);
         loadCaptchaTask.execute(RECAPTCHA_URL);
     }
 
@@ -312,7 +307,7 @@ public class PostReplyActivity extends Activity {
                     return true;
                 }
                 Toast.makeText(getApplicationContext(), "Posting reply...", Toast.LENGTH_SHORT).show();
-                PostReplyTask postReplyTask = new PostReplyTask(getApplicationContext());
+                PostReplyTask postReplyTask = new PostReplyTask(this);
                 postReplyTask.execute();
                 return true;
             default:
@@ -320,7 +315,28 @@ public class PostReplyActivity extends Activity {
         }
     }
 
+    public String getMessage() {
+        return messageText.getText().toString();
+    }
+
+    public String getImageUrl() {
+        return imageUri != null ? imageUri.toString() : null;
+    }
+
+    public String getContentType() {
+        return imageUri != null ? getContentResolver().getType(imageUri) : null;
+    }
+
+    public String getRecaptchaChallenge() {
+        return loadCaptchaTask.getRecaptchaChallenge();
+    }
+
+    public String getRecaptchaResponse() {
+        return  recaptchaText.getText().toString();
+    }
+
     private String validatePost() {
+        String recaptchaChallenge = loadCaptchaTask.getRecaptchaChallenge();
         if (recaptchaChallenge == null || recaptchaChallenge.trim().isEmpty()) {
             return "Can't post without captca, try later";
         }
@@ -338,7 +354,7 @@ public class PostReplyActivity extends Activity {
         return null;
     }
 
-    private void navigateUp() {
+    public void navigateUp() {
         Intent upIntent = new Intent(this, ThreadListActivity.class);
         upIntent.putExtra("boardCode", boardCode);
         upIntent.putExtra("threadNo", threadNo);
@@ -358,160 +374,6 @@ public class PostReplyActivity extends Activity {
         if (getActionBar() != null) {
             getActionBar().setTitle("/" + boardCode + " " + getString(R.string.post_reply_activity));
             getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-    private class LoadCaptchaTask extends AsyncTask<String, Void, HttpResponse> {
-
-        private Context context = null;
-
-        public LoadCaptchaTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected HttpResponse doInBackground(String... params) {
-            AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-            try {
-                 String url = params[0];
-                 HttpGet request = new HttpGet(url);
-                 return client.execute(request);
-            } catch (Exception e) {
-                String msg = "Couldn't get recaptcha";
-                Log.e(TAG, "Error getting recaptcha url", e);
-            }
-            finally {
-                if (client != null) {
-                    client.close();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onCancelled() {
-            String msg = "Couldn't load captcha";
-            Log.e(TAG, msg);
-            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-            recaptchaView.loadUrl(CAPTCHA_DEFAULT_URL);
-        }
-
-        @Override
-        protected void onPostExecute(HttpResponse response) {
-            String msg = "Couldn't load captcha";
-            if (response == null) {
-                Log.e(TAG, "Null response loading recaptcha");
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            try {
-                BufferedReader r = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-                StringBuilder s = new StringBuilder();
-                String line;
-                while ((line = r.readLine()) != null) {
-                    s.append(line);
-                }
-                Captcha c = Recaptcha.GetCaptcha(s.toString());
-                String challenge = c.Challenge;
-                String url = c.ImageUrl;
-                if (url != null && !url.equalsIgnoreCase("false")
-                        && challenge != null && !challenge.equalsIgnoreCase("false")) {
-                    Log.e(TAG, "Found recaptcha url: " + url);
-                    recaptchaChallenge = challenge;
-                    recaptchaView.loadUrl(c.ImageUrl);
-                }
-                else {
-                    Log.e(TAG, "Error reading recaptcha response");
-                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                    recaptchaView.loadUrl(CAPTCHA_DEFAULT_URL);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error reading recaptcha response", e);
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                recaptchaView.loadUrl(CAPTCHA_DEFAULT_URL);
-            }
-        }
-    }
-
-    private class PostReplyTask extends AsyncTask<String, Void, HttpResponse> {
-
-        private Context context = null;
-
-        public PostReplyTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected HttpResponse doInBackground(String... params) {
-            AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-            try {
-                String url = POST_URL_ROOT + boardCode + "/post";
-                HttpPost request = new HttpPost(url);
-
-                String message = messageText.getText().toString();
-                String recaptcha = recaptchaText.getText().toString();
-
-                List<Part> partsList = new ArrayList<Part>();
-                partsList.add(new StringPart("MAX-FILE-SIZE", MAX_FILE_SIZE));
-                partsList.add(new StringPart("mode", "regist"));
-                partsList.add(new StringPart("resto", Integer.toString(threadNo)));
-                partsList.add(new StringPart("recaptcha_challenge_field", recaptchaChallenge));
-                partsList.add(new StringPart("recaptcha_response_field", recaptcha));
-                partsList.add(new StringPart("com", message));
-                if (imageUri != null) {
-                    String contentType = getContentResolver().getType(imageUri);
-                    File file = new File(new URI(imageUri.toString()));
-                    FilePart filePart = new FilePart("upfile", file.getName(), file, contentType, "UTF-8");
-                    partsList.add(filePart);
-                }
-
-                Part[] parts = partsList.toArray(new Part[partsList.size()]);
-                MultipartEntity entity = new MultipartEntity(parts);
-                request.setEntity(entity);
-
-                return client.execute(request);
-            } catch (Exception e) {
-                String msg = "Couldn't post";
-                Log.e(TAG, "Error posting", e);
-            }
-            finally {
-                if (client != null) {
-                    client.close();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onCancelled() {
-            String msg = "Couldn't post";
-            Log.e(TAG, msg);
-            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-            recaptchaView.loadUrl(CAPTCHA_DEFAULT_URL);
-        }
-
-        @Override
-        protected void onPostExecute(HttpResponse response) {
-            String msg = "Couldn't post";
-            if (response == null) {
-                Log.e(TAG, "Null response posting");
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            try {
-                int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode != 200) {
-                    Log.e(TAG, "Error received in post response: " + statusCode + " " + response.getStatusLine().getReasonPhrase());
-                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), "Posted reply", Toast.LENGTH_SHORT).show();
-                }
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Exception posting reply", e);
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
