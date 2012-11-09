@@ -64,10 +64,9 @@ public class BoardGridActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
-        selectedBoardType = ChanBoard.Type.valueOf(prefs.getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
-        
+
+        reloadBoardPrefs();
+
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -75,17 +74,25 @@ public class BoardGridActivity
         height = size.y;
         Log.i(TAG, "width: " + width + ", height: " + height);
 
-	    setContentView(R.layout.photo_grid);
-
         numColumns = width / 300 == 1 ? 2 : width / 300;
         columnWidth = (width - 15) / numColumns;
-        
+
+	    setContentView(R.layout.photo_grid);
+
 	    TabHost tabHost = getTabHost();
         for (ChanBoard.Type type : ChanBoard.Type.values()) {
             tabHost.addTab(tabHost.newTabSpec(type.toString())
                     .setIndicator(type.toString().replaceAll("_", " "))
                     .setContent(this));
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        reloadBoardPrefs();
+
         int selectedTab = 0;
         for (ChanBoard.Type type : ChanBoard.Type.values()) {
         	if (type == selectedBoardType) {
@@ -96,6 +103,12 @@ public class BoardGridActivity
         setDefaultTab(selectedTab);
     }
 
+    private void reloadBoardPrefs() {
+        prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        selectedBoardType = ChanBoard.Type.valueOf(prefs.getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
 
@@ -131,8 +144,8 @@ public class BoardGridActivity
         String boardCode = board.link;
         int pageNo = 0;
         Intent intent = new Intent(this, BoardListActivity.class);
-        intent.putExtra("boardCode", boardCode);
-        intent.putExtra("pageNo", pageNo);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.PAGE, pageNo);
         startActivity(intent);
     }
     

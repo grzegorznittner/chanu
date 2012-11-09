@@ -3,6 +3,7 @@ package com.chanapps.four.test;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -14,10 +15,13 @@ import android.util.Log;
 import android.view.*;
 import android.webkit.WebView;
 import android.widget.*;
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.LoadCaptchaTask;
 import com.chanapps.four.data.PostReplyTask;
 
 import java.io.*;
+import java.text.DecimalFormat;
+import java.util.Random;
 
 public class PostReplyActivity extends Activity {
 
@@ -26,6 +30,7 @@ public class PostReplyActivity extends Activity {
     public static final String RECAPTCHA_NOSCRIPT_URL = "http://www.google.com/recaptcha/api/noscript?k=";
     public static final String RECAPTCHA_PUBLIC_KEY = "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc";
     public static final String RECAPTCHA_URL = RECAPTCHA_NOSCRIPT_URL + RECAPTCHA_PUBLIC_KEY;
+    public static final int PASSWORD_MAX = 100000000;
 
     private static final int IMAGE_CAPTURE = 0;
     private static final int IMAGE_GALLERY = 1;
@@ -45,10 +50,15 @@ public class PostReplyActivity extends Activity {
     private ImageView imagePreview;
     private int angle = 0;
 
-    private String fileName;
+    public String imagePath;
+    public String contentType;
+    private String orientation;
     private Uri imageUri;
     public String boardCode = null;
-    public int threadNo = 0;
+    public long threadNo = 0;
+
+    private Random randomGenerator = new Random();
+    private DecimalFormat eightDigits = new DecimalFormat("00000000");
 
     private void randomizeThread() {
         setBoardCode("diy");
@@ -77,14 +87,6 @@ public class PostReplyActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
-        Intent intent = getIntent();
-        if (intent.hasExtra("threadNo")) {
-            setBoardCode(intent.getStringExtra("boardCode"));
-            threadNo = intent.getIntExtra("threadNo", 0);
-        } else {
-            randomizeThread();
-        }
 
         setContentView(R.layout.post_reply_activity_layout);
 
@@ -132,6 +134,20 @@ public class PostReplyActivity extends Activity {
 
         recaptchaView = (WebView) findViewById(R.id.post_reply_recaptcha_webview);
         recaptchaView.getSettings().setAllowFileAccess(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Intent intent = getIntent();
+        if (intent.hasExtra(ChanHelper.BOARD_CODE) && intent.hasExtra(ChanHelper.THREAD_NO)) {
+            setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
+            threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+        } else {
+            Toast.makeText(getApplicationContext(), "Can't post, unknown thread", Toast.LENGTH_SHORT);
+            navigateUp();
+        }
 
         reloadCaptcha();
     }
@@ -153,19 +169,18 @@ public class PostReplyActivity extends Activity {
         String msg = "Couldn't load activity image";
         try {
         if (requestCode == IMAGE_CAPTURE) {
-            if (resultCode == RESULT_OK && imageUri != null) {
+            if (resultCode == RESULT_OK && data != null) {
                 msg = "Added image to post";
-                setImagePreview();
+                processImage(data);
             }
             else {
                 Log.e(TAG, "Couldn't load camera image");
             }
         }
         else if (requestCode == IMAGE_GALLERY) {
-            if (resultCode == RESULT_OK) {
+            if (resultCode == RESULT_OK && data != null) {
                 msg = "Added image to post";
-                imageUri = data.getData();
-                setImagePreview();
+                processImage(data);
             }
             else {
                 Log.e(TAG, "Couldn't load gallery image");
@@ -270,14 +285,14 @@ public class PostReplyActivity extends Activity {
 
     private void startCamera() {
         Log.d(TAG, "starting camera...");
-        fileName = java.util.UUID.randomUUID().toString() + ".jpg";
+        String fileName = java.util.UUID.randomUUID().toString() + ".jpg";
+        String contentType = "image/jpeg";
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, fileName);
-        values.put(MediaStore.Images.Media.DESCRIPTION,
-                "Image capture by camera");
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-        imageUri = getContentResolver().insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        values.put(MediaStore.Images.Media.DESCRIPTION, "Image capture by camera");
+        values.put(MediaStore.Images.Media.MIME_TYPE, contentType);
+        values.put(MediaStore.Images.Media.ORIENTATION, "0");
+        Uri imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         if (imageUri != null) {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -292,6 +307,19 @@ public class PostReplyActivity extends Activity {
         Log.d(TAG, "starting gallery...");
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, IMAGE_GALLERY);
+    }
+
+    private void processImage(Intent data) {
+        imageUri = data.getData();
+        String[] filePathColumn = { MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns.MIME_TYPE, MediaStore.Images.ImageColumns.ORIENTATION };
+        Cursor cursor = getContentResolver().query(imageUri, filePathColumn, null, null, null);
+        cursor.moveToFirst();
+        imagePath = cursor.getString(cursor.getColumnIndexOrThrow(filePathColumn[0]));
+        contentType = cursor.getString(cursor.getColumnIndexOrThrow(filePathColumn[1]));
+        orientation = cursor.getString(cursor.getColumnIndexOrThrow(filePathColumn[2]));
+
+        cursor.close();
+        setImagePreview();
     }
 
     @Override
@@ -324,7 +352,7 @@ public class PostReplyActivity extends Activity {
     }
 
     public String getContentType() {
-        return imageUri != null ? getContentResolver().getType(imageUri) : null;
+        return contentType;
     }
 
     public String getRecaptchaChallenge() {
@@ -356,8 +384,8 @@ public class PostReplyActivity extends Activity {
 
     public void navigateUp() {
         Intent upIntent = new Intent(this, ThreadListActivity.class);
-        upIntent.putExtra("boardCode", boardCode);
-        upIntent.putExtra("threadNo", threadNo);
+        upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
         NavUtils.navigateUpTo(this, upIntent);
     }
 
@@ -375,6 +403,10 @@ public class PostReplyActivity extends Activity {
             getActionBar().setTitle("/" + boardCode + " " + getString(R.string.post_reply_activity));
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    public String generatePwd() {
+        return eightDigits.format(randomGenerator.nextInt(PASSWORD_MAX));
     }
 
 }

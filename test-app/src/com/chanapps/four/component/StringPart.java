@@ -66,6 +66,7 @@ public class StringPart extends PartBase {
     /** The String value of this part. */
     private String value;
 
+    public String getValue() { return value; }
     /**
      * Constructor.
      *

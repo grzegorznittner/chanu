@@ -44,8 +44,8 @@ public class FullScreenImageActivity extends Activity {
 	private SharedPreferences prefs = null;
 
     private String boardCode = null;
-    private long  threadNo = 0;
-    private long  postNo = 0;
+    private long threadNo = 0;
+    private long postNo = 0;
     private String imageUrl = null;
     private int imageWidth = 0;
     private int imageHeight = 0;
@@ -445,8 +445,9 @@ public class FullScreenImageActivity extends Activity {
 
     private void navigateUp() {
         Intent upIntent = new Intent(this, ThreadListActivity.class);
-        upIntent.putExtra("boardCode", boardCode);
-        upIntent.putExtra("threadNo", postNo);
+        upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        upIntent.putExtra(ChanHelper.POST_NO, postNo);
         NavUtils.navigateUpTo(this, upIntent);
     }
 

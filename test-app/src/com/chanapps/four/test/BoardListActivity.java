@@ -73,23 +73,7 @@ public class BoardListActivity extends ListActivity
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(getApplicationContext()));
 
-        Intent intent = getIntent();
-        if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
-            setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
-            Log.i(TAG, "Board code read from intent: " + boardCode);
-        }
-        if (!intent.hasExtra(ChanHelper.BOARD_CODE) || !ChanBoard.isValidBoardCode(boardCode)) {
-            setBoardCode(prefs.getString(ChanHelper.BOARD_CODE, "s"));
-            Log.i(TAG, "Board code loaded from prefs: " + boardCode);
-        }
-        
 
-        Log.i(TAG, "Starting ChanThreadService");
-        Intent threadIntent = new Intent(this, ChanThreadService.class);
-        threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        threadIntent.putExtra(ChanHelper.PAGE, 0);
-        startService(threadIntent);
-        
         db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
 
         adapter = new ImageTextCursorAdapter(this,
@@ -102,10 +86,32 @@ public class BoardListActivity extends ListActivity
         
         getListView().setClickable(true);
         getListView().setOnItemClickListener(this);
-        
-        getLoaderManager().initLoader(0, null, this);
     }
-    
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Intent intent = getIntent();
+        if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
+            setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
+            Log.i(TAG, "Board code read from intent: " + boardCode);
+        }
+        if (!intent.hasExtra(ChanHelper.BOARD_CODE) || !ChanBoard.isValidBoardCode(boardCode)) {
+            setBoardCode(prefs.getString(ChanHelper.BOARD_CODE, "s"));
+            Log.i(TAG, "Board code loaded from prefs: " + boardCode);
+        }
+
+        Log.i(TAG, "Starting ChanThreadService");
+        Intent threadIntent = new Intent(this, ChanThreadService.class);
+        threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        threadIntent.putExtra(ChanHelper.PAGE, 0);
+        startService(threadIntent);
+
+        //getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().restartLoader(0, null, this);
+    }
+
     protected void onPause() {
         super.onPause();
 

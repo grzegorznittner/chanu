@@ -16,9 +16,7 @@ import org.apache.http.client.methods.HttpPost;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,18 +50,31 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             List<Part> partsList = new ArrayList<Part>();
             partsList.add(new StringPart("MAX-FILE-SIZE", MAX_FILE_SIZE));
             partsList.add(new StringPart("mode", "regist"));
-            partsList.add(new StringPart("resto", Integer.toString(activity.threadNo)));
+            partsList.add(new StringPart("resto", Long.toString(activity.threadNo)));
+            partsList.add(new StringPart("name", ""));
+            partsList.add(new StringPart("email", ""));
+            partsList.add(new StringPart("sub", ""));
+            partsList.add(new StringPart("com", activity.getMessage()));
             partsList.add(new StringPart("recaptcha_challenge_field", activity.getRecaptchaChallenge()));
             partsList.add(new StringPart("recaptcha_response_field", activity.getRecaptchaResponse()));
-            partsList.add(new StringPart("com", activity.getMessage()));
             String imageUrl = activity.getImageUrl();
             if (imageUrl != null) {
-                File file = new File(new URI(imageUrl));
-                FilePart filePart = new FilePart("upfile", file.getName(), file, activity.getContentType(), "UTF-8");
+                File file = new File(activity.imagePath);
+                FilePart filePart = new FilePart("upfile", file.getName(), file, activity.contentType, "UTF-8");
                 partsList.add(filePart);
             }
+            partsList.add(new StringPart("pwd", activity.generatePwd()));
 
             Part[] parts = partsList.toArray(new Part[partsList.size()]);
+
+            String foo = "";
+            for (Part p : partsList) {
+                if (!(p instanceof StringPart))
+                    continue;
+                StringPart s = (StringPart)p;
+                foo += s.getName() + ": " + s.getValue() + ", ";
+            }
+
             MultipartEntity entity = new MultipartEntity(parts);
             request.setEntity(entity);
 
