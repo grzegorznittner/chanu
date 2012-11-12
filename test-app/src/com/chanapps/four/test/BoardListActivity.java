@@ -23,7 +23,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chanapps.four.component.ImageTextCursorAdapter;
-import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanDatabaseHelper;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanText;
@@ -46,20 +45,28 @@ public class BoardListActivity extends ListActivity
     private long lastUpdate = 0;
     private SharedPreferences prefs = null;
     
-	private Handler handler = new Handler() {
-
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			Log.d(TAG, ">>>>>>>>>>> refresh message received");
-			getLoaderManager().restartLoader(0, null, BoardListActivity.this);
+	private Handler handler = null;
+	
+	private void openDatabaseIfNecessary() {
+		if (db == null) {
+			db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
 		}
-
-	};
+	}
+	
+	private void closeDatabse() {
+		try {
+			adapter.swapCursor(null);
+			if (db != null) {
+				db.close();
+			}
+		} finally {
+			db = null;
+		}
+	}
 	
     @Override
     protected void onCreate(Bundle savedInstanceState){
-		Log.d(TAG, "************ onCreate");
+		Log.i(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
@@ -78,20 +85,11 @@ public class BoardListActivity extends ListActivity
             setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
             Log.i(TAG, "Board code read from intent: " + boardCode);
         }
-        if (!intent.hasExtra(ChanHelper.BOARD_CODE) || !ChanBoard.isValidBoardCode(boardCode)) {
-            setBoardCode(prefs.getString(ChanHelper.BOARD_CODE, "s"));
-            Log.i(TAG, "Board code loaded from prefs: " + boardCode);
-        }
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putString(ChanHelper.BOARD_CODE, boardCode);
+        Log.i(TAG, "Stored in prefs, board code: " + boardCode);
+        ed.commit();
         
-
-        Log.i(TAG, "Starting ChanThreadService");
-        Intent threadIntent = new Intent(this, ChanThreadService.class);
-        threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        threadIntent.putExtra(ChanHelper.PAGE, 0);
-        startService(threadIntent);
-        
-        db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
-
         adapter = new ImageTextCursorAdapter(this,
                 R.layout.board_activity_list_item,
                 this,
@@ -103,17 +101,74 @@ public class BoardListActivity extends ListActivity
         getListView().setClickable(true);
         getListView().setOnItemClickListener(this);
         
-        getLoaderManager().initLoader(0, null, this);
+        handler = new Handler() {
+    		@Override
+    		public void handleMessage(Message msg) {
+    			try {
+    				Log.i(TAG, ">>>>>>>>>>> refresh message received");
+    				if (getLoaderManager().getLoader(0) != null) {
+    					getLoaderManager().restartLoader(0, null, BoardListActivity.this);
+    				} else {
+    					getLoaderManager().initLoader(0, null, BoardListActivity.this);
+    				}
+    			} catch (Exception e) {
+    				Log.e(TAG, "Error restarting loader. " + e.getMessage(), e);
+    			}
+    		}
+    	};
     }
     
-    protected void onPause() {
-        super.onPause();
+    @Override
+	protected void onStart() {
+		super.onStart();
+		Log.i(TAG, "onStart");
 
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(ChanHelper.BOARD_CODE, boardCode);
-        Log.i(TAG, "Stored in prefs, board code: " + boardCode);
-        ed.commit();
+        setBoardCode(prefs.getString(ChanHelper.BOARD_CODE, "s"));
+        Log.i(TAG, "Board code loaded from prefs: " + boardCode);
+        
+        Log.i(TAG, "Starting ChanThreadService");
+        Intent threadIntent = new Intent(this, ChanThreadService.class);
+        threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        threadIntent.putExtra(ChanHelper.PAGE, 0);
+        startService(threadIntent);
+        
+        openDatabaseIfNecessary();
+        handler.sendEmptyMessage(0);
     }
+    
+    protected void onStop () {
+    	super.onStop();
+    	Log.i(TAG, "onStop");
+    	closeDatabse();
+    	handler = null;
+    }
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		Log.i(TAG, "onRestart");
+	}
+	
+	protected void onResume () {
+		super.onResume();
+		Log.i(TAG, "onResume");
+	}
+	
+	public void onWindowFocusChanged (boolean hasFocus) {
+		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
+	}
+
+	protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause");
+    }
+	
+	protected void onDestroy () {
+		super.onDestroy();
+		Log.i(TAG, "onDestroy");
+		closeDatabse();
+		handler = null;
+	}
 
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
@@ -158,35 +213,24 @@ public class BoardListActivity extends ListActivity
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.d(TAG, ">>>>>>>>>>> onCreateLoader");
+		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
 
 		return new ChanThreadCursorLoader(getBaseContext(), db, boardCode);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		Log.d(TAG, ">>>>>>>>>>> onLoadFinished");
+		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
 		handler.sendEmptyMessageDelayed(0, 2000);
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.d(TAG, ">>>>>>>>>>> onLoaderReset");
+		Log.i(TAG, ">>>>>>>>>>> onLoaderReset");
 		adapter.swapCursor(null);
 	}
 
-	@Override
-	protected void onDestroy() {
-		Log.d(TAG, "************ onDestroy");
-		adapter.swapCursor(null);
-		super.onDestroy();
-		if (db != null) {
-			db.close();
-			db = null;
-		}
-	}
-	
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
     	Log.i(TAG, "onItemClick id=" + id + ", position=" + position);

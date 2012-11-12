@@ -49,7 +49,7 @@ import com.chanapps.four.data.ChanBoard.Type;
  */
 public class BoardGridActivity
         extends TabActivity
-        implements OnItemClickListener, TabHost.TabContentFactory
+        implements OnItemClickListener, TabHost.TabContentFactory, TabHost.OnTabChangeListener
 {
 	public static final String TAG = "BoardGridActivity";
 	
@@ -64,28 +64,36 @@ public class BoardGridActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
+        setContentView(R.layout.photo_grid);
+    }
+    
+    @Override
+	protected void onStart() {
+		super.onStart();
+		
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
         selectedBoardType = ChanBoard.Type.valueOf(prefs.getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
+        Log.i(TAG, "onStart selectedBoardType: " + selectedBoardType);
         
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         width = size.x;
         height = size.y;
-        Log.i(TAG, "width: " + width + ", height: " + height);
-
-	    setContentView(R.layout.photo_grid);
+        Log.i(TAG, "onStart width: " + width + ", height: " + height);
 
         numColumns = width / 300 == 1 ? 2 : width / 300;
         columnWidth = (width - 15) / numColumns;
-        
+
 	    TabHost tabHost = getTabHost();
         for (ChanBoard.Type type : ChanBoard.Type.values()) {
             tabHost.addTab(tabHost.newTabSpec(type.toString())
                     .setIndicator(type.toString().replaceAll("_", " "))
                     .setContent(this));
         }
+        tabHost.setOnTabChangedListener(this);
+        
         int selectedTab = 0;
         for (ChanBoard.Type type : ChanBoard.Type.values()) {
         	if (type == selectedBoardType) {
@@ -93,25 +101,48 @@ public class BoardGridActivity
         	}
         	selectedTab++;
         }
+        tabHost.setCurrentTab(selectedTab);
         setDefaultTab(selectedTab);
     }
-
-    protected void onPause() {
-        super.onPause();
-
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(ChanHelper.BOARD_TYPE, selectedBoardType.toString());
-        ed.commit();
-    }
     
+    protected void onStop () {
+    	super.onStop();
+    	Log.i(TAG, "onStop");
+    }
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		Log.i(TAG, "onRestart");
+	}
+	
+	protected void onResume () {
+		super.onResume();
+		Log.i(TAG, "onResume");
+	}
+	
+	public void onWindowFocusChanged (boolean hasFocus) {
+		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
+	}
+
+	protected void onPause() {
+        super.onPause();
+        
+		Log.i(TAG, "onPause");
+    }
+	
+	protected void onDestroy () {
+		super.onDestroy();
+		Log.i(TAG, "onDestroy");
+	}
+	
     /** {@inheritDoc} */
     public View createTabContent(String tag) {
-    	selectedBoardType = ChanBoard.Type.valueOf(tag);
     	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	GridView g = (GridView) inflater.inflate(R.layout.board_grid_view, null, false);
         g.setNumColumns(numColumns);
         g.setColumnWidth(columnWidth);
-    	adapter = new ImageAdapter(getApplicationContext(), selectedBoardType, columnWidth);
+    	adapter = new ImageAdapter(getApplicationContext(), ChanBoard.Type.valueOf(tag), columnWidth);
         g.setAdapter(adapter);
         g.setOnItemClickListener(this);
         return g;
@@ -136,6 +167,18 @@ public class BoardGridActivity
         startActivity(intent);
     }
     
+	@Override
+	public void onTabChanged(String tabId) {
+		Log.i(TAG, "onTabChanged tabId: " + tabId);
+		selectedBoardType = ChanBoard.Type.valueOf(tabId);
+    	Log.i(TAG, "Storing tab selection: " + selectedBoardType);
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putString(ChanHelper.BOARD_TYPE, selectedBoardType.toString());
+        ed.commit();
+	}
+
+
+
 	public static class ImageAdapter extends BaseAdapter {
 		LayoutInflater infater = null;
 		Type selectedBoardType;
