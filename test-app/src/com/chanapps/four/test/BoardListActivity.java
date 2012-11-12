@@ -11,6 +11,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -90,6 +91,19 @@ public class BoardListActivity extends ListActivity
                 new int[] {R.id.list_item_image, R.id.list_item_text});
         setListAdapter(adapter);
         setContentView(R.layout.board_activity_list_layout);
+        
+        handler = new Handler() {
+
+    		@Override
+    		public void handleMessage(Message msg) {
+    			super.handleMessage(msg);
+    			Log.d(TAG, ">>>>>>>>>>> refresh message received");
+    			if (getLoaderManager().getLoader(0).isStarted()) {
+    				getLoaderManager().restartLoader(0, null, BoardListActivity.this);
+    			}
+    		}
+
+    	};
         
         getListView().setClickable(true);
         getListView().setOnItemClickListener(this);
@@ -223,7 +237,7 @@ public class BoardListActivity extends ListActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent intent = new Intent(this, BoardGridActivity.class);
+                Intent intent = new Intent(this, BoardSelectorActivity.class);
                 NavUtils.navigateUpTo(this, intent);
                 return true;
             default:

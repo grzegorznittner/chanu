@@ -68,7 +68,7 @@ public class FragmentLayout extends Activity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 // app icon in action bar clicked; go home
-                Intent intent = new Intent(this, BoardGridActivity.class);
+                Intent intent = new Intent(this, BoardSelectorActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;
