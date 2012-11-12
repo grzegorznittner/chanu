@@ -11,7 +11,6 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chanapps.four.component.ImageTextCursorAdapter;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanDatabaseHelper;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanText;
@@ -80,16 +80,9 @@ public class BoardListActivity extends ListActivity
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(getApplicationContext()));
 
-        Intent intent = getIntent();
-        if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
-            setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
-            Log.i(TAG, "Board code read from intent: " + boardCode);
-        }
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(ChanHelper.BOARD_CODE, boardCode);
-        Log.i(TAG, "Stored in prefs, board code: " + boardCode);
-        ed.commit();
-        
+
+        db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
+
         adapter = new ImageTextCursorAdapter(this,
                 R.layout.board_activity_list_item,
                 this,
@@ -100,42 +93,33 @@ public class BoardListActivity extends ListActivity
         
         getListView().setClickable(true);
         getListView().setOnItemClickListener(this);
-        
-        handler = new Handler() {
-    		@Override
-    		public void handleMessage(Message msg) {
-    			try {
-    				Log.i(TAG, ">>>>>>>>>>> refresh message received");
-    				if (getLoaderManager().getLoader(0) != null) {
-    					getLoaderManager().restartLoader(0, null, BoardListActivity.this);
-    				} else {
-    					getLoaderManager().initLoader(0, null, BoardListActivity.this);
-    				}
-    			} catch (Exception e) {
-    				Log.e(TAG, "Error restarting loader. " + e.getMessage(), e);
-    			}
-    		}
-    	};
     }
-    
-    @Override
-	protected void onStart() {
-		super.onStart();
-		Log.i(TAG, "onStart");
 
-        setBoardCode(prefs.getString(ChanHelper.BOARD_CODE, "s"));
-        Log.i(TAG, "Board code loaded from prefs: " + boardCode);
-        
+    @Override
+    protected void onResume() {
+        super.onResume();
+		Log.i(TAG, "onResume");
+
+        Intent intent = getIntent();
+        if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
+            setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
+            Log.i(TAG, "Board code read from intent: " + boardCode);
+        }
+        if (!intent.hasExtra(ChanHelper.BOARD_CODE) || !ChanBoard.isValidBoardCode(boardCode)) {
+            setBoardCode(prefs.getString(ChanHelper.BOARD_CODE, "s"));
+            Log.i(TAG, "Board code loaded from prefs: " + boardCode);
+        }
+
         Log.i(TAG, "Starting ChanThreadService");
         Intent threadIntent = new Intent(this, ChanThreadService.class);
         threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         threadIntent.putExtra(ChanHelper.PAGE, 0);
         startService(threadIntent);
-        
-        openDatabaseIfNecessary();
-        handler.sendEmptyMessage(0);
+
+        //getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().restartLoader(0, null, this);
     }
-    
+
     protected void onStop () {
     	super.onStop();
     	Log.i(TAG, "onStop");
@@ -147,11 +131,6 @@ public class BoardListActivity extends ListActivity
 	protected void onRestart() {
 		super.onRestart();
 		Log.i(TAG, "onRestart");
-	}
-	
-	protected void onResume () {
-		super.onResume();
-		Log.i(TAG, "onResume");
 	}
 	
 	public void onWindowFocusChanged (boolean hasFocus) {

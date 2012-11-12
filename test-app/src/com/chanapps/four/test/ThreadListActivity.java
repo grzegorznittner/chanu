@@ -90,6 +90,26 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(getApplicationContext()));
 
+        db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
+
+        adapter = new ImageTextCursorAdapter(this,
+                R.layout.thread_activity_list_item,
+                this,
+                new String[] {"image_url", "text"},
+                new int[] {R.id.list_item_image, R.id.list_item_text});
+        setListAdapter(adapter);
+        setContentView(R.layout.board_activity_list_layout);
+        
+        getListView().setClickable(true);
+        //getListView().setOnItemClickListener(this);
+        
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+		Log.i(TAG, "onResume");
+
         Intent intent = getIntent();
         if (intent.hasExtra(ChanHelper.THREAD_NO)) {
             setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
@@ -102,18 +122,16 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
             ed.commit();
         }
         Log.e(TAG, "Threadno: " + threadNo);
-                
-        adapter = new ImageTextCursorAdapter(this,
-                R.layout.thread_activity_list_item,
-                this,
-                new String[] {"image_url", "text"},
-                new int[] {R.id.list_item_image, R.id.list_item_text});
-        setListAdapter(adapter);
-        setContentView(R.layout.board_activity_list_layout);
-        
-        getListView().setClickable(true);
-        //getListView().setOnItemClickListener(this);
-        
+
+        Log.i(TAG, "Starting ChanPostService");
+        Intent postIntent = new Intent(this, ChanPostService.class);
+        postIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        postIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        startService(postIntent);
+
+        //getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().restartLoader(0, null, this);
+
         lastUpdate = new Date().getTime();
     }
     
@@ -140,11 +158,6 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 	protected void onRestart() {
 		super.onRestart();
 		Log.i(TAG, "onRestart");
-	}
-	
-	protected void onResume () {
-		super.onResume();
-		Log.i(TAG, "onResume");
 	}
 	
 	public void onWindowFocusChanged (boolean hasFocus) {
@@ -262,8 +275,8 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
                 return true;
             case R.id.post_reply_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
-                replyIntent.putExtra("boardCode", boardCode);
-                replyIntent.putExtra("threadNo", threadNo);
+                replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+                replyIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
                 startActivity(replyIntent);
                 return true;
             case R.id.download_all_images_menu:

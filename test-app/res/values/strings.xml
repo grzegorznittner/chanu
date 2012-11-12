@@ -42,6 +42,9 @@
     <string name="post_reply_text_hint">Type message here...</string>
     <string name="post_reply_camera_hint">Camera</string>
     <string name="post_reply_picture_hint">Gallery</string>
+    <string name="post_reply_rotate_left_hint">Rotate Left</string>
+    <string name="post_reply_rotate_right_hint">Rotate Right</string>
+    <string name="post_reply_reload_captcha_hint">Reload Captcha</string>
     <string name="post_reply_recaptcha_hint">Type recaptcha text here...</string>
 
 </resources>

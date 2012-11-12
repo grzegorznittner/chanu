@@ -40,8 +40,8 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanBoard.Type;
+import com.chanapps.four.data.ChanHelper;
 
 /**
  * A grid that displays a set of framed photos.
@@ -86,6 +86,8 @@ public class BoardGridActivity
         numColumns = width / 300 == 1 ? 2 : width / 300;
         columnWidth = (width - 15) / numColumns;
 
+	    setContentView(R.layout.photo_grid);
+
 	    TabHost tabHost = getTabHost();
         for (ChanBoard.Type type : ChanBoard.Type.values()) {
             tabHost.addTab(tabHost.newTabSpec(type.toString())
@@ -93,7 +95,15 @@ public class BoardGridActivity
                     .setContent(this));
         }
         tabHost.setOnTabChangedListener(this);
-        
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+		Log.i(TAG, "onResume");
+
+        reloadBoardPrefs();
+
         int selectedTab = 0;
         for (ChanBoard.Type type : ChanBoard.Type.values()) {
         	if (type == selectedBoardType) {
@@ -101,6 +111,7 @@ public class BoardGridActivity
         	}
         	selectedTab++;
         }
+        TabHost tabHost = getTabHost();
         tabHost.setCurrentTab(selectedTab);
         setDefaultTab(selectedTab);
     }
@@ -110,21 +121,22 @@ public class BoardGridActivity
     	Log.i(TAG, "onStop");
     }
 
-	@Override
+    @Override
 	protected void onRestart() {
 		super.onRestart();
 		Log.i(TAG, "onRestart");
-	}
-	
-	protected void onResume () {
-		super.onResume();
-		Log.i(TAG, "onResume");
 	}
 	
 	public void onWindowFocusChanged (boolean hasFocus) {
 		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
 	}
 
+	private void reloadBoardPrefs() {
+        prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        selectedBoardType = ChanBoard.Type.valueOf(prefs.getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
+    }
+
+    @Override
 	protected void onPause() {
         super.onPause();
         
@@ -162,8 +174,8 @@ public class BoardGridActivity
         String boardCode = board.link;
         int pageNo = 0;
         Intent intent = new Intent(this, BoardListActivity.class);
-        intent.putExtra("boardCode", boardCode);
-        intent.putExtra("pageNo", pageNo);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.PAGE, pageNo);
         startActivity(intent);
     }
     
