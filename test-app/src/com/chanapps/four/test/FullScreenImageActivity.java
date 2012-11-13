@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.chanapps.four.data.ChanDatabaseHelper;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanThreadService;
 
 public class FullScreenImageActivity extends Activity {
 
@@ -86,6 +87,7 @@ public class FullScreenImageActivity extends Activity {
     
     private boolean loadChanPostData() {
     	ChanDatabaseHelper h = new ChanDatabaseHelper(getBaseContext());
+    	Cursor c = null;
 		try {
 			String query = "SELECT " + ChanDatabaseHelper.POST_ID + ", "
 					+ "'http://images.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
@@ -95,7 +97,7 @@ public class FullScreenImageActivity extends Activity {
 					+ ChanDatabaseHelper.POST_H + " 'imageheight'"
 					+ " FROM " + ChanDatabaseHelper.POST_TABLE
 					+ " WHERE " + ChanDatabaseHelper.POST_ID + "=" + postNo;
-			Cursor c = h.getWritableDatabase().rawQuery(query, null);
+			c = h.getWritableDatabase().rawQuery(query, null);
 			int imageurlIdx = c.getColumnIndex("imageurl");
 			int imagewidthIdx = c.getColumnIndex("imagewidth");
 			int imageheightIdx = c.getColumnIndex("imageheight");
@@ -114,6 +116,13 @@ public class FullScreenImageActivity extends Activity {
 			return true;
 		} catch (Exception e) {
 			Log.e(TAG, "Error querying chan DB. " + e.getMessage(), e);
+		} finally {
+			if (c != null) {
+				c.close();
+			}
+			if (h != null) {
+				h.close();
+			}
 		}
 		return false;
     }
@@ -131,7 +140,11 @@ public class FullScreenImageActivity extends Activity {
         	threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
             setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
             Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
-            loadChanPostData();
+            
+            SharedPreferences.Editor ed = prefs.edit();
+            ed.putLong(ChanHelper.POST_NO, postNo);
+            Log.i(TAG, "Stored in prefs, post no: " + postNo);
+            ed.commit();
         } else {
             randomizeImage();
         }
@@ -154,18 +167,49 @@ public class FullScreenImageActivity extends Activity {
           }
         });
         */
+    }
+
+    @Override
+	protected void onStart() {
+		super.onStart();
+		Log.i(TAG, "onStart");
+
+		postNo = prefs.getLong(ChanHelper.POST_NO, 0);
+		Log.i(TAG, "Post no " + postNo + " laoded from preferences");
+        loadChanPostData();
         loadImage();
     }
-
-    protected void onPause() {
-        super.onPause();
-
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putLong(ChanHelper.POST_NO, postNo);
-        Log.i(TAG, "Stored in prefs, post no: " + postNo);
-        ed.commit();
-    }
     
+    protected void onStop () {
+    	super.onStop();
+    	Log.i(TAG, "onStop");
+    }
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		Log.i(TAG, "onRestart");
+	}
+	
+	protected void onResume () {
+		super.onResume();
+		Log.i(TAG, "onResume");
+	}
+	
+	public void onWindowFocusChanged (boolean hasFocus) {
+		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
+	}
+
+	protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause");
+    }
+	
+	protected void onDestroy () {
+		super.onDestroy();
+		Log.i(TAG, "onDestroy");
+	}
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         loadImage();

@@ -1,5 +1,7 @@
 package com.chanapps.four.data;
 
+import android.content.SharedPreferences;
+
 public class ChanHelper {
 	public static final String PREF_NAME = "4Channer";
 
@@ -8,4 +10,5 @@ public class ChanHelper {
 	public static final String PAGE = "pageNo";
 	public static final String THREAD_NO = "threadNo";
 	public static final String POST_NO = "postNo";
+
 }

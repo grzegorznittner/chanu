@@ -40,7 +40,6 @@
         <activity android:name=".BoardListActivity" android:label="@string/board_list_activity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
@@ -48,15 +47,7 @@
         <activity android:name=".ThreadListActivity" android:label="@string/thread_list_activity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
                 <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".BoardGridActivity" android:label="@string/app_name">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
-	            <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 
@@ -72,6 +63,14 @@
             </intent-filter>
         </activity>
 
+		<activity android:name=".BoardSelectorActivity" android:label="@string/app_name">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        
 		<service android:name="com.chanapps.four.data.ChanThreadService" />
 		<service android:name="com.chanapps.four.data.ChanPostService" />
     </application>

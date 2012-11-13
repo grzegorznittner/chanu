@@ -46,20 +46,28 @@ public class BoardListActivity extends ListActivity
     private long lastUpdate = 0;
     private SharedPreferences prefs = null;
     
-	private Handler handler = new Handler() {
-
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			Log.d(TAG, ">>>>>>>>>>> refresh message received");
-			getLoaderManager().restartLoader(0, null, BoardListActivity.this);
+	private Handler handler = null;
+	
+	private void openDatabaseIfNecessary() {
+		if (db == null) {
+			db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
 		}
-
-	};
+	}
+	
+	private void closeDatabse() {
+		try {
+			adapter.swapCursor(null);
+			if (db != null) {
+				db.close();
+			}
+		} finally {
+			db = null;
+		}
+	}
 	
     @Override
     protected void onCreate(Bundle savedInstanceState){
-		Log.d(TAG, "************ onCreate");
+		Log.i(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
@@ -84,6 +92,19 @@ public class BoardListActivity extends ListActivity
         setListAdapter(adapter);
         setContentView(R.layout.board_activity_list_layout);
         
+        handler = new Handler() {
+
+    		@Override
+    		public void handleMessage(Message msg) {
+    			super.handleMessage(msg);
+    			Log.d(TAG, ">>>>>>>>>>> refresh message received");
+    			if (getLoaderManager().getLoader(0).isStarted()) {
+    				getLoaderManager().restartLoader(0, null, BoardListActivity.this);
+    			}
+    		}
+
+    	};
+        
         getListView().setClickable(true);
         getListView().setOnItemClickListener(this);
     }
@@ -91,6 +112,7 @@ public class BoardListActivity extends ListActivity
     @Override
     protected void onResume() {
         super.onResume();
+		Log.i(TAG, "onResume");
 
         Intent intent = getIntent();
         if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
@@ -112,14 +134,34 @@ public class BoardListActivity extends ListActivity
         getLoaderManager().restartLoader(0, null, this);
     }
 
-    protected void onPause() {
-        super.onPause();
-
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(ChanHelper.BOARD_CODE, boardCode);
-        Log.i(TAG, "Stored in prefs, board code: " + boardCode);
-        ed.commit();
+    protected void onStop () {
+    	super.onStop();
+    	Log.i(TAG, "onStop");
+    	closeDatabse();
+    	handler = null;
     }
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		Log.i(TAG, "onRestart");
+	}
+	
+	public void onWindowFocusChanged (boolean hasFocus) {
+		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
+	}
+
+	protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause");
+    }
+	
+	protected void onDestroy () {
+		super.onDestroy();
+		Log.i(TAG, "onDestroy");
+		closeDatabse();
+		handler = null;
+	}
 
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
@@ -164,35 +206,24 @@ public class BoardListActivity extends ListActivity
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.d(TAG, ">>>>>>>>>>> onCreateLoader");
+		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
 
 		return new ChanThreadCursorLoader(getBaseContext(), db, boardCode);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		Log.d(TAG, ">>>>>>>>>>> onLoadFinished");
+		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
 		handler.sendEmptyMessageDelayed(0, 2000);
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.d(TAG, ">>>>>>>>>>> onLoaderReset");
+		Log.i(TAG, ">>>>>>>>>>> onLoaderReset");
 		adapter.swapCursor(null);
 	}
 
-	@Override
-	protected void onDestroy() {
-		Log.d(TAG, "************ onDestroy");
-		adapter.swapCursor(null);
-		super.onDestroy();
-		if (db != null) {
-			db.close();
-			db = null;
-		}
-	}
-	
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
     	Log.i(TAG, "onItemClick id=" + id + ", position=" + position);
@@ -206,7 +237,7 @@ public class BoardListActivity extends ListActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent intent = new Intent(this, BoardGridActivity.class);
+                Intent intent = new Intent(this, BoardSelectorActivity.class);
                 NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.new_thread_menu:

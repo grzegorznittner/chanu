@@ -1,6 +1,7 @@
 package com.chanapps.four.test;
 
 import java.util.Date;
+
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.Context;
@@ -23,6 +24,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.chanapps.four.component.ImageTextCursorAdapter;
 import com.chanapps.four.data.ChanDatabaseHelper;
 import com.chanapps.four.data.ChanHelper;
@@ -55,6 +57,23 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 			getLoaderManager().restartLoader(0, null, ThreadListActivity.this);
 		}
 	};
+	
+	private void openDatabaseIfNecessary() {
+		if (db == null) {
+			db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
+		}
+	}
+	
+	private void closeDatabse() {
+		try {
+			adapter.swapCursor(null);
+			if (db != null) {
+				db.close();
+			}
+		} finally {
+			db = null;
+		}
+	}
     
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -89,16 +108,18 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
     @Override
     protected void onResume() {
         super.onResume();
+		Log.i(TAG, "onResume");
 
         Intent intent = getIntent();
         if (intent.hasExtra(ChanHelper.THREAD_NO)) {
             setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
             threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
             Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo);
-        } else {
-            boardCode = prefs.getString(ChanHelper.BOARD_CODE, "not-set");
-            threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
-            Log.i(TAG, "Loaded from prefs, boardCode: " + boardCode + ", threadNo: " + threadNo);
+            
+            SharedPreferences.Editor ed = prefs.edit();
+            ed.putLong(ChanHelper.THREAD_NO, threadNo);
+            Log.i(TAG, "Stored in prefs, thread no: " + threadNo);
+            ed.commit();
         }
         Log.e(TAG, "Threadno: " + threadNo);
 
@@ -113,15 +134,53 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 
         lastUpdate = new Date().getTime();
     }
+    
+    @Override
+	protected void onStart() {
+		super.onStart();
+		Log.i(TAG, "onStart");
 
-    protected void onPause() {
+	    boardCode = prefs.getString(ChanHelper.BOARD_CODE, "not-set");
+	    threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
+	    Log.i(TAG, "Loaded from prefs, boardCode: " + boardCode + ", threadNo: " + threadNo);
+	    
+	    Log.i(TAG, "Starting ChanPostService");
+	    Intent postIntent = new Intent(this, ChanPostService.class);
+	    postIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+	    postIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+	    startService(postIntent);
+
+	    openDatabaseIfNecessary();
+	    getLoaderManager().initLoader(0, null, this);
+	}
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		Log.i(TAG, "onRestart");
+	}
+	
+	public void onWindowFocusChanged (boolean hasFocus) {
+		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
+	}
+
+	protected void onPause() {
         super.onPause();
-
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putLong(ChanHelper.THREAD_NO, threadNo);
-        Log.i(TAG, "Stored in prefs, thread no: " + threadNo);
-        ed.commit();
+        Log.i(TAG, "onPause");
     }
+	
+    protected void onStop () {
+    	super.onStop();
+    	Log.i(TAG, "onStop");
+    	closeDatabse();
+    }
+
+	@Override
+	protected void onDestroy() {
+		Log.d(TAG, "************ onDestroy");
+		super.onDestroy();
+		closeDatabse();
+	}
     
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
@@ -194,17 +253,6 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 	public void onLoaderReset(Loader<Cursor> loader) {
 		Log.d(TAG, ">>>>>>>>>>> onLoaderReset");
 		adapter.swapCursor(null);
-	}
-
-	@Override
-	protected void onDestroy() {
-		Log.d(TAG, "************ onDestroy");
-		adapter.swapCursor(null);
-		super.onDestroy();
-		if (db != null) {
-			db.close();
-			db = null;
-		}
 	}
 
     @Override
