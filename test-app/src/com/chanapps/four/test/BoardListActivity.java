@@ -209,6 +209,11 @@ public class BoardListActivity extends ListActivity
                 Intent intent = new Intent(this, BoardGridActivity.class);
                 NavUtils.navigateUpTo(this, intent);
                 return true;
+            case R.id.new_thread_menu:
+                Intent replyIntent = new Intent(this, PostReplyActivity.class);
+                replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+                startActivity(replyIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -51,7 +51,7 @@ public class BoardGridActivity
         extends TabActivity
         implements OnItemClickListener, TabHost.TabContentFactory
 {
-	public static final String TAG = "BoardGridActivity";
+	public static final String TAG = BoardGridActivity.class.getSimpleName();
 	
 	private int width, height;
 	private int numColumns = 2;

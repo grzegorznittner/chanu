@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Toast;
+import com.chanapps.four.test.R;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 
@@ -66,7 +67,7 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onCancelled() {
         Log.e(TAG, "Captcha load task cancelled");
-        Toast.makeText(context, "Couldn't load captcha", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, R.string.post_reply_captcha_error, Toast.LENGTH_SHORT).show();
         recaptchaView.loadUrl(CAPTCHA_DEFAULT_URL);
     }
 
@@ -74,7 +75,7 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String response) {
         if (response == null) {
             Log.e(TAG, "Null response loading recaptcha");
-            Toast.makeText(context, "Couldn't load captcha", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.post_reply_captcha_error, Toast.LENGTH_SHORT).show();
             return;
         }
         try {
@@ -89,12 +90,12 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, String> {
             }
             else {
                 Log.e(TAG, "Error reading recaptcha response");
-                Toast.makeText(context, "Couldn't load captcha", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.post_reply_captcha_error, Toast.LENGTH_SHORT).show();
                 recaptchaView.loadUrl(CAPTCHA_DEFAULT_URL);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error reading recaptcha response", e);
-            Toast.makeText(context, "Couldn't load captcha", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.post_reply_captcha_error, Toast.LENGTH_SHORT).show();
             recaptchaView.loadUrl(CAPTCHA_DEFAULT_URL);
         }
     }

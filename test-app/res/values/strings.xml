@@ -9,7 +9,7 @@
     <string name="board_list_activity">Board</string>
     <string name="title_photogrid_activity">PhotoGrid</string>
     <string name="full_screen_image_activity">View Image</string>
-    <string name="post_reply_activity">Post Reply</string>
+    <string name="post_reply_activity">New Post</string>
 
     <!-- menus -->
     <string name="settings_menu">Settings</string>
@@ -37,8 +37,21 @@
     <string name="other">Other</string>
     <string name="misc">Misc.</string>
 
-    <!-- forms -->
-    <string name="post_reply_title">Post Reply</string>
+    <!-- full screen image activity -->
+    <string name="full_screen_saving_image">Saving image...</string>
+    <string name="full_screen_setting_wallpaper">Setting wallpaper...</string>
+    <string name="full_screen_save_image_error">Couldn\'t save image, try later</string>
+    <string name="full_screen_download_description">Downloaded from 4chan URL:</string>
+    <string name="full_screen_image_saved">Image saved</string>
+    <string name="full_screen_wallpaper_set">Wallpaper set</string>
+    <string name="full_screen_wallpaper_error">Couldn\'t set wallpaper</string>
+    <string name="full_screen_share_image_intent">Share Image</string>
+    <string name="full_screen_image_shared">Image shared</string>
+    <string name="full_screen_sharing_error">Couldn\'t share image</string>
+
+    <!-- post reply activity -->
+    <string name="post_reply_title">New Reply</string>
+    <string name="post_reply_thread_title">New Thread</string>
     <string name="post_reply_text_hint">Type message here...</string>
     <string name="post_reply_camera_hint">Camera</string>
     <string name="post_reply_picture_hint">Gallery</string>
@@ -46,5 +59,30 @@
     <string name="post_reply_rotate_right_hint">Rotate Right</string>
     <string name="post_reply_reload_captcha_hint">Reload Captcha</string>
     <string name="post_reply_recaptcha_hint">Type recaptcha text here...</string>
+    <string name="post_reply_recaptcha_url_root">http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc</string>
+    <string name="post_reply_no_board">Can\'t post, unknown board</string>
+    <string name="post_reply_added_image">Added image to post</string>
+    <string name="post_reply_no_load_camera_image">Couldn\'t load camera image</string>
+    <string name="post_reply_no_load_gallery_image">Couldn\'t load gallery image</string>
+    <string name="post_reply_no_load_image">Couldn\'t load image</string>
+    <string name="post_reply_no_image">Couldn\'t load image</string>
+    <string name="post_reply_no_image_rotate">Couldn\'t rotate image</string>
+    <string name="post_reply_no_camera">Couldn\'t load camera</string>
+    <string name="post_reply_camera_capture">Camera image</string>
+    <string name="post_reply_posting">Posting</string>
+    <string name="post_reply_captcha_error">Couldn\'t load captcha</string>
+    <string name="post_reply_enter_captcha">Enter captcha</string>
+    <string name="post_reply_add_image">Add image to post</string>
+    <string name="post_reply_add_text_or_image">Add text or image to post</string>
+    <string name="post_reply_response_error">Couldn\'t post, unknown response</string>
+    <string name="post_reply_no_response">Couldn\'t post, no response</string>
+    <string name="post_reply_error">Couldn\'t post</string>
+    <string name="post_reply_posted_reply">Posted reply</string>
+    <string name="post_reply_posted_thread">Posted new thread</string>
+
+    <!-- chan post -->
+    <string name="chan_thread_no_thread">Couldn\'t find thread</string>
+    <string name="chan_thread_parse_error">Couldn\'t load thread</string>
+    <string name="chan_thread_db_error">Couldn\'t load thread db</string>
 
 </resources>

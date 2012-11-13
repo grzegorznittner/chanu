@@ -2,7 +2,9 @@ package com.chanapps.four.test;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,9 +29,6 @@ public class PostReplyActivity extends Activity {
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
 
-    public static final String RECAPTCHA_NOSCRIPT_URL = "http://www.google.com/recaptcha/api/noscript?k=";
-    public static final String RECAPTCHA_PUBLIC_KEY = "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc";
-    public static final String RECAPTCHA_URL = RECAPTCHA_NOSCRIPT_URL + RECAPTCHA_PUBLIC_KEY;
     public static final int PASSWORD_MAX = 100000000;
 
     private static final int IMAGE_CAPTURE = 0;
@@ -40,6 +39,9 @@ public class PostReplyActivity extends Activity {
     private ImageButton rotateLeftButton;
     private ImageButton rotateRightButton;
     private ImageButton refreshCaptchaButton;
+
+    private Context ctx;
+    private Resources res;
 
     private WebView recaptchaView;
     private LoadCaptchaTask loadCaptchaTask;
@@ -87,6 +89,9 @@ public class PostReplyActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+        res = getResources();
+        ctx = getApplicationContext();
 
         setContentView(R.layout.post_reply_activity_layout);
 
@@ -144,8 +149,13 @@ public class PostReplyActivity extends Activity {
         if (intent.hasExtra(ChanHelper.BOARD_CODE) && intent.hasExtra(ChanHelper.THREAD_NO)) {
             setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
             threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-        } else {
-            Toast.makeText(getApplicationContext(), "Can't post, unknown thread", Toast.LENGTH_SHORT);
+        }
+        else if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
+                setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
+                threadNo = 0;
+        }
+        else {
+            Toast.makeText(ctx, R.string.post_reply_no_board, Toast.LENGTH_SHORT);
             navigateUp();
         }
 
@@ -154,8 +164,8 @@ public class PostReplyActivity extends Activity {
 
 
     public void reloadCaptcha() {
-        loadCaptchaTask = new LoadCaptchaTask(getApplicationContext(), recaptchaView);
-        loadCaptchaTask.execute(RECAPTCHA_URL);
+        loadCaptchaTask = new LoadCaptchaTask(ctx, recaptchaView);
+        loadCaptchaTask.execute(res.getString(R.string.post_reply_recaptcha_url_root));
     }
 
     @Override
@@ -166,34 +176,38 @@ public class PostReplyActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        String msg = "Couldn't load activity image";
+        String msg;
         try {
-        if (requestCode == IMAGE_CAPTURE) {
-            if (resultCode == RESULT_OK && data != null) {
-                msg = "Added image to post";
-                processImage(data);
+            if (requestCode == IMAGE_CAPTURE) {
+                if (resultCode == RESULT_OK && data != null) {
+                    msg = res.getString(R.string.post_reply_added_image);
+                    processImage(data);
+                }
+                else {
+                    msg = res.getString(R.string.post_reply_no_load_camera_image);
+                    Log.e(TAG, msg);
+                }
+            }
+            else if (requestCode == IMAGE_GALLERY) {
+                if (resultCode == RESULT_OK && data != null) {
+                    msg = res.getString(R.string.post_reply_added_image);
+                    processImage(data);
+                }
+                else {
+                    msg = res.getString(R.string.post_reply_no_load_gallery_image);
+                    Log.e(TAG, msg);
+                }
             }
             else {
-                Log.e(TAG, "Couldn't load camera image");
+                msg = res.getString(R.string.post_reply_no_load_image);
+                Log.e(TAG, msg);
             }
-        }
-        else if (requestCode == IMAGE_GALLERY) {
-            if (resultCode == RESULT_OK && data != null) {
-                msg = "Added image to post";
-                processImage(data);
-            }
-            else {
-                Log.e(TAG, "Couldn't load gallery image");
-            }
-        }
-        else {
-            msg = "Unknown activity";
-        }
         }
         catch (Exception e) {
+            msg = res.getString(R.string.post_reply_no_load_image);
             Log.e(TAG, msg, e);
         }
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show();
     }
 
     private Bitmap getImagePreviewBitmap() throws Exception {
@@ -202,7 +216,7 @@ public class PostReplyActivity extends Activity {
 
     private Bitmap getImagePreviewBitmap(boolean useWidth) throws Exception {
         if (imageUri == null) {
-            throw new Exception("Null image URI for preview");
+            throw new Exception(res.getString(R.string.post_reply_no_image));
         }
 
         InputStream in = getContentResolver().openInputStream(imageUri);
@@ -243,14 +257,16 @@ public class PostReplyActivity extends Activity {
             if (b != null) {
                 resetImagePreview();
                 imagePreview.setImageBitmap(b);
-                Log.e(TAG, "Image: " + imageUri.toString() + " dimensions: " + b.getWidth() + "x" + b.getHeight());
+                Log.d(TAG, "Image: " + imageUri.toString() + " dimensions: " + b.getWidth() + "x" + b.getHeight());
             }
             else {
-                Log.e(TAG, "Image: " + imageUri+toString() + " null bitmap");
+                Toast.makeText(ctx, R.string.post_reply_no_image, Toast.LENGTH_SHORT);
+                Log.e(TAG, "Image: " + imageUri + toString() + " couldn't get bitmap");
             }
         }
         catch (Exception e) {
-            Log.e(TAG, "Couldn't load image bitmap", e);
+            Toast.makeText(ctx, R.string.post_reply_no_image, Toast.LENGTH_SHORT);
+            Log.e(TAG, res.getString(R.string.post_reply_no_image), e);
         }
     }
 
@@ -263,11 +279,9 @@ public class PostReplyActivity extends Activity {
     }
 
     private void rotateImagePreview(int theta) {
-        Log.e(TAG, "rotate right...");
         try {
             Bitmap b = getImagePreviewBitmap(false);
             if (b != null) {
-                Log.e(TAG, "ready to rotate right...");
                 Matrix matrix = new Matrix();
                 angle += theta;
                 matrix.postRotate(angle);
@@ -275,21 +289,22 @@ public class PostReplyActivity extends Activity {
                 imagePreview.setImageBitmap(rotatedBitmap);
             }
             else {
-                Log.e(TAG, "couldn't get image bitmap for rotation");
+                Toast.makeText(ctx, R.string.post_reply_no_image_rotate, Toast.LENGTH_SHORT);
+                Log.e(TAG, res.getString(R.string.post_reply_no_image_rotate));
             }
         }
         catch (Exception e) {
-            Log.e(TAG, "Couldn't rotate image bitmap", e);
+            Toast.makeText(ctx, R.string.post_reply_no_image_rotate, Toast.LENGTH_SHORT);
+            Log.e(TAG, res.getString(R.string.post_reply_no_image_rotate), e);
         }
     }
 
     private void startCamera() {
-        Log.d(TAG, "starting camera...");
         String fileName = java.util.UUID.randomUUID().toString() + ".jpg";
         String contentType = "image/jpeg";
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, fileName);
-        values.put(MediaStore.Images.Media.DESCRIPTION, "Image capture by camera");
+        values.put(MediaStore.Images.Media.DESCRIPTION, res.getString(R.string.post_reply_camera_capture));
         values.put(MediaStore.Images.Media.MIME_TYPE, contentType);
         values.put(MediaStore.Images.Media.ORIENTATION, "0");
         Uri imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
@@ -299,12 +314,12 @@ public class PostReplyActivity extends Activity {
             startActivityForResult(intent, IMAGE_CAPTURE);
         }
         else {
-            Toast.makeText(getApplicationContext(), "Unable to load camera, try again", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, R.string.post_reply_no_camera, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, res.getString(R.string.post_reply_no_camera));
         }
     }
 
     private void startGallery() {
-        Log.d(TAG, "starting gallery...");
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, IMAGE_GALLERY);
     }
@@ -331,10 +346,10 @@ public class PostReplyActivity extends Activity {
             case R.id.post_reply_send_menu:
                 String validMsg = validatePost();
                 if (validMsg != null) {
-                    Toast.makeText(getApplicationContext(), validMsg, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ctx, validMsg, Toast.LENGTH_SHORT).show();
                     return true;
                 }
-                Toast.makeText(getApplicationContext(), "Posting reply...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctx, R.string.post_reply_posting, Toast.LENGTH_SHORT).show();
                 PostReplyTask postReplyTask = new PostReplyTask(this);
                 postReplyTask.execute();
                 return true;
@@ -351,10 +366,6 @@ public class PostReplyActivity extends Activity {
         return imageUri != null ? imageUri.toString() : null;
     }
 
-    public String getContentType() {
-        return contentType;
-    }
-
     public String getRecaptchaChallenge() {
         return loadCaptchaTask.getRecaptchaChallenge();
     }
@@ -366,32 +377,41 @@ public class PostReplyActivity extends Activity {
     private String validatePost() {
         String recaptchaChallenge = loadCaptchaTask.getRecaptchaChallenge();
         if (recaptchaChallenge == null || recaptchaChallenge.trim().isEmpty()) {
-            return "Can't post without captca, try later";
+            return res.getString(R.string.post_reply_captcha_error);
         }
         String recaptcha = recaptchaText.getText().toString();
         if (recaptcha == null || recaptcha.trim().isEmpty()) {
-            return "Enter captcha to post";
+            return res.getString(R.string.post_reply_enter_captcha);
         }
         String message = messageText.getText().toString();
         String image = imageUri != null ? imageUri.getPath() : null;
         boolean hasMessage = message != null && !message.trim().isEmpty();
         boolean hasImage = image != null && !image.trim().isEmpty();
-        if (!hasMessage && !hasImage) {
-            return "Enter text or image to post";
+        if (threadNo == 0 && !hasImage) {
+            return res.getString(R.string.post_reply_add_image);
+        }
+        if (threadNo != 0 && !hasMessage && !hasImage) {
+            return res.getString(R.string.post_reply_add_text_or_image);
         }
         return null;
     }
 
     public void navigateUp() {
-        Intent upIntent = new Intent(this, ThreadListActivity.class);
-        upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        Intent upIntent;
+        if (threadNo == 0) {
+            upIntent = new Intent(this, ThreadListActivity.class);
+            upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+            upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        }
+        else {
+            upIntent = new Intent(this, BoardListActivity.class);
+            upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        }
         NavUtils.navigateUpTo(this, upIntent);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "onCreateOptionsMenu called");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.post_relpy_menu, menu);
         return true;
@@ -400,7 +420,12 @@ public class PostReplyActivity extends Activity {
     private void setBoardCode(String code) {
         boardCode = code;
         if (getActionBar() != null) {
-            getActionBar().setTitle("/" + boardCode + " " + getString(R.string.post_reply_activity));
+            if (threadNo == 0) {
+                getActionBar().setTitle("/" + boardCode + " " + getString(R.string.post_reply_thread_title));
+            }
+            else {
+                getActionBar().setTitle("/" + boardCode + " " + getString(R.string.post_reply_title));
+            }
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }

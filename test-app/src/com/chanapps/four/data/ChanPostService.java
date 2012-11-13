@@ -9,6 +9,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Set;
 
+import android.widget.Toast;
+import com.chanapps.four.test.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -35,6 +37,7 @@ public class ChanPostService extends ChanThreadService {
 		long threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
 
 		if (threadNo == 0) {
+            Toast.makeText(this, R.string.chan_thread_no_thread, Toast.LENGTH_SHORT);
 			Log.w(TAG, "Thread number not passed!");
 			return;
 		}
@@ -67,6 +70,7 @@ public class ChanPostService extends ChanThreadService {
             	addPost(ih, thread, postExists);
 			}
 		} catch (Exception e) {
+            Toast.makeText(this, R.string.chan_thread_parse_error, Toast.LENGTH_SHORT);
 			Log.e(TAG, "Error parsing Chan post json. " + e.getMessage(), e);
 		} finally {
 			if (ih != null) {
@@ -77,6 +81,7 @@ public class ChanPostService extends ChanThreadService {
 					in.close();
 				}
 			} catch (Exception e) {
+                Toast.makeText(this, R.string.chan_thread_parse_error, Toast.LENGTH_SHORT);
 				Log.e(TAG, "Error closing reader", e);
 			}
 		}
@@ -93,6 +98,7 @@ public class ChanPostService extends ChanThreadService {
 			}
 			c.close();
 		} catch (Exception e) {
+            Toast.makeText(this, R.string.chan_thread_db_error, Toast.LENGTH_SHORT);
 			Log.e(TAG, "Error querying chan DB. " + e.getMessage(), e);
 		} finally {
 			h.close();

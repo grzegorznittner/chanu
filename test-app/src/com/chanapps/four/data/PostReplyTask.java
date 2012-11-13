@@ -10,6 +10,7 @@ import com.chanapps.four.component.MultipartEntity;
 import com.chanapps.four.component.Part;
 import com.chanapps.four.component.StringPart;
 import com.chanapps.four.test.PostReplyActivity;
+import com.chanapps.four.test.R;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 
@@ -81,10 +82,9 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             Log.e(TAG, "Calling URL: " + request.getURI());
             HttpResponse response = client.execute(request);
             Log.e(TAG, "Response: " + response);
-            String msg = "Couldn't post";
             if (response == null) {
-                Log.e(TAG, "Null response posting");
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, context.getString(R.string.post_reply_no_response));
+                Toast.makeText(context, R.string.post_reply_no_response, Toast.LENGTH_SHORT).show();
                 return null;
             }
             BufferedReader r = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -109,7 +109,7 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onCancelled() {
         Log.e(TAG, "Post cancelled");
-        Toast.makeText(context, "Couldn't post", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, R.string.post_reply_error, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -117,17 +117,26 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
         Log.e(TAG, "Response: " + response);
         if (response == null || response.isEmpty()) {
             Log.e(TAG, "Null response posting");
-            Toast.makeText(context, "Couldn't post, try again", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.post_reply_error, Toast.LENGTH_SHORT).show();
             activity.reloadCaptcha();
             return;
         }
-        ChanPostResponse chanPostResponse = new ChanPostResponse(response);
+        ChanPostResponse chanPostResponse = new ChanPostResponse(context, response);
         if (chanPostResponse.isPosted()) {
-            Toast.makeText(context, "Reply posted", Toast.LENGTH_SHORT).show();
+            if (activity.threadNo == 0) {
+                Toast.makeText(context, R.string.post_reply_posted_reply, Toast.LENGTH_SHORT).show();
+            }
+            else {
+                Toast.makeText(context, R.string.post_reply_posted_thread, Toast.LENGTH_SHORT).show();
+            }
             activity.navigateUp();
         }
         else {
-            Toast.makeText(context, "Try again, " + chanPostResponse.getError(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                    context,
+                    context.getString(R.string.post_reply_error) + ": " + chanPostResponse.getError(context),
+                    Toast.LENGTH_SHORT)
+                    .show();
             activity.reloadCaptcha();
         }
     }

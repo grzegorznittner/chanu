@@ -3,6 +3,7 @@ package com.chanapps.four.test;
 import java.util.Date;
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
@@ -47,19 +48,18 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
     private SharedPreferences prefs = null;
 
     private Handler handler = new Handler() {
-
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			Log.d(TAG, ">>>>>>>>>>> refresh message received");
 			getLoaderManager().restartLoader(0, null, ThreadListActivity.this);
 		}
-
 	};
     
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
         
         options = new DisplayImageOptions.Builder()
@@ -220,10 +220,8 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
             	handler.sendEmptyMessageDelayed(0, 100);
                 return true;
             case R.id.view_as_grid_menu:
-                Toast.makeText(getApplicationContext(), "View as Grid", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.view_as_list_menu:
-                Toast.makeText(getApplicationContext(), "View as List", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.post_reply_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
@@ -232,16 +230,12 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
                 startActivity(replyIntent);
                 return true;
             case R.id.download_all_images_menu:
-                Toast.makeText(getApplicationContext(), "Starting download...", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.watch_thread_menu:
-                Toast.makeText(getApplicationContext(), "Watch this thread", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.settings_menu:
-                Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT).show();
-                return true;
+                 return true;
             case R.id.help_menu:
-                Toast.makeText(getApplicationContext(), "Help", Toast.LENGTH_SHORT).show();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -249,7 +243,6 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "onCreateOptionsMenu called");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.thread_list_menu, menu);
         return true;
@@ -262,4 +255,5 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
+
 }

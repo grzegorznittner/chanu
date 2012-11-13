@@ -1,5 +1,8 @@
 package com.chanapps.four.data;
 
+import android.content.Context;
+import com.chanapps.four.test.R;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,11 +15,14 @@ import java.util.regex.Pattern;
  */
 public class ChanPostResponse {
 
+    private Context ctx = null;
     private boolean isPosted = false;
     private String error = null;
 
-    public ChanPostResponse(String page) {
+    public ChanPostResponse(Context ctx, String page) {
         try {
+            error = ctx.getString(R.string.post_reply_response_error);
+
             Pattern successReg = Pattern.compile("(<title.*)(Post successful)");
             Pattern errorReg = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<]*)");
 
@@ -33,12 +39,10 @@ public class ChanPostResponse {
             }
             else {
                 isPosted = false;
-                error = "Couldn't post";
             }
         }
         catch(Exception e) {
             isPosted = false;
-            error = "Couldn't post";
         }
     }
 
@@ -46,7 +50,7 @@ public class ChanPostResponse {
         return isPosted;
     }
 
-    public String getError() {
+    public String getError(Context ctx) {
         return error;
     }
 

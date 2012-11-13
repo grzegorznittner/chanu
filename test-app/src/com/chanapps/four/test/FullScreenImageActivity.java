@@ -40,7 +40,9 @@ public class FullScreenImageActivity extends Activity {
 	public static final String TAG = FullScreenImageActivity.class.getSimpleName();
 
 	private WebView webView = null;
-	
+
+    private Context ctx;
+
 	private SharedPreferences prefs = null;
 
     private String boardCode = null;
@@ -119,7 +121,8 @@ public class FullScreenImageActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        
+
+        ctx = getApplicationContext();
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
 
         Intent intent = getIntent();
@@ -255,12 +258,12 @@ public class FullScreenImageActivity extends Activity {
                 navigateUp();
                 return true;
             case R.id.download_image_menu:
-                Toast.makeText(getApplicationContext(), "Saving image...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctx, R.string.full_screen_saving_image, Toast.LENGTH_SHORT).show();
                 SaveImageTask saveTask = new SaveImageTask(getApplicationContext());
                 saveTask.execute(imageUrl);
                 return true;
             case R.id.set_as_wallpaper_menu:
-                Toast.makeText(getApplicationContext(), "Setting wallpaper...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctx, R.string.full_screen_setting_wallpaper, Toast.LENGTH_SHORT).show();
                 SetImageAsWallpaperTask wallpaperTask = new SetImageAsWallpaperTask(getApplicationContext());
                 wallpaperTask.execute(imageUrl);
                 return true;
@@ -279,7 +282,7 @@ public class FullScreenImageActivity extends Activity {
         final HttpClient client = AndroidHttpClient.newInstance("Android");
         final HttpGet getRequest = new HttpGet(url);
 
-        String result = "Couldn't save image, try later";
+        String result = ctx.getString(R.string.full_screen_save_image_error);
         InputStream inputStream = null;
         HttpEntity entity = null;
         Bitmap bitmap = null;
@@ -287,8 +290,7 @@ public class FullScreenImageActivity extends Activity {
             HttpResponse response = client.execute(getRequest);
             final int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != HttpStatus.SC_OK) {
-                Log.w(TAG, "Error " + statusCode +
-                        " while retrieving image from " + url);
+                Log.w(TAG, "Error " + statusCode + " while retrieving image from " + url);
                 return result;
             }
             entity = response.getEntity();
@@ -298,7 +300,7 @@ public class FullScreenImageActivity extends Activity {
             inputStream = entity.getContent();
             bitmap = BitmapFactory.decodeStream(inputStream);
             String title = imageUrl.replaceAll(".*/", "").replaceAll("\\..*", "");
-            String description = "Downloaded from 4chan URL: " + imageUrl;
+            String description = ctx.getString(R.string.full_screen_download_description) + " " + imageUrl;
             /*
             String sdPath = "/4channer/images/" + boardCode + "/" + threadNo;
             String storageDir = Environment.getExternalStorageDirectory() + sdPath;
@@ -316,7 +318,7 @@ public class FullScreenImageActivity extends Activity {
             MediaStore.Images.Media.insertImage(getContentResolver(), file.getCanonicalPath(), title, description);
             */
             MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, title, description);
-            result = "Image saved";
+            result = ctx.getString(R.string.full_screen_image_saved);
         }
         catch (Exception e) {
             getRequest.abort();
@@ -409,12 +411,12 @@ public class FullScreenImageActivity extends Activity {
         try {
             InputStream ins = new URL(url).openStream();
             wallpaperManager.setStream(ins);
-            result = "Wallpaper set";
+            result = ctx.getString(R.string.full_screen_wallpaper_set);
             Log.i(TAG, result);
         }
         catch (Exception e) {
-            result = "Couldn't set wallpaper, try later";
-            Log.e(TAG, "Couldn't set wallpaper", e);
+            result = ctx.getString(R.string.full_screen_wallpaper_error);
+            Log.e(TAG, result, e);
         }
         return result;
     }
@@ -422,7 +424,7 @@ public class FullScreenImageActivity extends Activity {
     private String shareImage(String url) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("image/*");
-        String result = "Couldn't share image, try later";
+        String msg;
         try {
 /*
             URL imageUrl = new URL(url);
@@ -432,15 +434,14 @@ public class FullScreenImageActivity extends Activity {
             intent.setType(contentType);
 */
             intent.putExtra(Intent.EXTRA_STREAM, url);
-            startActivity(Intent.createChooser(intent, "Share Image"));
-            result = "Image shared";
-            Log.i(TAG, result);
+            startActivity(Intent.createChooser(intent, ctx.getString(R.string.full_screen_share_image_intent)));
+            msg = ctx.getString(R.string.full_screen_image_shared);
         }
         catch (Exception e) {
-            result = "Sharing error, try later";
-            Log.e(TAG, "Couldn't share image", e);
+            msg = ctx.getString(R.string.full_screen_sharing_error);
+            Log.e(TAG, msg, e);
         }
-        return result;
+        return msg;
     }
 
     private void navigateUp() {
@@ -453,7 +454,6 @@ public class FullScreenImageActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "onCreateOptionsMenu called");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.full_screen_image_menu, menu);
         return true;

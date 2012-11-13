@@ -19,7 +19,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
 public class ChanThread {
-	public static final String TAG = "ChanThread";
+	public static final String TAG = ChanThread.class.getSimpleName();
 	
 	public MatrixCursor cursor = null;
 	
