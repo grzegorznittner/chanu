@@ -110,9 +110,9 @@ public class BoardListActivity extends ListActivity
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-		Log.i(TAG, "onResume");
+    protected void onStart() {
+        super.onStart();
+		Log.i(TAG, "onStart");
 
         Intent intent = getIntent();
         if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
@@ -123,6 +123,10 @@ public class BoardListActivity extends ListActivity
             setBoardCode(prefs.getString(ChanHelper.BOARD_CODE, "s"));
             Log.i(TAG, "Board code loaded from prefs: " + boardCode);
         }
+        
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putString(ChanHelper.BOARD_CODE, boardCode);
+        ed.commit();
 
         Log.i(TAG, "Starting ChanThreadService");
         Intent threadIntent = new Intent(this, ChanThreadService.class);
@@ -206,21 +210,23 @@ public class BoardListActivity extends ListActivity
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
+		Log.d(TAG, ">>>>>>>>>>> onCreateLoader");
 
 		return new ChanThreadCursorLoader(getBaseContext(), db, boardCode);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
+		Log.d(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
-		handler.sendEmptyMessageDelayed(0, 2000);
+		if (handler != null) {
+			handler.sendEmptyMessageDelayed(0, 2000);
+		}
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.i(TAG, ">>>>>>>>>>> onLoaderReset");
+		Log.d(TAG, ">>>>>>>>>>> onLoaderReset");
 		adapter.swapCursor(null);
 	}
 

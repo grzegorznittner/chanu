@@ -46,8 +46,6 @@ public class BoardSelectorActivity extends FragmentActivity {
     
     public static class BoardGroupFragment extends Fragment implements OnItemClickListener {
     	private ChanBoard.Type boardType;
-    	private int numColumns = 1;
-    	private int columnWidth = 480;
     	private ImageAdapter adapter = null;
     	
     	@Override
@@ -55,12 +53,19 @@ public class BoardSelectorActivity extends FragmentActivity {
             super.onCreate(savedInstanceState);
             boardType = getArguments() != null
             		? ChanBoard.Type.valueOf(getArguments().getString(ChanHelper.BOARD_TYPE)) : ChanBoard.Type.JAPANESE_CULTURE;
-            columnWidth = getArguments().getInt("columnWidth");
-            numColumns = getArguments().getInt("numColumns");
         }
     	
     	@Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            Display display = getActivity().getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+            int height = size.y;
+            int numColumns = width / 300 == 1 ? 2 : width / 300;
+            int columnWidth = (width - 15) / numColumns;
+            Log.i(TAG, "BoardGroupFragment onCreateView width: " + width + ", height: " + height + ", numCols: " + numColumns);
+            
         	GridView g = (GridView) inflater.inflate(R.layout.board_grid_view, container, false);
             g.setNumColumns(numColumns);
             g.setColumnWidth(columnWidth);
@@ -74,6 +79,9 @@ public class BoardSelectorActivity extends FragmentActivity {
     	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             ChanBoard board = ChanBoard.getBoardsByType(boardType).get(position);
             String boardCode = board.link;
+            
+            Log.i(TAG, "onItemClick boardType: " + boardType);
+
             int pageNo = 0;
             Intent intent = new Intent(view.getContext(), BoardListActivity.class);
             intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
@@ -94,15 +102,6 @@ public class BoardSelectorActivity extends FragmentActivity {
     @Override
 	protected void onStart() {
 		super.onStart();
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
-        Log.i(TAG, "onStart width: " + width + ", height: " + height);
-
-        int numColumns = width / 300 == 1 ? 2 : width / 300;
-        int columnWidth = (width - 15) / numColumns;
 
         final ActionBar bar = getActionBar();
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -112,8 +111,6 @@ public class BoardSelectorActivity extends FragmentActivity {
         for (ChanBoard.Type type : ChanBoard.Type.values()) {
         	Bundle bundle = new Bundle();
         	bundle.putString(ChanHelper.BOARD_TYPE, type.toString());
-        	bundle.putInt("columnWidth", columnWidth);
-        	bundle.putInt("numColumns", numColumns);
         	mTabsAdapter.addTab(bar.newTab().setText(type.toString().replaceAll("_", " ")),
             		BoardGroupFragment.class, bundle);
         }
@@ -221,10 +218,7 @@ public class BoardSelectorActivity extends FragmentActivity {
         public Fragment getItem(int position) {
             TabInfo info = mTabs.get(position);
             String selectedType = info.args.getString(ChanHelper.BOARD_TYPE);
-            Log.i(TAG, "Storing selected boardType: " + selectedType);
-            SharedPreferences.Editor ed = mContext.prefs.edit();
-            ed.putString(ChanHelper.BOARD_TYPE, selectedType);
-            ed.commit();
+            Log.i(TAG, "getItem selected boardType: " + selectedType);
             
             return Fragment.instantiate(mContext, info.clss.getName(), info.args);
         }
@@ -235,6 +229,10 @@ public class BoardSelectorActivity extends FragmentActivity {
 
         @Override
         public void onPageSelected(int position) {
+        	Log.i(TAG, "onPageSelected position: " + position + ", storing boardType: " + ChanBoard.Type.values()[position]);
+            SharedPreferences.Editor ed = mContext.prefs.edit();
+            ed.putString(ChanHelper.BOARD_TYPE, ChanBoard.Type.values()[position].toString());
+            ed.commit();
             mActionBar.setSelectedNavigationItem(position);
         }
 
