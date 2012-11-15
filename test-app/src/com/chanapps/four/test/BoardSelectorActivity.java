@@ -104,21 +104,29 @@ public class BoardSelectorActivity extends FragmentActivity {
 		super.onStart();
 
         final ActionBar bar = getActionBar();
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
-
-        mTabsAdapter = new TabsAdapter(this, getSupportFragmentManager(), mViewPager);
-        for (ChanBoard.Type type : ChanBoard.Type.values()) {
-        	Bundle bundle = new Bundle();
-        	bundle.putString(ChanHelper.BOARD_TYPE, type.toString());
-        	mTabsAdapter.addTab(bar.newTab().setText(type.toString().replaceAll("_", " ")),
-            		BoardGroupFragment.class, bundle);
+        if (bar != null) {
+            bar.setTitle(getString(R.string.app_name));
+            bar.setDisplayHomeAsUpEnabled(false);
+            bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+            bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE);
         }
-		
+
+        if (mTabsAdapter == null) {
+            mTabsAdapter = new TabsAdapter(this, getSupportFragmentManager(), mViewPager);
+            for (ChanBoard.Type type : ChanBoard.Type.values()) {
+                Bundle bundle = new Bundle();
+                bundle.putString(ChanHelper.BOARD_TYPE, type.toString());
+                mTabsAdapter.addTab(bar.newTab().setText(type.toString().replaceAll("_", " ")),
+                        BoardGroupFragment.class, bundle);
+            }
+        }
+	}
+
+    private void setTabFromPrefs() {
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
         selectedBoardType = ChanBoard.Type.valueOf(prefs.getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
-        Log.i(TAG, "onStart selectedBoardType: " + selectedBoardType);
-        
+        Log.e(TAG, "onStart selectedBoardType: " + selectedBoardType);
+
         int selectedTab = 0;
         for (ChanBoard.Type type : ChanBoard.Type.values()) {
         	if (type == selectedBoardType) {
@@ -127,8 +135,11 @@ public class BoardSelectorActivity extends FragmentActivity {
         	selectedTab++;
         }
         getActionBar().setSelectedNavigationItem(selectedTab);
-	}
-    
+        if (mViewPager.getCurrentItem() != selectedTab) {
+            mViewPager.setCurrentItem(selectedTab, true);
+        }
+    }
+
     protected void onStop () {
     	super.onStop();
     	Log.i(TAG, "onStop");
@@ -143,6 +154,12 @@ public class BoardSelectorActivity extends FragmentActivity {
 	public void onWindowFocusChanged (boolean hasFocus) {
 		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
 	}
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setTabFromPrefs();
+    }
 
     @Override
 	protected void onPause() {
