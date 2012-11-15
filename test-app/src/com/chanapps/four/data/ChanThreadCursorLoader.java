@@ -9,6 +9,7 @@ import android.content.Loader;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 /**
  * A loader that queries the ChanDatabaseHelper and returns a {@link Cursor}.
@@ -18,7 +19,7 @@ import android.database.sqlite.SQLiteDatabase;
  * 
  */
 public class ChanThreadCursorLoader extends AsyncTaskLoader<Cursor> {
-    final ForceLoadContentObserver mObserver;
+    protected final ForceLoadContentObserver mObserver;
 
     protected SQLiteDatabase db;
     protected Cursor mCursor;
@@ -39,6 +40,7 @@ public class ChanThreadCursorLoader extends AsyncTaskLoader<Cursor> {
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
+    	Log.i(TAG(), "loadInBackground");
     	String query = "SELECT " + ChanDatabaseHelper.POST_ID + ", "
 				+ "'http://0.thumbs.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
 					+ " || '/thumb/' || " + ChanDatabaseHelper.POST_TIM + " || 's.jpg' 'image_url', "
@@ -48,10 +50,12 @@ public class ChanThreadCursorLoader extends AsyncTaskLoader<Cursor> {
 				+ " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "' AND "
 					+ ChanDatabaseHelper.POST_RESTO + "=0 ORDER BY " + ChanDatabaseHelper.POST_TIM + " DESC";
     	if (db != null && db.isOpen()) {
+    		Log.i(TAG(), "loadInBackground database is ok");
     		Cursor cursor = db.rawQuery(query, null);
     		if (cursor != null) {
     			// Ensure the cursor window is filled
-    			cursor.getCount();
+    			int count = cursor.getCount();
+    			Log.i(TAG(), "loadInBackground cursor is ok, count: " + count);
     			registerContentObserver(cursor, mObserver);
     		}
     		return cursor;
@@ -70,6 +74,7 @@ public class ChanThreadCursorLoader extends AsyncTaskLoader<Cursor> {
     /* Runs on the UI thread */
     @Override
     public void deliverResult(Cursor cursor) {
+		Log.i(TAG(), "deliverResult isReset(): " + isReset());
         if (isReset()) {
             // An async query came in while the loader is stopped
             if (cursor != null) {
@@ -98,6 +103,7 @@ public class ChanThreadCursorLoader extends AsyncTaskLoader<Cursor> {
      */
     @Override
     protected void onStartLoading() {
+    	Log.i(TAG(), "onStartLoading mCursor: " + mCursor);
         if (mCursor != null) {
             deliverResult(mCursor);
         }
@@ -111,12 +117,14 @@ public class ChanThreadCursorLoader extends AsyncTaskLoader<Cursor> {
      */
     @Override
     protected void onStopLoading() {
+    	Log.i(TAG(), "onStopLoading");
         // Attempt to cancel the current load task if possible.
         cancelLoad();
     }
 
     @Override
     public void onCanceled(Cursor cursor) {
+    	Log.i(TAG(), "onCanceled cursor: " + cursor);
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
@@ -125,7 +133,7 @@ public class ChanThreadCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     protected void onReset() {
         super.onReset();
-        
+        Log.i(TAG(), "onReset cursor: " + mCursor);
         // Ensure the loader is stopped
         onStopLoading();
 
@@ -134,6 +142,10 @@ public class ChanThreadCursorLoader extends AsyncTaskLoader<Cursor> {
         }
         mCursor = null;
     }
+
+	protected String TAG() {
+		return "ChanThreadCursorLoader";
+	}
 
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {

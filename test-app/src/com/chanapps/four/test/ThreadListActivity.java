@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.net.Uri;
@@ -49,18 +50,17 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 	private long lastUpdate = 0;
     private SharedPreferences prefs = null;
 
-    private Handler handler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			Log.d(TAG, ">>>>>>>>>>> refresh message received");
-			getLoaderManager().restartLoader(0, null, ThreadListActivity.this);
-		}
-	};
+    private Handler handler = null;
 	
 	private void openDatabaseIfNecessary() {
-		if (db == null) {
-			db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
+		try {
+			if (db == null || !db.isOpen()) {
+				Log.i(TAG, "Opening Chan database");
+				db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
+			}
+		} catch (SQLException se) {
+			Log.e(TAG, "Cannot open database", se);
+			db = null;
 		}
 	}
 	
@@ -74,7 +74,7 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 			db = null;
 		}
 	}
-    
+	
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -100,9 +100,19 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
         setListAdapter(adapter);
         setContentView(R.layout.board_activity_list_layout);
         
+        handler = new Handler() {
+    		@Override
+    		public void handleMessage(Message msg) {
+    			super.handleMessage(msg);
+    			Log.d(TAG, ">>>>>>>>>>> refresh message received");
+    			getLoaderManager().restartLoader(0, null, ThreadListActivity.this);
+    		}
+    	};
+        
         getListView().setClickable(true);
         //getListView().setOnItemClickListener(this);
         
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -129,9 +139,10 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
         postIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
         startService(postIntent);
 
-        //getLoaderManager().initLoader(0, null, this);
-        getLoaderManager().restartLoader(0, null, this);
-
+        if (handler != null) {
+			handler.sendEmptyMessageDelayed(0, 100);
+		}
+        
         lastUpdate = new Date().getTime();
     }
     
@@ -150,8 +161,9 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 	    postIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
 	    startService(postIntent);
 
-	    openDatabaseIfNecessary();
-	    getLoaderManager().initLoader(0, null, this);
+        if (handler != null) {
+			handler.sendEmptyMessageDelayed(0, 100);
+		}
 	}
 
 	@Override

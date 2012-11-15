@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.net.Uri;
@@ -49,8 +50,14 @@ public class BoardListActivity extends ListActivity
 	private Handler handler = null;
 	
 	private void openDatabaseIfNecessary() {
-		if (db == null) {
-			db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
+		try {
+			if (db == null || !db.isOpen()) {
+				Log.i(TAG, "Opening Chan database");
+				db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
+			}
+		} catch (SQLException se) {
+			Log.e(TAG, "Cannot open database", se);
+			db = null;
 		}
 	}
 	
@@ -81,9 +88,6 @@ public class BoardListActivity extends ListActivity
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(getApplicationContext()));
 
-
-        db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
-
         adapter = new ImageTextCursorAdapter(this,
                 R.layout.board_activity_list_item,
                 this,
@@ -92,21 +96,23 @@ public class BoardListActivity extends ListActivity
         setListAdapter(adapter);
         setContentView(R.layout.board_activity_list_layout);
         
+        LoaderManager.enableDebugLogging(true);
+        
         handler = new Handler() {
-
     		@Override
     		public void handleMessage(Message msg) {
     			super.handleMessage(msg);
-    			Log.d(TAG, ">>>>>>>>>>> refresh message received");
-    			if (getLoaderManager().getLoader(0).isStarted()) {
-    				getLoaderManager().restartLoader(0, null, BoardListActivity.this);
-    			}
+				Log.i(TAG, ">>>>>>>>>>> refresh message received restarting loader");
+				getLoaderManager().restartLoader(0, null, BoardListActivity.this);
     		}
 
     	};
         
         getListView().setClickable(true);
         getListView().setOnItemClickListener(this);
+        
+        //Log.i(TAG, "onCreate init loader");
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -134,14 +140,17 @@ public class BoardListActivity extends ListActivity
         threadIntent.putExtra(ChanHelper.PAGE, 0);
         startService(threadIntent);
 
-        //getLoaderManager().initLoader(0, null, this);
-        getLoaderManager().restartLoader(0, null, this);
+        if (handler != null) {
+			handler.sendEmptyMessageDelayed(0, 100);
+		}
     }
+    
+    
 
     protected void onStop () {
     	super.onStop();
     	Log.i(TAG, "onStop");
-    	closeDatabse();
+    	getLoaderManager().destroyLoader(0);
     	handler = null;
     }
 
@@ -149,6 +158,9 @@ public class BoardListActivity extends ListActivity
 	protected void onRestart() {
 		super.onRestart();
 		Log.i(TAG, "onRestart");
+        if (handler != null) {
+			handler.sendEmptyMessageDelayed(0, 2000);
+		}
 	}
 	
 	public void onWindowFocusChanged (boolean hasFocus) {
@@ -163,6 +175,7 @@ public class BoardListActivity extends ListActivity
 	protected void onDestroy () {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy");
+		getLoaderManager().destroyLoader(0);
 		closeDatabse();
 		handler = null;
 	}
@@ -210,24 +223,26 @@ public class BoardListActivity extends ListActivity
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.d(TAG, ">>>>>>>>>>> onCreateLoader");
-
+		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
+		openDatabaseIfNecessary();
 		return new ChanThreadCursorLoader(getBaseContext(), db, boardCode);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		Log.d(TAG, ">>>>>>>>>>> onLoadFinished");
+		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
 		if (handler != null) {
 			handler.sendEmptyMessageDelayed(0, 2000);
 		}
+		//closeDatabse();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.d(TAG, ">>>>>>>>>>> onLoaderReset");
+		Log.i(TAG, ">>>>>>>>>>> onLoaderReset");
 		adapter.swapCursor(null);
+		//closeDatabse();
 	}
 
     @Override
