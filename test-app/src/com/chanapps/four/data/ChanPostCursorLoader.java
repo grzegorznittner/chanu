@@ -23,7 +23,8 @@ public class ChanPostCursorLoader extends ChanThreadCursorLoader {
 				+ "'http://0.thumbs.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
 					+ " || '/thumb/' || " + ChanDatabaseHelper.POST_TIM + " || 's.jpg' 'image_url', "
 				+ ChanDatabaseHelper.POST_NOW + " || ' ' || " + ChanDatabaseHelper.POST_COM + " 'text', "
-				+ ChanDatabaseHelper.POST_TN_W + " 'tn_w', " + ChanDatabaseHelper.POST_TN_H + " 'tn_h'"
+                + ChanDatabaseHelper.POST_TN_W + " 'tn_w', " + ChanDatabaseHelper.POST_TN_H + " 'tn_h', "
+                + ChanDatabaseHelper.POST_W + " 'w', " + ChanDatabaseHelper.POST_H + " 'h'"
 				+ " FROM " + ChanDatabaseHelper.POST_TABLE
 				+ " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "' AND "
 					+ "(" + ChanDatabaseHelper.POST_ID + "=" + threadNo + " OR " + ChanDatabaseHelper.POST_RESTO + "=" + threadNo + ")"

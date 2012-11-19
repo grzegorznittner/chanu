@@ -23,6 +23,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.widget.Toast;
 
 /**
  * IntentService is a base class for {@link Service}s that handle asynchronous
@@ -55,6 +56,16 @@ public abstract class BaseChanService extends Service {
     private volatile ServiceHandler mServiceHandler;
     private String mName;
     private boolean mRedelivery;
+
+    protected void toastUI(final int stringId) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), stringId, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {

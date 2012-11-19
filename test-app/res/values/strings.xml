@@ -37,6 +37,23 @@
     <string name="other">Other</string>
     <string name="misc">Misc.</string>
 
+    <!-- board activity -->
+    <string name="board_activity_refresh">Refreshing...</string>
+    <string name="board_activity_couldnt_open_db">Couldn\'t open database, try later</string>
+
+    <!-- board service -->
+    <string name="board_service_couldnt_fetch">Couldn\'t get board</string>
+    <string name="board_service_couldnt_read">Couldn\'t read board</string>
+    <string name="board_service_couldnt_load">Couldn\'t load board</string>
+    <string name="board_service_couldnt_read_db">Couldn\'t read board data</string>
+
+    <!-- thread service -->
+    <string name="thread_service_no_thread">Couldn\'t find thread</string>
+    <string name="thread_service_not_found">Thread no longer exists</string>
+    <string name="thread_service_couldnt_read">Couldn\'t read thread</string>
+    <string name="thread_service_couldnt_load">Couldn\'t load thread</string>
+    <string name="thread_service_couldnt_read_db">Couldn\'t read thread data</string>
+
     <!-- full screen image activity -->
     <string name="full_screen_saving_image">Saving image...</string>
     <string name="full_screen_setting_wallpaper">Setting wallpaper...</string>
@@ -79,10 +96,5 @@
     <string name="post_reply_error">Couldn\'t post</string>
     <string name="post_reply_posted_reply">Posted reply</string>
     <string name="post_reply_posted_thread">Posted new thread</string>
-
-    <!-- chan post -->
-    <string name="chan_thread_no_thread">Couldn\'t find thread</string>
-    <string name="chan_thread_parse_error">Couldn\'t load thread</string>
-    <string name="chan_thread_db_error">Couldn\'t load thread db</string>
 
 </resources>

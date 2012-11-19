@@ -23,13 +23,10 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import android.widget.Toast;
 import com.chanapps.four.component.ImageTextCursorAdapter;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanDatabaseHelper;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanText;
-import com.chanapps.four.data.ChanThreadCursorLoader;
-import com.chanapps.four.data.ChanThreadService;
+import com.chanapps.four.data.*;
+import com.chanapps.four.data.ChanLoadBoardService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -57,6 +54,7 @@ public class BoardListActivity extends ListActivity
 			}
 		} catch (SQLException se) {
 			Log.e(TAG, "Cannot open database", se);
+            Toast.makeText(this, R.string.board_activity_couldnt_open_db, Toast.LENGTH_SHORT).show();
 			db = null;
 		}
 	}
@@ -80,7 +78,7 @@ public class BoardListActivity extends ListActivity
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
         
         options = new DisplayImageOptions.Builder()
-//			.showImageForEmptyUri(R.drawable.stub_image)
+			.showImageForEmptyUri(R.drawable.stub_image)
 			.cacheOnDisc()
 			.imageScaleType(ImageScaleType.EXACT)
 			.build();
@@ -97,22 +95,28 @@ public class BoardListActivity extends ListActivity
         setContentView(R.layout.board_activity_list_layout);
         
         LoaderManager.enableDebugLogging(true);
-        
-        handler = new Handler() {
-    		@Override
-    		public void handleMessage(Message msg) {
-    			super.handleMessage(msg);
-				Log.i(TAG, ">>>>>>>>>>> refresh message received restarting loader");
-				getLoaderManager().restartLoader(0, null, BoardListActivity.this);
-    		}
 
-    	};
-        
+        ensureHandler();
+
         getListView().setClickable(true);
         getListView().setOnItemClickListener(this);
         
         //Log.i(TAG, "onCreate init loader");
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    private void ensureHandler() {
+        if (handler == null) {
+            handler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    super.handleMessage(msg);
+                    Log.i(TAG, ">>>>>>>>>>> refresh message received restarting loader");
+                    getLoaderManager().restartLoader(0, null, BoardListActivity.this);
+                }
+
+        	};
+        }
     }
 
     @Override
@@ -134,18 +138,11 @@ public class BoardListActivity extends ListActivity
         ed.putString(ChanHelper.BOARD_CODE, boardCode);
         ed.commit();
 
-        Log.i(TAG, "Starting ChanThreadService");
-        Intent threadIntent = new Intent(this, ChanThreadService.class);
+        Log.i(TAG, "Starting ChanLoadBoardService");
+        Intent threadIntent = new Intent(this, ChanLoadBoardService.class);
         threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        threadIntent.putExtra(ChanHelper.PAGE, 0);
         startService(threadIntent);
-
-        if (handler != null) {
-			handler.sendEmptyMessageDelayed(0, 100);
-		}
     }
-    
-    
 
     protected void onStop () {
     	super.onStop();
@@ -155,14 +152,18 @@ public class BoardListActivity extends ListActivity
     }
 
 	@Override
-	protected void onRestart() {
-		super.onRestart();
-		Log.i(TAG, "onRestart");
-        if (handler != null) {
-			handler.sendEmptyMessageDelayed(0, 2000);
-		}
+	protected void onResume() {
+		super.onResume();
+		Log.i(TAG, "onResume");
+        refreshBoard();
 	}
-	
+
+    private void refreshBoard() {
+        ensureHandler();
+		handler.sendEmptyMessageDelayed(0, 100);
+        Toast.makeText(getApplicationContext(), R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
+    }
+
 	public void onWindowFocusChanged (boolean hasFocus) {
 		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
 	}
@@ -232,9 +233,8 @@ public class BoardListActivity extends ListActivity
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
-		if (handler != null) {
-			handler.sendEmptyMessageDelayed(0, 2000);
-		}
+        ensureHandler();
+		handler.sendEmptyMessageDelayed(0, 10000);
 		//closeDatabse();
 	}
 
@@ -260,6 +260,9 @@ public class BoardListActivity extends ListActivity
             case android.R.id.home:
                 Intent intent = new Intent(this, BoardSelectorActivity.class);
                 NavUtils.navigateUpTo(this, intent);
+                return true;
+            case R.id.refresh_board_menu:
+                refreshBoard();
                 return true;
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);

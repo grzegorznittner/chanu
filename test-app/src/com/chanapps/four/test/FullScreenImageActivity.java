@@ -34,7 +34,6 @@ import android.widget.Toast;
 
 import com.chanapps.four.data.ChanDatabaseHelper;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanThreadService;
 
 public class FullScreenImageActivity extends Activity {
 
@@ -45,6 +44,8 @@ public class FullScreenImageActivity extends Activity {
     private Context ctx;
 
 	private SharedPreferences prefs = null;
+
+    private Intent intent;
 
     private String boardCode = null;
     private long threadNo = 0;
@@ -84,7 +85,7 @@ public class FullScreenImageActivity extends Activity {
             imageHeight = 433;
         }
     }
-    
+
     private boolean loadChanPostData() {
     	ChanDatabaseHelper h = new ChanDatabaseHelper(getBaseContext());
     	Cursor c = null;
@@ -93,18 +94,18 @@ public class FullScreenImageActivity extends Activity {
 					+ "'http://images.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
 						+ " || '/src/' || " + ChanDatabaseHelper.POST_TIM
 						+ " || " + ChanDatabaseHelper.POST_EXT + " 'imageurl', "
-					+ ChanDatabaseHelper.POST_W + " 'imagewidth', "
-					+ ChanDatabaseHelper.POST_H + " 'imageheight'"
+					+ ChanDatabaseHelper.POST_W + ", "
+					+ ChanDatabaseHelper.POST_H
 					+ " FROM " + ChanDatabaseHelper.POST_TABLE
 					+ " WHERE " + ChanDatabaseHelper.POST_ID + "=" + postNo;
 			c = h.getWritableDatabase().rawQuery(query, null);
 			int imageurlIdx = c.getColumnIndex("imageurl");
-			int imagewidthIdx = c.getColumnIndex("imagewidth");
-			int imageheightIdx = c.getColumnIndex("imageheight");
+//			int imagewidthIdx = c.getColumnIndex(ChanDatabaseHelper.POST_W);
+//			int imageheightIdx = c.getColumnIndex(ChanDatabaseHelper.POST_H);
 			if (c.moveToFirst()) {
 				imageUrl = c.getString(imageurlIdx);
-				imageWidth = c.getInt(imagewidthIdx);
-				imageHeight = c.getInt(imageheightIdx);
+//				imageWidth = c.getInt(imagewidthIdx);
+//				imageHeight = c.getInt(imageheightIdx);
 				if (c.moveToNext()) {
 					Log.w(TAG, "Post with id " + postNo + " for board " + boardCode + " is not unique across boards!");
 				}
@@ -134,21 +135,6 @@ public class FullScreenImageActivity extends Activity {
         ctx = getApplicationContext();
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
 
-        Intent intent = getIntent();
-        if (intent.hasExtra(ChanHelper.POST_NO)) {
-        	postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
-        	threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-            setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
-            Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
-            
-            SharedPreferences.Editor ed = prefs.edit();
-            ed.putLong(ChanHelper.POST_NO, postNo);
-            Log.i(TAG, "Stored in prefs, post no: " + postNo);
-            ed.commit();
-        } else {
-            randomizeImage();
-        }
-        
         webView = new WebView(this);
         setContentView(webView);
         webView.getSettings().setLoadWithOverviewMode(true);
@@ -157,8 +143,7 @@ public class FullScreenImageActivity extends Activity {
         webView.setScrollbarFadingEnabled(false);
         //webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setBuiltInZoomControls(true);
-        setDefaultZoom();
-        //webView.setBackgroundColor(0);
+        webView.setBackgroundColor(Color.BLACK);
         /*
         final Activity activity = this;
         webView.setWebViewClient(new WebViewClient() {
@@ -173,15 +158,50 @@ public class FullScreenImageActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		Log.i(TAG, "onStart");
-
-		postNo = prefs.getLong(ChanHelper.POST_NO, 0);
-		Log.i(TAG, "Post no " + postNo + " laoded from preferences");
-        loadChanPostData();
-        loadImage();
+        loadPrefs();
     }
-    
+
+    private void loadPrefs() {
+        if (intent == null || intent != getIntent()) {
+            intent = getIntent();
+            if (intent.hasExtra(ChanHelper.POST_NO)) {
+                postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
+                threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+                setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
+                imageWidth = intent.getIntExtra(ChanHelper.IMAGE_WIDTH, 0);
+                imageHeight = intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0);
+                Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
+                savePrefs();
+            } else {
+                randomizeImage();
+            }
+        }
+        else {
+            boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+            threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+            postNo = prefs.getLong(ChanHelper.POST_NO, 0);
+            imageWidth = prefs.getInt(ChanHelper.IMAGE_WIDTH, 0);
+            imageHeight = prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
+            Log.i(TAG, "Post no " + postNo + " laoded from preferences");
+        }
+        loadChanPostData();
+    }
+
+    private void savePrefs() {
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putString(ChanHelper.BOARD_CODE, boardCode);
+        ed.putLong(ChanHelper.THREAD_NO, threadNo);
+        ed.putLong(ChanHelper.POST_NO, postNo);
+        ed.putInt(ChanHelper.IMAGE_WIDTH, imageWidth);
+        ed.putInt(ChanHelper.IMAGE_HEIGHT, imageHeight);
+        Log.i(TAG, "Stored in prefs, post no: " + postNo);
+        ed.commit();
+    }
+
+    @Override
     protected void onStop () {
     	super.onStop();
+        savePrefs();
     	Log.i(TAG, "onStop");
     }
 
@@ -190,21 +210,28 @@ public class FullScreenImageActivity extends Activity {
 		super.onRestart();
 		Log.i(TAG, "onRestart");
 	}
-	
+
+    @Override
 	protected void onResume () {
 		super.onResume();
 		Log.i(TAG, "onResume");
+        setDefaultZoom();
+        loadImage();
 	}
 	
 	public void onWindowFocusChanged (boolean hasFocus) {
 		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
 	}
 
+    @Override
 	protected void onPause() {
+        savePrefs();
         super.onPause();
+        savePrefs();
         Log.i(TAG, "onPause");
     }
-	
+
+    @Override
 	protected void onDestroy () {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy");
@@ -212,6 +239,7 @@ public class FullScreenImageActivity extends Activity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        setDefaultZoom();
         loadImage();
     }
 
@@ -271,7 +299,6 @@ public class FullScreenImageActivity extends Activity {
         //        "\" />" +
         //        "</html>";
         //webView.loadData(html, "text/html", "UTF-8");
-        webView.setBackgroundColor(Color.BLACK);
         webView.loadUrl(imageUrl);
 
     }

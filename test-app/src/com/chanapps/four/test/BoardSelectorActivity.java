@@ -247,6 +247,9 @@ public class BoardSelectorActivity extends FragmentActivity {
         @Override
         public void onPageSelected(int position) {
         	Log.i(TAG, "onPageSelected position: " + position + ", storing boardType: " + ChanBoard.Type.values()[position]);
+            if (mContext == null || mContext.prefs == null) {
+                return;
+            }
             SharedPreferences.Editor ed = mContext.prefs.edit();
             ed.putString(ChanHelper.BOARD_TYPE, ChanBoard.Type.values()[position].toString());
             ed.commit();

@@ -1,10 +1,7 @@
 package com.chanapps.four.test;
 
-import java.util.Date;
-
 import android.app.ListActivity;
 import android.app.LoaderManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
@@ -24,14 +21,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import android.widget.Toast;
 import com.chanapps.four.component.ImageTextCursorAdapter;
-import com.chanapps.four.data.ChanDatabaseHelper;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanPostCursorLoader;
-import com.chanapps.four.data.ChanPostService;
-import com.chanapps.four.data.ChanText;
+import com.chanapps.four.data.*;
+import com.chanapps.four.data.ChanLoadThreadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -47,10 +41,10 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 	private ImageTextCursorAdapter adapter = null;
 	private String boardCode = null;
 	private long threadNo = 0;
-	private long lastUpdate = 0;
     private SharedPreferences prefs = null;
 
     private Handler handler = null;
+    private Intent serviceIntent = null;
 	
 	private void openDatabaseIfNecessary() {
 		try {
@@ -99,16 +93,9 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
                 new int[] {R.id.list_item_image, R.id.list_item_text});
         setListAdapter(adapter);
         setContentView(R.layout.board_activity_list_layout);
-        
-        handler = new Handler() {
-    		@Override
-    		public void handleMessage(Message msg) {
-    			super.handleMessage(msg);
-    			Log.d(TAG, ">>>>>>>>>>> refresh message received");
-    			getLoaderManager().restartLoader(0, null, ThreadListActivity.this);
-    		}
-    	};
-        
+
+        ensureHandler();
+
         getListView().setClickable(true);
         //getListView().setOnItemClickListener(this);
         
@@ -119,57 +106,86 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
     protected void onResume() {
         super.onResume();
 		Log.i(TAG, "onResume");
-
-        Intent intent = getIntent();
-        if (intent.hasExtra(ChanHelper.THREAD_NO)) {
-            setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
-            threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-            Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo);
-            
-            SharedPreferences.Editor ed = prefs.edit();
-            ed.putLong(ChanHelper.THREAD_NO, threadNo);
-            Log.i(TAG, "Stored in prefs, thread no: " + threadNo);
-            ed.commit();
-        }
-        Log.e(TAG, "Threadno: " + threadNo);
-
-        Log.i(TAG, "Starting ChanPostService");
-        Intent postIntent = new Intent(this, ChanPostService.class);
-        postIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        postIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        startService(postIntent);
-
-        if (handler != null) {
-			handler.sendEmptyMessageDelayed(0, 100);
-		}
-        
-        lastUpdate = new Date().getTime();
+        ensureService();
+        refreshBoard();
     }
-    
+
+    private void ensureHandler() {
+        if (handler == null) {
+            handler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    super.handleMessage(msg);
+                    Log.i(TAG, ">>>>>>>>>>> refresh message received restarting loader");
+                    getLoaderManager().restartLoader(0, null, ThreadListActivity.this);
+                }
+
+        	};
+        }
+    }
+
+    private void refreshBoard() {
+        ensureHandler();
+		handler.sendEmptyMessageDelayed(0, 100);
+        Toast.makeText(getApplicationContext(), R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
 	protected void onStart() {
 		super.onStart();
 		Log.i(TAG, "onStart");
-
-	    boardCode = prefs.getString(ChanHelper.BOARD_CODE, "not-set");
-	    threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
-	    Log.i(TAG, "Loaded from prefs, boardCode: " + boardCode + ", threadNo: " + threadNo);
-	    
-	    Log.i(TAG, "Starting ChanPostService");
-	    Intent postIntent = new Intent(this, ChanPostService.class);
-	    postIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-	    postIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
-	    startService(postIntent);
-
-        if (handler != null) {
-			handler.sendEmptyMessageDelayed(0, 100);
-		}
+        ensureService();
 	}
+
+    private void saveServiceConfig() {
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putString(ChanHelper.BOARD_CODE, boardCode);
+        ed.putLong(ChanHelper.THREAD_NO, threadNo);
+        Log.i(TAG, "Stored in prefs, board code: " + boardCode + " thread no: " + threadNo);
+        ed.commit();
+    }
+
+    private void loadServiceConfig() {
+        Intent intent = getIntent();
+        if (intent != serviceIntent
+                && intent != null
+                && intent.hasExtra(ChanHelper.BOARD_CODE)
+                && intent.hasExtra(ChanHelper.THREAD_NO)) {
+            setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
+            threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+            Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo);
+        }
+        else {
+            boardCode = prefs.getString(ChanHelper.BOARD_CODE, "not-set");
+            threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
+            Log.i(TAG, "Loaded from prefs, boardCode: " + boardCode + ", threadNo: " + threadNo);
+        }
+        saveServiceConfig();
+    }
+
+    private void ensureService() {
+        Intent currentIntent = getIntent();
+        if (currentIntent == serviceIntent) { // already running, do nothing
+            return;
+        }
+        // otherwise change service
+        if (serviceIntent != null) {
+            stopService(serviceIntent);
+        }
+        loadServiceConfig();
+
+   	    Log.i(TAG, "Starting ChanLoadThreadService");
+   	    serviceIntent = new Intent(this, ChanLoadThreadService.class);
+   	    serviceIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+   	    serviceIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+   	    startService(serviceIntent);
+    }
 
 	@Override
 	protected void onRestart() {
 		super.onRestart();
 		Log.i(TAG, "onRestart");
+        ensureService();
 	}
 	
 	public void onWindowFocusChanged (boolean hasFocus) {
@@ -179,12 +195,17 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 	protected void onPause() {
         super.onPause();
         Log.i(TAG, "onPause");
+        saveServiceConfig();
     }
 	
     protected void onStop () {
     	super.onStop();
     	Log.i(TAG, "onStop");
-    	closeDatabse();
+        saveServiceConfig();
+        if (serviceIntent != null) {
+            stopService(serviceIntent);
+        }
+    	//closeDatabse();
     }
 
 	@Override
@@ -231,7 +252,9 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
         try {
             this.imageLoader.displayImage(thumbnailImageUrl, imageView, options);
             final long postId = cursor.getLong(cursor.getColumnIndex("_id"));
-            
+            final int w = cursor.getInt(cursor.getColumnIndex("w"));
+            final int h = cursor.getInt(cursor.getColumnIndex("h"));
+
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -239,6 +262,8 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
                     intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
                     intent.putExtra(ChanHelper.THREAD_NO, threadNo);
                     intent.putExtra(ChanHelper.POST_NO, postId);
+                    intent.putExtra(ChanHelper.IMAGE_WIDTH, w);
+                    intent.putExtra(ChanHelper.IMAGE_HEIGHT, h);
                     startActivity(intent);
                 }
             });
@@ -258,7 +283,7 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		Log.d(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
-		handler.sendEmptyMessageDelayed(0, 2000);
+		handler.sendEmptyMessageDelayed(0, 10000);
 	}
 
 	@Override
@@ -277,7 +302,7 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
                 NavUtils.navigateUpTo(this, upIntent);
                 return true;
             case R.id.refresh_thread_menu:
-            	handler.sendEmptyMessageDelayed(0, 100);
+                refreshBoard();
                 return true;
             case R.id.view_as_grid_menu:
                 return true;
