@@ -19,15 +19,16 @@ public class ChanPostResponse {
     private boolean isPosted = false;
     private String error = null;
 
+    private static final Pattern SUCCESS_REG = Pattern.compile("(<title.*)(Post successful)");
+    private static final Pattern ERROR_REG = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<]*)");
+
     public ChanPostResponse(Context ctx, String page) {
         try {
             error = ctx.getString(R.string.post_reply_response_error);
 
-            Pattern successReg = Pattern.compile("(<title.*)(Post successful)");
-            Pattern errorReg = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<]*)");
 
-            Matcher successMatch = successReg.matcher(page);
-            Matcher errorMatch = errorReg.matcher(page);
+            Matcher successMatch = SUCCESS_REG.matcher(page);
+            Matcher errorMatch = ERROR_REG.matcher(page);
 
             if (successMatch.find()) {
                 isPosted = true;
