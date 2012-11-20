@@ -16,23 +16,18 @@ public class Captcha {
     private String challenge;
     private String imageUrl;
 
-    public Captcha(String page) throws Exception {
-        try {
-            Pattern imgReg = Pattern.compile("(<img .*src\\=\")([^\"]*)");
-            Pattern chalReg = Pattern.compile("(id=\"recaptcha_challenge_field\" value=\")([^\"]*)");
+    private static final Pattern IMG_REG = Pattern.compile("(<img .*src\\=\")([^\"]*)");
+    private static final Pattern CHAL_REG = Pattern.compile("(id=\"recaptcha_challenge_field\" value=\")([^\"]*)");
 
-            Matcher challengeMatch = chalReg.matcher(page);
-            Matcher imageMatch = imgReg.matcher(page);
-            boolean bChal = challengeMatch.find();
-            boolean bImg = imageMatch.find();
+    public Captcha(String page) {
+        Matcher challengeMatch = CHAL_REG.matcher(page);
+        Matcher imageMatch = IMG_REG.matcher(page);
+        boolean bChal = challengeMatch.find();
+        boolean bImg = imageMatch.find();
 
-            if (bChal && bImg) {
-                challenge = challengeMatch.group(2);
-                imageUrl = apiBaseUrl+imageMatch.group(2);
-            }
-        }
-        catch(Exception e) {
-            return;
+        if (bChal && bImg) {
+            challenge = challengeMatch.group(2);
+            imageUrl = apiBaseUrl + imageMatch.group(2);
         }
     }
 
