@@ -4,6 +4,8 @@
       <root url="jar://$PROJECT_DIR$/libs/android-support-v4.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$USER_HOME$/android-sdk-linux/sources/android-15" />
+    </SOURCES>
   </library>
 </component>

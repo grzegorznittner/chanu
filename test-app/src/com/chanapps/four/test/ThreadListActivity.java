@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import android.widget.Toast;
+import com.chanapps.four.component.FlowTextHelper;
 import com.chanapps.four.component.ImageTextCursorAdapter;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanLoadThreadService;

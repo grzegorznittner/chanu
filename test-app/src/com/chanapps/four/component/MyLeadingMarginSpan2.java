@@ -1,4 +1,4 @@
-package com.chanapps.four.test;
+package com.chanapps.four.component;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -12,7 +12,7 @@ import android.text.style.LeadingMarginSpan;
  * Time: 5:08 PM
  * To change this template use File | Settings | File Templates.
  */
-class MyLeadingMarginSpan2 implements LeadingMarginSpan.LeadingMarginSpan2 {
+public class MyLeadingMarginSpan2 implements LeadingMarginSpan.LeadingMarginSpan2 {
     private int margin;
     private int lines;
 
