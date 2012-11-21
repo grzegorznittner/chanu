@@ -1,7 +1,6 @@
 package com.chanapps.four.component;
 
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -37,19 +36,11 @@ public class BoardGroupFragment extends Fragment implements AdapterView.OnItemCl
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        GridView g = (GridView) inflater.inflate(R.layout.board_selector_grid_view, container, false);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
-        int numColumns = width / 300 == 1 ? 2 : width / 300;
-        int columnWidth = (width - 15) / numColumns;
-        Log.i(BoardSelectorActivity.TAG, "BoardGroupFragment onCreateView width: " + width + ", height: " + height + ", numCols: " + numColumns);
-
-        GridView g = (GridView) inflater.inflate(R.layout.board_grid_view, container, false);
-        g.setNumColumns(numColumns);
-        g.setColumnWidth(columnWidth);
-        adapter = new ImageAdapter(container.getContext(), boardType, columnWidth);
+        ChanGridSizer cg = new ChanGridSizer(g, display);
+        cg.sizeGridToDisplay();
+        adapter = new ImageAdapter(container.getContext(), boardType, cg.getColumnWidth());
         g.setAdapter(adapter);
         g.setOnItemClickListener(this);
         return g;
@@ -62,10 +53,8 @@ public class BoardGroupFragment extends Fragment implements AdapterView.OnItemCl
 
         Log.i(BoardSelectorActivity.TAG, "onItemClick boardType: " + boardType);
 
-        int pageNo = 0;
         Intent intent = new Intent(view.getContext(), BoardListActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.PAGE, pageNo);
         startActivity(intent);
     }
 }

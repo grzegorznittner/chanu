@@ -51,15 +51,17 @@ public class ChanThreadCursorLoader extends AsyncTaskLoader<Cursor> {
 					+ ChanDatabaseHelper.POST_RESTO + "=0 ORDER BY " + ChanDatabaseHelper.POST_TIM + " DESC";
     	if (db != null && db.isOpen()) {
     		Log.i(TAG(), "loadInBackground database is ok");
-    		Cursor cursor = db.rawQuery(query, null);
+    		Cursor cursor = db != null && db.isOpen() ? db.rawQuery(query, null) : null;
     		if (cursor != null) {
     			// Ensure the cursor window is filled
-    			int count = cursor.getCount();
+    			int count = db != null && db.isOpen() && cursor != null ? cursor.getCount() : 0;
     			Log.i(TAG(), "loadInBackground cursor is ok, count: " + count);
-    			registerContentObserver(cursor, mObserver);
+    			if (count > 0) {
+                    registerContentObserver(cursor, mObserver);
+                }
     		}
     		return cursor;
-    	}
+        }
         return null;
     }
 

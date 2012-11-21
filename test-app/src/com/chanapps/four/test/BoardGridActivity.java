@@ -1,6 +1,6 @@
 package com.chanapps.four.test;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
@@ -15,35 +15,29 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import android.widget.Toast;
+import android.view.*;
+import android.widget.*;
+import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.FlowTextHelper;
 import com.chanapps.four.component.ImageTextCursorAdapter;
 import com.chanapps.four.data.*;
-import com.chanapps.four.data.ChanLoadBoardService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class BoardListActivity extends ListActivity
+public class BoardGridActivity extends Activity
 		implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>, ImageTextCursorAdapter.ViewBinder {
-	public static final String TAG = BoardListActivity.class.getSimpleName();
+	public static final String TAG = BoardGridActivity.class.getSimpleName();
 	
 	private SQLiteDatabase db = null;
 	private ImageLoader imageLoader = null;
     private DisplayImageOptions options = null;
     private ImageTextCursorAdapter adapter = null;
     private String boardCode = null;
+    private long lastUpdate = 0;
     private SharedPreferences prefs = null;
-    
+    private GridView gridView = null;
 	private Handler handler = null;
 	
 	private void openDatabaseIfNecessary() {
@@ -86,20 +80,26 @@ public class BoardListActivity extends ListActivity
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(getApplicationContext()));
 
+        setContentView(R.layout.board_activity_grid_layout);
+
+        gridView = (GridView)findViewById(R.id.board_activity_grid_view);
+        Display display = getWindowManager().getDefaultDisplay();
+        ChanGridSizer cg = new ChanGridSizer(gridView, display);
+        cg.sizeGridToDisplay();
+
         adapter = new ImageTextCursorAdapter(this,
-                R.layout.board_activity_list_item,
+                R.layout.board_activity_grid_item,
                 this,
                 new String[] {"image_url", "text"},
-                new int[] {R.id.list_item_image, R.id.list_item_text});
-        setListAdapter(adapter);
-        setContentView(R.layout.board_activity_list_layout);
-        
+                new int[] {R.id.board_activity_grid_item_image, R.id.board_activity_grid_item_text});
+        gridView.setAdapter(adapter);
+
         LoaderManager.enableDebugLogging(true);
 
         ensureHandler();
 
-        getListView().setClickable(true);
-        getListView().setOnItemClickListener(this);
+        gridView.setClickable(true);
+        gridView.setOnItemClickListener(this);
         
         //Log.i(TAG, "onCreate init loader");
         getLoaderManager().initLoader(0, null, this);
@@ -112,7 +112,7 @@ public class BoardListActivity extends ListActivity
                 public void handleMessage(Message msg) {
                     super.handleMessage(msg);
                     Log.i(TAG, ">>>>>>>>>>> refresh message received restarting loader");
-                    getLoaderManager().restartLoader(0, null, BoardListActivity.this);
+                    getLoaderManager().restartLoader(0, null, BoardGridActivity.this);
                 }
 
         	};
@@ -185,7 +185,6 @@ public class BoardListActivity extends ListActivity
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		if (view instanceof TextView) {
 			String text = cursor.getString(columnIndex);
-			text = ChanText.sanitizeText(text);
             setViewText((TextView) view, text, cursor);
             return true;
         } else if (view instanceof ImageView) {
@@ -202,20 +201,19 @@ public class BoardListActivity extends ListActivity
         	Log.w(TAG, "setViewText - Why is cursor null?");
             return;
         }
-        int tn_w = cursor.getInt(cursor.getColumnIndex("tn_w"));
-        int tn_h = cursor.getInt(cursor.getColumnIndex("tn_h"));
-        //Log.i(TAG, "tn_w=" + tn_w + ", tn_h=" + tn_h);
-        Point imageDimensions = new Point(tn_w, tn_h);
-        if (imageDimensions != null && imageDimensions.x > 0 && imageDimensions.y > 0) {
-        	text = text == null ? "" : text;
-            FlowTextHelper.tryFlowText(text, imageDimensions, textView);
-        } else {
-            textView.setText(text);
-        }
+        text = ChanText.sanitizeText(text).trim();
+        text = text.substring(0, Math.min(text.length(), 30));
+        textView.setText(text);
     }
     
     public void setViewImage(ImageView imageView, final String thumbnailImageUrl, Cursor cursor) {
         try {
+            /*
+            int tn_w = cursor.getInt(cursor.getColumnIndex("tn_w"));
+            int tn_h = cursor.getInt(cursor.getColumnIndex("tn_h"));
+            //Log.i(TAG, "tn_w=" + tn_w + ", tn_h=" + tn_h);
+            Point imageDimensions = new Point(tn_w, tn_h);
+            */
             this.imageLoader.displayImage(thumbnailImageUrl, imageView, options);
         } catch (NumberFormatException nfe) {
             imageView.setImageURI(Uri.parse(thumbnailImageUrl));
@@ -258,16 +256,11 @@ public class BoardListActivity extends ListActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent homeIntent = new Intent(this, BoardSelectorActivity.class);
-                NavUtils.navigateUpTo(this, homeIntent);
+                Intent intent = new Intent(this, BoardSelectorActivity.class);
+                NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.refresh_board_menu:
                 refreshBoard();
-                return true;
-            case R.id.view_as_grid_menu:
-                Intent listIntent = new Intent(getApplicationContext(), BoardGridActivity.class);
-                listIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-                startActivity(listIntent);
                 return true;
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);

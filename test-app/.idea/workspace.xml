@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AndroidConfiguredLogFilters">
-    <filters>
-      <filter>
-        <option name="logLevel" value="error" />
-        <option name="logMessagePattern" value=".*chan.*" />
-        <option name="logTagPattern" value="" />
-        <option name="name" value="chan" />
-        <option name="pid" value="" />
-      </filter>
-    </filters>
-  </component>
   <component name="AndroidLayoutPreviewToolWindow">
     <option name="state">
       <GlobalState>
@@ -23,11 +12,20 @@
     </option>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="chan" />
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="ERROR" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b3492763-7884-4c6a-8ffb-17a5ff808231" name="Default" comment="">
       <change type="DELETED" beforePath="$PROJECT_DIR$/4channer.iml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/com/chanapps/four/test/ThreadGridActivity.java" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/res/layout/board_grid_view.xml" afterPath="$PROJECT_DIR$/res/layout/board_selector_grid_view.xml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/res/menu/board_grid_menu.xml" afterPath="$PROJECT_DIR$/res/menu/board_selector_menu.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AndroidManifest.xml" afterPath="$PROJECT_DIR$/AndroidManifest.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/values/strings.xml" afterPath="$PROJECT_DIR$/res/values/strings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/chanapps/four/component/BoardGroupFragment.java" afterPath="$PROJECT_DIR$/src/com/chanapps/four/component/BoardGroupFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/chanapps/four/data/ChanThreadCursorLoader.java" afterPath="$PROJECT_DIR$/src/com/chanapps/four/data/ChanThreadCursorLoader.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/chanapps/four/test/BoardListActivity.java" afterPath="$PROJECT_DIR$/src/com/chanapps/four/test/BoardListActivity.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/chanapps/four/test/BoardSelectorActivity.java" afterPath="$PROJECT_DIR$/src/com/chanapps/four/test/BoardSelectorActivity.java" />
     </list>
     <ignored path="test-app.iws" />
@@ -118,10 +116,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ThreadGridActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/ThreadGridActivity.java">
+      <file leaf-file-name="BoardListActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/BoardListActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="67" column="0" selection-start="2094" selection-end="2094" vertical-scroll-proportion="0.0">
+            <state line="71" column="25" selection-start="2333" selection-end="2333" vertical-scroll-proportion="-0.6">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -129,20 +127,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ThreadListActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/ThreadListActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="44" selection-start="1240" selection-end="1240" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BoardSelectorActivity.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="BoardSelectorActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/BoardSelectorActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="69" selection-start="458" selection-end="458" vertical-scroll-proportion="0.11838791">
-              <folding />
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -150,16 +141,7 @@
       <file leaf-file-name="BoardGroupFragment.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/component/BoardGroupFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="43" column="15" selection-start="1514" selection-end="1514" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TabsAdapter.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/component/TabsAdapter.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="90" column="4" selection-start="3449" selection-end="3449" vertical-scroll-proportion="0.0">
+            <state line="39" column="18" selection-start="1398" selection-end="1478" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -167,37 +149,64 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Fragment.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/android-sdk-linux/sources/android-15/android/support/v4/app/Fragment.java">
+      <file leaf-file-name="ChanGridSizer.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/component/ChanGridSizer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="488" column="24" selection-start="16837" selection-end="16837" vertical-scroll-proportion="0.0">
+            <state line="44" column="26" selection-start="1206" selection-end="1206" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Fragment.class" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/libs/android-support-v4.jar!/android/support/v4/app/Fragment.class">
+      <file leaf-file-name="WindowManager.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/android-sdk-linux/sources/android-15/android/view/WindowManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="77" column="35" selection-start="2787" selection-end="2787" vertical-scroll-proportion="0.0">
+            <state line="55" column="19" selection-start="1707" selection-end="1707" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FullScreenImageActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/FullScreenImageActivity.java">
+      <file leaf-file-name="GridView.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/android-sdk-linux/sources/android-15/android/widget/GridView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="301" column="26" selection-start="10655" selection-end="10655" vertical-scroll-proportion="0.0">
+            <state line="100" column="0" selection-start="3102" selection-end="3102" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PostReplyActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/PostReplyActivity.java">
+      <file leaf-file-name="BoardGridActivity.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/BoardGridActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="13" selection-start="790" selection-end="790" vertical-scroll-proportion="0.0">
+            <state line="85" column="22" selection-start="2898" selection-end="2898" vertical-scroll-proportion="0.45454547">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="board_activity_list_layout.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/board_activity_list_layout.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="board_activity_grid_item.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/res/layout/board_activity_grid_item.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="25" column="28" selection-start="1004" selection-end="1004" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AndroidManifest.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="41" column="78" selection-start="1808" selection-end="1808" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -216,22 +225,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/com/chanapps/four/data/ChanLoadBoardService.java" />
-        <option value="$PROJECT_DIR$/src/com/chanapps/four/data/ChanLoadThreadService.java" />
-        <option value="$PROJECT_DIR$/src/com/chanapps/four/data/ChanHelper.java" />
-        <option value="$PROJECT_DIR$/src/com/chanapps/four/data/ChanPostCursorLoader.java" />
-        <option value="$PROJECT_DIR$/src/com/chanapps/four/test/ThreadListActivity.java" />
-        <option value="$PROJECT_DIR$/src/com/chanapps/four/test/FullScreenImageActivity.java" />
-        <option value="$PROJECT_DIR$/src/com/chanapps/four/test/ThreadActivity.java" />
-        <option value="$PROJECT_DIR$/res/layout/thread_grid_view.xml" />
-        <option value="$PROJECT_DIR$/src/com/chanapps/four/test/ImageAdapter.java" />
-        <option value="$PROJECT_DIR$/src/com/chanapps/four/component/ImageAdapter.java" />
-        <option value="$PROJECT_DIR$/src/com/chanapps/four/component/FlowTextHelper.java" />
-        <option value="$PROJECT_DIR$/src/com/chanapps/four/component/MyLeadingMarginSpan2.java" />
-        <option value="$PROJECT_DIR$/src/com/chanapps/four/test/BoardSelectorActivity.java" />
         <option value="$PROJECT_DIR$/src/com/chanapps/four/component/TabsAdapter.java" />
+        <option value="$PROJECT_DIR$/res/layout/thread_activity_grid_layout.xml" />
         <option value="$PROJECT_DIR$/src/com/chanapps/four/test/ThreadGridActivity.java" />
+        <option value="$PROJECT_DIR$/res/menu/board_grid_menu.xml" />
+        <option value="$PROJECT_DIR$/src/com/chanapps/four/test/BoardSelectorActivity.java" />
+        <option value="$PROJECT_DIR$/src/com/chanapps/four/data/ChanThreadCursorLoader.java" />
+        <option value="$PROJECT_DIR$/src/com/chanapps/four/test/BoardListActivity.java" />
+        <option value="$PROJECT_DIR$/AndroidManifest.xml" />
+        <option value="$PROJECT_DIR$/res/values/strings.xml" />
+        <option value="$PROJECT_DIR$/res/layout/board_grid_view.xml" />
+        <option value="$PROJECT_DIR$/res/layout/board_activity_grid_view.xml" />
+        <option value="$PROJECT_DIR$/res/layout/board_activity_grid_layout.xml" />
+        <option value="$PROJECT_DIR$/res/layout/board_activity_grid_item.xml" />
+        <option value="$PROJECT_DIR$/src/com/chanapps/four/component/ChanGridSizer.java" />
         <option value="$PROJECT_DIR$/src/com/chanapps/four/component/BoardGroupFragment.java" />
+        <option value="$PROJECT_DIR$/src/com/chanapps/four/test/BoardGridActivity.java" />
       </list>
     </option>
   </component>
@@ -322,6 +331,110 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="test-app" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="External Libraries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="&lt; Android 4.0.3 Platform &gt;" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test-app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="External Libraries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="&lt; Android 4.0.3 Platform &gt;" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android.jar" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test-app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="External Libraries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="&lt; Android 4.0.3 Platform &gt;" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android.jar" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test-app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="External Libraries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="&lt; Android 4.0.3 Platform &gt;" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android.jar" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="database" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test-app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="External Libraries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="&lt; Android 4.0.3 Platform &gt;" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android.jar" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="database" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sqlite" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -466,8 +579,8 @@
       <recent name="com.chanapps.four.data" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/res/menu" />
       <recent name="$PROJECT_DIR$/res/layout" />
+      <recent name="$PROJECT_DIR$/res/menu" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="com.chanapps.four.component" />
@@ -753,11 +866,11 @@
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977098" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32816327" sideWeight="0.7526718" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17632653" sideWeight="0.67328244" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32824427" sideWeight="0.4935065" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32671756" sideWeight="0.6753247" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32671756" sideWeight="0.6753247" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32824427" sideWeight="0.48734695" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -766,8 +879,8 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977098" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32951757" sideWeight="0.67588323" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2277551" sideWeight="0.73282444" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26717559" sideWeight="0.477551" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.30857143" sideWeight="0.67328244" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26717559" sideWeight="0.477551" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="simpleUML" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24938676" sideWeight="0.67588323" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -838,104 +951,88 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/component/ImageAdapter.java">
+    <entry file="file://$PROJECT_DIR$/res/menu/full_screen_image_menu.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="20" selection-start="510" selection-end="510" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/component/FlowTextHelper.java">
+    <entry file="file://$PROJECT_DIR$/res/menu/board_list_menu.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="7" selection-start="386" selection-end="386" vertical-scroll-proportion="0.0">
+        <state line="0" column="9" selection-start="9" selection-end="9" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/component/MyLeadingMarginSpan2.java">
+    <entry file="file://$PROJECT_DIR$/res/values/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="7" selection-start="336" selection-end="336" vertical-scroll-proportion="0.0">
+        <state line="9" column="28" selection-start="383" selection-end="383" vertical-scroll-proportion="-5.08">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/board_selector_grid_view.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="26" selection-start="134" selection-end="134" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gen/com/chanapps/four/test/R.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="19" selection-start="234" selection-end="234" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/board_activity_grid_layout.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="4" selection-start="568" selection-end="568" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/BoardListActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="211" column="12" selection-start="6927" selection-end="6927" vertical-scroll-proportion="0.0">
+        <state line="71" column="25" selection-start="2333" selection-end="2333" vertical-scroll-proportion="-0.6">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/FragmentLayout.java">
+    <entry file="file://$PROJECT_DIR$/res/layout/board_activity_list_layout.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="13" selection-start="1580" selection-end="1580" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/FullScreenImageActivity.java">
+    <entry file="file://$PROJECT_DIR$/res/layout/board_activity_grid_item.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="301" column="26" selection-start="10655" selection-end="10655" vertical-scroll-proportion="0.0">
+        <state line="25" column="28" selection-start="1004" selection-end="1004" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/PostReplyActivity.java">
+    <entry file="file://$USER_HOME$/android-sdk-linux/sources/android-15/android/widget/GridView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="13" selection-start="790" selection-end="790" vertical-scroll-proportion="0.0">
+        <state line="100" column="0" selection-start="3102" selection-end="3102" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/ThreadListActivity.java">
+    <entry file="file://$USER_HOME$/android-sdk-linux/sources/android-15/android/view/WindowManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="44" selection-start="1240" selection-end="1240" vertical-scroll-proportion="0.0">
+        <state line="55" column="19" selection-start="1707" selection-end="1707" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/android-sdk-linux/sources/android-15/android/support/v4/app/Fragment.java">
+    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/BoardSelectorActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="488" column="24" selection-start="16837" selection-end="16837" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/android-support-v4.jar!/android/support/v4/app/Fragment.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="77" column="35" selection-start="2787" selection-end="2787" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/component/TabsAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="90" column="4" selection-start="3449" selection-end="3449" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/android-sdk-linux/platforms/android-15/android.jar!/android/app/Activity.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="13" selection-start="149" selection-end="149" vertical-scroll-proportion="0.1421801">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/android-sdk-linux/sources/android-15/android/app/Activity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="628" column="13" selection-start="31223" selection-end="31223" vertical-scroll-proportion="0.33175355">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/ThreadGridActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="67" column="0" selection-start="2094" selection-end="2094" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -944,14 +1041,30 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/component/BoardGroupFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="15" selection-start="1514" selection-end="1514" vertical-scroll-proportion="0.0">
+        <state line="39" column="18" selection-start="1398" selection-end="1478" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/component/ChanGridSizer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="44" column="26" selection-start="1206" selection-end="1206" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/BoardSelectorActivity.java">
+    <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="69" selection-start="458" selection-end="458" vertical-scroll-proportion="0.11838791">
+        <state line="41" column="78" selection-start="1808" selection-end="1808" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/chanapps/four/test/BoardGridActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="85" column="22" selection-start="2898" selection-end="2898" vertical-scroll-proportion="0.45454547">
           <folding />
         </state>
       </provider>

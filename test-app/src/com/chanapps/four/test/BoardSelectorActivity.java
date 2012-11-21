@@ -108,7 +108,7 @@ public class BoardSelectorActivity extends FragmentActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(TAG, "onCreateOptionsMenu called");
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.board_grid_menu, menu);
+        inflater.inflate(R.menu.board_selector_menu, menu);
         return true;
     }
 

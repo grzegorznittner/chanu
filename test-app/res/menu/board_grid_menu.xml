@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/refresh_board_menu"
+          android:title="@string/refresh_board_menu"
+          android:icon="@drawable/navigation_refresh"
+          android:showAsAction="always"
+            />
+    <item android:id="@+id/view_as_list_menu"
+          android:title="@string/view_as_list_menu"
+          android:icon="@drawable/collections_view_as_list"
+          android:showAsAction="always"
+            />
+    <item android:id="@+id/new_thread_menu"
+          android:title="@string/new_thread_menu"
+          android:icon="@drawable/content_new"
+          android:showAsAction="always"
+            />
+    <item android:id="@+id/add_to_favorites_menu"
+          android:title="@string/add_to_favorites_menu"
+          android:icon="@drawable/rating_important"
+            />
+    <item android:id="@+id/download_all_threads_menu"
+          android:title="@string/download_all_threads_menu"
+          android:icon="@drawable/content_save"
+            />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"
@@ -7,5 +30,5 @@
     <item android:id="@+id/help_menu"
           android:title="@string/help_menu"
           android:icon="@drawable/action_help"
-          />
+            />
 </menu>
