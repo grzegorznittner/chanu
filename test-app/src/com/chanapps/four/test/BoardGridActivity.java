@@ -262,6 +262,11 @@ public class BoardGridActivity extends Activity
             case R.id.refresh_board_menu:
                 refreshBoard();
                 return true;
+            case R.id.view_as_list_menu:
+                Intent listIntent = new Intent(getApplicationContext(), BoardListActivity.class);
+                listIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+                startActivity(listIntent);
+                return true;
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
                 replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
