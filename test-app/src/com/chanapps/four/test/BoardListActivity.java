@@ -210,7 +210,7 @@ public class BoardListActivity extends ListActivity
         	Log.w(TAG, "setViewText - Why is cursor null?");
             return;
         }
-        if (hideAllText) {
+        if (hideAllText) {  //todo - @john - if the text is hidden then the image should take the full available space
             textView.setVisibility(View.INVISIBLE);
         } else textView.setVisibility(View.VISIBLE);
 
