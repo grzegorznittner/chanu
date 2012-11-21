@@ -46,8 +46,9 @@ public class BoardListActivity extends ListActivity
     private SharedPreferences prefs = null;
 
     private boolean hideAllText = false;
-    
-	private Handler handler = null;
+    private boolean hideTextOnlyPosts = false;
+
+    private Handler handler = null;
 	
 	private void openDatabaseIfNecessary() {
 		try {
@@ -162,6 +163,7 @@ public class BoardListActivity extends ListActivity
         //getting the shared preferences to enable / disable the text
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         hideAllText = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        hideTextOnlyPosts = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
 
         refreshBoard();
 	}
@@ -193,7 +195,7 @@ public class BoardListActivity extends ListActivity
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		if (view instanceof TextView) {
 			String text = cursor.getString(columnIndex);
-			text = ChanText.sanitizeText(text);
+			text = hideAllText ? "" : ChanText.sanitizeText(text);  //todo - @john - if the text is hidden then the image should take the full available space. Also we should not run ChanText replacements
             setViewText((TextView) view, text, cursor);
             return true;
         } else if (view instanceof ImageView) {
@@ -210,9 +212,6 @@ public class BoardListActivity extends ListActivity
         	Log.w(TAG, "setViewText - Why is cursor null?");
             return;
         }
-        if (hideAllText) {  //todo - @john - if the text is hidden then the image should take the full available space
-            textView.setVisibility(View.INVISIBLE);
-        } else textView.setVisibility(View.VISIBLE);
 
         int tn_w = cursor.getInt(cursor.getColumnIndex("tn_w"));
         int tn_h = cursor.getInt(cursor.getColumnIndex("tn_h"));

@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -43,6 +44,9 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 	private String boardCode = null;
 	private long threadNo = 0;
     private SharedPreferences prefs = null;
+
+    private boolean hideAllText = false;
+    private boolean hideTextOnlyPosts = false;
 
     private Handler handler = null;
     private Intent serviceIntent = null;
@@ -107,6 +111,11 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
     protected void onResume() {
         super.onResume();
 		Log.i(TAG, "onResume");
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        hideAllText = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        hideTextOnlyPosts = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
+
         ensureService();
         refreshBoard();
     }
@@ -220,7 +229,7 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		if (view instanceof TextView) {
 			String text = cursor.getString(columnIndex);
-			text = ChanText.sanitizeText(text);
+			text = hideAllText ? "" : ChanText.sanitizeText(text);  //todo - @john - if the text is hidden then the image should take the full available space. Also we should not run ChanText replacements
             setViewText((TextView) view, text, cursor);
             return true;
         } else if (view instanceof ImageView) {
@@ -237,6 +246,7 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
         	Log.w(TAG, "setViewText - Why is cursor null?");
             return;
         }
+
         int tn_w = cursor.getInt(cursor.getColumnIndex("tn_w"));
         int tn_h = cursor.getInt(cursor.getColumnIndex("tn_h"));
         //Log.i(TAG, "tn_w=" + tn_w + ", tn_h=" + tn_h);
