@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+            android:key="pref_notifications"
+            android:title="@string/pref_notifications"
+            android:summary="@string/pref_notifications_summ"
+            android:defaultValue="false" />
+    <CheckBoxPreference
+            android:key="pref_hide_text_only_posts"
+            android:title="@string/pref_hide_text_only_posts"
+            android:summary="@string/pref_hide_text_only_posts_summ"
+            android:defaultValue="false" />
+
+    <CheckBoxPreference
+            android:key="pref_hide_all_text"
+            android:title="@string/pref_hide_all_text"
+            android:summary="@string/pref_hide_all_text_summ"
+            android:defaultValue="false" />
+
+</PreferenceScreen>

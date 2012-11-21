@@ -320,6 +320,9 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
             case R.id.watch_thread_menu:
                 return true;
             case R.id.settings_menu:
+                Log.i(TAG, "Starting settings activity");
+                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                 startActivity(settingsIntent);
                  return true;
             case R.id.help_menu:
             default:

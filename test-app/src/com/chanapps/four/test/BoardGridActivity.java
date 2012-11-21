@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
@@ -155,6 +156,7 @@ public class BoardGridActivity extends Activity
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume");
+
         refreshBoard();
 	}
 
@@ -271,6 +273,11 @@ public class BoardGridActivity extends Activity
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
                 replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
                 startActivity(replyIntent);
+                return true;
+            case R.id.settings_menu:
+                Log.i(TAG, "Starting settings activity");
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

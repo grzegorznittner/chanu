@@ -58,7 +58,14 @@
             </intent-filter>
         </activity>
 
-		<activity android:name=".FragmentLayout" android:label="GridView">
+        <activity android:name=".SettingsActivity" android:label="@string/settings_activity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".FragmentLayout" android:label="GridView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>

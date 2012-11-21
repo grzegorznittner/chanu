@@ -353,6 +353,11 @@ public class PostReplyActivity extends Activity {
                 PostReplyTask postReplyTask = new PostReplyTask(this);
                 postReplyTask.execute();
                 return true;
+            case R.id.settings_menu:
+                Log.i(TAG, "Starting settings activity");
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

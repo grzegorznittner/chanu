@@ -1,5 +1,8 @@
 package com.chanapps.four.test;
 
+import android.content.Intent;
+import android.support.v4.app.NavUtils;
+import android.view.MenuItem;
 import com.chanapps.four.component.BoardGroupFragment;
 import com.chanapps.four.component.TabsAdapter;
 import com.chanapps.four.data.ChanBoard;
@@ -15,8 +18,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 
 public class BoardSelectorActivity extends FragmentActivity {
-	public static final String TAG = "BoardSelectorActivity";
-	
+    public static final String TAG = "BoardSelectorActivity";
+
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
     private SharedPreferences prefs = null;
@@ -30,10 +33,10 @@ public class BoardSelectorActivity extends FragmentActivity {
         mViewPager.setId(R.id.pager);
         setContentView(mViewPager);
     }
-    
+
     @Override
-	protected void onStart() {
-		super.onStart();
+    protected void onStart() {
+        super.onStart();
 
         final ActionBar bar = getActionBar();
         if (bar != null) {
@@ -52,7 +55,7 @@ public class BoardSelectorActivity extends FragmentActivity {
                         BoardGroupFragment.class, bundle);
             }
         }
-	}
+    }
 
     private void setTabFromPrefs() {
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
@@ -61,10 +64,10 @@ public class BoardSelectorActivity extends FragmentActivity {
 
         int selectedTab = 0;
         for (ChanBoard.Type type : ChanBoard.Type.values()) {
-        	if (type == selectedBoardType) {
-        		break;
-        	}
-        	selectedTab++;
+            if (type == selectedBoardType) {
+                break;
+            }
+            selectedTab++;
         }
         getActionBar().setSelectedNavigationItem(selectedTab);
         if (mViewPager.getCurrentItem() != selectedTab) {
@@ -72,20 +75,20 @@ public class BoardSelectorActivity extends FragmentActivity {
         }
     }
 
-    protected void onStop () {
-    	super.onStop();
-    	Log.i(TAG, "onStop");
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "onStop");
     }
 
     @Override
-	protected void onRestart() {
-		super.onRestart();
-		Log.i(TAG, "onRestart");
-	}
-	
-	public void onWindowFocusChanged (boolean hasFocus) {
-		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
-	}
+    protected void onRestart() {
+        super.onRestart();
+        Log.i(TAG, "onRestart");
+    }
+
+    public void onWindowFocusChanged(boolean hasFocus) {
+        Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
+    }
 
     @Override
     protected void onResume() {
@@ -94,22 +97,36 @@ public class BoardSelectorActivity extends FragmentActivity {
     }
 
     @Override
-	protected void onPause() {
-        super.onPause();        
-		Log.i(TAG, "onPause");
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause");
     }
-	
-	protected void onDestroy () {
-		super.onDestroy();
-		Log.i(TAG, "onDestroy");
-	}
 
-	@Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "onDestroy");
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(TAG, "onCreateOptionsMenu called");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_selector_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings_menu:
+                Log.i(TAG, "Starting settings activity");
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+            case R.id.help_menu:
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 }

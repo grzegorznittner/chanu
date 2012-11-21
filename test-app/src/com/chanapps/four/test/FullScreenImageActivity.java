@@ -342,6 +342,12 @@ public class FullScreenImageActivity extends Activity {
                 ShareImageTask shareImageTask = new ShareImageTask(getApplicationContext());
                 shareImageTask.execute(imageUrl);
                 return true;
+            case R.id.settings_menu:
+                Log.i(TAG, "Starting settings activity");
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

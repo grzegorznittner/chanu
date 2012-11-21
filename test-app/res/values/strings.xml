@@ -11,6 +11,7 @@
     <string name="title_photogrid_activity">PhotoGrid</string>
     <string name="full_screen_image_activity">View Image</string>
     <string name="post_reply_activity">New Post</string>
+    <string name="settings_activity">Settings</string>
 
     <!-- menus -->
     <string name="settings_menu">Settings</string>
@@ -97,5 +98,12 @@
     <string name="post_reply_error">Couldn\'t post</string>
     <string name="post_reply_posted_reply">Posted reply</string>
     <string name="post_reply_posted_thread">Posted new thread</string>
+    <string name="pref_notifications">Notifications</string>
+    <string name="pref_notifications_summ">whether or not you receive watching thread notifications</string>
+    <string name="pref_hide_text_only_posts">Hide Text Only Posts</string>
+    <string name="pref_hide_text_only_posts_summ">Hide text only posts</string>
+    <string name="pref_hide_all_text">Hide All Text</string>
+    <string name="pref_hide_all_text_summ">Hide All Text</string>
+
 
 </resources>

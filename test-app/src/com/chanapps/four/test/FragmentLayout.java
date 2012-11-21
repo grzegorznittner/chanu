@@ -16,8 +16,6 @@
 
 package com.chanapps.four.test;
 
-import com.chanapps.four.test.R;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -27,18 +25,9 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.ScrollView;
-import android.widget.TextView;
+import android.widget.*;
 
 
 /**
@@ -72,6 +61,11 @@ public class FragmentLayout extends Activity {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;
+            case R.id.settings_menu:
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

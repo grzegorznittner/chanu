@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -43,6 +44,8 @@ public class BoardListActivity extends ListActivity
     private ImageTextCursorAdapter adapter = null;
     private String boardCode = null;
     private SharedPreferences prefs = null;
+
+    private boolean hideAllText = false;
     
 	private Handler handler = null;
 	
@@ -155,6 +158,11 @@ public class BoardListActivity extends ListActivity
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume");
+
+        //getting the shared preferences to enable / disable the text
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        hideAllText = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+
         refreshBoard();
 	}
 
@@ -202,6 +210,10 @@ public class BoardListActivity extends ListActivity
         	Log.w(TAG, "setViewText - Why is cursor null?");
             return;
         }
+        if (hideAllText) {
+            textView.setVisibility(View.INVISIBLE);
+        } else textView.setVisibility(View.VISIBLE);
+
         int tn_w = cursor.getInt(cursor.getColumnIndex("tn_w"));
         int tn_h = cursor.getInt(cursor.getColumnIndex("tn_h"));
         //Log.i(TAG, "tn_w=" + tn_w + ", tn_h=" + tn_h);
@@ -274,6 +286,12 @@ public class BoardListActivity extends ListActivity
                 replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
                 startActivity(replyIntent);
                 return true;
+            case R.id.settings_menu:
+                Log.i(TAG, "Starting settings activity");
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
