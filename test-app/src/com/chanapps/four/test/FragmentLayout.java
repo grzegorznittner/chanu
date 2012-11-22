@@ -65,6 +65,10 @@ public class FragmentLayout extends Activity {
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
+            case R.id.help_menu:
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.raw.help_header, R.raw.help_fragment_layout);
+                rawResourceDialog.show();
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);

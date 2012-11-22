@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:stretchColumns="*">
+    <TableRow>
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/four_leaf_clover_1"
+                android:layout_gravity="left|center" android:contentDescription="@string/about_menu"/>
+        <TextView
+                android:id="@+id/info_text"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" />
+    </TableRow>
+    <TableRow>
+        <TextView
+                android:id="@+id/legal_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="10dip"
+                android:textStyle="italic"
+                android:layout_span="2"
+                android:layout_margin="8dip"
+                android:textColor="#cccccc" />
+    </TableRow>
+</TableLayout>

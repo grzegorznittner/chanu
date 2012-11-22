@@ -335,6 +335,9 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
                  startActivity(settingsIntent);
                  return true;
             case R.id.help_menu:
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.raw.help_header, R.raw.help_thread_list);
+                rawResourceDialog.show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
