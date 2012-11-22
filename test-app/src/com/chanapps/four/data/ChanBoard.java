@@ -59,7 +59,7 @@ public class ChanBoard {
 	private void addThread(ChanThread thread) {
 		threads.add(thread);
 		if (cursor != null) {
-            cursor.addRow(new Object[] {thread.no, thread.getThumbnailUrl(), ChanText.sanitizeText(thread.getText())});
+            cursor.addRow(new Object[] {thread.no, thread.getThumbnailUrl(), thread.getText()});
 		}
         thumbnailToPointMap.put(thread.getThumbnailUrl(), new Point(thread.tn_w, thread.tn_h));
 	}

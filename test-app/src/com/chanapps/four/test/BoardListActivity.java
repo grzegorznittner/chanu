@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.chanapps.four.component.FlowTextHelper;
 import com.chanapps.four.component.ImageTextCursorAdapter;
+import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanLoadBoardService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -160,15 +161,15 @@ public class BoardListActivity extends ListActivity
 		super.onResume();
 		Log.i(TAG, "onResume");
 
+        refreshBoard();
+	}
+
+    private void refreshBoard() {
         //getting the shared preferences to enable / disable the text
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         hideAllText = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         hideTextOnlyPosts = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
 
-        refreshBoard();
-	}
-
-    private void refreshBoard() {
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 100);
         Toast.makeText(getApplicationContext(), R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
@@ -194,13 +195,20 @@ public class BoardListActivity extends ListActivity
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		if (view instanceof TextView) {
-			String text = cursor.getString(columnIndex);
-			text = hideAllText ? "" : ChanText.sanitizeText(text);  //todo - @john - if the text is hidden then the image should take the full available space. Also we should not run ChanText replacements
-            setViewText((TextView) view, text, cursor);
+			//todo - @john - if the text is hidden then the image should take the full available space. Also we should not run ChanText replacements
+            TextView tv = (TextView)view;
+            if (hideAllText) {
+                tv.setVisibility(TextView.INVISIBLE);
+            }
+            else {
+                String text = cursor.getString(columnIndex);
+                Log.e(TAG, "text: " + text);
+                setViewText(tv, text, cursor);
+            }
             return true;
         } else if (view instanceof ImageView) {
-        	String text = cursor.getString(columnIndex);
-            setViewImage((ImageView) view, text, cursor);
+        	String imageUrl = cursor.getString(columnIndex);
+            setViewImage((ImageView) view, imageUrl, cursor);
             return true;
         } else {
         	return false;
@@ -237,7 +245,7 @@ public class BoardListActivity extends ListActivity
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
 		openDatabaseIfNecessary();
-		return new ChanThreadCursorLoader(getBaseContext(), db, boardCode);
+		return new ChanBoardCursorLoader(getBaseContext(), db, boardCode);
 	}
 
 	@Override

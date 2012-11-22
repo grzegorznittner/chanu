@@ -1,1 +1,9 @@
-todo post reply activity
+Enter the text you want to post, this may be empty if you wish.
+Click on the camera button to take a new picture to post.
+Click on the gallery button to select an existing picture
+from your phone.
+Click on the rotate left and rotate right buttons until the picture
+is as you want it.
+Pictures are required for new threads, but optional for replies.
+Then enter the captcha text to prove you are a human.
+Click submit to submit the post.

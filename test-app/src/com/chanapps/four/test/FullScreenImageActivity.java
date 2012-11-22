@@ -3,6 +3,7 @@ package com.chanapps.four.test;
 import java.io.InputStream;
 import java.net.URL;
 
+import com.chanapps.four.component.RawResourceDialog;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;

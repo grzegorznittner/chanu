@@ -65,19 +65,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".FragmentLayout" android:label="GridView">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-
-		<activity android:name=".FragmentLayout$DetailsActivity" android:label="DetailsView">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-
-		<activity android:name=".BoardSelectorActivity" android:label="@string/app_name">
+        <activity android:name=".BoardSelectorActivity" android:label="@string/app_name">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.VIEW" />

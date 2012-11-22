@@ -1,1 +1,4 @@
-todo board selector activity
+You are viewing the board selector.
+Click on the top tab to select the board category,
+or scroll right and left to switch board categories.
+Click on a board to view the latest threads for that board.

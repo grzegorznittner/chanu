@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.*;
 import android.webkit.WebView;
 import android.widget.*;
+import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.LoadCaptchaTask;
 import com.chanapps.four.data.PostReplyTask;

@@ -38,9 +38,7 @@ public class ChanPost {
 	}
 
     public String getText() {
-        return sub != null && sub.trim().length() > 0
-                  ? sub + (com != null && com.trim().length() > 0 ? "<br/>" + com : "")
-                  : com;
+        return ChanText.getText(sub, com);
     }
 
 	public String toString() {

@@ -1,4 +1,4 @@
-package com.chanapps.four.test;
+package com.chanapps.four.component;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,6 +20,7 @@ import android.text.util.Linkify;
 import android.graphics.Color;
 import android.view.Window;
 import android.widget.TextView;
+import com.chanapps.four.test.R;
 
 public class RawResourceDialog extends Dialog {
     private static Context mContext = null;

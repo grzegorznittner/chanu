@@ -61,9 +61,7 @@ public class ChanThread {
 	}
 
     public String getText() {
-        return sub != null && sub.trim().length() > 0
-                  ? sub + (com != null && com.trim().length() > 0 ? "<br/>" + com : "")
-                  : com;
+        return ChanText.getText(sub, com);
     }
 
 	public ArrayList<ChanPost> posts = new ArrayList<ChanPost>();
@@ -107,7 +105,7 @@ public class ChanThread {
 
     private void addItemToCursor(int no, String thumbnailUrl, String text) {
         if (cursor != null) {
-            cursor.addRow(new Object[] {no, thumbnailUrl, ChanText.sanitizeText(text)});
+            cursor.addRow(new Object[] {no, thumbnailUrl, text});
         }
     }
 

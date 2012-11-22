@@ -1,9 +1,9 @@
 package com.chanapps.four.test;
 
 import android.content.Intent;
-import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import com.chanapps.four.component.BoardGroupFragment;
+import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.component.TabsAdapter;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
@@ -60,7 +60,7 @@ public class BoardSelectorActivity extends FragmentActivity {
     private void setTabFromPrefs() {
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
         selectedBoardType = ChanBoard.Type.valueOf(prefs.getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
-        Log.e(TAG, "onStart selectedBoardType: " + selectedBoardType);
+        Log.i(TAG, "onStart selectedBoardType: " + selectedBoardType);
 
         int selectedTab = 0;
         for (ChanBoard.Type type : ChanBoard.Type.values()) {

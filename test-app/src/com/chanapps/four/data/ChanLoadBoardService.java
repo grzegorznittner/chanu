@@ -42,7 +42,7 @@ public class ChanLoadBoardService extends BaseChanService {
 		super(name);
 	}
 	
-	private int id = -1, boardName, now, time, name, sub, com, tim, filename, ext, w, h, tn_w, tn_h, fsize, resto, lastUpdate;
+	private int id = -1, boardName, now, time, name, sub, com, tim, filename, ext, w, h, tn_w, tn_h, fsize, resto, lastUpdate, text;
 	
 	protected Set<Integer> getListOfIds(String boardName) {
 		Set<Integer> ids = new HashSet<Integer>();
@@ -208,6 +208,8 @@ public class ChanLoadBoardService extends BaseChanService {
             fsize = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_FSIZE);
             resto = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_RESTO);
             lastUpdate = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_LAST_UPDATE);
+            // constructed fields
+            text = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_TEXT);
         }
     }
 
@@ -266,6 +268,7 @@ public class ChanLoadBoardService extends BaseChanService {
                 insertHelper.bind(fsize, thread.fsize);
             }
             insertHelper.bind(lastUpdate, new Date().getTime());
+            insertHelper.bind(text, ChanText.getText(thread.sub, thread.com));
 
             insertHelper.execute();
         }

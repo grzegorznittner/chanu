@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.chanapps.four.component.FlowTextHelper;
 import com.chanapps.four.component.ImageTextCursorAdapter;
+import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanLoadThreadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -228,13 +229,19 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		if (view instanceof TextView) {
-			String text = cursor.getString(columnIndex);
-			text = hideAllText ? "" : ChanText.sanitizeText(text);  //todo - @john - if the text is hidden then the image should take the full available space. Also we should not run ChanText replacements
-            setViewText((TextView) view, text, cursor);
+			//todo - @john - if the text is hidden then the image should take the full available space. Also we should not run ChanText replacements
+            TextView tv = (TextView)view;
+            if (hideAllText) {
+                tv.setVisibility(TextView.INVISIBLE);
+            }
+            else {
+                String text = cursor.getString(columnIndex);
+                setViewText(tv, text, cursor);
+            }
             return true;
         } else if (view instanceof ImageView) {
-        	String text = cursor.getString(columnIndex);
-            setViewImage((ImageView) view, text, cursor);
+        	String imageUrl = cursor.getString(columnIndex);
+            setViewImage((ImageView) view, imageUrl, cursor);
             return true;
         } else {
         	return false;
@@ -287,7 +294,7 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.d(TAG, ">>>>>>>>>>> onCreateLoader");
 
-		return new ChanPostCursorLoader(getBaseContext(), db, boardCode, threadNo);
+		return new ChanThreadCursorLoader(getBaseContext(), db, boardCode, threadNo);
 	}
 
 	@Override

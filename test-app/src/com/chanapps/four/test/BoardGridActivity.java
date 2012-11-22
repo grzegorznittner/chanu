@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,8 +18,8 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.FlowTextHelper;
 import com.chanapps.four.component.ImageTextCursorAdapter;
+import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.*;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -40,7 +39,9 @@ public class BoardGridActivity extends Activity
     private SharedPreferences prefs = null;
     private GridView gridView = null;
 	private Handler handler = null;
-	
+    private boolean hideAllText = false;
+    private boolean hideTextOnlyPosts = false;
+
 	private void openDatabaseIfNecessary() {
 		try {
 			if (db == null || !db.isOpen()) {
@@ -161,6 +162,10 @@ public class BoardGridActivity extends Activity
 	}
 
     private void refreshBoard() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        hideAllText = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        hideTextOnlyPosts = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
+
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 100);
         Toast.makeText(getApplicationContext(), R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
@@ -185,25 +190,30 @@ public class BoardGridActivity extends Activity
 
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-		if (view instanceof TextView) {
-			String text = cursor.getString(columnIndex);
-            setViewText((TextView) view, text, cursor);
+        if (view instanceof TextView) {
+            //todo - @john - if the text is hidden then the image should take the full available space. Also we should not run ChanText replacements
+            TextView tv = (TextView) view;
+            if (hideAllText) {
+                tv.setVisibility(TextView.INVISIBLE);
+            } else {
+                String text = cursor.getString(columnIndex);
+                setViewText(tv, text, cursor);
+            }
             return true;
         } else if (view instanceof ImageView) {
-        	String text = cursor.getString(columnIndex);
-            setViewImage((ImageView) view, text, cursor);
+            String imageUrl = cursor.getString(columnIndex);
+            setViewImage((ImageView) view, imageUrl, cursor);
             return true;
         } else {
-        	return false;
+            return false;
         }
-	}
+    }
 
     public void setViewText(TextView textView, String text, Cursor cursor) {
         if (cursor == null) {
         	Log.w(TAG, "setViewText - Why is cursor null?");
             return;
         }
-        text = ChanText.sanitizeText(text).trim();
         text = text.substring(0, Math.min(text.length(), 30));
         textView.setText(text);
     }
@@ -226,7 +236,7 @@ public class BoardGridActivity extends Activity
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
 		openDatabaseIfNecessary();
-		return new ChanThreadCursorLoader(getBaseContext(), db, boardCode);
+		return new ChanBoardCursorLoader(getBaseContext(), db, boardCode);
 	}
 
 	@Override
@@ -292,7 +302,7 @@ public class BoardGridActivity extends Activity
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(TAG, "onCreateOptionsMenu called");
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.board_list_menu, menu);
+        inflater.inflate(R.menu.board_grid_menu, menu);
         return true;
     }
 

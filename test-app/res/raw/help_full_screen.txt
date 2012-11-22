@@ -1,1 +1,4 @@
-todo full screen activity
+You are viewing this image post in full screen mode.
+Use pinch, zoom, and scroll to move the image around.
+Select Download from the menu to save the image.
+Select Share from the menu to share the image to your friends.

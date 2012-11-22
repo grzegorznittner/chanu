@@ -1,1 +1,8 @@
-todo thread list activity
+You are viewing the list of latest replies to this thread.
+You will see each post in order of its date, oldest first.
+Scroll down to see more posts.
+If the post has an image, you will see its thumbnail.
+Click on this thumbnail for a full screen image, which will
+also let you save the image.
+Click the menu Download All to save all the images from thread.
+

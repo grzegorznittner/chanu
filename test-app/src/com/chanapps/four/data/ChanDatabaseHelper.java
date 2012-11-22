@@ -17,7 +17,7 @@ public class ChanDatabaseHelper extends SQLiteOpenHelper {
 	static final String TAG = "ChanDatabaseHelper";
 	
 	public static final String DB_NAME = "4Channer";
-	public static final int DB_VERSION = 1;
+	public static final int DB_VERSION = 6;
 	
 	public static final String POST_TABLE = "post";
 	public static final String POST_ID = "_id";
@@ -26,7 +26,7 @@ public class ChanDatabaseHelper extends SQLiteOpenHelper {
 	public static final String POST_TIME = "time";
 	public static final String POST_NAME = "name";
 	public static final String POST_SUB = "sub";
-	public static final String POST_COM = "com";
+    public static final String POST_COM = "com";
 	public static final String POST_TIM = "tim";
 	public static final String POST_FILENAME = "filename";
 	public static final String POST_EXT = "ext";
@@ -37,6 +37,9 @@ public class ChanDatabaseHelper extends SQLiteOpenHelper {
 	public static final String POST_FSIZE = "fsize";
 	public static final String POST_RESTO = "resto";
 	public static final String POST_LAST_UPDATE = "last_update";
+
+    public static final String POST_TEXT = "text"; // we construct and filter this
+
 	// version 2
 	public static final String POST_STICKY = "sticky";
 	public static final String POST_CLOSED = "closed";
@@ -58,42 +61,62 @@ public class ChanDatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		String sql = "CREATE TABLE " + POST_TABLE + " ("
-				+ POST_ID + " INTEGER PRIMARY KEY, "
-				+ POST_RESTO + " INTEGER NOT NULL, "
-				+ POST_BOARD_NAME + " TEXT NOT NULL, "
-				+ POST_NAME + " TEXT, "
-				+ POST_NOW + " TEXT, "
-				+ POST_TIME + " INTEGER NOT NULL, "
-				+ POST_SUB + " TEXT, "
-				+ POST_COM + " TEXT, "
-				+ POST_TIM + " INTEGER, "
-				+ POST_FILENAME + " TEXT, "
-				+ POST_EXT + " TEXT, "
-				+ POST_W + " INTEGER, "
-				+ POST_H + " INTEGER, "
-				+ POST_TN_W + " INTEGER, "
-				+ POST_TN_H + " INTEGER, "
-				+ POST_FSIZE + " INTEGER, "
-				+ POST_LAST_UPDATE + " INTEGER "
-				+ ");";
-		Log.e(TAG, "Executing: " + sql);
-		db.execSQL(sql);
-		
-		sql = "CREATE INDEX " + POST_TABLE + "_resto_board " + "ON " + POST_TABLE + "(" + POST_RESTO + ", " + POST_BOARD_NAME + ");";
-		Log.e(TAG, "Executing: " + sql);
-		db.execSQL(sql);
-		
-		sql = "CREATE INDEX " + POST_TABLE + "_resto_time " + "ON " + POST_TABLE + "(" + POST_RESTO + ", " + POST_TIME + ");";
-		Log.e(TAG, "Executing: " + sql);
-		db.execSQL(sql);
+	    createDb(db);
 	}
-	
+
+    public void createDb(SQLiteDatabase db) {
+        String sql = "CREATE TABLE " + POST_TABLE + " ("
+   				+ POST_ID + " INTEGER PRIMARY KEY, "
+   				+ POST_RESTO + " INTEGER NOT NULL, "
+   				+ POST_BOARD_NAME + " TEXT NOT NULL, "
+   				+ POST_NAME + " TEXT, "
+   				+ POST_NOW + " TEXT, "
+   				+ POST_TIME + " INTEGER NOT NULL, "
+   				+ POST_SUB + " TEXT, "
+   				+ POST_COM + " TEXT, "
+   				+ POST_TIM + " INTEGER, "
+   				+ POST_FILENAME + " TEXT, "
+   				+ POST_EXT + " TEXT, "
+   				+ POST_W + " INTEGER, "
+   				+ POST_H + " INTEGER, "
+   				+ POST_TN_W + " INTEGER, "
+   				+ POST_TN_H + " INTEGER, "
+   				+ POST_FSIZE + " INTEGER, "
+   				+ POST_LAST_UPDATE + " INTEGER, "
+                   + POST_TEXT + " TEXT "
+   				+ ");";
+   		Log.e(TAG, "Executing: " + sql);
+   		db.execSQL(sql);
+
+   		sql = "CREATE INDEX " + POST_TABLE + "_resto_board " + "ON " + POST_TABLE + "(" + POST_RESTO + ", " + POST_BOARD_NAME + ");";
+   		Log.e(TAG, "Executing: " + sql);
+   		db.execSQL(sql);
+
+   		sql = "CREATE INDEX " + POST_TABLE + "_resto_time " + "ON " + POST_TABLE + "(" + POST_RESTO + ", " + POST_TIME + ");";
+   		Log.e(TAG, "Executing: " + sql);
+   		db.execSQL(sql);
+    }
+
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO Auto-generated method stub
-
+		// TODO migrate script
+        dropDb(db);
+        createDb(db);
 	}
+
+    private void dropDb(SQLiteDatabase db) {
+        String sql = "DROP INDEX " + POST_TABLE + "_resto_time";
+        Log.e(TAG, "Executing: " + sql);
+        db.execSQL(sql);
+
+        sql = "DROP INDEX " + POST_TABLE + "_resto_board";
+        Log.e(TAG, "Executing: " + sql);
+        db.execSQL(sql);
+
+        sql = "DROP TABLE " + POST_TABLE;
+        Log.e(TAG, "Executing: " + sql);
+        db.execSQL(sql);
+    }
 
 	
 	static class ErrorHandler implements DatabaseErrorHandler {
