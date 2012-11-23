@@ -13,7 +13,6 @@
     <item android:id="@+id/new_thread_menu"
           android:title="@string/new_thread_menu"
           android:icon="@drawable/content_new"
-          android:showAsAction="always"
             />
     <item android:id="@+id/add_to_favorites_menu"
           android:title="@string/add_to_favorites_menu"

@@ -3,6 +3,7 @@ package com.chanapps.four.activity;
 import java.io.InputStream;
 import java.net.URL;
 
+import com.chanapps.four.component.ChanViewHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -54,6 +55,7 @@ public class FullScreenImageActivity extends Activity {
     private String imageUrl = null;
     private int imageWidth = 0;
     private int imageHeight = 0;
+    private ChanViewHelper.ViewType viewType = ChanViewHelper.ViewType.LIST;
 
     private void randomizeImage() {
         double d = Math.random();
@@ -171,6 +173,12 @@ public class FullScreenImageActivity extends Activity {
                 setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
                 imageWidth = intent.getIntExtra(ChanHelper.IMAGE_WIDTH, 0);
                 imageHeight = intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0);
+                if (intent.hasExtra(ChanHelper.VIEW_TYPE)) {
+                    viewType = ChanViewHelper.ViewType.valueOf(intent.getStringExtra(ChanHelper.VIEW_TYPE));
+                }
+                else {
+                    viewType = ChanViewHelper.ViewType.LIST;
+                }
                 Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
                 savePrefs();
             } else {
@@ -183,6 +191,7 @@ public class FullScreenImageActivity extends Activity {
             postNo = prefs.getLong(ChanHelper.POST_NO, 0);
             imageWidth = prefs.getInt(ChanHelper.IMAGE_WIDTH, 0);
             imageHeight = prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
+            viewType = ChanViewHelper.ViewType.valueOf(prefs.getString(ChanHelper.VIEW_TYPE, ChanViewHelper.ViewType.LIST.toString()));
             Log.i(TAG, "Post no " + postNo + " laoded from preferences");
         }
         loadChanPostData();
@@ -195,6 +204,7 @@ public class FullScreenImageActivity extends Activity {
         ed.putLong(ChanHelper.POST_NO, postNo);
         ed.putInt(ChanHelper.IMAGE_WIDTH, imageWidth);
         ed.putInt(ChanHelper.IMAGE_HEIGHT, imageHeight);
+        ed.putString(ChanHelper.VIEW_TYPE, viewType.toString());
         Log.i(TAG, "Stored in prefs, post no: " + postNo);
         ed.commit();
     }

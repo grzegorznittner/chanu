@@ -25,7 +25,6 @@ public class BoardGridActivity extends Activity
 	
 	private SQLiteDatabase db = null;
     private ImageTextCursorAdapter adapter = null;
-    private String boardCode = null;
     private GridView gridView = null;
 	private Handler handler = null;
 
@@ -37,7 +36,7 @@ public class BoardGridActivity extends Activity
 		Log.i(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
 
-        viewHelper = new ChanViewHelper(this);
+        viewHelper = new ChanViewHelper(this, ChanViewHelper.ViewType.GRID);
 
         setContentView(R.layout.board_activity_grid_layout);
 
@@ -82,14 +81,7 @@ public class BoardGridActivity extends Activity
     protected void onStart() {
         super.onStart();
 		Log.i(TAG, "onStart");
-        boardCode = viewHelper.loadBoard();
-    }
-
-    protected void onStop () {
-    	super.onStop();
-    	Log.i(TAG, "onStop");
-    	getLoaderManager().destroyLoader(0);
-    	handler = null;
+        viewHelper.startBoardService();
     }
 
 	@Override
@@ -115,6 +107,13 @@ public class BoardGridActivity extends Activity
         Log.i(TAG, "onPause");
     }
 	
+    protected void onStop () {
+    	super.onStop();
+    	Log.i(TAG, "onStop");
+    	getLoaderManager().destroyLoader(0);
+    	handler = null;
+    }
+
 	protected void onDestroy () {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy");
@@ -132,7 +131,7 @@ public class BoardGridActivity extends Activity
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
 		db = ChanDatabaseHelper.openDatabaseIfNecessary(this, db);
-		cursorLoader = new ChanCursorLoader(getBaseContext(), db, boardCode);
+		cursorLoader = new ChanCursorLoader(getBaseContext(), db, viewHelper.getBoardCode());
         return cursorLoader;
 	}
 
@@ -154,7 +153,7 @@ public class BoardGridActivity extends Activity
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        viewHelper.onItemClick(adapterView, view, position, id, boardCode);
+        viewHelper.startThreadActivity(adapterView, view, position, id);
     }
 
     @Override
@@ -169,12 +168,12 @@ public class BoardGridActivity extends Activity
                 return true;
             case R.id.view_as_list_menu:
                 Intent listIntent = new Intent(getApplicationContext(), BoardListActivity.class);
-                listIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+                listIntent.putExtra(ChanHelper.BOARD_CODE, viewHelper.getBoardCode());
                 startActivity(listIntent);
                 return true;
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
-                replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+                replyIntent.putExtra(ChanHelper.BOARD_CODE, viewHelper.getBoardCode());
                 startActivity(replyIntent);
                 return true;
             case R.id.settings_menu:

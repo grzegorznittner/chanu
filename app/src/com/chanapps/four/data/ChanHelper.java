@@ -12,5 +12,6 @@ public class ChanHelper {
     public static final String POST_NO = "postNo";
     public static final String IMAGE_WIDTH = "imageWidth";
     public static final String IMAGE_HEIGHT = "imageHeight";
+    public static final String VIEW_TYPE = "viewType";
 
 }

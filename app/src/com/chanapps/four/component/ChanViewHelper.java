@@ -13,9 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.activity.ThreadListActivity;
+import com.chanapps.four.activity.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanLoadService;
@@ -37,23 +35,36 @@ public class ChanViewHelper {
 
     private Activity activity;
     private DisplayImageOptions options;
-    private ImageLoader imageLoader = null;
+    private ImageLoader imageLoader;
+    private String boardCode;
+    private long threadNo = 0;
     private boolean hideAllText = false;
 
-    private enum ViewType {
+    public enum ViewType {
         LIST,
         GRID
     }
 
-    public ChanViewHelper(Activity activity) {
+    public ChanViewHelper(Activity activity, ViewType viewType) {
         this.activity = activity;
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(activity));
-        options = new DisplayImageOptions.Builder()
-			.showImageForEmptyUri(R.drawable.stub_image)
-			.cacheOnDisc()
-			.imageScaleType(ImageScaleType.EXACT)
-			.build();
+        if (viewType == ViewType.LIST) {
+            options = new DisplayImageOptions.Builder()
+    // for text-only posts this image is still there, causing display problems
+    //			.showImageForEmptyUri(R.drawable.stub_image)
+    			.cacheOnDisc()
+    			.imageScaleType(ImageScaleType.EXACT)
+    			.build();
+            }
+        else {
+            options = new DisplayImageOptions.Builder()
+                .showImageForEmptyUri(R.drawable.stub_image)
+			    .cacheOnDisc()
+			    .imageScaleType(ImageScaleType.EXACT)
+			    .build();
+        }
+        saveViewType(viewType);
     }
 
     public boolean setGridViewValue(View view, Cursor cursor, int columnIndex) {
@@ -75,23 +86,27 @@ public class ChanViewHelper {
             Log.e(TAG, "setting text: " + text);
             switch (viewType) {
                 case GRID:
-                    if (hideAllText) {
-                        tv.setVisibility(TextView.INVISIBLE);
+                    if (hideAllText || text == null || text.isEmpty()) {
+                        tv.setVisibility(View.INVISIBLE);
                     }
                     else {
                         setGridViewText(tv, text, cursor);
                     }
                     break;
-                case LIST:
+                default:
                     setListViewText(tv, text, cursor);
                     break;
-                default:
-                    throw new RuntimeException("Unknown view type: " + viewType);
             }
             return true;
         } else if (view instanceof ImageView) {
             ImageView iv = (ImageView) view;
-            setViewImage(iv, imageUrl, cursor);
+            // making this invisible causes display problems
+            //if (imageUrl != null && !imageUrl.isEmpty()) {
+                setViewImage(iv, imageUrl, cursor);
+            //}
+            //else {
+            //    iv.setVisibility(View.INVISIBLE);
+            //}
             return true;
         } else {
             return false;
@@ -132,58 +147,164 @@ public class ChanViewHelper {
         }
     }
 
-    private void setBoardMenu(String code) {
+    private void setBoardMenu() {
         ActionBar a = activity.getActionBar();
-        if (a != null) {
-            a.setTitle("/" + code + " " + activity.getString(R.string.board_activity));
-            a.setDisplayHomeAsUpEnabled(true);
+        if (a == null) {
+            return;
         }
+        int stringId = threadNo == 0
+                ? R.string.board_activity
+                : R.string.thread_activity;
+        String title = "/" + boardCode + " " + activity.getString(stringId);
+        a.setTitle(title);
+        a.setDisplayHomeAsUpEnabled(true);
     }
 
-    private void reloadPrefs() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+    private void reloadPrefs(SharedPreferences prefs) {
+        if (prefs == null) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        }
         hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
     }
 
     public void onRefresh() {
-        reloadPrefs();
+        reloadPrefs(null);
     }
 
-    public String loadBoard() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-        reloadPrefs();
-        String oldBoardCode = prefs.getString(ChanHelper.BOARD_CODE, "s");
-        String newBoardCode = "s";
-        Intent intent = activity.getIntent();
-        if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
-            newBoardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-            Log.i(TAG, "Board code read from intent: " + newBoardCode);
-        }
-        if (!intent.hasExtra(ChanHelper.BOARD_CODE) || !ChanBoard.isValidBoardCode(newBoardCode)) {
-            newBoardCode = prefs.getString(ChanHelper.BOARD_CODE, "s");
-            Log.i(TAG, "Board code loaded from prefs: " + newBoardCode);
-        }
-        setBoardMenu(newBoardCode);
+    private enum ServiceType {
+        BOARD,
+        THREAD
+    }
 
-        if (!oldBoardCode.equals(newBoardCode)) {
+    public void startBoardService() {
+        startService(ServiceType.BOARD);
+    }
+
+    public void startThreadService() {
+        startService(ServiceType.THREAD);
+    }
+
+    private void loadBoardCode(SharedPreferences prefs) {
+        String oldBoardCode = prefs.getString(ChanHelper.BOARD_CODE, "s");
+        boardCode = "s";
+        Intent intent = activity.getIntent();
+        if (intent != null && intent.hasExtra(ChanHelper.BOARD_CODE)) {
+            boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+            if (boardCode == null || boardCode.isEmpty()) {
+                boardCode = "s";
+            }
+            Log.i(TAG, "Board code read from intent: " + boardCode);
+        }
+        if (intent == null || !intent.hasExtra(ChanHelper.BOARD_CODE) || !ChanBoard.isValidBoardCode(boardCode)) {
+            boardCode = oldBoardCode;
+            Log.i(TAG, "Board code loaded from prefs: " + boardCode);
+        }
+        if (!oldBoardCode.equals(boardCode)) {
             SharedPreferences.Editor ed = prefs.edit();
-            ed.putString(ChanHelper.BOARD_CODE, newBoardCode);
+            ed.putString(ChanHelper.BOARD_CODE, boardCode);
             ed.commit();
         }
-
-        Log.i(TAG, "Starting ChanLoadService");
-        Intent threadIntent = new Intent(activity, ChanLoadService.class);
-        threadIntent.putExtra(ChanHelper.BOARD_CODE, newBoardCode);
-        activity.startService(threadIntent);
-        return newBoardCode;
     }
 
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id, String boardCode) {
-        Log.i(TAG, "onItemClick id=" + id + ", position=" + position);
-        Intent intent = new Intent(activity, ThreadListActivity.class);
+    private void loadThreadNo(SharedPreferences prefs) {
+        long oldThreadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
+        threadNo = 0;
+        Intent intent = activity.getIntent();
+        if (intent != null && intent.hasExtra(ChanHelper.THREAD_NO)) {
+            threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+            Log.i(TAG, "Thread no read from intent: " + boardCode);
+        }
+        if (intent == null || !intent.hasExtra(ChanHelper.THREAD_NO)) {
+            threadNo = oldThreadNo;
+            Log.i(TAG, "Thread no loaded from prefs: " + threadNo);
+        }
+        if (oldThreadNo != threadNo) {
+            SharedPreferences.Editor ed = prefs.edit();
+            ed.putString(ChanHelper.BOARD_CODE, boardCode);
+            ed.putLong(ChanHelper.THREAD_NO, threadNo);
+            ed.commit();
+        }
+    }
+
+    public ViewType getViewType() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        return ChanViewHelper.ViewType.valueOf(prefs.getString(ChanHelper.VIEW_TYPE, ViewType.LIST.toString()));
+    }
+
+    public void saveViewType(ViewType viewType) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        ViewType oldViewType = ChanViewHelper.ViewType.valueOf(prefs.getString(ChanHelper.VIEW_TYPE, ViewType.LIST.toString()));
+        if (viewType != oldViewType) {
+            SharedPreferences.Editor ed = prefs.edit();
+            ed.putString(ChanHelper.VIEW_TYPE, viewType.toString());
+            ed.commit();
+        }
+    }
+
+    private void startService(ServiceType serviceType) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        reloadPrefs(prefs);
+        loadBoardCode(prefs);
+        if (serviceType == ServiceType.THREAD) {
+            loadThreadNo(prefs);
+        }
+        setBoardMenu();
+        Log.i(TAG, "Starting ChanLoadService");
+        Intent threadIntent = new Intent(activity, ChanLoadService.class);
+        threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        threadIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        activity.startService(threadIntent);
+    }
+
+    public void startBoardActivity(AdapterView<?> adapterView, View view, int position, long id) {
+        startBoardActivityWithType(adapterView, view, position, id, getViewType());
+    }
+
+    private void startBoardActivityWithType(AdapterView<?> adapterView, View view, int position, long id, ViewType viewType) {
+        Intent intent = new Intent(activity, viewType == ViewType.LIST ? BoardListActivity.class : BoardGridActivity.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        activity.startActivity(intent);
+    }
+    public void startThreadActivity(AdapterView<?> adapterView, View view, int position, long id) {
+        startThreadActivityWithType(adapterView, view, position, id, getViewType());
+    }
+
+    private void startThreadActivityWithType(AdapterView<?> adapterView, View view, int position, long id, ViewType viewType) {
+        Intent intent = new Intent(activity, viewType == ViewType.LIST ? ThreadListActivity.class : ThreadGridActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, id);
         activity.startActivity(intent);
+    }
+
+    public void startFullImageActivityFromList(AdapterView<?> adapterView, View view, int position, long id) {
+        startFullImageActivity(adapterView, view, position, id, ViewType.LIST);
+    }
+
+    public void startFullImageActivityFromGrid(AdapterView<?> adapterView, View view, int position, long id) {
+        startFullImageActivity(adapterView, view, position, id, ViewType.GRID);
+    }
+
+    private void startFullImageActivity(AdapterView<?> adapterView, View view, int position, long id, ViewType viewType) {
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final long postId = cursor.getLong(cursor.getColumnIndex("_id"));
+        final int w = cursor.getInt(cursor.getColumnIndex("w"));
+        final int h = cursor.getInt(cursor.getColumnIndex("h"));
+        Intent intent = new Intent(activity, FullScreenImageActivity.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(ChanHelper.POST_NO, postId);
+        intent.putExtra(ChanHelper.IMAGE_WIDTH, w);
+        intent.putExtra(ChanHelper.IMAGE_HEIGHT, h);
+        intent.putExtra(ChanHelper.VIEW_TYPE, viewType.toString());
+        activity.startActivity(intent);
+    }
+
+    public String getBoardCode() {
+        return boardCode;
+    }
+
+    public long getThreadNo() {
+        return threadNo;
     }
 
 }

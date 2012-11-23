@@ -1,7 +1,9 @@
 package com.chanapps.four.component;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import com.chanapps.four.activity.BoardGridActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.activity.BoardListActivity;
@@ -32,6 +35,7 @@ public class BoardGroupFragment extends Fragment implements AdapterView.OnItemCl
         super.onCreate(savedInstanceState);
         boardType = getArguments() != null
                 ? ChanBoard.Type.valueOf(getArguments().getString(ChanHelper.BOARD_TYPE)) : ChanBoard.Type.JAPANESE_CULTURE;
+
     }
 
     @Override
@@ -50,10 +54,9 @@ public class BoardGroupFragment extends Fragment implements AdapterView.OnItemCl
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ChanBoard board = ChanBoard.getBoardsByType(boardType).get(position);
         String boardCode = board.link;
-
-        Log.i(BoardSelectorActivity.TAG, "onItemClick boardType: " + boardType);
-
-        Intent intent = new Intent(view.getContext(), BoardListActivity.class);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        ChanViewHelper.ViewType viewType = ChanViewHelper.ViewType.valueOf(prefs.getString(ChanHelper.VIEW_TYPE, ChanViewHelper.ViewType.LIST.toString()));
+        Intent intent = new Intent(view.getContext(), viewType == ChanViewHelper.ViewType.LIST ? BoardListActivity.class : BoardGridActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         startActivity(intent);
     }
