@@ -5,9 +5,13 @@ package com.chanapps.four.data;
 
 import android.content.Context;
 import android.database.DatabaseErrorHandler;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.CursorAdapter;
+import android.widget.Toast;
+import com.chanapps.four.activity.R;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -49,7 +53,33 @@ public class ChanDatabaseHelper extends SQLiteOpenHelper {
 	public ChanDatabaseHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION, new ErrorHandler());
 	}
-	
+
+    public static SQLiteDatabase openDatabaseIfNecessary(Context context, SQLiteDatabase db) {
+   		try {
+   			if (db == null || !db.isOpen()) {
+   				Log.i(TAG, "Opening Chan database");
+   				db = new ChanDatabaseHelper(context).getReadableDatabase();
+   			}
+   		} catch (SQLException se) {
+   			Log.e(TAG, "Cannot open database", se);
+               Toast.makeText(context, R.string.board_activity_couldnt_open_db, Toast.LENGTH_SHORT).show();
+   			db = null;
+   		}
+           return db;
+   	}
+
+   	public static SQLiteDatabase closeDatabase(CursorAdapter adapter, SQLiteDatabase db) {
+   		try {
+   			adapter.swapCursor(null);
+   			if (db != null) {
+   				db.close();
+   			}
+   		} finally {
+   			db = null;
+   		}
+           return db;
+   	}
+
 	@Override
 	public void onOpen(SQLiteDatabase db) {
 	    super.onOpen(db);

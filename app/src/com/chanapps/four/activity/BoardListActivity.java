@@ -5,7 +5,6 @@ import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,30 +31,6 @@ public class BoardListActivity extends ListActivity
     private String boardCode = null;
     private ChanViewHelper viewHelper;
     private Handler handler = null;
-	
-	private void openDatabaseIfNecessary() {
-		try {
-			if (db == null || !db.isOpen()) {
-				Log.i(TAG, "Opening Chan database");
-				db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
-			}
-		} catch (SQLException se) {
-			Log.e(TAG, "Cannot open database", se);
-            Toast.makeText(this, R.string.board_activity_couldnt_open_db, Toast.LENGTH_SHORT).show();
-			db = null;
-		}
-	}
-	
-	private void closeDatabse() {
-		try {
-			adapter.swapCursor(null);
-			if (db != null) {
-				db.close();
-			}
-		} finally {
-			db = null;
-		}
-	}
 	
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -139,7 +114,7 @@ public class BoardListActivity extends ListActivity
 		super.onDestroy();
 		Log.i(TAG, "onDestroy");
 		getLoaderManager().destroyLoader(0);
-		closeDatabse();
+		db = ChanDatabaseHelper.closeDatabase(adapter, db);
 		handler = null;
 	}
 
@@ -151,7 +126,7 @@ public class BoardListActivity extends ListActivity
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
-		openDatabaseIfNecessary();
+        db = ChanDatabaseHelper.openDatabaseIfNecessary(this, db);
         return new ChanCursorLoader(getBaseContext(), db, boardCode);
 	}
 

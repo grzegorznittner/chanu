@@ -5,7 +5,6 @@ import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,30 +31,6 @@ public class BoardGridActivity extends Activity
 
     private ChanCursorLoader cursorLoader;
     private ChanViewHelper viewHelper;
-
-	private void openDatabaseIfNecessary() {
-		try {
-			if (db == null || !db.isOpen()) {
-				Log.i(TAG, "Opening Chan database");
-				db = new ChanDatabaseHelper(getApplicationContext()).getReadableDatabase();
-			}
-		} catch (SQLException se) {
-			Log.e(TAG, "Cannot open database", se);
-            Toast.makeText(this, R.string.board_activity_couldnt_open_db, Toast.LENGTH_SHORT).show();
-			db = null;
-		}
-	}
-	
-	private void closeDatabse() {
-		try {
-			adapter.swapCursor(null);
-			if (db != null) {
-				db.close();
-			}
-		} finally {
-			db = null;
-		}
-	}
 	
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -144,7 +119,7 @@ public class BoardGridActivity extends Activity
 		super.onDestroy();
 		Log.i(TAG, "onDestroy");
 		getLoaderManager().destroyLoader(0);
-		closeDatabse();
+		db = ChanDatabaseHelper.closeDatabase(adapter, db);
 		handler = null;
 	}
 
@@ -156,7 +131,7 @@ public class BoardGridActivity extends Activity
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
-		openDatabaseIfNecessary();
+		db = ChanDatabaseHelper.openDatabaseIfNecessary(this, db);
 		cursorLoader = new ChanCursorLoader(getBaseContext(), db, boardCode);
         return cursorLoader;
 	}
@@ -167,14 +142,14 @@ public class BoardGridActivity extends Activity
 		adapter.swapCursor(data);
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 10000);
-		//closeDatabse();
+		//closeDatabase();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		Log.i(TAG, ">>>>>>>>>>> onLoaderReset");
 		adapter.swapCursor(null);
-		//closeDatabse();
+		//closeDatabase();
 	}
 
     @Override
