@@ -18,7 +18,7 @@ import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.activity.ThreadListActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanLoadBoardService;
+import com.chanapps.four.data.ChanLoadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -38,6 +38,7 @@ public class ChanViewHelper {
     private Activity activity;
     private DisplayImageOptions options;
     private ImageLoader imageLoader = null;
+    private boolean hideAllText = false;
 
     private enum ViewType {
         LIST,
@@ -74,7 +75,12 @@ public class ChanViewHelper {
             Log.e(TAG, "setting text: " + text);
             switch (viewType) {
                 case GRID:
-                    setGridViewText(tv, text, cursor);
+                    if (hideAllText) {
+                        tv.setVisibility(TextView.INVISIBLE);
+                    }
+                    else {
+                        setGridViewText(tv, text, cursor);
+                    }
                     break;
                 case LIST:
                     setListViewText(tv, text, cursor);
@@ -134,8 +140,18 @@ public class ChanViewHelper {
         }
     }
 
+    private void reloadPrefs() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+    }
+
+    public void onRefresh() {
+        reloadPrefs();
+    }
+
     public String loadBoard() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        reloadPrefs();
         String oldBoardCode = prefs.getString(ChanHelper.BOARD_CODE, "s");
         String newBoardCode = "s";
         Intent intent = activity.getIntent();
@@ -155,11 +171,10 @@ public class ChanViewHelper {
             ed.commit();
         }
 
-        Log.i(TAG, "Starting ChanLoadBoardService");
-        Intent threadIntent = new Intent(activity, ChanLoadBoardService.class);
+        Log.i(TAG, "Starting ChanLoadService");
+        Intent threadIntent = new Intent(activity, ChanLoadService.class);
         threadIntent.putExtra(ChanHelper.BOARD_CODE, newBoardCode);
         activity.startService(threadIntent);
-
         return newBoardCode;
     }
 

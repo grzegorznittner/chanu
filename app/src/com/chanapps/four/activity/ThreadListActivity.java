@@ -28,7 +28,6 @@ import com.chanapps.four.component.FlowTextHelper;
 import com.chanapps.four.component.ImageTextCursorAdapter;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.*;
-import com.chanapps.four.data.ChanLoadThreadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -185,8 +184,8 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
         }
         loadServiceConfig();
 
-   	    Log.i(TAG, "Starting ChanLoadThreadService");
-   	    serviceIntent = new Intent(this, ChanLoadThreadService.class);
+   	    Log.i(TAG, "Starting ChanLoadService");
+   	    serviceIntent = new Intent(this, ChanLoadService.class);
    	    serviceIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
    	    serviceIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
    	    startService(serviceIntent);
@@ -294,7 +293,7 @@ public class ThreadListActivity extends ListActivity implements LoaderManager.Lo
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.d(TAG, ">>>>>>>>>>> onCreateLoader");
 
-		return new ChanThreadCursorLoader(getBaseContext(), db, boardCode, threadNo);
+		return new ChanCursorLoader(getBaseContext(), db, boardCode, threadNo);
 	}
 
 	@Override

@@ -120,6 +120,7 @@ public class BoardListActivity extends ListActivity
 	}
 
     private void refreshBoard() {
+        viewHelper.onRefresh();
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 100);
         Toast.makeText(getApplicationContext(), R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
@@ -151,7 +152,7 @@ public class BoardListActivity extends ListActivity
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
 		openDatabaseIfNecessary();
-        return new ChanBoardCursorLoader(getBaseContext(), db, boardCode);
+        return new ChanCursorLoader(getBaseContext(), db, boardCode);
 	}
 
 	@Override

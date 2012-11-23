@@ -73,8 +73,7 @@
             </intent-filter>
         </activity>
         
-		<service android:name="com.chanapps.four.data.ChanLoadBoardService" />
-		<service android:name="com.chanapps.four.data.ChanLoadThreadService" />
+		<service android:name="com.chanapps.four.data.ChanLoadService" />
     </application>
 
 </manifest>

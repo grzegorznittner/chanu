@@ -28,17 +28,17 @@ import android.util.Log;
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
  *
  */
-public class ChanLoadBoardService extends BaseChanService {
-	private static final String TAG = ChanLoadBoardService.class.getName();
+public class ChanLoadService extends BaseChanService {
+	private static final String TAG = ChanLoadService.class.getName();
 
     protected static ChanDatabaseHelper chanDatabaseHelper;
     protected static InsertHelper insertHelper;
 
-    public ChanLoadBoardService() {
+    public ChanLoadService() {
    		super("board");
    	}
 
-    protected ChanLoadBoardService(String name) {
+    protected ChanLoadService(String name) {
    		super(name);
    	}
 	
@@ -98,44 +98,30 @@ public class ChanLoadBoardService extends BaseChanService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		String boardName = intent.getStringExtra(ChanHelper.BOARD_CODE);
+		String boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
 		int boardPage = intent.getIntExtra(ChanHelper.PAGE, 0);
-		Log.i(TAG, "Handling board=" + boardName + " page=" + boardPage);
+        long threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+		Log.i(TAG, "Handling board=" + boardCode + " page=" + boardPage);
 
         initDbHelpers();
 
         BufferedReader in = null;
 		try {
-			Set<Integer> ids = getListOfIds(boardName);
 			prepareColumnIndexes();
 			
-			URL chanApi = new URL("http://api.4chan.org/" + boardName + "/" + boardPage + ".json");
-	        URLConnection tc = chanApi.openConnection();
+			URL chanApi = threadNo == 0
+                ? new URL("http://api.4chan.org/" + boardCode + "/" + boardPage + ".json")
+                : new URL("http://api.4chan.org/" + boardCode + "/res/" + threadNo + ".json");
+
+            URLConnection tc = chanApi.openConnection();
             Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength());
 	        in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
-	        Gson gson = new GsonBuilder().create();
-	        
-			JsonReader reader = new JsonReader(in);
-			reader.setLenient(true);
-			reader.beginObject(); // has "threads" as single property
-			reader.nextName(); // "threads"
-			reader.beginArray();
-			while (reader.hasNext()) { // iterate over threads
-                reader.beginObject(); // has "posts" as single property
-                reader.nextName(); // "posts"
-                reader.beginArray();
-                while (reader.hasNext()) { // first object is the thread post, spin over rest
-                    ChanPost post = gson.fromJson(reader, ChanPost.class);
-                    post.board = boardName;
-                    boolean postExists = !ids.contains(post.no);
-                	Log.d(TAG, post.toString() + ", existed = " + postExists);
-                	addPost(post, postExists);
-                }
-                reader.endArray();
-                reader.endObject();
+            if (threadNo == 0) {
+                parseBoard(boardCode, in);
             }
-            reader.endArray();
-            reader.endObject();
+            else {
+                parseThread(boardCode, in);
+            }
         } catch (IOException e) {
             toastUI(R.string.board_service_couldnt_read);
             Log.e(TAG, "IO Error reading Chan board json. " + e.getMessage(), e);
@@ -151,32 +137,55 @@ public class ChanLoadBoardService extends BaseChanService {
 				Log.e(TAG, "Error closing reader", e);
 			}
 		}
-
-        // getNumThreads();
-
         cleanupDbHelpers();
 	}
 
-    protected void getNumThreads() {
-        if (chanDatabaseHelper == null) {
-            return;
+    protected void parseBoard(String boardCode, BufferedReader in) throws IOException {
+        Set<Integer> ids = getListOfIds(boardCode);
+
+        Gson gson = new GsonBuilder().create();
+
+        JsonReader reader = new JsonReader(in);
+        reader.setLenient(true);
+        reader.beginObject(); // has "threads" as single property
+        reader.nextName(); // "threads"
+        reader.beginArray();
+
+        while (reader.hasNext()) { // iterate over threads
+            reader.beginObject(); // has "posts" as single property
+            reader.nextName(); // "posts"
+            reader.beginArray();
+            while (reader.hasNext()) { // first object is the thread post, spin over rest
+                ChanPost post = gson.fromJson(reader, ChanPost.class);
+                post.board = boardCode;
+                boolean postExists = !ids.contains(post.no);
+                Log.d(TAG, post.toString() + ", existed = " + postExists);
+                addPost(post, postExists);
+            }
+            reader.endArray();
+            reader.endObject();
         }
-        synchronized (chanDatabaseHelper) {
-    		try {
-    			String query = "SELECT count(*) 'num_threads'"
-    					+ " FROM " + ChanDatabaseHelper.POST_TABLE
-    					+ " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "' AND "
-    						+ ChanDatabaseHelper.POST_RESTO + "=0";
-    			Cursor c = chanDatabaseHelper.getWritableDatabase().rawQuery(query, null);
-    			int numIdx = c.getColumnIndex("num_threads");
-    			for (boolean hasItem = c.moveToFirst(); hasItem; hasItem = c.moveToNext()) {
-    			    Log.i(TAG, "Number of threads: " + c.getString(numIdx));
-    			}
-    			c.close();
-    		} catch (Exception e) {
-                toastUI(R.string.board_service_couldnt_read_db);
-    			Log.e(TAG, "Error querying chan DB. " + e.getMessage(), e);
-    		}
+        //reader.endArray();
+        //reader.endObject();
+    }
+
+    protected void parseThread(String boardCode, BufferedReader in) throws IOException {
+        Set<Integer> ids = getListOfIds(boardCode);
+
+        Gson gson = new GsonBuilder().create();
+
+        JsonReader reader = new JsonReader(in);
+        reader.setLenient(true);
+        reader.beginObject(); // has "posts" as single property
+        reader.nextName(); // "posts"
+        reader.beginArray();
+
+        while (reader.hasNext()) {
+            ChanPost post = gson.fromJson(reader, ChanPost.class);
+            post.board = boardCode;
+            boolean postExists = !ids.contains(post.no);
+            Log.i(TAG, post.toString() + ", existed = " + postExists);
+            addPost(post, postExists);
         }
     }
 

@@ -21,52 +21,65 @@ import com.chanapps.four.activity.SettingsActivity;
  * query on a background thread so that it does not block the application's UI.
  * 
  */
-public class ChanBoardCursorLoader extends AsyncTaskLoader<Cursor> {
+public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
+
+    private static final String TAG = ChanCursorLoader.class.getSimpleName();
+
     protected final ForceLoadContentObserver mObserver;
 
     protected SQLiteDatabase db;
     protected Cursor mCursor;
     protected Context context;
+
     protected String boardName;
-    
-    protected ChanBoardCursorLoader(Context context, SQLiteDatabase db) {
+    protected long threadNo;
+
+    protected ChanCursorLoader(Context context, SQLiteDatabase db) {
         super(context);
         mObserver = new ForceLoadContentObserver();
         this.db = db;
     }
 
-    public ChanBoardCursorLoader(Context context, SQLiteDatabase db, String boardName) {
+    public ChanCursorLoader(Context context, SQLiteDatabase db, String boardName, long threadNo) {
         this(context, db);
         this.context = context;
         this.boardName = boardName;
+        this.threadNo = threadNo;
+    }
+
+    public ChanCursorLoader(Context context, SQLiteDatabase db, String boardName) {
+        this(context, db, boardName, 0);
     }
 
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
-    	Log.i(TAG(), "loadInBackground");
+    	Log.i(TAG, "loadInBackground");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         boolean hideTextOnlyPosts = prefs.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
-        Log.i("ChanBoardCursorLoader", "prefs: " + hideAllText + " " + hideTextOnlyPosts);
+        Log.i("ChanCursorLoader", "prefs: " + hideAllText + " " + hideTextOnlyPosts);
     	String query = "SELECT " + ChanDatabaseHelper.POST_ID + ", "
 				+ "'http://0.thumbs.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
 					+ " || '/thumb/' || " + ChanDatabaseHelper.POST_TIM + " || 's.jpg' 'image_url', "
                 + (hideAllText ? " '' 'text', " : ChanDatabaseHelper.POST_TEXT + " 'text', ")
-				+ ChanDatabaseHelper.POST_TN_W + " 'tn_w', " + ChanDatabaseHelper.POST_TN_H + " 'tn_h'"
+				+ ChanDatabaseHelper.POST_TN_W + " 'tn_w', " + ChanDatabaseHelper.POST_TN_H + " 'tn_h', "
+                + ChanDatabaseHelper.POST_W + " 'w', " + ChanDatabaseHelper.POST_H + " 'h'"
 				+ " FROM " + ChanDatabaseHelper.POST_TABLE
 				+ " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "' AND "
-					+ ChanDatabaseHelper.POST_RESTO + "=0 "
+                + (threadNo != 0
+                    ? "(" + ChanDatabaseHelper.POST_ID + "=" + threadNo + " OR " + ChanDatabaseHelper.POST_RESTO + "=" + threadNo + ")"
+				    :  ChanDatabaseHelper.POST_RESTO + "=0 ")
                 + (hideAllText || hideTextOnlyPosts ? " AND " + ChanDatabaseHelper.POST_TIM + " IS NOT NULL " : "")
                 + " ORDER BY " + ChanDatabaseHelper.POST_TIM + " ASC";
 
     	if (db != null && db.isOpen()) {
-    		Log.i(TAG(), "loadInBackground database is ok");
+    		Log.i(TAG, "loadInBackground database is ok");
     		Cursor cursor = db != null && db.isOpen() ? db.rawQuery(query, null) : null;
     		if (cursor != null) {
     			// Ensure the cursor window is filled
     			int count = db != null && db.isOpen() && cursor != null ? cursor.getCount() : 0;
-    			Log.i(TAG(), "loadInBackground cursor is ok, count: " + count);
+    			Log.i(TAG, "loadInBackground cursor is ok, count: " + count);
     			if (count > 0) {
                     registerContentObserver(cursor, mObserver);
                 }
@@ -87,7 +100,7 @@ public class ChanBoardCursorLoader extends AsyncTaskLoader<Cursor> {
     /* Runs on the UI thread */
     @Override
     public void deliverResult(Cursor cursor) {
-		Log.i(TAG(), "deliverResult isReset(): " + isReset());
+		Log.i(TAG, "deliverResult isReset(): " + isReset());
         if (isReset()) {
             // An async query came in while the loader is stopped
             if (cursor != null) {
@@ -116,7 +129,7 @@ public class ChanBoardCursorLoader extends AsyncTaskLoader<Cursor> {
      */
     @Override
     protected void onStartLoading() {
-    	Log.i(TAG(), "onStartLoading mCursor: " + mCursor);
+    	Log.i(TAG, "onStartLoading mCursor: " + mCursor);
         if (mCursor != null) {
             deliverResult(mCursor);
         }
@@ -130,14 +143,14 @@ public class ChanBoardCursorLoader extends AsyncTaskLoader<Cursor> {
      */
     @Override
     protected void onStopLoading() {
-    	Log.i(TAG(), "onStopLoading");
+    	Log.i(TAG, "onStopLoading");
         // Attempt to cancel the current load task if possible.
         cancelLoad();
     }
 
     @Override
     public void onCanceled(Cursor cursor) {
-    	Log.i(TAG(), "onCanceled cursor: " + cursor);
+    	Log.i(TAG, "onCanceled cursor: " + cursor);
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
@@ -146,7 +159,7 @@ public class ChanBoardCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     protected void onReset() {
         super.onReset();
-        Log.i(TAG(), "onReset cursor: " + mCursor);
+        Log.i(TAG, "onReset cursor: " + mCursor);
         // Ensure the loader is stopped
         onStopLoading();
 
@@ -155,10 +168,6 @@ public class ChanBoardCursorLoader extends AsyncTaskLoader<Cursor> {
         }
         mCursor = null;
     }
-
-	protected String TAG() {
-		return "ChanBoardCursorLoader";
-	}
 
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {

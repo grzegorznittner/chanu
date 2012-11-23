@@ -30,7 +30,7 @@ public class BoardGridActivity extends Activity
     private GridView gridView = null;
 	private Handler handler = null;
 
-    private ChanBoardCursorLoader cursorLoader;
+    private ChanCursorLoader cursorLoader;
     private ChanViewHelper viewHelper;
 
 	private void openDatabaseIfNecessary() {
@@ -125,6 +125,7 @@ public class BoardGridActivity extends Activity
 	}
 
     private void refreshBoard() {
+        viewHelper.onRefresh();
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 100);
         Toast.makeText(getApplicationContext(), R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
@@ -156,7 +157,7 @@ public class BoardGridActivity extends Activity
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
 		openDatabaseIfNecessary();
-		cursorLoader = new ChanBoardCursorLoader(getBaseContext(), db, boardCode);
+		cursorLoader = new ChanCursorLoader(getBaseContext(), db, boardCode);
         return cursorLoader;
 	}
 
