@@ -1,7 +1,7 @@
 package com.chanapps.four.data;
 
 import android.content.Context;
-import com.chanapps.four.test.R;
+import com.chanapps.four.activity.R;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

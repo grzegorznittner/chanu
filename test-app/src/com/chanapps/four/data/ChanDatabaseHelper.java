@@ -100,7 +100,12 @@ public class ChanDatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO migrate script
-        dropDb(db);
+        try {
+            dropDb(db);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Error while dropping db: " + e.getMessage(), e);
+        }
         createDb(db);
 	}
 

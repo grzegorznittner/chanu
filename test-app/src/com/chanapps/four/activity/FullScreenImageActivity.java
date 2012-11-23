@@ -1,4 +1,4 @@
-package com.chanapps.four.test;
+package com.chanapps.four.activity;
 
 import java.io.InputStream;
 import java.net.URL;

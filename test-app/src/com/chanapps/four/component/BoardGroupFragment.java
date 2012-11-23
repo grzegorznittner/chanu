@@ -12,9 +12,9 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.test.BoardListActivity;
-import com.chanapps.four.test.BoardSelectorActivity;
-import com.chanapps.four.test.R;
+import com.chanapps.four.activity.BoardListActivity;
+import com.chanapps.four.activity.BoardSelectorActivity;
+import com.chanapps.four.activity.R;
 
 /**
 * Created with IntelliJ IDEA.

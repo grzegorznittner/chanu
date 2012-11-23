@@ -11,8 +11,8 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.test.BoardSelectorActivity;
-import android.content.SharedPreferences;
+import com.chanapps.four.activity.BoardSelectorActivity;
+
 import java.util.ArrayList;
 
 /**

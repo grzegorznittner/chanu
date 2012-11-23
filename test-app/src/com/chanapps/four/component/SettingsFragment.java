@@ -2,7 +2,7 @@ package com.chanapps.four.component;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import com.chanapps.four.test.R;
+import com.chanapps.four.activity.R;
 
 /**
  * Created with IntelliJ IDEA.

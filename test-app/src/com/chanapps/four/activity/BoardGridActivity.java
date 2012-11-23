@@ -1,4 +1,4 @@
-package com.chanapps.four.test;
+package com.chanapps.four.activity;
 
 import android.app.Activity;
 import android.app.LoaderManager;
@@ -214,7 +214,7 @@ public class BoardGridActivity extends Activity
         	Log.w(TAG, "setViewText - Why is cursor null?");
             return;
         }
-        text = text.substring(0, Math.min(text.length(), 30));
+        text = text.substring(0, Math.min(text.length(), 22));
         textView.setText(text);
     }
     

@@ -1,4 +1,4 @@
-package com.chanapps.four.test;
+package com.chanapps.four.activity;
 
 import android.app.ListActivity;
 import android.app.LoaderManager;

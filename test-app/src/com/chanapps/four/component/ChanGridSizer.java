@@ -4,7 +4,7 @@ import android.graphics.Point;
 import android.util.Log;
 import android.view.Display;
 import android.widget.GridView;
-import com.chanapps.four.test.BoardSelectorActivity;
+import com.chanapps.four.activity.BoardSelectorActivity;
 
 /**
  * Created with IntelliJ IDEA.

@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.test.BoardSelectorActivity;
-import com.chanapps.four.test.R;
+import com.chanapps.four.activity.BoardSelectorActivity;
+import com.chanapps.four.activity.R;
 
 /**
 * Created with IntelliJ IDEA.

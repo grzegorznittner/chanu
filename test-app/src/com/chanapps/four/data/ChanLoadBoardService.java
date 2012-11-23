@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.chanapps.four.component.BaseChanService;
-import com.chanapps.four.test.R;
+import com.chanapps.four.activity.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -34,13 +34,13 @@ public class ChanLoadBoardService extends BaseChanService {
     protected static ChanDatabaseHelper chanDatabaseHelper;
     protected static InsertHelper insertHelper;
 
-	public ChanLoadBoardService() {
-		super("Thread");
-	}
-	
-	protected ChanLoadBoardService(String name) {
-		super(name);
-	}
+    public ChanLoadBoardService() {
+   		super("board");
+   	}
+
+    protected ChanLoadBoardService(String name) {
+   		super(name);
+   	}
 	
 	private int id = -1, boardName, now, time, name, sub, com, tim, filename, ext, w, h, tn_w, tn_h, fsize, resto, lastUpdate, text;
 	
@@ -125,11 +125,11 @@ public class ChanLoadBoardService extends BaseChanService {
                 reader.nextName(); // "posts"
                 reader.beginArray();
                 while (reader.hasNext()) { // first object is the thread post, spin over rest
-                    ChanThread thread = gson.fromJson(reader, ChanThread.class);
-                    thread.board = boardName;
-                    boolean postExists = !ids.contains(thread.no);
-                	Log.d(TAG, thread.toString() + ", existed = " + postExists);
-                	addPost(thread, postExists);
+                    ChanPost post = gson.fromJson(reader, ChanPost.class);
+                    post.board = boardName;
+                    boolean postExists = !ids.contains(post.no);
+                	Log.d(TAG, post.toString() + ", existed = " + postExists);
+                	addPost(post, postExists);
                 }
                 reader.endArray();
                 reader.endObject();
@@ -213,7 +213,7 @@ public class ChanLoadBoardService extends BaseChanService {
         }
     }
 
-	protected void addPost(ChanThread thread, boolean postExists) throws SQLiteConstraintException {
+	protected void addPost(ChanPost post, boolean postExists) throws SQLiteConstraintException {
         if (insertHelper == null) {
             return;
         }
@@ -227,48 +227,48 @@ public class ChanLoadBoardService extends BaseChanService {
                 insertHelper.prepareForReplace();
             }
 
-            insertHelper.bind(id, thread.no);
-            insertHelper.bind(boardName, thread.board);
-            insertHelper.bind(resto, thread.resto);
-            insertHelper.bind(time, thread.time);
-            if (thread.now != null) {
-                insertHelper.bind(now, thread.now);
+            insertHelper.bind(id, post.no);
+            insertHelper.bind(boardName, post.board);
+            insertHelper.bind(resto, post.resto);
+            insertHelper.bind(time, post.time);
+            if (post.now != null) {
+                insertHelper.bind(now, post.now);
             }
-            if (thread.name != null) {
-                insertHelper.bind(name, thread.name);
+            if (post.name != null) {
+                insertHelper.bind(name, post.name);
             }
-            if (thread.com != null) {
-                insertHelper.bind(com, thread.com);
+            if (post.com != null) {
+                insertHelper.bind(com, post.com);
             }
-            if (thread.sub != null) {
-                insertHelper.bind(sub, thread.sub);
+            if (post.sub != null) {
+                insertHelper.bind(sub, post.sub);
             }
-            if (thread.tim != null) {
-                insertHelper.bind(tim, thread.tim);
+            if (post.tim != null) {
+                insertHelper.bind(tim, post.tim);
             }
-            if (thread.filename != null) {
-                insertHelper.bind(filename, thread.filename);
+            if (post.filename != null) {
+                insertHelper.bind(filename, post.filename);
             }
-            if (thread.ext != null) {
-                insertHelper.bind(ext, thread.ext);
+            if (post.ext != null) {
+                insertHelper.bind(ext, post.ext);
             }
-            if (thread.w != -1) {
-                insertHelper.bind(w, thread.w);
+            if (post.w != -1) {
+                insertHelper.bind(w, post.w);
             }
-            if (thread.h != -1) {
-                insertHelper.bind(h, thread.h);
+            if (post.h != -1) {
+                insertHelper.bind(h, post.h);
             }
-            if (thread.tn_w != -1) {
-                insertHelper.bind(tn_w, thread.tn_w);
+            if (post.tn_w != -1) {
+                insertHelper.bind(tn_w, post.tn_w);
             }
-            if (thread.tn_h != -1) {
-                insertHelper.bind(tn_h, thread.tn_h);
+            if (post.tn_h != -1) {
+                insertHelper.bind(tn_h, post.tn_h);
             }
-            if (thread.fsize != -1) {
-                insertHelper.bind(fsize, thread.fsize);
+            if (post.fsize != -1) {
+                insertHelper.bind(fsize, post.fsize);
             }
             insertHelper.bind(lastUpdate, new Date().getTime());
-            insertHelper.bind(text, ChanText.getText(thread.sub, thread.com));
+            insertHelper.bind(text, ChanText.getText(post.sub, post.com));
 
             insertHelper.execute();
         }

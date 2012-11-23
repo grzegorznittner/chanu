@@ -9,8 +9,8 @@ import com.chanapps.four.component.FilePart;
 import com.chanapps.four.component.MultipartEntity;
 import com.chanapps.four.component.Part;
 import com.chanapps.four.component.StringPart;
-import com.chanapps.four.test.PostReplyActivity;
-import com.chanapps.four.test.R;
+import com.chanapps.four.activity.PostReplyActivity;
+import com.chanapps.four.activity.R;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 

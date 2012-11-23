@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Toast;
-import com.chanapps.four.test.R;
+import com.chanapps.four.activity.R;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 

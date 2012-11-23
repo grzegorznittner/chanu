@@ -11,17 +11,14 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Set;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.Toast;
-import com.chanapps.four.test.R;
+import com.chanapps.four.activity.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils.InsertHelper;
 import android.util.Log;
 
 /**
@@ -66,11 +63,11 @@ public class ChanLoadThreadService extends ChanLoadBoardService {
 			reader.nextName(); // "posts"
 			reader.beginArray();
 			while (reader.hasNext()) {
-				ChanThread thread = gson.fromJson(reader, ChanThread.class);
-				thread.board = boardName;
-				boolean postExists = !ids.contains(thread.no);
-            	Log.i(TAG, thread.toString() + ", existed = " + postExists);
-            	addPost(thread, postExists);
+				ChanPost post = gson.fromJson(reader, ChanPost.class);
+				post.board = boardName;
+				boolean postExists = !ids.contains(post.no);
+            	Log.i(TAG, post.toString() + ", existed = " + postExists);
+            	addPost(post, postExists);
 			}
         } catch (FileNotFoundException e) {
             toastUI(R.string.thread_service_not_found);
