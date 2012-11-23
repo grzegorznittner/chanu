@@ -118,19 +118,16 @@ public class BoardListActivity
 		handler = null;
 	}
 
-    @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         return viewHelper.setListViewValue(view, cursor, columnIndex);
     }
 
-	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
         db = ChanDatabaseHelper.openDatabaseIfNecessary(this, db);
         return new ChanCursorLoader(getBaseContext(), db, viewHelper.getBoardCode());
 	}
 
-	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
@@ -138,13 +135,11 @@ public class BoardListActivity
 		handler.sendEmptyMessageDelayed(0, 10000);
 	}
 
-	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		Log.i(TAG, ">>>>>>>>>>> onLoaderReset");
 		adapter.swapCursor(null);
 	}
 
-    @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         viewHelper.startThreadActivity(adapterView, view, position, id);
     }

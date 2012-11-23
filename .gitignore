@@ -10,7 +10,6 @@
 
 .DS_Store
 .idea
-.idea/
 
 # generated files
 bin/
@@ -20,6 +19,6 @@ out/
 # Local configuration file (sdk path, etc)
 local.properties
 
-#Intellij
+*.ipr
+*.iws
 *.iml
-app/.idea/

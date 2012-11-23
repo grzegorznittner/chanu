@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:minWidth="294dp"
+                    android:minHeight="72dp"
+                    android:updatePeriodMillis="600000"
+                    android:previewImage="@drawable/four_leaf_clover_1"
+                    android:initialLayout="@layout/channer_widget"
+                    android:resizeMode="horizontal|vertical"
+        />

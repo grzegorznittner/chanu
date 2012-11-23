@@ -60,7 +60,6 @@ public abstract class BaseChanService extends Service {
     protected void toastUI(final int stringId) {
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
-            @Override
             public void run() {
                 Toast.makeText(getApplicationContext(), stringId, Toast.LENGTH_SHORT).show();
             }

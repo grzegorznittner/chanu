@@ -122,12 +122,10 @@ public class BoardGridActivity extends Activity
 		handler = null;
 	}
 
-    @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         return viewHelper.setGridViewValue(view, cursor, columnIndex);
     }
 
-	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
 		db = ChanDatabaseHelper.openDatabaseIfNecessary(this, db);
@@ -135,7 +133,6 @@ public class BoardGridActivity extends Activity
         return cursorLoader;
 	}
 
-	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
@@ -144,14 +141,12 @@ public class BoardGridActivity extends Activity
 		//closeDatabase();
 	}
 
-	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		Log.i(TAG, ">>>>>>>>>>> onLoaderReset");
 		adapter.swapCursor(null);
 		//closeDatabase();
 	}
 
-    @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         viewHelper.startThreadActivity(adapterView, view, position, id);
     }

@@ -108,31 +108,26 @@ public class PostReplyActivity extends Activity {
         recaptchaText = (EditText)findViewById(R.id.post_reply_recaptcha_response);
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View view) {
                 startCamera();
             }
         });
         pictureButton.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View view) {
                 startGallery();
             }
         });
         rotateLeftButton.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View view) {
                 rotateLeft();
             }
         });
         rotateRightButton.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View view) {
                 rotateRight();
             }
         });
         refreshCaptchaButton.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View view) {
                 reloadCaptcha();
             }
