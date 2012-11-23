@@ -37,14 +37,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".BoardListActivity" android:label="@string/board_list_activity">
+        <activity android:name=".BoardListActivity" android:label="@string/board_activity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".BoardGridActivity" android:label="@string/board_grid_activity">
+        <activity android:name=".BoardGridActivity" android:label="@string/board_activity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />

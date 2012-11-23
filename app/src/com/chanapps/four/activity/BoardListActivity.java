@@ -8,8 +8,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Point;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,35 +18,23 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 
-import android.widget.Toast;
-import com.chanapps.four.component.FlowTextHelper;
+import com.chanapps.four.component.ChanViewHelper;
 import com.chanapps.four.component.ImageTextCursorAdapter;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanLoadBoardService;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class BoardListActivity extends ListActivity
 		implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>, ImageTextCursorAdapter.ViewBinder {
 	public static final String TAG = BoardListActivity.class.getSimpleName();
 	
 	private SQLiteDatabase db = null;
-	private ImageLoader imageLoader = null;
-    private DisplayImageOptions options = null;
     private ImageTextCursorAdapter adapter = null;
     private String boardCode = null;
     private SharedPreferences prefs = null;
-
-    private boolean hideAllText = false;
-    private boolean hideTextOnlyPosts = false;
-
+    private ChanViewHelper viewHelper;
     private Handler handler = null;
 	
 	private void openDatabaseIfNecessary() {
@@ -81,15 +67,7 @@ public class BoardListActivity extends ListActivity
         super.onCreate(savedInstanceState);
         
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
-        
-        options = new DisplayImageOptions.Builder()
-			.showImageForEmptyUri(R.drawable.stub_image)
-			.cacheOnDisc()
-			.imageScaleType(ImageScaleType.EXACT)
-			.build();
-
-        imageLoader = ImageLoader.getInstance();
-        imageLoader.init(ImageLoaderConfiguration.createDefault(getApplicationContext()));
+        viewHelper = new ChanViewHelper(this);
 
         adapter = new ImageTextCursorAdapter(this,
                 R.layout.board_activity_list_item,
@@ -131,14 +109,15 @@ public class BoardListActivity extends ListActivity
 
         Intent intent = getIntent();
         if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
-            setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
+            boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
             Log.i(TAG, "Board code read from intent: " + boardCode);
         }
         if (!intent.hasExtra(ChanHelper.BOARD_CODE) || !ChanBoard.isValidBoardCode(boardCode)) {
-            setBoardCode(prefs.getString(ChanHelper.BOARD_CODE, "s"));
+            boardCode = prefs.getString(ChanHelper.BOARD_CODE, "s");
             Log.i(TAG, "Board code loaded from prefs: " + boardCode);
         }
-        
+        viewHelper.setBoardMenu(boardCode);
+
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(ChanHelper.BOARD_CODE, boardCode);
         ed.commit();
@@ -165,11 +144,7 @@ public class BoardListActivity extends ListActivity
 	}
 
     private void refreshBoard() {
-        //getting the shared preferences to enable / disable the text
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        hideAllText = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        hideTextOnlyPosts = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
-
+        viewHelper.refreshPrefs();
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 100);
         Toast.makeText(getApplicationContext(), R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
@@ -192,53 +167,9 @@ public class BoardListActivity extends ListActivity
 		handler = null;
 	}
 
-	@Override
-	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-		if (view instanceof TextView) {
-			//todo - @john - if the text is hidden then the image should take the full available space. Also we should not run ChanText replacements
-            TextView tv = (TextView)view;
-            if (hideAllText) {
-                tv.setVisibility(TextView.INVISIBLE);
-            }
-            else {
-                String text = cursor.getString(columnIndex);
-                Log.e(TAG, "text: " + text);
-                setViewText(tv, text, cursor);
-            }
-            return true;
-        } else if (view instanceof ImageView) {
-        	String imageUrl = cursor.getString(columnIndex);
-            setViewImage((ImageView) view, imageUrl, cursor);
-            return true;
-        } else {
-        	return false;
-        }
-	}
-
-    public void setViewText(TextView textView, String text, Cursor cursor) {
-        if (cursor == null) {
-        	Log.w(TAG, "setViewText - Why is cursor null?");
-            return;
-        }
-
-        int tn_w = cursor.getInt(cursor.getColumnIndex("tn_w"));
-        int tn_h = cursor.getInt(cursor.getColumnIndex("tn_h"));
-        //Log.i(TAG, "tn_w=" + tn_w + ", tn_h=" + tn_h);
-        Point imageDimensions = new Point(tn_w, tn_h);
-        if (imageDimensions != null && imageDimensions.x > 0 && imageDimensions.y > 0) {
-        	text = text == null ? "" : text;
-            FlowTextHelper.tryFlowText(text, imageDimensions, textView);
-        } else {
-            textView.setText(text);
-        }
-    }
-    
-    public void setViewImage(ImageView imageView, final String thumbnailImageUrl, Cursor cursor) {
-        try {
-            this.imageLoader.displayImage(thumbnailImageUrl, imageView, options);
-        } catch (NumberFormatException nfe) {
-            imageView.setImageURI(Uri.parse(thumbnailImageUrl));
-        }
+    @Override
+    public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+        return viewHelper.setListViewValue(view, cursor, columnIndex);
     }
 
 	@Override
@@ -313,14 +244,6 @@ public class BoardListActivity extends ListActivity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_list_menu, menu);
         return true;
-    }
-
-    private void setBoardCode(String code) {
-        boardCode = code;
-        if (getActionBar() != null) {
-            getActionBar().setTitle("/" + boardCode + " " + getString(R.string.board_list_activity));
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
     }
 
 }

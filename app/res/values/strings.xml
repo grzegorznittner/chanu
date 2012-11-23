@@ -6,8 +6,7 @@
     <string name="title_item_list">Items</string>
     <string name="fragment_layout">2 Pane Layout</string>
     <string name="thread_list_activity">Thread</string>
-    <string name="board_list_activity">Board</string>
-    <string name="board_grid_activity">Board</string>
+    <string name="board_activity">Board</string>
     <string name="title_photogrid_activity">PhotoGrid</string>
     <string name="full_screen_image_activity">View Image</string>
     <string name="post_reply_activity">New Post</string>

@@ -8,39 +8,31 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.chanapps.four.component.ChanGridSizer;
+import com.chanapps.four.component.ChanViewHelper;
 import com.chanapps.four.component.ImageTextCursorAdapter;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.*;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class BoardGridActivity extends Activity
 		implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>, ImageTextCursorAdapter.ViewBinder {
 	public static final String TAG = BoardGridActivity.class.getSimpleName();
 	
 	private SQLiteDatabase db = null;
-	private ImageLoader imageLoader = null;
-    private DisplayImageOptions options = null;
     private ImageTextCursorAdapter adapter = null;
     private String boardCode = null;
-    private long lastUpdate = 0;
     private SharedPreferences prefs = null;
     private GridView gridView = null;
 	private Handler handler = null;
-    private boolean hideAllText = false;
-    private boolean hideTextOnlyPosts = false;
+
+    private ChanViewHelper viewHelper;
 
 	private void openDatabaseIfNecessary() {
 		try {
@@ -72,15 +64,7 @@ public class BoardGridActivity extends Activity
         super.onCreate(savedInstanceState);
         
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
-        
-        options = new DisplayImageOptions.Builder()
-			.showImageForEmptyUri(R.drawable.stub_image)
-			.cacheOnDisc()
-			.imageScaleType(ImageScaleType.EXACT)
-			.build();
-
-        imageLoader = ImageLoader.getInstance();
-        imageLoader.init(ImageLoaderConfiguration.createDefault(getApplicationContext()));
+        viewHelper = new ChanViewHelper(this);
 
         setContentView(R.layout.board_activity_grid_layout);
 
@@ -128,13 +112,14 @@ public class BoardGridActivity extends Activity
 
         Intent intent = getIntent();
         if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
-            setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
+            boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
             Log.i(TAG, "Board code read from intent: " + boardCode);
         }
         if (!intent.hasExtra(ChanHelper.BOARD_CODE) || !ChanBoard.isValidBoardCode(boardCode)) {
-            setBoardCode(prefs.getString(ChanHelper.BOARD_CODE, "s"));
+            boardCode = prefs.getString(ChanHelper.BOARD_CODE, "s");
             Log.i(TAG, "Board code loaded from prefs: " + boardCode);
         }
+        viewHelper.setBoardMenu(boardCode);
         
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(ChanHelper.BOARD_CODE, boardCode);
@@ -162,10 +147,7 @@ public class BoardGridActivity extends Activity
 	}
 
     private void refreshBoard() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        hideAllText = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        hideTextOnlyPosts = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
-
+        viewHelper.refreshPrefs();
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 100);
         Toast.makeText(getApplicationContext(), R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
@@ -188,48 +170,9 @@ public class BoardGridActivity extends Activity
 		handler = null;
 	}
 
-	@Override
-	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        if (view instanceof TextView) {
-            //todo - @john - if the text is hidden then the image should take the full available space. Also we should not run ChanText replacements
-            TextView tv = (TextView) view;
-            if (hideAllText) {
-                tv.setVisibility(TextView.INVISIBLE);
-            } else {
-                String text = cursor.getString(columnIndex);
-                setViewText(tv, text, cursor);
-            }
-            return true;
-        } else if (view instanceof ImageView) {
-            String imageUrl = cursor.getString(columnIndex);
-            setViewImage((ImageView) view, imageUrl, cursor);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public void setViewText(TextView textView, String text, Cursor cursor) {
-        if (cursor == null) {
-        	Log.w(TAG, "setViewText - Why is cursor null?");
-            return;
-        }
-        text = text.substring(0, Math.min(text.length(), 22));
-        textView.setText(text);
-    }
-    
-    public void setViewImage(ImageView imageView, final String thumbnailImageUrl, Cursor cursor) {
-        try {
-            /*
-            int tn_w = cursor.getInt(cursor.getColumnIndex("tn_w"));
-            int tn_h = cursor.getInt(cursor.getColumnIndex("tn_h"));
-            //Log.i(TAG, "tn_w=" + tn_w + ", tn_h=" + tn_h);
-            Point imageDimensions = new Point(tn_w, tn_h);
-            */
-            this.imageLoader.displayImage(thumbnailImageUrl, imageView, options);
-        } catch (NumberFormatException nfe) {
-            imageView.setImageURI(Uri.parse(thumbnailImageUrl));
-        }
+    @Override
+    public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+        return viewHelper.setGridViewValue(view, cursor, columnIndex);
     }
 
 	@Override
@@ -304,14 +247,6 @@ public class BoardGridActivity extends Activity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_grid_menu, menu);
         return true;
-    }
-
-    private void setBoardCode(String code) {
-        boardCode = code;
-        if (getActionBar() != null) {
-            getActionBar().setTitle("/" + boardCode + " " + getString(R.string.board_list_activity));
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
     }
 
 }
