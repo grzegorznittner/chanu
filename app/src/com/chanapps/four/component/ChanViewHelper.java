@@ -2,6 +2,7 @@ package com.chanapps.four.component;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Point;
@@ -9,10 +10,15 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.activity.ThreadListActivity;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanLoadBoardService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -33,9 +39,6 @@ public class ChanViewHelper {
     private DisplayImageOptions options;
     private ImageLoader imageLoader = null;
 
-    private boolean hideAllText = false;
-    private boolean hideTextOnlyPosts = false;
-
     private enum ViewType {
         LIST,
         GRID
@@ -52,12 +55,6 @@ public class ChanViewHelper {
 			.build();
     }
 
-    public void refreshPrefs() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity);
-        hideAllText = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        hideTextOnlyPosts = sharedPref.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
-    }
-
     public boolean setGridViewValue(View view, Cursor cursor, int columnIndex) {
         return setViewValue(view, cursor, columnIndex, ViewType.GRID);
     }
@@ -72,35 +69,23 @@ public class ChanViewHelper {
         String text = rawText == null ? "" : rawText;
         String imageUrl = rawImageUrl == null ? "" : rawImageUrl;
         if (view instanceof TextView) {
-            //todo - @john - if the text is hidden then the image should take the full available space. Also we should not run ChanText replacements
+            //todo - @john - if the text is hidden then the image should take the full available space.
             TextView tv = (TextView) view;
-            if (hideAllText) {
-                tv.setVisibility(TextView.INVISIBLE);
-            } else if (hideTextOnlyPosts && imageUrl.isEmpty()) {
-                tv.setVisibility(TextView.INVISIBLE);
-            } else {
-                Log.e(TAG, "setting text: " + text);
-                switch (viewType) {
-                    case GRID:
-                        setGridViewText(tv, text, cursor);
-                        break;
-                    case LIST:
-                        setListViewText(tv, text, cursor);
-                        break;
-                    default:
-                        throw new RuntimeException("Unknown view type: " + viewType);
-                }
+            Log.e(TAG, "setting text: " + text);
+            switch (viewType) {
+                case GRID:
+                    setGridViewText(tv, text, cursor);
+                    break;
+                case LIST:
+                    setListViewText(tv, text, cursor);
+                    break;
+                default:
+                    throw new RuntimeException("Unknown view type: " + viewType);
             }
             return true;
         } else if (view instanceof ImageView) {
             ImageView iv = (ImageView) view;
-            if (hideTextOnlyPosts && imageUrl.isEmpty()) {
-                iv.setVisibility(ImageView.INVISIBLE);
-            } else if (hideAllText && imageUrl.isEmpty()) {
-                iv.setVisibility(ImageView.INVISIBLE);
-            } else {
-                setViewImage(iv, imageUrl, cursor);
-            }
+            setViewImage(iv, imageUrl, cursor);
             return true;
         } else {
             return false;
@@ -141,12 +126,49 @@ public class ChanViewHelper {
         }
     }
 
-    public void setBoardMenu(String code) {
+    private void setBoardMenu(String code) {
         ActionBar a = activity.getActionBar();
         if (a != null) {
             a.setTitle("/" + code + " " + activity.getString(R.string.board_activity));
             a.setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    public String loadBoard() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        String oldBoardCode = prefs.getString(ChanHelper.BOARD_CODE, "s");
+        String newBoardCode = "s";
+        Intent intent = activity.getIntent();
+        if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
+            newBoardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+            Log.i(TAG, "Board code read from intent: " + newBoardCode);
+        }
+        if (!intent.hasExtra(ChanHelper.BOARD_CODE) || !ChanBoard.isValidBoardCode(newBoardCode)) {
+            newBoardCode = prefs.getString(ChanHelper.BOARD_CODE, "s");
+            Log.i(TAG, "Board code loaded from prefs: " + newBoardCode);
+        }
+        setBoardMenu(newBoardCode);
+
+        if (!oldBoardCode.equals(newBoardCode)) {
+            SharedPreferences.Editor ed = prefs.edit();
+            ed.putString(ChanHelper.BOARD_CODE, newBoardCode);
+            ed.commit();
+        }
+
+        Log.i(TAG, "Starting ChanLoadBoardService");
+        Intent threadIntent = new Intent(activity, ChanLoadBoardService.class);
+        threadIntent.putExtra(ChanHelper.BOARD_CODE, newBoardCode);
+        activity.startService(threadIntent);
+
+        return newBoardCode;
+    }
+
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id, String boardCode) {
+        Log.i(TAG, "onItemClick id=" + id + ", position=" + position);
+        Intent intent = new Intent(activity, ThreadListActivity.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.THREAD_NO, id);
+        activity.startActivity(intent);
     }
 
 }

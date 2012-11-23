@@ -4,14 +4,12 @@ import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -24,7 +22,6 @@ import com.chanapps.four.component.ChanViewHelper;
 import com.chanapps.four.component.ImageTextCursorAdapter;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.*;
-import com.chanapps.four.data.ChanLoadBoardService;
 
 public class BoardListActivity extends ListActivity
 		implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>, ImageTextCursorAdapter.ViewBinder {
@@ -33,7 +30,6 @@ public class BoardListActivity extends ListActivity
 	private SQLiteDatabase db = null;
     private ImageTextCursorAdapter adapter = null;
     private String boardCode = null;
-    private SharedPreferences prefs = null;
     private ChanViewHelper viewHelper;
     private Handler handler = null;
 	
@@ -66,7 +62,6 @@ public class BoardListActivity extends ListActivity
 		Log.i(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         
-        prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
         viewHelper = new ChanViewHelper(this);
 
         adapter = new ImageTextCursorAdapter(this,
@@ -106,26 +101,7 @@ public class BoardListActivity extends ListActivity
     protected void onStart() {
         super.onStart();
 		Log.i(TAG, "onStart");
-
-        Intent intent = getIntent();
-        if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
-            boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-            Log.i(TAG, "Board code read from intent: " + boardCode);
-        }
-        if (!intent.hasExtra(ChanHelper.BOARD_CODE) || !ChanBoard.isValidBoardCode(boardCode)) {
-            boardCode = prefs.getString(ChanHelper.BOARD_CODE, "s");
-            Log.i(TAG, "Board code loaded from prefs: " + boardCode);
-        }
-        viewHelper.setBoardMenu(boardCode);
-
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(ChanHelper.BOARD_CODE, boardCode);
-        ed.commit();
-
-        Log.i(TAG, "Starting ChanLoadBoardService");
-        Intent threadIntent = new Intent(this, ChanLoadBoardService.class);
-        threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        startService(threadIntent);
+        boardCode = viewHelper.loadBoard();
     }
 
     protected void onStop () {
@@ -144,7 +120,6 @@ public class BoardListActivity extends ListActivity
 	}
 
     private void refreshBoard() {
-        viewHelper.refreshPrefs();
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 100);
         Toast.makeText(getApplicationContext(), R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
@@ -176,7 +151,7 @@ public class BoardListActivity extends ListActivity
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
 		openDatabaseIfNecessary();
-		return new ChanBoardCursorLoader(getBaseContext(), db, boardCode);
+        return new ChanBoardCursorLoader(getBaseContext(), db, boardCode);
 	}
 
 	@Override
@@ -197,11 +172,7 @@ public class BoardListActivity extends ListActivity
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-    	Log.i(TAG, "onItemClick id=" + id + ", position=" + position);
-        Intent intent = new Intent(this, ThreadListActivity.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.THREAD_NO, id);
-        startActivity(intent);
+        viewHelper.onItemClick(adapterView, view, position, id, boardCode);
     }
 
     @Override

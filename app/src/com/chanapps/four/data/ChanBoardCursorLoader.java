@@ -6,10 +6,13 @@ import java.io.PrintWriter;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import com.chanapps.four.activity.SettingsActivity;
 
 /**
  * A loader that queries the ChanDatabaseHelper and returns a {@link Cursor}.
@@ -23,8 +26,8 @@ public class ChanBoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected SQLiteDatabase db;
     protected Cursor mCursor;
-
-    private String boardName;
+    protected Context context;
+    protected String boardName;
     
     protected ChanBoardCursorLoader(Context context, SQLiteDatabase db) {
         super(context);
@@ -34,6 +37,7 @@ public class ChanBoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     public ChanBoardCursorLoader(Context context, SQLiteDatabase db, String boardName) {
         this(context, db);
+        this.context = context;
         this.boardName = boardName;
     }
 
@@ -41,14 +45,19 @@ public class ChanBoardCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public Cursor loadInBackground() {
     	Log.i(TAG(), "loadInBackground");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        boolean hideTextOnlyPosts = prefs.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
+        Log.i("ChanBoardCursorLoader", "prefs: " + hideAllText + " " + hideTextOnlyPosts);
     	String query = "SELECT " + ChanDatabaseHelper.POST_ID + ", "
 				+ "'http://0.thumbs.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
 					+ " || '/thumb/' || " + ChanDatabaseHelper.POST_TIM + " || 's.jpg' 'image_url', "
-                + ChanDatabaseHelper.POST_TEXT + " 'text', "
+                + (hideAllText ? " '' 'text', " : ChanDatabaseHelper.POST_TEXT + " 'text', ")
 				+ ChanDatabaseHelper.POST_TN_W + " 'tn_w', " + ChanDatabaseHelper.POST_TN_H + " 'tn_h'"
 				+ " FROM " + ChanDatabaseHelper.POST_TABLE
 				+ " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "' AND "
 					+ ChanDatabaseHelper.POST_RESTO + "=0 "
+                + (hideAllText || hideTextOnlyPosts ? " AND " + ChanDatabaseHelper.POST_TIM + " IS NOT NULL " : "")
                 + " ORDER BY " + ChanDatabaseHelper.POST_TIM + " ASC";
 
     	if (db != null && db.isOpen()) {
