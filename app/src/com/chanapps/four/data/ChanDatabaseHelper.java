@@ -70,7 +70,9 @@ public class ChanDatabaseHelper extends SQLiteOpenHelper {
 
    	public static SQLiteDatabase closeDatabase(CursorAdapter adapter, SQLiteDatabase db) {
    		try {
-   			adapter.swapCursor(null);
+            if (adapter != null) {
+   			    adapter.swapCursor(null);
+            }
    			if (db != null) {
    				db.close();
    			}

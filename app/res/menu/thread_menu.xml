@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/refresh_thread_menu"
-          android:title="@string/refresh_board_menu"
-          android:icon="@drawable/navigation_refresh"
-          android:showAsAction="always"
-            />
-    <item android:id="@+id/view_as_grid_menu"
-          android:title="@string/view_as_grid_menu"
-          android:icon="@drawable/collections_view_as_grid"
-          android:showAsAction="always"
-            />
     <item android:id="@+id/post_reply_menu"
           android:title="@string/post_reply_menu"
           android:icon="@drawable/content_new"
+          android:showAsAction="always"
             />
     <item android:id="@+id/download_all_images_menu"
           android:title="@string/download_all_images_menu"

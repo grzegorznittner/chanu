@@ -8,72 +8,93 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.ChanViewHelper;
-import com.chanapps.four.component.ImageTextCursorAdapter;
-import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.data.*;
+import com.chanapps.four.component.*;
+import com.chanapps.four.data.ChanCursorLoader;
+import com.chanapps.four.data.ChanDatabaseHelper;
+import com.chanapps.four.data.ChanHelper;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshGridView;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-public class BoardGridActivity extends Activity
-		implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>, ImageTextCursorAdapter.ViewBinder {
-	public static final String TAG = BoardGridActivity.class.getSimpleName();
+public class BoardActivity extends Activity implements ClickableLoaderActivity {
+	public static final String TAG = BoardActivity.class.getSimpleName();
 	
-	private SQLiteDatabase db = null;
-    private ImageTextCursorAdapter adapter = null;
-    private GridView gridView = null;
-	private Handler handler = null;
-
-    private ChanCursorLoader cursorLoader;
-    private ChanViewHelper viewHelper;
+	protected SQLiteDatabase db;
+    protected ImageTextCursorAdapter adapter;
+    protected PullToRefreshGridView gridView;
+    protected PullToRefreshListView listView;
+    protected Handler handler;
+    protected ChanCursorLoader cursorLoader;
+    protected ChanViewHelper viewHelper;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState){
 		Log.i(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
-
-        viewHelper = new ChanViewHelper(this, ChanViewHelper.ViewType.GRID);
-
-        setContentView(R.layout.board_activity_grid_layout);
-
-        gridView = (GridView)findViewById(R.id.board_activity_grid_view);
-        Display display = getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(gridView, display);
-        cg.sizeGridToDisplay();
-
-        adapter = new ImageTextCursorAdapter(this,
-                R.layout.board_activity_grid_item,
-                this,
-                new String[] {"image_url", "text"},
-                new int[] {R.id.board_activity_grid_item_image, R.id.board_activity_grid_item_text});
-        gridView.setAdapter(adapter);
-
-        LoaderManager.enableDebugLogging(true);
-
+        viewHelper = new ChanViewHelper(this, getServiceType());
+        createViewFromOrientation();
         ensureHandler();
-
-        gridView.setClickable(true);
-        gridView.setOnItemClickListener(this);
-        
-        //Log.i(TAG, "onCreate init loader");
+        LoaderManager.enableDebugLogging(true);
+        Log.i(TAG, "onCreate init loader");
         getLoaderManager().initLoader(0, null, this);
     }
 
-    private void ensureHandler() {
-        if (handler == null) {
-            handler = new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    Log.i(TAG, ">>>>>>>>>>> refresh message received restarting loader");
-                    getLoaderManager().restartLoader(0, null, BoardGridActivity.this);
-                }
+    @Override
+    public ChanViewHelper.ServiceType getServiceType() {
+        return ChanViewHelper.ServiceType.BOARD;
+    }
 
-        	};
+    protected void createViewFromOrientation() {
+        if (viewHelper.getViewType() == ChanViewHelper.ViewType.GRID) {
+            setContentView(R.layout.board_grid_layout);
+            gridView = (PullToRefreshGridView)findViewById(R.id.board_activity_grid_view);
+            Display display = getWindowManager().getDefaultDisplay();
+            ChanGridSizer cg = new ChanGridSizer(gridView.getRefreshableView(), display);
+            cg.sizeGridToDisplay();
+            adapter = new ImageTextCursorAdapter(this,
+                R.layout.board_grid_item,
+                this,
+                new String[] {"image_url", "text"},
+                new int[] {R.id.board_activity_grid_item_image, R.id.board_activity_grid_item_text});
+            gridView.setAdapter(adapter);
+            gridView.setClickable(true);
+            gridView.setOnItemClickListener(this);
+            gridView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<GridView>() {
+                @Override
+                public void onRefresh(PullToRefreshBase<GridView> refreshView) {
+                    refresh();
+                }
+            });
+            gridView = null;
+        }
+        else {
+            setContentView(R.layout.board_list_layout);
+            listView = (PullToRefreshListView)findViewById(R.id.board_activity_list_view);
+            adapter = new ImageTextCursorAdapter(this,
+                    R.layout.board_list_item,
+                    this,
+                    new String[] {"image_url", "text"},
+                    new int[] {R.id.list_item_image, R.id.list_item_text});
+            listView.setAdapter(adapter);
+            listView.setClickable(true);
+            listView.setOnItemClickListener(this);
+            listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+                @Override
+                public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                    refresh();
+                }
+            });
+            gridView = null;
+        }
+    }
+
+    protected void ensureHandler() {
+        if (handler == null) {
+            handler = new LoaderHandler(this);
         }
     }
 
@@ -81,21 +102,22 @@ public class BoardGridActivity extends Activity
     protected void onStart() {
         super.onStart();
 		Log.i(TAG, "onStart");
-        viewHelper.startBoardService();
+        viewHelper.startService();
     }
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume");
-        refreshBoard();
+        refresh();
 	}
 
-    private void refreshBoard() {
+    protected void refresh() {
+        createViewFromOrientation();
         viewHelper.onRefresh();
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 100);
-        Toast.makeText(getApplicationContext(), R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
     }
 
 	public void onWindowFocusChanged (boolean hasFocus) {
@@ -123,13 +145,13 @@ public class BoardGridActivity extends Activity
 	}
 
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        return viewHelper.setGridViewValue(view, cursor, columnIndex);
+        return viewHelper.setViewValue(view, cursor, columnIndex);
     }
 
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
 		db = ChanDatabaseHelper.openDatabaseIfNecessary(this, db);
-		cursorLoader = new ChanCursorLoader(getBaseContext(), db, viewHelper.getBoardCode());
+		cursorLoader = new ChanCursorLoader(getBaseContext(), db, viewHelper.getBoardCode(), viewHelper.getThreadNo());
         return cursorLoader;
 	}
 
@@ -138,6 +160,12 @@ public class BoardGridActivity extends Activity
 		adapter.swapCursor(data);
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 10000);
+        if (gridView != null) {
+            gridView.onRefreshComplete();
+        }
+        if (listView != null) {
+            listView.onRefreshComplete();
+        }
 		//closeDatabase();
 	}
 
@@ -157,14 +185,6 @@ public class BoardGridActivity extends Activity
             case android.R.id.home:
                 Intent intent = new Intent(this, BoardSelectorActivity.class);
                 NavUtils.navigateUpTo(this, intent);
-                return true;
-            case R.id.refresh_board_menu:
-                refreshBoard();
-                return true;
-            case R.id.view_as_list_menu:
-                Intent listIntent = new Intent(getApplicationContext(), BoardListActivity.class);
-                listIntent.putExtra(ChanHelper.BOARD_CODE, viewHelper.getBoardCode());
-                startActivity(listIntent);
                 return true;
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
@@ -189,7 +209,7 @@ public class BoardGridActivity extends Activity
     public boolean onCreateOptionsMenu(Menu menu) {
         Log.i(TAG, "onCreateOptionsMenu called");
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.board_grid_menu, menu);
+        inflater.inflate(R.menu.board_menu, menu);
         return true;
     }
 

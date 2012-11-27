@@ -38,7 +38,7 @@ public class ChanText {
                 .trim()
             : "";
         long end = System.currentTimeMillis();
-        Log.i(TAG, "Regexp: " + (end - start) + "ms");
+        Log.v(TAG, "Regexp: " + (end - start) + "ms");
         return foo;
     }
 }

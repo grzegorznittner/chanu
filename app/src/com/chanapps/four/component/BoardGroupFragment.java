@@ -1,22 +1,15 @@
 package com.chanapps.four.component;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import com.chanapps.four.activity.BoardGridActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.activity.BoardListActivity;
-import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 
 /**
@@ -40,7 +33,7 @@ public class BoardGroupFragment extends Fragment implements AdapterView.OnItemCl
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        GridView g = (GridView) inflater.inflate(R.layout.board_selector_grid_view, container, false);
+        GridView g = (GridView) inflater.inflate(R.layout.board_selector_grid, container, false);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         ChanGridSizer cg = new ChanGridSizer(g, display);
         cg.sizeGridToDisplay();
@@ -54,10 +47,6 @@ public class BoardGroupFragment extends Fragment implements AdapterView.OnItemCl
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ChanBoard board = ChanBoard.getBoardsByType(boardType).get(position);
         String boardCode = board.link;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        ChanViewHelper.ViewType viewType = ChanViewHelper.ViewType.valueOf(prefs.getString(ChanHelper.VIEW_TYPE, ChanViewHelper.ViewType.LIST.toString()));
-        Intent intent = new Intent(view.getContext(), viewType == ChanViewHelper.ViewType.LIST ? BoardListActivity.class : BoardGridActivity.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        startActivity(intent);
+        ChanViewHelper.startBoardActivity(parent, view, position, id, getActivity(), boardCode);
     }
 }

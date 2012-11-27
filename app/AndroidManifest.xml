@@ -37,28 +37,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".BoardListActivity" android:label="@string/board_activity">
+        <activity android:name=".BoardActivity" android:label="@string/board_activity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
 
-        <activity android:name=".BoardGridActivity" android:label="@string/board_activity">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".ThreadListActivity" android:label="@string/thread_activity">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".ThreadGridActivity" android:label="@string/thread_activity">
+        <activity android:name=".ThreadActivity" android:label="@string/thread_activity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>

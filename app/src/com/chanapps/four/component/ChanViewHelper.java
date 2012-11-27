@@ -2,6 +2,7 @@ package com.chanapps.four.component;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -31,6 +32,16 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
  */
 public class ChanViewHelper {
 
+    public enum ViewType {
+        LIST,
+        GRID
+    }
+
+    public enum ServiceType {
+        BOARD,
+        THREAD
+    }
+
     private static final String TAG = ChanViewHelper.class.getSimpleName();
 
     private Activity activity;
@@ -39,14 +50,15 @@ public class ChanViewHelper {
     private String boardCode;
     private long threadNo = 0;
     private boolean hideAllText = false;
+    private ServiceType serviceType;
 
-    public enum ViewType {
-        LIST,
-        GRID
+    public ChanViewHelper(Activity activity, ServiceType serviceType) {
+        this(activity, getViewTypeFromOrientation(activity), serviceType);
     }
 
-    public ChanViewHelper(Activity activity, ViewType viewType) {
+    public ChanViewHelper(Activity activity, ViewType viewType, ServiceType serviceType) {
         this.activity = activity;
+        this.serviceType = serviceType;
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(activity));
         if (viewType == ViewType.LIST) {
@@ -64,18 +76,9 @@ public class ChanViewHelper {
 			    .imageScaleType(ImageScaleType.EXACT)
 			    .build();
         }
-        saveViewType(viewType);
     }
 
-    public boolean setGridViewValue(View view, Cursor cursor, int columnIndex) {
-        return setViewValue(view, cursor, columnIndex, ViewType.GRID);
-    }
-
-    public boolean setListViewValue(View view, Cursor cursor, int columnIndex) {
-        return setViewValue(view, cursor, columnIndex, ViewType.LIST);
-    }
-
-    public boolean setViewValue(View view, Cursor cursor, int columnIndex, ViewType viewType) {
+    public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         String rawText = cursor.getString(cursor.getColumnIndex("text"));
         String rawImageUrl = cursor.getString(cursor.getColumnIndex("image_url"));
         String text = rawText == null ? "" : rawText;
@@ -83,8 +86,8 @@ public class ChanViewHelper {
         if (view instanceof TextView) {
             //todo - @john - if the text is hidden then the image should take the full available space.
             TextView tv = (TextView) view;
-            Log.e(TAG, "setting text: " + text);
-            switch (viewType) {
+            Log.v(TAG, "setting text: " + text);
+            switch (getViewType()) {
                 case GRID:
                     if (hideAllText || text == null || text.isEmpty()) {
                         tv.setVisibility(View.INVISIBLE);
@@ -171,19 +174,6 @@ public class ChanViewHelper {
         reloadPrefs(null);
     }
 
-    private enum ServiceType {
-        BOARD,
-        THREAD
-    }
-
-    public void startBoardService() {
-        startService(ServiceType.BOARD);
-    }
-
-    public void startThreadService() {
-        startService(ServiceType.THREAD);
-    }
-
     private void loadBoardCode(SharedPreferences prefs) {
         String oldBoardCode = prefs.getString(ChanHelper.BOARD_CODE, "s");
         boardCode = "s";
@@ -212,7 +202,7 @@ public class ChanViewHelper {
         Intent intent = activity.getIntent();
         if (intent != null && intent.hasExtra(ChanHelper.THREAD_NO)) {
             threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-            Log.i(TAG, "Thread no read from intent: " + boardCode);
+            Log.i(TAG, "Thread no read from intent: " + threadNo);
         }
         if (intent == null || !intent.hasExtra(ChanHelper.THREAD_NO)) {
             threadNo = oldThreadNo;
@@ -227,18 +217,11 @@ public class ChanViewHelper {
     }
 
     public ViewType getViewType() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-        return ChanViewHelper.ViewType.valueOf(prefs.getString(ChanHelper.VIEW_TYPE, ViewType.LIST.toString()));
+        return getViewTypeFromOrientation(activity);
     }
 
-    public void saveViewType(ViewType viewType) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-        ViewType oldViewType = ChanViewHelper.ViewType.valueOf(prefs.getString(ChanHelper.VIEW_TYPE, ViewType.LIST.toString()));
-        if (viewType != oldViewType) {
-            SharedPreferences.Editor ed = prefs.edit();
-            ed.putString(ChanHelper.VIEW_TYPE, viewType.toString());
-            ed.commit();
-        }
+    public void startService() {
+        startService(serviceType);
     }
 
     private void startService(ServiceType serviceType) {
@@ -248,6 +231,9 @@ public class ChanViewHelper {
         if (serviceType == ServiceType.THREAD) {
             loadThreadNo(prefs);
         }
+        else {
+            threadNo = 0;
+        }
         setBoardMenu();
         Log.i(TAG, "Starting ChanLoadService");
         Intent threadIntent = new Intent(activity, ChanLoadService.class);
@@ -256,35 +242,21 @@ public class ChanViewHelper {
         activity.startService(threadIntent);
     }
 
-    public void startBoardActivity(AdapterView<?> adapterView, View view, int position, long id) {
-        startBoardActivityWithType(adapterView, view, position, id, getViewType());
-    }
-
-    private void startBoardActivityWithType(AdapterView<?> adapterView, View view, int position, long id, ViewType viewType) {
-        Intent intent = new Intent(activity, viewType == ViewType.LIST ? BoardListActivity.class : BoardGridActivity.class);
+    public static final void startBoardActivity(AdapterView<?> adapterView, View view, int position, long id, Context context, String boardCode) {
+        Intent intent = new Intent(context, BoardActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        activity.startActivity(intent);
-    }
-    public void startThreadActivity(AdapterView<?> adapterView, View view, int position, long id) {
-        startThreadActivityWithType(adapterView, view, position, id, getViewType());
+        context.startActivity(intent);
     }
 
-    private void startThreadActivityWithType(AdapterView<?> adapterView, View view, int position, long id, ViewType viewType) {
-        Intent intent = new Intent(activity, viewType == ViewType.LIST ? ThreadListActivity.class : ThreadGridActivity.class);
+    public void startThreadActivity(AdapterView<?> adapterView, View view, int position, long id) {
+        Intent intent = new Intent(activity, ThreadActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, id);
+        Log.i(TAG, "Calling threadactivity with id=" + id);
         activity.startActivity(intent);
     }
 
-    public void startFullImageActivityFromList(AdapterView<?> adapterView, View view, int position, long id) {
-        startFullImageActivity(adapterView, view, position, id, ViewType.LIST);
-    }
-
-    public void startFullImageActivityFromGrid(AdapterView<?> adapterView, View view, int position, long id) {
-        startFullImageActivity(adapterView, view, position, id, ViewType.GRID);
-    }
-
-    private void startFullImageActivity(AdapterView<?> adapterView, View view, int position, long id, ViewType viewType) {
+    public void startFullImageActivity(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final long postId = cursor.getLong(cursor.getColumnIndex("_id"));
         final int w = cursor.getInt(cursor.getColumnIndex("w"));
@@ -295,7 +267,6 @@ public class ChanViewHelper {
         intent.putExtra(ChanHelper.POST_NO, postId);
         intent.putExtra(ChanHelper.IMAGE_WIDTH, w);
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, h);
-        intent.putExtra(ChanHelper.VIEW_TYPE, viewType.toString());
         activity.startActivity(intent);
     }
 
@@ -307,4 +278,14 @@ public class ChanViewHelper {
         return threadNo;
     }
 
+    public ViewType getViewTypeFromOrientation() {
+        return getViewTypeFromOrientation(activity);
+    }
+
+    public static final ViewType getViewTypeFromOrientation(Context context) {
+        return
+                ChanHelper.getOrientation(context) == ChanHelper.Orientation.PORTRAIT
+                ? ChanViewHelper.ViewType.GRID
+                : ChanViewHelper.ViewType.LIST;
+    }
 }

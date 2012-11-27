@@ -71,7 +71,7 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
                     ? "(" + ChanDatabaseHelper.POST_ID + "=" + threadNo + " OR " + ChanDatabaseHelper.POST_RESTO + "=" + threadNo + ")"
 				    :  ChanDatabaseHelper.POST_RESTO + "=0 ")
                 + (hideAllText || hideTextOnlyPosts ? " AND " + ChanDatabaseHelper.POST_TIM + " IS NOT NULL " : "")
-                + " ORDER BY " + ChanDatabaseHelper.POST_TIM + " ASC";
+                + " ORDER BY " + ChanDatabaseHelper.POST_TIM + (threadNo == 0 ? " DESC" : " ASC");
 
     	if (db != null && db.isOpen()) {
     		Log.i(TAG, "loadInBackground database is ok");

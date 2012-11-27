@@ -101,7 +101,7 @@ public class ChanLoadService extends BaseChanService {
 		String boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
 		int boardPage = intent.getIntExtra(ChanHelper.PAGE, 0);
         long threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-		Log.i(TAG, "Handling board=" + boardCode + " page=" + boardPage);
+		Log.i(TAG, "Handling board=" + boardCode + " threadNo=" + threadNo + " page=" + boardPage);
 
         initDbHelpers();
 

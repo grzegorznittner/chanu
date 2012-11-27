@@ -94,7 +94,7 @@ public class PostReplyActivity extends Activity {
         res = getResources();
         ctx = getApplicationContext();
 
-        setContentView(R.layout.post_reply_activity_layout);
+        setContentView(R.layout.post_reply_layout);
 
         imagePreview = (ImageView)findViewById(R.id.post_reply_image_preview);
 
@@ -404,12 +404,12 @@ public class PostReplyActivity extends Activity {
     public void navigateUp() {
         Intent upIntent;
         if (threadNo == 0) {
-            upIntent = new Intent(this, ThreadListActivity.class);
+            upIntent = new Intent(this, ThreadActivity.class);
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
             upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
         }
         else {
-            upIntent = new Intent(this, BoardListActivity.class);
+            upIntent = new Intent(this, BoardActivity.class);
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         }
         NavUtils.navigateUpTo(this, upIntent);

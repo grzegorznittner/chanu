@@ -1,6 +1,7 @@
 package com.chanapps.four.data;
 
-import android.content.SharedPreferences;
+import android.content.Context;
+import android.util.DisplayMetrics;
 
 public class ChanHelper {
 	public static final String PREF_NAME = "4Channer";
@@ -12,6 +13,19 @@ public class ChanHelper {
     public static final String POST_NO = "postNo";
     public static final String IMAGE_WIDTH = "imageWidth";
     public static final String IMAGE_HEIGHT = "imageHeight";
-    public static final String VIEW_TYPE = "viewType";
 
+    public enum Orientation {
+        PORTRAIT,
+        LANDSCAPE
+    }
+
+    public static final Orientation getOrientation(Context context) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        if (metrics.widthPixels > metrics.heightPixels) {
+            return Orientation.LANDSCAPE;
+        }
+        else {
+            return Orientation.PORTRAIT;
+        }
+    }
 }

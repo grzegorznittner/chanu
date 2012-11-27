@@ -173,12 +173,6 @@ public class FullScreenImageActivity extends Activity {
                 setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
                 imageWidth = intent.getIntExtra(ChanHelper.IMAGE_WIDTH, 0);
                 imageHeight = intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0);
-                if (intent.hasExtra(ChanHelper.VIEW_TYPE)) {
-                    viewType = ChanViewHelper.ViewType.valueOf(intent.getStringExtra(ChanHelper.VIEW_TYPE));
-                }
-                else {
-                    viewType = ChanViewHelper.ViewType.LIST;
-                }
                 Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
                 savePrefs();
             } else {
@@ -191,7 +185,6 @@ public class FullScreenImageActivity extends Activity {
             postNo = prefs.getLong(ChanHelper.POST_NO, 0);
             imageWidth = prefs.getInt(ChanHelper.IMAGE_WIDTH, 0);
             imageHeight = prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
-            viewType = ChanViewHelper.ViewType.valueOf(prefs.getString(ChanHelper.VIEW_TYPE, ChanViewHelper.ViewType.LIST.toString()));
             Log.i(TAG, "Post no " + postNo + " laoded from preferences");
         }
         loadChanPostData();
@@ -204,7 +197,6 @@ public class FullScreenImageActivity extends Activity {
         ed.putLong(ChanHelper.POST_NO, postNo);
         ed.putInt(ChanHelper.IMAGE_WIDTH, imageWidth);
         ed.putInt(ChanHelper.IMAGE_HEIGHT, imageHeight);
-        ed.putString(ChanHelper.VIEW_TYPE, viewType.toString());
         Log.i(TAG, "Stored in prefs, post no: " + postNo);
         ed.commit();
     }
@@ -265,31 +257,31 @@ public class FullScreenImageActivity extends Activity {
             : displayMetrics.widthPixels;
         double trialWidth = imageWidth;
         double trialHeight = imageHeight;
-        Log.e(TAG, "screenWidth,screenHeight = " + screenWidth + ", " + screenHeight);
-        Log.e(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        Log.v(TAG, "screenWidth,screenHeight = " + screenWidth + ", " + screenHeight);
+        Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
         if (trialWidth > screenWidth) { // need to scale width down
             double scale = screenWidth / trialWidth;
             trialWidth = screenWidth;
             trialHeight = (int)(Math.floor(scale * trialHeight));
         }
-        Log.e(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
         if (trialHeight > screenHeight) { // need to scale height down
             double scale = screenHeight / trialHeight;
             trialWidth = (int)(Math.floor(scale * trialWidth));
             trialHeight = screenHeight;
         }
-        Log.e(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
         if (trialWidth < screenWidth) { // try and scale up to width
             double scale = screenWidth / trialWidth;
-            Log.e(TAG, "scale = " + scale);
+            Log.v(TAG, "scale = " + scale);
             int testHeight = (int)(Math.floor(scale * trialHeight));
-            Log.e(TAG, "testHeight = " + testHeight);
+            Log.v(TAG, "testHeight = " + testHeight);
             if (testHeight <= screenHeight) {
                 trialWidth = screenWidth;
                 trialHeight = testHeight;
             }
         }
-        Log.e(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
         if (trialHeight < screenHeight) { // try and scale up to height
             double scale = screenHeight / trialHeight;
             int testWidth = (int)(Math.floor(scale * trialWidth));
@@ -298,10 +290,10 @@ public class FullScreenImageActivity extends Activity {
                 trialHeight = screenHeight;
             }
         }
-        Log.e(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
         int initialScalePct = (int)Math.floor(100 * screenWidth / imageWidth);
         webView.setInitialScale(initialScalePct);
-        Log.e(TAG, "initial Scale = " + initialScalePct);
+        Log.v(TAG, "initial Scale = " + initialScalePct);
     }
 
     private void loadImage() {
@@ -536,7 +528,7 @@ public class FullScreenImageActivity extends Activity {
     }
 
     private void navigateUp() {
-        Intent upIntent = new Intent(this, ThreadListActivity.class);
+        Intent upIntent = new Intent(this, ThreadActivity.class);
         upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
         upIntent.putExtra(ChanHelper.POST_NO, postNo);

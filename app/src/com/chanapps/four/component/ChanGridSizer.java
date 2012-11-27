@@ -15,6 +15,10 @@ import com.chanapps.four.activity.BoardSelectorActivity;
  */
 public class ChanGridSizer {
 
+    private static final String TAG = ChanGridSizer.class.getSimpleName();
+
+    private static final int MAX_COLUMN_WIDTH = 240;
+
     private GridView g;
     private Display d;
     private int numColumns = 0;
@@ -30,9 +34,9 @@ public class ChanGridSizer {
         d.getSize(size);
         int width = size.x;
         int height = size.y;
-        numColumns = width / 300 == 1 ? 2 : width / 300;
+        numColumns = width / MAX_COLUMN_WIDTH == 1 ? 2 : width / MAX_COLUMN_WIDTH;
         columnWidth = (width - 15) / numColumns;
-        Log.i(BoardSelectorActivity.TAG, "sizeGridToDisplay width: " + width + ", height: " + height + ", numCols: " + numColumns);
+        Log.i(TAG, "sizeGridToDisplay width: " + width + ", height: " + height + ", numCols: " + numColumns);
         g.setNumColumns(numColumns);
         g.setColumnWidth(columnWidth);
     }
