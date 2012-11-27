@@ -7,8 +7,10 @@
     <ImageView
         android:id="@+id/board_activity_grid_item_image"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:scaleType="fitCenter"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:maxHeight="400dp"
+        android:scaleType="centerCrop"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:src="@drawable/stub_image" />
@@ -16,7 +18,7 @@
     <TextView
         android:id="@+id/board_activity_grid_item_text"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:maxHeight="200dp"
         android:textColor="#40ffffff"
         android:background="#80000000"

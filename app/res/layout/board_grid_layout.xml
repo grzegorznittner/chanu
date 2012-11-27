@@ -16,7 +16,7 @@
         android:verticalSpacing="2dp"
         android:horizontalSpacing="2dp"
         android:numColumns="2"
-        android:stretchMode="columnWidth"
+        android:stretchMode="spacingWidth"
         android:gravity="center"
     />
  </LinearLayout>
