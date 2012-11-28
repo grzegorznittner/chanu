@@ -1,9 +1,11 @@
 package com.chanapps.four.data;
 
+import android.content.Context;
 import android.database.MatrixCursor;
 import android.graphics.Point;
 import android.os.Handler;
 import android.util.Log;
+import com.chanapps.four.activity.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -32,7 +34,7 @@ public class ChanBoard {
 		this.textOnly = textOnly;
 	}
 	
-	public enum Type {JAPANESE_CULTURE, INTERESTS, CREATIVE, ADULT, OTHER, MISC};
+	public enum Type {JAPANESE_CULTURE, INTERESTS, CREATIVE, ADULT, OTHER, MISC, FAVORITES};
 	
 	public MatrixCursor cursor = null;
 	
@@ -54,15 +56,30 @@ public class ChanBoard {
 	private static List<ChanBoard> boards = null;
 	private static Map<Type, List<ChanBoard>> boardsByType = null;
 
-	public static List<ChanBoard> getBoards() {
+    public static String getBoardTypeName(Context ctx, Type boardType) {
+        switch (boardType) {
+            case JAPANESE_CULTURE: return ctx.getString(R.string.board_type_japanese_culture);
+            case INTERESTS: return ctx.getString(R.string.board_type_interests);
+            case CREATIVE: return ctx.getString(R.string.board_type_creative);
+            case ADULT: return ctx.getString(R.string.board_type_adult);
+            case MISC: return ctx.getString(R.string.board_type_misc);
+            case OTHER: return ctx.getString(R.string.board_type_other);
+            case FAVORITES: return ctx.getString(R.string.board_type_favorites);
+            default:
+                return ctx.getString(R.string.board_type_japanese_culture);
+        }
+    }
+
+	public static List<ChanBoard> getBoards(Context context) {
 		if (boards == null) {
-			initBoards();
+			initBoards(context);
 		}
 		return boards;
 	}
 	
-	public static boolean isValidBoardCode(String boardCode) {
-		for (ChanBoard board : getBoards()) {
+	public static boolean isValidBoardCode(Context context, String boardCode) {
+        List<ChanBoard> boards = getBoards(context);
+		for (ChanBoard board : boards) {
 			if (board.link.equals(boardCode)) {
 				return true;
 			}
@@ -70,95 +87,109 @@ public class ChanBoard {
 		return false;
 	}
 	
-	public static List<ChanBoard> getBoardsByType(Type type) {
+	public static List<ChanBoard> getBoardsByType(Context context, Type type) {
 		if (boards == null) {
-			initBoards();
+			initBoards(context);
 		}
 		return boardsByType.get(type);
 	}
 
-	private static void initBoards() {
+	private static void initBoards(Context ctx) {
 		boards = new ArrayList<ChanBoard>();
 		boardsByType = new HashMap<Type, List<ChanBoard>>();
-		
-		List<ChanBoard> boardType = new ArrayList<ChanBoard>();
-		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Anime & Manga", "a", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Anime/Cute", "c", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Anime/Wallpapers", "w", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Mecha", "m", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Cosplay & EGL", "cgl", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Cute/Male", "cm", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Transportation", "n", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Otaku Culture", "jp", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.JAPANESE_CULTURE, "Pokemon", "vp", 0, true, true, false));
-		boardsByType.put(Type.JAPANESE_CULTURE, boardType);
-		boards.addAll(boardType);
-		
-		boardType = new ArrayList<ChanBoard>();
-		boardType.add(new ChanBoard(Type.INTERESTS, "Video Games", "v", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.INTERESTS, "Video Game Generals", "vg", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.INTERESTS, "Comics & Cartoons", "co", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.INTERESTS, "Technology", "g", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.INTERESTS, "Television & Film", "tv", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.INTERESTS, "Weapons", "k", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.INTERESTS, "Auto", "o", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.INTERESTS, "Animals & Nature", "an", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.INTERESTS, "Traditional Games", "tg", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.INTERESTS, "Sports", "sp", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.INTERESTS, "Science & Math", "sci", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.INTERESTS, "International", "int", 0, true, true, false));
-		boardsByType.put(Type.INTERESTS, boardType);
-		boards.addAll(boardType);
-		
-		boardType = new ArrayList<ChanBoard>();
-		boardType.add(new ChanBoard(Type.CREATIVE, "Oekaki", "i", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.CREATIVE, "Papercraft & Origami", "po", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.CREATIVE, "Photography", "p", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.CREATIVE, "Food & Cooking", "ck", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.CREATIVE, "Artwork/Critique", "ic", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.CREATIVE, "Wallpapers/General", "wg", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.CREATIVE, "Music", "mu", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.CREATIVE, "Fashion", "fa", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.CREATIVE, "Toys", "toy", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.CREATIVE, "3DCG", "3", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.CREATIVE, "Do-It-Yourself", "diy", 0, true, true, false));
-		boardType.add(new ChanBoard(Type.CREATIVE, "Worksafe GIF", "wsg", 0, true, true, false));
-		boardsByType.put(Type.CREATIVE, boardType);
-		boards.addAll(boardType);
-		
-		boardType = new ArrayList<ChanBoard>();
-		boardType.add(new ChanBoard(Type.ADULT, "Sexy Beautiful Women", "s", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.ADULT, "Hardcore", "hc", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.ADULT, "Handsome Men", "hm", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.ADULT, "Hentai", "h", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.ADULT, "Ecchi", "e", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.ADULT, "Yuri", "u", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.ADULT, "Hentai/Alternative", "d", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.ADULT, "Yaoi", "y", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.ADULT, "Torrents", "t", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.ADULT, "High Resolution", "hr", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.ADULT, "Animated GIF", "gif", 0, false, true, false));
-		boardsByType.put(Type.ADULT, boardType);
-		boards.addAll(boardType);
-		
-		boardType = new ArrayList<ChanBoard>();
-		boardType.add(new ChanBoard(Type.OTHER, "4chan Discussion", "q", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.OTHER, "Travel", "trv", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.OTHER, "Health & Fitness", "fit", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.OTHER, "Paranormal", "x", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.OTHER, "Literature", "lit", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.OTHER, "Advice", "adv", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.OTHER, "Pony", "mlp", 0, false, true, false));
-		boardsByType.put(Type.OTHER, boardType);
-		boards.addAll(boardType);
-		
-		boardType = new ArrayList<ChanBoard>();
-		boardType.add(new ChanBoard(Type.MISC, "Random", "b", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.MISC, "Request", "r", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.MISC, "ROBOT9001", "r9k", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.MISC, "Politically Incorrect", "pol", 0, false, true, false));
-		boardType.add(new ChanBoard(Type.MISC, "Social", "soc", 0, false, true, false));
-		boardsByType.put(Type.MISC, boardType);
-		boards.addAll(boardType);
-	}
+        String[][] boardCodesByType = initBoardCodes(ctx);
+
+        for (String[] boardCodesForType : boardCodesByType) {
+            Type boardType = Type.valueOf(boardCodesForType[0]);
+            List<ChanBoard> boardCodes = new ArrayList<ChanBoard>();
+            for (int i = 1; i < boardCodesForType.length; i+=2) {
+                String boardCode = boardCodesForType[i];
+                String boardName = boardCodesForType[i+1];
+                boolean workSafe = !(boardType == Type.ADULT || boardType == Type.MISC);
+                ChanBoard b = new ChanBoard(boardType, boardName, boardCode, 0, workSafe, true, false);
+                boardCodes.add(b);
+                boards.add(b);
+            }
+            boardsByType.put(boardType, boardCodes);
+        }
+   	}
+
+    private static String[][] initBoardCodes(Context ctx) {
+        String[][] boardCodesByType = {
+                {   Type.JAPANESE_CULTURE.toString(),
+                        "a", ctx.getString(R.string.board_a),
+                        "c", ctx.getString(R.string.board_c),
+                        "w", ctx.getString(R.string.board_w),
+                        "m", ctx.getString(R.string.board_m),
+                        "cgl", ctx.getString(R.string.board_cgl),
+                        "cm", ctx.getString(R.string.board_cm),
+                        "n", ctx.getString(R.string.board_n),
+                        "jp", ctx.getString(R.string.board_jp),
+                        "vp", ctx.getString(R.string.board_vp)
+                },
+                {   Type.INTERESTS.toString(),
+                        "v", ctx.getString(R.string.board_v),
+                        "vg", ctx.getString(R.string.board_vg),
+                        "co", ctx.getString(R.string.board_co),
+                        "g", ctx.getString(R.string.board_g),
+                        "tv", ctx.getString(R.string.board_tv),
+                        "k", ctx.getString(R.string.board_k),
+                        "o", ctx.getString(R.string.board_o),
+                        "an", ctx.getString(R.string.board_an),
+                        "tg", ctx.getString(R.string.board_tg),
+                        "sp", ctx.getString(R.string.board_sp),
+                        "sci", ctx.getString(R.string.board_sci),
+                        "int", ctx.getString(R.string.board_int)
+                },
+                {   Type.CREATIVE.toString(),
+                        "i", ctx.getString(R.string.board_i),
+                        "po", ctx.getString(R.string.board_po),
+                        "p", ctx.getString(R.string.board_p),
+                        "ck", ctx.getString(R.string.board_ck),
+                        "ic", ctx.getString(R.string.board_ic),
+                        "wg", ctx.getString(R.string.board_wg),
+                        "mu", ctx.getString(R.string.board_mu),
+                        "fa", ctx.getString(R.string.board_fa),
+                        "toy", ctx.getString(R.string.board_toy),
+                        "3", ctx.getString(R.string.board_3),
+                        "diy", ctx.getString(R.string.board_diy),
+                        "wsg", ctx.getString(R.string.board_wsg)
+                },
+                {   Type.ADULT.toString(),
+                        "s", ctx.getString(R.string.board_s),
+                        "hc", ctx.getString(R.string.board_hc),
+                        "hm", ctx.getString(R.string.board_hm),
+                        "h", ctx.getString(R.string.board_h),
+                        "e", ctx.getString(R.string.board_e),
+                        "u", ctx.getString(R.string.board_u),
+                        "d", ctx.getString(R.string.board_d),
+                        "y", ctx.getString(R.string.board_y),
+                        "t", ctx.getString(R.string.board_t),
+                        "hr", ctx.getString(R.string.board_hr),
+                        "gif", ctx.getString(R.string.board_gif)
+                },
+                {   Type.OTHER.toString(),
+                        "q", ctx.getString(R.string.board_q),
+                        "trv", ctx.getString(R.string.board_trv),
+                        "fit", ctx.getString(R.string.board_fit),
+                        "x", ctx.getString(R.string.board_x),
+                        "lit", ctx.getString(R.string.board_lit),
+                        "adv", ctx.getString(R.string.board_adv),
+                        "mlp", ctx.getString(R.string.board_mlp)
+                },
+                {   Type.MISC.toString(),
+                        "b", ctx.getString(R.string.board_b),
+                        "r", ctx.getString(R.string.board_r),
+                        "r9k", ctx.getString(R.string.board_r9k),
+                        "pol", ctx.getString(R.string.board_pol),
+                        "soc", ctx.getString(R.string.board_soc)
+                },
+                {   Type.FAVORITES.toString(),
+                        "watch", ctx.getString(R.string.board_watch)
+                }
+
+        };
+        return boardCodesByType;
+    }
+
 }

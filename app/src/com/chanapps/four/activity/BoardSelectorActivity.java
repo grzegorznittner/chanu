@@ -51,7 +51,8 @@ public class BoardSelectorActivity extends FragmentActivity {
             for (ChanBoard.Type type : ChanBoard.Type.values()) {
                 Bundle bundle = new Bundle();
                 bundle.putString(ChanHelper.BOARD_TYPE, type.toString());
-                mTabsAdapter.addTab(bar.newTab().setText(type.toString().replaceAll("_", " ")),
+                String boardTypeName = ChanBoard.getBoardTypeName(this, type);
+                mTabsAdapter.addTab(bar.newTab().setText(boardTypeName),
                         BoardGroupFragment.class, bundle);
             }
         }

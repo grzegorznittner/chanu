@@ -18,18 +18,20 @@ import com.chanapps.four.activity.R;
 * To change this template use File | Settings | File Templates.
 */
 public class ImageAdapter extends BaseAdapter {
-    LayoutInflater infater = null;
+    Context ctx;
+    LayoutInflater infater;
     ChanBoard.Type selectedBoardType;
     int columnWidth;
 
-public ImageAdapter(Context c, ChanBoard.Type selectedBoardType, int columnWidth) {
-        infater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.selectedBoardType = selectedBoardType;
-        this.columnWidth = columnWidth;
+public ImageAdapter(Context ctx, ChanBoard.Type selectedBoardType, int columnWidth) {
+    this.ctx = ctx;
+    this.infater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    this.selectedBoardType = selectedBoardType;
+    this.columnWidth = columnWidth;
 }
 
 public int getCount() {
-return ChanBoard.getBoardsByType(selectedBoardType).size();
+return ChanBoard.getBoardsByType(ctx, selectedBoardType).size();
 }
 
 public Object getItem(int position) {
@@ -53,7 +55,7 @@ if (convertView == null) {
 
 itemLayout.setLayoutParams(new AbsListView.LayoutParams(columnWidth, columnWidth));
 
-ChanBoard board = ChanBoard.getBoardsByType(selectedBoardType).get(position);
+ChanBoard board = ChanBoard.getBoardsByType(ctx, selectedBoardType).get(position);
 
 ImageView imageView = (ImageView)itemLayout.findViewById(R.id.grid_item_image);
 imageView.setLayoutParams(new RelativeLayout.LayoutParams(columnWidth, columnWidth));

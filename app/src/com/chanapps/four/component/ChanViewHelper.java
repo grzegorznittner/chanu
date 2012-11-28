@@ -185,7 +185,7 @@ public class ChanViewHelper {
             }
             Log.i(TAG, "Board code read from intent: " + boardCode);
         }
-        if (intent == null || !intent.hasExtra(ChanHelper.BOARD_CODE) || !ChanBoard.isValidBoardCode(boardCode)) {
+        if (intent == null || !intent.hasExtra(ChanHelper.BOARD_CODE) || !ChanBoard.isValidBoardCode(activity, boardCode)) {
             boardCode = oldBoardCode;
             Log.i(TAG, "Board code loaded from prefs: " + boardCode);
         }

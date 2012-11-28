@@ -45,7 +45,7 @@ public class BoardGroupFragment extends Fragment implements AdapterView.OnItemCl
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        ChanBoard board = ChanBoard.getBoardsByType(boardType).get(position);
+        ChanBoard board = ChanBoard.getBoardsByType(getActivity(), boardType).get(position);
         String boardCode = board.link;
         ChanViewHelper.startBoardActivity(parent, view, position, id, getActivity(), boardCode);
     }
