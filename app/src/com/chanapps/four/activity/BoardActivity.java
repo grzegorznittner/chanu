@@ -69,7 +69,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                     refresh();
                 }
             });
-            gridView = null;
+            listView = null;
         }
         else {
             setContentView(R.layout.board_list_layout);
