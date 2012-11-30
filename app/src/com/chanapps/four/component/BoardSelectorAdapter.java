@@ -17,13 +17,13 @@ import com.chanapps.four.activity.R;
 * Time: 12:23 PM
 * To change this template use File | Settings | File Templates.
 */
-public class ImageAdapter extends BaseAdapter {
+public class BoardSelectorAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater infater;
     ChanBoard.Type selectedBoardType;
     int columnWidth;
 
-public ImageAdapter(Context ctx, ChanBoard.Type selectedBoardType, int columnWidth) {
+public BoardSelectorAdapter(Context ctx, ChanBoard.Type selectedBoardType, int columnWidth) {
     this.ctx = ctx;
     this.infater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     this.selectedBoardType = selectedBoardType;
