@@ -72,6 +72,10 @@ public class BoardSelectorActivity extends FragmentActivity {
     private void setTabFromPrefs() {
         prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
         selectedBoardType = ChanBoard.Type.valueOf(prefs.getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
+        setTabToSelectedType(false);
+    }
+
+    private void setTabToSelectedType(boolean force) {
         Log.i(TAG, "onStart selectedBoardType: " + selectedBoardType);
 
         int selectedTab = 0;
@@ -82,7 +86,12 @@ public class BoardSelectorActivity extends FragmentActivity {
             selectedTab++;
         }
         getActionBar().setSelectedNavigationItem(selectedTab);
-        if (mViewPager.getCurrentItem() != selectedTab) {
+        if (force) {
+            int beforeTab = (selectedTab + 1) % ChanBoard.Type.values().length;
+            mViewPager.setCurrentItem(beforeTab, false);
+            mViewPager.setCurrentItem(selectedTab, false);
+        }
+        else if (mViewPager.getCurrentItem() != selectedTab) {
             mViewPager.setCurrentItem(selectedTab, true);
         }
     }
@@ -148,10 +157,10 @@ public class BoardSelectorActivity extends FragmentActivity {
             case R.id.clear_favorites_menu:
                 Log.d(TAG, "Clearing favorites...");
                 ChanBoard.clearFavorites(this);
-                BoardGroupFragment favoritesFragment =  (BoardGroupFragment)mTabsAdapter.getItem(ChanBoard.Type.FAVORITES.ordinal());
-                favoritesFragment.clearFavorites();
+                selectedBoardType = ChanBoard.Type.FAVORITES;
+                setTabToSelectedType(true);
                 Log.d(TAG, "Favorites cleared.");
-                Toast.makeText(this, R.string.board_favorites_cleared, Toast.LENGTH_SHORT);
+                Toast.makeText(this.getApplicationContext(), R.string.board_favorites_cleared, Toast.LENGTH_SHORT);
                 return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");

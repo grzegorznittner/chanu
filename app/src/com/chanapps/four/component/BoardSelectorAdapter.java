@@ -65,14 +65,14 @@ public class BoardSelectorAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         Log.d(BoardSelectorActivity.TAG, "BoardSelectorAdapter " + selectedBoardType + " getting view at: " + position);
         View itemLayout = null;
-        //if (convertView == null || selectedBoardType == ChanBoard.Type.FAVORITES) {
-            //Log.d(BoardSelectorActivity.TAG, "Creating new item view for " + position);
+        if (convertView == null) {
+            Log.d(BoardSelectorActivity.TAG, "Creating new item view for " + position);
             itemLayout = inflater.inflate(R.layout.grid_item, parent, false);
             itemLayout.setTag(selectedBoardType.toString());
-        //} else {
-        //    Log.d(BoardSelectorActivity.TAG, "Using existing view for " + position);
-        //    itemLayout = convertView;
-        //}
+        } else {
+            Log.d(BoardSelectorActivity.TAG, "Using existing view for " + position);
+            itemLayout = convertView;
+        }
 
         itemLayout.setLayoutParams(new AbsListView.LayoutParams(columnWidth, columnWidth));
 

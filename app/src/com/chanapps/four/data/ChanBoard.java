@@ -125,8 +125,6 @@ public class ChanBoard {
         SharedPreferences prefs = ctx.getSharedPreferences(ChanHelper.PREF_NAME, 0);
         Set<String> savedFavorites = prefs.getStringSet(ChanHelper.FAVORITE_BOARDS, new HashSet<String>());
         Log.i(TAG, "Loaded favorites from prefs:" + Arrays.toString(savedFavorites.toArray()));
-        savedFavorites.add(WATCH_BOARD_CODE); // always force watch list to be present
-        Log.i(TAG, "Returning favorites from prefs:" + Arrays.toString(savedFavorites.toArray()));
         return savedFavorites;
     }
 
@@ -242,8 +240,7 @@ public class ChanBoard {
                         "pol", ctx.getString(R.string.board_pol),
                         "soc", ctx.getString(R.string.board_soc)
                 },
-                {   Type.FAVORITES.toString(),
-                        WATCH_BOARD_CODE, ctx.getString(R.string.board_watch)
+                {   Type.FAVORITES.toString()
                 }
 
         };

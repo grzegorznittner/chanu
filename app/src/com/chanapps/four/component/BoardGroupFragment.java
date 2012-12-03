@@ -55,7 +55,7 @@ public class BoardGroupFragment extends Fragment implements AdapterView.OnItemCl
         gridView.setOnItemClickListener(this);
         return gridView;
     }
-
+               /*
     public void clearFavorites() {
         Log.d(BoardSelectorActivity.TAG, "BoardGroupFragment " + boardType + " clearFavorites called at fragment level");
         if (gridView != null) {
@@ -75,7 +75,7 @@ public class BoardGroupFragment extends Fragment implements AdapterView.OnItemCl
         }
 
     }
-
+                  */
     @Override
     public void onPause() {
         super.onPause();
@@ -135,11 +135,6 @@ public class BoardGroupFragment extends Fragment implements AdapterView.OnItemCl
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ChanBoard board = ChanBoard.getBoardsByType(getActivity(), boardType).get(position);
         String boardCode = board.link;
-        if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
-            Toast.makeText(this.getActivity(), "Watching board not yet implemented", Toast.LENGTH_SHORT);
-        }
-        else {
-            ChanViewHelper.startBoardActivity(parent, view, position, id, getActivity(), boardCode);
-        }
+        ChanViewHelper.startBoardActivity(parent, view, position, id, getActivity(), boardCode);
     }
 }
