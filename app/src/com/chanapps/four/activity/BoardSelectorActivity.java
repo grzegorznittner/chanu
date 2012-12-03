@@ -1,7 +1,12 @@
 package com.chanapps.four.activity;
 
 import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 import com.chanapps.four.component.BoardGroupFragment;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.component.TabsAdapter;
@@ -23,7 +28,7 @@ public class BoardSelectorActivity extends FragmentActivity {
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
     private SharedPreferences prefs = null;
-    private ChanBoard.Type selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
+    public ChanBoard.Type selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,23 +44,29 @@ public class BoardSelectorActivity extends FragmentActivity {
         super.onStart();
 
         final ActionBar bar = getActionBar();
-        if (bar != null) {
-            bar.setTitle(getString(R.string.app_name));
-            bar.setDisplayHomeAsUpEnabled(false);
-            bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-            bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE);
-        }
+        bar.setTitle(getString(R.string.app_name));
+        bar.setDisplayHomeAsUpEnabled(false);
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE);
 
         if (mTabsAdapter == null) {
             mTabsAdapter = new TabsAdapter(this, getSupportFragmentManager(), mViewPager);
             for (ChanBoard.Type type : ChanBoard.Type.values()) {
-                Bundle bundle = new Bundle();
-                bundle.putString(ChanHelper.BOARD_TYPE, type.toString());
-                String boardTypeName = ChanBoard.getBoardTypeName(this, type);
-                mTabsAdapter.addTab(bar.newTab().setText(boardTypeName),
-                        BoardGroupFragment.class, bundle);
+                addTab(type);
             }
         }
+    }
+
+    private void addTab(ChanBoard.Type type) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ChanHelper.BOARD_TYPE, type.toString());
+        String boardTypeName = ChanBoard.getBoardTypeName(this, type);
+        mTabsAdapter.addTab(getActionBar().newTab().setText(boardTypeName),
+                BoardGroupFragment.class, bundle);
+    }
+
+    private void removeTab(ChanBoard.Type type) {
+        mTabsAdapter.removeTab(type);
     }
 
     private void setTabFromPrefs() {
@@ -115,10 +126,33 @@ public class BoardSelectorActivity extends FragmentActivity {
         inflater.inflate(R.menu.board_selector_menu, menu);
         return true;
     }
+    /*
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem menuItem = menu.findItem(R.id.clear_favorites_menu);
+        if (menuItem != null) {
+            if (selectedBoardType == ChanBoard.Type.FAVORITES) {
+                menuItem.setVisible(true);
+            }
+            else {
+                menuItem.setVisible(false);
+            }
+        }
+        return true;
+    }
+    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.clear_favorites_menu:
+                Log.d(TAG, "Clearing favorites...");
+                ChanBoard.clearFavorites(this);
+                BoardGroupFragment favoritesFragment =  (BoardGroupFragment)mTabsAdapter.getItem(ChanBoard.Type.FAVORITES.ordinal());
+                favoritesFragment.clearFavorites();
+                Log.d(TAG, "Favorites cleared.");
+                Toast.makeText(this, R.string.board_favorites_cleared, Toast.LENGTH_SHORT);
+                return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);

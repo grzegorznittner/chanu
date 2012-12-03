@@ -1,7 +1,8 @@
 package com.chanapps.four.component;
 
 import android.app.ActionBar;
-import android.app.FragmentTransaction;
+import android.nfc.Tag;
+import android.support.v4.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.ViewGroup;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.activity.BoardSelectorActivity;
@@ -52,12 +54,29 @@ public class TabsAdapter extends FragmentPagerAdapter
         mViewPager.setOnPageChangeListener(this);
     }
 
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        if (position >= getCount()) {
+            FragmentManager manager = ((Fragment) object).getFragmentManager();
+            FragmentTransaction trans = manager.beginTransaction();
+            trans.remove((Fragment) object);
+            trans.commit();
+        }
+    }
+
     public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args) {
         TabInfo info = new TabInfo(clss, args);
         tab.setTag(info);
         tab.setTabListener(this);
         mTabs.add(info);
         mActionBar.addTab(tab);
+        notifyDataSetChanged();
+    }
+
+    public void removeTab(ChanBoard.Type type) {
+        int i = type.ordinal();
+        mTabs.remove(i);
+        mActionBar.removeTabAt(i);
         notifyDataSetChanged();
     }
 
@@ -70,8 +89,7 @@ public class TabsAdapter extends FragmentPagerAdapter
     public Fragment getItem(int position) {
         TabInfo info = mTabs.get(position);
         String selectedType = info.args.getString(ChanHelper.BOARD_TYPE);
-        Log.i(BoardSelectorActivity.TAG, "getItem selected boardType: " + selectedType);
-
+        Log.d(BoardSelectorActivity.TAG, "TabsAdapter " + selectedType + " instantiating Fragment");
         return Fragment.instantiate(mContext, info.clss.getName(), info.args);
     }
 
@@ -100,20 +118,22 @@ public class TabsAdapter extends FragmentPagerAdapter
     }
 
     @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+    public void onTabSelected(ActionBar.Tab tab, android.app.FragmentTransaction ft) {
         Object tag = tab.getTag();
         for (int i=0; i<mTabs.size(); i++) {
             if (mTabs.get(i) == tag) {
+                Log.d(BoardSelectorActivity.TAG, "TabAdapter setting pager to " + i);
                 mViewPager.setCurrentItem(i);
             }
         }
     }
 
     @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+    public void onTabUnselected(ActionBar.Tab tab, android.app.FragmentTransaction transaction) {
     }
 
     @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+    public void onTabReselected(ActionBar.Tab tab, android.app.FragmentTransaction transaction) {
     }
+
 }

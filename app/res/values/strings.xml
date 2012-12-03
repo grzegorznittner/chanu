@@ -13,6 +13,7 @@
     <string name="settings_activity">Settings</string>
 
     <!-- menus -->
+    <string name="clear_favorites_menu">Clear Favorites</string>
     <string name="settings_menu">Settings</string>
     <string name="help_menu">Help</string>
     <string name="refresh_board_menu">Refresh Board</string>
@@ -41,6 +42,9 @@
     <!-- board activity -->
     <string name="board_activity_refresh">Refreshing...</string>
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
+    <string name="board_already_in_favorites">Board already in favorites</string>
+    <string name="board_added_to_favorites">Board added to favorites</string>
+    <string name="board_favorites_cleared">Cleared board favorites</string>
 
     <!-- board service -->
     <string name="board_service_couldnt_fetch">Couldn\'t get board</string>

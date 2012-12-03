@@ -1,10 +1,12 @@
 package com.chanapps.four.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.MatrixCursor;
 import android.graphics.Point;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,11 +16,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();
@@ -35,7 +33,9 @@ public class ChanBoard {
 	}
 	
 	public enum Type {JAPANESE_CULTURE, INTERESTS, CREATIVE, ADULT, OTHER, MISC, FAVORITES};
-	
+
+    public static final String WATCH_BOARD_CODE = "watch";
+
 	public MatrixCursor cursor = null;
 	
 	public String board;
@@ -53,8 +53,9 @@ public class ChanBoard {
         return "Board " + board + " page " + no;
     }
 
-	private static List<ChanBoard> boards = null;
-	private static Map<Type, List<ChanBoard>> boardsByType = null;
+	private static List<ChanBoard> boards;
+    private static Map<Type, List<ChanBoard>> boardsByType;
+    private static Map<String, ChanBoard> boardByCode;
 
     public static String getBoardTypeName(Context ctx, Type boardType) {
         switch (boardType) {
@@ -78,40 +79,97 @@ public class ChanBoard {
 	}
 	
 	public static boolean isValidBoardCode(Context context, String boardCode) {
-        List<ChanBoard> boards = getBoards(context);
-		for (ChanBoard board : boards) {
-			if (board.link.equals(boardCode)) {
-				return true;
-			}
-		}
-		return false;
+        if (boards == null) {
+   			initBoards(context);
+   		}
+        return boardByCode.containsKey(boardCode);
 	}
 	
 	public static List<ChanBoard> getBoardsByType(Context context, Type type) {
 		if (boards == null) {
 			initBoards(context);
 		}
+        else if (type == Type.FAVORITES) {
+            loadFavoritesFromPrefs(context);
+        }
 		return boardsByType.get(type);
 	}
+
+    public static void addBoardToFavorites(Context ctx, String boardCode) {
+        Set<String> savedFavorites = getFavoritesFromPrefs(ctx);
+        if (savedFavorites.contains(boardCode)) {
+            Log.i(TAG, "Board " + boardCode + " already in favorites");
+            Toast.makeText(ctx, R.string.board_already_in_favorites, Toast.LENGTH_SHORT);
+        }
+        else {
+            savedFavorites.add(boardCode);
+            SharedPreferences.Editor editor = ctx.getSharedPreferences(ChanHelper.PREF_NAME, 0).edit();
+            editor.putStringSet(ChanHelper.FAVORITE_BOARDS, savedFavorites);
+            editor.commit();
+            Log.i(TAG, "Board " + boardCode + " added to favorites");
+            Log.i(TAG, "Put favorites list to prefs: " + Arrays.toString(savedFavorites.toArray()));
+            Toast.makeText(ctx, R.string.board_added_to_favorites, Toast.LENGTH_SHORT);
+        }
+    }
+
+    public static void clearFavorites(Context ctx) {
+        Log.i(TAG, "Clearing favorites...");
+        SharedPreferences.Editor editor = ctx.getSharedPreferences(ChanHelper.PREF_NAME, 0).edit();
+        editor.remove(ChanHelper.FAVORITE_BOARDS);
+        editor.commit();
+        Log.i(TAG, "Favorites cleared");
+    }
+
+    private static Set<String> getFavoritesFromPrefs(Context ctx) {
+        Log.i(TAG, "Getting favorites from prefs...");
+        SharedPreferences prefs = ctx.getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        Set<String> savedFavorites = prefs.getStringSet(ChanHelper.FAVORITE_BOARDS, new HashSet<String>());
+        Log.i(TAG, "Loaded favorites from prefs:" + Arrays.toString(savedFavorites.toArray()));
+        savedFavorites.add(WATCH_BOARD_CODE); // always force watch list to be present
+        Log.i(TAG, "Returning favorites from prefs:" + Arrays.toString(savedFavorites.toArray()));
+        return savedFavorites;
+    }
+
+    private static void loadFavoritesFromPrefs(Context ctx) {
+        Set<String> savedFavorites = getFavoritesFromPrefs(ctx);
+        List<String> favoriteCodes = new ArrayList<String>(savedFavorites);
+        Collections.sort(favoriteCodes);
+
+        List<ChanBoard> favorites = new ArrayList<ChanBoard>();
+        for (String boardCode : favoriteCodes) {
+            ChanBoard existingBoard = boardByCode.get(boardCode);
+            Log.i(TAG, "found board: " + boardCode + " with val: " + (existingBoard != null ? existingBoard.name : "none"));
+            if (existingBoard != null) {
+                favorites.add(existingBoard);
+            }
+        }
+
+        boardsByType.put(Type.FAVORITES, favorites);
+    }
 
 	private static void initBoards(Context ctx) {
 		boards = new ArrayList<ChanBoard>();
 		boardsByType = new HashMap<Type, List<ChanBoard>>();
+        boardByCode = new HashMap<String, ChanBoard>();
+
         String[][] boardCodesByType = initBoardCodes(ctx);
 
         for (String[] boardCodesForType : boardCodesByType) {
             Type boardType = Type.valueOf(boardCodesForType[0]);
-            List<ChanBoard> boardCodes = new ArrayList<ChanBoard>();
+            List<ChanBoard> boardsForType = new ArrayList<ChanBoard>();
             for (int i = 1; i < boardCodesForType.length; i+=2) {
                 String boardCode = boardCodesForType[i];
                 String boardName = boardCodesForType[i+1];
                 boolean workSafe = !(boardType == Type.ADULT || boardType == Type.MISC);
                 ChanBoard b = new ChanBoard(boardType, boardName, boardCode, 0, workSafe, true, false);
-                boardCodes.add(b);
+                boardsForType.add(b);
                 boards.add(b);
+                boardByCode.put(boardCode, b);
             }
-            boardsByType.put(boardType, boardCodes);
+            boardsByType.put(boardType, boardsForType);
         }
+
+        loadFavoritesFromPrefs(ctx);
    	}
 
     private static String[][] initBoardCodes(Context ctx) {
@@ -185,7 +243,7 @@ public class ChanBoard {
                         "soc", ctx.getString(R.string.board_soc)
                 },
                 {   Type.FAVORITES.toString(),
-                        "watch", ctx.getString(R.string.board_watch)
+                        WATCH_BOARD_CODE, ctx.getString(R.string.board_watch)
                 }
 
         };

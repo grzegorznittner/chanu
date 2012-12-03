@@ -10,59 +10,82 @@ import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 
+import javax.security.auth.login.LoginException;
+
 /**
-* Created with IntelliJ IDEA.
-* User: arley
-* Date: 11/20/12
-* Time: 12:23 PM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: arley
+ * Date: 11/20/12
+ * Time: 12:23 PM
+ * To change this template use File | Settings | File Templates.
+ */
 public class BoardSelectorAdapter extends BaseAdapter {
     Context ctx;
-    LayoutInflater infater;
+    LayoutInflater inflater;
     ChanBoard.Type selectedBoardType;
     int columnWidth;
 
-public BoardSelectorAdapter(Context ctx, ChanBoard.Type selectedBoardType, int columnWidth) {
-    this.ctx = ctx;
-    this.infater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    this.selectedBoardType = selectedBoardType;
-    this.columnWidth = columnWidth;
-}
+    public BoardSelectorAdapter(Context ctx, ChanBoard.Type selectedBoardType, int columnWidth) {
+        Log.d(BoardSelectorActivity.TAG, "BoardSelectorAdapter " + selectedBoardType + " initializing");
+        this.ctx = ctx;
+        this.inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.selectedBoardType = selectedBoardType;
+        this.columnWidth = columnWidth;
+    }
 
-public int getCount() {
-return ChanBoard.getBoardsByType(ctx, selectedBoardType).size();
-}
+    public int getCount() {
+        int size = ChanBoard.getBoardsByType(ctx, selectedBoardType).size();
+        Log.d(BoardSelectorActivity.TAG, "BoardSelectorAdapter " + selectedBoardType + " returned size " + size);
+        return size;
+    }
 
-public Object getItem(int position) {
-return position;
-}
+    public Object getItem(int position) {
+        ChanBoard board = ChanBoard.getBoardsByType(ctx, selectedBoardType).get(position);
+        Log.d(BoardSelectorActivity.TAG, "BoardSelectorAdapter " + selectedBoardType + " getting item: " + position);
+        //return position;
+        String dataItem = position + board.link;
+        Log.d(BoardSelectorActivity.TAG, "BoardSelectorAdapter " + selectedBoardType + " got dataItem: " + dataItem);
+        return dataItem;
+    }
 
-public long getItemId(int position) {
-return position;
-}
+    public long getItemId(int position) {
+        ChanBoard board = ChanBoard.getBoardsByType(ctx, selectedBoardType).get(position);
+        Log.d(BoardSelectorActivity.TAG, "BoardSelectorAdapter " + selectedBoardType + " getting item id: " + position);
+        long itemId = position + 100 * board.iconId;
+        Log.d(BoardSelectorActivity.TAG, "BoardSelectorAdapter " + selectedBoardType + " got itemId: " + itemId);
+        return itemId;
+        // return position;
+    }
 
-public View getView(int position, View convertView, ViewGroup parent) {
+    @Override
+    public boolean hasStableIds() {
+        return false;
+    }
+
+    public View getView(int position, View convertView, ViewGroup parent) {
+        Log.d(BoardSelectorActivity.TAG, "BoardSelectorAdapter " + selectedBoardType + " getting view at: " + position);
         View itemLayout = null;
-if (convertView == null) {
-            Log.d(BoardSelectorActivity.TAG, "Creating new item view for " + position);
-            itemLayout = infater.inflate(R.layout.grid_item, parent, false);
+        //if (convertView == null || selectedBoardType == ChanBoard.Type.FAVORITES) {
+            //Log.d(BoardSelectorActivity.TAG, "Creating new item view for " + position);
+            itemLayout = inflater.inflate(R.layout.grid_item, parent, false);
             itemLayout.setTag(selectedBoardType.toString());
-} else {
-            Log.d(BoardSelectorActivity.TAG, "Using existing view for " + position);
-            itemLayout = convertView;
-}
+        //} else {
+        //    Log.d(BoardSelectorActivity.TAG, "Using existing view for " + position);
+        //    itemLayout = convertView;
+        //}
 
-itemLayout.setLayoutParams(new AbsListView.LayoutParams(columnWidth, columnWidth));
+        itemLayout.setLayoutParams(new AbsListView.LayoutParams(columnWidth, columnWidth));
 
-ChanBoard board = ChanBoard.getBoardsByType(ctx, selectedBoardType).get(position);
+        ChanBoard board = ChanBoard.getBoardsByType(ctx, selectedBoardType).get(position);
+        Log.d(BoardSelectorActivity.TAG, "BoardSelectorAdapter " + selectedBoardType + " board: " + board.link + " processing");
 
-ImageView imageView = (ImageView)itemLayout.findViewById(R.id.grid_item_image);
-imageView.setLayoutParams(new RelativeLayout.LayoutParams(columnWidth, columnWidth));
+        ImageView imageView = (ImageView) itemLayout.findViewById(R.id.grid_item_image);
+        imageView.setLayoutParams(new RelativeLayout.LayoutParams(columnWidth, columnWidth));
 
-int imageId = 0;
-try {
+        int imageId = 0;
+        try {
             imageId = R.drawable.class.getField(board.link).getInt(null);
+            Log.d(BoardSelectorActivity.TAG, "BoardSelectorAdapter " + selectedBoardType + " board " + board.link + " setting image: " + imageId);
         } catch (Exception e) {
             try {
                 imageId = R.drawable.class.getField("board_" + board.link).getInt(null);
@@ -72,9 +95,10 @@ try {
         }
         imageView.setImageResource(imageId);
 
-TextView textView = (TextView)itemLayout.findViewById(R.id.grid_item_text);
-textView.setText(board.name);
+        TextView textView = (TextView) itemLayout.findViewById(R.id.grid_item_text);
+        textView.setText(board.name);
+        Log.d(BoardSelectorActivity.TAG, "BoardSelectorAdapter " + selectedBoardType + " board " + board.link + " setting text: " + board.name);
 
-return itemLayout;
-}
+        return itemLayout;
+    }
 }

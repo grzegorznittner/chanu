@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.chanapps.four.component.*;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanCursorLoader;
 import com.chanapps.four.data.ChanDatabaseHelper;
 import com.chanapps.four.data.ChanHelper;
@@ -190,6 +191,9 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
                 replyIntent.putExtra(ChanHelper.BOARD_CODE, viewHelper.getBoardCode());
                 startActivity(replyIntent);
+                return true;
+            case R.id.add_to_favorites_menu:
+                ChanBoard.addBoardToFavorites(this, viewHelper.getBoardCode());
                 return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");

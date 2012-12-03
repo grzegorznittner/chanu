@@ -41,15 +41,14 @@ public class ChanDatabaseHelper extends SQLiteOpenHelper {
 	public static final String POST_FSIZE = "fsize";
 	public static final String POST_RESTO = "resto";
 	public static final String POST_LAST_UPDATE = "last_update";
-
-    public static final String POST_TEXT = "text"; // we construct and filter this
-
 	// version 2
 	public static final String POST_STICKY = "sticky";
 	public static final String POST_CLOSED = "closed";
 	public static final String POST_OMITTED_POSTS = "omitted_posts";
 	public static final String POST_OMITTED_IMAGES = "omitted_images";
-	
+    // version 6
+    public static final String POST_TEXT = "text"; // we construct and filter this
+
 	public ChanDatabaseHelper(Context context) {
 		super(context, DB_NAME, null, DB_VERSION, new ErrorHandler());
 	}

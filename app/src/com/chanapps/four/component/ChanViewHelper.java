@@ -165,7 +165,7 @@ public class ChanViewHelper {
 
     private void reloadPrefs(SharedPreferences prefs) {
         if (prefs == null) {
-            prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+            prefs = activity.getSharedPreferences(ChanHelper.PREF_NAME, 0);
         }
         hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
     }
@@ -225,7 +225,7 @@ public class ChanViewHelper {
     }
 
     private void startService(ServiceType serviceType) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        SharedPreferences prefs = activity.getSharedPreferences(ChanHelper.PREF_NAME, 0);
         reloadPrefs(prefs);
         loadBoardCode(prefs);
         if (serviceType == ServiceType.THREAD) {

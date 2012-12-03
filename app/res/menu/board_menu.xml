@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/new_thread_menu"
           android:title="@string/new_thread_menu"
-          android:icon="@drawable/content_new"
+          android:icon="@drawable/content_new_picture"
           android:showAsAction="always"
             />
     <item android:id="@+id/add_to_favorites_menu"
           android:title="@string/add_to_favorites_menu"
-          android:icon="@drawable/rating_important"
+          android:icon="@drawable/rating_favorite"
             />
     <item android:id="@+id/download_all_threads_menu"
           android:title="@string/download_all_threads_menu"

@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.widget.Toast;
 import com.chanapps.four.component.BaseChanService;
 import com.chanapps.four.activity.R;
 import com.google.gson.Gson;
@@ -23,6 +24,8 @@ import android.database.Cursor;
 import android.database.DatabaseUtils.InsertHelper;
 import android.database.sqlite.SQLiteConstraintException;
 import android.util.Log;
+
+import javax.security.auth.login.LoginException;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -102,6 +105,11 @@ public class ChanLoadService extends BaseChanService {
 		int boardPage = intent.getIntExtra(ChanHelper.PAGE, 0);
         long threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
 		Log.i(TAG, "Handling board=" + boardCode + " threadNo=" + threadNo + " page=" + boardPage);
+
+        if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
+            Log.e(TAG, "Watching board not implemented yet");
+            return;
+        }
 
         initDbHelpers();
 
