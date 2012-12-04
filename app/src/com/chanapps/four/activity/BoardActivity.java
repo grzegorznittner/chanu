@@ -5,17 +5,27 @@ import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.*;
-import android.widget.*;
-import com.chanapps.four.component.*;
+import android.view.Display;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.chanapps.four.component.ChanGridSizer;
+import com.chanapps.four.component.ChanViewHelper;
+import com.chanapps.four.component.ImageTextCursorAdapter;
+import com.chanapps.four.component.LoaderHandler;
+import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanCursorLoader;
-import com.chanapps.four.data.ChanDatabaseHelper;
 import com.chanapps.four.data.ChanHelper;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshGridView;
@@ -24,7 +34,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 public class BoardActivity extends Activity implements ClickableLoaderActivity {
 	public static final String TAG = BoardActivity.class.getSimpleName();
 	
-	protected SQLiteDatabase db;
     protected ImageTextCursorAdapter adapter;
     protected PullToRefreshGridView gridView;
     protected PullToRefreshListView listView;
@@ -33,7 +42,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     protected ChanViewHelper viewHelper;
 	
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         viewHelper = new ChanViewHelper(this, getServiceType());
@@ -141,7 +150,6 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy");
 		getLoaderManager().destroyLoader(0);
-		db = ChanDatabaseHelper.closeDatabase(adapter, db);
 		handler = null;
 	}
 
@@ -151,8 +159,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
-		db = ChanDatabaseHelper.openDatabaseIfNecessary(this, db);
-		cursorLoader = new ChanCursorLoader(getBaseContext(), db, viewHelper.getBoardCode(), viewHelper.getThreadNo());
+		cursorLoader = new ChanCursorLoader(getBaseContext(), viewHelper.getBoardCode(), viewHelper.getThreadNo());
         return cursorLoader;
 	}
 

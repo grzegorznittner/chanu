@@ -9,9 +9,10 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 import android.util.Log;
+
 import com.chanapps.four.activity.SettingsActivity;
 
 /**
@@ -27,28 +28,26 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected final ForceLoadContentObserver mObserver;
 
-    protected SQLiteDatabase db;
     protected Cursor mCursor;
     protected Context context;
 
     protected String boardName;
     protected long threadNo;
 
-    protected ChanCursorLoader(Context context, SQLiteDatabase db) {
+    protected ChanCursorLoader(Context context) {
         super(context);
         mObserver = new ForceLoadContentObserver();
-        this.db = db;
     }
 
-    public ChanCursorLoader(Context context, SQLiteDatabase db, String boardName, long threadNo) {
-        this(context, db);
+    public ChanCursorLoader(Context context, String boardName, long threadNo) {
+        this(context);
         this.context = context;
         this.boardName = boardName;
         this.threadNo = threadNo;
     }
 
-    public ChanCursorLoader(Context context, SQLiteDatabase db, String boardName) {
-        this(context, db, boardName, 0);
+    public ChanCursorLoader(Context context, String boardName) {
+        this(context, boardName, 0);
     }
 
     /* Runs on a worker thread */
@@ -59,32 +58,43 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         boolean hideTextOnlyPosts = prefs.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
         Log.i("ChanCursorLoader", "prefs: " + hideAllText + " " + hideTextOnlyPosts);
-    	String query = "SELECT " + ChanDatabaseHelper.POST_ID + ", "
-				+ "'http://0.thumbs.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
-					+ " || '/thumb/' || " + ChanDatabaseHelper.POST_TIM + " || 's.jpg' 'image_url', "
-                + (hideAllText ? " '' 'text', " : ChanDatabaseHelper.POST_TEXT + " 'text', ")
-				+ ChanDatabaseHelper.POST_TN_W + " 'tn_w', " + ChanDatabaseHelper.POST_TN_H + " 'tn_h', "
-                + ChanDatabaseHelper.POST_W + " 'w', " + ChanDatabaseHelper.POST_H + " 'h'"
-				+ " FROM " + ChanDatabaseHelper.POST_TABLE
-				+ " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "' AND "
-                + (threadNo != 0
-                    ? "(" + ChanDatabaseHelper.POST_ID + "=" + threadNo + " OR " + ChanDatabaseHelper.POST_RESTO + "=" + threadNo + ")"
-				    :  ChanDatabaseHelper.POST_RESTO + "=0 ")
-                + (hideAllText || hideTextOnlyPosts ? " AND " + ChanDatabaseHelper.POST_TIM + " IS NOT NULL " : "")
-                + " ORDER BY " + ChanDatabaseHelper.POST_TIM + (threadNo == 0 ? " DESC" : " ASC");
 
-    	if (db != null && db.isOpen()) {
-    		Log.i(TAG, "loadInBackground database is ok");
-    		Cursor cursor = db != null && db.isOpen() ? db.rawQuery(query, null) : null;
-    		if (cursor != null) {
-    			// Ensure the cursor window is filled
-    			int count = db != null && db.isOpen() && cursor != null ? cursor.getCount() : 0;
-    			Log.i(TAG, "loadInBackground cursor is ok, count: " + count);
-    			if (count > 0) {
-                    registerContentObserver(cursor, mObserver);
-                }
+    	if (threadNo == 0) {
+    		// loading board from file
+    		ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
+    		if (board != null) {
+	    		MatrixCursor matrixCursor = new MatrixCursor(new String[] {"_id", "image_url", "text", "tn_w", "tn_h", "w", "h"});
+	    		for (ChanPost thread : board.threads) {
+	    			matrixCursor.addRow(new Object[] {
+	   					thread.no, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
+	    				thread.sub, thread.tn_w, thread.tn_h, thread.w, thread.h});
+	    		}
+	    		if (board.threads.length > 0) {
+	    			registerContentObserver(matrixCursor, mObserver);
+	    		}
+	    		return matrixCursor;
     		}
-    		return cursor;
+    	} else {
+    		// loading board from file
+    		ChanThread thread = ChanFileStorage.loadThreadData(getContext(), boardName, threadNo);
+    		if (thread != null) {
+	    		MatrixCursor matrixCursor = new MatrixCursor(new String[] {"_id", "image_url", "text", "tn_w", "tn_h", "w", "h"});
+	    		for (ChanPost post : thread.posts) {
+	    			if (post.tn_w <= 0) {
+	    				matrixCursor.addRow(new Object[] {
+	    						post.no, "",
+	    						post.com, post.tn_w, post.tn_h, post.w, post.h});
+	    			} else {
+	    				matrixCursor.addRow(new Object[] {
+	    						post.no, "http://0.thumbs.4chan.org/" + thread.board + "/thumb/" + post.tim + "s.jpg",
+	    						post.sub != null ? post.sub : post.com, post.tn_w, post.tn_h, post.w, post.h});
+	    			}
+	    		}
+	    		if (thread.posts.length > 0) {
+	    			registerContentObserver(matrixCursor, mObserver);
+	    		}
+	    		return matrixCursor;
+    		}
         }
         return null;
     }

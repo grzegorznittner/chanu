@@ -1,22 +1,26 @@
 package com.chanapps.four.data;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.MatrixCursor;
-import android.graphics.Point;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.chanapps.four.activity.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.*;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();
@@ -36,8 +40,6 @@ public class ChanBoard {
 
     public static final String WATCH_BOARD_CODE = "watch";
 
-	public MatrixCursor cursor = null;
-	
 	public String board;
 	public String name;
     public String link;
@@ -48,9 +50,19 @@ public class ChanBoard {
 	public boolean workSafe;
 	public boolean classic;
 	public boolean textOnly;
+	
+	public ChanPost stickyPosts[] = new ChanPost[0];
+	public ChanPost threads[] = new ChanPost[0];
+	public long lastFetched;
+	
+	public ChanBoard copy() {
+		ChanBoard copy = new ChanBoard(this.type, this.name, this.link, this.iconId,
+				this.workSafe, this.classic, this.textOnly);
+		return copy;
+	}
 
 	public String toString() {
-        return "Board " + board + " page " + no;
+        return "Board " + link + " page: " + no + ", stickyPosts: " + stickyPosts.length + ", threads: " + threads.length;
     }
 
 	private static List<ChanBoard> boards;
@@ -95,6 +107,13 @@ public class ChanBoard {
 		return boardsByType.get(type);
 	}
 
+	public static ChanBoard getBoardByCode(Context context, String boardCode) {
+        if (boards == null) {
+   			initBoards(context);
+   		}
+        return boardByCode.get(boardCode);
+	}
+	
     public static void addBoardToFavorites(Context ctx, String boardCode) {
         Set<String> savedFavorites = getFavoritesFromPrefs(ctx);
         if (savedFavorites.contains(boardCode)) {

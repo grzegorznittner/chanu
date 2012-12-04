@@ -8,24 +8,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-import android.widget.Toast;
-import com.chanapps.four.component.BaseChanService;
+import android.content.Intent;
+import android.util.Log;
+
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.BaseChanService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.DatabaseUtils.InsertHelper;
-import android.database.sqlite.SQLiteConstraintException;
-import android.util.Log;
-
-import javax.security.auth.login.LoginException;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -33,9 +28,8 @@ import javax.security.auth.login.LoginException;
  */
 public class ChanLoadService extends BaseChanService {
 	private static final String TAG = ChanLoadService.class.getName();
-
-    protected static ChanDatabaseHelper chanDatabaseHelper;
-    protected static InsertHelper insertHelper;
+	
+	private static final long STORE_INTERVAL = 2000;  // it's in miliseconds
 
     public ChanLoadService() {
    		super("board");
@@ -45,60 +39,6 @@ public class ChanLoadService extends BaseChanService {
    		super(name);
    	}
 	
-	private int id = -1, boardName, now, time, name, sub, com, tim, filename, ext, w, h, tn_w, tn_h, fsize, resto, lastUpdate, text;
-	
-	protected Set<Integer> getListOfIds(String boardName) {
-		Set<Integer> ids = new HashSet<Integer>();
-        synchronized (chanDatabaseHelper) {
-            if (chanDatabaseHelper == null) {
-                return ids;
-            }
-            Cursor c = null;
-            try {
-                String query = "SELECT " + ChanDatabaseHelper.POST_ID
-                        + " FROM " + ChanDatabaseHelper.POST_TABLE
-                        + " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "'";
-                c = chanDatabaseHelper.getWritableDatabase().rawQuery(query, null);
-                int indexIdx = c.getColumnIndex(ChanDatabaseHelper.POST_ID);
-                for (boolean hasItem = c.moveToFirst(); hasItem; hasItem = c.moveToNext()) {
-                    ids.add(c.getInt(indexIdx));
-                }
-            } catch (Exception e) {
-                toastUI(R.string.board_service_couldnt_fetch);
-                Log.e(TAG, "Error while fetching list of thread ids for board " + boardName + ". " + e.getMessage(), e);
-            } finally {
-                if (c != null) {
-                    c.close();
-                }
-    		}
-        }
-		return ids;
-	}
-
-    protected void initDbHelpers() {
-        if (chanDatabaseHelper == null) {
-            chanDatabaseHelper = new ChanDatabaseHelper(getBaseContext());
-        }
-        if (insertHelper == null) {
-            insertHelper = new InsertHelper(chanDatabaseHelper.getWritableDatabase(), ChanDatabaseHelper.POST_TABLE);
-        }
-    }
-
-    protected void cleanupDbHelpers() {
-        if (chanDatabaseHelper != null) {
-            synchronized (chanDatabaseHelper) {
-		        chanDatabaseHelper.close();
-            }
-            chanDatabaseHelper = null;
-        }
-        if (insertHelper != null) {
-            synchronized (insertHelper) {
-		        insertHelper.close();
-            }
-            insertHelper = null;
-        }
-    }
-
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		String boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
@@ -111,12 +51,8 @@ public class ChanLoadService extends BaseChanService {
             return;
         }
 
-        initDbHelpers();
-
         BufferedReader in = null;
-		try {
-			prepareColumnIndexes();
-			
+		try {			
 			URL chanApi = threadNo == 0
                 ? new URL("http://api.4chan.org/" + boardCode + "/" + boardPage + ".json")
                 : new URL("http://api.4chan.org/" + boardCode + "/res/" + threadNo + ".json");
@@ -128,7 +64,7 @@ public class ChanLoadService extends BaseChanService {
                 parseBoard(boardCode, in);
             }
             else {
-                parseThread(boardCode, in);
+                parseThread(boardCode, threadNo, in);
             }
         } catch (IOException e) {
             toastUI(R.string.board_service_couldnt_read);
@@ -145,12 +81,14 @@ public class ChanLoadService extends BaseChanService {
 				Log.e(TAG, "Error closing reader", e);
 			}
 		}
-        cleanupDbHelpers();
 	}
 
     protected void parseBoard(String boardCode, BufferedReader in) throws IOException {
-        Set<Integer> ids = getListOfIds(boardCode);
-
+    	long time = new Date().getTime();
+    	ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
+    	List<ChanPost> stickyPosts = new ArrayList<ChanPost>();
+    	List<ChanPost> threads = new ArrayList<ChanPost>();
+    	
         Gson gson = new GsonBuilder().create();
 
         JsonReader reader = new JsonReader(in);
@@ -163,23 +101,78 @@ public class ChanLoadService extends BaseChanService {
             reader.beginObject(); // has "posts" as single property
             reader.nextName(); // "posts"
             reader.beginArray();
+            
+            ChanThread thread = null;
+            List<ChanPost> posts = new ArrayList<ChanPost>();
+            boolean first = true;
             while (reader.hasNext()) { // first object is the thread post, spin over rest
                 ChanPost post = gson.fromJson(reader, ChanPost.class);
                 post.board = boardCode;
-                boolean postExists = !ids.contains(post.no);
-                Log.d(TAG, post.toString() + ", existed = " + postExists);
-                addPost(post, postExists);
+                if (post.sticky > 0) {
+                	stickyPosts.add(post);
+                } else {
+                	if (first) {
+                		threads.add(post);
+                		thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
+                		// if thread was not stored create a new object
+                		if (thread == null) {
+                			thread = new ChanThread();
+                			thread.board = boardCode;
+                			thread.no = post.no;
+                		}
+                		first = false;
+                	}
+                	posts.add(post);
+                }
+                Log.d(TAG, post.toString());
+            }
+            if (thread != null) {
+            	mergePosts(thread, posts);
+            	ChanFileStorage.storeThreadData(getBaseContext(), thread);
+            	if (new Date().getTime() - time > STORE_INTERVAL) {
+            		board.threads = threads.toArray(new ChanPost[0]);
+                    board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
+                    ChanFileStorage.storeBoardData(getBaseContext(), board);
+            	}
             }
             reader.endArray();
             reader.endObject();
         }
-        //reader.endArray();
-        //reader.endObject();
+        board.threads = threads.toArray(new ChanPost[0]);
+        board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
+        ChanFileStorage.storeBoardData(getBaseContext(), board);
     }
 
-    protected void parseThread(String boardCode, BufferedReader in) throws IOException {
-        Set<Integer> ids = getListOfIds(boardCode);
+    private void mergePosts(ChanThread thread, List<ChanPost> posts) {
+    	List<ChanPost> mergedPosts = new ArrayList<ChanPost>(Arrays.asList(thread.posts));
+		for (ChanPost newPost : posts) {
+			boolean exists = false;
+			for (ChanPost p : thread.posts) {
+				if (p.no == newPost.no) {
+					exists = true;
+					p.replies = newPost.replies;
+					p.images = newPost.images;
+					p.omitted_images = newPost.omitted_images;
+					p.omitted_posts = newPost.omitted_posts;
+				}
+			}
+			if (!exists) {
+				mergedPosts.add(newPost);
+			}
+		}
+		thread.posts = mergedPosts.toArray(new ChanPost[0]);
+	}
 
+	protected void parseThread(String boardCode, long threadNo, BufferedReader in) throws IOException {
+    	long time = new Date().getTime();
+    	ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, threadNo);
+    	if (thread == null) {
+    		thread = new ChanThread();
+        	thread.board = boardCode;
+            thread.no = threadNo;
+    	}
+        
+    	List<ChanPost> posts = new ArrayList<ChanPost>();
         Gson gson = new GsonBuilder().create();
 
         JsonReader reader = new JsonReader(in);
@@ -191,104 +184,14 @@ public class ChanLoadService extends BaseChanService {
         while (reader.hasNext()) {
             ChanPost post = gson.fromJson(reader, ChanPost.class);
             post.board = boardCode;
-            boolean postExists = !ids.contains(post.no);
-            Log.i(TAG, post.toString() + ", existed = " + postExists);
-            addPost(post, postExists);
+            posts.add(post);
+            if (new Date().getTime() - time > STORE_INTERVAL) {
+            	mergePosts(thread, posts);
+                ChanFileStorage.storeThreadData(getBaseContext(), thread);
+        	}
         }
+        mergePosts(thread, posts);
+        ChanFileStorage.storeThreadData(getBaseContext(), thread);
     }
-
-	protected void prepareColumnIndexes() {
-        if (id != -1) {
-            return;
-        }
-        if (insertHelper == null) {
-            return;
-        }
-        synchronized (insertHelper) {
-            if (insertHelper == null) {
-                return;
-            }
-            id = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_ID);
-            boardName = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_BOARD_NAME);
-            now = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_NOW);
-            time = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_TIME);
-            name = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_NAME);
-            sub = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_SUB);
-            com = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_COM);
-            tim = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_TIM);
-            filename = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_FILENAME);
-            ext = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_EXT);
-            w = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_W);
-            h = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_H);
-            tn_w = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_TN_W);
-            tn_h = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_TN_H);
-            fsize = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_FSIZE);
-            resto = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_RESTO);
-            lastUpdate = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_LAST_UPDATE);
-            // constructed fields
-            text = insertHelper.getColumnIndex(ChanDatabaseHelper.POST_TEXT);
-        }
-    }
-
-	protected void addPost(ChanPost post, boolean postExists) throws SQLiteConstraintException {
-        if (insertHelper == null) {
-            return;
-        }
-        synchronized (insertHelper) {
-            if (insertHelper == null) {
-                return;
-            }
-            if (postExists) {
-                insertHelper.prepareForInsert();
-            } else {
-                insertHelper.prepareForReplace();
-            }
-
-            insertHelper.bind(id, post.no);
-            insertHelper.bind(boardName, post.board);
-            insertHelper.bind(resto, post.resto);
-            insertHelper.bind(time, post.time);
-            if (post.now != null) {
-                insertHelper.bind(now, post.now);
-            }
-            if (post.name != null) {
-                insertHelper.bind(name, post.name);
-            }
-            if (post.com != null) {
-                insertHelper.bind(com, post.com);
-            }
-            if (post.sub != null) {
-                insertHelper.bind(sub, post.sub);
-            }
-            if (post.tim != null) {
-                insertHelper.bind(tim, post.tim);
-            }
-            if (post.filename != null) {
-                insertHelper.bind(filename, post.filename);
-            }
-            if (post.ext != null) {
-                insertHelper.bind(ext, post.ext);
-            }
-            if (post.w != -1) {
-                insertHelper.bind(w, post.w);
-            }
-            if (post.h != -1) {
-                insertHelper.bind(h, post.h);
-            }
-            if (post.tn_w != -1) {
-                insertHelper.bind(tn_w, post.tn_w);
-            }
-            if (post.tn_h != -1) {
-                insertHelper.bind(tn_h, post.tn_h);
-            }
-            if (post.fsize != -1) {
-                insertHelper.bind(fsize, post.fsize);
-            }
-            insertHelper.bind(lastUpdate, new Date().getTime());
-            insertHelper.bind(text, ChanText.getText(post.sub, post.com));
-
-            insertHelper.execute();
-        }
-	}
 
 }

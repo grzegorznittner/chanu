@@ -3,8 +3,6 @@ package com.chanapps.four.activity;
 import java.io.InputStream;
 import java.net.URL;
 
-import com.chanapps.four.component.ChanViewHelper;
-import com.chanapps.four.component.RawResourceDialog;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -17,7 +15,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -34,8 +31,12 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import com.chanapps.four.data.ChanDatabaseHelper;
+import com.chanapps.four.component.ChanViewHelper;
+import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
 
 public class FullScreenImageActivity extends Activity {
 
@@ -90,43 +91,16 @@ public class FullScreenImageActivity extends Activity {
     }
 
     private boolean loadChanPostData() {
-    	ChanDatabaseHelper h = new ChanDatabaseHelper(getBaseContext());
-    	Cursor c = null;
 		try {
-			String query = "SELECT " + ChanDatabaseHelper.POST_ID + ", "
-					+ "'http://images.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
-						+ " || '/src/' || " + ChanDatabaseHelper.POST_TIM
-						+ " || " + ChanDatabaseHelper.POST_EXT + " 'imageurl', "
-					+ ChanDatabaseHelper.POST_W + ", "
-					+ ChanDatabaseHelper.POST_H
-					+ " FROM " + ChanDatabaseHelper.POST_TABLE
-					+ " WHERE " + ChanDatabaseHelper.POST_ID + "=" + postNo;
-			c = h.getWritableDatabase().rawQuery(query, null);
-			int imageurlIdx = c.getColumnIndex("imageurl");
-//			int imagewidthIdx = c.getColumnIndex(ChanDatabaseHelper.POST_W);
-//			int imageheightIdx = c.getColumnIndex(ChanDatabaseHelper.POST_H);
-			if (c.moveToFirst()) {
-				imageUrl = c.getString(imageurlIdx);
-//				imageWidth = c.getInt(imagewidthIdx);
-//				imageHeight = c.getInt(imageheightIdx);
-				if (c.moveToNext()) {
-					Log.w(TAG, "Post with id " + postNo + " for board " + boardCode + " is not unique across boards!");
+			ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, threadNo);
+			for (ChanPost post : thread.posts) {
+				if (post.no == postNo) {
+					imageUrl = "http://images.4chan.org/" + thread.board + "/src/" + post.tim + post.ext;
+					return true;
 				}
-			} else {
-				Log.w(TAG, "Post with id " + postNo + " for board " + boardCode + " has not been found!");
 			}
-			c.close();
-			h.close();
-			return true;
 		} catch (Exception e) {
-			Log.e(TAG, "Error querying chan DB. " + e.getMessage(), e);
-		} finally {
-			if (c != null) {
-				c.close();
-			}
-			if (h != null) {
-				h.close();
-			}
+			Log.e(TAG, "Error load post data. " + e.getMessage(), e);
 		}
 		return false;
     }
