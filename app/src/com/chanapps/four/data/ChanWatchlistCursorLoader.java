@@ -1,93 +1,90 @@
 package com.chanapps.four.data;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-
-import android.content.AsyncTaskLoader;
+import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import com.chanapps.four.activity.SettingsActivity;
 
-/**
- * A loader that queries the ChanDatabaseHelper and returns a {@link Cursor}.
- * This class implements the {@link Loader} protocol in a standard way for
- * querying cursors, building on {@link AsyncTaskLoader} to perform the cursor
- * query on a background thread so that it does not block the application's UI.
- * 
- */
-public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
+import javax.security.auth.login.LoginException;
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
-    private static final String TAG = ChanCursorLoader.class.getSimpleName();
+/**
+ * A loader that queries the ChanDatabaseHelper and returns a {@link android.database.Cursor}.
+ * This class implements the {@link android.content.Loader} protocol in a standard way for
+ * querying cursors, building on {@link android.content.AsyncTaskLoader} to perform the cursor
+ * query on a background thread so that it does not block the application's UI.
+ *
+ */
+public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
+
+    private static final String TAG = ChanWatchlistCursorLoader.class.getSimpleName();
+
+    protected static final String[] columns = {
+            ChanDatabaseHelper.POST_ID,
+            ChanDatabaseHelper.POST_BOARD_NAME,
+            ChanDatabaseHelper.POST_IMAGE_URL,
+            ChanDatabaseHelper.POST_TEXT,
+            ChanDatabaseHelper.POST_TN_W,
+            ChanDatabaseHelper.POST_TN_H
+    };
 
     protected final ForceLoadContentObserver mObserver;
 
-    protected SQLiteDatabase db;
     protected Cursor mCursor;
     protected Context context;
 
-    protected String boardName;
-    protected long threadNo;
-
-    protected ChanCursorLoader(Context context, SQLiteDatabase db) {
+    public ChanWatchlistCursorLoader(Context context) {
         super(context);
-        mObserver = new ForceLoadContentObserver();
-        this.db = db;
-    }
-
-    public ChanCursorLoader(Context context, SQLiteDatabase db, String boardName, long threadNo) {
-        this(context, db);
         this.context = context;
-        this.boardName = boardName;
-        this.threadNo = threadNo;
-    }
-
-    public ChanCursorLoader(Context context, SQLiteDatabase db, String boardName) {
-        this(context, db, boardName, 0);
+        mObserver = new ForceLoadContentObserver();
     }
 
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
-    	Log.i(TAG, "loadInBackground");
+        List<String> savedWatchlist = ChanWatchlist.getSortedWatchlistFromPrefs(context);
+        if (savedWatchlist == null || savedWatchlist.isEmpty()) {
+            return null;
+        }
+        Log.d(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
+        MatrixCursor cursor = new MatrixCursor(columns);
         SharedPreferences prefs = context.getSharedPreferences(ChanHelper.PREF_NAME, 0);
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        boolean hideTextOnlyPosts = prefs.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
-        Log.i("ChanCursorLoader", "prefs: " + hideAllText + " " + hideTextOnlyPosts);
-    	String query = "SELECT " + ChanDatabaseHelper.POST_ID + ", "
-                + ChanDatabaseHelper.POST_BOARD_NAME + ", "
-				+ "'http://0.thumbs.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
-					+ " || '/thumb/' || " + ChanDatabaseHelper.POST_TIM + " || 's.jpg' 'image_url', "
-                + (hideAllText ? " '' 'text', " : ChanDatabaseHelper.POST_TEXT + " 'text', ")
-				+ ChanDatabaseHelper.POST_TN_W + " 'tn_w', " + ChanDatabaseHelper.POST_TN_H + " 'tn_h', "
-                + ChanDatabaseHelper.POST_W + " 'w', " + ChanDatabaseHelper.POST_H + " 'h'"
-				+ " FROM " + ChanDatabaseHelper.POST_TABLE
-				+ " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "' AND "
-                + (threadNo != 0
-                    ? "(" + ChanDatabaseHelper.POST_ID + "=" + threadNo + " OR " + ChanDatabaseHelper.POST_RESTO + "=" + threadNo + ")"
-				    :  ChanDatabaseHelper.POST_RESTO + "=0 ")
-                + (hideAllText || hideTextOnlyPosts ? " AND " + ChanDatabaseHelper.POST_TIM + " IS NOT NULL " : "")
-                + " ORDER BY " + ChanDatabaseHelper.POST_TIM + (threadNo == 0 ? " DESC" : " ASC");
-
-    	if (db != null && db.isOpen()) {
-    		Log.i(TAG, "loadInBackground database is ok");
-    		Cursor cursor = db != null && db.isOpen() ? db.rawQuery(query, null) : null;
-    		if (cursor != null) {
-    			// Ensure the cursor window is filled
-    			int count = db != null && db.isOpen() && cursor != null ? cursor.getCount() : 0;
-    			Log.i(TAG, "loadInBackground cursor is ok, count: " + count);
-    			if (count > 0) {
-                    registerContentObserver(cursor, mObserver);
-                }
-    		}
-    		return cursor;
+        for (String threadPath : savedWatchlist) {
+            try {
+                String[] threadComponents = ChanWatchlist.getThreadPathComponents(threadPath);
+                String boardCode = threadComponents[0];
+                long threadNo = Long.valueOf(threadComponents[1]);
+                String text = hideAllText ? "" : threadComponents[2];
+                String imageUrl = threadComponents[3];
+                int imageWidth = Integer.valueOf(threadComponents[4]);
+                int imageHeight = Integer.valueOf(threadComponents[5]);
+                MatrixCursor.RowBuilder row = cursor.newRow();
+                row.add(threadNo);
+                row.add(boardCode);
+                row.add(imageUrl);
+                row.add(text);
+                row.add(imageWidth);
+                row.add(imageHeight);
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Error parsing watch preferences ", e);
+            }
         }
-        return null;
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+        }
+        registerContentObserver(cursor, mObserver);
+  		return cursor;
     }
 
     /**
@@ -173,7 +170,6 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
         super.dump(prefix, fd, writer, args);
-        writer.print(prefix); writer.print("boardName="); writer.println(boardName);
         writer.print(prefix); writer.print("mCursor="); writer.println(mCursor);
     }
 }
