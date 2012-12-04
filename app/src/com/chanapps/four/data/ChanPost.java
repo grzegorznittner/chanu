@@ -17,7 +17,8 @@ public class ChanPost {
 
     public String board;
 
-   	public int no = -1;
+   	public long no = -1;
+  	public int sticky = 0;
    	public String now;
    	public Date created;
    	public long time = -1;
@@ -28,12 +29,15 @@ public class ChanPost {
    	public String filename;
    	public String ext;
    	public int w = 0;
-       public int h = 0;
+    public int h = 0;
    	public int tn_w = 0;
-       public int tn_h = 0;
-   //	public String md5;
-      	public int fsize = -1;
-      	public int resto = -1;
+    public int tn_h = 0;
+  	public int fsize = -1;
+  	public int resto = -1;
+  	public int replies = -1;
+  	public int images = -1;
+  	public int omitted_posts = -1;
+  	public int omitted_images = -1;
 
    	public String getThumbnailUrl() {
    		if (tim != null) {

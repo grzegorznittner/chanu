@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -82,8 +81,8 @@ public class ChanViewHelper {
     }
 
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        String rawText = cursor.getString(cursor.getColumnIndex(ChanDatabaseHelper.POST_TEXT));
-        String rawImageUrl = cursor.getString(cursor.getColumnIndex(ChanDatabaseHelper.POST_IMAGE_URL));
+        String rawText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        String rawImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         String text = rawText == null ? "" : rawText;
         String imageUrl = rawImageUrl == null ? "" : rawImageUrl;
         if (view instanceof TextView) {
@@ -124,8 +123,8 @@ public class ChanViewHelper {
             Log.w(TAG, "setViewText - Why is cursor null?");
             return;
         }
-        int tn_w = cursor.getInt(cursor.getColumnIndex(ChanDatabaseHelper.POST_TN_W));
-        int tn_h = cursor.getInt(cursor.getColumnIndex(ChanDatabaseHelper.POST_TN_H));
+        int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
+        int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
         //Log.i(TAG, "tn_w=" + tn_w + ", tn_h=" + tn_h);
         Point imageDimensions = new Point(tn_w, tn_h);
         if (imageDimensions != null && imageDimensions.x > 0 && imageDimensions.y > 0) {
@@ -141,7 +140,6 @@ public class ChanViewHelper {
             Log.w(TAG, "setViewText - Why is cursor null?");
             return;
         }
-        text = text.substring(0, Math.min(text.length(), 22));
         textView.setText(text);
     }
 
@@ -237,7 +235,7 @@ public class ChanViewHelper {
 
     private void startService(ServiceType serviceType) {
         if (serviceType == ServiceType.WATCHLIST) {
-            startWatchlistService();
+            //startWatchlistService();
             return;
         }
         SharedPreferences prefs = activity.getSharedPreferences(ChanHelper.PREF_NAME, 0);
@@ -257,12 +255,6 @@ public class ChanViewHelper {
         activity.startService(threadIntent);
     }
 
-    private void startWatchlistService() {
-        Log.i(TAG, "Starting ChanLoadWatchlistService");
-        Intent intent = new Intent(activity, ChanLoadWatchlistService.class);
-        activity.startService(intent);
-    }
-
     public static final void startBoardActivity(AdapterView<?> adapterView, View view, int position, long id, Activity activity, String boardCode) {
         Intent intent = new Intent(activity, BoardActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
@@ -271,12 +263,12 @@ public class ChanViewHelper {
 
     public void startThreadActivity(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final long postId = cursor.getLong(cursor.getColumnIndex(ChanDatabaseHelper.POST_ID));
-        final String boardName = cursor.getString(cursor.getColumnIndex(ChanDatabaseHelper.POST_BOARD_NAME));
-        final String text = cursor.getString(cursor.getColumnIndex(ChanDatabaseHelper.POST_TEXT));
-        final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanDatabaseHelper.POST_IMAGE_URL));
-        final int tn_w = cursor.getInt(cursor.getColumnIndex(ChanDatabaseHelper.POST_TN_W));
-        final int tn_h = cursor.getInt(cursor.getColumnIndex(ChanDatabaseHelper.POST_TN_H));
+        final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+        final String boardName = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+        final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        final int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
+        final int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
         Intent intent = new Intent(activity, ThreadActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardName != null ? boardName : boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, postId);
@@ -290,9 +282,9 @@ public class ChanViewHelper {
 
     public void startFullImageActivity(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final long postId = cursor.getLong(cursor.getColumnIndex(ChanDatabaseHelper.POST_ID));
-        final int w = cursor.getInt(cursor.getColumnIndex(ChanDatabaseHelper.POST_W));
-        final int h = cursor.getInt(cursor.getColumnIndex(ChanDatabaseHelper.POST_H));
+        final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+        final int w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
+        final int h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
         Intent intent = new Intent(activity, FullScreenImageActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);

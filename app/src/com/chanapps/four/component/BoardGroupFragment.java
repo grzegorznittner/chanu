@@ -1,6 +1,5 @@
 package com.chanapps.four.component;
 
-import android.app.Activity;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.support.v4.content.Loader;
@@ -17,9 +16,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.Toast;
-import com.chanapps.four.activity.BoardSelectorActivity;
-import com.chanapps.four.activity.ClickableLoaderActivity;
 import com.chanapps.four.data.*;
 import com.chanapps.four.activity.R;
 
@@ -85,7 +81,7 @@ public class BoardGroupFragment
                     context,
                     R.layout.board_grid_item,
                     this,
-                    new String[] {ChanDatabaseHelper.POST_IMAGE_URL, ChanDatabaseHelper.POST_TEXT},
+                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT},
                     new int[] {R.id.board_activity_grid_item_image, R.id.board_activity_grid_item_text}
             );
             adapter = imageTextCursorAdapter;

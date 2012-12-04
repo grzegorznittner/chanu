@@ -6,35 +6,25 @@ import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import com.chanapps.four.activity.SettingsActivity;
 
-import javax.security.auth.login.LoginException;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
-/**
- * A loader that queries the ChanDatabaseHelper and returns a {@link android.database.Cursor}.
- * This class implements the {@link android.content.Loader} protocol in a standard way for
- * querying cursors, building on {@link android.content.AsyncTaskLoader} to perform the cursor
- * query on a background thread so that it does not block the application's UI.
- *
- */
 public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = ChanWatchlistCursorLoader.class.getSimpleName();
 
     protected static final String[] columns = {
-            ChanDatabaseHelper.POST_ID,
-            ChanDatabaseHelper.POST_BOARD_NAME,
-            ChanDatabaseHelper.POST_IMAGE_URL,
-            ChanDatabaseHelper.POST_TEXT,
-            ChanDatabaseHelper.POST_TN_W,
-            ChanDatabaseHelper.POST_TN_H
+            ChanHelper.POST_ID,
+            ChanHelper.POST_BOARD_NAME,
+            ChanHelper.POST_IMAGE_URL,
+            ChanHelper.POST_TEXT,
+            ChanHelper.POST_TN_W,
+            ChanHelper.POST_TN_H
     };
 
     protected final ForceLoadContentObserver mObserver;

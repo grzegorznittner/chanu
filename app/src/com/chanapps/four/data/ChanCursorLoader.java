@@ -5,50 +5,51 @@ import java.io.PrintWriter;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
+import android.database.MatrixCursor;
 import android.util.Log;
+
 import com.chanapps.four.activity.SettingsActivity;
 
-/**
- * A loader that queries the ChanDatabaseHelper and returns a {@link Cursor}.
- * This class implements the {@link Loader} protocol in a standard way for
- * querying cursors, building on {@link AsyncTaskLoader} to perform the cursor
- * query on a background thread so that it does not block the application's UI.
- * 
- */
 public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = ChanCursorLoader.class.getSimpleName();
 
     protected final ForceLoadContentObserver mObserver;
 
-    protected SQLiteDatabase db;
     protected Cursor mCursor;
     protected Context context;
 
     protected String boardName;
     protected long threadNo;
 
-    protected ChanCursorLoader(Context context, SQLiteDatabase db) {
+    protected static final String[] columns = {
+            ChanHelper.POST_ID,
+            ChanHelper.POST_BOARD_NAME,
+            ChanHelper.POST_IMAGE_URL,
+            ChanHelper.POST_TEXT,
+            ChanHelper.POST_TN_W,
+            ChanHelper.POST_TN_H,
+            ChanHelper.POST_W,
+            ChanHelper.POST_H
+    };
+
+    protected ChanCursorLoader(Context context) {
         super(context);
         mObserver = new ForceLoadContentObserver();
-        this.db = db;
     }
 
-    public ChanCursorLoader(Context context, SQLiteDatabase db, String boardName, long threadNo) {
-        this(context, db);
+    public ChanCursorLoader(Context context, String boardName, long threadNo) {
+        this(context);
         this.context = context;
         this.boardName = boardName;
         this.threadNo = threadNo;
     }
 
-    public ChanCursorLoader(Context context, SQLiteDatabase db, String boardName) {
-        this(context, db, boardName, 0);
+    public ChanCursorLoader(Context context, String boardName) {
+        this(context, boardName, 0);
     }
 
     /* Runs on a worker thread */
@@ -59,38 +60,87 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         boolean hideTextOnlyPosts = prefs.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
         Log.i("ChanCursorLoader", "prefs: " + hideAllText + " " + hideTextOnlyPosts);
-    	String query = "SELECT " + ChanDatabaseHelper.POST_ID + ", "
-                + ChanDatabaseHelper.POST_BOARD_NAME + ", "
-				+ "'http://0.thumbs.4chan.org/' || " + ChanDatabaseHelper.POST_BOARD_NAME
-					+ " || '/thumb/' || " + ChanDatabaseHelper.POST_TIM + " || 's.jpg' 'image_url', "
-                + (hideAllText ? " '' 'text', " : ChanDatabaseHelper.POST_TEXT + " 'text', ")
-				+ ChanDatabaseHelper.POST_TN_W + " 'tn_w', " + ChanDatabaseHelper.POST_TN_H + " 'tn_h', "
-                + ChanDatabaseHelper.POST_W + " 'w', " + ChanDatabaseHelper.POST_H + " 'h'"
-				+ " FROM " + ChanDatabaseHelper.POST_TABLE
-				+ " WHERE " + ChanDatabaseHelper.POST_BOARD_NAME + "='" + boardName + "' AND "
-                + (threadNo != 0
-                    ? "(" + ChanDatabaseHelper.POST_ID + "=" + threadNo + " OR " + ChanDatabaseHelper.POST_RESTO + "=" + threadNo + ")"
-				    :  ChanDatabaseHelper.POST_RESTO + "=0 ")
-                + (hideAllText || hideTextOnlyPosts ? " AND " + ChanDatabaseHelper.POST_TIM + " IS NOT NULL " : "")
-                + " ORDER BY " + ChanDatabaseHelper.POST_TIM + (threadNo == 0 ? " DESC" : " ASC");
-
-    	if (db != null && db.isOpen()) {
-    		Log.i(TAG, "loadInBackground database is ok");
-    		Cursor cursor = db != null && db.isOpen() ? db.rawQuery(query, null) : null;
-    		if (cursor != null) {
-    			// Ensure the cursor window is filled
-    			int count = db != null && db.isOpen() && cursor != null ? cursor.getCount() : 0;
-    			Log.i(TAG, "loadInBackground cursor is ok, count: " + count);
-    			if (count > 0) {
-                    registerContentObserver(cursor, mObserver);
-                }
+    	if (threadNo == 0) {
+    		// loading board from file
+    		ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
+    		if (board != null) {
+	    		MatrixCursor matrixCursor = new MatrixCursor(columns);
+	    		for (ChanPost thread : board.threads) {
+	    			if (thread.tn_w <= 0 || thread.tim == null) {
+		    			matrixCursor.addRow(new Object[] {
+			   					thread.no, boardName, "",
+			   					getThreadText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h});
+	    			} else {
+		    			matrixCursor.addRow(new Object[] {
+			   					thread.no, boardName, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
+			   					getThreadText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h});
+	    			}
+	    		}
+	    		if (board.threads.length > 0) {
+	    			registerContentObserver(matrixCursor, mObserver);
+	    		}
+	    		return matrixCursor;
     		}
-    		return cursor;
+    	} else {
+    		// loading thread from file
+    		ChanThread thread = ChanFileStorage.loadThreadData(getContext(), boardName, threadNo);
+    		if (thread != null) {
+	    		MatrixCursor matrixCursor = new MatrixCursor(columns);
+	    		for (ChanPost post : thread.posts) {
+	    			if (post.tn_w <= 0 || post.tim == null) {
+	    				matrixCursor.addRow(new Object[] {
+	    						post.no, boardName, "",
+	    						getPostText(post), post.tn_w, post.tn_h, post.w, post.h});
+	    			} else {
+	    				matrixCursor.addRow(new Object[] {
+	    						post.no, boardName, "http://0.thumbs.4chan.org/" + thread.board + "/thumb/" + post.tim + "s.jpg",
+	    						getPostText(post), post.tn_w, post.tn_h, post.w, post.h});
+	    			}
+	    		}
+	    		if (thread.posts.length > 0) {
+	    			registerContentObserver(matrixCursor, mObserver);
+	    		}
+	    		return matrixCursor;
+    		}
         }
         return null;
     }
 
-    /**
+    private Object getPostText(ChanPost post) {
+		String text = "";
+		if (post.sub != null) {
+			text += post.sub;
+		}
+		if (post.com != null) {
+			text += " " + post.com;
+		}
+		if (text.length() > 22) {
+			text = text.substring(0, 22) + "...";
+		}
+		if (post.fsize > 0) {
+			text += "\n";
+			int kbSize = (post.fsize / 1024) + 1;
+			text += "size: " + kbSize + "kB";
+		}
+		return text;
+	}
+
+	private Object getThreadText(ChanPost thread) {
+		String text = "";
+		if (thread.sub != null) {
+			text += thread.sub;
+		}
+		if (thread.com != null) {
+			text += " " + thread.com;
+		}
+		if (text.length() > 22) {
+			text = text.substring(0, 22) + "...";
+		}
+		text += "\nimg: " + thread.images + " rep: " + thread.replies;
+		return text;
+	}
+
+	/**
      * Registers an observer to get notifications from the content provider
      * when the cursor needs to be refreshed.
      */
