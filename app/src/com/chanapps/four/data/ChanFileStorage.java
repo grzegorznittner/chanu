@@ -73,7 +73,7 @@ public class ChanFileStorage {
 			return null;
 		}
 		if (boardCache.containsKey(boardCode)) {
-			Log.i(TAG, "Retruning board " + boardCode + " data from cache");
+			Log.w(TAG, "Retruning board " + boardCode + " data from cache");
 			return boardCache.get(boardCode);
 		}
 		try {
@@ -105,7 +105,7 @@ public class ChanFileStorage {
 			return null;
 		}
 		if (threadCache.containsKey(threadNo)) {
-			Log.i(TAG, "Retruning thread " + boardCode + "/" +  threadNo + " data from cache");
+			Log.w(TAG, "Retruning thread " + boardCode + "/" +  threadNo + " data from cache");
 			return threadCache.get(threadNo);
 		}
 		try {

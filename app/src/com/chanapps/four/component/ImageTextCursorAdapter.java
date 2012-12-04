@@ -6,7 +6,6 @@ package com.chanapps.four.component;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
-import android.widget.CursorAdapter;
 import android.widget.ResourceCursorAdapter;
 
 /**

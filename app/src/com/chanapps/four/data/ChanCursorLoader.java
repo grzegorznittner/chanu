@@ -65,9 +65,15 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
     		if (board != null) {
 	    		MatrixCursor matrixCursor = new MatrixCursor(new String[] {"_id", "image_url", "text", "tn_w", "tn_h", "w", "h"});
 	    		for (ChanPost thread : board.threads) {
-	    			matrixCursor.addRow(new Object[] {
-	   					thread.no, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
-	    				thread.sub, thread.tn_w, thread.tn_h, thread.w, thread.h});
+	    			if (thread.tn_w <= 0 || thread.tim == null) {
+		    			matrixCursor.addRow(new Object[] {
+			   					thread.no, "",
+			   					getThreadText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h});
+	    			} else {
+		    			matrixCursor.addRow(new Object[] {
+			   					thread.no, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
+			   					getThreadText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h});
+	    			}
 	    		}
 	    		if (board.threads.length > 0) {
 	    			registerContentObserver(matrixCursor, mObserver);
@@ -75,19 +81,19 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 	    		return matrixCursor;
     		}
     	} else {
-    		// loading board from file
+    		// loading thread from file
     		ChanThread thread = ChanFileStorage.loadThreadData(getContext(), boardName, threadNo);
     		if (thread != null) {
 	    		MatrixCursor matrixCursor = new MatrixCursor(new String[] {"_id", "image_url", "text", "tn_w", "tn_h", "w", "h"});
 	    		for (ChanPost post : thread.posts) {
-	    			if (post.tn_w <= 0) {
+	    			if (post.tn_w <= 0 || post.tim == null) {
 	    				matrixCursor.addRow(new Object[] {
 	    						post.no, "",
-	    						post.com, post.tn_w, post.tn_h, post.w, post.h});
+	    						getPostText(post), post.tn_w, post.tn_h, post.w, post.h});
 	    			} else {
 	    				matrixCursor.addRow(new Object[] {
 	    						post.no, "http://0.thumbs.4chan.org/" + thread.board + "/thumb/" + post.tim + "s.jpg",
-	    						post.sub != null ? post.sub : post.com, post.tn_w, post.tn_h, post.w, post.h});
+	    						getPostText(post), post.tn_w, post.tn_h, post.w, post.h});
 	    			}
 	    		}
 	    		if (thread.posts.length > 0) {
@@ -99,7 +105,41 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
         return null;
     }
 
-    /**
+    private Object getPostText(ChanPost post) {
+		String text = "";
+		if (post.sub != null) {
+			text += post.sub;
+		}
+		if (post.com != null) {
+			text += " " + post.com;
+		}
+		if (text.length() > 22) {
+			text = text.substring(0, 22) + "...";
+		}
+		if (post.fsize > 0) {
+			text += "\n";
+			int kbSize = (post.fsize / 1024) + 1;
+			text += "size: " + kbSize + "kB";
+		}
+		return text;
+	}
+
+	private Object getThreadText(ChanPost thread) {
+		String text = "";
+		if (thread.sub != null) {
+			text += thread.sub;
+		}
+		if (thread.com != null) {
+			text += " " + thread.com;
+		}
+		if (text.length() > 22) {
+			text = text.substring(0, 22) + "...";
+		}
+		text += "\nimg: " + thread.images + " rep: " + thread.replies;
+		return text;
+	}
+
+	/**
      * Registers an observer to get notifications from the content provider
      * when the cursor needs to be refreshed.
      */

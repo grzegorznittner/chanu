@@ -142,7 +142,6 @@ public class ChanViewHelper {
             Log.w(TAG, "setViewText - Why is cursor null?");
             return;
         }
-        text = text.substring(0, Math.min(text.length(), 22));
         textView.setText(text);
     }
 

@@ -105,11 +105,13 @@ public class ChanLoadService extends BaseChanService {
             ChanThread thread = null;
             List<ChanPost> posts = new ArrayList<ChanPost>();
             boolean first = true;
+            boolean isSticky = false;
             while (reader.hasNext()) { // first object is the thread post, spin over rest
                 ChanPost post = gson.fromJson(reader, ChanPost.class);
                 post.board = boardCode;
-                if (post.sticky > 0) {
+                if (post.sticky > 0 || isSticky) {
                 	stickyPosts.add(post);
+                	isSticky = true;
                 } else {
                 	if (first) {
                 		threads.add(post);

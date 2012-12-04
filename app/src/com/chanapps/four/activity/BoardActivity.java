@@ -126,7 +126,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         createViewFromOrientation();
         viewHelper.onRefresh();
         ensureHandler();
-		handler.sendEmptyMessageDelayed(0, 100);
+		handler.sendEmptyMessageDelayed(0, 200);
         Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
     }
 
@@ -167,7 +167,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
         ensureHandler();
-		handler.sendEmptyMessageDelayed(0, 10000);
+		handler.sendEmptyMessageDelayed(0, 5000);
         if (gridView != null) {
             gridView.onRefreshComplete();
         }
