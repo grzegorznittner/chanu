@@ -4,6 +4,10 @@
           android:title="@string/clear_favorites_menu"
           android:icon="@drawable/content_remove"
             />
+    <item android:id="@+id/clear_watchlist_menu"
+          android:title="@string/clear_watchlist_menu"
+          android:icon="@drawable/content_remove"
+            />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"

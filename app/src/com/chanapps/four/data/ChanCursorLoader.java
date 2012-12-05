@@ -5,24 +5,15 @@ import java.io.PrintWriter;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.text.Html;
 import android.util.Log;
 
 import com.chanapps.four.activity.SettingsActivity;
 
-/**
- * A loader that queries the ChanDatabaseHelper and returns a {@link Cursor}.
- * This class implements the {@link Loader} protocol in a standard way for
- * querying cursors, building on {@link AsyncTaskLoader} to perform the cursor
- * query on a background thread so that it does not block the application's UI.
- * 
- */
 public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = ChanCursorLoader.class.getSimpleName();
@@ -34,6 +25,17 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected String boardName;
     protected long threadNo;
+
+    protected static final String[] columns = {
+            ChanHelper.POST_ID,
+            ChanHelper.POST_BOARD_NAME,
+            ChanHelper.POST_IMAGE_URL,
+            ChanHelper.POST_TEXT,
+            ChanHelper.POST_TN_W,
+            ChanHelper.POST_TN_H,
+            ChanHelper.POST_W,
+            ChanHelper.POST_H
+    };
 
     protected ChanCursorLoader(Context context) {
         super(context);
@@ -59,20 +61,19 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         boolean hideTextOnlyPosts = prefs.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
         Log.i("ChanCursorLoader", "prefs: " + hideAllText + " " + hideTextOnlyPosts);
-
     	if (threadNo == 0) {
     		// loading board from file
     		ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
     		if (board != null) {
-	    		MatrixCursor matrixCursor = new MatrixCursor(new String[] {"_id", "image_url", "text", "tn_w", "tn_h", "w", "h"});
+	    		MatrixCursor matrixCursor = new MatrixCursor(columns);
 	    		for (ChanPost thread : board.threads) {
 	    			if (thread.tn_w <= 0 || thread.tim == null) {
 		    			matrixCursor.addRow(new Object[] {
-			   					thread.no, "",
+			   					thread.no, boardName, "",
 			   					getThreadText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h});
 	    			} else {
 		    			matrixCursor.addRow(new Object[] {
-			   					thread.no, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
+			   					thread.no, boardName, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
 			   					getThreadText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h});
 	    			}
 	    		}
@@ -85,15 +86,15 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
     		// loading thread from file
     		ChanThread thread = ChanFileStorage.loadThreadData(getContext(), boardName, threadNo);
     		if (thread != null) {
-	    		MatrixCursor matrixCursor = new MatrixCursor(new String[] {"_id", "image_url", "text", "tn_w", "tn_h", "w", "h"});
+	    		MatrixCursor matrixCursor = new MatrixCursor(columns);
 	    		for (ChanPost post : thread.posts) {
 	    			if (post.tn_w <= 0 || post.tim == null) {
 	    				matrixCursor.addRow(new Object[] {
-	    						post.no, "",
+	    						post.no, boardName, "",
 	    						getPostText(post), post.tn_w, post.tn_h, post.w, post.h});
 	    			} else {
 	    				matrixCursor.addRow(new Object[] {
-	    						post.no, "http://0.thumbs.4chan.org/" + thread.board + "/thumb/" + post.tim + "s.jpg",
+	    						post.no, boardName, "http://0.thumbs.4chan.org/" + thread.board + "/thumb/" + post.tim + "s.jpg",
 	    						getPostText(post), post.tn_w, post.tn_h, post.w, post.h});
 	    			}
 	    		}

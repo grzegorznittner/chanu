@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.chanapps.four.component.ChanViewHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanWatchlist;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,10 +47,17 @@ public class ThreadActivity extends BoardActivity {
                 replyIntent.putExtra(ChanHelper.THREAD_NO, viewHelper.getThreadNo());
                 startActivity(replyIntent);
                 return true;
-            case R.id.download_all_images_menu:
-                Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT);
-                return true;
             case R.id.watch_thread_menu:
+                ChanWatchlist.watchThread(
+                        this,
+                        viewHelper.getBoardCode(),
+                        viewHelper.getThreadNo(),
+                        viewHelper.getText(),
+                        viewHelper.getImageUrl(),
+                        viewHelper.getImageWidth(),
+                        viewHelper.getImageHeight());
+                return true;
+            case R.id.download_all_images_menu:
                 Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT);
                 return true;
             case R.id.settings_menu:

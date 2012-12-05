@@ -68,7 +68,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             adapter = new ImageTextCursorAdapter(this,
                 R.layout.board_grid_item,
                 this,
-                new String[] {"image_url", "text"},
+                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT},
                 new int[] {R.id.board_activity_grid_item_image, R.id.board_activity_grid_item_text});
             gridView.setAdapter(adapter);
             gridView.setClickable(true);
@@ -87,7 +87,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             adapter = new ImageTextCursorAdapter(this,
                     R.layout.board_list_item,
                     this,
-                    new String[] {"image_url", "text"},
+                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT},
                     new int[] {R.id.list_item_image, R.id.list_item_text});
             listView.setAdapter(adapter);
             listView.setClickable(true);
@@ -130,15 +130,18 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
 	public void onWindowFocusChanged (boolean hasFocus) {
 		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
 	}
 
+    @Override
 	protected void onPause() {
         super.onPause();
         Log.i(TAG, "onPause");
     }
-	
+
+    @Override
     protected void onStop () {
     	super.onStop();
     	Log.i(TAG, "onStop");
@@ -146,6 +149,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     	handler = null;
     }
 
+    @Override
 	protected void onDestroy () {
 		super.onDestroy();
 		Log.i(TAG, "onDestroy");
@@ -153,16 +157,19 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 		handler = null;
 	}
 
+    @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         return viewHelper.setViewValue(view, cursor, columnIndex);
     }
 
+    @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
 		cursorLoader = new ChanCursorLoader(getBaseContext(), viewHelper.getBoardCode(), viewHelper.getThreadNo());
         return cursorLoader;
 	}
 
+    @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
@@ -177,12 +184,14 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 		//closeDatabase();
 	}
 
+    @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		Log.i(TAG, ">>>>>>>>>>> onLoaderReset");
 		adapter.swapCursor(null);
 		//closeDatabase();
 	}
 
+    @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         viewHelper.startThreadActivity(adapterView, view, position, id);
     }

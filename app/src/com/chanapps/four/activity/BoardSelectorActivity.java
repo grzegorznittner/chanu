@@ -1,11 +1,7 @@
 package com.chanapps.four.activity;
 
 import android.content.Intent;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 import com.chanapps.four.component.BoardGroupFragment;
 import com.chanapps.four.component.RawResourceDialog;
@@ -21,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import com.chanapps.four.data.ChanWatchlist;
 
 public class BoardSelectorActivity extends FragmentActivity {
     public static final String TAG = "BoardSelectorActivity";
@@ -160,7 +157,25 @@ public class BoardSelectorActivity extends FragmentActivity {
                 selectedBoardType = ChanBoard.Type.FAVORITES;
                 setTabToSelectedType(true);
                 Log.d(TAG, "Favorites cleared.");
-                Toast.makeText(this.getApplicationContext(), R.string.board_favorites_cleared, Toast.LENGTH_SHORT);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(BoardSelectorActivity.this, R.string.board_favorites_cleared, Toast.LENGTH_SHORT);
+                    }
+                });
+                return true;
+            case R.id.clear_watchlist_menu:
+                Log.d(TAG, "Clearing watchlist...");
+                ChanWatchlist.clearWatchlist(this);
+                selectedBoardType = ChanBoard.Type.WATCHING;
+                setTabToSelectedType(true);
+                Log.d(TAG, "Watchlist cleared.");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(BoardSelectorActivity.this, R.string.thread_watchlist_cleared, Toast.LENGTH_SHORT);
+                    }
+                });
                 return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");

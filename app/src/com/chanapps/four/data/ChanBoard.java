@@ -36,7 +36,7 @@ public class ChanBoard {
 		this.textOnly = textOnly;
 	}
 	
-	public enum Type {JAPANESE_CULTURE, INTERESTS, CREATIVE, ADULT, OTHER, MISC, FAVORITES};
+	public enum Type {JAPANESE_CULTURE, INTERESTS, CREATIVE, ADULT, OTHER, MISC, FAVORITES, WATCHING};
 
     public static final String WATCH_BOARD_CODE = "watch";
 
@@ -78,6 +78,7 @@ public class ChanBoard {
             case MISC: return ctx.getString(R.string.board_type_misc);
             case OTHER: return ctx.getString(R.string.board_type_other);
             case FAVORITES: return ctx.getString(R.string.board_type_favorites);
+            case WATCHING: return ctx.getString(R.string.board_watch);
             default:
                 return ctx.getString(R.string.board_type_japanese_culture);
         }
@@ -103,6 +104,9 @@ public class ChanBoard {
 		}
         else if (type == Type.FAVORITES) {
             loadFavoritesFromPrefs(context);
+        }
+        else if (type == Type.WATCHING) { // handled at thread level
+            return null;
         }
 		return boardsByType.get(type);
 	}
@@ -260,6 +264,8 @@ public class ChanBoard {
                         "soc", ctx.getString(R.string.board_soc)
                 },
                 {   Type.FAVORITES.toString()
+                },
+                {   Type.WATCHING.toString()
                 }
 
         };

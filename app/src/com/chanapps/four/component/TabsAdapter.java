@@ -1,7 +1,6 @@
 package com.chanapps.four.component;
 
 import android.app.ActionBar;
-import android.nfc.Tag;
 import android.support.v4.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.os.Bundle;

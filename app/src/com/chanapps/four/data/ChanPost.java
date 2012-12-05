@@ -1,6 +1,12 @@
 package com.chanapps.four.data;
 
-import java.util.Date;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+import android.widget.Toast;
+import com.chanapps.four.activity.R;
+
+import java.util.*;
 
 public class ChanPost {
 	public static final String TAG = ChanPost.class.getSimpleName();
@@ -49,9 +55,9 @@ public class ChanPost {
    		return null;
    	}
    */
-       public String getText() {
-           return ChanText.getText(sub, com);
-       }
 
+    public String getText() {
+        return ChanText.getText(sub, com);
+    }
 
 }
