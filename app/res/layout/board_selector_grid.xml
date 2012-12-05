@@ -7,6 +7,5 @@
     android:verticalSpacing="2dp"
     android:horizontalSpacing="2dp"
     android:numColumns="2"
-    android:stretchMode="columnWidth"
-    android:gravity="center"
+    android:stretchMode="none"
 />

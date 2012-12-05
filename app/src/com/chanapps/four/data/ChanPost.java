@@ -32,6 +32,8 @@ public class ChanPost {
   	public int images = -1;
   	public int omitted_posts = -1;
   	public int omitted_images = -1;
+  	public int bumplimit = 0;
+  	public int imagelimit = 0;
 
    	public String getThumbnailUrl() {
    		if (tim != null) {

@@ -11,6 +11,7 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.Html;
 import android.util.Log;
 
 import com.chanapps.four.activity.SettingsActivity;
@@ -113,13 +114,13 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 		if (post.com != null) {
 			text += " " + post.com;
 		}
-		if (text.length() > 22) {
-			text = text.substring(0, 22) + "...";
-		}
+		text = Html.fromHtml(text).toString();
 		if (post.fsize > 0) {
-			text += "\n";
+			if (text.length() > 0) {
+				text += "\n";
+			}
 			int kbSize = (post.fsize / 1024) + 1;
-			text += "size: " + kbSize + "kB";
+			text += kbSize + "kB " + post.w + "x" + post.h + " " + post.ext;
 		}
 		return text;
 	}
@@ -132,10 +133,26 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 		if (thread.com != null) {
 			text += " " + thread.com;
 		}
+		text = Html.fromHtml(text).toString();
 		if (text.length() > 22) {
 			text = text.substring(0, 22) + "...";
 		}
-		text += "\nimg: " + thread.images + " rep: " + thread.replies;
+		if (text.length() > 0) {
+			text += "\n";
+		}
+		if (thread.replies <= 0) {
+			text += "no replies yet";
+		} else if (thread.images <= 0) {
+			text += thread.replies + " posts but no image replies";
+		} else {
+			text += thread.replies + " posts and " + thread.images + " image replies";
+		}
+		if (thread.imagelimit == 1) {
+			text += " (IL)";
+		}
+		if (thread.bumplimit == 1) {
+			text += " (BL)";
+		}
 		return text;
 	}
 
