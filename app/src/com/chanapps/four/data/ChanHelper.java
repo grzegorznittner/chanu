@@ -40,6 +40,7 @@ public class ChanHelper {
     public static final String POST_OMITTED_POSTS = "omitted_posts";
     public static final String POST_OMITTED_IMAGES = "omitted_images";
     // version 6
+    public static final String POST_SHORT_TEXT = "shortText"; // we construct and filter this
     public static final String POST_TEXT = "text"; // we construct and filter this
     public static final String POST_IMAGE_URL = "image_url"; // we construct this from board and tim
     

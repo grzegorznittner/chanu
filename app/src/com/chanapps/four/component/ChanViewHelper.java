@@ -9,10 +9,11 @@ import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.ViewGroup;
+import android.widget.*;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.data.*;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -35,6 +36,7 @@ public class ChanViewHelper {
     }
 
     public enum ServiceType {
+        SELECTOR,
         BOARD,
         THREAD,
         WATCHLIST
@@ -81,21 +83,22 @@ public class ChanViewHelper {
     }
 
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+        String rawShortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
         String rawText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         String rawImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        String shortText = rawShortText == null ? "" : rawShortText;
         String text = rawText == null ? "" : rawText;
         String imageUrl = rawImageUrl == null ? "" : rawImageUrl;
         if (view instanceof TextView) {
             //todo - @john - if the text is hidden then the image should take the full available space.
             TextView tv = (TextView) view;
-            Log.v(TAG, "setting text: " + text);
             switch (getViewType()) {
                 case GRID:
-                    if (hideAllText || text == null || text.isEmpty()) {
+                    if (hideAllText || shortText == null || shortText.isEmpty()) {
                         tv.setVisibility(View.INVISIBLE);
                     }
                     else {
-                        setGridViewText(tv, text, cursor);
+                        setGridViewText(tv, shortText, cursor);
                     }
                     break;
                 default:
@@ -292,6 +295,32 @@ public class ChanViewHelper {
         intent.putExtra(ChanHelper.IMAGE_WIDTH, w);
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, h);
         activity.startActivity(intent);
+    }
+
+    public boolean showPopupText(AdapterView<?> adapterView, View view, int position, long id) {
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+        final String boardName = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+        final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        Log.i(TAG, "Calling popup with id=" + id);
+        if (text != null && !text.trim().isEmpty()) {
+            View popupView = activity.getLayoutInflater().inflate(R.layout.popup_full_text_layout, null);
+            TextView popupText = (TextView)popupView.findViewById(R.id.popup_full_text);
+            popupText.setText(text);
+            final PopupWindow popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            final Button dismissButton = (Button)popupView.findViewById(R.id.popup_dismiss_button);
+            dismissButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popupWindow.dismiss();
+                }
+            });
+            popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public String getBoardCode() {

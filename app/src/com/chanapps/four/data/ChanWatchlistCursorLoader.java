@@ -22,6 +22,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
             ChanHelper.POST_ID,
             ChanHelper.POST_BOARD_NAME,
             ChanHelper.POST_IMAGE_URL,
+            ChanHelper.POST_SHORT_TEXT,
             ChanHelper.POST_TEXT,
             ChanHelper.POST_TN_W,
             ChanHelper.POST_TN_H
@@ -54,6 +55,11 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 String[] threadComponents = ChanWatchlist.getThreadPathComponents(threadPath);
                 String boardCode = threadComponents[0];
                 long threadNo = Long.valueOf(threadComponents[1]);
+                String shortText = hideAllText
+                        ? ""
+                        : (threadComponents[2].length() > 25
+                            ? threadComponents[2].substring(0, 22) + "..."
+                            : threadComponents[2]);
                 String text = hideAllText ? "" : threadComponents[2];
                 String imageUrl = threadComponents[3];
                 int imageWidth = Integer.valueOf(threadComponents[4]);
@@ -62,6 +68,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 row.add(threadNo);
                 row.add(boardCode);
                 row.add(imageUrl);
+                row.add(shortText);
                 row.add(text);
                 row.add(imageWidth);
                 row.add(imageHeight);

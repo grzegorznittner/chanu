@@ -16,6 +16,7 @@ import com.chanapps.four.component.ImageTextCursorAdapter;
  */
 public interface ClickableLoaderActivity extends
         AdapterView.OnItemClickListener,
+        AdapterView.OnItemLongClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,
         ImageTextCursorAdapter.ViewBinder {
     public LoaderManager getLoaderManager();

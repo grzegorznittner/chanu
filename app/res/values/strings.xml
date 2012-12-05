@@ -77,6 +77,9 @@
     <string name="full_screen_image_shared">Image shared</string>
     <string name="full_screen_sharing_error">Couldn\'t share image</string>
 
+    <!-- popup text -->
+    <string name="dismiss">Dismiss</string>
+
     <!-- post reply activity -->
     <string name="post_reply_title">New Reply</string>
     <string name="post_reply_thread_title">New Thread</string>

@@ -30,6 +30,7 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
             ChanHelper.POST_ID,
             ChanHelper.POST_BOARD_NAME,
             ChanHelper.POST_IMAGE_URL,
+            ChanHelper.POST_SHORT_TEXT,
             ChanHelper.POST_TEXT,
             ChanHelper.POST_TN_W,
             ChanHelper.POST_TN_H,
@@ -71,17 +72,17 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 	    			if (thread.tn_w <= 0 || thread.tim == null) {
 		    			matrixCursor.addRow(new Object[] {
 			   					thread.no, boardName, "",
-			   					getThreadText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
+			   					getThreadText(thread), getPostText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
 	    			} else {
 		    			matrixCursor.addRow(new Object[] {
 			   					thread.no, boardName, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
-			   					getThreadText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
+			   					getThreadText(thread), getPostText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
 	    			}
 	    		}
 	    		if (board.threads.length > 0) {
 	    			matrixCursor.addRow(new Object[] {
 		   					2, boardName, "",
-		   					"Load page 2", -1, -1, -1, -1, 1});
+		   					"Load page 2", "", -1, -1, -1, -1, 1});
 	    			registerContentObserver(matrixCursor, mObserver);
 	    		}
 	    		return matrixCursor;
@@ -95,11 +96,11 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 	    			if (post.tn_w <= 0 || post.tim == null) {
 	    				matrixCursor.addRow(new Object[] {
 	    						post.no, boardName, "",
-	    						getPostText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
+								getThreadText(post), getPostText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
 	    			} else {
 	    				matrixCursor.addRow(new Object[] {
 	    						post.no, boardName, "http://0.thumbs.4chan.org/" + thread.board + "/thumb/" + post.tim + "s.jpg",
-	    						getPostText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
+	    						getThreadText(post), getPostText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
 	    			}
 	    		}
 	    		if (thread.posts.length > 0) {
@@ -142,22 +143,24 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 		if (text.length() > 22) {
 			text = text.substring(0, 22) + "...";
 		}
-		if (text.length() > 0) {
-			text += "\n";
-		}
-		if (thread.replies <= 0) {
-			text += "no replies yet";
-		} else if (thread.images <= 0) {
-			text += thread.replies + " posts but no image replies";
-		} else {
-			text += thread.replies + " posts and " + thread.images + " image replies";
-		}
-		if (thread.imagelimit == 1) {
-			text += " (IL)";
-		}
-		if (thread.bumplimit == 1) {
-			text += " (BL)";
-		}
+        if (thread.resto == 0) { // it's a thread, add thread stuff
+            if (text.length() > 0) {
+                text += "\n";
+            }
+            if (thread.replies <= 0) {
+                text += "no replies yet";
+            } else if (thread.images <= 0) {
+                text += thread.replies + " posts but no image replies";
+            } else {
+                text += thread.replies + " posts and " + thread.images + " image replies";
+            }
+            if (thread.imagelimit == 1) {
+                text += " (IL)";
+            }
+            if (thread.bumplimit == 1) {
+                text += " (BL)";
+    		}
+        }
 		return text;
 	}
 

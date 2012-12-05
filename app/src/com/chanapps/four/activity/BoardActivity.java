@@ -63,7 +63,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             setContentView(R.layout.board_grid_layout);
             gridView = (PullToRefreshGridView)findViewById(R.id.board_activity_grid_view);
             Display display = getWindowManager().getDefaultDisplay();
-            ChanGridSizer cg = new ChanGridSizer(gridView.getRefreshableView(), display);
+            ChanGridSizer cg = new ChanGridSizer(gridView.getRefreshableView(), display, getServiceType());
             cg.sizeGridToDisplay();
             adapter = new ImageTextCursorAdapter(this,
                 R.layout.board_grid_item,
@@ -73,6 +73,8 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             gridView.setAdapter(adapter);
             gridView.setClickable(true);
             gridView.setOnItemClickListener(this);
+            gridView.setLongClickable(true);
+            //gridView.setOnItemLongClickListener(this);
             gridView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<GridView>() {
                 @Override
                 public void onRefresh(PullToRefreshBase<GridView> refreshView) {
@@ -92,6 +94,8 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             listView.setAdapter(adapter);
             listView.setClickable(true);
             listView.setOnItemClickListener(this);
+            listView.setLongClickable(true);
+            //listView.setOnItemLongClickListener(this);
             listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
                 @Override
                 public void onRefresh(PullToRefreshBase<ListView> refreshView) {
@@ -194,6 +198,11 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         viewHelper.startThreadActivity(adapterView, view, position, id);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+        return viewHelper.showPopupText(adapterView, view, position, id);
     }
 
     @Override
