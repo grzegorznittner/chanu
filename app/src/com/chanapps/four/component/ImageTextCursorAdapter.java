@@ -5,8 +5,15 @@ package com.chanapps.four.component;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
+
+import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanHelper;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -19,6 +26,8 @@ import android.widget.ResourceCursorAdapter;
  *
  */
 public class ImageTextCursorAdapter extends ResourceCursorAdapter {
+	private static final String TAG = ImageTextCursorAdapter.class.getSimpleName();
+	
     /**
      * A list of columns containing the data to bind to the UI.
      * This field should be made private, so it is hidden from the SDK.
@@ -33,9 +42,12 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
     protected int[] mTo;
 
     private ViewBinder mViewBinder;
+    private Context context;
+    private LayoutInflater mInflater;
 
     String[] mOriginalFrom;
 
+    
     /**
      * Standard constructor.
      * 
@@ -53,9 +65,11 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
      */
     public ImageTextCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, null, 0);
+        this.context = context;
         mTo = to;
         mOriginalFrom = from;
         mViewBinder = viewBinder;
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     /**
@@ -77,24 +91,67 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
                 if (binder != null) {
                     bound = binder.setViewValue(v, cursor, from[i]);
                 }
-
-//                if (!bound) {
-//                    String text = cursor.getString(from[i]);
-//                    if (text == null) {
-//                        text = "";
-//                    }
-//
-//                    if (v instanceof TextView) {
-//                        setViewText((TextView) v, text);
-//                    } else if (v instanceof ImageView) {
-//                        setViewImage((ImageView) v, text);
-//                    } else {
-//                        throw new IllegalStateException(v.getClass().getName() + " is not a " +
-//                                " view that can be bounds by this SimpleCursorAdapter");
-//                    }
-//                }
             }
         }
+    }
+    
+    /**
+     * @see android.widget.ListAdapter#getView(int, View, ViewGroup)
+     */
+    public View getView(int position, View convertView, ViewGroup parent) {
+    	Cursor cursor = getCursor();
+        if (cursor == null) {
+            throw new IllegalStateException("this should only be called when the cursor is valid");
+        }
+        if (!cursor.moveToPosition(position)) {
+            throw new IllegalStateException("couldn't move cursor to position " + position);
+        }
+        String tag = null;
+        String imageUrl = null;
+    	int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
+    	if (loadPage > 0) {
+    		tag = ChanHelper.LOAD_PAGE;
+    	} else {
+    		imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+    		if (imageUrl != null && imageUrl.length() > 0) {
+    			tag = ChanHelper.POST_IMAGE_URL;
+    		} else {
+    			tag = ChanHelper.TEXT;
+    		}
+    	}
+
+        View v;
+        if (convertView == null || !tag.equals(convertView.getTag())) {
+            v = newView(context, parent, tag, position);
+            v.setTag(tag);
+            if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
+        		ImageView imageView = (ImageView)v.findViewById(R.id.board_activity_grid_item_image);
+        		imageView.setTag(imageUrl);
+            }
+        } else {
+        	Log.w(TAG, "Reusing existing " + tag + " layout for " + position);
+        	if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
+        		ImageView imageView = (ImageView)convertView.findViewById(R.id.board_activity_grid_item_image);
+        		if (imageView != null && !imageUrl.equals(imageView.getTag())) {
+        			//imageView.setImageResource(R.drawable.stub_image);
+        		}
+        	}
+            v = convertView;
+        }
+        bindView(v, context, cursor);
+        return v;
+    }
+    
+    private View newView(Context context, ViewGroup parent, String tag, int position) {
+		Log.w(TAG, "Creating " + tag + " layout for " + position);
+    	if (ChanHelper.LOAD_PAGE.equals(tag)) {
+    		return mInflater.inflate(R.layout.board_grid_item_next_page, parent, false);
+    	}
+    	if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
+    		return mInflater.inflate(R.layout.board_grid_item, parent, false);
+    	} else {
+    		return mInflater.inflate(R.layout.board_grid_item_no_image, parent, false);
+    	}
     }
 
     /**
