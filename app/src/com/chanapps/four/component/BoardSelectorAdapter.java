@@ -10,8 +10,6 @@ import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 
-import javax.security.auth.login.LoginException;
-
 /**
  * Created with IntelliJ IDEA.
  * User: arley
@@ -67,7 +65,7 @@ public class BoardSelectorAdapter extends BaseAdapter {
         View itemLayout = null;
         if (convertView == null) {
             Log.d(BoardSelectorActivity.TAG, "Creating new item view for " + position);
-            itemLayout = inflater.inflate(R.layout.grid_item, parent, false);
+            itemLayout = inflater.inflate(R.layout.selector_grid_item, parent, false);
             itemLayout.setTag(selectedBoardType.toString());
         } else {
             Log.d(BoardSelectorActivity.TAG, "Using existing view for " + position);

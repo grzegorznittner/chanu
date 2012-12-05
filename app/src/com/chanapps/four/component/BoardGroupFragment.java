@@ -72,7 +72,7 @@ public class BoardGroupFragment
 
         gridView = (GridView) inflater.inflate(R.layout.board_selector_grid, container, false);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(gridView, display);
+        ChanGridSizer cg = new ChanGridSizer(gridView, display, ChanViewHelper.ServiceType.SELECTOR);
         cg.sizeGridToDisplay();
         context = container.getContext();
         columnWidth = cg.getColumnWidth();
