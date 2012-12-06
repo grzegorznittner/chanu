@@ -74,7 +74,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             gridView.setClickable(true);
             gridView.setOnItemClickListener(this);
             gridView.setLongClickable(true);
-            //gridView.setOnItemLongClickListener(this);
+            gridView.setOnItemLongClickListener(this);
             gridView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<GridView>() {
                 @Override
                 public void onRefresh(PullToRefreshBase<GridView> refreshView) {
