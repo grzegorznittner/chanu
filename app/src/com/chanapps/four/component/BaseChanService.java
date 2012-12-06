@@ -122,14 +122,6 @@ public abstract class BaseChanService extends Service {
         mServiceHandler = new ServiceHandler(mServiceLooper);
     }
 
-    @Override
-    public void onStart(Intent intent, int startId) {
-        Message msg = mServiceHandler.obtainMessage();
-        msg.arg1 = startId;
-        msg.obj = intent;
-        mServiceHandler.sendMessage(msg);
-    }
-
     /**
      * You should not override this method for your IntentService. Instead,
      * override {@link #onHandleIntent}, which the system calls when the IntentService
@@ -138,7 +130,10 @@ public abstract class BaseChanService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        onStart(intent, startId);
+        Message msg = mServiceHandler.obtainMessage();
+        msg.arg1 = startId;
+        msg.obj = intent;
+        mServiceHandler.sendMessage(msg);
         return mRedelivery ? START_REDELIVER_INTENT : START_NOT_STICKY;
     }
 

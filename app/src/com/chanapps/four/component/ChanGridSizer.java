@@ -1,6 +1,7 @@
 package com.chanapps.four.component;
 
 import android.graphics.Point;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.widget.GridView;
@@ -37,9 +38,18 @@ public class ChanGridSizer {
         this.d = d;
         for (int i = 0; i < MAX_COLUMN_WIDTHS.length; i += 2) {
             if (serviceType.ordinal() == MAX_COLUMN_WIDTHS[i]) {
-                maxColumnWidth = MAX_COLUMN_WIDTHS[i + 1];
+                int dp = MAX_COLUMN_WIDTHS[i + 1];
+                maxColumnWidth = dpToPx(d, dp);
             }
         }
+    }
+
+    private int dpToPx(Display d, int dp) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        d.getMetrics(displayMetrics);
+        float dpf = dp;
+        int pixels = (int)(displayMetrics.density * dpf + 0.5f);
+        return pixels;
     }
 
     public void sizeGridToDisplay() {

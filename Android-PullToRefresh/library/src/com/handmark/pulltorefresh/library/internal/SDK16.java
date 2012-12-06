@@ -22,7 +22,7 @@ import android.view.View;
 public class SDK16 {
 
 	public static void postOnAnimation(View view, Runnable runnable) {
-		view.postOnAnimation(runnable);
+		//view.postOnAnimation(runnable);
 	}
 
 }

@@ -70,11 +70,11 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                 this,
                 new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT},
                 new int[] {R.id.board_activity_grid_item_image, R.id.board_activity_grid_item_text});
-            gridView.setAdapter(adapter);
+            gridView.getRefreshableView().setAdapter(adapter);
             gridView.setClickable(true);
-            gridView.setOnItemClickListener(this);
+            gridView.getRefreshableView().setOnItemClickListener(this);
             gridView.setLongClickable(true);
-            gridView.setOnItemLongClickListener(this);
+            gridView.getRefreshableView().setOnItemLongClickListener(this);
             gridView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<GridView>() {
                 @Override
                 public void onRefresh(PullToRefreshBase<GridView> refreshView) {
@@ -91,11 +91,11 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                     this,
                     new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT},
                     new int[] {R.id.list_item_image, R.id.list_item_text});
-            listView.setAdapter(adapter);
+            listView.getRefreshableView().setAdapter(adapter);
             listView.setClickable(true);
-            listView.setOnItemClickListener(this);
+            listView.getRefreshableView().setOnItemClickListener(this);
             listView.setLongClickable(true);
-            //listView.setOnItemLongClickListener(this);
+            listView.getRefreshableView().setOnItemLongClickListener(this);
             listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
                 @Override
                 public void onRefresh(PullToRefreshBase<ListView> refreshView) {
