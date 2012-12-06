@@ -3,16 +3,26 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_margin="32dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginBottom="16dp"
+    android:padding="1dp"
     android:background="#121212"
+    android:orientation="vertical"
     >
 
+    <FrameLayout
+        android:background="#e2e2e2"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
 
         <ScrollView
             android:id="@+id/popup_full_text_scroll_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_margin="1dp"
+            android:layout_marginBottom="48dp"
             android:scrollbars="vertical">
 
             <LinearLayout
@@ -20,7 +30,6 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:padding="16dp"
-                android:background="#e2e2e2"
                 android:orientation="vertical">
 
             <TextView
@@ -29,21 +38,23 @@
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textColor="#121212"
+                android:linksClickable="true"
+                android:autoLink="all"
                 android:layout_gravity="top">
             </TextView>
-
-
-            <Button
-               android:id="@+id/popup_dismiss_button"
-               android:layout_width="fill_parent"
-               android:layout_height="wrap_content"
-               android:layout_gravity="bottom"
-               android:paddingTop="16dp"
-               android:text="@string/dismiss" />
 
             </LinearLayout>
 
         </ScrollView>
 
+
+        <Button
+            android:id="@+id/popup_dismiss_button"
+            android:layout_width="fill_parent"
+            android:layout_height="48dp"
+            android:layout_gravity="bottom"
+            android:text="@string/dismiss" />
+
+    </FrameLayout>
 
 </LinearLayout>

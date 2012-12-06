@@ -124,10 +124,10 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
         ChanPostResponse chanPostResponse = new ChanPostResponse(context, response);
         if (chanPostResponse.isPosted()) {
             if (activity.threadNo == 0) {
-                Toast.makeText(context, R.string.post_reply_posted_reply, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.post_reply_posted_thread, Toast.LENGTH_SHORT).show();
             }
             else {
-                Toast.makeText(context, R.string.post_reply_posted_thread, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.post_reply_posted_reply, Toast.LENGTH_SHORT).show();
             }
             activity.navigateUp();
         }

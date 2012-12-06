@@ -10,7 +10,7 @@
     android:paddingBottom="0dp"
     android:layout_marginLeft="0dp"
     android:layout_marginRight="0dp"
-    android:background="#40000000">
+    android:background="#e2e2e2">
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     	android:id="@+id/board_activity_grid_item_relative"
     	android:layout_width="match_parent"
@@ -18,14 +18,15 @@
 	    <TextView
 	        android:id="@+id/board_activity_grid_item_text"
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
+	        android:layout_height="match_parent"
 	        android:maxHeight="200dp"
-	        android:textColor="#40ffffff"
-	        android:background="#80000000"
+	        android:textColor="#121212"
+	        android:background="#e2e2e2"
 	        android:textStyle="normal"
 	        android:textColorHint="#555555"
-	        android:paddingBottom="5dp"
-	        android:gravity="top|center"
+            android:padding="8dp"
+            android:text="FOO bar"
+	        android:gravity="top|left"
 	        android:textSize="12sp"
 	    />
     </RelativeLayout>

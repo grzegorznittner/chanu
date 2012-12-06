@@ -72,11 +72,11 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 	    			if (thread.tn_w <= 0 || thread.tim == null) {
 		    			matrixCursor.addRow(new Object[] {
 			   					thread.no, boardName, "",
-			   					getThreadText(thread), getPostText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
+			   					getThreadText(thread), getFullText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
 	    			} else {
 		    			matrixCursor.addRow(new Object[] {
 			   					thread.no, boardName, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
-			   					getThreadText(thread), getPostText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
+			   					getThreadText(thread), getFullText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
 	    			}
 	    		}
 	    		if (board.threads.length > 0) {
@@ -96,11 +96,11 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 	    			if (post.tn_w <= 0 || post.tim == null) {
 	    				matrixCursor.addRow(new Object[] {
 	    						post.no, boardName, "",
-								getThreadText(post), getPostText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
+								getPostText(post), getFullText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
 	    			} else {
 	    				matrixCursor.addRow(new Object[] {
 	    						post.no, boardName, "http://0.thumbs.4chan.org/" + thread.board + "/thumb/" + post.tim + "s.jpg",
-	    						getThreadText(post), getPostText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
+	    						getPostText(post), getFullText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
 	    			}
 	    		}
 	    		if (thread.posts.length > 0) {
@@ -111,6 +111,10 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
         }
         return null;
     }
+
+    private Object getFullText(ChanPost post) {
+        return ChanText.getText(post.sub, post.com);
+	}
 
     private Object getPostText(ChanPost post) {
 		String text = "";

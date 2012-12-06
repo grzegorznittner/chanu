@@ -1,6 +1,7 @@
 package com.chanapps.four.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -30,7 +31,18 @@ public class ThreadActivity extends BoardActivity {
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        viewHelper.startFullImageActivity(adapterView, view, position, id);
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            viewHelper.showPopupText(adapterView, view, position, id);
+        }
+        else {
+            viewHelper.startFullImageActivity(adapterView, view, position, id);
+        }
+    }
+
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+        return viewHelper.showPopupText(adapterView, view, position, id);
     }
 
     @Override
