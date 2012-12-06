@@ -35,7 +35,8 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
             ChanHelper.POST_TN_W,
             ChanHelper.POST_TN_H,
             ChanHelper.POST_W,
-            ChanHelper.POST_H
+            ChanHelper.POST_H,
+            ChanHelper.LOAD_PAGE
     };
 
     protected ChanCursorLoader(Context context) {
@@ -71,14 +72,17 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 	    			if (thread.tn_w <= 0 || thread.tim == null) {
 		    			matrixCursor.addRow(new Object[] {
 			   					thread.no, boardName, "",
-			   					getThreadText(thread), getPostText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h});
+			   					getThreadText(thread), getPostText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
 	    			} else {
 		    			matrixCursor.addRow(new Object[] {
 			   					thread.no, boardName, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
-			   					getThreadText(thread), getPostText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h});
+			   					getThreadText(thread), getPostText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
 	    			}
 	    		}
 	    		if (board.threads.length > 0) {
+	    			matrixCursor.addRow(new Object[] {
+		   					2, boardName, "",
+		   					"Load page 2", "", -1, -1, -1, -1, 1});
 	    			registerContentObserver(matrixCursor, mObserver);
 	    		}
 	    		return matrixCursor;
@@ -92,11 +96,11 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 	    			if (post.tn_w <= 0 || post.tim == null) {
 	    				matrixCursor.addRow(new Object[] {
 	    						post.no, boardName, "",
-	    						getThreadText(post), getPostText(post), post.tn_w, post.tn_h, post.w, post.h});
+								getThreadText(post), getPostText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
 	    			} else {
 	    				matrixCursor.addRow(new Object[] {
 	    						post.no, boardName, "http://0.thumbs.4chan.org/" + thread.board + "/thumb/" + post.tim + "s.jpg",
-	    						getThreadText(post), getPostText(post), post.tn_w, post.tn_h, post.w, post.h});
+	    						getThreadText(post), getPostText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
 	    			}
 	    		}
 	    		if (thread.posts.length > 0) {

@@ -43,6 +43,8 @@ public class ChanHelper {
     public static final String POST_SHORT_TEXT = "shortText"; // we construct and filter this
     public static final String POST_TEXT = "text"; // we construct and filter this
     public static final String POST_IMAGE_URL = "image_url"; // we construct this from board and tim
+    
+    public static final String LOAD_PAGE = "load_page";
 
     public enum Orientation {
         PORTRAIT,
