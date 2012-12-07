@@ -2,6 +2,7 @@ package com.chanapps.four.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
@@ -26,8 +27,8 @@ public class ChanWatchlist {
     public static String getThreadPath(String boardCode, long threadNo, String text, String imageUrl, int imageWidth, int imageHeight) {
         return boardCode + FIELD_SEPARATOR
                 + threadNo + FIELD_SEPARATOR
-                + text.replaceAll(FIELD_SEPARATOR_REGEX,"") + FIELD_SEPARATOR
-                + imageUrl.replaceAll(FIELD_SEPARATOR_REGEX,"") + FIELD_SEPARATOR
+                + text == null ? "" : text.replaceAll(FIELD_SEPARATOR_REGEX,"") + FIELD_SEPARATOR
+                + imageUrl == null ? "" : imageUrl.replaceAll(FIELD_SEPARATOR_REGEX,"") + FIELD_SEPARATOR
                 + imageWidth + FIELD_SEPARATOR
                 + imageHeight;
     }
@@ -52,7 +53,7 @@ public class ChanWatchlist {
         }
         else {
             savedWatchlist.add(threadPath);
-            SharedPreferences.Editor editor = ctx.getSharedPreferences(ChanHelper.PREF_NAME, 0).edit();
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
             editor.putStringSet(ChanHelper.THREAD_WATCHLIST, savedWatchlist);
             editor.commit();
             Log.i(TAG, "Thread " + threadPath + " added to watchlist");
@@ -63,7 +64,7 @@ public class ChanWatchlist {
 
     public static void clearWatchlist(Context ctx) {
         Log.i(TAG, "Clearing watchlist...");
-        SharedPreferences.Editor editor = ctx.getSharedPreferences(ChanHelper.PREF_NAME, 0).edit();
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
         editor.remove(ChanHelper.THREAD_WATCHLIST);
         editor.commit();
         Log.i(TAG, "Watchlist cleared");
@@ -79,7 +80,7 @@ public class ChanWatchlist {
 
     public static Set<String> getWatchlistFromPrefs(Context ctx) {
         Log.i(TAG, "Getting watchlist from prefs...");
-        SharedPreferences prefs = ctx.getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         Set<String> savedWatchlist = prefs.getStringSet(ChanHelper.THREAD_WATCHLIST, new HashSet<String>());
         Log.i(TAG, "Loaded watchlist from prefs:" + Arrays.toString(savedWatchlist.toArray()));
         return savedWatchlist;

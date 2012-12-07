@@ -1,5 +1,6 @@
 package com.chanapps.four.data;
 
+import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -48,7 +49,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
         }
         Log.d(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
         MatrixCursor cursor = new MatrixCursor(columns);
-        SharedPreferences prefs = context.getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         for (String threadPath : savedWatchlist) {
             try {

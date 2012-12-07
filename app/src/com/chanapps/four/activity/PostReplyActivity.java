@@ -403,7 +403,7 @@ public class PostReplyActivity extends Activity {
 
     public void navigateUp() {
         Intent upIntent;
-        if (threadNo == 0) {
+        if (threadNo != 0) {
             upIntent = new Intent(this, ThreadActivity.class);
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
             upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);

@@ -1,6 +1,7 @@
 package com.chanapps.four.component;
 
 import android.app.ActionBar;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -100,7 +101,7 @@ public class TabsAdapter extends FragmentPagerAdapter
     public void onPageSelected(int position) {
         Log.i(BoardSelectorActivity.TAG, "onPageSelected position: " + position + ", storing boardType: " + ChanBoard.Type.values()[position]);
         if (mContext != null) {
-        SharedPreferences prefs = mContext.getSharedPreferences(ChanHelper.PREF_NAME, 0);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
             if (prefs != null) {
                 SharedPreferences.Editor ed = prefs.edit();
                 ed.putString(ChanHelper.BOARD_TYPE, ChanBoard.Type.values()[position].toString());

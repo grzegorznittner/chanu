@@ -14,6 +14,7 @@ import java.util.Set;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -126,7 +127,7 @@ public class ChanBoard {
         }
         else {
             savedFavorites.add(boardCode);
-            SharedPreferences.Editor editor = ctx.getSharedPreferences(ChanHelper.PREF_NAME, 0).edit();
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
             editor.putStringSet(ChanHelper.FAVORITE_BOARDS, savedFavorites);
             editor.commit();
             Log.i(TAG, "Board " + boardCode + " added to favorites");
@@ -137,7 +138,7 @@ public class ChanBoard {
 
     public static void clearFavorites(Context ctx) {
         Log.i(TAG, "Clearing favorites...");
-        SharedPreferences.Editor editor = ctx.getSharedPreferences(ChanHelper.PREF_NAME, 0).edit();
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
         editor.remove(ChanHelper.FAVORITE_BOARDS);
         editor.commit();
         Log.i(TAG, "Favorites cleared");
@@ -145,7 +146,7 @@ public class ChanBoard {
 
     private static Set<String> getFavoritesFromPrefs(Context ctx) {
         Log.i(TAG, "Getting favorites from prefs...");
-        SharedPreferences prefs = ctx.getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         Set<String> savedFavorites = prefs.getStringSet(ChanHelper.FAVORITE_BOARDS, new HashSet<String>());
         Log.i(TAG, "Loaded favorites from prefs:" + Arrays.toString(savedFavorites.toArray()));
         return savedFavorites;

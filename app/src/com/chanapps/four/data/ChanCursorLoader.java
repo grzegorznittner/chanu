@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
 
@@ -59,7 +60,7 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public Cursor loadInBackground() {
     	Log.i(TAG, "loadInBackground");
-        SharedPreferences prefs = context.getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         boolean hideTextOnlyPosts = prefs.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
         Log.i("ChanCursorLoader", "prefs: " + hideAllText + " " + hideTextOnlyPosts);

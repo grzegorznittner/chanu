@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -94,11 +95,14 @@ public class ChanViewHelper {
             TextView tv = (TextView) view;
             switch (getViewType()) {
                 case GRID:
-                    if (hideAllText || shortText == null || shortText.isEmpty()) {
+                    if ((threadNo != 0 && hideAllText) || shortText == null || shortText.isEmpty()) {
                         tv.setVisibility(View.INVISIBLE);
                     }
-                    else {
+                    else if (!imageUrl.isEmpty()) {
                         setGridViewText(tv, shortText, cursor);
+                    }
+                    else {
+                        setGridViewText(tv, text, cursor);
                     }
                     break;
                 default:
@@ -169,7 +173,7 @@ public class ChanViewHelper {
 
     private void reloadPrefs(SharedPreferences prefs) {
         if (prefs == null) {
-            prefs = activity.getSharedPreferences(ChanHelper.PREF_NAME, 0);
+            prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         }
         hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
     }
@@ -229,7 +233,8 @@ public class ChanViewHelper {
     }
 
     public ViewType getViewType() {
-        return getViewTypeFromOrientation(activity);
+        //return getViewTypeFromOrientation(activity);
+        return ViewType.GRID;
     }
 
     public void startService() {
@@ -241,7 +246,7 @@ public class ChanViewHelper {
             //startWatchlistService();
             return;
         }
-        SharedPreferences prefs = activity.getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         reloadPrefs(prefs);
         loadBoardCode(prefs);
         if (serviceType == ServiceType.THREAD) {

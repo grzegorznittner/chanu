@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 
 public class ChanHelper {
-	public static final String PREF_NAME = "4Channer";
+	//public static final String PREF_NAME = "4Channer";
 
 	public static final String BOARD_TYPE = "boardType";
 	public static final String BOARD_CODE = "boardCode";

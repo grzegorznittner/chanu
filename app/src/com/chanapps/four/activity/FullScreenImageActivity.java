@@ -1,8 +1,18 @@
 package com.chanapps.four.activity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.SecureRandom;
+import java.util.Random;
+import java.util.UUID;
 
+import android.graphics.*;
+import android.net.Uri;
+import android.os.Environment;
+import android.preference.PreferenceManager;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -15,9 +25,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -110,7 +117,7 @@ public class FullScreenImageActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         ctx = getApplicationContext();
-        prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         webView = new WebView(this);
         setContentView(webView);
@@ -316,8 +323,8 @@ public class FullScreenImageActivity extends Activity {
                 wallpaperTask.execute(imageUrl);
                 return true;
             case R.id.share_image_menu:
-                ShareImageTask shareImageTask = new ShareImageTask(getApplicationContext());
-                shareImageTask.execute(imageUrl);
+                ShareImageTask shareImageTask = new ShareImageTask(this);
+                shareImageTask.execute(webView);
                 return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");
@@ -442,8 +449,8 @@ public class FullScreenImageActivity extends Activity {
         }
     }
 
-    private class ShareImageTask extends AsyncTask<String, Void, String> {
-        private String url;
+    private class ShareImageTask extends AsyncTask<WebView, Void, String> {
+        private WebView webView;
         private Context context;
 
         public ShareImageTask(Context context) {
@@ -451,9 +458,9 @@ public class FullScreenImageActivity extends Activity {
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            url = params[0];
-            return shareImage(url);
+        protected String doInBackground(WebView... params) {
+            webView = params[0];
+            return shareImage(webView);
         }
 
         @Override
@@ -461,7 +468,6 @@ public class FullScreenImageActivity extends Activity {
             Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
         }
     }
-
     private String setImageAsWallpaper(String url) {
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
         String result = "";
@@ -478,19 +484,31 @@ public class FullScreenImageActivity extends Activity {
         return result;
     }
 
-    private String shareImage(String url) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("image/*");
+    private String shareImage(WebView webView) {
         String msg;
         try {
-/*
-            URL imageUrl = new URL(url);
-            URLConnection connection = imageUrl.openConnection();
-            String contentType = connection.getContentType();
-            InputStream ins = connection.getInputStream();
-            intent.setType(contentType);
-*/
-            intent.putExtra(Intent.EXTRA_STREAM, url);
+            Picture picture = webView.capturePicture();
+            Canvas canvas = new Canvas();
+            picture.draw(canvas);
+            Bitmap image = Bitmap.createBitmap(picture.getWidth(), picture.getHeight(), Bitmap.Config.ARGB_8888);
+            canvas.drawBitmap(image, 0, 0, null);
+            if (image == null) {
+                msg = "Null image capture from web view";
+                throw new Exception(msg);
+            }
+            ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 90, byteArrayOS);
+            String fileName = UUID.randomUUID().toString() + ".jpg";
+            File f = new File(Environment.getExternalStorageDirectory(), fileName);
+            f.createNewFile();
+            f.setReadable(true);
+            f.setWritable(true);
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(byteArrayOS.toByteArray());
+            fos.close();
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("image/jpeg");
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
             startActivity(Intent.createChooser(intent, ctx.getString(R.string.full_screen_share_image_intent)));
             msg = ctx.getString(R.string.full_screen_image_shared);
         }

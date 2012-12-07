@@ -1,8 +1,11 @@
 package com.chanapps.four.component;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanHelper;
 
 /**
  * Created with IntelliJ IDEA.

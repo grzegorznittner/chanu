@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Display;
@@ -208,7 +209,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        SharedPreferences prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         if (hideAllText) {
             menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_show_all_text);
@@ -220,7 +221,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     }
 
     protected void toggleHideAllText() {
-        SharedPreferences prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, !hideAllText);
