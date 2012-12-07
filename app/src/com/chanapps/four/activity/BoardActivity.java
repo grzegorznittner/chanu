@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,7 +41,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     protected Handler handler;
     protected ChanCursorLoader cursorLoader;
     protected ChanViewHelper viewHelper;
-	
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "************ onCreate");
@@ -206,6 +207,29 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        SharedPreferences prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        if (hideAllText) {
+            menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_show_all_text);
+        }
+        else {
+            menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_hide_all_text);
+        }
+        return true;
+    }
+
+    protected void toggleHideAllText() {
+        SharedPreferences prefs = getSharedPreferences(ChanHelper.PREF_NAME, 0);
+        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, !hideAllText);
+        editor.commit();
+        invalidateOptionsMenu();
+        refresh();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -219,6 +243,9 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                 return true;
             case R.id.add_to_favorites_menu:
                 ChanBoard.addBoardToFavorites(this, viewHelper.getBoardCode());
+                return true;
+            case R.id.hide_all_text:
+                toggleHideAllText();
                 return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");

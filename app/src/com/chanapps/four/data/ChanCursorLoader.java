@@ -63,20 +63,22 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         boolean hideTextOnlyPosts = prefs.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
         Log.i("ChanCursorLoader", "prefs: " + hideAllText + " " + hideTextOnlyPosts);
-    	if (threadNo == 0) {
+        if (threadNo == 0) {
     		// loading board from file
     		ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
     		if (board != null) {
 	    		MatrixCursor matrixCursor = new MatrixCursor(columns);
 	    		for (ChanPost thread : board.threads) {
 	    			if (thread.tn_w <= 0 || thread.tim == null) {
-		    			matrixCursor.addRow(new Object[] {
+                        if (!hideAllText) {
+		    			    matrixCursor.addRow(new Object[] {
 			   					thread.no, boardName, "",
-			   					getThreadText(thread), getFullText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
-	    			} else {
+			   					getThreadText(thread, hideAllText), getFullText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
+                        }
+                    } else {
 		    			matrixCursor.addRow(new Object[] {
 			   					thread.no, boardName, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
-			   					getThreadText(thread), getFullText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
+			   					getThreadText(thread, hideAllText), getFullText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0});
 	    			}
 	    		}
 	    		if (board.threads.length > 0) {
@@ -94,13 +96,15 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 	    		MatrixCursor matrixCursor = new MatrixCursor(columns);
 	    		for (ChanPost post : thread.posts) {
 	    			if (post.tn_w <= 0 || post.tim == null) {
-	    				matrixCursor.addRow(new Object[] {
+                        if (!hideAllText) {
+	    				    matrixCursor.addRow(new Object[] {
 	    						post.no, boardName, "",
-								getPostText(post), getFullText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
-	    			} else {
+								getPostText(post, hideAllText), getFullText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
+                        }
+                    } else {
 	    				matrixCursor.addRow(new Object[] {
 	    						post.no, boardName, "http://0.thumbs.4chan.org/" + thread.board + "/thumb/" + post.tim + "s.jpg",
-	    						getPostText(post), getFullText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
+	    						getPostText(post, hideAllText), getFullText(post), post.tn_w, post.tn_h, post.w, post.h, 0});
 	    			}
 	    		}
 	    		if (thread.posts.length > 0) {
@@ -117,14 +121,14 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 	}
 
     private Object getPostText(ChanPost post) {
-		String text = "";
-		if (post.sub != null) {
-			text += post.sub;
-		}
-		if (post.com != null) {
-			text += " " + post.com;
-		}
-		text = Html.fromHtml(text).toString();
+        return getPostText(post, false);
+    }
+
+    private Object getPostText(ChanPost post, boolean hideAllText) {
+        String text = hideAllText ? "" : ChanText.getText(post.sub, post.com);
+        if (text.length() > 22) {
+      		text = text.substring(0, 22) + "...";
+        }
 		if (post.fsize > 0) {
 			if (text.length() > 0) {
 				text += "\n";
@@ -135,15 +139,12 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 		return text;
 	}
 
-	private Object getThreadText(ChanPost thread) {
-		String text = "";
-		if (thread.sub != null) {
-			text += thread.sub;
-		}
-		if (thread.com != null) {
-			text += " " + thread.com;
-		}
-		text = Html.fromHtml(text).toString();
+    private Object getThreadText(ChanPost thread) {
+        return getThreadText(thread, false);
+    }
+
+	private Object getThreadText(ChanPost thread, boolean hideAllText) {
+        String text = hideAllText ? "" : ChanText.getText(thread.sub, thread.com);
 		if (text.length() > 22) {
 			text = text.substring(0, 22) + "...";
 		}

@@ -115,7 +115,11 @@
     <string name="pref_hide_text_only_posts">Hide Text Only Posts</string>
     <string name="pref_hide_text_only_posts_summ">Hide text only posts</string>
     <string name="pref_hide_all_text">Hide All Text</string>
-    <string name="pref_hide_all_text_summ">Hide All Text</string>
+    <string name="pref_hide_all_text_summ">Hide all hext</string>
+    <string name="pref_show_text_only_posts">Show Text Only Posts</string>
+    <string name="pref_show_text_only_posts_summ">Show text only posts</string>
+    <string name="pref_show_all_text">Show All Text</string>
+    <string name="pref_show_all_text_summ">Show all hext</string>
     <string name="about_menu">About</string>
 
     <!-- board names -->

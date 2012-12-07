@@ -18,11 +18,11 @@
     
     <ImageView
         android:id="@+id/board_activity_grid_item_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:maxHeight="200dp"
-        android:scaleType="centerCrop"
+        android:scaleType="fitEnd"
         android:src="@drawable/stub_image" />
     <TextView
         android:id="@+id/board_activity_grid_item_text"

@@ -21,17 +21,17 @@ public class ChanGridSizer {
     private static final String TAG = ChanGridSizer.class.getSimpleName();
 
     private static final int[] MAX_COLUMN_WIDTHS = {
-            ServiceType.SELECTOR.ordinal(), 310,
-            ServiceType.BOARD.ordinal(), 260,
-            ServiceType.THREAD.ordinal(), 135,
-            ServiceType.WATCHLIST.ordinal(), 260
+            ServiceType.SELECTOR.ordinal(), 200,
+            ServiceType.BOARD.ordinal(), 200,
+            ServiceType.THREAD.ordinal(), 200,
+            ServiceType.WATCHLIST.ordinal(), 200
     };
 
     private GridView g;
     private Display d;
     private int numColumns = 0;
     private int columnWidth = 0;
-    private int maxColumnWidth = 260;
+    private int maxColumnWidth = 200;
 
     public ChanGridSizer(GridView g, Display d, ChanViewHelper.ServiceType serviceType) {
         this.g = g;

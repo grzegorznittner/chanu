@@ -1,6 +1,7 @@
 package com.chanapps.four.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -71,6 +72,9 @@ public class ThreadActivity extends BoardActivity {
                 return true;
             case R.id.download_all_images_menu:
                 Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT);
+                return true;
+            case R.id.hide_all_text:
+                toggleHideAllText();
                 return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");
