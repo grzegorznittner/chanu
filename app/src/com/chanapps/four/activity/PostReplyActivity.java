@@ -143,12 +143,14 @@ public class PostReplyActivity extends Activity {
 
         Intent intent = getIntent();
         if (intent.hasExtra(ChanHelper.BOARD_CODE) && intent.hasExtra(ChanHelper.THREAD_NO)) {
-            setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
+            boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
             threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+            setBoardCode(boardCode);
         }
         else if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
-                setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
-                threadNo = 0;
+            boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+            threadNo = 0;
+            setBoardCode(boardCode);
         }
         else {
             Toast.makeText(ctx, R.string.post_reply_no_board, Toast.LENGTH_SHORT);
@@ -407,10 +409,13 @@ public class PostReplyActivity extends Activity {
             upIntent = new Intent(this, ThreadActivity.class);
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
             upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+            upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
+            upIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_THREAD_POSITION, 0));
         }
         else {
             upIntent = new Intent(this, BoardActivity.class);
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+            upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
         }
         NavUtils.navigateUpTo(this, upIntent);
     }

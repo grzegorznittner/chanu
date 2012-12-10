@@ -1,8 +1,5 @@
 package com.chanapps.four.data;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,15 +16,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.chanapps.four.activity.R;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();
 
 	private ChanBoard(Type type, String name, String link, int iconId,
-			boolean workSafe, boolean classic, boolean textOnly) {
+			boolean workSafe, boolean classic, boolean textOnly, boolean lastPage) {
 		this.type = type;
 		this.name = name;
 		this.link = link;
@@ -35,6 +29,7 @@ public class ChanBoard {
 		this.workSafe = workSafe;
 		this.classic = classic;
 		this.textOnly = textOnly;
+        this.lastPage = lastPage;
 	}
 	
 	public enum Type {JAPANESE_CULTURE, INTERESTS, CREATIVE, ADULT, OTHER, MISC, FAVORITES, WATCHING};
@@ -51,6 +46,7 @@ public class ChanBoard {
 	public boolean workSafe;
 	public boolean classic;
 	public boolean textOnly;
+    public boolean lastPage;
 	
 	public ChanPost stickyPosts[] = new ChanPost[0];
 	public ChanPost threads[] = new ChanPost[0];
@@ -58,7 +54,7 @@ public class ChanBoard {
 	
 	public ChanBoard copy() {
 		ChanBoard copy = new ChanBoard(this.type, this.name, this.link, this.iconId,
-				this.workSafe, this.classic, this.textOnly);
+				this.workSafe, this.classic, this.textOnly, this.lastPage);
 		return copy;
 	}
 
@@ -183,7 +179,7 @@ public class ChanBoard {
                 String boardCode = boardCodesForType[i];
                 String boardName = boardCodesForType[i+1];
                 boolean workSafe = !(boardType == Type.ADULT || boardType == Type.MISC);
-                ChanBoard b = new ChanBoard(boardType, boardName, boardCode, 0, workSafe, true, false);
+                ChanBoard b = new ChanBoard(boardType, boardName, boardCode, 0, workSafe, true, false, false);
                 boardsForType.add(b);
                 boards.add(b);
                 boardByCode.put(boardCode, b);

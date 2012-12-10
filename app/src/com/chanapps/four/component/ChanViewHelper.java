@@ -1,5 +1,6 @@
 package com.chanapps.four.component;
 
+import android.*;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -14,8 +15,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.*;
 import com.chanapps.four.activity.*;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.data.*;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -49,6 +53,7 @@ public class ChanViewHelper {
     private DisplayImageOptions options;
     private ImageLoader imageLoader;
     private String boardCode;
+    private int pageNo = 0;
     private long threadNo = 0;
     private String text;
     private String imageUrl;
@@ -64,6 +69,7 @@ public class ChanViewHelper {
     public ChanViewHelper(Activity activity, ViewType viewType, ServiceType serviceType) {
         this.activity = activity;
         this.serviceType = serviceType;
+        initFieldsFromIntent();
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(activity));
         if (viewType == ViewType.LIST) {
@@ -84,6 +90,8 @@ public class ChanViewHelper {
     }
 
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+        final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
+        final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
         String rawShortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
         String rawText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         String rawImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
@@ -95,7 +103,13 @@ public class ChanViewHelper {
             TextView tv = (TextView) view;
             switch (getViewType()) {
                 case GRID:
-                    if ((threadNo != 0 && hideAllText) || shortText == null || shortText.isEmpty()) {
+                    if (loadPage > 0) {
+                        // doesn't have text
+                    }
+                    else if (lastPage > 0) {
+                        // text is already set
+                    }
+                    else if ((threadNo != 0 && hideAllText) || shortText == null || shortText.isEmpty()) {
                         tv.setVisibility(View.INVISIBLE);
                     }
                     else if (!imageUrl.isEmpty()) {
@@ -112,9 +126,20 @@ public class ChanViewHelper {
             return true;
         } else if (view instanceof ImageView) {
             ImageView iv = (ImageView) view;
+            if (loadPage > 0) {
+                Animation rotation = AnimationUtils.loadAnimation(activity, R.animator.clockwise_refresh);
+                rotation.setRepeatCount(Animation.INFINITE);
+                iv.startAnimation(rotation);
+            }
+            else if (lastPage > 0) {
+                // nothing
+            }
+            else {
+                setViewImage(iv, imageUrl, cursor);
+            }
             // making this invisible causes display problems
             //if (imageUrl != null && !imageUrl.isEmpty()) {
-                setViewImage(iv, imageUrl, cursor);
+            //setViewImage(iv, imageUrl, cursor);
             //}
             //else {
             //    iv.setVisibility(View.INVISIBLE);
@@ -204,6 +229,20 @@ public class ChanViewHelper {
         }
     }
 
+    private void loadPageNo(SharedPreferences prefs) {
+        int oldPageNo = prefs.getInt(ChanHelper.PAGE, 0);
+        Intent intent = activity.getIntent();
+        if (intent != null && intent.hasExtra(ChanHelper.PAGE)) {
+            pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
+        }
+        if (oldPageNo != pageNo) {
+            SharedPreferences.Editor ed = prefs.edit();
+            ed.putString(ChanHelper.BOARD_CODE, boardCode);
+            ed.putInt(ChanHelper.PAGE, pageNo);
+            ed.commit();
+        }
+    }
+
     private void loadThreadNo(SharedPreferences prefs) {
         long oldThreadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
         threadNo = 0;
@@ -223,6 +262,7 @@ public class ChanViewHelper {
             imageHeight = intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0);
             SharedPreferences.Editor ed = prefs.edit();
             ed.putString(ChanHelper.BOARD_CODE, boardCode);
+            ed.putInt(ChanHelper.PAGE, pageNo);
             ed.putLong(ChanHelper.THREAD_NO, threadNo);
             ed.putString(ChanHelper.TEXT, text);
             ed.putString(ChanHelper.IMAGE_URL, imageUrl);
@@ -238,7 +278,21 @@ public class ChanViewHelper {
     }
 
     public void startService() {
+        if (serviceType == ServiceType.BOARD) {
+            pageNo = 0;
+        }
         startService(serviceType);
+    }
+
+    public void resetPageNo() {
+        pageNo = 0;
+
+    }
+    public void loadNextPage() {
+        if (serviceType == ServiceType.BOARD) {
+            pageNo++;
+            startService(ServiceType.BOARD);
+        }
     }
 
     private void startService(ServiceType serviceType) {
@@ -246,9 +300,22 @@ public class ChanViewHelper {
             //startWatchlistService();
             return;
         }
+        initFieldsFromIntent();
+        Log.i(TAG, "Starting ChanLoadService board " + boardCode + " page " + pageNo + " thread " + threadNo );
+        Intent intent = new Intent(activity, ChanLoadService.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.PAGE, pageNo);
+        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        activity.startService(intent);
+    }
+
+    private void initFieldsFromIntent() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         reloadPrefs(prefs);
         loadBoardCode(prefs);
+        if (serviceType == ServiceType.BOARD) {
+            loadPageNo(prefs);
+        }
         if (serviceType == ServiceType.THREAD) {
             loadThreadNo(prefs);
         }
@@ -256,11 +323,6 @@ public class ChanViewHelper {
             threadNo = 0;
         }
         setBoardMenu();
-        Log.i(TAG, "Starting ChanLoadService");
-        Intent threadIntent = new Intent(activity, ChanLoadService.class);
-        threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        threadIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        activity.startService(threadIntent);
     }
 
     public static final void startBoardActivity(AdapterView<?> adapterView, View view, int position, long id, Activity activity, String boardCode) {
@@ -284,6 +346,7 @@ public class ChanViewHelper {
         intent.putExtra(ChanHelper.IMAGE_URL, imageUrl);
         intent.putExtra(ChanHelper.IMAGE_WIDTH, tn_w);
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, tn_h);
+        intent.putExtra(ChanHelper.LAST_BOARD_POSITION, adapterView.getFirstVisiblePosition());
         Log.i(TAG, "Calling thread activity with id=" + id);
         activity.startActivity(intent);
     }
@@ -299,6 +362,8 @@ public class ChanViewHelper {
         intent.putExtra(ChanHelper.POST_NO, postId);
         intent.putExtra(ChanHelper.IMAGE_WIDTH, w);
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, h);
+        intent.putExtra(ChanHelper.LAST_BOARD_POSITION, activity.getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
+        intent.putExtra(ChanHelper.LAST_THREAD_POSITION, adapterView.getFirstVisiblePosition());
         activity.startActivity(intent);
     }
 
@@ -330,6 +395,10 @@ public class ChanViewHelper {
 
     public String getBoardCode() {
         return boardCode;
+    }
+
+    public int getPageNo() {
+        return pageNo;
     }
 
     public long getThreadNo() {

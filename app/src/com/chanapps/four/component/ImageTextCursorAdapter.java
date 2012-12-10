@@ -108,10 +108,15 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
         }
         String tag = null;
         String imageUrl = null;
-    	int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
+        int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
+        int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
     	if (loadPage > 0) {
     		tag = ChanHelper.LOAD_PAGE;
-    	} else {
+    	}
+        else if (lastPage > 0) {
+            tag = ChanHelper.LAST_PAGE;
+        }
+        else {
     		imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
     		if (imageUrl != null && imageUrl.length() > 0) {
     			tag = ChanHelper.POST_IMAGE_URL;
@@ -144,9 +149,12 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
     
     private View newView(Context context, ViewGroup parent, String tag, int position) {
 		Log.w(TAG, "Creating " + tag + " layout for " + position);
-    	if (ChanHelper.LOAD_PAGE.equals(tag)) {
-    		return mInflater.inflate(R.layout.board_grid_item_next_page, parent, false);
-    	}
+        if (ChanHelper.LOAD_PAGE.equals(tag)) {
+       		return mInflater.inflate(R.layout.board_grid_item_load_page, parent, false);
+       	}
+        if (ChanHelper.LAST_PAGE.equals(tag)) {
+       		return mInflater.inflate(R.layout.board_grid_item_last_page, parent, false);
+       	}
     	if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
     		return mInflater.inflate(R.layout.board_grid_item, parent, false);
     	} else {

@@ -16,10 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.*;
 
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.ChanViewHelper;
@@ -33,15 +30,18 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshGridView;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-public class BoardActivity extends Activity implements ClickableLoaderActivity {
+public class BoardActivity extends Activity implements ClickableLoaderActivity, AbsListView.OnScrollListener {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	
+
     protected ImageTextCursorAdapter adapter;
     protected PullToRefreshGridView gridView;
     protected PullToRefreshListView listView;
     protected Handler handler;
     protected ChanCursorLoader cursorLoader;
     protected ChanViewHelper viewHelper;
+    protected int prevTotalItemCount = 0;
+    protected int scrollOnNextLoaderFinished = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +80,10 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             gridView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<GridView>() {
                 @Override
                 public void onRefresh(PullToRefreshBase<GridView> refreshView) {
-                    refresh();
+                    manualRefresh();
                 }
             });
+            gridView.setOnScrollListener(this);
             listView = null;
         }
         else {
@@ -118,6 +119,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     protected void onStart() {
         super.onStart();
 		Log.i(TAG, "onStart");
+        viewHelper.resetPageNo();
         viewHelper.startService();
     }
 
@@ -125,15 +127,43 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 	protected void onResume() {
 		super.onResume();
 		Log.i(TAG, "onResume");
-        refresh();
+        refresh(false);
+        scrollToLastPosition();
 	}
 
     protected void refresh() {
+        refresh(true);
+    }
+
+    protected void manualRefresh() {
+        viewHelper.resetPageNo();
+        viewHelper.startService();
+    }
+
+    protected void refresh(boolean showMessage) {
         createViewFromOrientation();
         viewHelper.onRefresh();
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 200);
-        Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
+        if (showMessage)
+            Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
+    }
+
+    protected void scrollToLastPosition() {
+        String intentExtra;
+        switch (getServiceType()) {
+            case BOARD: intentExtra = ChanHelper.LAST_BOARD_POSITION; break;
+            case THREAD: intentExtra = ChanHelper.LAST_THREAD_POSITION; break;
+            default: intentExtra = null;
+        }
+        int lastPosition = getIntent().getIntExtra(intentExtra, 0);
+        if (lastPosition == 0) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            lastPosition = prefs.getInt(intentExtra, 0);
+        }
+        if (lastPosition != 0)
+            scrollOnNextLoaderFinished = lastPosition;
+        Log.i(TAG, "Scrolling to:" + lastPosition);
     }
 
     @Override
@@ -145,6 +175,15 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 	protected void onPause() {
         super.onPause();
         Log.i(TAG, "onPause");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        if (getServiceType() == ChanViewHelper.ServiceType.BOARD) {
+            editor.putInt(ChanHelper.LAST_BOARD_POSITION, gridView.getRefreshableView().getFirstVisiblePosition());
+        }
+        if (getServiceType() == ChanViewHelper.ServiceType.THREAD) {
+            editor.putInt(ChanHelper.LAST_THREAD_POSITION, gridView.getRefreshableView().getFirstVisiblePosition());
+        }
+        editor.commit();
     }
 
     @Override
@@ -171,7 +210,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
-		cursorLoader = new ChanCursorLoader(getBaseContext(), viewHelper.getBoardCode(), viewHelper.getThreadNo());
+		cursorLoader = new ChanCursorLoader(getBaseContext(), viewHelper.getBoardCode(), viewHelper.getPageNo(), viewHelper.getThreadNo());
         return cursorLoader;
 	}
 
@@ -180,9 +219,13 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
         ensureHandler();
-		handler.sendEmptyMessageDelayed(0, 5000);
+		handler.sendEmptyMessageDelayed(0, 2000);
         if (gridView != null) {
             gridView.onRefreshComplete();
+            if (scrollOnNextLoaderFinished > 0) {
+                gridView.getRefreshableView().setSelection(scrollOnNextLoaderFinished);
+                scrollOnNextLoaderFinished = 0;
+            }
         }
         if (listView != null) {
             listView.onRefreshComplete();
@@ -199,7 +242,11 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        viewHelper.startThreadActivity(adapterView, view, position, id);
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
+        final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
+        if (loadPage == 0 && lastPage == 0)
+            viewHelper.startThreadActivity(adapterView, view, position, id);
     }
 
     @Override
@@ -270,4 +317,23 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         return true;
     }
 
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        Log.d(TAG, "onScroll firstVisibleItem=" + firstVisibleItem + " visibleItemCount=" + visibleItemCount + " totalItemCount=" + totalItemCount + " prevTotalItemCount=" + prevTotalItemCount);
+        if (view.getAdapter() != null && ((firstVisibleItem + visibleItemCount) >= totalItemCount) && totalItemCount != prevTotalItemCount) {
+            Log.v(TAG, "onListEnd, extending list");
+            prevTotalItemCount = totalItemCount;
+            Toast.makeText(this, "Fetch next page", Toast.LENGTH_SHORT);
+            viewHelper.loadNextPage();
+            //handler.sendEmptyMessageDelayed(0, 200);
+            prevTotalItemCount = totalItemCount;
+            //getLoaderManager().
+            //adapter.addMoreData();
+        }
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int s) {
+
+    }
 }

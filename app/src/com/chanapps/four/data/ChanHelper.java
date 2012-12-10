@@ -34,17 +34,32 @@ public class ChanHelper {
     public static final String POST_FSIZE = "fsize";
     public static final String POST_RESTO = "resto";
     public static final String POST_LAST_UPDATE = "last_update";
-    // version 2
     public static final String POST_STICKY = "sticky";
     public static final String POST_CLOSED = "closed";
     public static final String POST_OMITTED_POSTS = "omitted_posts";
     public static final String POST_OMITTED_IMAGES = "omitted_images";
-    // version 6
     public static final String POST_SHORT_TEXT = "shortText"; // we construct and filter this
     public static final String POST_TEXT = "text"; // we construct and filter this
     public static final String POST_IMAGE_URL = "image_url"; // we construct this from board and tim
     
     public static final String LOAD_PAGE = "load_page";
+    public static final String LAST_PAGE = "last_page";
+    public static final String LAST_BOARD_POSITION = "lastBoardPosition";
+    public static final String LAST_THREAD_POSITION = "lastThreadPosition";
+
+    public static final String[] POST_COLUMNS = {
+            POST_ID,
+            POST_BOARD_NAME,
+            POST_IMAGE_URL,
+            POST_SHORT_TEXT,
+            POST_TEXT,
+            POST_TN_W,
+            POST_TN_H,
+            POST_W,
+            POST_H,
+            LOAD_PAGE,
+            LAST_PAGE
+    };
 
     public enum Orientation {
         PORTRAIT,

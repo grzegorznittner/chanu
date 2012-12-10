@@ -8,7 +8,8 @@
          android:paddingRight="0dp"
          android:paddingTop="0dp"
          android:paddingBottom="0dp">
-    <com.handmark.pulltorefresh.library.PullToRefreshGridView xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.handmark.pulltorefresh.library.PullToRefreshGridView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/board_activity_grid_view"
     	android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
@@ -17,5 +18,7 @@
         android:horizontalSpacing="2dp"
         android:numColumns="2"
         android:stretchMode="none"
+        ptr:ptrOverScroll="false"
+        ptr:ptrAnimationStyle="flip"
     />
  </LinearLayout>

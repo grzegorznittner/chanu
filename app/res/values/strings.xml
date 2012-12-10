@@ -46,6 +46,7 @@
     <string name="board_already_in_favorites">Board already in favorites</string>
     <string name="board_added_to_favorites">Board added to favorites</string>
     <string name="board_favorites_cleared">Cleared board favorites</string>
+    <string name="board_end_of_board">End of board</string>
 
     <!-- watchlist -->
     <string name="thread_already_in_watchlist">Thread already in watchlist</string>
@@ -81,7 +82,7 @@
     <string name="dismiss">Dismiss</string>
 
     <!-- post reply activity -->
-    <string name="post_reply_title">New Reply</string>
+    <string name="post_reply_title">Post Reply</string>
     <string name="post_reply_thread_title">New Thread</string>
     <string name="post_reply_text_hint">Type message here...</string>
     <string name="post_reply_camera_hint">Camera</string>

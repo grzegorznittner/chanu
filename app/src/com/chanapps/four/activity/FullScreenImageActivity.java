@@ -524,6 +524,8 @@ public class FullScreenImageActivity extends Activity {
         upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
         upIntent.putExtra(ChanHelper.POST_NO, postNo);
+        upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
+        upIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_THREAD_POSITION, 0));
         NavUtils.navigateUpTo(this, upIntent);
     }
 

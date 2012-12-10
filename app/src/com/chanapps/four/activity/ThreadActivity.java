@@ -52,12 +52,14 @@ public class ThreadActivity extends BoardActivity {
             case android.R.id.home:
                 Intent upIntent = new Intent(this, BoardActivity.class);
                 upIntent.putExtra(ChanHelper.BOARD_CODE, ChanHelper.BOARD_CODE);
+                upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
                 NavUtils.navigateUpTo(this, upIntent);
                 return true;
             case R.id.post_reply_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
                 replyIntent.putExtra(ChanHelper.BOARD_CODE, viewHelper.getBoardCode());
                 replyIntent.putExtra(ChanHelper.THREAD_NO, viewHelper.getThreadNo());
+                replyIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, gridView.getRefreshableView().getFirstVisiblePosition());
                 startActivity(replyIntent);
                 return true;
             case R.id.watch_thread_menu:

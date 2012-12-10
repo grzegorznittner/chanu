@@ -19,16 +19,6 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = ChanWatchlistCursorLoader.class.getSimpleName();
 
-    protected static final String[] columns = {
-            ChanHelper.POST_ID,
-            ChanHelper.POST_BOARD_NAME,
-            ChanHelper.POST_IMAGE_URL,
-            ChanHelper.POST_SHORT_TEXT,
-            ChanHelper.POST_TEXT,
-            ChanHelper.POST_TN_W,
-            ChanHelper.POST_TN_H
-    };
-
     protected final ForceLoadContentObserver mObserver;
 
     protected Cursor mCursor;
@@ -48,7 +38,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
             return null;
         }
         Log.d(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
-        MatrixCursor cursor = new MatrixCursor(columns);
+        MatrixCursor cursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         for (String threadPath : savedWatchlist) {
@@ -73,6 +63,8 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 row.add(text);
                 row.add(imageWidth);
                 row.add(imageHeight);
+                row.add(0);
+                row.add(0);
             }
             catch (Exception e) {
                 Log.e(TAG, "Error parsing watch preferences ", e);

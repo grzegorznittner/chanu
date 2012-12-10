@@ -14,8 +14,8 @@
             android:layout_height="fill_parent"
             android:layout_width="fill_parent"
             android:gravity="center">
-	    <Button
-	        android:id="@+id/board_activity_grid_item_text"
+        <!--
+	    <ImageView
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:maxHeight="200dp"
@@ -27,5 +27,19 @@
             android:padding="16dp"
 	        android:textSize="18sp"
 	    />
+	    -->
+        <TextView
+                android:layout_width="wrap_content"
+       	        android:layout_height="wrap_content"
+       	        android:maxHeight="200dp"
+       	        android:textColor="#121212"
+       	        android:background="#e2e2e2"
+       	        android:textColorHint="#555555"
+       	        android:paddingBottom="5dp"
+       	        android:gravity="center"
+                android:padding="16dp"
+       	        android:textSize="18sp"
+                android:text="@string/board_end_of_board"
+        />
     </LinearLayout>
 </LinearLayout>
