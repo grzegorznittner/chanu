@@ -6,6 +6,7 @@ import android.widget.AdapterView;
 
 import com.chanapps.four.component.ChanViewHelper;
 import com.chanapps.four.component.ImageTextCursorAdapter;
+import com.handmark.pulltorefresh.library.PullToRefreshGridView;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,4 +22,5 @@ public interface ClickableLoaderActivity extends
         ImageTextCursorAdapter.ViewBinder {
     public LoaderManager getLoaderManager();
     public ChanViewHelper.ServiceType getServiceType();
+    public PullToRefreshGridView getGridView();
 }

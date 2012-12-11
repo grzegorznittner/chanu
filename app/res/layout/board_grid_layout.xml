@@ -18,7 +18,7 @@
         android:horizontalSpacing="2dp"
         android:numColumns="2"
         android:stretchMode="none"
+        ptr:ptrShowIndicator="false"
         ptr:ptrOverScroll="false"
-        ptr:ptrAnimationStyle="flip"
     />
  </LinearLayout>

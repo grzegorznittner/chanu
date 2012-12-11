@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -102,7 +103,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
             listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
                 @Override
                 public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                    refresh();
+                    manualRefresh();
                 }
             });
             gridView = null;
@@ -138,13 +139,21 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     protected void manualRefresh() {
         viewHelper.resetPageNo();
         viewHelper.startService();
+        refresh();
+    }
+
+    public PullToRefreshGridView getGridView() {
+        return gridView;
     }
 
     protected void refresh(boolean showMessage) {
         createViewFromOrientation();
         viewHelper.onRefresh();
         ensureHandler();
-		handler.sendEmptyMessageDelayed(0, 200);
+        Message m = Message.obtain(handler, LoaderHandler.MessageType.REFRESH_COMPLETE.ordinal());
+        handler.sendMessageDelayed(m, 200);
+        Message m2 = Message.obtain(handler, LoaderHandler.MessageType.RESTART_LOADER.ordinal());
+        handler.sendMessageDelayed(m2, 200);
         if (showMessage)
             Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
     }
@@ -220,8 +229,10 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 		adapter.swapCursor(data);
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 2000);
+        Message m = Message.obtain(handler, LoaderHandler.MessageType.REFRESH_COMPLETE.ordinal());
+        handler.sendMessageDelayed(m, 200);
         if (gridView != null) {
-            gridView.onRefreshComplete();
+//            gridView.onRefreshComplete();
             if (scrollOnNextLoaderFinished > 0) {
                 gridView.getRefreshableView().setSelection(scrollOnNextLoaderFinished);
                 scrollOnNextLoaderFinished = 0;

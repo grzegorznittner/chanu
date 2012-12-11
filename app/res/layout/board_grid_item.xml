@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxHeight="200dp"
-        android:textColor="#80eaeaea"
+        android:textColor="#ffeaeaea"
         android:background="#80121212"
         android:textStyle="normal"
         android:textColorHint="#555555"
