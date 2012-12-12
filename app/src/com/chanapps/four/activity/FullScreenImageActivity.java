@@ -360,7 +360,7 @@ public class FullScreenImageActivity extends Activity {
     }
     
     private void showImage() {
-    	Log.i(TAG, "Displaing image " + localImageUri);
+    	Log.i(TAG, "Displaying image " + localImageUri);
     	webView = new WebView(this);
         setContentView(webView);
         webView.getSettings().setLoadWithOverviewMode(true);
@@ -389,8 +389,10 @@ public class FullScreenImageActivity extends Activity {
 		ImageView imageView = (ImageView)loadingView.findViewById(R.id.fullscreen_image_image);
 		imageLoader.displayImage(thumbUrl, imageView, options);
 		
+		TextView fileSizeTextView = (TextView)loadingView.findViewById(R.id.fullscreen_image_sizetext);
+		fileSizeTextView.setText("" + post.w + "px x " + post.h + "px");
 		TextView textView = (TextView)loadingView.findViewById(R.id.fullscreen_image_text);
-		textView.setText("Loading image\n0 / " + post.fsize);
+		textView.setText("0kB / " + ((post.fsize / 1024) + 1));
 		
 		ProgressBar progressBar = (ProgressBar)loadingView.findViewById(R.id.fullscreen_image_progressbar);
 		progressBar.setProgress(0);
@@ -583,8 +585,31 @@ public class FullScreenImageActivity extends Activity {
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
         String result = "";
         try {
-            Log.i(TAG, "Setting wallpaper from file " + this.localImageUri);
-            wallpaperManager.setStream(new FileInputStream(new File(URI.create(this.localImageUri))));
+        	DisplayMetrics displayMetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            double screenWidth = getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT
+                ? displayMetrics.widthPixels
+                : displayMetrics.heightPixels;
+            double screenHeight  = getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT
+                ? displayMetrics.heightPixels
+                : displayMetrics.widthPixels;
+
+            // wallpapers are twice wider than screen
+            screenWidth *= 2;
+            
+            int scale = 1;
+            while (post.w/scale/2 >= screenWidth && post.h/scale/2 >= screenHeight) {
+            	scale *= 2;
+            }
+            
+            FileInputStream is = new FileInputStream(new File(URI.create(this.localImageUri)));
+            BitmapFactory.Options options=new BitmapFactory.Options();
+            options.inSampleSize = scale;
+            Log.i(TAG, "Setting wallpaper from file " + this.localImageUri + ", scaled down " + scale + " times");
+
+            Bitmap wallpaperBitmap = BitmapFactory.decodeStream(is, null, options);
+            
+            wallpaperManager.setBitmap(wallpaperBitmap);
             result = ctx.getString(R.string.full_screen_wallpaper_set);
             Log.i(TAG, result);
         }
@@ -656,20 +681,29 @@ public class FullScreenImageActivity extends Activity {
             super.handleMessage(msg);
             
             int localFileSize = 0;
-            Query query = new Query();
-            query.setFilterById(activity.downloadEnqueueId);
-            Cursor c = activity.dm.query(query);
-            if (c.moveToFirst()) {
-                int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
-                localFileSize = c.getInt(columnIndex);
+            Cursor c = null;
+            try {
+	            Query query = new Query();
+	            query.setFilterById(activity.downloadEnqueueId);
+	            c = activity.dm.query(query);
+	            if (c.moveToFirst()) {
+	                int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
+	                localFileSize = c.getInt(columnIndex);
+	            }
+            } catch (Exception e) {
+            	Log.e(TAG, "Error while getting download progress");
+            } finally {
+            	c.close();
             }
-            c.close();
             Log.i(TAG, "handle message: updating progress bar " + localFileSize);
+            
+            int totalSize = (activity.post.fsize / 1024) + 1;
+            int downloadedSize = (localFileSize / 1024);
             
             ProgressBar progressBar = (ProgressBar)activity.loadingView.findViewById(R.id.fullscreen_image_progressbar);
     		progressBar.setProgress(localFileSize);
     		TextView textView = (TextView)activity.loadingView.findViewById(R.id.fullscreen_image_text);
-    		textView.setText("Loading image\n" + localFileSize + " / " + activity.post.fsize);
+    		textView.setText("" + downloadedSize + "kB / " + totalSize + "kB");
     		
             if (activity.hasWindowFocus() && activity.localImageUri == null) {
             	this.sendEmptyMessageDelayed(0, 100);

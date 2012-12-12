@@ -11,6 +11,33 @@
     android:layout_marginLeft="0dp"
     android:layout_marginRight="0dp"
     android:background="#e2e2e2">
+    <TextView
+        android:id="@+id/fullscreen_image_uppertext"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="200dp"
+        android:textColor="#80eaeaea"
+        android:background="#80121212"
+        android:textStyle="bold"
+        android:textColorHint="#555555"
+        android:padding="8dp"
+        android:gravity="center"
+        android:textSize="16dp"
+        android:text="@string/fullscreen_image_progress_upper"
+    />
+    <TextView
+        android:id="@+id/fullscreen_image_sizetext"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="200dp"
+        android:textColor="#80eaeaea"
+        android:background="#80121212"
+        android:textStyle="normal"
+        android:textColorHint="#555555"
+        android:padding="8dp"
+        android:gravity="center"
+        android:textSize="16dp"
+    />
     <ImageView
         android:id="@+id/fullscreen_image_image"
         android:layout_width="wrap_content"
@@ -39,6 +66,6 @@
         android:textColorHint="#555555"
         android:padding="8dp"
         android:gravity="center"
-        android:textSize="12dp"
+        android:textSize="16dp"
     />
 </LinearLayout>
