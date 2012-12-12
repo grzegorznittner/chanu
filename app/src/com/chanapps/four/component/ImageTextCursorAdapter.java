@@ -134,7 +134,7 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
         		imageView.setTag(imageUrl);
             }
         } else {
-        	Log.w(TAG, "Reusing existing " + tag + " layout for " + position);
+        	Log.d(TAG, "Reusing existing " + tag + " layout for " + position);
         	if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
         		ImageView imageView = (ImageView)convertView.findViewById(R.id.board_activity_grid_item_image);
         		if (imageView != null && !imageUrl.equals(imageView.getTag())) {
@@ -148,7 +148,7 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
     }
     
     private View newView(Context context, ViewGroup parent, String tag, int position) {
-		Log.w(TAG, "Creating " + tag + " layout for " + position);
+		Log.d(TAG, "Creating " + tag + " layout for " + position);
         if (ChanHelper.LOAD_PAGE.equals(tag)) {
        		return mInflater.inflate(R.layout.board_grid_item_load_page, parent, false);
        	}

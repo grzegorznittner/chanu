@@ -1,18 +1,14 @@
 package com.chanapps.four.activity;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.security.SecureRandom;
-import java.util.Random;
-import java.util.UUID;
+import java.io.OutputStream;
+import java.net.URI;
 
-import android.graphics.*;
-import android.net.Uri;
-import android.os.Environment;
-import android.preference.PreferenceManager;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -20,30 +16,53 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.app.DownloadManager.Query;
+import android.app.DownloadManager.Request;
 import android.app.WallpaperManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.ParcelFileDescriptor;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chanapps.four.component.ChanViewHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class FullScreenImageActivity extends Activity {
 
@@ -60,42 +79,19 @@ public class FullScreenImageActivity extends Activity {
     private String boardCode = null;
     private long threadNo = 0;
     private long postNo = 0;
+    private ChanPost post = null;
     private String imageUrl = null;
+    private String localImageUri = null;
     private int imageWidth = 0;
     private int imageHeight = 0;
-    private ChanViewHelper.ViewType viewType = ChanViewHelper.ViewType.LIST;
-
-    private void randomizeImage() {
-        double d = Math.random();
-        if (d >= 0.75) {
-            setBoardCode("trv");
-            postNo = 609350;
-            imageUrl = "http://images.4chan.org/trv/src/1341267758351.png";
-            imageWidth = 280;
-            imageHeight = 280;
-        }
-        else if (d >= 0.5) {
-            setBoardCode("diy");
-            postNo = 100304;
-            imageUrl = "http://images.4chan.org/diy/src/1324490988301.jpg";
-            imageWidth = 324;
-            imageHeight = 433;
-        }
-        else if (d >= 0.25) {
-            setBoardCode("fit");
-            postNo = 4820056;
-            imageUrl = "http://images.4chan.org/fit/src/1286894765253.jpg";
-            imageWidth = 368;
-            imageHeight = 600;
-        }
-        else {
-            setBoardCode("po");
-            postNo = 430177;
-            imageUrl = "http://images.4chan.org/po/src/1304652991998.jpg";
-            imageWidth = 652;
-            imageHeight = 433;
-        }
-    }
+    private DisplayImageOptions options;
+    private ImageLoader imageLoader;
+    private LayoutInflater inflater;
+    private View loadingView;
+    protected Handler handler;
+    private long downloadEnqueueId;
+    private DownloadManager dm;
+    private BroadcastReceiver receiver;
 
     private boolean loadChanPostData() {
 		try {
@@ -103,6 +99,7 @@ public class FullScreenImageActivity extends Activity {
 			for (ChanPost post : thread.posts) {
 				if (post.no == postNo) {
 					imageUrl = "http://images.4chan.org/" + thread.board + "/src/" + post.tim + post.ext;
+					this.post = post;
 					return true;
 				}
 			}
@@ -111,7 +108,7 @@ public class FullScreenImageActivity extends Activity {
 		}
 		return false;
     }
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -119,24 +116,76 @@ public class FullScreenImageActivity extends Activity {
         ctx = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        webView = new WebView(this);
-        setContentView(webView);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        webView.setScrollbarFadingEnabled(false);
-        //webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setBuiltInZoomControls(true);
-        webView.setBackgroundColor(Color.BLACK);
-        /*
-        final Activity activity = this;
-        webView.setWebViewClient(new WebViewClient() {
-          public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-            Toast.makeText(activity, "Couldn't get image, try later" + description, Toast.LENGTH_SHORT).show();
-          }
-        });
-        */
+        dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        
+        //webView.setBackgroundColor(Color.BLACK);
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration.createDefault(this));
+        options = new DisplayImageOptions.Builder()
+			.cacheOnDisc()
+			.imageScaleType(ImageScaleType.EXACT)
+			.build();
+
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+                	Cursor c = null;
+                	try {
+	                    long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+	                    Query query = new Query();
+	                    query.setFilterById(downloadEnqueueId);
+	                    c = dm.query(query);
+	                    if (c.moveToFirst()) {
+	                        int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
+	                        if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+	                        	localImageUri = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+	                        	
+	                        	ParcelFileDescriptor parcel = dm.openDownloadedFile(downloadEnqueueId);
+	                        	copyImageFileToBoardFolder(parcel);
+	                        	showImage();
+	                        }
+	                    }
+                	} catch (Exception e) {
+                		Log.e(TAG, "Error storing downloaded file", e);
+                	} finally {
+                		c.close();
+                	}
+                }
+                unregisterReceiver(this);
+            }
+
+        };
     }
+
+	private void copyImageFileToBoardFolder(ParcelFileDescriptor parcel) throws FileNotFoundException, IOException {
+		InputStream downloadedFile = null;
+		OutputStream newFile = null;
+		try {
+			downloadedFile = new FileInputStream(parcel.getFileDescriptor());
+			String imageFile = getLocalImagePath(getCacheFolder());
+			Log.i(TAG, "Image downloaded, copying to " + imageFile);
+			newFile = new FileOutputStream(new File(URI.create(imageFile)), false);
+
+		    byte[] buffer = new byte[1024];
+		    int length;
+		    while((length = downloadedFile.read(buffer)) > 0) {
+		        newFile.write(buffer, 0, length);
+		    }
+		    localImageUri = imageFile;
+		    Log.i(TAG, "Image file copied to " + imageFile);
+		    dm.remove(downloadEnqueueId);
+		} finally {
+			if (downloadedFile != null) {
+				downloadedFile.close();
+			}
+			if (newFile != null) {
+				newFile.close();
+			}
+		}
+	}
 
     @Override
 	protected void onStart() {
@@ -157,7 +206,7 @@ public class FullScreenImageActivity extends Activity {
                 Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
                 savePrefs();
             } else {
-                randomizeImage();
+                Log.e(TAG, "Intent received without postno");
             }
         }
         else {
@@ -199,8 +248,7 @@ public class FullScreenImageActivity extends Activity {
 	protected void onResume () {
 		super.onResume();
 		Log.i(TAG, "onResume");
-        setDefaultZoom();
-        loadImage();
+		loadOrShowImage();
 	}
 	
 	public void onWindowFocusChanged (boolean hasFocus) {
@@ -212,7 +260,8 @@ public class FullScreenImageActivity extends Activity {
         savePrefs();
         super.onPause();
         savePrefs();
-        Log.i(TAG, "onPause");
+        dm.remove(downloadEnqueueId);
+        Log.i(TAG, "onPause - removing download id " + downloadEnqueueId);
     }
 
     @Override
@@ -223,10 +272,43 @@ public class FullScreenImageActivity extends Activity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        setDefaultZoom();
-        loadImage();
+   		// checking filesystem if image file is available
+    	loadOrShowImage();
+    }
+    
+    private void loadOrShowImage() {
+    	localImageUri = checkLocalImage();
+    	
+    	if (localImageUri != null) {
+    		showImage();
+    	} else {
+    		loadImage();
+    	}
     }
 
+	private String checkLocalImage() {
+		String cacheFolder = getCacheFolder();
+    	String localImageUri = getLocalImagePath(cacheFolder);
+    	try {
+	    	File localImage = new File(URI.create(localImageUri));
+	    	if (localImage.exists()) {
+//	    		if (localImage.length() == post.fsize) {
+//	    			Log.i(TAG, "Image " + localImageUri + " already exists and has correct size");
+	    			return localImageUri;
+//	    		} else {
+//	    			Log.i(TAG, "Image " + localImageUri + " available but size is not correct, should be: " + post.fsize
+//	    					+ ", current file size: " + localImage.length());
+//	    			//localImage.delete();
+//	    		}
+	    	} else {
+	    		Log.i(TAG, "Image " + localImageUri + " doesn't exist");
+	    	}
+    	} catch (Exception e) {
+    		Log.e(TAG, "Image file checking error", e);
+    	}
+    	return null;
+	}
+	
     private void setDefaultZoom() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -276,19 +358,65 @@ public class FullScreenImageActivity extends Activity {
         webView.setInitialScale(initialScalePct);
         Log.v(TAG, "initial Scale = " + initialScalePct);
     }
-
-    private void loadImage() {
-        //String html = "<html style=\"" +
-        //        "background: #000 url(" + imageUrl + ") no-repeat center center;" +
-        //        "\" />" +
-        //        "</html>";
-        //webView.loadData(html, "text/html", "UTF-8");
-        webView.loadUrl(imageUrl);
-
+    
+    private void showImage() {
+    	Log.i(TAG, "Displaing image " + localImageUri);
+    	webView = new WebView(this);
+        setContentView(webView);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        webView.setScrollbarFadingEnabled(false);
+        webView.getSettings().setBuiltInZoomControls(true);
+        
+        setDefaultZoom();
+        
+        webView.loadUrl(localImageUri);
     }
 
-    public int getScreenOrientation()
-    {
+    private void loadImage() {
+    	this.localImageUri = null;
+    	Log.i(TAG, "Loading image from URL: " + imageUrl);
+    	registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    	
+        Request request = new Request(Uri.parse(imageUrl));
+        downloadEnqueueId = dm.enqueue(request);
+        Log.i(TAG, "Equeuing image " + imageUrl + " in DM, id " + downloadEnqueueId);
+
+		String thumbUrl = "http://0.thumbs.4chan.org/" + post.board + "/thumb/" + post.tim + "s.jpg";
+
+		loadingView = inflater.inflate(R.layout.fullscreen_image_loading, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
+		ImageView imageView = (ImageView)loadingView.findViewById(R.id.fullscreen_image_image);
+		imageLoader.displayImage(thumbUrl, imageView, options);
+		
+		TextView textView = (TextView)loadingView.findViewById(R.id.fullscreen_image_text);
+		textView.setText("Loading image\n0 / " + post.fsize);
+		
+		ProgressBar progressBar = (ProgressBar)loadingView.findViewById(R.id.fullscreen_image_progressbar);
+		progressBar.setProgress(0);
+		progressBar.setMax(post.fsize);
+		
+		setContentView(loadingView);
+		
+        handler = new ProgressHandler(this);
+        handler.sendEmptyMessageDelayed(0, 100);
+    }
+
+    private String getLocalImagePath(String cacheFolder) {
+    	return cacheFolder + "/" + post.board + "/" + post.no + post.ext;
+    }
+    
+	private String getCacheFolder() {
+		String cacheDir = "Android/data/" + getBaseContext().getPackageName() + "/cache/";
+		File picCacheDir = StorageUtils.getOwnCacheDirectory(getBaseContext(), cacheDir);
+		String baseDir = "";
+		if (picCacheDir != null && (picCacheDir.exists() || picCacheDir.mkdirs())) {
+			baseDir = "file://" + picCacheDir.getAbsolutePath();
+		}
+		return baseDir;
+	}
+
+    public int getScreenOrientation() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int orientation;
@@ -365,22 +493,7 @@ public class FullScreenImageActivity extends Activity {
             bitmap = BitmapFactory.decodeStream(inputStream);
             String title = imageUrl.replaceAll(".*/", "").replaceAll("\\..*", "");
             String description = ctx.getString(R.string.full_screen_download_description) + " " + imageUrl;
-            /*
-            String sdPath = "/4channer/images/" + boardCode + "/" + threadNo;
-            String storageDir = Environment.getExternalStorageDirectory() + sdPath;
-            File storagePath = new File(storageDir);
-            storagePath.mkdirs();
-            File file = new File(storagePath, url);
-            file.createNewFile();
-            byte[] buffer = new byte[1024];
-            int bufferLength = 0;
-            FileOutputStream fileOutput = new FileOutputStream(file);
-            while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
-                fileOutput.write(buffer, 0, bufferLength);
-            }
-            fileOutput.close();
-            MediaStore.Images.Media.insertImage(getContentResolver(), file.getCanonicalPath(), title, description);
-            */
+
             MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, title, description);
             result = ctx.getString(R.string.full_screen_image_saved);
         }
@@ -439,8 +552,7 @@ public class FullScreenImageActivity extends Activity {
 
         @Override
         protected String doInBackground(String... params) {
-            url = params[0];
-            return setImageAsWallpaper(url);
+            return setImageAsWallpaper();
         }
 
         @Override
@@ -450,7 +562,6 @@ public class FullScreenImageActivity extends Activity {
     }
 
     private class ShareImageTask extends AsyncTask<WebView, Void, String> {
-        private WebView webView;
         private Context context;
 
         public ShareImageTask(Context context) {
@@ -459,8 +570,7 @@ public class FullScreenImageActivity extends Activity {
 
         @Override
         protected String doInBackground(WebView... params) {
-            webView = params[0];
-            return shareImage(webView);
+            return shareImage();
         }
 
         @Override
@@ -468,12 +578,13 @@ public class FullScreenImageActivity extends Activity {
             Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
         }
     }
-    private String setImageAsWallpaper(String url) {
+    
+    private String setImageAsWallpaper() {
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
         String result = "";
         try {
-            InputStream ins = new URL(url).openStream();
-            wallpaperManager.setStream(ins);
+            Log.i(TAG, "Setting wallpaper from file " + this.localImageUri);
+            wallpaperManager.setStream(new FileInputStream(new File(URI.create(this.localImageUri))));
             result = ctx.getString(R.string.full_screen_wallpaper_set);
             Log.i(TAG, result);
         }
@@ -484,33 +595,22 @@ public class FullScreenImageActivity extends Activity {
         return result;
     }
 
-    private String shareImage(WebView webView) {
+    private String shareImage() {
         String msg;
         try {
-            Picture picture = webView.capturePicture();
-            Canvas canvas = new Canvas();
-            picture.draw(canvas);
-            Bitmap image = Bitmap.createBitmap(picture.getWidth(), picture.getHeight(), Bitmap.Config.ARGB_8888);
-            canvas.drawBitmap(image, 0, 0, null);
-            if (image == null) {
-                msg = "Null image capture from web view";
-                throw new Exception(msg);
-            }
-            ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.JPEG, 90, byteArrayOS);
-            String fileName = UUID.randomUUID().toString() + ".jpg";
-            File f = new File(Environment.getExternalStorageDirectory(), fileName);
-            f.createNewFile();
-            f.setReadable(true);
-            f.setWritable(true);
-            FileOutputStream fos = new FileOutputStream(f);
-            fos.write(byteArrayOS.toByteArray());
-            fos.close();
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("image/jpeg");
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(f));
+            if (localImageUri.endsWith("jpeg") || localImageUri.endsWith("jpg")) {
+            	intent.setType("image/jpeg");
+            } else if (localImageUri.endsWith("gif")) {
+            	intent.setType("image/gif");
+            } else if (localImageUri.endsWith("png")) {
+            	intent.setType("image/png");
+            } else if (localImageUri.endsWith("bmp")) {
+            	intent.setType("image/bmp");
+            }
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(URI.create(localImageUri))));
             startActivity(Intent.createChooser(intent, ctx.getString(R.string.full_screen_share_image_intent)));
-            msg = ctx.getString(R.string.full_screen_image_shared);
+            return null;
         }
         catch (Exception e) {
             msg = ctx.getString(R.string.full_screen_sharing_error);
@@ -544,4 +644,36 @@ public class FullScreenImageActivity extends Activity {
         }
     }
 
+    private static class ProgressHandler extends Handler {
+    	FullScreenImageActivity activity;
+    	ProgressHandler(FullScreenImageActivity activity) {
+    		super();
+    		this.activity = activity;
+    	}
+    	
+    	@Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            
+            int localFileSize = 0;
+            Query query = new Query();
+            query.setFilterById(activity.downloadEnqueueId);
+            Cursor c = activity.dm.query(query);
+            if (c.moveToFirst()) {
+                int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
+                localFileSize = c.getInt(columnIndex);
+            }
+            c.close();
+            Log.i(TAG, "handle message: updating progress bar " + localFileSize);
+            
+            ProgressBar progressBar = (ProgressBar)activity.loadingView.findViewById(R.id.fullscreen_image_progressbar);
+    		progressBar.setProgress(localFileSize);
+    		TextView textView = (TextView)activity.loadingView.findViewById(R.id.fullscreen_image_text);
+    		textView.setText("Loading image\n" + localFileSize + " / " + activity.post.fsize);
+    		
+            if (activity.hasWindowFocus() && activity.localImageUri == null) {
+            	this.sendEmptyMessageDelayed(0, 100);
+            }
+        }
+    };
 }
