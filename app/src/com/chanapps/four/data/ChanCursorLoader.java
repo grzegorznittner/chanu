@@ -62,24 +62,24 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
                         if (!hideAllText) {
 		    			    matrixCursor.addRow(new Object[] {
 			   					thread.no, boardName, "",
-			   					getThreadText(thread, hideAllText), getFullText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0, 0});
+			   					getThreadText(thread, hideAllText), getFullText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, 0, 0});
                         }
                     } else {
 		    			matrixCursor.addRow(new Object[] {
 			   					thread.no, boardName, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
-			   					getThreadText(thread, hideAllText), getFullText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, 0, 0});
+			   					getThreadText(thread, hideAllText), getFullText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, 0, 0});
 	    			}
 	    		}
 	    		if (board.threads != null && board.threads.length > 0 && !board.lastPage) {
 	    			matrixCursor.addRow(new Object[] {
 		   					2, boardName, "",
-		   					"", "", -1, -1, -1, -1, 1, 0});
+		   					"", "", -1, -1, -1, -1, 0, 1, 0});
 	    			registerContentObserver(matrixCursor, mObserver);
 	    		}
                 else {
                     matrixCursor.addRow(new Object[] {
             		   					2, boardName, "",
-            		   					"", "", -1, -1, -1, -1, 0, 1});
+            		   					"", "", -1, -1, -1, -1, 0, 0, 1});
 
                 }
 	    		return matrixCursor;
@@ -94,12 +94,12 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
                         if (!hideAllText) {
 	    				    matrixCursor.addRow(new Object[] {
 	    						post.no, boardName, "",
-								getPostText(post, hideAllText), getFullText(post), post.tn_w, post.tn_h, post.w, post.h, 0, 0});
+								getPostText(post, hideAllText), getFullText(post), post.tn_w, post.tn_h, post.w, post.h, post.tim, 0, 0});
                         }
                     } else {
 	    				matrixCursor.addRow(new Object[] {
 	    						post.no, boardName, "http://0.thumbs.4chan.org/" + thread.board + "/thumb/" + post.tim + "s.jpg",
-	    						getPostText(post, hideAllText), getFullText(post), post.tn_w, post.tn_h, post.w, post.h, 0, 0});
+	    						getPostText(post, hideAllText), getFullText(post), post.tn_w, post.tn_h, post.w, post.h, post.tim, 0, 0});
 	    			}
 	    		}
 	    		if (thread.posts.length > 0) {

@@ -42,19 +42,22 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         for (String threadPath : savedWatchlist) {
+            Log.d(TAG, "Parsing threadpath: " + threadPath);
+
             try {
                 String[] threadComponents = ChanWatchlist.getThreadPathComponents(threadPath);
-                String boardCode = threadComponents[0];
-                long threadNo = Long.valueOf(threadComponents[1]);
+                long tim = Long.valueOf(threadComponents[0]);
+                String boardCode = threadComponents[1];
+                long threadNo = Long.valueOf(threadComponents[2]);
                 String shortText = hideAllText
                         ? ""
-                        : (threadComponents[2].length() > 25
-                            ? threadComponents[2].substring(0, 22) + "..."
-                            : threadComponents[2]);
-                String text = hideAllText ? "" : threadComponents[2];
-                String imageUrl = threadComponents[3];
-                int imageWidth = Integer.valueOf(threadComponents[4]);
-                int imageHeight = Integer.valueOf(threadComponents[5]);
+                        : (threadComponents[3].length() > 25
+                            ? threadComponents[3].substring(0, 22) + "..."
+                            : threadComponents[3]);
+                String text = hideAllText ? "" : threadComponents[3];
+                String imageUrl = threadComponents[4];
+                int imageWidth = Integer.valueOf(threadComponents[5]);
+                int imageHeight = Integer.valueOf(threadComponents[6]);
                 MatrixCursor.RowBuilder row = cursor.newRow();
                 row.add(threadNo);
                 row.add(boardCode);
