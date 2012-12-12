@@ -27,8 +27,8 @@ public class ChanWatchlist {
     public static String getThreadPath(String boardCode, long threadNo, String text, String imageUrl, int imageWidth, int imageHeight) {
         return boardCode + FIELD_SEPARATOR
                 + threadNo + FIELD_SEPARATOR
-                + text == null ? "" : text.replaceAll(FIELD_SEPARATOR_REGEX,"") + FIELD_SEPARATOR
-                + imageUrl == null ? "" : imageUrl.replaceAll(FIELD_SEPARATOR_REGEX,"") + FIELD_SEPARATOR
+                + (text == null ? "" : text.replaceAll(FIELD_SEPARATOR_REGEX,"")) + FIELD_SEPARATOR
+                + (imageUrl == null ? "" : imageUrl.replaceAll(FIELD_SEPARATOR_REGEX,"")) + FIELD_SEPARATOR
                 + imageWidth + FIELD_SEPARATOR
                 + imageHeight;
     }
