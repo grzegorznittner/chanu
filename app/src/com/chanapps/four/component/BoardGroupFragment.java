@@ -30,6 +30,7 @@ public class BoardGroupFragment
         extends Fragment
         implements
         AdapterView.OnItemClickListener,
+        AdapterView.OnItemLongClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,
         ImageTextCursorAdapter.ViewBinder
 {
@@ -90,7 +91,10 @@ public class BoardGroupFragment
             adapter = new BoardSelectorAdapter(context, boardType, columnWidth);
         }
         gridView.setAdapter(adapter);
+        gridView.setClickable(true);
+        gridView.setLongClickable(true);
         gridView.setOnItemClickListener(this);
+        gridView.setOnItemLongClickListener(this);
         return gridView;
     }
 
@@ -158,6 +162,20 @@ public class BoardGroupFragment
             String boardCode = board.link;
             ChanViewHelper.startBoardActivity(parent, view, position, id, getActivity(), boardCode);
         }
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        if (boardType == ChanBoard.Type.WATCHING) {
+            // popup to confirm delete from watchlist
+        }
+        else if (boardType == ChanBoard.Type.FAVORITES) {
+            // popup to confirm delete from favorites
+        }
+        else {
+            // popup to confirm add to favorites
+        }
+        return true;
     }
 
     protected void ensureHandler() {

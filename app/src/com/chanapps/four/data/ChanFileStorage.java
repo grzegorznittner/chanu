@@ -32,8 +32,13 @@ public class ChanFileStorage {
 					Gson gson = new GsonBuilder().create();
 					gson.toJson(board, writer);
 				} finally {
-					writer.flush();
-					writer.close();
+                    try {
+					    writer.flush();
+					    writer.close();
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "Exception while writing and closing board cache:" + e.getMessage(), e);
+                    }
 				}
 				Log.i(TAG, "Stored " + board.threads.length + " threads for board '" + board.link + "'");
 			} else {
@@ -56,8 +61,13 @@ public class ChanFileStorage {
 					Gson gson = new GsonBuilder().create();
 					gson.toJson(thread, writer);
 				} finally {
-					writer.flush();
-					writer.close();
+                    try {
+					    writer.flush();
+					    writer.close();
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "Exception while writing and closing thread cache:" + e.getMessage(), e);
+                    }
 				}
 				Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + "/" + thread.no + "'");
 			} else {
@@ -127,7 +137,10 @@ public class ChanFileStorage {
 					FileReader reader = new FileReader(threadFile);
 					Gson gson = new GsonBuilder().create();
 					ChanThread thread = gson.fromJson(reader, ChanThread.class);
-					Log.i(TAG, "Loaded " + thread.posts.length + " posts for board '" + boardCode + "/" + threadNo + "'");
+                    if (thread == null)
+                        Log.e(TAG, "Couldn't load thread, null thread returned for " + boardCode + "/" + threadNo);
+                    else
+					    Log.i(TAG, "Loaded " + thread.posts.length + " posts for board '" + boardCode + "/" + threadNo + "'");
 					return thread;
 				} else {
 					Log.w(TAG, "File for thread '" + boardCode + "/" + threadNo + "' doesn't exist");
