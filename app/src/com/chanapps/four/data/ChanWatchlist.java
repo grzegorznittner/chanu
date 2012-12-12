@@ -3,6 +3,7 @@ package com.chanapps.four.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.format.Time;
 import android.util.Log;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
@@ -24,8 +25,9 @@ public class ChanWatchlist {
     private static final String FIELD_SEPARATOR = "\t";
     private static final String FIELD_SEPARATOR_REGEX = "\\t";
 
-    public static String getThreadPath(String boardCode, long threadNo, String text, String imageUrl, int imageWidth, int imageHeight) {
-        return boardCode + FIELD_SEPARATOR
+    private static String getThreadPath(long tim, String boardCode, long threadNo, String text, String imageUrl, int imageWidth, int imageHeight) {
+        return tim + FIELD_SEPARATOR
+                + boardCode + FIELD_SEPARATOR
                 + threadNo + FIELD_SEPARATOR
                 + (text == null ? "" : text.replaceAll(FIELD_SEPARATOR_REGEX,"")) + FIELD_SEPARATOR
                 + (imageUrl == null ? "" : imageUrl.replaceAll(FIELD_SEPARATOR_REGEX,"")) + FIELD_SEPARATOR
@@ -39,6 +41,7 @@ public class ChanWatchlist {
 
     public static void watchThread(
             Context ctx,
+            long tim,
             String boardCode,
             long threadNo,
             String text,
@@ -46,7 +49,7 @@ public class ChanWatchlist {
             int imageWidth,
             int imageHeight) {
         Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
-        String threadPath = getThreadPath(boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
+        String threadPath = getThreadPath(tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
         if (savedWatchlist.contains(threadPath)) {
             Log.i(TAG, "Thread " + threadPath + " already in watchlist");
             Toast.makeText(ctx, R.string.thread_already_in_watchlist, Toast.LENGTH_SHORT);
@@ -75,6 +78,7 @@ public class ChanWatchlist {
         List<String> threadPathList = new ArrayList<String>();
         threadPathList.addAll(threadPaths);
         Collections.sort(threadPathList);
+        Collections.reverse(threadPathList);
         return threadPathList;
     }
 

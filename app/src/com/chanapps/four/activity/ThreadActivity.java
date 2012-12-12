@@ -65,6 +65,7 @@ public class ThreadActivity extends BoardActivity {
             case R.id.watch_thread_menu:
                 ChanWatchlist.watchThread(
                         this,
+                        viewHelper.getTim(),
                         viewHelper.getBoardCode(),
                         viewHelper.getThreadNo(),
                         viewHelper.getText(),

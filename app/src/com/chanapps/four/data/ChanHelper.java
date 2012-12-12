@@ -11,6 +11,7 @@ public class ChanHelper {
 	public static final String PAGE = "pageNo";
 	public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
+    public static final String TIM = "tim";
     public static final String TEXT = "text";
     public static final String IMAGE_URL = "imageUrl";
     public static final String IMAGE_WIDTH = "imageWidth";
@@ -57,6 +58,7 @@ public class ChanHelper {
             POST_TN_H,
             POST_W,
             POST_H,
+            POST_TIM,
             LOAD_PAGE,
             LAST_PAGE
     };

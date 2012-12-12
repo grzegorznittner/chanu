@@ -110,6 +110,7 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
         String imageUrl = null;
         int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
         int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
+        long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
     	if (loadPage > 0) {
     		tag = ChanHelper.LOAD_PAGE;
     	}

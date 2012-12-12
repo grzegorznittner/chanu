@@ -52,6 +52,7 @@ public class ChanViewHelper {
     private Activity activity;
     private DisplayImageOptions options;
     private ImageLoader imageLoader;
+    private long tim;
     private String boardCode;
     private int pageNo = 0;
     private long threadNo = 0;
@@ -250,17 +251,19 @@ public class ChanViewHelper {
         if (intent != null && intent.hasExtra(ChanHelper.THREAD_NO)) {
             threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
             Log.i(TAG, "Thread no read from intent: " + threadNo);
+            tim = intent.getLongExtra(ChanHelper.TIM, 0);
+            text = intent.getStringExtra(ChanHelper.TEXT);
+            imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
+            imageWidth = intent.getIntExtra(ChanHelper.IMAGE_WIDTH, 0);
+            imageHeight = intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0);
         }
         if (intent == null || !intent.hasExtra(ChanHelper.THREAD_NO)) {
             threadNo = oldThreadNo;
             Log.i(TAG, "Thread no loaded from prefs: " + threadNo);
         }
         if (oldThreadNo != threadNo) {
-            text = intent.getStringExtra(ChanHelper.TEXT);
-            imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
-            imageWidth = intent.getIntExtra(ChanHelper.IMAGE_WIDTH, 0);
-            imageHeight = intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0);
             SharedPreferences.Editor ed = prefs.edit();
+            ed.putLong(ChanHelper.TIM, tim);
             ed.putString(ChanHelper.BOARD_CODE, boardCode);
             ed.putInt(ChanHelper.PAGE, pageNo);
             ed.putLong(ChanHelper.THREAD_NO, threadNo);
@@ -333,6 +336,8 @@ public class ChanViewHelper {
 
     public void startThreadActivity(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final long threadTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
+        Log.d(TAG, "threadTim: " + threadTim);
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         final String boardName = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
         final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
@@ -340,6 +345,7 @@ public class ChanViewHelper {
         final int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
         final int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
         Intent intent = new Intent(activity, ThreadActivity.class);
+        intent.putExtra(ChanHelper.TIM, threadTim);
         intent.putExtra(ChanHelper.BOARD_CODE, boardName != null ? boardName : boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, postId);
         intent.putExtra(ChanHelper.TEXT, text);
@@ -391,6 +397,10 @@ public class ChanViewHelper {
         else {
             return false;
         }
+    }
+
+    public long getTim() {
+        return tim;
     }
 
     public String getBoardCode() {
