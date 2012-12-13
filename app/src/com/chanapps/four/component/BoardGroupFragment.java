@@ -1,5 +1,9 @@
 package com.chanapps.four.component;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.support.v4.app.DialogFragment;
+import android.content.DialogInterface;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.support.v4.content.Loader;
@@ -16,8 +20,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.Toast;
 import com.chanapps.four.data.*;
 import com.chanapps.four.activity.R;
+
+import java.util.Arrays;
 
 /**
 * Created with IntelliJ IDEA.
@@ -61,9 +68,9 @@ public class BoardGroupFragment
         }
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
-        Log.i(TAG, "onCreate init loader");
+        Log.v(TAG, "onCreate init loader");
         getLoaderManager().initLoader(0, null, this);
-        Log.d(TAG, "BoardGroupFragment " + boardType + " onCreate");
+        Log.v(TAG, "BoardGroupFragment " + boardType + " onCreate");
     }
 
     @Override
@@ -127,7 +134,7 @@ public class BoardGroupFragment
 
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
+		Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         if (imageTextCursorAdapter != null) {
             cursorLoader = new ChanWatchlistCursorLoader(getActivity().getBaseContext());
         }
@@ -136,7 +143,7 @@ public class BoardGroupFragment
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
+		Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
         if (imageTextCursorAdapter != null) {
 		    imageTextCursorAdapter.swapCursor(data);
         }
@@ -146,7 +153,7 @@ public class BoardGroupFragment
 
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.i(TAG, ">>>>>>>>>>> onLoaderReset");
+		Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
         if (imageTextCursorAdapter != null) {
 		    imageTextCursorAdapter.swapCursor(null);
         }
@@ -167,7 +174,14 @@ public class BoardGroupFragment
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if (boardType == ChanBoard.Type.WATCHING) {
-            // popup to confirm delete from watchlist
+            Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+            Log.d(TAG, "Cursor columns: " + Arrays.toString(cursor.getColumnNames()));
+            final long threadno = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            Log.d(TAG, "Cursor threadno: " + threadno);
+            final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
+            Log.d(TAG, "Cursor tim: " + tim);
+            WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(tim);
+            d.show(getFragmentManager(), d.TAG);
         }
         else if (boardType == ChanBoard.Type.FAVORITES) {
             // popup to confirm delete from favorites
@@ -176,6 +190,39 @@ public class BoardGroupFragment
             // popup to confirm add to favorites
         }
         return true;
+    }
+
+    private class WatchlistDeleteDialogFragment extends DialogFragment {
+        public final String TAG = WatchlistDeleteDialogFragment.class.getSimpleName();
+        private long tim = 0;
+        public WatchlistDeleteDialogFragment(long tim) {
+            super();
+            this.tim = tim;
+        }
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return (new AlertDialog.Builder(getActivity()))
+                    .setMessage(R.string.dialog_delete_watchlist_thread)
+                    .setPositiveButton(R.string.dialog_delete,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Context ctx = getActivity();
+                                    ChanWatchlist.deleteThreadFromWatchlist(ctx, tim);
+                                    Message m = Message.obtain(handler, LoaderHandler.MessageType.RESTART_LOADER.ordinal());
+                                    handler.sendMessageDelayed(m, 200);
+                                }
+                            })
+                    .setNegativeButton(R.string.dialog_cancel,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // ignore
+                                }
+                            })
+                    .create();
+
+        }
     }
 
     protected void ensureHandler() {
@@ -193,7 +240,7 @@ public class BoardGroupFragment
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Log.i(fragment.getClass().getSimpleName(), ">>>>>>>>>>> refresh message received restarting loader");
+            Log.v(fragment.getClass().getSimpleName(), ">>>>>>>>>>> refresh message received restarting loader");
             if (!fragment.isDetached()) {
                 fragment.getLoaderManager().restartLoader(0, null, fragment);
             }

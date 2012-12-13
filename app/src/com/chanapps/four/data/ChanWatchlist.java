@@ -73,6 +73,28 @@ public class ChanWatchlist {
         Log.i(TAG, "Watchlist cleared");
     }
 
+    public static void deleteThreadFromWatchlist(Context ctx, long tim) {
+        Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
+        String threadToDelete = null;
+        for (String s : savedWatchlist) {
+            if (s.startsWith(tim + FIELD_SEPARATOR)) {
+                threadToDelete = s;
+                break;
+            }
+        }
+        if (threadToDelete != null) {
+            savedWatchlist.remove(threadToDelete);
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
+            editor.putStringSet(ChanHelper.THREAD_WATCHLIST, savedWatchlist);
+            editor.commit();
+            Log.i(TAG, "Thread " + threadToDelete + " deleted from watchlist");
+            Log.i(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
+        }
+        else {
+            Log.e(TAG, "Could not find thread to delete with tim = " + tim);
+        }
+    }
+
     public static List<String> getSortedWatchlistFromPrefs(Context ctx) {
         Set<String> threadPaths = getWatchlistFromPrefs(ctx);
         List<String> threadPathList = new ArrayList<String>();

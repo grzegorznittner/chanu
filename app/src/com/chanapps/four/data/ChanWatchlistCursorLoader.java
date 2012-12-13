@@ -66,6 +66,9 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 row.add(text);
                 row.add(imageWidth);
                 row.add(imageHeight);
+                row.add(imageWidth);
+                row.add(imageHeight);
+                row.add(tim);
                 row.add(0);
                 row.add(0);
             }

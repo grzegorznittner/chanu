@@ -81,6 +81,12 @@
     <!-- popup text -->
     <string name="dismiss">Dismiss</string>
 
+    <!-- dialog text -->
+    <string name="dialog_watchlist_updated">Watchlist updated</string>
+    <string name="dialog_delete_watchlist_thread">Delete thread from watchlist?</string>
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_cancel">Cancel</string>
+
     <!-- post reply activity -->
     <string name="post_reply_title">Post Reply</string>
     <string name="post_reply_thread_title">New Thread</string>
