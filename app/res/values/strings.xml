@@ -84,8 +84,11 @@
     <!-- dialog text -->
     <string name="dialog_watchlist_updated">Watchlist updated</string>
     <string name="dialog_delete_watchlist_thread">Delete thread from watchlist?</string>
+    <string name="dialog_favorites_updated">Favorites updated</string>
+    <string name="dialog_delete_favorites_thread">Delete board from favorites?</string>
     <string name="dialog_delete">Delete</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_added_to_favorites">Added to favorites</string>
 
     <!-- post reply activity -->
     <string name="post_reply_title">Post Reply</string>

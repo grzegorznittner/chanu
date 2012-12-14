@@ -1,4 +1,4 @@
-package com.chanapps.four.data;
+package com.chanapps.four.task;
 
 import android.content.Context;
 import android.net.http.AndroidHttpClient;
@@ -7,6 +7,7 @@ import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.Captcha;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 

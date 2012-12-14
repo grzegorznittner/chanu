@@ -1,4 +1,4 @@
-package com.chanapps.four.component;
+package com.chanapps.four.adapter;
 
 import android.app.ActionBar;
 import android.preference.PreferenceManager;

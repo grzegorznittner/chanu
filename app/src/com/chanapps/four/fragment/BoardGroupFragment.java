@@ -1,30 +1,28 @@
-package com.chanapps.four.component;
+package com.chanapps.four.fragment;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.support.v4.app.DialogFragment;
-import android.content.DialogInterface;
+import android.os.Message;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.Toast;
+import com.chanapps.four.adapter.BoardSelectorAdapter;
+import com.chanapps.four.adapter.ImageTextCursorAdapter;
+import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.activity.R;
-
-import java.util.Arrays;
+import com.chanapps.four.loader.ChanWatchlistCursorLoader;
 
 /**
 * Created with IntelliJ IDEA.
@@ -54,6 +52,10 @@ public class BoardGroupFragment
     protected ChanWatchlistCursorLoader cursorLoader;
     protected ChanViewHelper viewHelper;
 
+    public BaseAdapter getAdapter() {
+        return adapter;
+
+    }
     public ChanViewHelper.ServiceType getServiceType() {
         return ChanViewHelper.ServiceType.WATCHLIST;
     }
@@ -116,14 +118,18 @@ public class BoardGroupFragment
     @Override
     public void onStop () {
     	super.onStop();
-    	getLoaderManager().destroyLoader(0);
+        if (boardType == ChanBoard.Type.WATCHING) {
+    	    getLoaderManager().destroyLoader(0);
+        }
     	handler = null;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        getLoaderManager().destroyLoader(0);
+        if (boardType == ChanBoard.Type.WATCHING) {
+            getLoaderManager().destroyLoader(0);
+        }
         handler = null;
     }
 
@@ -175,54 +181,26 @@ public class BoardGroupFragment
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if (boardType == ChanBoard.Type.WATCHING) {
             Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-            Log.d(TAG, "Cursor columns: " + Arrays.toString(cursor.getColumnNames()));
             final long threadno = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-            Log.d(TAG, "Cursor threadno: " + threadno);
             final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
-            Log.d(TAG, "Cursor tim: " + tim);
-            WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(tim);
+            WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, tim);
             d.show(getFragmentManager(), d.TAG);
         }
         else if (boardType == ChanBoard.Type.FAVORITES) {
-            // popup to confirm delete from favorites
+            ChanBoard board = ChanBoard.getBoardsByType(getActivity(), boardType).get(position);
+            String boardCode = board.link;
+            FavoritesDeleteDialogFragment d = new FavoritesDeleteDialogFragment(this, boardCode);
+            d.show(getFragmentManager(), d.TAG);
         }
         else {
-            // popup to confirm add to favorites
+            ChanBoard board = ChanBoard.getBoardsByType(getActivity(), boardType).get(position);
+            String boardCode = board.link;
+            ChanBoard.addBoardToFavorites(getActivity(), boardCode);
+            handler.sendEmptyMessageDelayed(0, 200);
+            adapter.notifyDataSetChanged();
+            (new ToastRunnable(getActivity(), getString(R.string.dialog_added_to_favorites))).run();
         }
         return true;
-    }
-
-    private class WatchlistDeleteDialogFragment extends DialogFragment {
-        public final String TAG = WatchlistDeleteDialogFragment.class.getSimpleName();
-        private long tim = 0;
-        public WatchlistDeleteDialogFragment(long tim) {
-            super();
-            this.tim = tim;
-        }
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return (new AlertDialog.Builder(getActivity()))
-                    .setMessage(R.string.dialog_delete_watchlist_thread)
-                    .setPositiveButton(R.string.dialog_delete,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Context ctx = getActivity();
-                                    ChanWatchlist.deleteThreadFromWatchlist(ctx, tim);
-                                    Message m = Message.obtain(handler, LoaderHandler.MessageType.RESTART_LOADER.ordinal());
-                                    handler.sendMessageDelayed(m, 200);
-                                }
-                            })
-                    .setNegativeButton(R.string.dialog_cancel,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // ignore
-                                }
-                            })
-                    .create();
-
-        }
     }
 
     protected void ensureHandler() {
@@ -231,19 +209,40 @@ public class BoardGroupFragment
         }
     }
 
-    private class FragmentLoaderHandler extends Handler {
+    /**
+    * Created with IntelliJ IDEA.
+    * User: arley
+    * Date: 12/14/12
+    * Time: 12:46 PM
+    * To change this template use File | Settings | File Templates.
+    */
+    public static class FragmentLoaderHandler extends Handler {
         private BoardGroupFragment fragment;
+        private static final String TAG = FragmentLoaderHandler.class.getSimpleName();
         public FragmentLoaderHandler() {}
         public FragmentLoaderHandler(BoardGroupFragment fragment) {
             this.fragment = fragment;
         }
         @Override
         public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            Log.v(fragment.getClass().getSimpleName(), ">>>>>>>>>>> refresh message received restarting loader");
-            if (!fragment.isDetached()) {
-                fragment.getLoaderManager().restartLoader(0, null, fragment);
+            try {
+                super.handleMessage(msg);
+                Log.v(fragment.getClass().getSimpleName(), ">>>>>>>>>>> refresh message received restarting loader");
+                if (!fragment.isDetached()) {
+                    if (fragment.boardType == ChanBoard.Type.WATCHING) {
+                        fragment.getLoaderManager().restartLoader(0, null, fragment);
+                    }
+                    else if (fragment.boardType == ChanBoard.Type.FAVORITES) {
+                        if (fragment.adapter != null) {
+                            fragment.adapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't restart loader", e);
             }
         }
     }
+
 }

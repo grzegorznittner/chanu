@@ -2,7 +2,7 @@ package com.chanapps.four.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
-import com.chanapps.four.component.SettingsFragment;
+import com.chanapps.four.fragment.SettingsFragment;
 
 /**
  * User: mpop

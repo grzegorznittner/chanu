@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.widget.Toast;
-import com.chanapps.four.component.BoardGroupFragment;
+import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.component.TabsAdapter;
+import com.chanapps.four.adapter.TabsAdapter;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 

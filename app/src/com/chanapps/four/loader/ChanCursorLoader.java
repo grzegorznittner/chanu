@@ -1,4 +1,4 @@
-package com.chanapps.four.data;
+package com.chanapps.four.loader;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.data.*;
 
 public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 

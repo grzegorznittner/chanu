@@ -21,11 +21,11 @@ import android.widget.*;
 
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.ChanViewHelper;
-import com.chanapps.four.component.ImageTextCursorAdapter;
-import com.chanapps.four.component.LoaderHandler;
+import com.chanapps.four.adapter.ImageTextCursorAdapter;
+import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanCursorLoader;
+import com.chanapps.four.loader.ChanCursorLoader;
 import com.chanapps.four.data.ChanHelper;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshGridView;
@@ -299,9 +299,6 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
                 replyIntent.putExtra(ChanHelper.BOARD_CODE, viewHelper.getBoardCode());
                 startActivity(replyIntent);
-                return true;
-            case R.id.add_to_favorites_menu:
-                ChanBoard.addBoardToFavorites(this, viewHelper.getBoardCode());
                 return true;
             case R.id.hide_all_text:
                 toggleHideAllText();

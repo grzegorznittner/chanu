@@ -132,6 +132,21 @@ public class ChanBoard {
         }
     }
 
+    public static void deleteBoardFromFavorites(Context ctx, String boardCode) {
+        Set<String> savedFavorites = getFavoritesFromPrefs(ctx);
+        if (savedFavorites.contains(boardCode)) {
+            savedFavorites.remove(boardCode);
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
+            editor.putStringSet(ChanHelper.FAVORITE_BOARDS, savedFavorites);
+            editor.commit();
+            Log.i(TAG, "Board " + boardCode + " deleted from favorites");
+            Log.i(TAG, "Put favorites list to prefs: " + Arrays.toString(savedFavorites.toArray()));
+        }
+        else {
+            Log.i(TAG, "Tried to delete board " + boardCode + " that is not in favorites");
+        }
+    }
+
     public static void clearFavorites(Context ctx) {
         Log.i(TAG, "Clearing favorites...");
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();

@@ -1,4 +1,4 @@
-package com.chanapps.four.data;
+package com.chanapps.four.loader;
 
 import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.util.Log;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanWatchlist;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;

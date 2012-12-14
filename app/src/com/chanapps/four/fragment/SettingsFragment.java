@@ -1,4 +1,4 @@
-package com.chanapps.four.component;
+package com.chanapps.four.fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

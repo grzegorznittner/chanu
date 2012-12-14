@@ -1,4 +1,4 @@
-package com.chanapps.four.data;
+package com.chanapps.four.task;
 
 import android.content.Context;
 import android.net.http.AndroidHttpClient;
@@ -11,6 +11,7 @@ import com.chanapps.four.component.Part;
 import com.chanapps.four.component.StringPart;
 import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanPostResponse;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 

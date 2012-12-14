@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.widget.AdapterView;
 
 import com.chanapps.four.component.ChanViewHelper;
-import com.chanapps.four.component.ImageTextCursorAdapter;
+import com.chanapps.four.adapter.ImageTextCursorAdapter;
 import com.handmark.pulltorefresh.library.PullToRefreshGridView;
 
 /**

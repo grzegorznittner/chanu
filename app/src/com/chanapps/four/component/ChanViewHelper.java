@@ -1,6 +1,5 @@
 package com.chanapps.four.component;
 
-import android.*;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -12,7 +11,6 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -21,6 +19,7 @@ import android.widget.*;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.*;
+import com.chanapps.four.service.ChanLoadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;

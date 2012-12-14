@@ -1,26 +1,23 @@
 /**
  * 
  */
-package com.chanapps.four.data;
+package com.chanapps.four.service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
 
 import android.content.Intent;
 import android.util.Log;
 
 import com.chanapps.four.activity.R;
-import com.chanapps.four.component.BaseChanService;
+import com.chanapps.four.data.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-
-import javax.security.auth.login.LoginException;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>

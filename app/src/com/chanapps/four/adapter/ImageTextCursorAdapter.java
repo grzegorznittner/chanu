@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chanapps.four.component;
+package com.chanapps.four.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
