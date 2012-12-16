@@ -41,8 +41,6 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
         }
         Log.d(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
         MatrixCursor cursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         for (String threadPath : savedWatchlist) {
             Log.d(TAG, "Parsing threadpath: " + threadPath);
 
@@ -51,12 +49,10 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 long tim = Long.valueOf(threadComponents[0]);
                 String boardCode = threadComponents[1];
                 long threadNo = Long.valueOf(threadComponents[2]);
-                String shortText = hideAllText
-                        ? ""
-                        : (threadComponents[3].length() > 25
+                String shortText = (threadComponents[3].length() > 25
                             ? threadComponents[3].substring(0, 22) + "..."
                             : threadComponents[3]);
-                String text = hideAllText ? "" : threadComponents[3];
+                String text = threadComponents[3];
                 String imageUrl = threadComponents[4];
                 int imageWidth = Integer.valueOf(threadComponents[5]);
                 int imageHeight = Integer.valueOf(threadComponents[6]);

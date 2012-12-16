@@ -19,6 +19,7 @@ import android.webkit.WebView;
 import android.widget.*;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanText;
 import com.chanapps.four.task.LoadCaptchaTask;
 import com.chanapps.four.task.PostReplyTask;
 
@@ -62,30 +63,6 @@ public class PostReplyActivity extends Activity {
 
     private Random randomGenerator = new Random();
     private DecimalFormat eightDigits = new DecimalFormat("00000000");
-
-    private void randomizeThread() {
-        setBoardCode("diy");
-        threadNo = 325344;
-        /*
-        double d = Math.random();
-        if (d >= 0.75) {
-            setBoardCode("trv");
-            threadNo = 609350;
-        }
-        else if (d >= 0.5) {
-            setBoardCode("diy");
-            threadNo = 100304;
-        }
-        else if (d >= 0.25) {
-            setBoardCode("fit");
-            threadNo = 4820056;
-        }
-        else {
-            setBoardCode("po");
-            threadNo = 430177;
-        }
-        */
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -142,14 +119,14 @@ public class PostReplyActivity extends Activity {
         super.onResume();
 
         Intent intent = getIntent();
-        if (intent.hasExtra(ChanHelper.BOARD_CODE) && intent.hasExtra(ChanHelper.THREAD_NO)) {
+        if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
             boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
             threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-            setBoardCode(boardCode);
-        }
-        else if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
-            boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-            threadNo = 0;
+            String initialText = intent.getStringExtra(ChanHelper.TEXT);
+            if (initialText != null && !initialText.isEmpty()) {
+                String quotedText = ChanText.quoteText(initialText);
+                messageText.setText(quotedText);
+            }
             setBoardCode(boardCode);
         }
         else {

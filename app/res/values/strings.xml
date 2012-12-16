@@ -21,12 +21,12 @@
     <string name="refresh_thread_menu">Refresh Thread</string>
     <string name="new_thread_menu">New Thread</string>
     <string name="add_to_favorites_menu">Add to Favorites</string>
-    <string name="download_all_threads_menu">Prefetch All Threads</string>
+    <string name="prefetch_board_menu">Prefetch Board Threads</string>
     <string name="watch_thread_menu">Watch Thread</string>
     <string name="view_as_grid_menu">View As Grid</string>
     <string name="view_as_list_menu">View As List</string>
     <string name="post_reply_menu">Post Reply</string>
-    <string name="download_all_images_menu">Save All Images</string>
+    <string name="download_all_images_menu">Download All Images</string>
     <string name="download_image_menu">Save Image</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
     <string name="share_image_menu">Share Image</string>
@@ -79,6 +79,8 @@
     <string name="full_screen_sharing_error">Couldn\'t share image</string>
 
     <!-- popup text -->
+    <string name="reply">Reply</string>
+    <string name="quote">Quote</string>
     <string name="dismiss">Dismiss</string>
 
     <!-- dialog text -->

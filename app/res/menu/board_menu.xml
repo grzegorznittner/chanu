@@ -5,12 +5,10 @@
           android:icon="@drawable/content_new_picture"
           android:showAsAction="always"
             />
-    <item android:id="@+id/download_all_threads_menu"
-          android:title="@string/download_all_threads_menu"
-          android:icon="@drawable/content_save"
-            />
-    <item android:id="@+id/hide_all_text"
-          android:title="@string/pref_hide_all_text"
+    <item android:id="@+id/prefetch_board_menu"
+          android:title="@string/prefetch_board_menu"
+          android:icon="@drawable/av_download"
+          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"

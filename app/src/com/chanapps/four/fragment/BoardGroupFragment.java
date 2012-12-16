@@ -214,11 +214,7 @@ public class BoardGroupFragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (boardType == ChanBoard.Type.FAVORITES) {
             inflater.inflate(R.menu.favorites_menu, menu);
-//            if (gridView != null) {
-//                gridView.invalidate();
-//
-//            }
-            if (adapter != null) {
+            if (adapter != null) { // has to be here because adapter is null when we modify favorites from another tab
                 adapter.notifyDataSetInvalidated();
             }
         }

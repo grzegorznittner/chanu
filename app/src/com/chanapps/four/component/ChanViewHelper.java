@@ -62,6 +62,13 @@ public class ChanViewHelper {
     private boolean hideAllText = false;
     private ServiceType serviceType;
 
+    private View popupView;
+    private TextView popupText;
+    private PopupWindow popupWindow;
+    private Button replyButton;
+    private Button quoteButton;
+    private Button dismissButton;
+
     public ChanViewHelper(Activity activity, ServiceType serviceType) {
         this(activity, getViewTypeFromOrientation(activity), serviceType);
     }
@@ -372,21 +379,53 @@ public class ChanViewHelper {
         activity.startActivity(intent);
     }
 
-    public boolean showPopupText(AdapterView<?> adapterView, View view, int position, long id) {
-        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-        final String boardName = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
-        final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        Log.i(TAG, "Calling popup with id=" + id);
-        if (text != null && !text.trim().isEmpty()) {
-            View popupView = activity.getLayoutInflater().inflate(R.layout.popup_full_text_layout, null);
-            TextView popupText = (TextView)popupView.findViewById(R.id.popup_full_text);
-            popupText.setText(text);
-            final PopupWindow popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            final Button dismissButton = (Button)popupView.findViewById(R.id.popup_dismiss_button);
+    private void ensurePopupWindow() {
+        if (popupView == null) {
+            popupView = activity.getLayoutInflater().inflate(R.layout.popup_full_text_layout, null);
+            popupText = (TextView)popupView.findViewById(R.id.popup_full_text);
+            popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
+            quoteButton = (Button)popupView.findViewById(R.id.popup_quote_button);
+            dismissButton = (Button)popupView.findViewById(R.id.popup_dismiss_button);
             dismissButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    popupWindow.dismiss();
+                }
+            });
+        }
+    }
+
+    public boolean showPopupText(AdapterView<?> adapterView, View view, int position, long id) {
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        Log.i(TAG, "Calling popup with id=" + id);
+        if (text != null && !text.trim().isEmpty()) {
+            final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+            final long clickedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            final int currentPosition = adapterView.getFirstVisiblePosition();
+            ensurePopupWindow();
+            popupText.setText(text);
+            replyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent replyIntent = new Intent(activity, PostReplyActivity.class);
+                    replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
+                    replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
+                    replyIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, currentPosition);
+                    activity.startActivity(replyIntent);
+                    popupWindow.dismiss();
+                }
+            });
+            quoteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent replyIntent = new Intent(activity, PostReplyActivity.class);
+                    replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
+                    replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
+                    replyIntent.putExtra(ChanHelper.TEXT, text);
+                    replyIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, currentPosition);
+                    activity.startActivity(replyIntent);
                     popupWindow.dismiss();
                 }
             });

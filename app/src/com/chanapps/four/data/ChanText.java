@@ -13,6 +13,40 @@ import android.util.Log;
 public class ChanText {
     private static final String TAG = ChanText.class.getSimpleName();
 
+    private static final int MIN_LINE = 30;
+    private static final int MAX_LINE = 40;
+
+    public static final String quoteText(String s) {
+        if (s == null || s.isEmpty())
+            return "";
+        String o = "> ";
+        int l = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '\n') {
+                o += "\n> ";
+                l = 2;
+            }
+            else if (l < MIN_LINE) {
+                o += c;
+                l++;
+            }
+            else if (l > MAX_LINE) {
+                o += "\n> " + c;
+                l = 3;
+            }
+            else if (c == ' ') {
+                o += "\n> ";
+                l = 2;
+            }
+            else {
+                o+= c;
+                l++;
+            }
+        }
+        return o;
+    }
+
     public static final String getText(String sub, String com) {
         String text = sub != null && sub.trim().length() > 0
                   ? sub + (com != null && com.trim().length() > 0 ? "<br/>" + com : "")

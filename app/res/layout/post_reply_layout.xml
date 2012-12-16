@@ -3,7 +3,8 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/post_reply_scroll_view"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
+        android:fillViewport="true"
         android:scrollbars="vertical">
 
         <LinearLayout
@@ -28,9 +29,9 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/post_reply_text_hint"
                 android:inputType="textMultiLine"
-                android:lines="7"
+                android:lines="9"
                 android:padding="8dp"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"

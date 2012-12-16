@@ -266,29 +266,6 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        if (hideAllText) {
-            menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_show_all_text);
-        }
-        else {
-            menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_hide_all_text);
-        }
-        return true;
-    }
-
-    protected void toggleHideAllText() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, !hideAllText);
-        editor.commit();
-        invalidateOptionsMenu();
-        refresh();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -300,8 +277,8 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
                 replyIntent.putExtra(ChanHelper.BOARD_CODE, viewHelper.getBoardCode());
                 startActivity(replyIntent);
                 return true;
-            case R.id.hide_all_text:
-                toggleHideAllText();
+            case R.id.prefetch_board_menu:
+                Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");
