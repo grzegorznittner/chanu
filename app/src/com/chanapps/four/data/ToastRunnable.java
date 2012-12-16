@@ -13,15 +13,26 @@ import android.widget.Toast;
 public class ToastRunnable implements Runnable {
     Context ctx;
     String text;
+    int strId;
 
     public ToastRunnable(Context ctx, String text) {
         this.ctx = ctx;
         this.text = text;
     }
 
+    public ToastRunnable(Context ctx, int strId) {
+        this.ctx = ctx;
+        this.strId = strId;
+    }
+
     @Override
     public void run(){
-         Toast.makeText(ctx, text, Toast.LENGTH_SHORT).show();
+        if (text == null) {
+            Toast.makeText(ctx, strId, Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(ctx, text, Toast.LENGTH_SHORT).show();
+        }
     }
 }
 

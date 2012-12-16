@@ -1,5 +1,6 @@
 package com.chanapps.four.fragment;
 
+import android.content.Intent;
 import android.os.Message;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
@@ -9,14 +10,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.Display;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Adapter;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.adapter.BoardSelectorAdapter;
 import com.chanapps.four.adapter.ImageTextCursorAdapter;
 import com.chanapps.four.component.*;
@@ -47,7 +45,7 @@ public class BoardGroupFragment
     private BaseAdapter adapter;
     private GridView gridView;
     private Context context;
-    private int columnWidth = 0;
+    public int columnWidth = 0;
     protected Handler handler;
     protected ChanWatchlistCursorLoader cursorLoader;
     protected ChanViewHelper viewHelper;
@@ -56,6 +54,7 @@ public class BoardGroupFragment
         return adapter;
 
     }
+
     public ChanViewHelper.ServiceType getServiceType() {
         return ChanViewHelper.ServiceType.WATCHLIST;
     }
@@ -64,9 +63,13 @@ public class BoardGroupFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         boardType = getArguments() != null
-                ? ChanBoard.Type.valueOf(getArguments().getString(ChanHelper.BOARD_TYPE)) : ChanBoard.Type.JAPANESE_CULTURE;
-        if (boardType == ChanBoard.Type.WATCHING) {
+                ? ChanBoard.Type.valueOf(getArguments().getString(ChanHelper.BOARD_TYPE))
+                : ChanBoard.Type.JAPANESE_CULTURE;
+        if (boardType == ChanBoard.Type.WATCHLIST) {
             viewHelper = new ChanViewHelper(this.getActivity(), ChanViewHelper.ServiceType.WATCHLIST);
+        }
+        if (boardType == ChanBoard.Type.FAVORITES || boardType == ChanBoard.Type.WATCHLIST) {
+            setHasOptionsMenu(true);
         }
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
@@ -86,7 +89,7 @@ public class BoardGroupFragment
         cg.sizeGridToDisplay();
         context = container.getContext();
         columnWidth = cg.getColumnWidth();
-        if (boardType == ChanBoard.Type.WATCHING) {
+        if (boardType == ChanBoard.Type.WATCHLIST) {
             imageTextCursorAdapter = new ImageTextCursorAdapter(
                     context,
                     R.layout.board_grid_item,
@@ -110,7 +113,7 @@ public class BoardGroupFragment
     @Override
     public void onStart() {
         super.onStart();
-        if (boardType == ChanBoard.Type.WATCHING) {
+        if (boardType == ChanBoard.Type.WATCHLIST) {
             viewHelper.startService();
         }
     }
@@ -118,7 +121,7 @@ public class BoardGroupFragment
     @Override
     public void onStop () {
     	super.onStop();
-        if (boardType == ChanBoard.Type.WATCHING) {
+        if (boardType == ChanBoard.Type.WATCHLIST) {
     	    getLoaderManager().destroyLoader(0);
         }
     	handler = null;
@@ -127,7 +130,7 @@ public class BoardGroupFragment
     @Override
     public void onDetach() {
         super.onDetach();
-        if (boardType == ChanBoard.Type.WATCHING) {
+        if (boardType == ChanBoard.Type.WATCHLIST) {
             getLoaderManager().destroyLoader(0);
         }
         handler = null;
@@ -167,7 +170,7 @@ public class BoardGroupFragment
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (boardType == ChanBoard.Type.WATCHING) {
+        if (boardType == ChanBoard.Type.WATCHLIST) {
             viewHelper.startThreadActivity(parent, view, position, id);
         }
         else {
@@ -179,7 +182,7 @@ public class BoardGroupFragment
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        if (boardType == ChanBoard.Type.WATCHING) {
+        if (boardType == ChanBoard.Type.WATCHLIST) {
             Cursor cursor = (Cursor) parent.getItemAtPosition(position);
             final long threadno = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
             final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
@@ -195,10 +198,8 @@ public class BoardGroupFragment
         else {
             ChanBoard board = ChanBoard.getBoardsByType(getActivity(), boardType).get(position);
             String boardCode = board.link;
-            ChanBoard.addBoardToFavorites(getActivity(), boardCode);
-            handler.sendEmptyMessageDelayed(0, 200);
-            adapter.notifyDataSetChanged();
-            (new ToastRunnable(getActivity(), getString(R.string.dialog_added_to_favorites))).run();
+            FavoritesAddDialogFragment d = new FavoritesAddDialogFragment(this, boardCode);
+            d.show(getFragmentManager(), d.TAG);
         }
         return true;
     }
@@ -209,13 +210,51 @@ public class BoardGroupFragment
         }
     }
 
-    /**
-    * Created with IntelliJ IDEA.
-    * User: arley
-    * Date: 12/14/12
-    * Time: 12:46 PM
-    * To change this template use File | Settings | File Templates.
-    */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (boardType == ChanBoard.Type.FAVORITES) {
+            inflater.inflate(R.menu.favorites_menu, menu);
+//            if (gridView != null) {
+//                gridView.invalidate();
+//
+//            }
+            if (adapter != null) {
+                adapter.notifyDataSetInvalidated();
+            }
+        }
+        else if (boardType == ChanBoard.Type.WATCHLIST) {
+            inflater.inflate(R.menu.watchlist_menu, menu);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.clear_favorites_menu:
+                FavoritesClearDialogFragment clearDialogFragment = new FavoritesClearDialogFragment(this);
+                clearDialogFragment.show(getFragmentManager(), clearDialogFragment.TAG);
+                return true;
+            case R.id.clear_watchlist_menu:
+                WatchlistClearDialogFragment clearWatchlistFragment = new WatchlistClearDialogFragment(this);
+                clearWatchlistFragment.show(getFragmentManager(), clearWatchlistFragment.TAG);
+                return true;
+            case R.id.settings_menu:
+                Intent settingsIntent = new Intent(this.getActivity(), SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+            case R.id.help_menu:
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this.getActivity(), R.raw.help_header, R.raw.help_board_selector);
+                rawResourceDialog.show();
+                return true;
+            case R.id.about_menu:
+                RawResourceDialog aboutDialog = new RawResourceDialog(this.getActivity(), R.raw.legal, R.raw.info);
+                aboutDialog.show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public static class FragmentLoaderHandler extends Handler {
         private BoardGroupFragment fragment;
         private static final String TAG = FragmentLoaderHandler.class.getSimpleName();
@@ -229,7 +268,7 @@ public class BoardGroupFragment
                 super.handleMessage(msg);
                 Log.v(fragment.getClass().getSimpleName(), ">>>>>>>>>>> refresh message received restarting loader");
                 if (!fragment.isDetached()) {
-                    if (fragment.boardType == ChanBoard.Type.WATCHING) {
+                    if (fragment.boardType == ChanBoard.Type.WATCHLIST) {
                         fragment.getLoaderManager().restartLoader(0, null, fragment);
                     }
                     else if (fragment.boardType == ChanBoard.Type.FAVORITES) {

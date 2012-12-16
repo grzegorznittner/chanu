@@ -15,6 +15,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
+import javax.security.auth.login.LoginException;
+
 public class ChanFileStorage {
 	public static final String TAG = ChanFileStorage.class.getSimpleName();
 	
@@ -61,15 +63,24 @@ public class ChanFileStorage {
 					thread.lastFetched = new Date().getTime();
 					Gson gson = new GsonBuilder().create();
 					gson.toJson(thread, writer);
-				} finally {
+				}
+                catch (Exception e) {
+                    Log.e(TAG, "Exception while writing thread", e);
+                }
+                finally {
                     try {
-					    writer.flush();
-					    writer.close();
+                        writer.flush();
                     }
                     catch (Exception e) {
-                        Log.e(TAG, "Exception while writing and closing thread cache:" + e.getMessage(), e);
+                        Log.e(TAG, "Exception while flushing thread", e);
                     }
-				}
+                    try {
+                        writer.close();
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "Exception while closing thread", e);
+                    }
+                }
 				Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + "/" + thread.no + "'");
 			} else {
 				Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));

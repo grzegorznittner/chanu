@@ -9,6 +9,7 @@ import android.support.v4.app.DialogFragment;
 import android.widget.BaseAdapter;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ToastRunnable;
 
 /**
 * Created with IntelliJ IDEA.
@@ -29,7 +30,7 @@ public class FavoritesDeleteDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return (new AlertDialog.Builder(getActivity()))
-                .setMessage(R.string.dialog_delete_favorites_thread)
+                .setMessage(R.string.dialog_delete_favorites_board)
                 .setPositiveButton(R.string.dialog_delete,
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -39,6 +40,7 @@ public class FavoritesDeleteDialogFragment extends DialogFragment {
                                 BaseAdapter adapter = fragment.getAdapter();
                                 if (adapter != null)
                                     adapter.notifyDataSetChanged();
+                                (new ToastRunnable(getActivity(), getString(R.string.dialog_deleted_from_favorites))).run();
                             }
                         })
                 .setNegativeButton(R.string.dialog_cancel,

@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import com.chanapps.four.data.ChanWatchlist;
+import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 
 public class BoardSelectorActivity extends FragmentActivity {
     public static final String TAG = "BoardSelectorActivity";
@@ -63,6 +64,10 @@ public class BoardSelectorActivity extends FragmentActivity {
                 BoardGroupFragment.class, bundle);
     }
 
+    public BoardGroupFragment getFavoritesFragment() {
+        return (BoardGroupFragment)mTabsAdapter.getItem(ChanBoard.Type.FAVORITES.ordinal());
+    }
+
     private void removeTab(ChanBoard.Type type) {
         mTabsAdapter.removeTab(type);
     }
@@ -73,7 +78,7 @@ public class BoardSelectorActivity extends FragmentActivity {
         setTabToSelectedType(false);
     }
 
-    private void setTabToSelectedType(boolean force) {
+    public void setTabToSelectedType(boolean force) {
         Log.i(TAG, "onStart selectedBoardType: " + selectedBoardType);
 
         int selectedTab = 0;
@@ -133,51 +138,10 @@ public class BoardSelectorActivity extends FragmentActivity {
         inflater.inflate(R.menu.board_selector_menu, menu);
         return true;
     }
-    /*
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem menuItem = menu.findItem(R.id.clear_favorites_menu);
-        if (menuItem != null) {
-            if (selectedBoardType == ChanBoard.Type.FAVORITES) {
-                menuItem.setVisible(true);
-            }
-            else {
-                menuItem.setVisible(false);
-            }
-        }
-        return true;
-    }
-    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.clear_favorites_menu:
-                Log.d(TAG, "Clearing favorites...");
-                ChanBoard.clearFavorites(this);
-                selectedBoardType = ChanBoard.Type.FAVORITES;
-                setTabToSelectedType(true);
-                Log.d(TAG, "Favorites cleared.");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(BoardSelectorActivity.this, R.string.board_favorites_cleared, Toast.LENGTH_SHORT);
-                    }
-                });
-                return true;
-            case R.id.clear_watchlist_menu:
-                Log.d(TAG, "Clearing watchlist...");
-                ChanWatchlist.clearWatchlist(this);
-                selectedBoardType = ChanBoard.Type.WATCHING;
-                setTabToSelectedType(true);
-                Log.d(TAG, "Watchlist cleared.");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(BoardSelectorActivity.this, R.string.thread_watchlist_cleared, Toast.LENGTH_SHORT);
-                    }
-                });
-                return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);

@@ -5,13 +5,12 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.DialogFragment;
+import android.widget.BaseAdapter;
+import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ToastRunnable;
-import com.chanapps.four.handler.LoaderHandler;
-import com.chanapps.four.data.ChanWatchlist;
 
 /**
 * Created with IntelliJ IDEA.
@@ -20,28 +19,27 @@ import com.chanapps.four.data.ChanWatchlist;
 * Time: 12:44 PM
 * To change this template use File | Settings | File Templates.
 */
-public class WatchlistDeleteDialogFragment extends DialogFragment {
-    public static final String TAG = WatchlistDeleteDialogFragment.class.getSimpleName();
-    private Handler handler;
-    private long tim = 0;
-    public WatchlistDeleteDialogFragment(Handler handler, long tim) {
+public class FavoritesClearDialogFragment extends DialogFragment {
+    public static final String TAG = FavoritesClearDialogFragment.class.getSimpleName();
+    private BoardGroupFragment fragment;
+    public FavoritesClearDialogFragment(BoardGroupFragment fragment) {
         super();
-        this.handler = handler;
-        this.tim = tim;
+        this.fragment = fragment;
     }
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return (new AlertDialog.Builder(getActivity()))
-                .setMessage(R.string.dialog_delete_watchlist_thread)
-                .setPositiveButton(R.string.dialog_delete,
+                .setMessage(R.string.dialog_clear_favorites)
+                .setPositiveButton(R.string.dialog_clear,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Context ctx = getActivity();
-                                ChanWatchlist.deleteThreadFromWatchlist(ctx, tim);
-                                Message m = Message.obtain(handler, LoaderHandler.MessageType.RESTART_LOADER.ordinal());
-                                handler.sendMessageDelayed(m, 200);
-                                (new ToastRunnable(getActivity(), getString(R.string.dialog_deleted_from_watchlist))).run();
+                                ChanBoard.clearFavorites(ctx);
+                                BaseAdapter adapter = fragment.getAdapter();
+                                if (adapter != null)
+                                    adapter.notifyDataSetChanged();
+                                (new ToastRunnable(getActivity(), getString(R.string.dialog_cleared_favorites))).run();
                             }
                         })
                 .setNegativeButton(R.string.dialog_cancel,
