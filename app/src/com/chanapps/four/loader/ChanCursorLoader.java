@@ -61,24 +61,24 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 	    		for (ChanPost thread : board.threads) {
 	    			if (thread.tn_w <= 0 || thread.tim == null) {
                         matrixCursor.addRow(new Object[] {
-			   			        thread.no, boardName, "",
+			   			        thread.no, boardName, 0, "",
 			   				    getThreadText(thread), getFullText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, 0, 0});
 
                     } else {
 		    			matrixCursor.addRow(new Object[] {
-			   					thread.no, boardName, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
+			   					thread.no, boardName, 0, "http://0.thumbs.4chan.org/" + board.link + "/thumb/" + thread.tim + "s.jpg",
 			   					getThreadText(thread), getFullText(thread), thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, 0, 0});
 	    			}
 	    		}
 	    		if (board.threads != null && board.threads.length > 0 && !board.lastPage) {
 	    			matrixCursor.addRow(new Object[] {
-		   					2, boardName, "",
+		   					2, boardName, 0, "",
 		   					"", "", -1, -1, -1, -1, 0, 1, 0});
 	    			registerContentObserver(matrixCursor, mObserver);
 	    		}
                 else {
                     matrixCursor.addRow(new Object[] {
-            		   					2, boardName, "",
+            		   					2, boardName, 0, "",
             		   					"", "", -1, -1, -1, -1, 0, 0, 1});
 
                 }
@@ -95,13 +95,13 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
                             String postText = (String)getPostText(post);
                             if (postText != null && !postText.isEmpty())
 	    				        matrixCursor.addRow(new Object[] {
-	    						    post.no, boardName, "",
+	    						    post.no, boardName, threadNo, "",
 								    postText, getFullText(post),
                                     post.tn_w, post.tn_h, post.w, post.h, post.tim, 0, 0});
                         }
                     } else {
 	    				matrixCursor.addRow(new Object[] {
-	    						post.no, boardName, "http://0.thumbs.4chan.org/" + thread.board + "/thumb/" + post.tim + "s.jpg",
+	    						post.no, boardName, threadNo, "http://0.thumbs.4chan.org/" + thread.board + "/thumb/" + post.tim + "s.jpg",
 	    						getPostText(post, hideAllText), getFullText(post), post.tn_w, post.tn_h, post.w, post.h, post.tim, 0, 0});
 	    			}
 	    		}

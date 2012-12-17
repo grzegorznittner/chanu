@@ -59,6 +59,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 MatrixCursor.RowBuilder row = cursor.newRow();
                 row.add(threadNo);
                 row.add(boardCode);
+                row.add(0);
                 row.add(imageUrl);
                 row.add(shortText);
                 row.add(text);

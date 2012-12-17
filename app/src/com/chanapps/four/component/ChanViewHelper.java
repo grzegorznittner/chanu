@@ -397,12 +397,18 @@ public class ChanViewHelper {
     }
 
     public boolean showPopupText(AdapterView<?> adapterView, View view, int position, long id) {
+        return showPopupText(adapterView, view, position, id, false);
+    }
+
+    public boolean showPopupText(AdapterView<?> adapterView, View view, int position, long id, final boolean fromBoard) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         Log.i(TAG, "Calling popup with id=" + id);
         if (text != null && !text.trim().isEmpty()) {
             final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
-            final long clickedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+            final long clickedThreadNo = resto == 0 ? postId : resto;
             final int currentPosition = adapterView.getFirstVisiblePosition();
             ensurePopupWindow();
             popupText.setText(text);
@@ -412,7 +418,13 @@ public class ChanViewHelper {
                     Intent replyIntent = new Intent(activity, PostReplyActivity.class);
                     replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
                     replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
-                    replyIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, currentPosition);
+                    if (fromBoard) {
+                        replyIntent.putExtra(ChanHelper.FROM_BOARD, true);
+                        replyIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, currentPosition);
+                    }
+                    else {
+                        replyIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, currentPosition);
+                    }
                     activity.startActivity(replyIntent);
                     popupWindow.dismiss();
                 }
@@ -424,7 +436,13 @@ public class ChanViewHelper {
                     replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
                     replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
                     replyIntent.putExtra(ChanHelper.TEXT, text);
-                    replyIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, currentPosition);
+                    if (fromBoard) {
+                        replyIntent.putExtra(ChanHelper.FROM_BOARD, true);
+                        replyIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, currentPosition);
+                    }
+                    else {
+                        replyIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, currentPosition);
+                    }
                     activity.startActivity(replyIntent);
                     popupWindow.dismiss();
                 }

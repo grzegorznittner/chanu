@@ -9,6 +9,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+import android.media.MediaScannerConnection;
+import android.os.*;
+import com.chanapps.four.data.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -31,11 +34,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
@@ -54,10 +52,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanThread;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -158,6 +152,69 @@ public class FullScreenImageActivity extends Activity {
             }
 
         };
+    }
+
+    private void viewImageGallery() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.parse(localImageUri), "image/*");
+        startActivity(intent);
+    }
+
+    private File ensureGalleryFolder() {
+        File galleryFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File gallery4chanFolder = new File(galleryFolder, "4channer");
+        if (!gallery4chanFolder.exists())
+            gallery4chanFolder.mkdirs();
+        return gallery4chanFolder;
+    }
+
+    private String copyImageFileToGallery() {
+        InputStream boardFile = null;
+        OutputStream newFile = null;
+        try {
+            String galleryFilename = getLocalGalleryImageFilename();
+            File gallery4chanFolder = ensureGalleryFolder();
+            File galleryFile = new File(gallery4chanFolder, galleryFilename);
+
+            boardFile = new FileInputStream(new File(URI.create(this.localImageUri)));
+            newFile = new FileOutputStream(galleryFile);
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while((length = boardFile.read(buffer)) > 0) {
+                newFile.write(buffer, 0, length);
+            }
+
+            MediaScannerConnection.scanFile(this,
+                    new String[] { galleryFile.toString()},
+                    null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.i(TAG, "Scanned file for gallery: " + path + " " + uri);
+                            runOnUiThread(new ToastRunnable(FullScreenImageActivity.this, R.string.full_screen_saved_to_gallery));
+                        }
+                    });
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Error saving image file to gallery", e);
+            return getString(R.string.full_screen_save_image_error);
+        }
+        finally {
+            try {
+                if (boardFile != null) {
+                    boardFile.close();
+                }
+                if (newFile != null) {
+                    newFile.close();
+                }
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't close files while saving to image folder", e);
+            }
+        }
+        return null;
     }
 
 	private void copyImageFileToBoardFolder(ParcelFileDescriptor parcel) throws FileNotFoundException, IOException {
@@ -404,11 +461,19 @@ public class FullScreenImageActivity extends Activity {
         handler.sendEmptyMessageDelayed(0, 100);
     }
 
-    private String getLocalImagePath(String cacheFolder) {
-    	return cacheFolder + "/" + post.board + "/" + post.no + post.ext;
+    private String getLocalImagePath(String cacheFolder, String separator) {
+        return (cacheFolder != null ? (cacheFolder + separator) : "") + post.board + separator + post.no + post.ext;
     }
-    
-	private String getCacheFolder() {
+
+    private String getLocalGalleryImageFilename() {
+        return getLocalImagePath(null, "_");
+    }
+
+    private String getLocalImagePath(String cacheFolder) {
+        return getLocalImagePath(cacheFolder, "/");
+    }
+
+    private String getCacheFolder() {
 		String cacheDir = "Android/data/" + getBaseContext().getPackageName() + "/cache/";
 		File picCacheDir = StorageUtils.getOwnCacheDirectory(getBaseContext(), cacheDir);
 		String baseDir = "";
@@ -443,18 +508,40 @@ public class FullScreenImageActivity extends Activity {
                 navigateUp();
                 return true;
             case R.id.download_image_menu:
-                Toast.makeText(ctx, R.string.full_screen_saving_image, Toast.LENGTH_SHORT).show();
-                SaveImageTask saveTask = new SaveImageTask(getApplicationContext());
-                saveTask.execute(imageUrl);
-                return true;
-            case R.id.set_as_wallpaper_menu:
-                Toast.makeText(ctx, R.string.full_screen_setting_wallpaper, Toast.LENGTH_SHORT).show();
-                SetImageAsWallpaperTask wallpaperTask = new SetImageAsWallpaperTask(getApplicationContext());
-                wallpaperTask.execute(imageUrl);
+                if (checkLocalImage() != null) {
+                    Toast.makeText(ctx, R.string.full_screen_saving_image, Toast.LENGTH_SHORT).show();
+                    CopyImageToGalleryTask copyToGalleryTask = new CopyImageToGalleryTask(getApplicationContext());
+                    copyToGalleryTask.execute();
+                }
+                else {
+                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
+                }
                 return true;
             case R.id.share_image_menu:
-                ShareImageTask shareImageTask = new ShareImageTask(this);
-                shareImageTask.execute(webView);
+                if (checkLocalImage() != null) {
+                    shareImage();
+                }
+                else {
+                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            case R.id.set_as_wallpaper_menu:
+                if (checkLocalImage() != null) {
+                    Toast.makeText(ctx, R.string.full_screen_setting_wallpaper, Toast.LENGTH_SHORT).show();
+                    SetImageAsWallpaperTask wallpaperTask = new SetImageAsWallpaperTask(getApplicationContext());
+                    wallpaperTask.execute(imageUrl);
+                }
+                else {
+                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            case R.id.view_image_gallery_menu:
+                if (checkLocalImage() != null) {
+                    viewImageGallery();
+                }
+                else {
+                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
+                }
                 return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");
@@ -470,77 +557,22 @@ public class FullScreenImageActivity extends Activity {
         }
     }
 
-    private String saveImage(String url) {
-        final int IO_BUFFER_SIZE = 4 * 1024;
-
-        final HttpClient client = AndroidHttpClient.newInstance("Android");
-        final HttpGet getRequest = new HttpGet(url);
-
-        String result = ctx.getString(R.string.full_screen_save_image_error);
-        InputStream inputStream = null;
-        HttpEntity entity = null;
-        Bitmap bitmap = null;
-        try {
-            HttpResponse response = client.execute(getRequest);
-            final int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode != HttpStatus.SC_OK) {
-                Log.w(TAG, "Error " + statusCode + " while retrieving image from " + url);
-                return result;
-            }
-            entity = response.getEntity();
-            if (entity == null) {
-                return result;
-            }
-            inputStream = entity.getContent();
-            bitmap = BitmapFactory.decodeStream(inputStream);
-            String title = imageUrl.replaceAll(".*/", "").replaceAll("\\..*", "");
-            String description = ctx.getString(R.string.full_screen_download_description) + " " + imageUrl;
-
-            MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, title, description);
-            result = ctx.getString(R.string.full_screen_image_saved);
-        }
-        catch (Exception e) {
-            getRequest.abort();
-            Log.e(TAG, "Error while retrieving bitmap from " + url, e);
-        }
-        finally {
-            try {
-                if ((client instanceof AndroidHttpClient)) {
-                    ((AndroidHttpClient) client).close();
-                }
-                if (bitmap != null) {
-                    bitmap.recycle();
-                }
-                 /*
-                if (inputStream != null) {
-                    inputStream.close();
-                } */
-                //entity.consumeContent();
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Exception during finally block of image download", e);
-            }
-        }
-        return result;
-    }
-
-    private class SaveImageTask extends AsyncTask<String, Void, String> {
-        private String url;
+    private class CopyImageToGalleryTask extends AsyncTask<String, Void, String> {
         private Context context;
 
-        public SaveImageTask(Context context) {
+        public CopyImageToGalleryTask(Context context) {
             this.context = context;
         }
 
         @Override
         protected String doInBackground(String... params) {
-            url = params[0];
-            return saveImage(url);
+            return copyImageFileToGallery();
         }
 
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+            if (result != null && !result.isEmpty())
+                Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -563,24 +595,6 @@ public class FullScreenImageActivity extends Activity {
         }
     }
 
-    private class ShareImageTask extends AsyncTask<WebView, Void, String> {
-        private Context context;
-
-        public ShareImageTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected String doInBackground(WebView... params) {
-            return shareImage();
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
-        }
-    }
-    
     private String setImageAsWallpaper() {
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
         String result = "";
@@ -620,8 +634,7 @@ public class FullScreenImageActivity extends Activity {
         return result;
     }
 
-    private String shareImage() {
-        String msg;
+    private void shareImage() {
         try {
             Intent intent = new Intent(Intent.ACTION_SEND);
             if (localImageUri.endsWith("jpeg") || localImageUri.endsWith("jpg")) {
@@ -635,13 +648,11 @@ public class FullScreenImageActivity extends Activity {
             }
             intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(URI.create(localImageUri))));
             startActivity(Intent.createChooser(intent, ctx.getString(R.string.full_screen_share_image_intent)));
-            return null;
         }
         catch (Exception e) {
-            msg = ctx.getString(R.string.full_screen_sharing_error);
-            Log.e(TAG, msg, e);
+            Log.e(TAG, "Error sharing image", e);
+            Toast.makeText(this, R.string.full_screen_sharing_error, Toast.LENGTH_SHORT).show();
         }
-        return msg;
     }
 
     private void navigateUp() {

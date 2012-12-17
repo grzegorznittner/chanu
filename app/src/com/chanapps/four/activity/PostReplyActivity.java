@@ -60,6 +60,7 @@ public class PostReplyActivity extends Activity {
     private Uri imageUri;
     public String boardCode = null;
     public long threadNo = 0;
+    private boolean fromBoard = false;
 
     private Random randomGenerator = new Random();
     private DecimalFormat eightDigits = new DecimalFormat("00000000");
@@ -122,6 +123,7 @@ public class PostReplyActivity extends Activity {
         if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
             boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
             threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+            fromBoard = intent.getBooleanExtra(ChanHelper.FROM_BOARD, false);
             String initialText = intent.getStringExtra(ChanHelper.TEXT);
             if (initialText != null && !initialText.isEmpty()) {
                 String quotedText = ChanText.quoteText(initialText);
@@ -382,7 +384,7 @@ public class PostReplyActivity extends Activity {
 
     public void navigateUp() {
         Intent upIntent;
-        if (threadNo != 0) {
+        if (threadNo != 0 || !fromBoard) {
             upIntent = new Intent(this, ThreadActivity.class);
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
             upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);

@@ -29,6 +29,7 @@
     <string name="download_all_images_menu">Download All Images</string>
     <string name="download_image_menu">Save Image</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
+    <string name="view_image_gallery_menu">View Gallery</string>
     <string name="share_image_menu">Share Image</string>
     <string name="post_reply_send_menu">Post Reply</string>
 
@@ -69,7 +70,7 @@
     <!-- full screen image activity -->
     <string name="full_screen_saving_image">Saving image...</string>
     <string name="full_screen_setting_wallpaper">Setting wallpaper...</string>
-    <string name="full_screen_save_image_error">Couldn\'t save image, try later</string>
+    <string name="full_screen_save_image_error">Couldn\'t save image to gallery</string>
     <string name="full_screen_download_description">Downloaded from 4chan URL:</string>
     <string name="full_screen_image_saved">Image saved</string>
     <string name="full_screen_wallpaper_set">Wallpaper set</string>
@@ -77,11 +78,13 @@
     <string name="full_screen_share_image_intent">Share Image</string>
     <string name="full_screen_image_shared">Image shared</string>
     <string name="full_screen_sharing_error">Couldn\'t share image</string>
+    <string name="full_screen_saved_to_gallery">Saved image to gallery</string>
+    <string name="full_screen_wait_until_downloaded">Wait until downloaded</string>
 
     <!-- popup text -->
     <string name="reply">Reply</string>
     <string name="quote">Quote</string>
-    <string name="dismiss">Dismiss</string>
+    <string name="dismiss">Close</string>
 
     <!-- dialog text -->
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>

@@ -9,7 +9,8 @@ public class ChanHelper {
 	public static final String BOARD_TYPE = "boardType";
 	public static final String BOARD_CODE = "boardCode";
 	public static final String PAGE = "pageNo";
-	public static final String THREAD_NO = "threadNo";
+    public static final String THREAD_NO = "threadNo";
+    public static final String FROM_BOARD = "fromBoard";
     public static final String POST_NO = "postNo";
     public static final String TIM = "tim";
     public static final String TEXT = "text";
@@ -51,6 +52,7 @@ public class ChanHelper {
     public static final String[] POST_COLUMNS = {
             POST_ID,
             POST_BOARD_NAME,
+            POST_RESTO,
             POST_IMAGE_URL,
             POST_SHORT_TEXT,
             POST_TEXT,

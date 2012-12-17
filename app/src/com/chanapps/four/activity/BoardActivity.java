@@ -262,7 +262,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-        return viewHelper.showPopupText(adapterView, view, position, id);
+        return viewHelper.showPopupText(adapterView, view, position, id, true);
     }
 
     @Override
