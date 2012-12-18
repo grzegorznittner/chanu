@@ -22,6 +22,7 @@ import android.widget.*;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.ChanViewHelper;
 import com.chanapps.four.adapter.ImageTextCursorAdapter;
+import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
@@ -46,13 +47,13 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-		Log.i(TAG, "************ onCreate");
+		Log.v(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         viewHelper = new ChanViewHelper(this, getServiceType());
         createViewFromOrientation();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
-        Log.i(TAG, "onCreate init loader");
+        Log.v(TAG, "onCreate init loader");
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -119,17 +120,14 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     @Override
     protected void onStart() {
         super.onStart();
-		Log.i(TAG, "onStart");
-        viewHelper.resetPageNo();
-        viewHelper.startService();
+		Log.v(TAG, "onStart");
     }
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.i(TAG, "onResume");
-        refresh(false);
-        scrollToLastPosition();
+		Log.v(TAG, "onResume");
+        restoreInstanceState();
 	}
 
     protected void refresh() {
@@ -172,33 +170,48 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         }
         if (lastPosition != 0)
             scrollOnNextLoaderFinished = lastPosition;
-        Log.i(TAG, "Scrolling to:" + lastPosition);
+        Log.v(TAG, "Scrolling to:" + lastPosition);
     }
 
     @Override
 	public void onWindowFocusChanged (boolean hasFocus) {
-		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
+		Log.v(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
 	}
 
     @Override
 	protected void onPause() {
         super.onPause();
-        Log.i(TAG, "onPause");
+        Log.v(TAG, "onPause");
+        saveInstanceState();
+    }
+
+    protected void restoreInstanceState() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = prefs.edit();
-        if (getServiceType() == ChanViewHelper.ServiceType.BOARD) {
-            editor.putInt(ChanHelper.LAST_BOARD_POSITION, gridView.getRefreshableView().getFirstVisiblePosition());
+        Intent intent = getIntent();
+        String boardCode = intent.hasExtra(ChanHelper.BOARD_CODE)
+                ? intent.getStringExtra(ChanHelper.BOARD_CODE)
+                : prefs.getString(ChanHelper.BOARD_CODE, "a");
+        if (!boardCode.equals(viewHelper.getBoardCode())) {
+            viewHelper.resetPageNo();
+            viewHelper.startService();
         }
-        if (getServiceType() == ChanViewHelper.ServiceType.THREAD) {
-            editor.putInt(ChanHelper.LAST_THREAD_POSITION, gridView.getRefreshableView().getFirstVisiblePosition());
-        }
+        refresh(true);
+        scrollToLastPosition();
+    }
+
+    protected void saveInstanceState() {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        editor.putString(ChanHelper.BOARD_CODE, viewHelper.getBoardCode());
+        editor.putLong(ChanHelper.THREAD_NO, 0);
+        editor.putInt(ChanHelper.LAST_BOARD_POSITION, gridView.getRefreshableView().getFirstVisiblePosition());
         editor.commit();
+        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     @Override
     protected void onStop () {
     	super.onStop();
-    	Log.i(TAG, "onStop");
+    	Log.v(TAG, "onStop");
     	getLoaderManager().destroyLoader(0);
     	handler = null;
     }
@@ -206,7 +219,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     @Override
 	protected void onDestroy () {
 		super.onDestroy();
-		Log.i(TAG, "onDestroy");
+		Log.v(TAG, "onDestroy");
 		getLoaderManager().destroyLoader(0);
 		handler = null;
 	}
@@ -218,14 +231,14 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.i(TAG, ">>>>>>>>>>> onCreateLoader");
+		Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
 		cursorLoader = new ChanCursorLoader(getBaseContext(), viewHelper.getBoardCode(), viewHelper.getPageNo(), viewHelper.getThreadNo());
         return cursorLoader;
 	}
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		Log.i(TAG, ">>>>>>>>>>> onLoadFinished");
+		Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 2000);
@@ -241,14 +254,12 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         if (listView != null) {
             listView.onRefreshComplete();
         }
-		//closeDatabase();
 	}
 
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.i(TAG, ">>>>>>>>>>> onLoaderReset");
+		Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
 		adapter.swapCursor(null);
-		//closeDatabase();
 	}
 
     @Override
@@ -270,6 +281,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = new Intent(this, BoardSelectorActivity.class);
+                intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
                 NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.new_thread_menu:
@@ -281,7 +293,6 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
                 Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.settings_menu:
-                Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
@@ -296,7 +307,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "onCreateOptionsMenu called");
+        Log.v(TAG, "onCreateOptionsMenu called");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_menu, menu);
         return true;

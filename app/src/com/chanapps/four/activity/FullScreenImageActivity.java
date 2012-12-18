@@ -11,6 +11,8 @@ import java.net.URI;
 
 import android.media.MediaScannerConnection;
 import android.os.*;
+import com.chanapps.four.component.ChanViewHelper;
+import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.data.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -314,11 +316,15 @@ public class FullScreenImageActivity extends Activity {
 
     @Override
 	protected void onPause() {
-        savePrefs();
         super.onPause();
-        savePrefs();
-        dm.remove(downloadEnqueueId);
+        saveInstanceState();
         Log.i(TAG, "onPause - removing download id " + downloadEnqueueId);
+        dm.remove(downloadEnqueueId);
+    }
+
+    protected void saveInstanceState() {
+        savePrefs();
+        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     @Override

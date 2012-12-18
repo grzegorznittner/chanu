@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 import com.chanapps.four.component.ChanViewHelper;
+import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanWatchlist;
@@ -29,6 +30,30 @@ public class ThreadActivity extends BoardActivity {
     @Override
     public ChanViewHelper.ServiceType getServiceType() {
         return ChanViewHelper.ServiceType.THREAD;
+    }
+
+    protected void restoreInstanceState() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Intent intent = getIntent();
+        String boardCode = intent.hasExtra(ChanHelper.BOARD_CODE)
+                ? intent.getStringExtra(ChanHelper.BOARD_CODE)
+                : prefs.getString(ChanHelper.BOARD_CODE, "a");
+        long threadNo = intent.hasExtra(ChanHelper.THREAD_NO)
+                ? intent.getLongExtra(ChanHelper.THREAD_NO, 0)
+                : prefs.getLong(ChanHelper.THREAD_NO, 0);
+        if (!boardCode.equals(viewHelper.getBoardCode()) || threadNo != viewHelper.getThreadNo())
+            viewHelper.startService();
+        refresh(true);
+        scrollToLastPosition();
+    }
+
+    protected void saveInstanceState() {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        editor.putString(ChanHelper.BOARD_CODE, viewHelper.getBoardCode());
+        editor.putLong(ChanHelper.THREAD_NO, viewHelper.getThreadNo());
+        editor.putInt(ChanHelper.LAST_THREAD_POSITION, gridView.getRefreshableView().getFirstVisiblePosition());
+        editor.commit();
+        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     @Override

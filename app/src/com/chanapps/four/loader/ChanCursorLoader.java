@@ -57,8 +57,6 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
     	Log.i(TAG, "loadInBackground");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        boolean hideTextOnlyPosts = prefs.getBoolean(SettingsActivity.PREF_HIDE_TEXT_ONLY_POSTS, false);
-        Log.i("ChanCursorLoader", "prefs: " + hideAllText + " " + hideTextOnlyPosts);
         if (threadNo == 0) {
     		// loading board from file
     		ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);

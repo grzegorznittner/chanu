@@ -130,7 +130,8 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             else {
                 Toast.makeText(context, R.string.post_reply_posted_reply, Toast.LENGTH_SHORT).show();
             }
-            activity.navigateUp();
+            activity.finish();
+            //activity.navigateUp();
         }
         else {
             Toast.makeText(

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -11,12 +12,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
 import android.webkit.WebView;
 import android.widget.*;
+import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanText;
@@ -118,27 +121,41 @@ public class PostReplyActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        restoreInstanceState();
+    }
 
+    private void restoreInstanceState() {
         Intent intent = getIntent();
         if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
             boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
             threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
             fromBoard = intent.getBooleanExtra(ChanHelper.FROM_BOARD, false);
+            String initialImageUri = intent.getStringExtra(ChanHelper.IMAGE_URL);
+            if (initialImageUri != null && !initialImageUri.isEmpty())
+                imageUri = Uri.parse(initialImageUri);
+            else
+                imageUri = null;
             String initialText = intent.getStringExtra(ChanHelper.TEXT);
             if (initialText != null && !initialText.isEmpty()) {
                 String quotedText = ChanText.quoteText(initialText);
                 messageText.setText(quotedText);
             }
-            setBoardCode(boardCode);
         }
         else {
-            Toast.makeText(ctx, R.string.post_reply_no_board, Toast.LENGTH_SHORT);
-            navigateUp();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            boardCode = prefs.getString(ChanHelper.BOARD_CODE, null);
+            threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
+            fromBoard = prefs.getBoolean(ChanHelper.FROM_BOARD, false);
+            messageText.setText(prefs.getString(ChanHelper.TEXT, null));
+            String initialImageUri = prefs.getString(ChanHelper.IMAGE_URL, null);
+            if (initialImageUri != null && !initialImageUri.isEmpty())
+                imageUri = Uri.parse(initialImageUri);
+            else
+                imageUri = null;
         }
-
+        setBoardCode(boardCode);
         reloadCaptcha();
     }
-
 
     public void reloadCaptcha() {
         loadCaptchaTask = new LoadCaptchaTask(ctx, recaptchaView);
@@ -148,6 +165,18 @@ public class PostReplyActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        saveInstanceState();
+    }
+
+    protected void saveInstanceState() {
+        SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        ed.putString(ChanHelper.BOARD_CODE, boardCode);
+        ed.putLong(ChanHelper.THREAD_NO, threadNo);
+        ed.putBoolean(ChanHelper.FROM_BOARD, fromBoard);
+        ed.putString(ChanHelper.TEXT, getMessage());
+        ed.putString(ChanHelper.IMAGE_URL, getImageUrl());
+        ed.commit();
+        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     @Override
@@ -317,9 +346,11 @@ public class PostReplyActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+/*
             case android.R.id.home:
                 navigateUp();
                 return true;
+*/
             case R.id.post_reply_send_menu:
                 String validMsg = validatePost();
                 if (validMsg != null) {
@@ -382,6 +413,7 @@ public class PostReplyActivity extends Activity {
         return null;
     }
 
+    /*
     public void navigateUp() {
         Intent upIntent;
         if (threadNo != 0 || !fromBoard) {
@@ -398,6 +430,7 @@ public class PostReplyActivity extends Activity {
         }
         NavUtils.navigateUpTo(this, upIntent);
     }
+    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -415,7 +448,7 @@ public class PostReplyActivity extends Activity {
             else {
                 getActionBar().setTitle("/" + boardCode + " " + getString(R.string.post_reply_title));
             }
-            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setDisplayHomeAsUpEnabled(false);
         }
     }
 

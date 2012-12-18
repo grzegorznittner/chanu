@@ -1,6 +1,9 @@
 package com.chanapps.four.data;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 
 public class ChanHelper {
@@ -48,6 +51,8 @@ public class ChanHelper {
     public static final String LAST_PAGE = "last_page";
     public static final String LAST_BOARD_POSITION = "lastBoardPosition";
     public static final String LAST_THREAD_POSITION = "lastThreadPosition";
+    public static final String LAST_ACTIVITY = "lastActivity";
+    public static final String IGNORE_DISPATCH = "ignoreDispatch";
 
     public static final String[] POST_COLUMNS = {
             POST_ID,
@@ -70,6 +75,15 @@ public class ChanHelper {
         LANDSCAPE
     }
 
+    public enum LastActivity {
+        BOARD_SELECTOR_ACTIVITY,
+        BOARD_ACTIVITY,
+        THREAD_ACTIVITY,
+        FULL_SCREEN_IMAGE_ACTIVITY,
+        POST_REPLY_ACTIVITY,
+        SETTINGS_ACTIVITY
+    }
+
     public static final Orientation getOrientation(Context context) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         if (metrics.widthPixels > metrics.heightPixels) {
@@ -79,4 +93,5 @@ public class ChanHelper {
             return Orientation.PORTRAIT;
         }
     }
+
 }

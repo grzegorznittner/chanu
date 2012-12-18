@@ -303,7 +303,7 @@ public class ChanViewHelper {
     }
 
     private void startService(ServiceType serviceType, boolean loadFromIntent) {
-            if (serviceType == ServiceType.WATCHLIST) {
+        if (serviceType == ServiceType.WATCHLIST) {
             //startWatchlistService();
             return;
         }
@@ -360,6 +360,7 @@ public class ChanViewHelper {
         intent.putExtra(ChanHelper.IMAGE_WIDTH, tn_w);
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, tn_h);
         intent.putExtra(ChanHelper.LAST_BOARD_POSITION, adapterView.getFirstVisiblePosition());
+        intent.putExtra(ChanHelper.LAST_THREAD_POSITION, 0);
         Log.i(TAG, "Calling thread activity with id=" + id);
         activity.startActivity(intent);
     }

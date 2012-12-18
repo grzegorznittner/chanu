@@ -1,7 +1,11 @@
 package com.chanapps.four.activity;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.fragment.SettingsFragment;
 
 /**
@@ -14,7 +18,6 @@ public class SettingsActivity extends Activity {
     public static final String TAG = SettingsActivity.class.getSimpleName();
 
     public static final String PREF_HIDE_ALL_TEXT = "pref_hide_all_text";
-    public static final String PREF_HIDE_TEXT_ONLY_POSTS = "pref_hide_text_only_posts";
     public static final String PREF_NOTIFICATIONS = "pref_notifications";
 
     @Override
@@ -22,5 +25,16 @@ public class SettingsActivity extends Activity {
         super.onCreate(savedInstanceState);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveInstanceState();
+    }
+
+    protected void saveInstanceState() {
+        DispatcherHelper.saveActivityToPrefs(this);
+    }
+
 }
 

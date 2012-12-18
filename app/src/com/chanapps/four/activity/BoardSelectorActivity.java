@@ -3,7 +3,7 @@ package com.chanapps.four.activity;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
-import android.widget.Toast;
+import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.adapter.TabsAdapter;
@@ -18,8 +18,6 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import com.chanapps.four.data.ChanWatchlist;
-import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 
 public class BoardSelectorActivity extends FragmentActivity {
     public static final String TAG = "BoardSelectorActivity";
@@ -31,8 +29,10 @@ public class BoardSelectorActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-
+        if (!getIntent().getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false))
+            DispatcherHelper.dispatchIfNecessaryFromPrefsState(this);
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
         setContentView(mViewPager);
@@ -72,7 +72,7 @@ public class BoardSelectorActivity extends FragmentActivity {
         mTabsAdapter.removeTab(type);
     }
 
-    private void setTabFromPrefs() {
+    private void restoreInstanceState() {
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         selectedBoardType = ChanBoard.Type.valueOf(prefs.getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
         setTabToSelectedType(false);
@@ -117,13 +117,20 @@ public class BoardSelectorActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        setTabFromPrefs();
+        restoreInstanceState();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(TAG, "onPause");
+        saveInstanceState();
+    }
+
+    protected void saveInstanceState() {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        editor.putString(ChanHelper.BOARD_TYPE, selectedBoardType.toString());
+        editor.commit();
+        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     protected void onDestroy() {
