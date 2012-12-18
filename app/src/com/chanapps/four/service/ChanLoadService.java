@@ -106,6 +106,7 @@ public class ChanLoadService extends BaseChanService {
                 Log.i(TAG, "Loaded " + threads.size() + " existing threads");
             }
         }
+        int existingThreadCount = threads.size();
 
         Gson gson = new GsonBuilder().create();
 
@@ -161,7 +162,8 @@ public class ChanLoadService extends BaseChanService {
             reader.endObject();
         }
 
-        if (threads.size() > 0) {
+        int newThreadCount = threads.size();
+        if (newThreadCount != existingThreadCount) {
             board.threads = threads.toArray(new ChanPost[0]);
             board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
             board.lastPage = false;

@@ -12,12 +12,18 @@ import android.database.MatrixCursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
 
 public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = ChanCursorLoader.class.getSimpleName();
+
+    private static final int MAX_IMAGETEXT_LEN = 78;
+    private static final int MAX_IMAGETEXT_ABBR_LEN = 75;
+    private static final int MAX_TEXTONLY_LEN = 303;
+    private static final int MAX_TEXTONLY_ABBR_LEN = 300;
 
     protected final ForceLoadContentObserver mObserver;
 
@@ -125,19 +131,35 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
         return getPostText(post, false);
     }
 
+    private String abbreviate(String s, int maxLen, int maxAbbrLen) {
+        return abbreviate(s, maxLen, maxAbbrLen, false);
+    }
+
+    private String abbreviate(String s, int maxLen, int maxAbbrLen, boolean longtext) {
+            if (s.length() <= maxLen) {
+            return s;
+        }
+        else {
+            return s.substring(0, maxAbbrLen).replaceFirst("\\s*\\S+$", "")
+                    + "..."
+                    + (longtext ? "\n" + getContext().getString(R.string.board_click_for_more) : "");
+        }
+    }
+
     private Object getPostText(ChanPost post, boolean hideAllText) {
         String text = hideAllText ? "" : ChanText.getText(post.sub, post.com);
-        if (text.length() > 22) {
-      		text = text.substring(0, 22) + "...";
-        }
 		if (post.fsize > 0) {
-			if (text.length() > 0) {
+            text = abbreviate(text, MAX_IMAGETEXT_LEN, MAX_IMAGETEXT_ABBR_LEN);
+            if (text.length() > 0) {
 				text += "\n";
 			}
 			int kbSize = (post.fsize / 1024) + 1;
 			text += kbSize + "kB " + post.w + "x" + post.h + " " + post.ext;
 		}
-		return text;
+        else {
+            text = abbreviate(text, MAX_TEXTONLY_LEN, MAX_TEXTONLY_ABBR_LEN, true);
+        }
+        return text;
 	}
 
     private Object getThreadText(ChanPost thread) {
@@ -146,20 +168,17 @@ public class ChanCursorLoader extends AsyncTaskLoader<Cursor> {
 
 	private Object getThreadText(ChanPost thread, boolean hideAllText) {
         String text = hideAllText ? "" : ChanText.getText(thread.sub, thread.com);
-		if (text.length() > 22) {
-			text = text.substring(0, 22) + "...";
-		}
+        text = abbreviate(text, MAX_IMAGETEXT_LEN, MAX_IMAGETEXT_ABBR_LEN);
         if (thread.resto == 0) { // it's a thread, add thread stuff
             if (text.length() > 0) {
                 text += "\n";
             }
-            if (thread.replies <= 0) {
-                text += "no replies yet";
-            } else if (thread.images <= 0) {
-                text += thread.replies + " posts but no image replies";
-            } else {
-                text += thread.replies + " posts and " + thread.images + " image replies";
-            }
+            text += thread.replies
+                    + " post" + (thread.replies == 1 ? "" : "s")
+                    + " "
+                    + thread.images
+                    + " image"
+                    + (thread.images == 1 ? "" : "s");
             if (thread.imagelimit == 1) {
                 text += " (IL)";
             }

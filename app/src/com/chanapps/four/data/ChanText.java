@@ -68,7 +68,8 @@ public class ChanText {
                 .replaceAll("&quot;", "\"")
                 .replaceAll("&#44;", ",")
                 .replaceAll("&#[0-9abcdef]*;", "")
-                .replaceAll(" +", " ")
+                .replaceAll("\\s+", " ")
+                .replaceAll("(\\s*\\n)+", "\n")
                 .trim()
             : "";
         long end = System.currentTimeMillis();

@@ -119,11 +119,8 @@ public class ChanViewHelper {
                     else if ((threadNo != 0 && hideAllText) || shortText == null || shortText.isEmpty()) {
                         tv.setVisibility(View.INVISIBLE);
                     }
-                    else if (!imageUrl.isEmpty()) {
-                        setGridViewText(tv, shortText, cursor);
-                    }
                     else {
-                        setGridViewText(tv, text, cursor);
+                        setGridViewText(tv, shortText, cursor);
                     }
                     break;
                 default:
@@ -287,9 +284,6 @@ public class ChanViewHelper {
     }
 
     public void startService() {
-        if (serviceType == ServiceType.BOARD) {
-            pageNo = 0;
-        }
         startService(serviceType);
     }
 
@@ -300,16 +294,21 @@ public class ChanViewHelper {
     public void loadNextPage() {
         if (serviceType == ServiceType.BOARD) {
             pageNo++;
-            startService(ServiceType.BOARD);
+            startService(ServiceType.BOARD, false);
         }
     }
 
     private void startService(ServiceType serviceType) {
-        if (serviceType == ServiceType.WATCHLIST) {
+        startService(serviceType, true);
+    }
+
+    private void startService(ServiceType serviceType, boolean loadFromIntent) {
+            if (serviceType == ServiceType.WATCHLIST) {
             //startWatchlistService();
             return;
         }
-        initFieldsFromIntent();
+        if (loadFromIntent)
+            initFieldsFromIntent();
         Log.i(TAG, "Starting ChanLoadService board " + boardCode + " page " + pageNo + " thread " + threadNo );
         Intent intent = new Intent(activity, ChanLoadService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
@@ -337,6 +336,8 @@ public class ChanViewHelper {
     public static final void startBoardActivity(AdapterView<?> adapterView, View view, int position, long id, Activity activity, String boardCode) {
         Intent intent = new Intent(activity, BoardActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.PAGE, 0);
+        intent.putExtra(ChanHelper.LAST_BOARD_POSITION, 0);
         activity.startActivity(intent);
     }
 
