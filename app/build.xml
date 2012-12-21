@@ -70,7 +70,7 @@
 
     <!-- Import the actual build file.
 
-         To customize existing targets, there are two options:
+         To customize existing targets, there are two displayImageOptions:
          - Customize only one target:
              - copy/paste the target into this file, *before* the
                <import> task.

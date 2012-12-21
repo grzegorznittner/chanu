@@ -23,16 +23,17 @@ import com.google.gson.stream.JsonReader;
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
  *
  */
-public class ChanLoadService extends BaseChanService {
-	private static final String TAG = ChanLoadService.class.getName();
-	
-	private static final long STORE_INTERVAL = 2000;  // it's in miliseconds
+public class BoardLoadService extends BaseChanService {
 
-    public ChanLoadService() {
+    protected static final String TAG = BoardLoadService.class.getName();
+	
+	protected static final long STORE_INTERVAL_MS = 2000;
+
+    public BoardLoadService() {
    		super("board");
    	}
 
-    protected ChanLoadService(String name) {
+    protected BoardLoadService(String name) {
    		super(name);
    	}
 	
@@ -40,44 +41,39 @@ public class ChanLoadService extends BaseChanService {
 	protected void onHandleIntent(Intent intent) {
 		String boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
 		int pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
-        long threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-		Log.i(TAG, "Handling board=" + boardCode + " threadNo=" + threadNo + " page=" + pageNo);
+		Log.i(TAG, "Handling board=" + boardCode + " page=" + pageNo);
 
         if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
-            Log.e(TAG, "Watching board not implemented yet");
+            Log.e(TAG, "Watching board must use ChanWatchlist instead of service");
             return;
         }
 
         BufferedReader in = null;
         HttpURLConnection tc = null;
 		try {			
-			URL chanApi = threadNo == 0
-                ? new URL("http://api.4chan.org/" + boardCode + "/" + pageNo + ".json")
-                : new URL("http://api.4chan.org/" + boardCode + "/res/" + threadNo + ".json");
+			URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/" + pageNo + ".json");
 
             tc = (HttpURLConnection) chanApi.openConnection();
             Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode());
+            ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
             if (pageNo > 0 && tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
-                Log.i(TAG, "Got 404 on next page, assuming last page");
-                ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
+                Log.i(TAG, "Got 404 on next page, assuming last page at pageNo=" + pageNo);
                 board.lastPage = true;
-                ChanFileStorage.storeBoardData(getBaseContext(), board);
             }
             else {
+                board.lastPage = false;
+            }
+            ChanFileStorage.storeBoardData(getBaseContext(), board);
+            if (!board.lastPage) {
                 in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
-                if (threadNo == 0) {
-                    parseBoard(boardCode, pageNo, in);
-                }
-                else {
-                    parseThread(boardCode, threadNo, in);
-                }
+                parseBoard(boardCode, pageNo, in);
             }
         } catch (IOException e) {
             toastUI(R.string.board_service_couldnt_read);
-            Log.e(TAG, "IO Error reading Chan board json. " + e.getMessage(), e);
+            Log.e(TAG, "IO Error reading Chan board json", e);
 		} catch (Exception e) {
             toastUI(R.string.board_service_couldnt_load);
-			Log.e(TAG, "Error parsing Chan board json. " + e.getMessage(), e);
+			Log.e(TAG, "Error parsing Chan board json", e);
 		} finally {
 			try {
 				if (in != null) {
@@ -140,9 +136,7 @@ public class ChanLoadService extends BaseChanService {
                 			thread.board = boardCode;
                 			thread.no = post.no;
                 		}
-                        else {
-                            mergeThreads(post, threads);
-                        }
+                        mergeThreads(post, threads);
                 		first = false;
                 	}
                 	posts.add(post);
@@ -152,7 +146,7 @@ public class ChanLoadService extends BaseChanService {
             if (thread != null) {
             	mergePosts(thread, posts);
             	ChanFileStorage.storeThreadData(getBaseContext(), thread);
-            	if (new Date().getTime() - time > STORE_INTERVAL) {
+            	if (new Date().getTime() - time > STORE_INTERVAL_MS) {
             		board.threads = threads.toArray(new ChanPost[0]);
                     board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
                     ChanFileStorage.storeBoardData(getBaseContext(), board);
@@ -162,17 +156,21 @@ public class ChanLoadService extends BaseChanService {
             reader.endObject();
         }
 
+        board.threads = threads.toArray(new ChanPost[0]);
+        board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
+        Log.i(TAG, "Now have " + threads.size() + " threads ");
+/*
         int newThreadCount = threads.size();
         if (newThreadCount != existingThreadCount) {
-            board.threads = threads.toArray(new ChanPost[0]);
-            board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
-            board.lastPage = false;
-            Log.i(TAG, "Now have " + threads.size() + " threads ");
+        }
+        else if (pageNo > 0) {
+            Log.i(TAG, "No more threads added, last page predicted at pageNo=" + pageNo);
         }
         else {
-            Log.i(TAG, "No more threads, last page");
-            board.lastPage = true;
+            Log.i(TAG, "No threads loaded this round");
         }
+*/
+        board.lastPage = false; // only set to true on 404
         ChanFileStorage.storeBoardData(getBaseContext(), board);
     }
 
@@ -190,7 +188,7 @@ public class ChanLoadService extends BaseChanService {
 		}
 	}
 
-    private void mergePosts(ChanThread thread, List<ChanPost> posts) {
+    protected void mergePosts(ChanThread thread, List<ChanPost> posts) {
     	List<ChanPost> mergedPosts = new ArrayList<ChanPost>(Arrays.asList(thread.posts));
 		for (ChanPost newPost : posts) {
 			boolean exists = false;
@@ -207,44 +205,13 @@ public class ChanLoadService extends BaseChanService {
 		thread.posts = mergedPosts.toArray(new ChanPost[0]);
 	}
 
-    private void copyUpdatedThreadFields(ChanPost surviving, ChanPost from) {
+    protected void copyUpdatedThreadFields(ChanPost surviving, ChanPost from) {
         surviving.bumplimit = from.bumplimit;
         surviving.imagelimit = from.imagelimit;
         surviving.images = from.images;
         surviving.omitted_images = from.omitted_images;
         surviving.omitted_posts = from.omitted_posts;
         surviving.replies = from.replies;
-    }
-
-	protected void parseThread(String boardCode, long threadNo, BufferedReader in) throws IOException {
-    	long time = new Date().getTime();
-    	ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, threadNo);
-    	if (thread == null) {
-    		thread = new ChanThread();
-        	thread.board = boardCode;
-            thread.no = threadNo;
-    	}
-        
-    	List<ChanPost> posts = new ArrayList<ChanPost>();
-        Gson gson = new GsonBuilder().create();
-
-        JsonReader reader = new JsonReader(in);
-        reader.setLenient(true);
-        reader.beginObject(); // has "posts" as single property
-        reader.nextName(); // "posts"
-        reader.beginArray();
-
-        while (reader.hasNext()) {
-            ChanPost post = gson.fromJson(reader, ChanPost.class);
-            post.board = boardCode;
-            posts.add(post);
-            if (new Date().getTime() - time > STORE_INTERVAL) {
-            	mergePosts(thread, posts);
-                ChanFileStorage.storeThreadData(getBaseContext(), thread);
-        	}
-        }
-        mergePosts(thread, posts);
-        ChanFileStorage.storeThreadData(getBaseContext(), thread);
     }
 
 }

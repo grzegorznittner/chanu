@@ -63,10 +63,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
+                <data android:scheme="http"
+                      android:host="4chan.org"
+                      android:pathPrefix=""/>
             </intent-filter>
         </activity>
 
-        <service android:name="com.chanapps.four.service.ChanLoadService"/>
+        <service android:name="com.chanapps.four.service.BoardLoadService"/>
 
         <!--widgets-->
         <activity android:name=".ChannerWidgetConfigureActivity">

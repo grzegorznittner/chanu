@@ -9,7 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ToastRunnable;
+import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.data.ChanWatchlist;
 
@@ -39,8 +39,8 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 Context ctx = getActivity();
                                 ChanWatchlist.deleteThreadFromWatchlist(ctx, tim);
-                                Message m = Message.obtain(handler, LoaderHandler.MessageType.RESTART_LOADER.ordinal());
-                                handler.sendMessageDelayed(m, 200);
+                                //Message m = Message.obtain(handler, LoaderHandler.RESTART_LOADER_MSG);
+                                //handler.sendMessageDelayed(m, 200);
                                 (new ToastRunnable(getActivity(), getString(R.string.dialog_deleted_from_watchlist))).run();
                             }
                         })

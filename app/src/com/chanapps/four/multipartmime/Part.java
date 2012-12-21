@@ -28,7 +28,7 @@
  *
  */
 
-package com.chanapps.four.component;
+package com.chanapps.four.multipartmime;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -1,86 +1,82 @@
 package com.chanapps.four.loader;
 
-import android.preference.PreferenceManager;
-import android.support.v4.content.AsyncTaskLoader;
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+
+import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.preference.PreferenceManager;
 import android.util.Log;
+
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanWatchlist;
+import com.chanapps.four.data.*;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.List;
+public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
-public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
-
-    private static final String TAG = ChanWatchlistCursorLoader.class.getSimpleName();
+    private static final String TAG = BoardCursorLoader.class.getSimpleName();
 
     protected final ForceLoadContentObserver mObserver;
 
     protected Cursor mCursor;
     protected Context context;
 
-    public ChanWatchlistCursorLoader(Context context) {
+    protected String boardName;
+    private int pageNo;
+
+    protected BoardCursorLoader(Context context) {
         super(context);
-        this.context = context;
         mObserver = new ForceLoadContentObserver();
+    }
+
+    public BoardCursorLoader(Context context, String boardName, int pageNo) {
+        this(context);
+        this.context = context;
+        this.boardName = boardName;
+        this.pageNo = pageNo;
+    }
+
+    public BoardCursorLoader(Context context, String boardName) {
+        this(context, boardName, 0);
     }
 
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
-        List<String> savedWatchlist = ChanWatchlist.getSortedWatchlistFromPrefs(context);
-        if (savedWatchlist == null || savedWatchlist.isEmpty()) {
-            return null;
-        }
-        Log.d(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
-        MatrixCursor cursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
-        for (String threadPath : savedWatchlist) {
-            Log.d(TAG, "Parsing threadpath: " + threadPath);
+    	Log.i(TAG, "loadInBackground");
+        ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
+        if (board != null) {
+            MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
+            for (ChanPost thread : board.threads) {
+                if (thread.tn_w <= 0 || thread.tim == null) {
+                    Log.e(TAG, "Board thread without image, should never happen, board=" + boardName + " threadNo=" + thread.no);
+                    matrixCursor.addRow(new Object[] {
+                            thread.no, boardName, 0, "",
+                            thread.getBoardThreadText(), thread.getFullText(), thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, 0, 0});
 
-            try {
-                String[] threadComponents = ChanWatchlist.getThreadPathComponents(threadPath);
-                long tim = Long.valueOf(threadComponents[0]);
-                String boardCode = threadComponents[1];
-                long threadNo = Long.valueOf(threadComponents[2]);
-                String shortText = (threadComponents[3].length() > ChanPost.MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN
-                        ? threadComponents[3].substring(0, ChanPost.MAX_BOARDTHREAD_IMAGETEXT_LEN) + "..."
-                        : threadComponents[3]);
-                String text = threadComponents[3];
-                String imageUrl = threadComponents[4];
-                int imageWidth = Integer.valueOf(threadComponents[5]);
-                int imageHeight = Integer.valueOf(threadComponents[6]);
-                MatrixCursor.RowBuilder row = cursor.newRow();
-                row.add(threadNo);
-                row.add(boardCode);
-                row.add(0);
-                row.add(imageUrl);
-                row.add(shortText);
-                row.add(text);
-                row.add(imageWidth);
-                row.add(imageHeight);
-                row.add(imageWidth);
-                row.add(imageHeight);
-                row.add(tim);
-                row.add(0);
-                row.add(0);
+                } else {
+                    matrixCursor.addRow(new Object[] {
+                            thread.no, boardName, 0, thread.getThumbnailUrl(),
+                            thread.getBoardThreadText(), thread.getFullText(), thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, 0, 0});
+                }
             }
-            catch (Exception e) {
-                Log.e(TAG, "Error parsing watch preferences ", e);
+            if (board.lastPage) {
+                matrixCursor.addRow(new Object[] {
+                        2, boardName, 0, "",
+                        "", "", -1, -1, -1, -1, 0, 0, 1});
             }
+            else {
+                matrixCursor.addRow(new Object[] {
+                        2, boardName, 0, "",
+                        "", "", -1, -1, -1, -1, 0, 1, 0});
+                registerContentObserver(matrixCursor, mObserver);
+            }
+            return matrixCursor;
         }
-        if (cursor.getCount() > 0) {
-            cursor.moveToFirst();
-        }
-        registerContentObserver(cursor, mObserver);
-  		return cursor;
+        return null;
     }
 
     /**
@@ -166,6 +162,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
         super.dump(prefix, fd, writer, args);
+        writer.print(prefix); writer.print("boardName="); writer.println(boardName);
         writer.print(prefix); writer.print("mCursor="); writer.println(mCursor);
     }
 }

@@ -1,4 +1,4 @@
-package com.chanapps.four.data;
+package com.chanapps.four.component;
 
 import android.content.Context;
 import android.widget.Toast;

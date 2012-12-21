@@ -4,8 +4,8 @@ import android.app.LoaderManager;
 import android.database.Cursor;
 import android.widget.AdapterView;
 
-import com.chanapps.four.component.ChanViewHelper;
-import com.chanapps.four.adapter.ImageTextCursorAdapter;
+import com.chanapps.four.component.ChanGridSizer;
+import com.chanapps.four.adapter.BoardCursorAdapter;
 import com.handmark.pulltorefresh.library.PullToRefreshGridView;
 
 /**
@@ -19,8 +19,7 @@ public interface ClickableLoaderActivity extends
         AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,
-        ImageTextCursorAdapter.ViewBinder {
+        BoardCursorAdapter.ViewBinder {
     public LoaderManager getLoaderManager();
-    public ChanViewHelper.ServiceType getServiceType();
     public PullToRefreshGridView getGridView();
 }

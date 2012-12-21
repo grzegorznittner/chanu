@@ -1,7 +1,10 @@
 package com.chanapps.four.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.support.v4.content.Loader;
@@ -11,16 +14,17 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.*;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
-import com.chanapps.four.activity.SettingsActivity;
+import android.widget.*;
+import com.chanapps.four.activity.*;
 import com.chanapps.four.adapter.BoardSelectorAdapter;
-import com.chanapps.four.adapter.ImageTextCursorAdapter;
+import com.chanapps.four.adapter.BoardCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
-import com.chanapps.four.activity.R;
 import com.chanapps.four.loader.ChanWatchlistCursorLoader;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 /**
 * Created with IntelliJ IDEA.
@@ -35,28 +39,24 @@ public class BoardGroupFragment
         AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,
-        ImageTextCursorAdapter.ViewBinder
+        BoardCursorAdapter.ViewBinder
 {
 
     private static final String TAG = BoardGroupFragment.class.getSimpleName();
 
     private ChanBoard.Type boardType;
-    private ImageTextCursorAdapter imageTextCursorAdapter;
+    private BoardCursorAdapter boardCursorAdapter;
     private BaseAdapter adapter;
     private GridView gridView;
     private Context context;
     public int columnWidth = 0;
     protected Handler handler;
     protected ChanWatchlistCursorLoader cursorLoader;
-    protected ChanViewHelper viewHelper;
+    protected ImageLoader imageLoader;
+    protected DisplayImageOptions displayImageOptions;
 
     public BaseAdapter getAdapter() {
         return adapter;
-
-    }
-
-    public ChanViewHelper.ServiceType getServiceType() {
-        return ChanViewHelper.ServiceType.WATCHLIST;
     }
 
     @Override
@@ -66,9 +66,16 @@ public class BoardGroupFragment
                 ? ChanBoard.Type.valueOf(getArguments().getString(ChanHelper.BOARD_TYPE))
                 : ChanBoard.Type.JAPANESE_CULTURE;
         if (boardType == ChanBoard.Type.WATCHLIST) {
-            viewHelper = new ChanViewHelper(this.getActivity(), ChanViewHelper.ServiceType.WATCHLIST);
+            imageLoader = ImageLoader.getInstance();
+            imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+            displayImageOptions = new DisplayImageOptions.Builder()
+                    .showImageForEmptyUri(R.drawable.stub_image)
+                    .cacheOnDisc()
+                    .imageScaleType(ImageScaleType.EXACT)
+                    .build();
+            setHasOptionsMenu(true);
         }
-        if (boardType == ChanBoard.Type.FAVORITES || boardType == ChanBoard.Type.WATCHLIST) {
+        else if (boardType == ChanBoard.Type.FAVORITES) {
             setHasOptionsMenu(true);
         }
         ensureHandler();
@@ -85,19 +92,19 @@ public class BoardGroupFragment
 
         gridView = (GridView) inflater.inflate(R.layout.board_selector_grid, container, false);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(gridView, display, ChanViewHelper.ServiceType.SELECTOR);
+        ChanGridSizer cg = new ChanGridSizer(gridView, display, ChanGridSizer.ServiceType.SELECTOR);
         cg.sizeGridToDisplay();
         context = container.getContext();
         columnWidth = cg.getColumnWidth();
         if (boardType == ChanBoard.Type.WATCHLIST) {
-            imageTextCursorAdapter = new ImageTextCursorAdapter(
+            boardCursorAdapter = new BoardCursorAdapter(
                     context,
                     R.layout.board_grid_item,
                     this,
                     new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT},
                     new int[] {R.id.board_activity_grid_item_image, R.id.board_activity_grid_item_text}
             );
-            adapter = imageTextCursorAdapter;
+            adapter = boardCursorAdapter;
         }
         else {
             adapter = new BoardSelectorAdapter(context, boardType, columnWidth);
@@ -111,11 +118,14 @@ public class BoardGroupFragment
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        ((BoardSelectorActivity)getActivity()).saveInstanceState();
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
-        if (boardType == ChanBoard.Type.WATCHLIST) {
-            viewHelper.startService();
-        }
     }
 
     @Override
@@ -138,13 +148,36 @@ public class BoardGroupFragment
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        return viewHelper.setViewValue(view, cursor, columnIndex);
+        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
+        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        if (view instanceof TextView) {
+            //todo - @john - if the text is hidden then the image should take the full available space.
+            TextView tv = (TextView) view;
+            if (shortText == null || shortText.isEmpty()) {
+                tv.setText("");
+                tv.setVisibility(View.INVISIBLE);
+            }
+            else {
+                tv.setText(shortText);
+            }
+            return true;
+        } else if (view instanceof ImageView) {
+            ImageView iv = (ImageView) view;
+            try {
+                this.imageLoader.displayImage(imageUrl, iv, displayImageOptions);
+            } catch (NumberFormatException nfe) {
+                iv.setImageURI(Uri.parse(imageUrl));
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
-        if (imageTextCursorAdapter != null) {
+        if (boardCursorAdapter != null) {
             cursorLoader = new ChanWatchlistCursorLoader(getActivity().getBaseContext());
         }
         return cursorLoader;
@@ -153,8 +186,8 @@ public class BoardGroupFragment
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
-        if (imageTextCursorAdapter != null) {
-		    imageTextCursorAdapter.swapCursor(data);
+        if (boardCursorAdapter != null) {
+		    boardCursorAdapter.swapCursor(data);
         }
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, 10000);
@@ -163,20 +196,27 @@ public class BoardGroupFragment
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
-        if (imageTextCursorAdapter != null) {
-		    imageTextCursorAdapter.swapCursor(null);
+        if (boardCursorAdapter != null) {
+		    boardCursorAdapter.swapCursor(null);
         }
 	}
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (boardType == ChanBoard.Type.WATCHLIST) {
-            viewHelper.startThreadActivity(parent, view, position, id);
+            ThreadActivity.startActivity(getActivity(), parent, view, position, id);
         }
         else {
             ChanBoard board = ChanBoard.getBoardsByType(getActivity(), boardType).get(position);
             String boardCode = board.link;
-            ChanViewHelper.startBoardActivity(parent, view, position, id, getActivity(), boardCode);
+            Intent intent = new Intent(this.getActivity(), BoardActivity.class);
+            intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+            intent.putExtra(ChanHelper.PAGE, 0);
+            intent.putExtra(ChanHelper.LAST_BOARD_POSITION, 0);
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
+            editor.putInt(ChanHelper.LAST_BOARD_POSITION, 0); // reset it
+            editor.commit();
+            startActivity(intent);
         }
     }
 

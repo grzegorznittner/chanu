@@ -5,9 +5,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.widget.GridView;
-import com.chanapps.four.component.ChanViewHelper.ServiceType;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,7 +20,7 @@ public class ChanGridSizer {
     private static final int[] MAX_COLUMN_WIDTHS = {
             ServiceType.SELECTOR.ordinal(), 200,
             ServiceType.BOARD.ordinal(), 200,
-            ServiceType.THREAD.ordinal(), 130,
+            ServiceType.THREAD.ordinal(), 120,
             ServiceType.WATCHLIST.ordinal(), 200
     };
 
@@ -33,7 +30,7 @@ public class ChanGridSizer {
     private int columnWidth = 0;
     private int maxColumnWidth = 200;
 
-    public ChanGridSizer(GridView g, Display d, ChanViewHelper.ServiceType serviceType) {
+    public ChanGridSizer(GridView g, Display d, ServiceType serviceType) {
         this.g = g;
         this.d = d;
         for (int i = 0; i < MAX_COLUMN_WIDTHS.length; i += 2) {
@@ -70,5 +67,12 @@ public class ChanGridSizer {
 
     public int getNumColumns() {
         return numColumns;
+    }
+
+    public enum ServiceType {
+        SELECTOR,
+        BOARD,
+        THREAD,
+        WATCHLIST
     }
 }

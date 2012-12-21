@@ -25,8 +25,8 @@ import com.chanapps.four.data.ChanHelper;
  * the appearance of these views.
  *
  */
-public class ImageTextCursorAdapter extends ResourceCursorAdapter {
-	private static final String TAG = ImageTextCursorAdapter.class.getSimpleName();
+public class BoardCursorAdapter extends ResourceCursorAdapter {
+	private static final String TAG = BoardCursorAdapter.class.getSimpleName();
 	
     /**
      * A list of columns containing the data to bind to the UI.
@@ -41,11 +41,11 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
      */
     protected int[] mTo;
 
-    private ViewBinder mViewBinder;
-    private Context context;
-    private LayoutInflater mInflater;
+    protected ViewBinder mViewBinder;
+    protected Context context;
+    protected LayoutInflater mInflater;
 
-    String[] mOriginalFrom;
+    protected String[] mOriginalFrom;
 
     
     /**
@@ -63,7 +63,7 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
      *            are given the values of the first N columns in the from
      *            parameter.  Can be null if the cursor is not available yet.
      */
-    public ImageTextCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
+    public BoardCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, null, 0);
         this.context = context;
         mTo = to;
@@ -98,6 +98,7 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
     /**
      * @see android.widget.ListAdapter#getView(int, View, ViewGroup)
      */
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
     	Cursor cursor = getCursor();
         if (cursor == null) {
@@ -122,7 +123,7 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
     		if (imageUrl != null && imageUrl.length() > 0) {
     			tag = ChanHelper.POST_IMAGE_URL;
     		} else {
-    			tag = ChanHelper.TEXT;
+    			tag = ChanHelper.POST_SHORT_TEXT;
     		}
     	}
 
@@ -136,19 +137,21 @@ public class ImageTextCursorAdapter extends ResourceCursorAdapter {
             }
         } else {
         	Log.d(TAG, "Reusing existing " + tag + " layout for " + position);
-        	if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
+        	/*
+            if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
         		ImageView imageView = (ImageView)convertView.findViewById(R.id.board_activity_grid_item_image);
         		if (imageView != null && !imageUrl.equals(imageView.getTag())) {
         			//imageView.setImageResource(R.drawable.stub_image);
         		}
         	}
+        	*/
             v = convertView;
         }
         bindView(v, context, cursor);
         return v;
     }
     
-    private View newView(Context context, ViewGroup parent, String tag, int position) {
+    protected View newView(Context context, ViewGroup parent, String tag, int position) {
 		Log.d(TAG, "Creating " + tag + " layout for " + position);
         if (ChanHelper.LOAD_PAGE.equals(tag)) {
        		return mInflater.inflate(R.layout.board_grid_item_load_page, parent, false);

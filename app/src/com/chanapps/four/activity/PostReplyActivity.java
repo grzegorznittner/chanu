@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
 import android.webkit.WebView;
@@ -22,7 +21,7 @@ import android.widget.*;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanText;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.task.LoadCaptchaTask;
 import com.chanapps.four.task.PostReplyTask;
 
@@ -137,7 +136,7 @@ public class PostReplyActivity extends Activity {
                 imageUri = null;
             String initialText = intent.getStringExtra(ChanHelper.TEXT);
             if (initialText != null && !initialText.isEmpty()) {
-                String quotedText = ChanText.quoteText(initialText);
+                String quotedText = ChanPost.quoteText(initialText);
                 messageText.setText(quotedText);
             }
         }

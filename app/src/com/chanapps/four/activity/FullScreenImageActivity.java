@@ -11,14 +11,10 @@ import java.net.URI;
 
 import android.media.MediaScannerConnection;
 import android.os.*;
-import com.chanapps.four.component.ChanViewHelper;
+import android.widget.*;
 import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.data.*;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 
 import android.app.Activity;
 import android.app.DownloadManager;
@@ -35,9 +31,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.net.http.AndroidHttpClient;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -48,10 +42,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.chanapps.four.component.RawResourceDialog;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -89,12 +79,30 @@ public class FullScreenImageActivity extends Activity {
     private DownloadManager dm;
     private BroadcastReceiver receiver;
 
+    public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id) {
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+        final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+        final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+        final int w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
+        final int h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
+        Intent intent = new Intent(from, FullScreenImageActivity.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(ChanHelper.POST_NO, postId);
+        intent.putExtra(ChanHelper.IMAGE_WIDTH, w);
+        intent.putExtra(ChanHelper.IMAGE_HEIGHT, h);
+        intent.putExtra(ChanHelper.LAST_THREAD_POSITION, adapterView.getFirstVisiblePosition());
+        Log.i(TAG, "Starting full screen image viewer for: " + boardCode + "/" + threadNo + "/" + postId);
+        from.startActivity(intent);
+    }
+
     private boolean loadChanPostData() {
 		try {
 			ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, threadNo);
 			for (ChanPost post : thread.posts) {
 				if (post.no == postNo) {
-					imageUrl = "http://images.4chan.org/" + thread.board + "/src/" + post.tim + post.ext;
+                    this.imageUrl = post.getImageUrl();
 					this.post = post;
 					return true;
 				}

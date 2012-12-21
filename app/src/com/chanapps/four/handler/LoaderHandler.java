@@ -20,10 +20,8 @@ public class LoaderHandler extends Handler {
     private ClickableLoaderActivity activity;
     private static final String TAG = LoaderHandler.class.getSimpleName();
 
-    public enum MessageType {
-        RESTART_LOADER,
-        REFRESH_COMPLETE,
-    }
+    public static final int REFRESH_COMPLETE_MSG = 1;
+    public static final int RESTART_LOADER_MSG = 2;
 
     public LoaderHandler() {}
     public LoaderHandler(ClickableLoaderActivity activity) {
@@ -33,17 +31,18 @@ public class LoaderHandler extends Handler {
     public void handleMessage(Message msg) {
         try {
             super.handleMessage(msg);
-            Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> refresh message received restarting loader");
-            MessageType type = msg.arg1 >= 0 ? MessageType.values()[msg.arg1] : MessageType.RESTART_LOADER;
-            switch (type) {
-                case RESTART_LOADER:
-                    activity.getLoaderManager().restartLoader(0, null, activity);
-                    break;
-                case REFRESH_COMPLETE:
+            switch (msg.what) {
+                case REFRESH_COMPLETE_MSG:
+                    Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> complete message received resetting grid view");
                     activity.getGridView().onRefreshComplete();
                     break;
-                default:
+                case RESTART_LOADER_MSG:
+                    Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
                     activity.getLoaderManager().restartLoader(0, null, activity);
+                    break;
+                default:
+                    Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> null message received doing nothing");
+
             }
         }
         catch (Exception e) {

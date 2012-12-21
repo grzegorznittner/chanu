@@ -126,7 +126,7 @@ public class BoardSelectorActivity extends FragmentActivity {
         saveInstanceState();
     }
 
-    protected void saveInstanceState() {
+    public void saveInstanceState() {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString(ChanHelper.BOARD_TYPE, selectedBoardType.toString());
         editor.commit();

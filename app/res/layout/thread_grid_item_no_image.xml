@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:id="@+id/board_activity_grid_item"
     android:layout_width="fill_parent"
-    android:layout_height="200dp"
+    android:layout_height="120dp"
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingTop="0dp"
@@ -16,10 +16,10 @@
     	android:layout_width="match_parent"
     	android:layout_height="match_parent" >
 	    <TextView
-	        android:id="@+id/board_activity_grid_item_text"
+	        android:id="@+id/thread_grid_item_text"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
-	        android:maxHeight="200dp"
+	        android:maxHeight="120dp"
 	        android:textColor="#121212"
 	        android:background="#e2e2e2"
 	        android:textStyle="normal"

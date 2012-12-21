@@ -1,114 +1,115 @@
 package com.chanapps.four.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.Display;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.*;
 
 import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.ChanViewHelper;
-import com.chanapps.four.adapter.ImageTextCursorAdapter;
+import com.chanapps.four.adapter.BoardCursorAdapter;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.loader.ChanCursorLoader;
+import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.service.BoardLoadService;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshGridView;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class BoardActivity extends Activity implements ClickableLoaderActivity, AbsListView.OnScrollListener {
 	public static final String TAG = BoardActivity.class.getSimpleName();
+    protected static final int LOADER_RESTART_INTERVAL_MS = 5000;
+    protected static final int LOADER_REFRESH_DELAY_MS = 1000;
 
-    protected ImageTextCursorAdapter adapter;
+    protected BoardCursorAdapter adapter;
     protected PullToRefreshGridView gridView;
-    protected PullToRefreshListView listView;
     protected Handler handler;
-    protected ChanCursorLoader cursorLoader;
-    protected ChanViewHelper viewHelper;
+    protected BoardCursorLoader cursorLoader;
     protected int prevTotalItemCount = 0;
     protected int scrollOnNextLoaderFinished = 0;
+    protected ImageLoader imageLoader;
+    protected DisplayImageOptions displayImageOptions;
+    protected SharedPreferences prefs;
 
+    protected View popupView;
+    protected TextView popupText;
+    protected PopupWindow popupWindow;
+    protected Button replyButton;
+    protected Button quoteButton;
+    protected Button dismissButton;
+
+    protected long tim;
+    protected String boardCode;
+    private int pageNo = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 		Log.v(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
-        viewHelper = new ChanViewHelper(this, getServiceType());
-        createViewFromOrientation();
+        loadFromIntentOrPrefs();
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration.createDefault(this));
+        displayImageOptions = new DisplayImageOptions.Builder()
+                .showImageForEmptyUri(R.drawable.stub_image)
+                .cacheOnDisc()
+                .imageScaleType(ImageScaleType.EXACT)
+                .build();
+        createGridView();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
         Log.v(TAG, "onCreate init loader");
         getLoaderManager().initLoader(0, null, this);
     }
 
-    @Override
-    public ChanViewHelper.ServiceType getServiceType() {
-        return ChanViewHelper.ServiceType.BOARD;
+    protected void sizeGridToDisplay() {
+        Display display = getWindowManager().getDefaultDisplay();
+        ChanGridSizer cg = new ChanGridSizer(gridView.getRefreshableView(), display, ChanGridSizer.ServiceType.BOARD);
+        cg.sizeGridToDisplay();
     }
 
-    protected void createViewFromOrientation() {
-        if (viewHelper.getViewType() == ChanViewHelper.ViewType.GRID) {
-            setContentView(R.layout.board_grid_layout);
-            gridView = (PullToRefreshGridView)findViewById(R.id.board_activity_grid_view);
-            Display display = getWindowManager().getDefaultDisplay();
-            ChanGridSizer cg = new ChanGridSizer(gridView.getRefreshableView(), display, getServiceType());
-            cg.sizeGridToDisplay();
-            adapter = new ImageTextCursorAdapter(this,
+    protected void initGridAdapter() {
+        adapter = new BoardCursorAdapter(this,
                 R.layout.board_grid_item,
                 this,
-                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT},
+                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT},
                 new int[] {R.id.board_activity_grid_item_image, R.id.board_activity_grid_item_text});
-            gridView.getRefreshableView().setAdapter(adapter);
-            gridView.setClickable(true);
-            gridView.getRefreshableView().setOnItemClickListener(this);
-            gridView.setLongClickable(true);
-            gridView.getRefreshableView().setOnItemLongClickListener(this);
-            gridView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<GridView>() {
-                @Override
-                public void onRefresh(PullToRefreshBase<GridView> refreshView) {
-                    manualRefresh();
-                }
-            });
-            gridView.setOnScrollListener(this);
-            listView = null;
-        }
-        else {
-            setContentView(R.layout.board_list_layout);
-            listView = (PullToRefreshListView)findViewById(R.id.board_activity_list_view);
-            adapter = new ImageTextCursorAdapter(this,
-                    R.layout.board_list_item,
-                    this,
-                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT},
-                    new int[] {R.id.list_item_image, R.id.list_item_text});
-            listView.getRefreshableView().setAdapter(adapter);
-            listView.setClickable(true);
-            listView.getRefreshableView().setOnItemClickListener(this);
-            listView.setLongClickable(true);
-            listView.getRefreshableView().setOnItemLongClickListener(this);
-            listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
-                @Override
-                public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                    manualRefresh();
-                }
-            });
-            gridView = null;
-        }
+        gridView.getRefreshableView().setAdapter(adapter);
+    }
+
+    protected void createGridView() {
+        setContentView(R.layout.board_grid_layout);
+        gridView = (PullToRefreshGridView)findViewById(R.id.board_activity_grid_view);
+        sizeGridToDisplay();
+        initGridAdapter();
+        gridView.setClickable(true);
+        gridView.getRefreshableView().setOnItemClickListener(this);
+        gridView.setLongClickable(true);
+        gridView.getRefreshableView().setOnItemLongClickListener(this);
+        gridView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<GridView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<GridView> refreshView) {
+                reloadBoard();
+            }
+        });
+        gridView.setOnScrollListener(this);
     }
 
     protected void ensureHandler() {
@@ -130,39 +131,21 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         restoreInstanceState();
 	}
 
-    protected void refresh() {
-        refresh(true);
-    }
-
-    protected void manualRefresh() {
-        viewHelper.resetPageNo();
-        viewHelper.startService();
-        refresh();
+    protected void reloadBoard() {
+        pageNo = 0;
+        startLoadService();
     }
 
     public PullToRefreshGridView getGridView() {
         return gridView;
     }
 
-    protected void refresh(boolean showMessage) {
-        createViewFromOrientation();
-        viewHelper.onRefresh();
-        ensureHandler();
-        Message m = Message.obtain(handler, LoaderHandler.MessageType.REFRESH_COMPLETE.ordinal());
-        handler.sendMessageDelayed(m, 200);
-        Message m2 = Message.obtain(handler, LoaderHandler.MessageType.RESTART_LOADER.ordinal());
-        handler.sendMessageDelayed(m2, 200);
-        if (showMessage)
-            Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
+    protected String getLastPositionName() {
+        return ChanHelper.LAST_BOARD_POSITION;
     }
 
     protected void scrollToLastPosition() {
-        String intentExtra;
-        switch (getServiceType()) {
-            case BOARD: intentExtra = ChanHelper.LAST_BOARD_POSITION; break;
-            case THREAD: intentExtra = ChanHelper.LAST_THREAD_POSITION; break;
-            default: intentExtra = null;
-        }
+        String intentExtra = getLastPositionName();
         int lastPosition = getIntent().getIntExtra(intentExtra, 0);
         if (lastPosition == 0) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -185,23 +168,38 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         saveInstanceState();
     }
 
-    protected void restoreInstanceState() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    protected void ensurePrefs() {
+        if (prefs == null)
+            prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    }
+
+    protected void loadFromIntentOrPrefs() {
+        ensurePrefs();
         Intent intent = getIntent();
-        String boardCode = intent.hasExtra(ChanHelper.BOARD_CODE)
+        boardCode = intent.hasExtra(ChanHelper.BOARD_CODE)
                 ? intent.getStringExtra(ChanHelper.BOARD_CODE)
                 : prefs.getString(ChanHelper.BOARD_CODE, "a");
-        if (!boardCode.equals(viewHelper.getBoardCode())) {
-            viewHelper.resetPageNo();
-            viewHelper.startService();
-        }
-        refresh(true);
+        pageNo = 0;
+    }
+
+    protected void restoreInstanceState() {
+        loadFromIntentOrPrefs();
+        startLoadService();
+        setActionBarTitle();
         scrollToLastPosition();
+    }
+
+    protected void startLoadService() {
+        Log.i(TAG, "Start board load service for " + boardCode + " page " + pageNo );
+        Intent intent = new Intent(this, BoardLoadService.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.PAGE, pageNo);
+        startService(intent);
     }
 
     protected void saveInstanceState() {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        editor.putString(ChanHelper.BOARD_CODE, viewHelper.getBoardCode());
+        editor.putString(ChanHelper.BOARD_CODE, boardCode);
         editor.putLong(ChanHelper.THREAD_NO, 0);
         editor.putInt(ChanHelper.LAST_BOARD_POSITION, gridView.getRefreshableView().getFirstVisiblePosition());
         editor.commit();
@@ -226,13 +224,47 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        return viewHelper.setViewValue(view, cursor, columnIndex);
+        final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
+        final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
+        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
+        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        if (view instanceof TextView) {
+            //todo - @john - if the text is hidden then the image should take the full available space.
+            TextView tv = (TextView) view;
+            if (loadPage > 0 || lastPage > 0) {
+                // nothing to set
+            }
+            else if (shortText == null || shortText.isEmpty()) {
+                tv.setVisibility(View.INVISIBLE);
+            }
+            else {
+                tv.setText(shortText);
+            }
+            return true;
+        } else if (view instanceof ImageView) {
+            ImageView iv = (ImageView) view;
+            if (loadPage > 0) {
+                Animation rotation = AnimationUtils.loadAnimation(this, R.animator.clockwise_refresh);
+                rotation.setRepeatCount(Animation.INFINITE);
+                iv.startAnimation(rotation);
+            }
+            else if (imageUrl != null && !imageUrl.isEmpty()) {
+                try {
+                    this.imageLoader.displayImage(imageUrl, iv, displayImageOptions);
+                } catch (NumberFormatException nfe) {
+                    iv.setImageURI(Uri.parse(imageUrl));
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
-		cursorLoader = new ChanCursorLoader(getBaseContext(), viewHelper.getBoardCode(), viewHelper.getPageNo(), viewHelper.getThreadNo());
+        cursorLoader = new BoardCursorLoader(this, boardCode, pageNo);
         return cursorLoader;
 	}
 
@@ -241,18 +273,16 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 		Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
         ensureHandler();
-		handler.sendEmptyMessageDelayed(0, 2000);
-        Message m = Message.obtain(handler, LoaderHandler.MessageType.REFRESH_COMPLETE.ordinal());
-        handler.sendMessageDelayed(m, 200);
+        Message m = Message.obtain(handler, LoaderHandler.RESTART_LOADER_MSG);
+        handler.sendMessageDelayed(m, LOADER_RESTART_INTERVAL_MS);
+        Message m2 = Message.obtain(handler, LoaderHandler.REFRESH_COMPLETE_MSG);
+        handler.sendMessageDelayed(m2, LOADER_REFRESH_DELAY_MS);
         if (gridView != null) {
 //            gridView.onRefreshComplete();
             if (scrollOnNextLoaderFinished > 0) {
                 gridView.getRefreshableView().setSelection(scrollOnNextLoaderFinished);
                 scrollOnNextLoaderFinished = 0;
             }
-        }
-        if (listView != null) {
-            listView.onRefreshComplete();
         }
 	}
 
@@ -268,12 +298,12 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
         final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
         if (loadPage == 0 && lastPage == 0)
-            viewHelper.startThreadActivity(adapterView, view, position, id);
+            ThreadActivity.startActivity(this, adapterView, view, position, id);
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-        return viewHelper.showPopupText(adapterView, view, position, id, true);
+        return showPopupText(adapterView, view, position, id);
     }
 
     @Override
@@ -286,7 +316,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
                 return true;
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
-                replyIntent.putExtra(ChanHelper.BOARD_CODE, viewHelper.getBoardCode());
+                replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
                 startActivity(replyIntent);
                 return true;
             case R.id.prefetch_board_menu:
@@ -316,20 +346,89 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         Log.d(TAG, "onScroll firstVisibleItem=" + firstVisibleItem + " visibleItemCount=" + visibleItemCount + " totalItemCount=" + totalItemCount + " prevTotalItemCount=" + prevTotalItemCount);
-        if (view.getAdapter() != null && ((firstVisibleItem + visibleItemCount) >= totalItemCount) && totalItemCount != prevTotalItemCount) {
+        if (adapter != null
+                && !adapter.isEmpty()
+                && adapter.getCount() > 2
+                && (firstVisibleItem + visibleItemCount) >= totalItemCount
+                && totalItemCount != prevTotalItemCount)
+        {
             Log.v(TAG, "onListEnd, extending list");
             prevTotalItemCount = totalItemCount;
-            Toast.makeText(this, "Fetch next page", Toast.LENGTH_SHORT);
-            viewHelper.loadNextPage();
-            //handler.sendEmptyMessageDelayed(0, 200);
-            prevTotalItemCount = totalItemCount;
-            //getLoaderManager().
-            //adapter.addMoreData();
+            Toast.makeText(this, "Fetching next page...", Toast.LENGTH_SHORT).show();
+            pageNo++;
+            startLoadService();
         }
     }
 
     @Override
     public void onScrollStateChanged(AbsListView view, int s) {
-
     }
+
+    protected void setActionBarTitle() {
+        ActionBar a = getActionBar();
+        if (a == null) {
+            return;
+        }
+        String title = "/" + boardCode + " " + getString(R.string.board_activity);
+        a.setTitle(title);
+        a.setDisplayHomeAsUpEnabled(true);
+    }
+
+    protected void ensurePopupWindow() {
+        if (popupView == null) {
+            popupView = getLayoutInflater().inflate(R.layout.popup_full_text_layout, null);
+            popupText = (TextView)popupView.findViewById(R.id.popup_full_text);
+            popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
+            quoteButton = (Button)popupView.findViewById(R.id.popup_quote_button);
+            dismissButton = (Button)popupView.findViewById(R.id.popup_dismiss_button);
+            dismissButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popupWindow.dismiss();
+                }
+            });
+        }
+    }
+
+    public boolean showPopupText(AdapterView<?> adapterView, View view, int position, long id) {
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        Log.i(TAG, "Calling popup with id=" + id);
+        if (text != null && !text.trim().isEmpty()) {
+            final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+            final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+            final long clickedThreadNo = resto == 0 ? postId : resto;
+            ensurePopupWindow();
+            popupText.setText(text);
+            replyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
+                    replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
+                    replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
+                    startActivity(replyIntent);
+                    popupWindow.dismiss();
+                }
+            });
+            quoteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
+                    replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
+                    replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
+                    replyIntent.putExtra(ChanHelper.TEXT, text);
+                    startActivity(replyIntent);
+                    popupWindow.dismiss();
+                }
+            });
+            popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 }

@@ -28,7 +28,7 @@
  *
  */
 
-package com.chanapps.four.component;
+package com.chanapps.four.multipartmime;
 
 
 /**

@@ -9,7 +9,7 @@ import android.support.v4.app.DialogFragment;
 import android.widget.BaseAdapter;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ToastRunnable;
+import com.chanapps.four.component.ToastRunnable;
 
 /**
 * Created with IntelliJ IDEA.

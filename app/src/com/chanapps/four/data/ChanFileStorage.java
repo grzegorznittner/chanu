@@ -10,12 +10,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.chanapps.four.service.ChanLoadService;
+import com.chanapps.four.service.BoardLoadService;
+import com.chanapps.four.service.ThreadLoadService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.utils.StorageUtils;
-
-import javax.security.auth.login.LoginException;
 
 public class ChanFileStorage {
 	public static final String TAG = ChanFileStorage.class.getSimpleName();
@@ -121,11 +120,14 @@ public class ChanFileStorage {
 			Log.e(TAG, "Error while loading board '" + boardCode + "' data. ", e);
 			if (boardFile != null) {
 				boardFile.delete();
-				Log.i(TAG, "Reloading board " + boardCode + " - starting ChanLoadService");
-		        Intent threadIntent = new Intent(context, ChanLoadService.class);
+            }
+            /*
+				Log.i(TAG, "Reloading board " + boardCode + " - starting BoardLoadService");
+		        Intent threadIntent = new Intent(context, BoardLoadService.class);
 		        threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+                threadIntent.putExtra(ChanHelper.RETRIES, )
 		        context.startService(threadIntent);
-			}
+		        */
 		}
 		return ChanBoard.getBoardByCode(context, boardCode);
 	}
@@ -164,12 +166,14 @@ public class ChanFileStorage {
 			Log.e(TAG, "Error while loading thread '" + boardCode + "/" + threadNo + "' data. ", e);
 			if (threadFile != null) {
 				threadFile.delete();
-				Log.i(TAG, "Reloading thread " + boardCode + "/" + threadNo + " - starting ChanLoadService");
-		        Intent threadIntent = new Intent(context, ChanLoadService.class);
+            }
+            /*
+				Log.i(TAG, "Reloading thread " + boardCode + "/" + threadNo + " - starting BoardLoadService");
+		        Intent threadIntent = new Intent(context, ThreadLoadService.class);
 		        threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
 		        threadIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
 		        context.startService(threadIntent);
-			}
+			*/
 		}
 		return null;
 	}

@@ -12,7 +12,7 @@ import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.adapter.BoardSelectorAdapter;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ToastRunnable;
+import com.chanapps.four.component.ToastRunnable;
 
 import java.util.List;
 
