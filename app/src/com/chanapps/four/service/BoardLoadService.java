@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -19,15 +20,31 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
+import javax.security.auth.login.LoginException;
+
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
  *
  */
 public class BoardLoadService extends BaseChanService {
 
-    protected static final String TAG = BoardLoadService.class.getName();
+    protected static final String TAG = BoardLoadService.class.getSimpleName();
 	
 	protected static final long STORE_INTERVAL_MS = 2000;
+    protected static final int MAX_THREAD_RETENTION_PER_BOARD = 100;
+
+
+    private String boardCode;
+    private int pageNo;
+    private ChanBoard board;
+
+    public static void startService(Context context, String boardCode, int pageNo) {
+        Log.i(TAG, "Start board load service for " + boardCode + " page " + pageNo );
+        Intent intent = new Intent(context, BoardLoadService.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.PAGE, pageNo);
+        context.startService(intent);
+    }
 
     public BoardLoadService() {
    		super("board");
@@ -39,8 +56,8 @@ public class BoardLoadService extends BaseChanService {
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		String boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-		int pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
+		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+		pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
 		Log.i(TAG, "Handling board=" + boardCode + " page=" + pageNo);
 
         if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
@@ -50,24 +67,31 @@ public class BoardLoadService extends BaseChanService {
 
         BufferedReader in = null;
         HttpURLConnection tc = null;
-		try {			
-			URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/" + pageNo + ".json");
+		try {
+            board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
+            if (pageNo == 0) {
+                Log.i(TAG, "page 0 request, therefore resetting board.lastPage to false");
+            }
+            else if (pageNo > 0 && board.lastPage) {
+                Log.i(TAG, "Board request after last page, therefore service is terminating");
+                return;
+            }
+
+            URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/" + pageNo + ".json");
 
             tc = (HttpURLConnection) chanApi.openConnection();
             Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode());
-            ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
             if (pageNo > 0 && tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 Log.i(TAG, "Got 404 on next page, assuming last page at pageNo=" + pageNo);
                 board.lastPage = true;
             }
             else {
-                board.lastPage = false;
-            }
-            ChanFileStorage.storeBoardData(getBaseContext(), board);
-            if (!board.lastPage) {
                 in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
-                parseBoard(boardCode, pageNo, in);
+                parseBoard(in);
             }
+
+            ChanFileStorage.storeBoardData(getBaseContext(), board);
+
         } catch (IOException e) {
             toastUI(R.string.board_service_couldnt_read);
             Log.e(TAG, "IO Error reading Chan board json", e);
@@ -88,21 +112,28 @@ public class BoardLoadService extends BaseChanService {
 		}
 	}
 
-    protected void parseBoard(String boardCode, int pageNo, BufferedReader in) throws IOException {
+    private void parseBoard(BufferedReader in) throws IOException {
     	long time = new Date().getTime();
-    	ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
     	List<ChanPost> stickyPosts = new ArrayList<ChanPost>();
     	List<ChanPost> threads = new ArrayList<ChanPost>();
-        if (pageNo > 0) { // merge instead of replace on subsequent page loads
-            if (board.stickyPosts != null && board.stickyPosts.length > 0) {
-                Collections.addAll(stickyPosts, board.stickyPosts);
-            }
-            if (board.threads != null && board.threads.length > 0) {
+
+        if (board.stickyPosts != null && board.stickyPosts.length > 0) {
+            Collections.addAll(stickyPosts, board.stickyPosts);
+            Log.i(TAG, "Added " + board.stickyPosts.length + " sticky posts from storage");
+        }
+
+        if (board.threads != null && board.threads.length > 0) {
+            if (board.threads.length < MAX_THREAD_RETENTION_PER_BOARD) {
                 Collections.addAll(threads, board.threads);
-                Log.i(TAG, "Loaded " + threads.size() + " existing threads");
+                Log.i(TAG, "Added " + board.threads.length + " threads from storage");
+            }
+            else {
+                for (int i = 0; i < MAX_THREAD_RETENTION_PER_BOARD; i++) {
+                    threads.add(board.threads[i]);
+                }
+                Log.i(TAG, "Hit thread retention limit, adding only " + MAX_THREAD_RETENTION_PER_BOARD + " threads from storage");
             }
         }
-        int existingThreadCount = threads.size();
 
         Gson gson = new GsonBuilder().create();
 
@@ -125,7 +156,7 @@ public class BoardLoadService extends BaseChanService {
                 ChanPost post = gson.fromJson(reader, ChanPost.class);
                 post.board = boardCode;
                 if (post.sticky > 0 || isSticky) {
-                	mergeThreads(post, stickyPosts);
+                    post.mergeIntoThreadList(stickyPosts);
                 	isSticky = true;
                 } else {
                 	if (first) {
@@ -136,7 +167,7 @@ public class BoardLoadService extends BaseChanService {
                 			thread.board = boardCode;
                 			thread.no = post.no;
                 		}
-                        mergeThreads(post, threads);
+                        post.mergeIntoThreadList(threads);
                 		first = false;
                 	}
                 	posts.add(post);
@@ -144,7 +175,7 @@ public class BoardLoadService extends BaseChanService {
                 Log.v(TAG, post.toString());
             }
             if (thread != null) {
-            	mergePosts(thread, posts);
+                thread.mergePosts(posts);
             	ChanFileStorage.storeThreadData(getBaseContext(), thread);
             	if (new Date().getTime() - time > STORE_INTERVAL_MS) {
             		board.threads = threads.toArray(new ChanPost[0]);
@@ -159,59 +190,6 @@ public class BoardLoadService extends BaseChanService {
         board.threads = threads.toArray(new ChanPost[0]);
         board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
         Log.i(TAG, "Now have " + threads.size() + " threads ");
-/*
-        int newThreadCount = threads.size();
-        if (newThreadCount != existingThreadCount) {
-        }
-        else if (pageNo > 0) {
-            Log.i(TAG, "No more threads added, last page predicted at pageNo=" + pageNo);
-        }
-        else {
-            Log.i(TAG, "No threads loaded this round");
-        }
-*/
-        board.lastPage = false; // only set to true on 404
-        ChanFileStorage.storeBoardData(getBaseContext(), board);
-    }
-
-    private void mergeThreads(ChanPost thread, List<ChanPost> threads) {
-        boolean exists = false;
-		for (ChanPost existingThread : threads) {
-            if (thread.no == existingThread.no) {
-                exists = true;
-                copyUpdatedThreadFields(existingThread, thread);
-                break;
-            }
-        }
-        if (!exists) {
-			threads.add(thread);
-		}
-	}
-
-    protected void mergePosts(ChanThread thread, List<ChanPost> posts) {
-    	List<ChanPost> mergedPosts = new ArrayList<ChanPost>(Arrays.asList(thread.posts));
-		for (ChanPost newPost : posts) {
-			boolean exists = false;
-			for (ChanPost p : thread.posts) {
-				if (p.no == newPost.no) {
-					exists = true;
-                    copyUpdatedThreadFields(p, newPost);
-				}
-			}
-			if (!exists) {
-				mergedPosts.add(newPost);
-			}
-		}
-		thread.posts = mergedPosts.toArray(new ChanPost[0]);
-	}
-
-    protected void copyUpdatedThreadFields(ChanPost surviving, ChanPost from) {
-        surviving.bumplimit = from.bumplimit;
-        surviving.imagelimit = from.imagelimit;
-        surviving.images = from.images;
-        surviving.omitted_images = from.omitted_images;
-        surviving.omitted_posts = from.omitted_posts;
-        surviving.replies = from.replies;
     }
 
 }

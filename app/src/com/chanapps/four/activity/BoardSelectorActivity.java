@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.data.SmartCache;
 import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.adapter.TabsAdapter;
@@ -19,6 +20,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 
+import java.util.Set;
+
 public class BoardSelectorActivity extends FragmentActivity {
     public static final String TAG = "BoardSelectorActivity";
 
@@ -29,10 +32,14 @@ public class BoardSelectorActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        if (!getIntent().getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false))
+        Log.v(TAG, "onCreate");
+        SmartCache.fillCache(this);
+        Intent intent = getIntent();
+        if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
+            Log.i(TAG, "Starting dispatch");
             DispatcherHelper.dispatchIfNecessaryFromPrefsState(this);
+        }
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
         setContentView(mViewPager);

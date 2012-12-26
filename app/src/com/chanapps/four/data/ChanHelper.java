@@ -46,12 +46,16 @@ public class ChanHelper {
     public static final String POST_SHORT_TEXT = "shortText"; // we construct and filter this
     public static final String POST_TEXT = "text"; // we construct and filter this
     public static final String POST_IMAGE_URL = "image_url"; // we construct this from board and tim
+    public static final String POST_IS_DEAD = "isDead";
     
     public static final String LOAD_PAGE = "load_page";
     public static final String LAST_PAGE = "last_page";
     public static final String LAST_BOARD_POSITION = "lastBoardPosition";
     public static final String LAST_THREAD_POSITION = "lastThreadPosition";
     public static final String LAST_ACTIVITY = "lastActivity";
+    public static final String LAST_NO_BOARD_CACHE_TIME = "lastNoBoardCacheTime";
+    public static final String LAST_FAVORITES_CACHE_TIME = "lastFavoritesCacheTime";
+    public static final String LAST_WATCHLIST_CACHE_TIME = "lastWatchlistCacheTime";
     public static final String IGNORE_DISPATCH = "ignoreDispatch";
 
     public static final String[] POST_COLUMNS = {
@@ -66,6 +70,7 @@ public class ChanHelper {
             POST_W,
             POST_H,
             POST_TIM,
+            POST_IS_DEAD,
             LOAD_PAGE,
             LAST_PAGE
     };

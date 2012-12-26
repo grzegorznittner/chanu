@@ -70,6 +70,7 @@
         </activity>
 
         <service android:name="com.chanapps.four.service.BoardLoadService"/>
+        <service android:name="com.chanapps.four.service.ThreadLoadService"/>
 
         <!--widgets-->
         <activity android:name=".ChannerWidgetConfigureActivity">

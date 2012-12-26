@@ -1,6 +1,7 @@
 package com.chanapps.four.component;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -36,11 +37,14 @@ public class DispatcherHelper {
         editor.commit();
     }
 
+    public static ChanHelper.LastActivity getLastActivity(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return ChanHelper.LastActivity.valueOf(
+            prefs.getString(ChanHelper.LAST_ACTIVITY, ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY.toString()));
+    }
+
     public static void dispatchIfNecessaryFromPrefsState(Activity activity) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-        ChanHelper.LastActivity lastActivity =
-                ChanHelper.LastActivity.valueOf(
-                        prefs.getString(ChanHelper.LAST_ACTIVITY, ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY.toString()));
+        ChanHelper.LastActivity lastActivity = getLastActivity(activity);
         Class activityClass;
         switch (lastActivity) {
             case FULL_SCREEN_IMAGE_ACTIVITY:

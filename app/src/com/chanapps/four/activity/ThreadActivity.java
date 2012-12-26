@@ -161,11 +161,7 @@ public class ThreadActivity extends BoardActivity {
 
     @Override
     protected void startLoadService() {
-        Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
-        Intent intent = new Intent(this, ThreadLoadService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        startService(intent);
+        ThreadLoadService.startService(this, boardCode, threadNo);
     }
 
     @Override

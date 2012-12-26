@@ -85,6 +85,7 @@
     <string name="reply">Reply</string>
     <string name="quote">Quote</string>
     <string name="dismiss">Close</string>
+    <string name="dead_thread_reply">Dead Thread No Reply</string>
 
     <!-- dialog text -->
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>

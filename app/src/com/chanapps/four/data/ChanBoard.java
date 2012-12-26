@@ -48,7 +48,7 @@ public class ChanBoard {
     public boolean lastPage;
 	
 	public ChanPost stickyPosts[] = new ChanPost[0];
-	public ChanPost threads[] = new ChanPost[0];
+	public ChanPost threads[] = new ChanThread[0];
 	public long lastFetched;
 	
 	public ChanBoard copy() {

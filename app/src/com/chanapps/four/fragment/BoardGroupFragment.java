@@ -190,7 +190,7 @@ public class BoardGroupFragment
 		    boardCursorAdapter.swapCursor(data);
         }
         ensureHandler();
-		handler.sendEmptyMessageDelayed(0, 10000);
+		handler.sendEmptyMessageDelayed(0, 2000);
 	}
 
     @Override
@@ -303,15 +303,18 @@ public class BoardGroupFragment
             try {
                 super.handleMessage(msg);
                 Log.v(fragment.getClass().getSimpleName(), ">>>>>>>>>>> refresh message received restarting loader");
-                if (!fragment.isDetached()) {
-                    if (fragment.boardType == ChanBoard.Type.WATCHLIST) {
-                        fragment.getLoaderManager().restartLoader(0, null, fragment);
+                if (fragment.boardType == ChanBoard.Type.WATCHLIST) {
+                    if (!fragment.isDetached())
+                        fragment.getLoaderManager().restartLoader(0, null, fragment); // keep getting stupid error
+                    else if (fragment.handler != null)
+                        fragment.handler.sendEmptyMessageDelayed(0, 2000); // make sure it keeps going
+                    else {
+                        fragment.ensureHandler();
+                        fragment.handler.sendEmptyMessageDelayed(0, 2000); // make sure it keeps going
                     }
-                    else if (fragment.boardType == ChanBoard.Type.FAVORITES) {
-                        if (fragment.adapter != null) {
-                            fragment.adapter.notifyDataSetChanged();
-                        }
-                    }
+                }
+                else if (fragment.boardType == ChanBoard.Type.FAVORITES && !fragment.isDetached() && fragment.adapter != null) {
+                    fragment.adapter.notifyDataSetChanged();
                 }
             }
             catch (Exception e) {

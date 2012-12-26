@@ -30,7 +30,6 @@ public class ChanPost {
     private static final int MAX_LINE = 40;
 
     public String board;
-
     public long no = -1;
     public int sticky = 0;
     public String now;
@@ -54,6 +53,7 @@ public class ChanPost {
     public int omitted_images = -1;
     public int bumplimit = 0;
     public int imagelimit = 0;
+    public boolean isDead = false;
 
     public static final String quoteText(String s) {
         if (s == null || s.isEmpty())
@@ -180,12 +180,24 @@ public class ChanPost {
     }
 
     public String getThreadText(boolean hideAllText) {
-        String text = hideAllText ? "" : getFullText();
-        text = abbreviate(text, MAX_IMAGETEXT_LEN, MAX_IMAGETEXT_ABBR_LEN);
-        if (resto == 0) { // it's a thread, add thread stuff
-            if (text.length() > 0) {
-                text += "\n";
-            }
+        return getThreadText(hideAllText, MAX_IMAGETEXT_LEN, MAX_IMAGETEXT_ABBR_LEN);
+    }
+
+    public String getThreadText(boolean hideAllText, int maxImageTextLen, int maxImageTextAbbrLen) {
+        if (hideAllText) {
+            return "";
+        }
+        String text = abbreviate(getFullText(), maxImageTextLen, maxImageTextAbbrLen);
+        if (resto != 0) { // just a post, don't add thread stuff
+            return text;
+        }
+        if (text.length() > 0) {
+            text += "\n";
+        }
+        if (isDead) {
+            text += "DEAD THREAD";
+        }
+        else {
             text += replies
                     + " post" + (replies == 1 ? "" : "s")
                     + " "
@@ -197,31 +209,36 @@ public class ChanPost {
             }
             if (bumplimit == 1) {
                 text += " (BL)";
-    		}
+            }
         }
 		return text;
 	}
 
     public String getBoardThreadText() {
-        String text = abbreviate(getFullText(), MAX_BOARDTHREAD_IMAGETEXT_LEN, MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN);
-        if (resto == 0) { // it's a thread, add thread stuff
-            if (text.length() > 0) {
-                text += "\n";
-            }
-            text += replies
-                    + " post" + (replies == 1 ? "" : "s")
-                    + " "
-                    + images
-                    + " image"
-                    + (images == 1 ? "" : "s");
-            if (imagelimit == 1) {
-                text += " (IL)";
-            }
-            if (bumplimit == 1) {
-                text += " (BL)";
+        return getThreadText(false, MAX_BOARDTHREAD_IMAGETEXT_LEN, MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN);
+    }
+
+    public void mergeIntoThreadList(List<ChanPost> threads) {
+        boolean exists = false;
+        for (ChanPost existingThread : threads) {
+            if (this.no == existingThread.no) {
+                exists = true;
+                existingThread.copyThreadStatusFields(this);
+                break;
             }
         }
-        return text;
+        if (!exists) {
+            threads.add(this);
+        }
+    }
+
+    public void copyThreadStatusFields(ChanPost from) {
+        bumplimit = from.bumplimit;
+        imagelimit = from.imagelimit;
+        images = from.images;
+        omitted_images = from.omitted_images;
+        omitted_posts = from.omitted_posts;
+        replies = from.replies;
     }
 
 }

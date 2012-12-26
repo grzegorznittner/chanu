@@ -25,7 +25,9 @@ public class ChanWatchlist {
     private static final String FIELD_SEPARATOR = "\t";
     private static final String FIELD_SEPARATOR_REGEX = "\\t";
 
-    private static String getThreadPath(long tim, String boardCode, long threadNo, String text, String imageUrl, int imageWidth, int imageHeight) {
+    private static String getThreadPath(long tim, String boardCode, long threadNo,
+                                        String text, String imageUrl, int imageWidth, int imageHeight)
+    {
         return tim + FIELD_SEPARATOR
                 + boardCode + FIELD_SEPARATOR
                 + threadNo + FIELD_SEPARATOR
@@ -37,6 +39,14 @@ public class ChanWatchlist {
 
     public static String[] getThreadPathComponents(String threadPath) {
         return threadPath.split(FIELD_SEPARATOR_REGEX);
+    }
+
+    public static String getBoardCodeFromThreadPath(String threadPath) {
+        return threadPath.split(FIELD_SEPARATOR_REGEX)[1];
+    }
+
+    public static long getThreadNoFromThreadPath(String threadPath) {
+        return Long.valueOf(threadPath.split(FIELD_SEPARATOR_REGEX)[2]);
     }
 
     public static void watchThread(
@@ -60,7 +70,7 @@ public class ChanWatchlist {
             editor.putStringSet(ChanHelper.THREAD_WATCHLIST, savedWatchlist);
             editor.commit();
             Log.i(TAG, "Thread " + threadPath + " added to watchlist");
-            Log.i(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
+            Log.d(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
             Toast.makeText(ctx, R.string.thread_added_to_watchlist, Toast.LENGTH_SHORT);
         }
     }
@@ -88,7 +98,7 @@ public class ChanWatchlist {
             editor.putStringSet(ChanHelper.THREAD_WATCHLIST, savedWatchlist);
             editor.commit();
             Log.i(TAG, "Thread " + threadToDelete + " deleted from watchlist");
-            Log.i(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
+            Log.d(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
         }
         else {
             Log.e(TAG, "Could not find thread to delete with tim = " + tim);
@@ -108,7 +118,7 @@ public class ChanWatchlist {
         Log.i(TAG, "Getting watchlist from prefs...");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         Set<String> savedWatchlist = prefs.getStringSet(ChanHelper.THREAD_WATCHLIST, new HashSet<String>());
-        Log.i(TAG, "Loaded watchlist from prefs:" + Arrays.toString(savedWatchlist.toArray()));
+        Log.d(TAG, "Loaded watchlist from prefs:" + Arrays.toString(savedWatchlist.toArray()));
         return savedWatchlist;
     }
 

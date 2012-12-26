@@ -21,14 +21,43 @@ public class ChanFileStorage {
 	
 	private static WeakHashMap<String, ChanBoard> boardCache = new WeakHashMap<String, ChanBoard>();
 	private static WeakHashMap<Long, ChanThread> threadCache = new WeakHashMap<Long, ChanThread>();
-	
-	public static void storeBoardData(Context context, ChanBoard board) {
+
+    private static final String CACHE_ROOT = "Android";
+    private static final String CACHE_DATA_DIR = "data";
+    private static final String CACHE_PKG_DIR = "cache";
+    private static final String FILE_SEP = "/";
+    private static final String CACHE_EXT = ".txt";
+
+    public static boolean isBoardCachedOnDisk(Context context, String boardCode) {
+        File boardDir = getBoardCacheDirectory(context, boardCode);
+        return boardDir != null && boardDir.exists();
+    }
+
+    public static boolean isThreadCachedOnDisk(Context context, String boardCode, long threadNo) {
+        File threadDir = getThreadCacheDirectory(context, boardCode, threadNo);
+        return threadDir != null && threadDir.exists();
+    }
+
+    private static File getBoardCacheDirectory(Context context, String boardCode) {
+        String cacheDir = CACHE_ROOT + FILE_SEP + CACHE_DATA_DIR + FILE_SEP + context.getPackageName() + FILE_SEP
+                + CACHE_PKG_DIR + FILE_SEP + boardCode;
+        File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+        return boardDir;
+    }
+
+    private static File getThreadCacheDirectory(Context context, String boardCode, long threadNo) {
+        String cacheDir = CACHE_ROOT + FILE_SEP + CACHE_DATA_DIR + FILE_SEP + context.getPackageName() + FILE_SEP
+                + CACHE_PKG_DIR + FILE_SEP + boardCode + FILE_SEP + threadNo;
+        File threadDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+        return threadDir;
+    }
+
+    public static void storeBoardData(Context context, ChanBoard board) {
 		try {
 			boardCache.put(board.link, board);
-			String cacheDir = "Android/data/" + context.getPackageName() + "/cache/" + board.link;
-			File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+            File boardDir = getBoardCacheDirectory(context, board.link);
 			if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-				FileWriter writer = new FileWriter(new File(boardDir, board.link + ".txt"), false);
+				FileWriter writer = new FileWriter(new File(boardDir, board.link + CACHE_EXT), false);
 				try {
 					board.lastFetched = new Date().getTime();
 					Gson gson = new GsonBuilder().create();
@@ -54,10 +83,9 @@ public class ChanFileStorage {
 	public static void storeThreadData(Context context, ChanThread thread) {
 		try {
 			threadCache.put(thread.no, thread);
-			String cacheDir = "Android/data/" + context.getPackageName() + "/cache/" + thread.board + "/" + thread.no;
-			File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
-			if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-				FileWriter writer = new FileWriter(new File(boardDir, thread.no + ".txt"), false);
+            File threadDir = getThreadCacheDirectory(context, thread.board, thread.no);
+			if (threadDir != null && (threadDir.exists() || threadDir.mkdirs())) {
+				FileWriter writer = new FileWriter(new File(threadDir, thread.no + CACHE_EXT), false);
 				try {
 					thread.lastFetched = new Date().getTime();
 					Gson gson = new GsonBuilder().create();
@@ -80,12 +108,12 @@ public class ChanFileStorage {
                         Log.e(TAG, "Exception while closing thread", e);
                     }
                 }
-				Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + "/" + thread.no + "'");
+				Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + FILE_SEP + thread.no + "'");
 			} else {
-				Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
+				Log.e(TAG, "Cannot create board cache folder. " + (threadDir == null ? "null" : threadDir.getAbsolutePath()));
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "Error while storing thread '" + thread.board + "/" + thread.no + "' data. ", e);
+			Log.e(TAG, "Error while storing thread '" + thread.board + FILE_SEP + thread.no + "' data. ", e);
 		}
 	}
 	
@@ -100,10 +128,9 @@ public class ChanFileStorage {
 		}
 		File boardFile = null;
 		try {
-			String cacheDir = "Android/data/" + context.getPackageName() + "/cache/" + boardCode;
-			File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+            File boardDir = getBoardCacheDirectory(context, boardCode);
 			if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-				boardFile = new File(boardDir, boardCode + ".txt");
+				boardFile = new File(boardDir, boardCode + CACHE_EXT);
 				if (boardFile != null && boardFile.exists()) {
 					FileReader reader = new FileReader(boardFile);
 					Gson gson = new GsonBuilder().create();
@@ -131,44 +158,45 @@ public class ChanFileStorage {
 		}
 		return ChanBoard.getBoardByCode(context, boardCode);
 	}
-	
+
+
+
 	public static ChanThread loadThreadData(Context context, String boardCode, long threadNo) {
 		if (boardCode == null || threadNo <= 0) {
-			Log.w(TAG, "Trying to load '" + boardCode + "/" + threadNo + "' thread! Check stack trace why has it happened.", new Exception());
+			Log.w(TAG, "Trying to load '" + boardCode + FILE_SEP + threadNo + "' thread! Check stack trace why has it happened.", new Exception());
 			return null;
 		}
 		if (threadCache.containsKey(threadNo)) {
-			Log.i(TAG, "Retruning thread " + boardCode + "/" +  threadNo + " data from cache");
+			Log.i(TAG, "Retruning thread " + boardCode + FILE_SEP +  threadNo + " data from cache");
 			return threadCache.get(threadNo);
 		}
 		File threadFile = null;
 		try {
-			String cacheDir = "Android/data/" + context.getPackageName() + "/cache/" + boardCode + "/" + threadNo;
-			File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
-			if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-				threadFile = new File(boardDir, "" + threadNo + ".txt");
+            File threadDir = getThreadCacheDirectory(context, boardCode, threadNo);
+			if (threadDir != null && (threadDir.exists() || threadDir.mkdirs())) {
+				threadFile = new File(threadDir, "" + threadNo + CACHE_EXT);
 				if (threadFile != null && threadFile.exists()) {
 					FileReader reader = new FileReader(threadFile);
 					Gson gson = new GsonBuilder().create();
 					ChanThread thread = gson.fromJson(reader, ChanThread.class);
                     if (thread == null)
-                        Log.e(TAG, "Couldn't load thread, null thread returned for " + boardCode + "/" + threadNo);
+                        Log.e(TAG, "Couldn't load thread, null thread returned for " + boardCode + FILE_SEP + threadNo);
                     else
-					    Log.i(TAG, "Loaded " + thread.posts.length + " posts for board '" + boardCode + "/" + threadNo + "'");
+					    Log.i(TAG, "Loaded " + thread.posts.length + " posts for board '" + boardCode + FILE_SEP + threadNo + "'");
 					return thread;
 				} else {
-					Log.w(TAG, "File for thread '" + boardCode + "/" + threadNo + "' doesn't exist");
+					Log.w(TAG, "File for thread '" + boardCode + FILE_SEP + threadNo + "' doesn't exist");
 				}
 			} else {
-				Log.e(TAG, "Cannot create thread cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
+				Log.e(TAG, "Cannot create thread cache folder. " + (threadDir == null ? "null" : threadDir.getAbsolutePath()));
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "Error while loading thread '" + boardCode + "/" + threadNo + "' data. ", e);
+			Log.e(TAG, "Error while loading thread '" + boardCode + FILE_SEP + threadNo + "' data. ", e);
 			if (threadFile != null) {
 				threadFile.delete();
             }
             /*
-				Log.i(TAG, "Reloading thread " + boardCode + "/" + threadNo + " - starting BoardLoadService");
+				Log.i(TAG, "Reloading thread " + boardCode + FILE_SEP + threadNo + " - starting BoardLoadService");
 		        Intent threadIntent = new Intent(context, ThreadLoadService.class);
 		        threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
 		        threadIntent.putExtra(ChanHelper.THREAD_NO, threadNo);

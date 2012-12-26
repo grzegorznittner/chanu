@@ -53,6 +53,15 @@
             android:layout_gravity="bottom"
             android:weightSum="3">
             <Button
+                    android:id="@+id/popup_dead_thread_button"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    android:clickable="false"
+                    android:text="@string/dead_thread_reply" />
+            <Button
                     android:id="@+id/popup_reply_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"

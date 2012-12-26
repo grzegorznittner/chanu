@@ -36,7 +36,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class BoardActivity extends Activity implements ClickableLoaderActivity, AbsListView.OnScrollListener {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-    protected static final int LOADER_RESTART_INTERVAL_MS = 5000;
+    protected static final int LOADER_RESTART_INTERVAL_MS = 2000;
     protected static final int LOADER_REFRESH_DELAY_MS = 1000;
 
     protected BoardCursorAdapter adapter;
@@ -52,6 +52,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     protected View popupView;
     protected TextView popupText;
     protected PopupWindow popupWindow;
+    protected Button deadThreadButton;
     protected Button replyButton;
     protected Button quoteButton;
     protected Button dismissButton;
@@ -190,11 +191,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     }
 
     protected void startLoadService() {
-        Log.i(TAG, "Start board load service for " + boardCode + " page " + pageNo );
-        Intent intent = new Intent(this, BoardLoadService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.PAGE, pageNo);
-        startService(intent);
+        BoardLoadService.startService(this, boardCode, pageNo);
     }
 
     protected void saveInstanceState() {
@@ -379,6 +376,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
             popupView = getLayoutInflater().inflate(R.layout.popup_full_text_layout, null);
             popupText = (TextView)popupView.findViewById(R.id.popup_full_text);
             popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            deadThreadButton = (Button)popupView.findViewById(R.id.popup_dead_thread_button);
             replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
             quoteButton = (Button)popupView.findViewById(R.id.popup_quote_button);
             dismissButton = (Button)popupView.findViewById(R.id.popup_dismiss_button);
@@ -394,7 +392,9 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     public boolean showPopupText(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        Log.i(TAG, "Calling popup with id=" + id);
+        final int isDeadInt = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_IS_DEAD));
+        final boolean isDead = isDeadInt == 0 ? false : true;
+        Log.i(TAG, "Calling popup with id=" + id + " isDead=" + isDead);
         if (text != null && !text.trim().isEmpty()) {
             final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
             final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
@@ -402,27 +402,37 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
             final long clickedThreadNo = resto == 0 ? postId : resto;
             ensurePopupWindow();
             popupText.setText(text);
-            replyButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
-                    replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
-                    replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
-                    startActivity(replyIntent);
-                    popupWindow.dismiss();
-                }
-            });
-            quoteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
-                    replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
-                    replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
-                    replyIntent.putExtra(ChanHelper.TEXT, text);
-                    startActivity(replyIntent);
-                    popupWindow.dismiss();
-                }
-            });
+            if (isDead) {
+                replyButton.setVisibility(View.GONE);
+                quoteButton.setVisibility(View.GONE);
+                deadThreadButton.setVisibility(View.VISIBLE);
+            }
+            else {
+                deadThreadButton.setVisibility(View.GONE);
+                replyButton.setVisibility(View.VISIBLE);
+                replyButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
+                        replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
+                        replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
+                        startActivity(replyIntent);
+                        popupWindow.dismiss();
+                    }
+                });
+                quoteButton.setVisibility(View.VISIBLE);
+                quoteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
+                        replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
+                        replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
+                        replyIntent.putExtra(ChanHelper.TEXT, text);
+                        startActivity(replyIntent);
+                        popupWindow.dismiss();
+                    }
+                });
+            }
             popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
             return true;
         }

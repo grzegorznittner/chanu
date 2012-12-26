@@ -43,22 +43,26 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     	Log.i(TAG, "loadInBackground");
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         ChanThread thread = ChanFileStorage.loadThreadData(getContext(), boardName, threadNo);
+        int isDead = thread.isDead ? 1 : 0;
+        Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
         if (thread != null) {
             MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
             for (ChanPost post : thread.posts) {
+                post.isDead = thread.isDead; // inherit from parent
                 if (post.tn_w <= 0 || post.tim == null) {
                     if (!hideAllText) {
-                        String postText = (String) post.getPostText();
+                        String postText = post.resto == 0 ? post.getThreadText() : post.getPostText();
                         if (postText != null && !postText.isEmpty())
                             matrixCursor.addRow(new Object[] {
                                     post.no, boardName, threadNo, "",
                                     postText, post.getFullText(),
-                                    post.tn_w, post.tn_h, post.w, post.h, post.tim, 0, 0});
+                                    post.tn_w, post.tn_h, post.w, post.h, post.tim, isDead, 0, 0});
                     }
                 } else {
+                    String postText = post.resto == 0 ? post.getThreadText(hideAllText) : post.getPostText(hideAllText);
                     matrixCursor.addRow(new Object[] {
                             post.no, boardName, threadNo, post.getThumbnailUrl(),
-                            post.getPostText(hideAllText), post.getFullText(), post.tn_w, post.tn_h, post.w, post.h, post.tim, 0, 0});
+                            postText, post.getFullText(), post.tn_w, post.tn_h, post.w, post.h, post.tim, isDead, 0, 0});
                 }
             }
             if (thread.posts.length > 0) {

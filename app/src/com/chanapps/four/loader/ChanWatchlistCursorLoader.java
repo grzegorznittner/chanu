@@ -9,10 +9,9 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.util.Log;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanWatchlist;
+import com.chanapps.four.data.*;
 
+import javax.security.auth.login.LoginException;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -50,13 +49,45 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 long tim = Long.valueOf(threadComponents[0]);
                 String boardCode = threadComponents[1];
                 long threadNo = Long.valueOf(threadComponents[2]);
-                String shortText = (threadComponents[3].length() > ChanPost.MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN
-                        ? threadComponents[3].substring(0, ChanPost.MAX_BOARDTHREAD_IMAGETEXT_LEN) + "..."
-                        : threadComponents[3]);
-                String text = threadComponents[3];
-                String imageUrl = threadComponents[4];
-                int imageWidth = Integer.valueOf(threadComponents[5]);
-                int imageHeight = Integer.valueOf(threadComponents[6]);
+                String shortText;
+                String text;
+                String imageUrl;
+                int imageWidth;
+                int imageHeight;
+                int isDead;
+                ChanThread thread = null;
+                ChanPost threadPost = null;
+                try {
+                    Log.i(TAG, "trying to load thread " + boardCode + "/" + threadNo + " from storage");
+                    thread = ChanFileStorage.loadThreadData(getContext(), boardCode, threadNo);
+                    if (thread != null) {
+                        threadPost = thread.posts[0];
+                    }
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "Error loading thread data from storage", e);
+                }
+                if (threadPost != null) { // pull from cache, it will have the latest data
+                    Log.i(TAG, "Found cached watchlist thread " + boardCode + "/" + threadNo + ", updating from cache");
+                    threadPost.isDead = thread.isDead;
+                    shortText = threadPost.getThreadText();
+                    text = threadPost.getFullText();
+                    imageUrl = threadPost.getThumbnailUrl();
+                    imageWidth = threadPost.tn_w;
+                    imageHeight = threadPost.tn_h;
+                    isDead = thread.isDead ? 1 : 0;
+                }
+                else { // thread not in cache, pull last stored from watchlist prefs
+                    Log.i(TAG, "Didn't find cached watchlist thread " + boardCode + "/" + threadNo + ", loading from prefs");
+                    shortText = (threadComponents[3].length() > ChanPost.MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN
+                            ? threadComponents[3].substring(0, ChanPost.MAX_BOARDTHREAD_IMAGETEXT_LEN) + "..."
+                            : threadComponents[3]);
+                    text = threadComponents[3];
+                    imageUrl = threadComponents[4];
+                    imageWidth = Integer.valueOf(threadComponents[5]);
+                    imageHeight = Integer.valueOf(threadComponents[6]);
+                    isDead = 0; // we don't know if it's dead or not, assume alive
+                }
                 MatrixCursor.RowBuilder row = cursor.newRow();
                 row.add(threadNo);
                 row.add(boardCode);
@@ -69,8 +100,11 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 row.add(imageWidth);
                 row.add(imageHeight);
                 row.add(tim);
+                row.add(isDead);
                 row.add(0);
                 row.add(0);
+                Log.i(TAG, "Thread dead status for " + boardCode + "/" + threadNo + " is " + isDead);
+                Log.d(TAG, "Watchlist cursor has: " + threadNo + " " + boardCode + " " + imageUrl + " " + shortText);
             }
             catch (Exception e) {
                 Log.e(TAG, "Error parsing watch preferences ", e);

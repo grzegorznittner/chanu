@@ -3,6 +3,7 @@
  */
 package com.chanapps.four.service;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import com.chanapps.four.activity.R;
@@ -22,9 +23,23 @@ import java.util.*;
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
  *
  */
-public class ThreadLoadService extends BoardLoadService {
+public class ThreadLoadService extends BaseChanService {
 
     protected static final String TAG = ThreadLoadService.class.getName();
+
+    protected static final long STORE_INTERVAL_MS = 2000;
+
+    private String boardCode;
+    private long threadNo;
+    private ChanThread thread;
+
+    public static void startService(Context context, String boardCode, long threadNo) {
+        Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
+        Intent intent = new Intent(context, ThreadLoadService.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        context.startService(intent);
+    }
 
     public ThreadLoadService() {
    		super("thread");
@@ -36,9 +51,10 @@ public class ThreadLoadService extends BoardLoadService {
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		String boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-        long threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+        threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
 		Log.i(TAG, "Handling board=" + boardCode + " threadNo=" + threadNo);
+
         if (threadNo == 0) {
             Log.e(TAG, "Board loading must be done via the BoardLoadService");
         }
@@ -49,22 +65,27 @@ public class ThreadLoadService extends BoardLoadService {
 
         BufferedReader in = null;
         HttpURLConnection tc = null;
-		try {			
-			URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/res/" + threadNo + ".json");
+		try {
+            thread = ChanFileStorage.loadThreadData(this, boardCode, threadNo);
+            if (thread != null && thread.isDead) {
+                Log.i(TAG, "Dead thread retrieved from storage, therefore service is terminating");
+                return;
+            }
+
+            URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/res/" + threadNo + ".json");
 
             tc = (HttpURLConnection) chanApi.openConnection();
             Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode());
             if (tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 Log.i(TAG, "Got 404 on thread, thread no longer exists");
-                // FIXME: mark thread as dead so user can be notified
-                //ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, threadNo);
-                //thread.isDead = true;
-                //ChanFileStorage.storeThreadData(getBaseContext(), thread);
+                markDead();
             }
             else {
                 in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
-                parseThread(boardCode, threadNo, in);
+                parseThread(in);
             }
+
+            ChanFileStorage.storeThreadData(getBaseContext(), thread);
         } catch (IOException e) {
             toastUI(R.string.board_service_couldnt_read);
             Log.e(TAG, "IO Error reading Chan board json. " + e.getMessage(), e);
@@ -85,13 +106,13 @@ public class ThreadLoadService extends BoardLoadService {
 		}
 	}
 
-	protected void parseThread(String boardCode, long threadNo, BufferedReader in) throws IOException {
+	protected void parseThread(BufferedReader in) throws IOException {
     	long time = new Date().getTime();
-    	ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, threadNo);
     	if (thread == null) {
     		thread = new ChanThread();
         	thread.board = boardCode;
             thread.no = threadNo;
+            thread.isDead = false;
     	}
         
     	List<ChanPost> posts = new ArrayList<ChanPost>();
@@ -108,12 +129,16 @@ public class ThreadLoadService extends BoardLoadService {
             post.board = boardCode;
             posts.add(post);
             if (new Date().getTime() - time > STORE_INTERVAL_MS) {
-            	mergePosts(thread, posts);
+            	thread.mergePosts(posts);
                 ChanFileStorage.storeThreadData(getBaseContext(), thread);
         	}
         }
-        mergePosts(thread, posts);
-        ChanFileStorage.storeThreadData(getBaseContext(), thread);
+        thread.mergePosts(posts);
+    }
+
+    private void markDead() {
+        thread.isDead = true;
+        Log.i(TAG, "marked thread as dead, will not be loaded again");
     }
 
 }
