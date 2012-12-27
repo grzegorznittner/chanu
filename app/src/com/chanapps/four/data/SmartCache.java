@@ -77,7 +77,7 @@ public class SmartCache {
         List<ChanBoard> boards = ChanBoard.getBoardsByType(context, ChanBoard.Type.FAVORITES);
         for (ChanBoard board : boards) {
             Log.i(TAG, "Starting load service for favorite board " + board.link);
-            BoardLoadService.startService(context, board.link, 0);
+            BoardLoadService.startService(context, board.link);
         }
     }
 
@@ -97,7 +97,7 @@ public class SmartCache {
         for (ChanBoard board : boards) {
             if (!ChanFileStorage.isBoardCachedOnDisk(context, board.link)) { // if user never visited board before
                 Log.i(TAG, "Starting load service for uncached board " + board.link);
-                BoardLoadService.startService(context, board.link, 0);
+                BoardLoadService.startService(context, board.link);
             }
         }
     }

@@ -38,7 +38,11 @@ public class BoardLoadService extends BaseChanService {
     private int pageNo;
     private ChanBoard board;
 
-    public static void startService(Context context, String boardCode, int pageNo) {
+    public static void startService(Context context, String boardCode) {
+        startService(context, boardCode, 0);
+    }
+
+    private static void startService(Context context, String boardCode, int pageNo) {
         Log.i(TAG, "Start board load service for " + boardCode + " page " + pageNo );
         Intent intent = new Intent(context, BoardLoadService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
@@ -71,6 +75,7 @@ public class BoardLoadService extends BaseChanService {
             board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
             if (pageNo == 0) {
                 Log.i(TAG, "page 0 request, therefore resetting board.lastPage to false");
+                board.lastPage = false;
             }
             else if (pageNo > 0 && board.lastPage) {
                 Log.i(TAG, "Board request after last page, therefore service is terminating");
@@ -91,6 +96,12 @@ public class BoardLoadService extends BaseChanService {
             }
 
             ChanFileStorage.storeBoardData(getBaseContext(), board);
+
+            if (!board.lastPage) {
+                pageNo++;
+                Log.i(TAG, "Starting serivce to load next page for " + boardCode + " page " + pageNo);
+                BoardLoadService.startService(getBaseContext(), boardCode, pageNo);
+            }
 
         } catch (IOException e) {
             toastUI(R.string.board_service_couldnt_read);

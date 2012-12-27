@@ -71,6 +71,12 @@ public class ThreadLoadService extends BaseChanService {
                 Log.i(TAG, "Dead thread retrieved from storage, therefore service is terminating");
                 return;
             }
+            else if (thread == null) {
+                thread = new ChanThread();
+                thread.board = boardCode;
+                thread.no = threadNo;
+                thread.isDead = false;
+            }
 
             URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/res/" + threadNo + ".json");
 
@@ -108,13 +114,7 @@ public class ThreadLoadService extends BaseChanService {
 
 	protected void parseThread(BufferedReader in) throws IOException {
     	long time = new Date().getTime();
-    	if (thread == null) {
-    		thread = new ChanThread();
-        	thread.board = boardCode;
-            thread.no = threadNo;
-            thread.isDead = false;
-    	}
-        
+
     	List<ChanPost> posts = new ArrayList<ChanPost>();
         Gson gson = new GsonBuilder().create();
 

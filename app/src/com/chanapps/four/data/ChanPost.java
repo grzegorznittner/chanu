@@ -10,21 +10,22 @@ import java.util.*;
 public class ChanPost {
 
 	public static final String TAG = ChanPost.class.getSimpleName();
-    public static final int MAX_BOARDTHREAD_IMAGETEXT_LEN = 78;
-    public static final int MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN = 75;
+    public static final int MAX_BOARDTHREAD_IMAGETEXT_LEN = 75;
+    public static final int MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN = MAX_BOARDTHREAD_IMAGETEXT_LEN - 3;
 
-    // THREE COL SIZES
+    /* THREE COL SIZES
     public static final int MAX_IMAGETEXT_LEN = 33;
     public static final int MAX_IMAGETEXT_ABBR_LEN = 30;
     public static final int MAX_TEXTONLY_LEN = 93;
     public static final int MAX_TEXTONLY_ABBR_LEN = 90;
-
-    /* TWO COL SIZES
-    public static final int MAX_IMAGETEXT_LEN = 78;
-    public static final int MAX_IMAGETEXT_ABBR_LEN = 75;
-    public static final int MAX_TEXTONLY_LEN = 303;
-    public static final int MAX_TEXTONLY_ABBR_LEN = 300;
     */
+
+    /* TWO COL SIZES */
+    public static final int MAX_IMAGETEXT_LEN = MAX_BOARDTHREAD_IMAGETEXT_LEN;
+    public static final int MAX_IMAGETEXT_ABBR_LEN = MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN;
+    public static final int MAX_TEXTONLY_LEN = MAX_BOARDTHREAD_IMAGETEXT_LEN * 4;
+    public static final int MAX_TEXTONLY_ABBR_LEN = MAX_TEXTONLY_LEN - 3;
+
 
     private static final int MIN_LINE = 30;
     private static final int MAX_LINE = 40;

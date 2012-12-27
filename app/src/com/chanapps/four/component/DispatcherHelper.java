@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.data.ChanHelper;
 
@@ -67,9 +69,13 @@ public class DispatcherHelper {
                 activityClass = BoardSelectorActivity.class;
         }
         if (activity.getClass() != activityClass) {
+            Log.i(BoardSelectorActivity.TAG, "Dispatching to activity:" + lastActivity);
             Intent intent = new Intent(activity, activityClass);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             activity.startActivity(intent);
+        }
+        else {
+            Log.i(BoardSelectorActivity.TAG, "Activity already active, not dispatching");
         }
     }
 

@@ -943,7 +943,7 @@ public abstract class PullToRefreshBase<T extends View> extends LinearLayout imp
 	 * Re-measure the Loading Views height, and adjust internal padding as
 	 * necessary
 	 */
-	private void refreshLoadingViewsHeight() {
+	public void refreshLoadingViewsHeight() {
 		mHeaderHeight = mFooterHeight = 0;
 
 		if (mMode.canPullDown()) {

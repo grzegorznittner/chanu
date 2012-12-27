@@ -99,15 +99,7 @@ public class TabsAdapter extends FragmentPagerAdapter
 
     @Override
     public void onPageSelected(int position) {
-        Log.i(BoardSelectorActivity.TAG, "onPageSelected position: " + position + ", storing boardType: " + ChanBoard.Type.values()[position]);
-        if (mContext != null) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            if (prefs != null) {
-                SharedPreferences.Editor ed = prefs.edit();
-                ed.putString(ChanHelper.BOARD_TYPE, ChanBoard.Type.values()[position].toString());
-                ed.commit();
-            }
-        }
+        mContext.selectedBoardType = ChanBoard.Type.values()[position];
         if (mActionBar != null) {
             mActionBar.setSelectedNavigationItem(position);
         }

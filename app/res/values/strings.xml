@@ -49,6 +49,8 @@
     <string name="board_favorites_cleared">Cleared board favorites</string>
     <string name="board_end_of_board">End of board</string>
     <string name="board_click_for_more">(click for more)</string>
+    <string name="board_last_updated">Last updated %s</string>
+
     <!-- watchlist -->
     <string name="thread_already_in_watchlist">Thread already in watchlist</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>

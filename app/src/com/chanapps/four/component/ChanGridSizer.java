@@ -20,7 +20,7 @@ public class ChanGridSizer {
     private static final int[] MAX_COLUMN_WIDTHS = {
             ServiceType.SELECTOR.ordinal(), 200,
             ServiceType.BOARD.ordinal(), 200,
-            ServiceType.THREAD.ordinal(), 120,
+            ServiceType.THREAD.ordinal(), 200,
             ServiceType.WATCHLIST.ordinal(), 200
     };
 

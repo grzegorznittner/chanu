@@ -34,10 +34,13 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class BoardActivity extends Activity implements ClickableLoaderActivity, AbsListView.OnScrollListener {
+import java.util.Date;
+
+public class BoardActivity extends Activity implements ClickableLoaderActivity {
 	public static final String TAG = BoardActivity.class.getSimpleName();
     protected static final int LOADER_RESTART_INTERVAL_MS = 2000;
-    protected static final int LOADER_REFRESH_DELAY_MS = 1000;
+    protected static final int LOADER_REFRESH_DELAY_MS = 500;
+    protected static final int IMAGE_URL_HASHCODE_KEY = R.id.board_activity_grid_item_image;
 
     protected BoardCursorAdapter adapter;
     protected PullToRefreshGridView gridView;
@@ -59,7 +62,6 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 
     protected long tim;
     protected String boardCode;
-    private int pageNo = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +112,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
                 reloadBoard();
             }
         });
-        gridView.setOnScrollListener(this);
+        gridView.setDisableScrollingWhileRefreshing(false);
     }
 
     protected void ensureHandler() {
@@ -133,7 +135,6 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 	}
 
     protected void reloadBoard() {
-        pageNo = 0;
         startLoadService();
     }
 
@@ -180,21 +181,25 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         boardCode = intent.hasExtra(ChanHelper.BOARD_CODE)
                 ? intent.getStringExtra(ChanHelper.BOARD_CODE)
                 : prefs.getString(ChanHelper.BOARD_CODE, "a");
-        pageNo = 0;
     }
 
     protected void restoreInstanceState() {
+        Log.i(TAG, "Restoring instance state...");
         loadFromIntentOrPrefs();
         startLoadService();
         setActionBarTitle();
         scrollToLastPosition();
+        ensureHandler();
+        Message m = Message.obtain(handler, LoaderHandler.RESTART_LOADER_MSG);
+        handler.sendMessageDelayed(m, LOADER_REFRESH_DELAY_MS); // shorter than usual
     }
 
     protected void startLoadService() {
-        BoardLoadService.startService(this, boardCode, pageNo);
+        BoardLoadService.startService(this, boardCode);
     }
 
     protected void saveInstanceState() {
+        Log.i(TAG, "Saving instance state...");
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString(ChanHelper.BOARD_CODE, boardCode);
         editor.putLong(ChanHelper.THREAD_NO, 0);
@@ -240,17 +245,14 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
             return true;
         } else if (view instanceof ImageView) {
             ImageView iv = (ImageView) view;
-            if (loadPage > 0) {
-                Animation rotation = AnimationUtils.loadAnimation(this, R.animator.clockwise_refresh);
-                rotation.setRepeatCount(Animation.INFINITE);
-                iv.startAnimation(rotation);
+            if (imageUrl != null && !imageUrl.isEmpty() && loadPage == 0) {
+                smartSetImageView(iv, imageUrl);
             }
-            else if (imageUrl != null && !imageUrl.isEmpty()) {
-                try {
-                    this.imageLoader.displayImage(imageUrl, iv, displayImageOptions);
-                } catch (NumberFormatException nfe) {
-                    iv.setImageURI(Uri.parse(imageUrl));
-                }
+            else if (loadPage > 0) {
+                setImageViewToLoading(iv);
+            }
+            else {
+                iv.setImageBitmap(null); // blank
             }
             return true;
         } else {
@@ -258,22 +260,47 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         }
     }
 
+    protected void smartSetImageView(ImageView iv, String imageUrl) {
+        try {
+            Integer viewHashCodeInt = (Integer)iv.getTag(IMAGE_URL_HASHCODE_KEY);
+            int viewHashCode = viewHashCodeInt != null ? viewHashCodeInt : 0;
+            int urlHashCode = imageUrl.hashCode();
+            Log.i(TAG, "iv urlhash=" + urlHashCode + " viewhash=" + viewHashCode);
+            if (iv.getDrawable() == null || viewHashCode != urlHashCode) {
+                Log.i(TAG, "calling imageloader for " + imageUrl);
+                iv.setImageBitmap(null);
+                iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
+                this.imageLoader.displayImage(imageUrl, iv, displayImageOptions);
+            }
+        } catch (NumberFormatException nfe) {
+            iv.setImageURI(Uri.parse(imageUrl));
+        }
+    }
+
+    protected void setImageViewToLoading(ImageView iv) {
+        iv.setImageResource(R.drawable.navigation_refresh_light);
+        Animation rotation = AnimationUtils.loadAnimation(this, R.animator.clockwise_refresh);
+        rotation.setRepeatCount(Animation.INFINITE);
+        iv.startAnimation(rotation);
+    }
+
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
-        cursorLoader = new BoardCursorLoader(this, boardCode, pageNo);
+        cursorLoader = new BoardCursorLoader(this, boardCode);
         return cursorLoader;
 	}
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
+        gridView.onRefreshComplete();
+        gridView.setLastUpdatedLabel(getString(R.string.board_last_updated, (new Date()).toString()));
+        gridView.refreshLoadingViewsHeight();
 		adapter.swapCursor(data);
         ensureHandler();
         Message m = Message.obtain(handler, LoaderHandler.RESTART_LOADER_MSG);
         handler.sendMessageDelayed(m, LOADER_RESTART_INTERVAL_MS);
-        Message m2 = Message.obtain(handler, LoaderHandler.REFRESH_COMPLETE_MSG);
-        handler.sendMessageDelayed(m2, LOADER_REFRESH_DELAY_MS);
         if (gridView != null) {
 //            gridView.onRefreshComplete();
             if (scrollOnNextLoaderFinished > 0) {
@@ -281,7 +308,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
                 scrollOnNextLoaderFinished = 0;
             }
         }
-	}
+    }
 
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
@@ -340,6 +367,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         return true;
     }
 
+    /*
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         Log.d(TAG, "onScroll firstVisibleItem=" + firstVisibleItem + " visibleItemCount=" + visibleItemCount + " totalItemCount=" + totalItemCount + " prevTotalItemCount=" + prevTotalItemCount);
@@ -352,7 +380,6 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
             Log.v(TAG, "onListEnd, extending list");
             prevTotalItemCount = totalItemCount;
             Toast.makeText(this, "Fetching next page...", Toast.LENGTH_SHORT).show();
-            pageNo++;
             startLoadService();
         }
     }
@@ -360,6 +387,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     @Override
     public void onScrollStateChanged(AbsListView view, int s) {
     }
+    */
 
     protected void setActionBarTitle() {
         ActionBar a = getActionBar();

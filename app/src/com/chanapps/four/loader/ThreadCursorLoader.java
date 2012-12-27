@@ -43,7 +43,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     	Log.i(TAG, "loadInBackground");
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         ChanThread thread = ChanFileStorage.loadThreadData(getContext(), boardName, threadNo);
-        int isDead = thread.isDead ? 1 : 0;
+        int isDead = thread != null && thread.isDead ? 1 : 0;
         Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
         if (thread != null) {
             MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);

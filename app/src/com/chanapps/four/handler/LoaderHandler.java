@@ -8,6 +8,7 @@ import android.util.Log;
 import com.chanapps.four.activity.ClickableLoaderActivity;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanHelper;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
 
 /**
 * Created with IntelliJ IDEA.
@@ -22,6 +23,7 @@ public class LoaderHandler extends Handler {
 
     public static final int REFRESH_COMPLETE_MSG = 1;
     public static final int RESTART_LOADER_MSG = 2;
+    public static final int REENABLE_PULL_TO_REFRESH = 3;
 
     public LoaderHandler() {}
     public LoaderHandler(ClickableLoaderActivity activity) {
@@ -39,6 +41,10 @@ public class LoaderHandler extends Handler {
                 case RESTART_LOADER_MSG:
                     Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
                     activity.getLoaderManager().restartLoader(0, null, activity);
+                    break;
+                case REENABLE_PULL_TO_REFRESH:
+                    Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> reenable message received");
+                    activity.getGridView().setMode(PullToRefreshBase.Mode.PULL_DOWN_TO_REFRESH);
                     break;
                 default:
                     Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> null message received doing nothing");

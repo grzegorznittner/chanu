@@ -120,7 +120,7 @@ public class BoardGroupFragment
     @Override
     public void onPause() {
         super.onPause();
-        ((BoardSelectorActivity)getActivity()).saveInstanceState();
+//        ((BoardSelectorActivity)getActivity()).saveInstanceState();
     }
 
     @Override

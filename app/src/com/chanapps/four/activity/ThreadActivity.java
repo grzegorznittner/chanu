@@ -183,10 +183,11 @@ public class ThreadActivity extends BoardActivity {
             return true;
         } else if (view instanceof ImageView) {
             ImageView iv = (ImageView) view;
-            try {
-                this.imageLoader.displayImage(imageUrl, iv, displayImageOptions);
-            } catch (NumberFormatException nfe) {
-                iv.setImageURI(Uri.parse(imageUrl));
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                smartSetImageView(iv, imageUrl);
+            }
+            else {
+                iv.setImageBitmap(null); // blank
             }
             return true;
         } else {
@@ -259,10 +260,11 @@ public class ThreadActivity extends BoardActivity {
         inflater.inflate(R.menu.thread_menu, menu);
         return true;
     }
-
+    /*
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
     }
+    */
 
     @Override
     protected void setActionBarTitle() {

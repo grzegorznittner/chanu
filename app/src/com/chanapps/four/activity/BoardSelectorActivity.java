@@ -34,7 +34,7 @@ public class BoardSelectorActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "onCreate");
-        SmartCache.fillCache(this);
+        //SmartCache.fillCache(this);
         Intent intent = getIntent();
         if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
             Log.i(TAG, "Starting dispatch");
@@ -130,6 +130,7 @@ public class BoardSelectorActivity extends FragmentActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        Log.i(TAG, "onPause");
         saveInstanceState();
     }
 
@@ -137,6 +138,7 @@ public class BoardSelectorActivity extends FragmentActivity {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString(ChanHelper.BOARD_TYPE, selectedBoardType.toString());
         editor.commit();
+        Log.i(TAG, "Saved selected board type to " + selectedBoardType);
         DispatcherHelper.saveActivityToPrefs(this);
     }
 
