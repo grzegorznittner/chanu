@@ -38,7 +38,7 @@ import java.util.Date;
 
 public class BoardActivity extends Activity implements ClickableLoaderActivity {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-    protected static final int LOADER_RESTART_INTERVAL_MS = 2000;
+    protected static final int LOADER_RESTART_INTERVAL_MS = 10000;
     protected static final int LOADER_REFRESH_DELAY_MS = 500;
     protected static final int IMAGE_URL_HASHCODE_KEY = R.id.board_activity_grid_item_image;
 
