@@ -50,10 +50,14 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 String boardCode = threadComponents[1];
                 long threadNo = Long.valueOf(threadComponents[2]);
                 String shortText;
+                String headerText;
                 String text;
                 String imageUrl;
+                String countryUrl;
                 int imageWidth;
                 int imageHeight;
+                int fullImageWidth;
+                int fullImageHeight;
                 int isDead;
                 ChanThread thread = null;
                 ChanPost threadPost = null;
@@ -70,11 +74,15 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 if (threadPost != null) { // pull from cache, it will have the latest data
                     Log.i(TAG, "Found cached watchlist thread " + boardCode + "/" + threadNo + ", updating from cache");
                     threadPost.isDead = thread.isDead;
-                    shortText = threadPost.getThreadText();
+                    shortText = threadPost.getBoardThreadText();
+                    headerText = threadPost.getHeaderText();
                     text = threadPost.getFullText();
                     imageUrl = threadPost.getThumbnailUrl();
+                    countryUrl = threadPost.getCountryFlagUrl();
                     imageWidth = threadPost.tn_w;
                     imageHeight = threadPost.tn_h;
+                    fullImageWidth = threadPost.w;
+                    fullImageHeight = threadPost.h;
                     isDead = thread.isDead ? 1 : 0;
                 }
                 else { // thread not in cache, pull last stored from watchlist prefs
@@ -82,10 +90,14 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                     shortText = (threadComponents[3].length() > ChanPost.MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN
                             ? threadComponents[3].substring(0, ChanPost.MAX_BOARDTHREAD_IMAGETEXT_LEN) + "..."
                             : threadComponents[3]);
+                    headerText = null;
                     text = threadComponents[3];
                     imageUrl = threadComponents[4];
+                    countryUrl = null;
                     imageWidth = Integer.valueOf(threadComponents[5]);
                     imageHeight = Integer.valueOf(threadComponents[6]);
+                    fullImageWidth = imageWidth;
+                    fullImageHeight = imageHeight;
                     isDead = 0; // we don't know if it's dead or not, assume alive
                 }
                 MatrixCursor.RowBuilder row = cursor.newRow();
@@ -93,12 +105,14 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 row.add(boardCode);
                 row.add(0);
                 row.add(imageUrl);
+                row.add(countryUrl);
                 row.add(shortText);
+                row.add(headerText);
                 row.add(text);
                 row.add(imageWidth);
                 row.add(imageHeight);
-                row.add(imageWidth);
-                row.add(imageHeight);
+                row.add(fullImageWidth);
+                row.add(fullImageHeight);
                 row.add(tim);
                 row.add(isDead);
                 row.add(0);

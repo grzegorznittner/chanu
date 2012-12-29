@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import android.util.Log;
 
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
+import com.chanapps.four.service.BoardLoadService;
 
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
@@ -48,30 +50,45 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     public Cursor loadInBackground() {
     	Log.i(TAG, "loadInBackground");
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
-        if (board != null) {
+        if (board == null) { // this shouldn't happen, so reload
+            Log.i(TAG, "Reloading board " + boardName + " - starting BoardLoadService");
+            Intent threadIntent = new Intent(context, BoardLoadService.class);
+            threadIntent.putExtra(ChanHelper.BOARD_CODE, boardName);
+            //threadIntent.putExtra(ChanHelper.RETRIES, ++retries);
+            context.startService(threadIntent);
+        }
+        else {
             MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
             for (ChanPost thread : board.threads) {
                 if (thread.tn_w <= 0 || thread.tim == null) {
                     Log.e(TAG, "Board thread without image, should never happen, board=" + boardName + " threadNo=" + thread.no);
                     matrixCursor.addRow(new Object[] {
                             thread.no, boardName, 0, "",
-                            thread.getBoardThreadText(), thread.getFullText(), thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.isDead ? 1 : 0, 0, 0});
+                            thread.getCountryFlagUrl(),
+                            thread.getBoardThreadText(), thread.getHeaderText(), thread.getFullText(),
+                            thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.isDead ? 1 : 0, 0, 0});
 
                 } else {
                     matrixCursor.addRow(new Object[] {
-                            thread.no, boardName, 0, thread.getThumbnailUrl(),
-                            thread.getBoardThreadText(), thread.getFullText(), thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.isDead ? 1 : 0, 0, 0});
+                            thread.no, boardName, 0,
+                            thread.getThumbnailUrl(), thread.getCountryFlagUrl(),
+                            thread.getBoardThreadText(), thread.getHeaderText(), thread.getFullText(),
+                            thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.isDead ? 1 : 0, 0, 0});
                 }
             }
             if (board.lastPage) {
                 matrixCursor.addRow(new Object[] {
-                        2, boardName, 0, "",
-                        "", "", -1, -1, -1, -1, 0, 1, 0, 1});
+                        2, boardName, 0,
+                        "", "",
+                        "", "", "",
+                        -1, -1, -1, -1, 0, 1, 0, 1});
             }
             else {
                 matrixCursor.addRow(new Object[] {
-                        2, boardName, 0, "",
-                        "", "", -1, -1, -1, -1, 0, 1, 1, 0});
+                        2, boardName, 0,
+                        "", "",
+                        "", "", "",
+                        -1, -1, -1, -1, 0, 1, 1, 0});
                 registerContentObserver(matrixCursor, mObserver);
             }
             return matrixCursor;

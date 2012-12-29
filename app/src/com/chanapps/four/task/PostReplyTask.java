@@ -52,7 +52,7 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             List<Part> partsList = new ArrayList<Part>();
             partsList.add(new StringPart("MAX-FILE-SIZE", MAX_FILE_SIZE));
             partsList.add(new StringPart("mode", "regist"));
-            partsList.add(new StringPart("resto", Long.toString(activity.threadNo)));
+            partsList.add(new StringPart("resto", Long.toString(activity.getRestoForPosting())));
             partsList.add(new StringPart("name", ""));
             partsList.add(new StringPart("email", ""));
             partsList.add(new StringPart("sub", ""));

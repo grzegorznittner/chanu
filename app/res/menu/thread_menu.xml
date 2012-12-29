@@ -3,7 +3,7 @@
     <item android:id="@+id/hide_all_text"
           android:title="@string/pref_hide_all_text"
           android:icon="@drawable/content_picture"
-          android:showAsAction="always"
+          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/watch_thread_menu"
           android:title="@string/watch_thread_menu"
@@ -23,4 +23,8 @@
           android:title="@string/help_menu"
           android:icon="@drawable/action_help"
           />
+    <item android:id="@+id/about_menu"
+          android:title="@string/about_menu"
+          android:icon="@drawable/action_help"
+            />
 </menu>

@@ -128,21 +128,22 @@ public class BoardLoadService extends BaseChanService {
     	List<ChanPost> stickyPosts = new ArrayList<ChanPost>();
     	List<ChanPost> threads = new ArrayList<ChanPost>();
 
-        if (board.stickyPosts != null && board.stickyPosts.length > 0) {
-            Collections.addAll(stickyPosts, board.stickyPosts);
-            Log.i(TAG, "Added " + board.stickyPosts.length + " sticky posts from storage");
-        }
-
-        if (board.threads != null && board.threads.length > 0) {
-            if (board.threads.length < MAX_THREAD_RETENTION_PER_BOARD) {
-                Collections.addAll(threads, board.threads);
-                Log.i(TAG, "Added " + board.threads.length + " threads from storage");
+        if (pageNo != 0) { // preserve existing threads on subsequent page loads
+            if (board.stickyPosts != null && board.stickyPosts.length > 0) {
+                Collections.addAll(stickyPosts, board.stickyPosts);
+                Log.i(TAG, "Added " + board.stickyPosts.length + " sticky posts from storage");
             }
-            else {
-                for (int i = 0; i < MAX_THREAD_RETENTION_PER_BOARD; i++) {
-                    threads.add(board.threads[i]);
+            if (board.threads != null && board.threads.length > 0) {
+                if (board.threads.length < MAX_THREAD_RETENTION_PER_BOARD) {
+                    Collections.addAll(threads, board.threads);
+                    Log.i(TAG, "Added " + board.threads.length + " threads from storage");
                 }
-                Log.i(TAG, "Hit thread retention limit, adding only " + MAX_THREAD_RETENTION_PER_BOARD + " threads from storage");
+                else {
+                    for (int i = 0; i < MAX_THREAD_RETENTION_PER_BOARD; i++) {
+                        threads.add(board.threads[i]);
+                    }
+                    Log.i(TAG, "Hit thread retention limit, adding only " + MAX_THREAD_RETENTION_PER_BOARD + " threads from storage");
+                }
             }
         }
 

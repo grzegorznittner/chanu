@@ -62,6 +62,7 @@ public class PostReplyActivity extends Activity {
     private Uri imageUri;
     public String boardCode = null;
     public long threadNo = 0;
+    public long postNo = 0;
     private boolean fromBoard = false;
 
     private Random randomGenerator = new Random();
@@ -86,6 +87,13 @@ public class PostReplyActivity extends Activity {
 
         messageText = (EditText)findViewById(R.id.post_reply_text);
         recaptchaText = (EditText)findViewById(R.id.post_reply_recaptcha_response);
+        recaptchaText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                validateAndSendReply();
+                return true;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -128,27 +136,43 @@ public class PostReplyActivity extends Activity {
         if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
             boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
             threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-            fromBoard = intent.getBooleanExtra(ChanHelper.FROM_BOARD, false);
+            postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
             String initialImageUri = intent.getStringExtra(ChanHelper.IMAGE_URL);
             if (initialImageUri != null && !initialImageUri.isEmpty())
-                imageUri = Uri.parse(initialImageUri);
+                try {
+                    imageUri = Uri.parse(initialImageUri);
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "Couldn't parse intent image uri=" + imageUri, e);
+                    imageUri = null;
+                }
             else
                 imageUri = null;
+            String message = "";
+            if (postNo != 0) {
+                message += ">>" + postNo + "\n";
+            }
             String initialText = intent.getStringExtra(ChanHelper.TEXT);
             if (initialText != null && !initialText.isEmpty()) {
-                String quotedText = ChanPost.quoteText(initialText);
-                messageText.setText(quotedText);
+                message += ChanPost.quoteText(initialText);
             }
+            messageText.append(message);
         }
         else {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             boardCode = prefs.getString(ChanHelper.BOARD_CODE, null);
             threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
-            fromBoard = prefs.getBoolean(ChanHelper.FROM_BOARD, false);
-            messageText.setText(prefs.getString(ChanHelper.TEXT, null));
+            postNo = prefs.getLong(ChanHelper.POST_NO, 0);
+            messageText.append(prefs.getString(ChanHelper.TEXT, null));
             String initialImageUri = prefs.getString(ChanHelper.IMAGE_URL, null);
             if (initialImageUri != null && !initialImageUri.isEmpty())
-                imageUri = Uri.parse(initialImageUri);
+                try {
+                    imageUri = Uri.parse(initialImageUri);
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "Couldn't parse prefs image uri=" + imageUri, e);
+                    imageUri = null;
+                }
             else
                 imageUri = null;
         }
@@ -171,7 +195,7 @@ public class PostReplyActivity extends Activity {
         SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(this).edit();
         ed.putString(ChanHelper.BOARD_CODE, boardCode);
         ed.putLong(ChanHelper.THREAD_NO, threadNo);
-        ed.putBoolean(ChanHelper.FROM_BOARD, fromBoard);
+        ed.putLong(ChanHelper.POST_NO, postNo);
         ed.putString(ChanHelper.TEXT, getMessage());
         ed.putString(ChanHelper.IMAGE_URL, getImageUrl());
         ed.commit();
@@ -342,6 +366,18 @@ public class PostReplyActivity extends Activity {
         setImagePreview();
     }
 
+    protected void validateAndSendReply() {
+        String validMsg = validatePost();
+        if (validMsg != null) {
+            Toast.makeText(ctx, validMsg, Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(ctx, R.string.post_reply_posting, Toast.LENGTH_SHORT).show();
+            PostReplyTask postReplyTask = new PostReplyTask(this);
+            postReplyTask.execute();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -351,14 +387,7 @@ public class PostReplyActivity extends Activity {
                 return true;
 */
             case R.id.post_reply_send_menu:
-                String validMsg = validatePost();
-                if (validMsg != null) {
-                    Toast.makeText(ctx, validMsg, Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-                Toast.makeText(ctx, R.string.post_reply_posting, Toast.LENGTH_SHORT).show();
-                PostReplyTask postReplyTask = new PostReplyTask(this);
-                postReplyTask.execute();
+                validateAndSendReply();
                 return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");
@@ -372,6 +401,10 @@ public class PostReplyActivity extends Activity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public long getRestoForPosting() {
+        return threadNo;
     }
 
     public String getMessage() {
@@ -399,7 +432,7 @@ public class PostReplyActivity extends Activity {
         if (recaptcha == null || recaptcha.trim().isEmpty()) {
             return res.getString(R.string.post_reply_enter_captcha);
         }
-        String message = messageText.getText().toString();
+        String message = getMessage();
         String image = imageUri != null ? imageUri.getPath() : null;
         boolean hasMessage = message != null && !message.trim().isEmpty();
         boolean hasImage = image != null && !image.trim().isEmpty();

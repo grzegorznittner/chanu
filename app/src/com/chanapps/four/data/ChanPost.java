@@ -33,7 +33,14 @@ public class ChanPost {
     public String board;
     public long no = -1;
     public int sticky = 0;
+    public int closed = 0;
     public String now;
+    public String trip;
+    public String id;
+    public String capcode;
+    public String country;
+    public String country_name;
+    public String email;
     public Date created;
     public long time = -1;
     public String name;
@@ -47,7 +54,7 @@ public class ChanPost {
     public int tn_w = 0;
     public int tn_h = 0;
     public int fsize = -1;
-    public int resto = -1;
+    public long resto = -1;
     public int replies = -1;
     public int images = -1;
     public int omitted_posts = -1;
@@ -88,19 +95,34 @@ public class ChanPost {
     }
 
     public String getFullText() {
+        return getFullText(true);
+    }
+
+    public String getFullText(boolean withNumbers) {
         String text = sub != null && sub.trim().length() > 0
                   ? sub + (com != null && com.trim().length() > 0 ? "<br/>" + com : "")
                   : com;
-        return sanitizeText(text);
+        return sanitizeText(text, withNumbers);
     }
 
     private static final String sanitizeText(String text) {
+        return sanitizeText(text, true);
+    }
+
+    private static final String sanitizeText(String text, boolean withNumbers) {
+        if (text == null || text.isEmpty())
+            return "";
+
         long start = System.currentTimeMillis();
-        String foo =
-            (text != null && text.length() > 0)
-            ? text
-                .replaceAll("<a[^>]*class=\"quotelink\">[^<]*</a>", "")
+
+        if (withNumbers)
+            text = text.replaceAll("<a[^>]*class=\"quotelink\">([^<]*)</a>", "$1");
+        else
+            text = text.replaceAll("<a[^>]*class=\"quotelink\">[^<]*</a>", "");
+
+        text = text
                 .replaceAll("<br */?>", "\n")
+                .replaceAll("\n\n\n+", "\n\n")
                 .replaceAll("<[^>]+>", "")
                 .replaceAll("&lt;", "<")
                 .replaceAll("&gt;", ">")
@@ -108,11 +130,12 @@ public class ChanPost {
                 .replaceAll("&quot;", "\"")
                 .replaceAll("&#44;", ",")
                 .replaceAll("&#[0-9abcdef]*;", "")
-                .trim()
-            : "";
+                .trim();
+
         long end = System.currentTimeMillis();
         Log.v(TAG, "Regexp: " + (end - start) + "ms");
-        return foo;
+
+        return text;
     }
 
     private static final String collapseNewlines(String s) {
@@ -156,19 +179,47 @@ public class ChanPost {
    		return null;
    	}
 
+    public String getCountryFlagUrl() {
+        if (country != null && !country.isEmpty())
+            return getCountryFlagUrl(board, country);
+        else
+            return null;
+    }
+
+    public String getCountryFlagUrl(String boardCode, String countryCode) {
+        return "http://static.4chan.org/image/country/"
+                + (boardCode.equals("pol") ? "troll/" : "")
+                + countryCode.toLowerCase()
+                + ".gif";
+    }
+
+    public String getHeaderText() {
+        return "No: " + no
+                + (resto > 0 ? "\nReply To: " + resto : "")
+                + (sticky > 0 ? "\nSticky" : "")
+                + (closed > 0 ? "\nClosed" : "")
+                + (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous") ? "\nName: " + name : "")
+                + (trip != null && !trip.isEmpty() ? "\nTripcode: " + trip : "")
+                + (id != null && !id.isEmpty() ? "\nId: " + id : "")
+                + (email != null && !email.isEmpty() ? "\nEmail: " + email : "")
+                + (country_name != null && !country_name.isEmpty() ? "\nCountry: " + country_name : "")
+                + "\n" + (new Date(time)).toString();
+    }
+
     public String getPostText(boolean hideAllText) {
-        String text = hideAllText ? "" : getFullText();
-		if (fsize > 0) {
-            text = abbreviate(text, MAX_IMAGETEXT_LEN, MAX_IMAGETEXT_ABBR_LEN);
+        int maxImageTextLen = fsize > 0 ? MAX_IMAGETEXT_LEN : MAX_TEXTONLY_LEN;
+        int maxImageTextAbbrLen = fsize > 0 ? MAX_IMAGETEXT_ABBR_LEN : MAX_TEXTONLY_ABBR_LEN;
+        String text = "";
+        if (!hideAllText) {
+            text += no + "\n" + abbreviate(getFullText(), maxImageTextLen, maxImageTextAbbrLen);
+        }
+        if (fsize > 0) {
             if (text.length() > 0) {
 				text += "\n";
 			}
 			int kbSize = (fsize / 1024) + 1;
 			text += kbSize + "kB " + w + "x" + h; // + " " + ext;
 		}
-        else {
-            text = abbreviate(text, MAX_TEXTONLY_LEN, MAX_TEXTONLY_ABBR_LEN, true);
-        }
         return text;
 	}
 
@@ -181,42 +232,49 @@ public class ChanPost {
     }
 
     public String getThreadText(boolean hideAllText) {
-        return getThreadText(hideAllText, MAX_IMAGETEXT_LEN, MAX_IMAGETEXT_ABBR_LEN);
+        return getThreadText(hideAllText, MAX_IMAGETEXT_LEN, MAX_IMAGETEXT_ABBR_LEN, false);
     }
 
-    public String getThreadText(boolean hideAllText, int maxImageTextLen, int maxImageTextAbbrLen) {
-        if (hideAllText) {
-            return "";
+    public String getThreadText(boolean hideAllText, int maxImageTextLen, int maxImageTextAbbrLen, boolean onBoard) {
+        String text = "";
+        if (!hideAllText) {
+            if (!onBoard)
+                text += no + "\n";
+            text += abbreviate(getFullText(!onBoard), maxImageTextLen, maxImageTextAbbrLen);
         }
-        String text = abbreviate(getFullText(), maxImageTextLen, maxImageTextAbbrLen);
+        if (fsize > 0 && !onBoard) {
+            if (text.length() > 0) {
+                text += "\n";
+            }
+            int kbSize = (fsize / 1024) + 1;
+            text += kbSize + "kB " + w + "x" + h; // + " " + ext;
+        }
         if (resto != 0) { // just a post, don't add thread stuff
             return text;
         }
         if (text.length() > 0) {
             text += "\n";
         }
+        text += replies
+                + " post" + (replies == 1 ? "" : "s")
+                + " "
+                + images
+                + " image"
+                + (images == 1 ? "" : "s");
+        if (imagelimit == 1) {
+            text += " (IL)";
+        }
+        if (bumplimit == 1) {
+            text += " (BL)";
+        }
         if (isDead) {
-            text += "DEAD THREAD";
+            text += "\nDEAD THREAD";
         }
-        else {
-            text += replies
-                    + " post" + (replies == 1 ? "" : "s")
-                    + " "
-                    + images
-                    + " image"
-                    + (images == 1 ? "" : "s");
-            if (imagelimit == 1) {
-                text += " (IL)";
-            }
-            if (bumplimit == 1) {
-                text += " (BL)";
-            }
-        }
-		return text;
+        return text;
 	}
 
     public String getBoardThreadText() {
-        return getThreadText(false, MAX_BOARDTHREAD_IMAGETEXT_LEN, MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN);
+        return getThreadText(false, MAX_BOARDTHREAD_IMAGETEXT_LEN, MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN, true);
     }
 
     public void mergeIntoThreadList(List<ChanPost> threads) {

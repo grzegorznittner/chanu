@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:layout_marginTop="16dp"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     android:layout_marginBottom="16dp"
     android:padding="1dp"
-    android:background="#121212"
+    android:background="#010101"
     android:orientation="vertical"
     >
 
     <FrameLayout
-        android:background="#e2e2e2"
+        android:background="#fefefe"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical">
@@ -32,16 +32,45 @@
                 android:padding="16dp"
                 android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/popup_full_text"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#121212"
-                android:linksClickable="true"
-                android:autoLink="all"
-                android:layout_gravity="top">
-            </TextView>
+
+                <FrameLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                    >
+
+                    <TextView
+                        android:id="@+id/popup_header"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#010101"
+                        android:textStyle="bold"
+                        android:paddingBottom="16dp"
+                        android:layout_gravity="top|left">
+                    </TextView>
+
+                    <ImageView
+                        android:id="@+id/popup_country_flag"
+                        android:layout_width="16dp"
+                        android:layout_height="11dp"
+                        android:layout_gravity="top|right"
+                        android:contentDescription="@string/popup_country_flag"
+                        >
+                    </ImageView>
+
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/popup_full_text"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#010101"
+                    android:linksClickable="true"
+                    android:autoLink="all"
+                    android:scrollHorizontally="true"
+                    android:layout_gravity="top">
+                </TextView>
 
             </LinearLayout>
 
@@ -57,7 +86,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="bottom"
-                    android:layout_weight="2"
+                    android:layout_weight="3"
                     android:visibility="gone"
                     android:clickable="false"
                     android:text="@string/dead_thread_reply" />

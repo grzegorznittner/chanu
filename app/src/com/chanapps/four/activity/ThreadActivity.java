@@ -6,24 +6,24 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-import com.chanapps.four.adapter.BoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanWatchlist;
-import com.chanapps.four.loader.BoardCursorLoader;
+import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.ThreadCursorLoader;
-import com.chanapps.four.service.BoardLoadService;
 import com.chanapps.four.service.ThreadLoadService;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * Created with IntelliJ IDEA.
@@ -125,8 +125,8 @@ public class ThreadActivity extends BoardActivity {
         adapter = new ThreadCursorAdapter(this,
                 R.layout.thread_grid_item,
                 this,
-                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT},
-                new int[] {R.id.thread_grid_item_image, R.id.thread_grid_item_text});
+                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_COUNTRY_URL},
+                new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag});
         gridView.getRefreshableView().setAdapter(adapter);
     }
 
@@ -166,14 +166,17 @@ public class ThreadActivity extends BoardActivity {
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
-        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        Log.i(TAG, "Setting view for " + view + " shortText=" + shortText + " imageUrl=" + imageUrl);
+        return setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions, hideAllText);
+    }
+
+    public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
+                                       ImageLoader imageLoader, DisplayImageOptions displayImageOptions,
+                                       boolean hideAllText) {
         if (view instanceof TextView) {
-            //todo - @john - if the text is hidden then the image should take the full available space.
             TextView tv = (TextView) view;
-            if ((threadNo != 0 && hideAllText) || shortText == null || shortText.isEmpty()) {
+            long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+            String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
+            if ((resto != 0 && hideAllText) || shortText == null || shortText.isEmpty()) {
                 tv.setText("");
                 tv.setVisibility(View.INVISIBLE);
             }
@@ -181,10 +184,21 @@ public class ThreadActivity extends BoardActivity {
                 tv.setText(shortText);
             }
             return true;
-        } else if (view instanceof ImageView) {
+        } else if (view instanceof ImageView && view.getId() == R.id.grid_item_image) {
+            String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
             ImageView iv = (ImageView) view;
             if (imageUrl != null && !imageUrl.isEmpty()) {
-                smartSetImageView(iv, imageUrl);
+                smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
+            }
+            else {
+                iv.setImageBitmap(null); // blank
+            }
+            return true;
+        } else if (view instanceof ImageView && view.getId() == R.id.grid_item_country_flag) {
+            ImageView iv = (ImageView) view;
+            String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
+            if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty()) {
+                smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions);
             }
             else {
                 iv.setImageBitmap(null); // blank
@@ -217,6 +231,9 @@ public class ThreadActivity extends BoardActivity {
         editor.commit();
         invalidateOptionsMenu();
         createGridView();
+        ensureHandler();
+        Message m = Message.obtain(handler, LoaderHandler.RESTART_LOADER_MSG);
+        handler.sendMessageDelayed(m, LOADER_SHORT_DELAY_MS);
     }
 
     @Override
@@ -272,7 +289,7 @@ public class ThreadActivity extends BoardActivity {
         if (a == null) {
             return;
         }
-        String title = "/" + boardCode + " " + getString(R.string.thread_activity);
+        String title = "/" + boardCode + " " + threadNo; // getString(R.string.thread_activity);
         a.setTitle(title);
         a.setDisplayHomeAsUpEnabled(true);
     }

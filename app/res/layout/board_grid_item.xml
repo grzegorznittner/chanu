@@ -1,41 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:id="@+id/board_activity_grid_item"
-    android:layout_width="fill_parent"
-    android:layout_height="200dp"
-    android:paddingLeft="0dp"
-    android:paddingRight="0dp"
-    android:paddingTop="0dp"
-    android:paddingBottom="0dp"
-    android:layout_marginLeft="0dp"
-    android:layout_marginRight="0dp"
-    android:background="#e2e2e2">
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    	android:id="@+id/board_activity_grid_item_relative"
-    	android:layout_width="match_parent"
-    	android:layout_height="match_parent" >
-    
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/grid_item"
+    style="@style/GridLayout">
+
     <ImageView
-        android:id="@+id/board_activity_grid_item_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:maxHeight="200dp"
-        android:scaleType="fitEnd"
-        android:src="@drawable/stub_image" />
+            android:id="@+id/grid_item_image"
+            style="@style/GridImageStyle"
+            />
+
     <TextView
-        android:id="@+id/board_activity_grid_item_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxHeight="200dp"
-        android:textColor="#ffeaeaea"
-        android:background="#80121212"
-        android:textStyle="normal"
-        android:textColorHint="#555555"
-        android:padding="8dp"
-        android:gravity="top|left"
-        android:textSize="12sp"
-    />
-    </RelativeLayout>
-</LinearLayout>
+            android:id="@+id/grid_item_text"
+            style="@style/GridTextImageOverlayStyle"
+            />
+
+    <ImageView
+            android:id="@+id/grid_item_country_flag"
+            style="@style/GridCountryFlagStyle"
+            />
+
+</RelativeLayout>

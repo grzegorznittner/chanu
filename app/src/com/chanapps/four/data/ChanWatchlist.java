@@ -10,6 +10,7 @@ import com.chanapps.four.activity.R;
 
 import java.net.URI;
 import java.net.URL;
+import java.security.KeyStore;
 import java.util.*;
 
 /**
@@ -83,26 +84,36 @@ public class ChanWatchlist {
         Log.i(TAG, "Watchlist cleared");
     }
 
+    public static void cleanWatchlist(Context ctx) {
+        Log.i(TAG, "Cleaning watchlist...");
+        List<Long> deadTims = getDeadTims(ctx);
+        deleteThreadsFromWatchlist(ctx, deadTims);
+        Log.i(TAG, "Watchlist cleaned");
+    }
+
     public static void deleteThreadFromWatchlist(Context ctx, long tim) {
+        List<Long> deleteTims = new ArrayList<Long>();
+        deleteTims.add(tim);
+        deleteThreadsFromWatchlist(ctx, deleteTims);
+    }
+
+    public static void deleteThreadsFromWatchlist(Context ctx, List<Long> tims) {
         Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
-        String threadToDelete = null;
+        Set<String> toDelete = new HashSet<String>();
         for (String s : savedWatchlist) {
-            if (s.startsWith(tim + FIELD_SEPARATOR)) {
-                threadToDelete = s;
-                break;
+            for (long tim : tims) { // order n^2, my CS prof would kill me
+                if (s.startsWith(tim + FIELD_SEPARATOR)) {
+                    toDelete.add(s);
+                    Log.i(TAG, "Thread " + s + " deleted from watchlist");
+                    break;
+                }
             }
         }
-        if (threadToDelete != null) {
-            savedWatchlist.remove(threadToDelete);
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
-            editor.putStringSet(ChanHelper.THREAD_WATCHLIST, savedWatchlist);
-            editor.commit();
-            Log.i(TAG, "Thread " + threadToDelete + " deleted from watchlist");
-            Log.d(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
-        }
-        else {
-            Log.e(TAG, "Could not find thread to delete with tim = " + tim);
-        }
+        savedWatchlist.removeAll(toDelete);
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
+        editor.putStringSet(ChanHelper.THREAD_WATCHLIST, savedWatchlist);
+        editor.commit();
+        Log.d(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
     }
 
     public static List<String> getSortedWatchlistFromPrefs(Context ctx) {
@@ -112,6 +123,26 @@ public class ChanWatchlist {
         Collections.sort(threadPathList);
         Collections.reverse(threadPathList);
         return threadPathList;
+    }
+
+    public static List<Long> getDeadTims(Context ctx) {
+        Set<String> threadPaths = getWatchlistFromPrefs(ctx);
+        List<Long> deadTims = new ArrayList<Long>();
+        for (String threadPath : threadPaths) {
+            String[] threadComponents = getThreadPathComponents(threadPath);
+            long tim = Long.valueOf(threadComponents[0]);
+            String boardCode = threadComponents[1];
+            long threadNo = Long.valueOf(threadComponents[2]);
+            try {
+                ChanThread thread = ChanFileStorage.loadThreadData(ctx, boardCode, threadNo);
+                if (thread.isDead)
+                    deadTims.add(tim);
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't load thread to determine dead status " + boardCode + "/" + threadNo, e);
+            }
+        }
+        return deadTims;
     }
 
     public static Set<String> getWatchlistFromPrefs(Context ctx) {

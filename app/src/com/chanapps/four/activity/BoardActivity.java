@@ -38,9 +38,12 @@ import java.util.Date;
 
 public class BoardActivity extends Activity implements ClickableLoaderActivity {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-    protected static final int LOADER_RESTART_INTERVAL_MS = 10000;
-    protected static final int LOADER_REFRESH_DELAY_MS = 500;
-    protected static final int IMAGE_URL_HASHCODE_KEY = R.id.board_activity_grid_item_image;
+    public static final int LOADER_RESTART_INTERVAL_SUPER_MS = 20000;
+    public static final int LOADER_RESTART_INTERVAL_LONG_MS = 10000;
+    public static final int LOADER_RESTART_INTERVAL_MED_MS = 5000;
+    public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 2500;
+    public static final int LOADER_SHORT_DELAY_MS = 500;
+    protected static final int IMAGE_URL_HASHCODE_KEY = R.id.grid_item_image;
 
     protected BoardCursorAdapter adapter;
     protected PullToRefreshGridView gridView;
@@ -53,6 +56,8 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     protected SharedPreferences prefs;
 
     protected View popupView;
+    protected ImageView countryFlag;
+    protected TextView popupHeader;
     protected TextView popupText;
     protected PopupWindow popupWindow;
     protected Button deadThreadButton;
@@ -92,14 +97,14 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         adapter = new BoardCursorAdapter(this,
                 R.layout.board_grid_item,
                 this,
-                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT},
-                new int[] {R.id.board_activity_grid_item_image, R.id.board_activity_grid_item_text});
+                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_COUNTRY_URL},
+                new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag});
         gridView.getRefreshableView().setAdapter(adapter);
     }
 
     protected void createGridView() {
         setContentView(R.layout.board_grid_layout);
-        gridView = (PullToRefreshGridView)findViewById(R.id.board_activity_grid_view);
+        gridView = (PullToRefreshGridView)findViewById(R.id.board_grid_view);
         sizeGridToDisplay();
         initGridAdapter();
         gridView.setClickable(true);
@@ -191,7 +196,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         scrollToLastPosition();
         ensureHandler();
         Message m = Message.obtain(handler, LoaderHandler.RESTART_LOADER_MSG);
-        handler.sendMessageDelayed(m, LOADER_REFRESH_DELAY_MS); // shorter than usual
+        handler.sendMessageDelayed(m, LOADER_SHORT_DELAY_MS); // shorter than usual
     }
 
     protected void startLoadService() {
@@ -226,24 +231,26 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
-        final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
-        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         if (view instanceof TextView) {
-            //todo - @john - if the text is hidden then the image should take the full available space.
+            final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
+            final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
             TextView tv = (TextView) view;
             if (loadPage > 0 || lastPage > 0) {
                 // nothing to set
             }
-            else if (shortText == null || shortText.isEmpty()) {
-                tv.setVisibility(View.INVISIBLE);
-            }
             else {
-                tv.setText(shortText);
+                String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
+                if (shortText == null || shortText.isEmpty()) {
+                    tv.setVisibility(View.INVISIBLE);
+                }
+                else {
+                    tv.setText(shortText);
+                }
             }
             return true;
-        } else if (view instanceof ImageView) {
+        } else if (view instanceof ImageView && view.getId() == R.id.grid_item_image) {
+            String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+            int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
             ImageView iv = (ImageView) view;
             if (imageUrl != null && !imageUrl.isEmpty() && loadPage == 0) {
                 smartSetImageView(iv, imageUrl);
@@ -255,12 +262,28 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                 iv.setImageBitmap(null); // blank
             }
             return true;
+        } else if (view instanceof ImageView && view.getId() == R.id.grid_item_country_flag) {
+            ImageView iv = (ImageView) view;
+            String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
+            Log.v(TAG, "Country flag url=" + countryFlagImageUrl);
+            if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty()) {
+                smartSetImageView(iv, countryFlagImageUrl);
+            }
+            else {
+                iv.setImageBitmap(null); // blank
+            }
+            return true;
         } else {
             return false;
         }
     }
 
     protected void smartSetImageView(ImageView iv, String imageUrl) {
+        smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
+    }
+
+    public static void smartSetImageView(ImageView iv, String imageUrl,
+                                         ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
         try {
             Integer viewHashCodeInt = (Integer)iv.getTag(IMAGE_URL_HASHCODE_KEY);
             int viewHashCode = viewHashCodeInt != null ? viewHashCodeInt : 0;
@@ -270,10 +293,20 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                 Log.i(TAG, "calling imageloader for " + imageUrl);
                 iv.setImageBitmap(null);
                 iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
-                this.imageLoader.displayImage(imageUrl, iv, displayImageOptions);
+                imageLoader.displayImage(imageUrl, iv, displayImageOptions);
             }
         } catch (NumberFormatException nfe) {
-            iv.setImageURI(Uri.parse(imageUrl));
+            try {
+                iv.setImageURI(Uri.parse(imageUrl));
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't set image view after number format exception with url=" + imageUrl, e);
+                iv.setImageBitmap(null);
+            }
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Exception setting image view with url=" + imageUrl, e);
+            iv.setImageBitmap(null);
         }
     }
 
@@ -299,10 +332,21 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         gridView.refreshLoadingViewsHeight();
 		adapter.swapCursor(data);
         ensureHandler();
+
+        int size = data == null ? 0 : data.getCount();
+        int restartInterval;
+        if (size > 300)
+            restartInterval = LOADER_RESTART_INTERVAL_SUPER_MS;
+        else if (size > 200)
+            restartInterval = LOADER_RESTART_INTERVAL_LONG_MS;
+        else if (size > 100)
+            restartInterval = LOADER_RESTART_INTERVAL_MED_MS;
+        else
+            restartInterval = LOADER_RESTART_INTERVAL_SHORT_MS;
         Message m = Message.obtain(handler, LoaderHandler.RESTART_LOADER_MSG);
-        handler.sendMessageDelayed(m, LOADER_RESTART_INTERVAL_MS);
+        handler.sendMessageDelayed(m, restartInterval);
+
         if (gridView != null) {
-//            gridView.onRefreshComplete();
             if (scrollOnNextLoaderFinished > 0) {
                 gridView.getRefreshableView().setSelection(scrollOnNextLoaderFinished);
                 scrollOnNextLoaderFinished = 0;
@@ -394,7 +438,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         if (a == null) {
             return;
         }
-        String title = "/" + boardCode + " " + getString(R.string.board_activity);
+        String title = "/" + boardCode; // + " " + getString(R.string.board_activity);
         a.setTitle(title);
         a.setDisplayHomeAsUpEnabled(true);
     }
@@ -402,23 +446,21 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     protected void ensurePopupWindow() {
         if (popupView == null) {
             popupView = getLayoutInflater().inflate(R.layout.popup_full_text_layout, null);
+            countryFlag = (ImageView)popupView.findViewById(R.id.popup_country_flag);
+            popupHeader = (TextView)popupView.findViewById(R.id.popup_header);
             popupText = (TextView)popupView.findViewById(R.id.popup_full_text);
             popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             deadThreadButton = (Button)popupView.findViewById(R.id.popup_dead_thread_button);
             replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
             quoteButton = (Button)popupView.findViewById(R.id.popup_quote_button);
             dismissButton = (Button)popupView.findViewById(R.id.popup_dismiss_button);
-            dismissButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    popupWindow.dismiss();
-                }
-            });
         }
     }
 
     public boolean showPopupText(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final String countryFlagUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
+        final String headerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_HEADER_TEXT));
         final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         final int isDeadInt = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_IS_DEAD));
         final boolean isDead = isDeadInt == 0 ? false : true;
@@ -428,12 +470,45 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
             final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
             final long clickedThreadNo = resto == 0 ? postId : resto;
+            final long clickedPostNo = resto != 0 ? postId : 0;
             ensurePopupWindow();
-            popupText.setText(text);
+            popupHeader.setText(headerText);
+
+            if (text.length() < 50)
+                popupText.setText(text);
+            else // stupid but can find no other way to force android to respect fill_parent in popup windows
+                popupText.setText(text + "                                                  \n");
+
+            Log.v(TAG, "Country flag url=" + countryFlagUrl);
+            if (countryFlagUrl != null && !countryFlagUrl.isEmpty()) {
+                try {
+                    Log.v(TAG, "calling imageloader for country flag" + countryFlagUrl);
+                    countryFlag.setVisibility(View.VISIBLE);
+                    this.imageLoader.displayImage(countryFlagUrl, countryFlag, displayImageOptions);
+//                    countryFlag.setImageURI(Uri.parse(countryFlagUrl));
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "Couldn't set country flag image with url=" + countryFlagUrl, e);
+                    countryFlag.setVisibility(View.GONE);
+                    countryFlag.setImageBitmap(null);
+                }
+            }
+            else {
+                countryFlag.setVisibility(View.GONE);
+                countryFlag.setImageBitmap(null);
+            }
+
             if (isDead) {
                 replyButton.setVisibility(View.GONE);
                 quoteButton.setVisibility(View.GONE);
+                dismissButton.setVisibility(View.GONE);
                 deadThreadButton.setVisibility(View.VISIBLE);
+                deadThreadButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        popupWindow.dismiss();
+                    }
+                });
             }
             else {
                 deadThreadButton.setVisibility(View.GONE);
@@ -444,6 +519,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                         Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
                         replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
                         replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
+                        replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
                         startActivity(replyIntent);
                         popupWindow.dismiss();
                     }
@@ -455,8 +531,16 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                         Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
                         replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
                         replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
+                        replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
                         replyIntent.putExtra(ChanHelper.TEXT, text);
                         startActivity(replyIntent);
+                        popupWindow.dismiss();
+                    }
+                });
+                dismissButton.setVisibility(View.VISIBLE);
+                dismissButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
                         popupWindow.dismiss();
                     }
                 });

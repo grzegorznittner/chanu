@@ -50,6 +50,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
+import javax.security.auth.login.LoginException;
+
 public class FullScreenImageActivity extends Activity {
 
 	public static final String TAG = FullScreenImageActivity.class.getSimpleName();
@@ -100,6 +102,8 @@ public class FullScreenImageActivity extends Activity {
     private boolean loadChanPostData() {
 		try {
 			ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, threadNo);
+            if (thread == null)
+                return false;
 			for (ChanPost post : thread.posts) {
 				if (post.no == postNo) {
                     this.imageUrl = post.getImageUrl();
@@ -112,7 +116,11 @@ public class FullScreenImageActivity extends Activity {
 		}
 		return false;
     }
-    
+
+    private void ensureDm() {
+        dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -165,10 +173,16 @@ public class FullScreenImageActivity extends Activity {
     }
 
     private void viewImageGallery() {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.parse(localImageUri), "image/*");
-        startActivity(intent);
+        try {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.parse(localImageUri), "image/*");
+            startActivity(intent);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't start image gallery for url=" + localImageUri, e);
+            runOnUiThread(new ToastRunnable(this, R.string.full_screen_view_gallery_error));
+        }
     }
 
     private File ensureGalleryFolder() {
@@ -265,26 +279,40 @@ public class FullScreenImageActivity extends Activity {
         if (intent == null || intent != getIntent()) {
             intent = getIntent();
             if (intent.hasExtra(ChanHelper.POST_NO)) {
+                boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
                 postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
                 threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-                setBoardCode(intent.getStringExtra(ChanHelper.BOARD_CODE));
+                imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
                 imageWidth = intent.getIntExtra(ChanHelper.IMAGE_WIDTH, 0);
                 imageHeight = intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0);
                 Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
-                savePrefs();
             } else {
                 Log.e(TAG, "Intent received without postno");
             }
         }
-        else {
-            boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-            threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+        if (postNo == 0) {
+            boardCode = prefs.getString(ChanHelper.BOARD_CODE, "");
+            threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
             postNo = prefs.getLong(ChanHelper.POST_NO, 0);
+            imageUrl = prefs.getString(ChanHelper.IMAGE_URL, "");
             imageWidth = prefs.getInt(ChanHelper.IMAGE_WIDTH, 0);
             imageHeight = prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
             Log.i(TAG, "Post no " + postNo + " laoded from preferences");
         }
-        loadChanPostData();
+        if (!loadChanPostData()) { // fill in the best we can
+            post = new ChanPost();
+            post.no = postNo;
+            post.resto = threadNo;
+            post.board = boardCode;
+            post.w = imageWidth;
+            post.h = imageHeight;
+        }
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            Log.i(TAG, "trying to load imageurl from prefs as last-ditch attempt");
+            imageUrl = prefs.getString(ChanHelper.IMAGE_URL, "");
+        }
+        Log.i(TAG, "loaded image from prefs/intent url=" + imageUrl);
+        setActionBarTitle();
     }
 
     private void savePrefs() {
@@ -292,10 +320,12 @@ public class FullScreenImageActivity extends Activity {
         ed.putString(ChanHelper.BOARD_CODE, boardCode);
         ed.putLong(ChanHelper.THREAD_NO, threadNo);
         ed.putLong(ChanHelper.POST_NO, postNo);
+        ed.putString(ChanHelper.IMAGE_URL, imageUrl);
         ed.putInt(ChanHelper.IMAGE_WIDTH, imageWidth);
         ed.putInt(ChanHelper.IMAGE_HEIGHT, imageHeight);
         Log.i(TAG, "Stored in prefs, post no: " + postNo);
         ed.commit();
+        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     @Override
@@ -308,14 +338,14 @@ public class FullScreenImageActivity extends Activity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		Log.i(TAG, "onRestart");
+        Log.i(TAG, "onRestart");
 	}
 
     @Override
 	protected void onResume () {
 		super.onResume();
 		Log.i(TAG, "onResume");
-		loadOrShowImage();
+        loadOrShowImage();
 	}
 	
 	public void onWindowFocusChanged (boolean hasFocus) {
@@ -358,10 +388,10 @@ public class FullScreenImageActivity extends Activity {
     }
 
 	private String checkLocalImage() {
-		String cacheFolder = getCacheFolder();
-    	String localImageUri = getLocalImagePath(cacheFolder);
     	try {
-	    	File localImage = new File(URI.create(localImageUri));
+            String cacheFolder = getCacheFolder();
+            String localImageUri = getLocalImagePath(cacheFolder);
+            File localImage = new File(URI.create(localImageUri));
 	    	if (localImage.exists()) {
 //	    		if (localImage.length() == post.fsize) {
 //	    			Log.i(TAG, "Image " + localImageUri + " already exists and has correct size");
@@ -446,33 +476,40 @@ public class FullScreenImageActivity extends Activity {
     }
 
     private void loadImage() {
-    	this.localImageUri = null;
-    	Log.i(TAG, "Loading image from URL: " + imageUrl);
-    	registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-    	
-        Request request = new Request(Uri.parse(imageUrl));
-        downloadEnqueueId = dm.enqueue(request);
-        Log.i(TAG, "Equeuing image " + imageUrl + " in DM, id " + downloadEnqueueId);
+    	try {
+            this.localImageUri = null;
+            Log.i(TAG, "Loading image from URL: " + imageUrl);
+            registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
-		String thumbUrl = "http://0.thumbs.4chan.org/" + post.board + "/thumb/" + post.tim + "s.jpg";
+            Request request = new Request(Uri.parse(imageUrl));
+            ensureDm();
+            downloadEnqueueId = dm.enqueue(request);
+            Log.i(TAG, "Equeuing image " + imageUrl + " in DM, id " + downloadEnqueueId);
 
-		loadingView = inflater.inflate(R.layout.fullscreen_image_loading, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
-		ImageView imageView = (ImageView)loadingView.findViewById(R.id.fullscreen_image_image);
-		imageLoader.displayImage(thumbUrl, imageView, options);
-		
-		TextView fileSizeTextView = (TextView)loadingView.findViewById(R.id.fullscreen_image_sizetext);
-		fileSizeTextView.setText("" + post.w + "px x " + post.h + "px");
-		TextView textView = (TextView)loadingView.findViewById(R.id.fullscreen_image_text);
-		textView.setText("0kB / " + ((post.fsize / 1024) + 1));
-		
-		ProgressBar progressBar = (ProgressBar)loadingView.findViewById(R.id.fullscreen_image_progressbar);
-		progressBar.setProgress(0);
-		progressBar.setMax(post.fsize);
-		
-		setContentView(loadingView);
-		
-        handler = new ProgressHandler(this);
-        handler.sendEmptyMessageDelayed(0, 100);
+            String thumbUrl = "http://0.thumbs.4chan.org/" + post.board + "/thumb/" + post.tim + "s.jpg";
+
+            loadingView = inflater.inflate(R.layout.fullscreen_image_loading, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
+            ImageView imageView = (ImageView)loadingView.findViewById(R.id.fullscreen_image_image);
+            imageLoader.displayImage(thumbUrl, imageView, options);
+
+            TextView fileSizeTextView = (TextView)loadingView.findViewById(R.id.fullscreen_image_sizetext);
+            fileSizeTextView.setText("" + post.w + "px x " + post.h + "px");
+            TextView textView = (TextView)loadingView.findViewById(R.id.fullscreen_image_text);
+            textView.setText("0kB / " + ((post.fsize / 1024) + 1));
+
+            ProgressBar progressBar = (ProgressBar)loadingView.findViewById(R.id.fullscreen_image_progressbar);
+            progressBar.setProgress(0);
+            progressBar.setMax(post.fsize);
+
+            setContentView(loadingView);
+
+            handler = new ProgressHandler(this);
+            handler.sendEmptyMessageDelayed(0, 100);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't load image for full screen view with url=" + imageUrl, e);
+            runOnUiThread(new ToastRunnable(this, R.string.full_screen_view_image_error));
+        }
     }
 
     private String getLocalImagePath(String cacheFolder, String separator) {
@@ -686,10 +723,9 @@ public class FullScreenImageActivity extends Activity {
         return true;
     }
 
-    private void setBoardCode(String code) {
-        boardCode = code;
+    private void setActionBarTitle() {
         if (getActionBar() != null) {
-            getActionBar().setTitle("/" + boardCode + " " + getString(R.string.full_screen_image_activity));
+            getActionBar().setTitle("/" + boardCode + " " + postNo);
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }

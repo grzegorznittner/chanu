@@ -14,6 +14,7 @@
 
     <!-- menus -->
     <string name="clear_favorites_menu">Clear Favorites</string>
+    <string name="clean_watchlist_menu">Clean Watchlist</string>
     <string name="clear_watchlist_menu">Clear Watchlist</string>
     <string name="settings_menu">Settings</string>
     <string name="help_menu">Help</string>
@@ -73,6 +74,8 @@
     <string name="full_screen_saving_image">Saving image...</string>
     <string name="full_screen_setting_wallpaper">Setting wallpaper...</string>
     <string name="full_screen_save_image_error">Couldn\'t save image to gallery</string>
+    <string name="full_screen_view_image_error">Couldn\'t load image</string>
+    <string name="full_screen_view_gallery_error">Couldn\'t view image in gallery</string>
     <string name="full_screen_download_description">Downloaded from 4chan URL:</string>
     <string name="full_screen_image_saved">Image saved</string>
     <string name="full_screen_wallpaper_set">Wallpaper set</string>
@@ -87,7 +90,8 @@
     <string name="reply">Reply</string>
     <string name="quote">Quote</string>
     <string name="dismiss">Close</string>
-    <string name="dead_thread_reply">Dead Thread No Reply</string>
+    <string name="dead_thread_reply">Close (Dead Thread)</string>
+    <string name="popup_country_flag">Country Flag</string>
 
     <!-- dialog text -->
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
@@ -95,9 +99,11 @@
     <string name="dialog_add_favorites_board">Add board to favorites?</string>
     <string name="dialog_clear_favorites">Clear favorites?</string>
     <string name="dialog_clear_watchlist">Clear favorites?</string>
+    <string name="dialog_clean_watchlist">Clean dead threads?</string>
     <string name="dialog_add">Add</string>
     <string name="dialog_delete">Remove</string>
     <string name="dialog_clear">Clear</string>
+    <string name="dialog_clean">Clean</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_added_to_favorites">Added to favorites</string>
     <string name="dialog_deleted_from_favorites">Removed from favorites</string>
@@ -105,6 +111,7 @@
     <string name="dialog_deleted_from_watchlist">Removed from watchlist</string>
     <string name="dialog_cleared_favorites">Favorites cleared</string>
     <string name="dialog_cleared_watchlist">Watchlist cleared</string>
+    <string name="dialog_cleaned_watchlist">Watchlist cleaned</string>
 
     <!-- post reply activity -->
     <string name="post_reply_title">Post Reply</string>
@@ -136,6 +143,7 @@
     <string name="post_reply_error">Couldn\'t post</string>
     <string name="post_reply_posted_reply">Posted reply</string>
     <string name="post_reply_posted_thread">Posted new thread</string>
+    <string name="post_reply_send">Send</string>
     <string name="pref_notifications">Notifications</string>
     <string name="pref_notifications_summ">whether or not you receive watching thread notifications</string>
     <string name="pref_hide_text_only_posts">Hide Text Only Posts</string>

@@ -1,28 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/relativeLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+                android:id="@+id/grid_item"
+                style="@style/GridLayout">
+<!--    style="@style/GridRelativeLayout"> -->
 
     <ImageView
-        android:id="@+id/grid_item_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:src="@drawable/stub_image" />
-    
+            android:id="@+id/grid_item_image"
+            style="@style/GridImageStyle"
+            />
+
     <TextView
-        android:id="@+id/grid_item_text"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:maxHeight="200dp"
-        android:textColor="#ffeaeaea"
-        android:background="#80121212"
-        android:textStyle="bold"
-        android:textColorHint="#555555"
-        android:paddingBottom="5dp"
-        android:gravity="bottom|center"
-        android:textSize="18sp"
-    />
+            android:id="@+id/grid_item_text"
+            style="@style/GridSelectorTextImageOverlayStyle"
+            />
+
 </RelativeLayout>

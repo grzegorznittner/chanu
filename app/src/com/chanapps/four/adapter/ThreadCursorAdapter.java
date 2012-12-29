@@ -3,11 +3,9 @@ package com.chanapps.four.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanHelper;
 
@@ -49,7 +47,7 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
             v = newView(context, parent, tag, position);
             v.setTag(tag);
             if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
-                ImageView imageView = (ImageView)v.findViewById(R.id.thread_grid_item_image);
+                ImageView imageView = (ImageView)v.findViewById(R.id.grid_item_image);
                 imageView.setTag(imageUrl);
             }
             else {

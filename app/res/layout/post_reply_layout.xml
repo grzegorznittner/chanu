@@ -150,7 +150,10 @@
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="16dp"
                 android:padding="8dp"
-                android:background="@drawable/border_background">
+                android:background="@drawable/border_background"
+                android:imeOptions="actionSend"
+                android:imeActionLabel="@string/post_reply_send"
+                >
             </EditText>
 
         </LinearLayout>

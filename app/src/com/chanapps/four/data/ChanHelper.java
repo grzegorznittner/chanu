@@ -13,7 +13,7 @@ public class ChanHelper {
 	public static final String BOARD_CODE = "boardCode";
 	public static final String PAGE = "pageNo";
     public static final String THREAD_NO = "threadNo";
-    public static final String FROM_BOARD = "fromBoard";
+    public static final String RETRIES = "noRetries";
     public static final String POST_NO = "postNo";
     public static final String TIM = "tim";
     public static final String TEXT = "text";
@@ -29,6 +29,7 @@ public class ChanHelper {
     public static final String POST_NAME = "name";
     public static final String POST_SUB = "sub";
     public static final String POST_COM = "com";
+    public static final String POST_COUNTRY = "country";
     public static final String POST_TIM = "tim";
     public static final String POST_FILENAME = "filename";
     public static final String POST_EXT = "ext";
@@ -43,9 +44,11 @@ public class ChanHelper {
     public static final String POST_CLOSED = "closed";
     public static final String POST_OMITTED_POSTS = "omitted_posts";
     public static final String POST_OMITTED_IMAGES = "omitted_images";
+    public static final String POST_HEADER_TEXT = "headerText"; // we construct and filter this
     public static final String POST_SHORT_TEXT = "shortText"; // we construct and filter this
     public static final String POST_TEXT = "text"; // we construct and filter this
     public static final String POST_IMAGE_URL = "image_url"; // we construct this from board and tim
+    public static final String POST_COUNTRY_URL = "country_url"; // we construct this from the country code
     public static final String POST_IS_DEAD = "isDead";
     
     public static final String LOAD_PAGE = "load_page";
@@ -63,7 +66,9 @@ public class ChanHelper {
             POST_BOARD_NAME,
             POST_RESTO,
             POST_IMAGE_URL,
+            POST_COUNTRY_URL,
             POST_SHORT_TEXT,
+            POST_HEADER_TEXT,
             POST_TEXT,
             POST_TN_W,
             POST_TN_H,

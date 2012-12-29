@@ -2,7 +2,6 @@ package com.chanapps.four.fragment;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
@@ -101,8 +100,8 @@ public class BoardGroupFragment
                     context,
                     R.layout.board_grid_item,
                     this,
-                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT},
-                    new int[] {R.id.board_activity_grid_item_image, R.id.board_activity_grid_item_text}
+                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
+                    new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag}
             );
             adapter = boardCursorAdapter;
         }
@@ -118,9 +117,17 @@ public class BoardGroupFragment
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (boardType == ChanBoard.Type.WATCHLIST) {
+            ensureHandler();
+            handler.sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_SHORT_MS);
+        }
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
-//        ((BoardSelectorActivity)getActivity()).saveInstanceState();
     }
 
     @Override
@@ -133,8 +140,8 @@ public class BoardGroupFragment
     	super.onStop();
         if (boardType == ChanBoard.Type.WATCHLIST) {
     	    getLoaderManager().destroyLoader(0);
+            handler = null;
         }
-    	handler = null;
     }
 
     @Override
@@ -142,36 +149,14 @@ public class BoardGroupFragment
         super.onDetach();
         if (boardType == ChanBoard.Type.WATCHLIST) {
             getLoaderManager().destroyLoader(0);
+            handler = null;
         }
-        handler = null;
     }
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        if (view instanceof TextView) {
-            //todo - @john - if the text is hidden then the image should take the full available space.
-            TextView tv = (TextView) view;
-            if (shortText == null || shortText.isEmpty()) {
-                tv.setText("");
-                tv.setVisibility(View.INVISIBLE);
-            }
-            else {
-                tv.setText(shortText);
-            }
-            return true;
-        } else if (view instanceof ImageView) {
-            ImageView iv = (ImageView) view;
-            try {
-                this.imageLoader.displayImage(imageUrl, iv, displayImageOptions);
-            } catch (NumberFormatException nfe) {
-                iv.setImageURI(Uri.parse(imageUrl));
-            }
-            return true;
-        } else {
-            return false;
-        }
+        Log.i(TAG, "Setting watchlist view");
+        return ThreadActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions, false);
     }
 
     @Override
@@ -190,7 +175,7 @@ public class BoardGroupFragment
 		    boardCursorAdapter.swapCursor(data);
         }
         ensureHandler();
-		handler.sendEmptyMessageDelayed(0, 2000);
+		handler.sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_SHORT_MS);
 	}
 
     @Override
@@ -270,6 +255,10 @@ public class BoardGroupFragment
                 FavoritesClearDialogFragment clearDialogFragment = new FavoritesClearDialogFragment(this);
                 clearDialogFragment.show(getFragmentManager(), clearDialogFragment.TAG);
                 return true;
+            case R.id.clean_watchlist_menu:
+                WatchlistCleanDialogFragment cleanWatchlistFragment = new WatchlistCleanDialogFragment(this);
+                cleanWatchlistFragment.show(getFragmentManager(), cleanWatchlistFragment.TAG);
+                return true;
             case R.id.clear_watchlist_menu:
                 WatchlistClearDialogFragment clearWatchlistFragment = new WatchlistClearDialogFragment(this);
                 clearWatchlistFragment.show(getFragmentManager(), clearWatchlistFragment.TAG);
@@ -303,17 +292,13 @@ public class BoardGroupFragment
             try {
                 super.handleMessage(msg);
                 Log.v(fragment.getClass().getSimpleName(), ">>>>>>>>>>> refresh message received restarting loader");
+                if (fragment.isDetached())
+                    return;
                 if (fragment.boardType == ChanBoard.Type.WATCHLIST) {
-                    if (!fragment.isDetached())
-                        fragment.getLoaderManager().restartLoader(0, null, fragment); // keep getting stupid error
-                    else if (fragment.handler != null)
-                        fragment.handler.sendEmptyMessageDelayed(0, 2000); // make sure it keeps going
-                    else {
-                        fragment.ensureHandler();
-                        fragment.handler.sendEmptyMessageDelayed(0, 2000); // make sure it keeps going
-                    }
+                    fragment.ensureHandler();
+                    fragment.getLoaderManager().restartLoader(0, null, fragment);
                 }
-                else if (fragment.boardType == ChanBoard.Type.FAVORITES && !fragment.isDetached() && fragment.adapter != null) {
+                else if (fragment.boardType == ChanBoard.Type.FAVORITES && fragment.adapter != null) {
                     fragment.adapter.notifyDataSetChanged();
                 }
             }

@@ -87,6 +87,7 @@ public class ThreadLoadService extends BaseChanService {
                 markDead();
             }
             else {
+                Log.i(TAG, "Received api response, parsing...");
                 in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
                 parseThread(in);
             }
@@ -113,7 +114,8 @@ public class ThreadLoadService extends BaseChanService {
 	}
 
 	protected void parseThread(BufferedReader in) throws IOException {
-    	long time = new Date().getTime();
+    	Log.i(TAG, "starting parsing thread " + boardCode + "/" + threadNo);
+        long time = new Date().getTime();
 
     	List<ChanPost> posts = new ArrayList<ChanPost>();
         Gson gson = new GsonBuilder().create();
@@ -128,12 +130,15 @@ public class ThreadLoadService extends BaseChanService {
             ChanPost post = gson.fromJson(reader, ChanPost.class);
             post.board = boardCode;
             posts.add(post);
+            Log.v(TAG, "Added post " + post.no + " to thread " + boardCode + "/" + threadNo);
             if (new Date().getTime() - time > STORE_INTERVAL_MS) {
             	thread.mergePosts(posts);
                 ChanFileStorage.storeThreadData(getBaseContext(), thread);
         	}
         }
         thread.mergePosts(posts);
+
+        Log.i(TAG, "finished parsing thread " + boardCode + "/" + threadNo);
     }
 
     private void markDead() {

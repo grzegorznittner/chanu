@@ -148,13 +148,6 @@ public class ChanFileStorage {
 			if (boardFile != null) {
 				boardFile.delete();
             }
-            /*
-				Log.i(TAG, "Reloading board " + boardCode + " - starting BoardLoadService");
-		        Intent threadIntent = new Intent(context, BoardLoadService.class);
-		        threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-                threadIntent.putExtra(ChanHelper.RETRIES, )
-		        context.startService(threadIntent);
-		        */
 		}
 		return ChanBoard.getBoardByCode(context, boardCode);
 	}
@@ -195,13 +188,6 @@ public class ChanFileStorage {
 			if (threadFile != null) {
 				threadFile.delete();
             }
-            /*
-				Log.i(TAG, "Reloading thread " + boardCode + FILE_SEP + threadNo + " - starting BoardLoadService");
-		        Intent threadIntent = new Intent(context, ThreadLoadService.class);
-		        threadIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-		        threadIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
-		        context.startService(threadIntent);
-			*/
 		}
 		return null;
 	}

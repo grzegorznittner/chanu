@@ -132,7 +132,7 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
             v = newView(context, parent, tag, position);
             v.setTag(tag);
             if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
-        		ImageView imageView = (ImageView)v.findViewById(R.id.board_activity_grid_item_image);
+        		ImageView imageView = (ImageView)v.findViewById(R.id.grid_item_image);
         		imageView.setTag(imageUrl);
             }
         } else {
