@@ -65,18 +65,27 @@ public class TabsAdapter extends FragmentPagerAdapter
     }
 
     public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args) {
+        addTab(tab, clss, args, -1);
+    }
+
+    public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args, int position) {
         TabInfo info = new TabInfo(clss, args);
         tab.setTag(info);
         tab.setTabListener(this);
-        mTabs.add(info);
-        mActionBar.addTab(tab);
+        if (position >= 0) {
+            mTabs.add(position, info);
+            mActionBar.addTab(tab, position);
+        }
+        else {
+            mTabs.add(info);
+            mActionBar.addTab(tab);
+        }
         notifyDataSetChanged();
     }
 
-    public void removeTab(ChanBoard.Type type) {
-        int i = type.ordinal();
-        mTabs.remove(i);
-        mActionBar.removeTabAt(i);
+    public void removeTab(int position) {
+        mTabs.remove(position);
+        mActionBar.removeTabAt(position);
         notifyDataSetChanged();
     }
 
@@ -99,7 +108,7 @@ public class TabsAdapter extends FragmentPagerAdapter
 
     @Override
     public void onPageSelected(int position) {
-        mContext.selectedBoardType = ChanBoard.Type.values()[position];
+        mContext.selectedBoardType = mContext.activeBoardTypes.get(position);
         if (mActionBar != null) {
             mActionBar.setSelectedNavigationItem(position);
         }

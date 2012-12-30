@@ -31,7 +31,7 @@ public class ChanBoard {
         this.lastPage = lastPage;
 	}
 	
-	public enum Type {JAPANESE_CULTURE, INTERESTS, CREATIVE, ADULT, OTHER, MISC, FAVORITES, WATCHLIST};
+	public enum Type { FAVORITES, WATCHLIST, JAPANESE_CULTURE, INTERESTS, CREATIVE, OTHER, ADULT, MISC };
 
     public static final String WATCH_BOARD_CODE = "watch";
 
@@ -77,6 +77,15 @@ public class ChanBoard {
             case WATCHLIST: return ctx.getString(R.string.board_watch);
             default:
                 return ctx.getString(R.string.board_type_japanese_culture);
+        }
+    }
+
+    public static boolean isNSFWBoardType(Type boardType) {
+        if (boardType == Type.ADULT || boardType == Type.MISC) {
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
@@ -224,6 +233,11 @@ public class ChanBoard {
 
     private static String[][] initBoardCodes(Context ctx) {
         String[][] boardCodesByType = {
+
+                {   Type.FAVORITES.toString()
+                },
+                {   Type.WATCHLIST.toString()
+                },
                 {   Type.JAPANESE_CULTURE.toString(),
                         "a", ctx.getString(R.string.board_a),
                         "c", ctx.getString(R.string.board_c),
@@ -263,6 +277,15 @@ public class ChanBoard {
                         "diy", ctx.getString(R.string.board_diy),
                         "wsg", ctx.getString(R.string.board_wsg)
                 },
+                {   Type.OTHER.toString(),
+                        "q", ctx.getString(R.string.board_q),
+                        "trv", ctx.getString(R.string.board_trv),
+                        "fit", ctx.getString(R.string.board_fit),
+                        "x", ctx.getString(R.string.board_x),
+                        "lit", ctx.getString(R.string.board_lit),
+                        "adv", ctx.getString(R.string.board_adv),
+                        "mlp", ctx.getString(R.string.board_mlp)
+                },
                 {   Type.ADULT.toString(),
                         "s", ctx.getString(R.string.board_s),
                         "hc", ctx.getString(R.string.board_hc),
@@ -276,25 +299,12 @@ public class ChanBoard {
                         "hr", ctx.getString(R.string.board_hr),
                         "gif", ctx.getString(R.string.board_gif)
                 },
-                {   Type.OTHER.toString(),
-                        "q", ctx.getString(R.string.board_q),
-                        "trv", ctx.getString(R.string.board_trv),
-                        "fit", ctx.getString(R.string.board_fit),
-                        "x", ctx.getString(R.string.board_x),
-                        "lit", ctx.getString(R.string.board_lit),
-                        "adv", ctx.getString(R.string.board_adv),
-                        "mlp", ctx.getString(R.string.board_mlp)
-                },
                 {   Type.MISC.toString(),
                         "b", ctx.getString(R.string.board_b),
                         "r", ctx.getString(R.string.board_r),
                         "r9k", ctx.getString(R.string.board_r9k),
                         "pol", ctx.getString(R.string.board_pol),
                         "soc", ctx.getString(R.string.board_soc)
-                },
-                {   Type.FAVORITES.toString()
-                },
-                {   Type.WATCHLIST.toString()
                 }
 
         };

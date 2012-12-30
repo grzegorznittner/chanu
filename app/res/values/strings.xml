@@ -144,16 +144,28 @@
     <string name="post_reply_posted_reply">Posted reply</string>
     <string name="post_reply_posted_thread">Posted new thread</string>
     <string name="post_reply_send">Send</string>
+
+    <!-- preferences -->
+    <string name="pref_show_nsfw_boards">NSFW Boards</string>
+    <string name="pref_show_nsfw_boards_summ_on">Show boards not safe for work</string>
+    <string name="pref_show_nsfw_boards_summ_off">Hide boards not safe for work (default)</string>
+    <string name="pref_show_nsfw_boards_summ_detail">
+        Boards considered NSFW (not safe for work) are hidden by default.  These boards are moderated, but may
+        potentially contain offensive material.  If you are under 18 or it is illegal
+        to view restricted content in your jurisdiction, do not check this button.
+    </string>
+    <string name="pref_favorites">Favorites Board</string>
+    <string name="pref_favorites_summ_on">On</string>
+    <string name="pref_favorites_summ_off">Off</string>
     <string name="pref_notifications">Notifications</string>
-    <string name="pref_notifications_summ">whether or not you receive watching thread notifications</string>
-    <string name="pref_hide_text_only_posts">Hide Text Only Posts</string>
-    <string name="pref_hide_text_only_posts_summ">Hide text only posts</string>
+    <string name="pref_notifications_summ_on">On</string>
+    <string name="pref_notifications_summ_off">Off</string>
     <string name="pref_hide_all_text">Hide All Text</string>
-    <string name="pref_hide_all_text_summ">Hide all hext</string>
-    <string name="pref_show_text_only_posts">Show Text Only Posts</string>
-    <string name="pref_show_text_only_posts_summ">Show text only posts</string>
-    <string name="pref_show_all_text">Show All Text</string>
-    <string name="pref_show_all_text_summ">Show all hext</string>
+    <string name="pref_hide_all_text_summ_on">Text-only posts and image text hidden</string>
+    <string name="pref_hide_all_text_summ_off">Text-only posts and image text shown</string>
+    <string name="pref_hide_all_text_on">Show All Text</string>
+
+    <!-- Help and about -->
     <string name="about_menu">About</string>
 
     <!-- board names -->

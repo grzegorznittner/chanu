@@ -17,8 +17,10 @@ public class SettingsActivity extends Activity {
 
     public static final String TAG = SettingsActivity.class.getSimpleName();
 
-    public static final String PREF_HIDE_ALL_TEXT = "pref_hide_all_text";
+    public static final String PREF_SHOW_NSFW_BOARDS = "pref_show_nsfw_boards";
+    public static final String PREF_USE_FAVORITES = "pref_use_favorites";
     public static final String PREF_NOTIFICATIONS = "pref_notifications";
+    public static final String PREF_HIDE_ALL_TEXT = "pref_hide_all_text";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

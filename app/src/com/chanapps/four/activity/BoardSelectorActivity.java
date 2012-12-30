@@ -20,6 +20,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class BoardSelectorActivity extends FragmentActivity {
@@ -28,7 +30,11 @@ public class BoardSelectorActivity extends FragmentActivity {
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
     private SharedPreferences prefs = null;
+    private boolean showNSFWBoards = false;
+    private boolean useFavoritesBoard = true;
+    public List<ChanBoard.Type> activeBoardTypes = new ArrayList<ChanBoard.Type>();
     public ChanBoard.Type selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,50 +60,120 @@ public class BoardSelectorActivity extends FragmentActivity {
         bar.setDisplayHomeAsUpEnabled(false);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE);
+    }
 
-        if (mTabsAdapter == null) {
+    private void ensureTabsAdapter() {
+        ensurePrefs();
+        showNSFWBoards = prefs.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
+        useFavoritesBoard = prefs.getBoolean(SettingsActivity.PREF_USE_FAVORITES, true);
+
+        if (mTabsAdapter == null) { // create the board tabs
+            activeBoardTypes.clear();
             mTabsAdapter = new TabsAdapter(this, getSupportFragmentManager(), mViewPager);
             for (ChanBoard.Type type : ChanBoard.Type.values()) {
-                addTab(type);
+                if (type == ChanBoard.Type.FAVORITES) {
+                    if (useFavoritesBoard)
+                        addTab(type, -1);
+                }
+                else if (showNSFWBoards || !ChanBoard.isNSFWBoardType(type)) {
+                    addTab(type, -1);
+                }
+            }
+            return;
+        }
+
+        /* can't get adding / removing 0th tab to work
+        if (useFavoritesBoard && getPositionOfTab(ChanBoard.Type.FAVORITES) == -1) { // need to add
+            addTab(ChanBoard.Type.FAVORITES, 0);
+        }
+        else if (!useFavoritesBoard && getPositionOfTab(ChanBoard.Type.FAVORITES) >= 0) { // need to remove
+            int pos = getPositionOfTab(ChanBoard.Type.FAVORITES);
+            removeTab(ChanBoard.Type.FAVORITES);
+        }
+        */
+
+        if (showNSFWBoards && getPositionOfTab(ChanBoard.Type.ADULT) == -1) { // need to add
+            addTab(ChanBoard.Type.ADULT, -1);
+            addTab(ChanBoard.Type.MISC, -1);
+        }
+        else if (!showNSFWBoards && getPositionOfTab(ChanBoard.Type.ADULT) >= 0) { // need to remove
+            removeTab(ChanBoard.Type.ADULT);
+            removeTab(ChanBoard.Type.MISC);
+            selectedBoardType = ChanBoard.Type.valueOf(prefs.getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
+            if (selectedBoardType == ChanBoard.Type.ADULT || selectedBoardType == ChanBoard.Type.MISC) {
+                selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
+                saveSelectedBoardType();
             }
         }
-    }
-
-    private void addTab(ChanBoard.Type type) {
-        Bundle bundle = new Bundle();
-        bundle.putString(ChanHelper.BOARD_TYPE, type.toString());
-        String boardTypeName = ChanBoard.getBoardTypeName(this, type);
-        mTabsAdapter.addTab(getActionBar().newTab().setText(boardTypeName),
-                BoardGroupFragment.class, bundle);
-    }
-
-    public BoardGroupFragment getFavoritesFragment() {
-        return (BoardGroupFragment)mTabsAdapter.getItem(ChanBoard.Type.FAVORITES.ordinal());
     }
 
     private void removeTab(ChanBoard.Type type) {
-        mTabsAdapter.removeTab(type);
+        mTabsAdapter.removeTab(getPositionOfTab(type));
+        activeBoardTypes.remove(type);
+    }
+
+    private void addTab(ChanBoard.Type type, int position) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ChanHelper.BOARD_TYPE, type.toString());
+        String boardTypeName = ChanBoard.getBoardTypeName(this, type);
+        if (position == -1) {
+            activeBoardTypes.add(type);
+        }
+        else {
+            activeBoardTypes.add(position, type);
+        }
+        mTabsAdapter.addTab(getActionBar().newTab().setText(boardTypeName),
+                BoardGroupFragment.class, bundle, position);
+    }
+
+    private int getPositionOfTab(ChanBoard.Type type) {
+        int position = -1;
+        for (int i = 0; i < activeBoardTypes.size(); i++)
+            if (activeBoardTypes.get(i) == type) {
+                position = i;
+                break;
+            }
+        return position;
+    }
+
+    public BoardGroupFragment getFavoritesFragment() {
+        int favoritesPos = getPositionOfTab(ChanBoard.Type.FAVORITES);
+        if (favoritesPos >= 0)
+            return (BoardGroupFragment)mTabsAdapter.getItem(favoritesPos);
+        else
+            return null;
+    }
+
+    private void ensurePrefs() {
+        if (prefs == null)
+            prefs = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     private void restoreInstanceState() {
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        ensureTabsAdapter();
+        ensurePrefs();
         selectedBoardType = ChanBoard.Type.valueOf(prefs.getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
+        if (getSelectedTabIndex() == -1) { // reset if board is no longer visible
+            selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
+            saveSelectedBoardType();
+        }
         setTabToSelectedType(false);
     }
 
-    public void setTabToSelectedType(boolean force) {
-        Log.i(TAG, "onStart selectedBoardType: " + selectedBoardType);
-
-        int selectedTab = 0;
-        for (ChanBoard.Type type : ChanBoard.Type.values()) {
-            if (type == selectedBoardType) {
-                break;
-            }
-            selectedTab++;
+    private int getSelectedTabIndex() {
+        for (int i = 0; i < activeBoardTypes.size(); i++) {
+            if (selectedBoardType == activeBoardTypes.get(i))
+                return i;
         }
+        return -1;
+    }
+
+    public void setTabToSelectedType(boolean force) {
+        Log.i(TAG, "setTabToSelectedType selectedBoardType: " + selectedBoardType);
+        int selectedTab = getSelectedTabIndex();
         getActionBar().setSelectedNavigationItem(selectedTab);
         if (force) {
-            int beforeTab = (selectedTab + 1) % ChanBoard.Type.values().length;
+            int beforeTab = (selectedTab + 1) % activeBoardTypes.size();
             mViewPager.setCurrentItem(beforeTab, false);
             mViewPager.setCurrentItem(selectedTab, false);
         }
@@ -134,11 +210,15 @@ public class BoardSelectorActivity extends FragmentActivity {
         saveInstanceState();
     }
 
-    public void saveInstanceState() {
+    private void saveSelectedBoardType() {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString(ChanHelper.BOARD_TYPE, selectedBoardType.toString());
         editor.commit();
         Log.i(TAG, "Saved selected board type to " + selectedBoardType);
+    }
+
+    public void saveInstanceState() {
+        saveSelectedBoardType();
         DispatcherHelper.saveActivityToPrefs(this);
     }
 

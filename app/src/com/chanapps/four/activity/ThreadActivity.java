@@ -214,7 +214,7 @@ public class ThreadActivity extends BoardActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         if (hideAllText) {
-            menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_show_all_text);
+            menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_hide_all_text_on);
         }
         else {
             menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_hide_all_text);

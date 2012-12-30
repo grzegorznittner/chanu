@@ -461,96 +461,88 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final String countryFlagUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
         final String headerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_HEADER_TEXT));
-        final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        final String rawText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        final String text = rawText == null ? "" : rawText;
         final int isDeadInt = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_IS_DEAD));
         final boolean isDead = isDeadInt == 0 ? false : true;
+        final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
         Log.i(TAG, "Calling popup with id=" + id + " isDead=" + isDead);
-        if (text != null && !text.trim().isEmpty()) {
-            final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
-            final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-            final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
-            final long clickedThreadNo = resto == 0 ? postId : resto;
-            final long clickedPostNo = resto != 0 ? postId : 0;
-            ensurePopupWindow();
-            popupHeader.setText(headerText);
+        final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+        final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+        final long clickedThreadNo = resto == 0 ? postId : resto;
+        final long clickedPostNo = resto != 0 ? postId : 0;
+        ensurePopupWindow();
+        popupHeader.setText(headerText);
+        popupText.setText(text);
 
-            if (text.length() < 50)
-                popupText.setText(text);
-            else // stupid but can find no other way to force android to respect fill_parent in popup windows
-                popupText.setText(text + "                                                  \n");
-
-            Log.v(TAG, "Country flag url=" + countryFlagUrl);
-            if (countryFlagUrl != null && !countryFlagUrl.isEmpty()) {
-                try {
-                    Log.v(TAG, "calling imageloader for country flag" + countryFlagUrl);
-                    countryFlag.setVisibility(View.VISIBLE);
-                    this.imageLoader.displayImage(countryFlagUrl, countryFlag, displayImageOptions);
+        Log.v(TAG, "Country flag url=" + countryFlagUrl);
+        if (countryFlagUrl != null && !countryFlagUrl.isEmpty()) {
+            try {
+                Log.v(TAG, "calling imageloader for country flag" + countryFlagUrl);
+                countryFlag.setVisibility(View.VISIBLE);
+                this.imageLoader.displayImage(countryFlagUrl, countryFlag, displayImageOptions);
 //                    countryFlag.setImageURI(Uri.parse(countryFlagUrl));
-                }
-                catch (Exception e) {
-                    Log.e(TAG, "Couldn't set country flag image with url=" + countryFlagUrl, e);
-                    countryFlag.setVisibility(View.GONE);
-                    countryFlag.setImageBitmap(null);
-                }
             }
-            else {
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't set country flag image with url=" + countryFlagUrl, e);
                 countryFlag.setVisibility(View.GONE);
                 countryFlag.setImageBitmap(null);
             }
-
-            if (isDead) {
-                replyButton.setVisibility(View.GONE);
-                quoteButton.setVisibility(View.GONE);
-                dismissButton.setVisibility(View.GONE);
-                deadThreadButton.setVisibility(View.VISIBLE);
-                deadThreadButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        popupWindow.dismiss();
-                    }
-                });
-            }
-            else {
-                deadThreadButton.setVisibility(View.GONE);
-                replyButton.setVisibility(View.VISIBLE);
-                replyButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
-                        replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
-                        replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
-                        replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
-                        startActivity(replyIntent);
-                        popupWindow.dismiss();
-                    }
-                });
-                quoteButton.setVisibility(View.VISIBLE);
-                quoteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
-                        replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
-                        replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
-                        replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
-                        replyIntent.putExtra(ChanHelper.TEXT, text);
-                        startActivity(replyIntent);
-                        popupWindow.dismiss();
-                    }
-                });
-                dismissButton.setVisibility(View.VISIBLE);
-                dismissButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        popupWindow.dismiss();
-                    }
-                });
-            }
-            popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
-            return true;
         }
         else {
-            return false;
+            countryFlag.setVisibility(View.GONE);
+            countryFlag.setImageBitmap(null);
         }
+
+        if (isDead) {
+            replyButton.setVisibility(View.GONE);
+            quoteButton.setVisibility(View.GONE);
+            dismissButton.setVisibility(View.GONE);
+            deadThreadButton.setVisibility(View.VISIBLE);
+            deadThreadButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popupWindow.dismiss();
+                }
+            });
+        }
+        else {
+            deadThreadButton.setVisibility(View.GONE);
+            replyButton.setVisibility(View.VISIBLE);
+            replyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
+                    replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
+                    replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
+                    replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
+                    startActivity(replyIntent);
+                    popupWindow.dismiss();
+                }
+            });
+            quoteButton.setVisibility(View.VISIBLE);
+            quoteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
+                    replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
+                    replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
+                    replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
+                    replyIntent.putExtra(ChanHelper.TEXT, text);
+                    startActivity(replyIntent);
+                    popupWindow.dismiss();
+                }
+            });
+            dismissButton.setVisibility(View.VISIBLE);
+            dismissButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popupWindow.dismiss();
+                }
+            });
+        }
+        popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
+        return true;
     }
 
 }
