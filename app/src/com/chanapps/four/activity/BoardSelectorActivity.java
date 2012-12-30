@@ -40,7 +40,7 @@ public class BoardSelectorActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "onCreate");
-        //SmartCache.fillCache(this);
+        SmartCache.fillCache(this);
         Intent intent = getIntent();
         if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
             Log.i(TAG, "Starting dispatch");

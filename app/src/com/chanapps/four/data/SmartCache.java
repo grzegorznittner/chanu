@@ -1,7 +1,10 @@
 package com.chanapps.four.data;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.nfc.Tag;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -29,8 +32,18 @@ public class SmartCache {
     private static final long MAX_WATCHLIST_CACHE_REFRESH_INTERVAL_MS = 360000; // 6 minutes
     private static final long MAX_NO_BOARD_CACHE_REFRESH_INTERVAL_MS = 3600000; // 1 hour
 
+    private static boolean isWifiConnected(Context context) {
+        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Service.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return wifi.isConnected();
+    }
+
     public static void fillCache(Context context) {
         Log.i(TAG, "Starting cache fill operation");
+
+        if (!isWifiConnected(context)) // don't blow the mobile data connection, this could be smarter
+            return;
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         if (shouldFillCache(prefs, ChanHelper.LAST_FAVORITES_CACHE_TIME, MAX_FAVORITES_CACHE_REFRESH_INTERVAL_MS)) {
