@@ -10,8 +10,8 @@ public class ChanHelper {
 	//public static final String PREF_NAME = "4Channer";
 
 	public static final String BOARD_TYPE = "boardType";
-	public static final String BOARD_CODE = "boardCode";
-	public static final String PAGE = "pageNo";
+    public static final String BOARD_CODE = "boardCode";
+    public static final String PAGE = "pageNo";
     public static final String THREAD_NO = "threadNo";
     public static final String RETRIES = "noRetries";
     public static final String POST_NO = "postNo";
@@ -78,6 +78,16 @@ public class ChanHelper {
             POST_IS_DEAD,
             LOAD_PAGE,
             LAST_PAGE
+    };
+
+    public static final String BOARD_ID = "_id";
+    public static final String BOARD_IMAGE_RESOURCE_ID = "boardImageResourceId";
+    public static final String BOARD_NAME = "boardName";
+    public static final String[] SELECTOR_COLUMNS = {
+            BOARD_ID,
+            BOARD_CODE,
+            BOARD_IMAGE_RESOURCE_ID,
+            BOARD_NAME
     };
 
     public enum Orientation {

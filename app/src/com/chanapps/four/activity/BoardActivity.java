@@ -42,6 +42,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     public static final int LOADER_RESTART_INTERVAL_LONG_MS = 10000;
     public static final int LOADER_RESTART_INTERVAL_MED_MS = 5000;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 2500;
+    public static final int LOADER_RESTART_INTERVAL_MICRO_MS = 100;
     public static final int LOADER_SHORT_DELAY_MS = 500;
     protected static final int IMAGE_URL_HASHCODE_KEY = R.id.grid_item_image;
 

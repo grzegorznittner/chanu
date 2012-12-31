@@ -1,6 +1,7 @@
 package com.chanapps.four.adapter;
 
 import android.app.ActionBar;
+import android.nfc.Tag;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.content.SharedPreferences;
@@ -10,11 +11,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.activity.BoardSelectorActivity;
 
+import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
 
 /**
@@ -56,12 +59,22 @@ public class TabsAdapter extends FragmentPagerAdapter
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        if (position >= getCount()) {
+        if (container != null && container instanceof ViewPager)
+            try {
+            //    ((ViewPager) container).removeViewAt(position);
+            //    Log.d(BoardSelectorActivity.TAG, "Successfully destroyed item " + position);
+            }
+            catch (Exception e) {
+                Log.e(BoardSelectorActivity.TAG, "Error destroying tab view at position:" + position);
+            }
+        //if (position >= getCount()) {
+        if (object != null && object instanceof Fragment) {
             FragmentManager manager = ((Fragment) object).getFragmentManager();
             FragmentTransaction trans = manager.beginTransaction();
             trans.remove((Fragment) object);
             trans.commit();
         }
+        //}
     }
 
     public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args) {
@@ -104,11 +117,13 @@ public class TabsAdapter extends FragmentPagerAdapter
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//        mContext.invalidateOptionsMenu();
     }
 
     @Override
     public void onPageSelected(int position) {
         mContext.selectedBoardType = mContext.activeBoardTypes.get(position);
+        //mContext.invalidateOptionsMenu();
         if (mActionBar != null) {
             mActionBar.setSelectedNavigationItem(position);
         }

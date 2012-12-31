@@ -10,7 +10,6 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.adapter.BoardSelectorAdapter;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.component.ToastRunnable;
 
@@ -41,34 +40,13 @@ public class FavoritesAddDialogFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Context ctx = getActivity();
-                                List<ChanBoard> favorites = ChanBoard.getBoardsByType(ctx, ChanBoard.Type.FAVORITES);
-                                if (favorites.isEmpty()) {
-                                    ChanBoard.addBoardToFavorites(ctx, boardCode);
-                                    BoardSelectorActivity activity = (BoardSelectorActivity) fragment.getActivity();
-                                    BoardGroupFragment favoritesFragment = activity.getFavoritesFragment();
-                                    if (favoritesFragment != null) {
-                                        BaseAdapter adapter = favoritesFragment.getAdapter();
-                                        if (adapter != null) {
-                                            adapter.notifyDataSetChanged();
-                                        }
-                                        GridView view = (GridView)favoritesFragment.getView();
-                                        if (view != null) {
-                                            view.setAdapter(null);
-                                            adapter = new BoardSelectorAdapter(ctx, ChanBoard.Type.FAVORITES, favoritesFragment.columnWidth);
-                                            view.setAdapter(adapter);
-                                            adapter.notifyDataSetInvalidated();
-                                        }
-                                    }
-                                }
-                                else {
-                                    ChanBoard.addBoardToFavorites(ctx, boardCode);
-                                    BoardSelectorActivity activity = (BoardSelectorActivity) fragment.getActivity();
-                                    BoardGroupFragment favoritesFragment = activity.getFavoritesFragment();
-                                    if (favoritesFragment != null) {
-                                        BaseAdapter adapter = favoritesFragment.getAdapter();
-                                        if (adapter != null) {
-                                            adapter.notifyDataSetChanged();
-                                        }
+                                ChanBoard.addBoardToFavorites(ctx, boardCode);
+                                BoardSelectorActivity activity = (BoardSelectorActivity) fragment.getActivity();
+                                BoardGroupFragment favoritesFragment = activity.getFavoritesFragment();
+                                if (favoritesFragment != null) {
+                                    BaseAdapter adapter = favoritesFragment.getAdapter();
+                                    if (adapter != null) {
+                                        adapter.notifyDataSetChanged();
                                     }
                                 }
                                 (new ToastRunnable(getActivity(),getString(R.string.dialog_added_to_favorites))).run();

@@ -15,10 +15,11 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.chanapps.four.activity.*;
-import com.chanapps.four.adapter.BoardSelectorAdapter;
 import com.chanapps.four.adapter.BoardCursorAdapter;
+import com.chanapps.four.adapter.BoardSelectorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
+import com.chanapps.four.loader.BoardSelectorCursorLoader;
 import com.chanapps.four.loader.ChanWatchlistCursorLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -41,16 +42,16 @@ public class BoardGroupFragment
         BoardCursorAdapter.ViewBinder
 {
 
-    private static final String TAG = BoardGroupFragment.class.getSimpleName();
+    private static final String TAG = BoardSelectorActivity.class.getSimpleName();
+    protected static final int IMAGE_RESOURCE_ID_KEY = R.id.grid_item_image;
 
     private ChanBoard.Type boardType;
-    private BoardCursorAdapter boardCursorAdapter;
-    private BaseAdapter adapter;
+    private ResourceCursorAdapter adapter;
     private GridView gridView;
     private Context context;
     public int columnWidth = 0;
     protected Handler handler;
-    protected ChanWatchlistCursorLoader cursorLoader;
+    protected Loader<Cursor> cursorLoader;
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
 
@@ -68,27 +69,32 @@ public class BoardGroupFragment
             imageLoader = ImageLoader.getInstance();
             imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));
             displayImageOptions = new DisplayImageOptions.Builder()
-                    .showImageForEmptyUri(R.drawable.stub_image)
-                    .cacheOnDisc()
-                    .imageScaleType(ImageScaleType.EXACT)
-                    .build();
-            setHasOptionsMenu(true);
+                .showImageForEmptyUri(R.drawable.stub_image)
+                .cacheOnDisc()
+                .imageScaleType(ImageScaleType.EXACT)
+                .build();
         }
-        else if (boardType == ChanBoard.Type.FAVORITES) {
-            setHasOptionsMenu(true);
-        }
+        //if (boardType == ChanBoard.Type.WATCHLIST || boardType == ChanBoard.Type.FAVORITES) {
+        //    setHasOptionsMenu(true);
+        //}
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
         Log.v(TAG, "onCreate init loader");
         getLoaderManager().initLoader(0, null, this);
         Log.v(TAG, "BoardGroupFragment " + boardType + " onCreate");
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        setHasOptionsMenu(true);
         Log.d(TAG, "BoardGroupFragment " + boardType + " onCreateView");
-
         gridView = (GridView) inflater.inflate(R.layout.board_selector_grid, container, false);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         ChanGridSizer cg = new ChanGridSizer(gridView, display, ChanGridSizer.ServiceType.SELECTOR);
@@ -96,17 +102,22 @@ public class BoardGroupFragment
         context = container.getContext();
         columnWidth = cg.getColumnWidth();
         if (boardType == ChanBoard.Type.WATCHLIST) {
-            boardCursorAdapter = new BoardCursorAdapter(
+            adapter = new BoardCursorAdapter(
                     context,
                     R.layout.board_grid_item,
                     this,
                     new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
                     new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag}
             );
-            adapter = boardCursorAdapter;
         }
         else {
-            adapter = new BoardSelectorAdapter(context, boardType, columnWidth);
+            adapter = new BoardSelectorAdapter(
+                    context,
+                    R.layout.selector_grid_item,
+                    this,
+                    new String[] {ChanHelper.BOARD_IMAGE_RESOURCE_ID, ChanHelper.BOARD_NAME},
+                    new int[] {R.id.grid_item_image, R.id.grid_item_text}
+            );
         }
         gridView.setAdapter(adapter);
         gridView.setClickable(true);
@@ -119,10 +130,9 @@ public class BoardGroupFragment
     @Override
     public void onResume() {
         super.onResume();
-        if (boardType == ChanBoard.Type.WATCHLIST) {
-            ensureHandler();
-            handler.sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_SHORT_MS);
-        }
+        ensureHandler();
+        handler.sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_SHORT_MS);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -133,46 +143,84 @@ public class BoardGroupFragment
     @Override
     public void onStart() {
         super.onStart();
+        setHasOptionsMenu(true);
     }
 
     @Override
     public void onStop () {
     	super.onStop();
-        if (boardType == ChanBoard.Type.WATCHLIST) {
-    	    getLoaderManager().destroyLoader(0);
-            handler = null;
-        }
+        getLoaderManager().destroyLoader(0);
+        handler = null;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        if (boardType == ChanBoard.Type.WATCHLIST) {
-            getLoaderManager().destroyLoader(0);
-            handler = null;
-        }
+        getLoaderManager().destroyLoader(0);
+        handler = null;
     }
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        Log.i(TAG, "Setting watchlist view");
-        return ThreadActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions, false);
+        if (boardType == ChanBoard.Type.WATCHLIST)
+            return ThreadActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions, false);
+        else
+            return setViewValueForBoardSelector(view, cursor, columnIndex);
+    }
+
+    private boolean setViewValueForBoardSelector(View view, Cursor cursor, int columnIndex) {
+        String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.BOARD_CODE));
+        int imageResourceId = cursor.getInt(cursor.getColumnIndex(ChanHelper.BOARD_IMAGE_RESOURCE_ID));
+        String boardName = cursor.getString(cursor.getColumnIndex(ChanHelper.BOARD_NAME));
+        if (view instanceof TextView) {
+            TextView tv = (TextView) view;
+            tv.setText(boardName);
+            return true;
+        } else if (view instanceof ImageView && view.getId() == R.id.grid_item_image) {
+            ImageView iv = (ImageView) view;
+            try {
+                Integer viewResourceIdInt = (Integer)iv.getTag(IMAGE_RESOURCE_ID_KEY);
+                int viewResourceId = viewResourceIdInt != null ? viewResourceIdInt : 0;
+                Log.i(TAG, "iv imageId=" + imageResourceId + " viewId=" + viewResourceId);
+                try {
+                    if (iv.getDrawable() == null || viewResourceId != imageResourceId) {
+                        Log.i(TAG, "setting resource id for imageId=" + imageResourceId);
+                        iv.setImageBitmap(null);
+                        iv.setTag(IMAGE_RESOURCE_ID_KEY, imageResourceId);
+                        iv.setImageResource(imageResourceId);
+                    }
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "Couldn't load board selector image for boardCode=" + boardCode + " imageId=" + imageResourceId);
+                    iv.setImageBitmap(null);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Exception setting image view with imageId=" + imageResourceId, e);
+                iv.setImageBitmap(null);
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
-        if (boardCursorAdapter != null) {
-            cursorLoader = new ChanWatchlistCursorLoader(getActivity().getBaseContext());
+        if (adapter != null) {
+            if (boardType == ChanBoard.Type.WATCHLIST)
+                cursorLoader = new ChanWatchlistCursorLoader(getActivity().getBaseContext());
+            else
+                cursorLoader = new BoardSelectorCursorLoader(getActivity().getBaseContext(), boardType);
         }
         return cursorLoader;
 	}
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
-        if (boardCursorAdapter != null) {
-		    boardCursorAdapter.swapCursor(data);
+		Log.v(TAG, ">>>>>>>>>>> onLoadFinished boardType=" + boardType);
+        if (adapter != null) {
+		    adapter.swapCursor(data);
         }
         ensureHandler();
 		handler.sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_SHORT_MS);
@@ -180,9 +228,9 @@ public class BoardGroupFragment
 
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
-        if (boardCursorAdapter != null) {
-		    boardCursorAdapter.swapCursor(null);
+		Log.v(TAG, ">>>>>>>>>>> onLoaderReset boardType=" + boardType);
+        if (adapter != null) {
+		    adapter.swapCursor(null);
         }
 	}
 
@@ -235,13 +283,26 @@ public class BoardGroupFragment
         }
     }
 
+    /*
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        Log.i(TAG, "Called onPrepareOptionsMenu fragment boardType=" + boardType);
+    }
+    */
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        Log.i(TAG, "Called onCreateOptionsMenu fragment boardType=" + boardType);
+        //MenuItem test = menu.add("Test");
+        //test.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        //getActivity().getActionBar().show();
+        if (inflater == null) {
+            Log.e(TAG, "Can't inflate, null menu inflater");
+        }
         if (boardType == ChanBoard.Type.FAVORITES) {
             inflater.inflate(R.menu.favorites_menu, menu);
-            if (adapter != null) { // has to be here because adapter is null when we modify favorites from another tab
-                adapter.notifyDataSetInvalidated();
-            }
         }
         else if (boardType == ChanBoard.Type.WATCHLIST) {
             inflater.inflate(R.menu.watchlist_menu, menu);
@@ -289,22 +350,35 @@ public class BoardGroupFragment
         }
         @Override
         public void handleMessage(Message msg) {
+            Log.v(TAG, ">>>>>>>>>>> refresh message received restarting loader");
+            if (fragment.isDetached())
+                return;
+
             try {
-                super.handleMessage(msg);
-                Log.v(fragment.getClass().getSimpleName(), ">>>>>>>>>>> refresh message received restarting loader");
-                if (fragment.isDetached())
-                    return;
-                if (fragment.boardType == ChanBoard.Type.WATCHLIST) {
-                    fragment.ensureHandler();
-                    fragment.getLoaderManager().restartLoader(0, null, fragment);
-                }
-                else if (fragment.boardType == ChanBoard.Type.FAVORITES && fragment.adapter != null) {
+                if (fragment.boardType == ChanBoard.Type.FAVORITES && fragment.adapter != null) {
                     fragment.adapter.notifyDataSetChanged();
                 }
             }
-            catch (Exception e) {
-                Log.e(TAG, "Couldn't restart loader", e);
+            catch (IllegalStateException e) {
+                Log.d(TAG, "Detached favorites fragment loader called, shouldn't be a problem, ignoring", e);
             }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't notify adapter of favorites board type data changed");
+            }
+
+            try {
+                if (fragment.getLoaderManager() != null) {
+                    fragment.ensureHandler();
+                    fragment.getLoaderManager().restartLoader(0, null, fragment);
+                }
+            }
+            catch (IllegalStateException e) {
+                Log.d(TAG, "Datached fragment loader restart called, shouldn't be a problem, ignoring", e);
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't restart loader manager for watchlist fragment", e);
+            }
+
         }
     }
 

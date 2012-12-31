@@ -229,7 +229,8 @@ public class BoardSelectorActivity extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "onCreateOptionsMenu called");
+        super.onCreateOptionsMenu(menu);
+        Log.i(TAG, "onCreateOptionsMenu called selectedBoardType="+selectedBoardType);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_selector_menu, menu);
         return true;
