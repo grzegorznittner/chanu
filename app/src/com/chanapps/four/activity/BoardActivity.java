@@ -38,12 +38,11 @@ import java.util.Date;
 
 public class BoardActivity extends Activity implements ClickableLoaderActivity {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-    public static final int LOADER_RESTART_INTERVAL_SUPER_MS = 20000;
-    public static final int LOADER_RESTART_INTERVAL_LONG_MS = 10000;
-    public static final int LOADER_RESTART_INTERVAL_MED_MS = 5000;
-    public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 2500;
+    public static final int LOADER_RESTART_INTERVAL_SUPER_MS = 10000;
+    public static final int LOADER_RESTART_INTERVAL_LONG_MS = 5000;
+    public static final int LOADER_RESTART_INTERVAL_MED_MS = 2000;
+    public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 1000;
     public static final int LOADER_RESTART_INTERVAL_MICRO_MS = 100;
-    public static final int LOADER_SHORT_DELAY_MS = 500;
     protected static final int IMAGE_URL_HASHCODE_KEY = R.id.grid_item_image;
 
     protected BoardCursorAdapter adapter;
@@ -115,16 +114,17 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         gridView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<GridView>() {
             @Override
             public void onRefresh(PullToRefreshBase<GridView> refreshView) {
-                reloadBoard();
+                startLoadService();
             }
         });
         gridView.setDisableScrollingWhileRefreshing(false);
     }
 
-    protected void ensureHandler() {
+    protected Handler ensureHandler() {
         if (handler == null) {
             handler = new LoaderHandler(this);
         }
+        return handler;
     }
 
     @Override
@@ -139,10 +139,6 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 		Log.v(TAG, "onResume");
         restoreInstanceState();
 	}
-
-    protected void reloadBoard() {
-        startLoadService();
-    }
 
     public PullToRefreshGridView getGridView() {
         return gridView;
@@ -192,12 +188,14 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     protected void restoreInstanceState() {
         Log.i(TAG, "Restoring instance state...");
         loadFromIntentOrPrefs();
-        startLoadService();
+        if (getIntent().hasExtra(ChanHelper.FROM_PARENT))
+            startLoadService();
         setActionBarTitle();
         scrollToLastPosition();
-        ensureHandler();
-        Message m = Message.obtain(handler, LoaderHandler.RESTART_LOADER_MSG);
-        handler.sendMessageDelayed(m, LOADER_SHORT_DELAY_MS); // shorter than usual
+        if (getLoaderManager().getLoader(0) == null || !getLoaderManager().getLoader(0).isStarted()) {
+            Message m = Message.obtain(ensureHandler(), LoaderHandler.RESTART_LOADER_MSG);
+            handler.sendMessageDelayed(m, LOADER_RESTART_INTERVAL_MICRO_MS); // shorter than usual
+        }
     }
 
     protected void startLoadService() {
@@ -332,9 +330,20 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         gridView.setLastUpdatedLabel(getString(R.string.board_last_updated, (new Date()).toString()));
         gridView.refreshLoadingViewsHeight();
 		adapter.swapCursor(data);
-        ensureHandler();
 
         int size = data == null ? 0 : data.getCount();
+        Message m = Message.obtain(ensureHandler(), LoaderHandler.RESTART_LOADER_MSG);
+        handler.sendMessageDelayed(m, getOptimalRefreshTime(size));
+
+        if (gridView != null) {
+            if (scrollOnNextLoaderFinished > 0) {
+                gridView.getRefreshableView().setSelection(scrollOnNextLoaderFinished);
+                scrollOnNextLoaderFinished = 0;
+            }
+        }
+    }
+
+    private int getOptimalRefreshTime(int size) {
         int restartInterval;
         if (size > 300)
             restartInterval = LOADER_RESTART_INTERVAL_SUPER_MS;
@@ -344,15 +353,8 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             restartInterval = LOADER_RESTART_INTERVAL_MED_MS;
         else
             restartInterval = LOADER_RESTART_INTERVAL_SHORT_MS;
-        Message m = Message.obtain(handler, LoaderHandler.RESTART_LOADER_MSG);
-        handler.sendMessageDelayed(m, restartInterval);
 
-        if (gridView != null) {
-            if (scrollOnNextLoaderFinished > 0) {
-                gridView.getRefreshableView().setSelection(scrollOnNextLoaderFinished);
-                scrollOnNextLoaderFinished = 0;
-            }
-        }
+        return restartInterval;
     }
 
     @Override
@@ -367,7 +369,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
         final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
         if (loadPage == 0 && lastPage == 0)
-            ThreadActivity.startActivity(this, adapterView, view, position, id);
+            ThreadActivity.startActivity(this, adapterView, view, position, id, true);
     }
 
     @Override

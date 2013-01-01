@@ -1,7 +1,12 @@
 package com.chanapps.four.fragment;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
@@ -52,8 +57,11 @@ public class BoardGroupFragment
     public int columnWidth = 0;
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
+
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
+
+    private byte[] decodeTempStorage = new byte[16000]; // to avoid constant reallocations on bitmap scaling
 
     public BaseAdapter getAdapter() {
         return adapter;
@@ -69,17 +77,16 @@ public class BoardGroupFragment
             imageLoader = ImageLoader.getInstance();
             imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));
             displayImageOptions = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.stub_image)
-                .cacheOnDisc()
-                .imageScaleType(ImageScaleType.EXACT)
-                .build();
+                    .showImageForEmptyUri(R.drawable.stub_image)
+                    .cacheOnDisc()
+                    .imageScaleType(ImageScaleType.EXACT)
+                    .build();
         }
         //if (boardType == ChanBoard.Type.WATCHLIST || boardType == ChanBoard.Type.FAVORITES) {
         //    setHasOptionsMenu(true);
         //}
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
-        Log.v(TAG, "onCreate init loader");
         getLoaderManager().initLoader(0, null, this);
         Log.v(TAG, "BoardGroupFragment " + boardType + " onCreate");
         setHasOptionsMenu(true);
@@ -130,8 +137,9 @@ public class BoardGroupFragment
     @Override
     public void onResume() {
         super.onResume();
-        ensureHandler();
-        handler.sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_SHORT_MS);
+        if (getLoaderManager().getLoader(0) == null || !getLoaderManager().getLoader(0).isStarted())
+            ensureHandler().sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_MICRO_MS);
+
         setHasOptionsMenu(true);
     }
 
@@ -163,7 +171,7 @@ public class BoardGroupFragment
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         if (boardType == ChanBoard.Type.WATCHLIST)
-            return ThreadActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions, false);
+            return ThreadActivity.setViewValue(view, cursor, columnIndex, getImageLoader(), getDisplayImageOptions(), false);
         else
             return setViewValueForBoardSelector(view, cursor, columnIndex);
     }
@@ -187,7 +195,12 @@ public class BoardGroupFragment
                         Log.i(TAG, "setting resource id for imageId=" + imageResourceId);
                         iv.setImageBitmap(null);
                         iv.setTag(IMAGE_RESOURCE_ID_KEY, imageResourceId);
-                        iv.setImageResource(imageResourceId);
+                        final BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inTempStorage = decodeTempStorage;
+                        options.inPurgeable = true;
+                        options.inSampleSize = 1;
+                        Bitmap b = BitmapFactory.decodeResource(getResources(), imageResourceId, options);
+                        iv.setImageBitmap(b);
                     }
                 }
                 catch (Exception e) {
@@ -202,6 +215,16 @@ public class BoardGroupFragment
         } else {
             return false;
         }
+    }
+
+    private ImageLoader getImageLoader() {
+        //return ((BoardSelectorActivity)getActivity()).imageLoader;
+        return imageLoader;
+    }
+
+    private DisplayImageOptions getDisplayImageOptions() {
+        //return ((BoardSelectorActivity)getActivity()).displayImageOptions;
+        return displayImageOptions;
     }
 
     @Override
@@ -222,9 +245,11 @@ public class BoardGroupFragment
         if (adapter != null) {
 		    adapter.swapCursor(data);
         }
-        ensureHandler();
-		handler.sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_SHORT_MS);
-	}
+        if (boardType == ChanBoard.Type.WATCHLIST)
+            ensureHandler().sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_MED_MS);
+        else
+            ensureHandler().sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_SHORT_MS);
+    }
 
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
@@ -237,7 +262,7 @@ public class BoardGroupFragment
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (boardType == ChanBoard.Type.WATCHLIST) {
-            ThreadActivity.startActivity(getActivity(), parent, view, position, id);
+            ThreadActivity.startActivity(getActivity(), parent, view, position, id, true);
         }
         else {
             ChanBoard board = ChanBoard.getBoardsByType(getActivity(), boardType).get(position);
@@ -246,6 +271,7 @@ public class BoardGroupFragment
             intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
             intent.putExtra(ChanHelper.PAGE, 0);
             intent.putExtra(ChanHelper.LAST_BOARD_POSITION, 0);
+            intent.putExtra(ChanHelper.FROM_PARENT, true);
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
             editor.putInt(ChanHelper.LAST_BOARD_POSITION, 0); // reset it
             editor.commit();
@@ -277,10 +303,11 @@ public class BoardGroupFragment
         return true;
     }
 
-    protected void ensureHandler() {
+    protected Handler ensureHandler() {
         if (handler == null) {
             handler = new FragmentLoaderHandler(this);
         }
+        return handler;
     }
 
     /*

@@ -74,7 +74,7 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
                 imageId = R.drawable.stub_image;
             }
         }
-        Log.d(BoardSelectorActivity.TAG, "Found image for board " + boardCode + " image Id: " + imageId);
+        Log.v(BoardSelectorActivity.TAG, "Found image for board " + boardCode + " image Id: " + imageId);
         return imageId;
     }
 

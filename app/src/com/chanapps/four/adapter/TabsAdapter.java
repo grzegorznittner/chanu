@@ -59,14 +59,6 @@ public class TabsAdapter extends FragmentPagerAdapter
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        if (container != null && container instanceof ViewPager)
-            try {
-            //    ((ViewPager) container).removeViewAt(position);
-            //    Log.d(BoardSelectorActivity.TAG, "Successfully destroyed item " + position);
-            }
-            catch (Exception e) {
-                Log.e(BoardSelectorActivity.TAG, "Error destroying tab view at position:" + position);
-            }
         //if (position >= getCount()) {
         if (object != null && object instanceof Fragment) {
             FragmentManager manager = ((Fragment) object).getFragmentManager();

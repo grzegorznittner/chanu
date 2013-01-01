@@ -51,7 +51,11 @@ public class ThreadActivity extends BoardActivity {
     }
 
     public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id) {
-        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        startActivity(from, adapterView, view, position, id, false);
+    }
+
+    public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id, boolean fromParent) {
+            Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final long threadTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
         Log.d(TAG, "threadTim: " + threadTim);
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
@@ -70,6 +74,8 @@ public class ThreadActivity extends BoardActivity {
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, tn_h);
         intent.putExtra(ChanHelper.LAST_BOARD_POSITION, adapterView.getFirstVisiblePosition());
         intent.putExtra(ChanHelper.LAST_THREAD_POSITION, 0);
+        if (fromParent)
+            intent.putExtra(ChanHelper.FROM_PARENT, true);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(from).edit();
         editor.putInt(ChanHelper.LAST_THREAD_POSITION, 0); // reset it
         editor.commit();
@@ -231,9 +237,8 @@ public class ThreadActivity extends BoardActivity {
         editor.commit();
         invalidateOptionsMenu();
         createGridView();
-        ensureHandler();
-        Message m = Message.obtain(handler, LoaderHandler.RESTART_LOADER_MSG);
-        handler.sendMessageDelayed(m, LOADER_SHORT_DELAY_MS);
+        Message m = Message.obtain(ensureHandler(), LoaderHandler.RESTART_LOADER_MSG);
+        handler.sendMessageDelayed(m, LOADER_RESTART_INTERVAL_SHORT_MS);
     }
 
     @Override

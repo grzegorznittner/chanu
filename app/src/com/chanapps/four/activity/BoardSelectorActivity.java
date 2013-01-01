@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.component.ExtendedImageDownloader;
 import com.chanapps.four.data.SmartCache;
 import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.component.RawResourceDialog;
@@ -19,6 +20,10 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +39,6 @@ public class BoardSelectorActivity extends FragmentActivity {
     private boolean useFavoritesBoard = true;
     public List<ChanBoard.Type> activeBoardTypes = new ArrayList<ChanBoard.Type>();
     public ChanBoard.Type selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
