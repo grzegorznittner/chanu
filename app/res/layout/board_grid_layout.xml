@@ -1,22 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-         android:id="@+id/board_grid_layout"
-         android:orientation="vertical"
-         android:layout_width="fill_parent"
-         android:layout_height="fill_parent"
-         android:paddingLeft="0dp"
-         android:paddingRight="0dp"
-         android:paddingTop="0dp"
-         android:paddingBottom="0dp">
-    -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+                android:id="@+id/board_grid_layout"
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp">
+
     <com.handmark.pulltorefresh.library.PullToRefreshGridView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:ptr="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/board_grid_view"
-    	style="@style/GridViewTemplate"
-        ptr:ptrShowIndicator="false"
-        ptr:ptrOverScroll="false"
-    />
-<!--
-</LinearLayout>
--->
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/board_grid_view"
+            style="@style/GridViewTemplate"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:gravity="top|left"
+            android:layout_marginBottom="50dp"
+            ptr:ptrShowIndicator="false"
+            ptr:ptrOverScroll="false"
+            />
+
+    <LinearLayout
+            android:id="@+id/board_grid_advert"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal|center_vertical"
+            android:background="#121212"
+            >
+        <!--
+        <TextView
+                android:id="@+id/adView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FOOBAR BAZ BUZ"
+                android:background="#80823412"
+                ads:adUnitId="MY_AD_UNIT_ID"
+                ads:adSize="BANNER"
+                ads:testDevices="42f758079ab89f7f"
+                ads:loadAdOnCreate="true"/>
+        -->
+        <com.google.ads.AdView
+                android:id="@+id/adView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                ads:adUnitId="a150e4b6d4be55e"
+                ads:adSize="BANNER"
+                ads:testDevices="42f758079ab89f7f"
+                ads:loadAdOnCreate="true"/>
+        <!-- -->
+    </LinearLayout>
+
+</RelativeLayout>

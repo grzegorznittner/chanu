@@ -27,6 +27,9 @@ import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.service.BoardLoadService;
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshGridView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -38,11 +41,16 @@ import java.util.Date;
 
 public class BoardActivity extends Activity implements ClickableLoaderActivity {
 	public static final String TAG = BoardActivity.class.getSimpleName();
+
     public static final int LOADER_RESTART_INTERVAL_SUPER_MS = 10000;
     public static final int LOADER_RESTART_INTERVAL_LONG_MS = 5000;
     public static final int LOADER_RESTART_INTERVAL_MED_MS = 2000;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 1000;
     public static final int LOADER_RESTART_INTERVAL_MICRO_MS = 100;
+
+//    private static final String AD_UNIT_ID = "1234";
+//    private static final String ARLEY_TEST_SAMSUNG_S3 = "42f758079ab89f7f";
+
     protected static final int IMAGE_URL_HASHCODE_KEY = R.id.grid_item_image;
 
     protected BoardCursorAdapter adapter;
@@ -68,11 +76,14 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     protected long tim;
     protected String boardCode;
 
+//    protected AdView adView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 		Log.v(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         loadFromIntentOrPrefs();
+//        adView = new AdView(this, AdSize.BANNER, AD_UNIT_ID);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(this));
         displayImageOptions = new DisplayImageOptions.Builder()
@@ -118,6 +129,14 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             }
         });
         gridView.setDisableScrollingWhileRefreshing(false);
+/*
+        RelativeLayout boardGridLayout = (RelativeLayout)findViewById(R.layout.board_grid_layout);
+        adView.setGravity(Gravity.BOTTOM|Gravity.LEFT);
+        boardGridLayout.addView(adView);
+        AdRequest adRequest = new AdRequest();
+        adRequest.addTestDevice(ARLEY_TEST_SAMSUNG_S3);
+*/
+        //adView.loadAd(new AdRequest());
     }
 
     protected Handler ensureHandler() {
@@ -226,6 +245,8 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 		Log.v(TAG, "onDestroy");
 		getLoaderManager().destroyLoader(0);
 		handler = null;
+//        if (adView != null)
+//            adView.destroy();
 	}
 
     @Override
