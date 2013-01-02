@@ -100,10 +100,12 @@
     <string name="dialog_clear_favorites">Clear favorites?</string>
     <string name="dialog_clear_watchlist">Clear favorites?</string>
     <string name="dialog_clean_watchlist">Clean dead threads?</string>
+    <string name="dialog_reset_preferences_confirm">Reset all preferences?</string>
     <string name="dialog_add">Add</string>
     <string name="dialog_delete">Remove</string>
     <string name="dialog_clear">Clear</string>
     <string name="dialog_clean">Clean</string>
+    <string name="dialog_reset">Reset</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_added_to_favorites">Added to favorites</string>
     <string name="dialog_deleted_from_favorites">Removed from favorites</string>
@@ -111,7 +113,9 @@
     <string name="dialog_deleted_from_watchlist">Removed from watchlist</string>
     <string name="dialog_cleared_favorites">Favorites cleared</string>
     <string name="dialog_cleared_watchlist">Watchlist cleared</string>
+    <string name="dialog_cleaning_watchlist">Cleaning watchlist...</string>
     <string name="dialog_cleaned_watchlist">Watchlist cleaned</string>
+    <string name="dialog_reset_preferences">Preferences reset to defaults</string>
 
     <!-- post reply activity -->
     <string name="post_reply_title">Post Reply</string>
@@ -164,6 +168,11 @@
     <string name="pref_hide_all_text_summ_on">Text-only posts and image text hidden</string>
     <string name="pref_hide_all_text_summ_off">Text-only posts and image text shown</string>
     <string name="pref_hide_all_text_on">Show All Text</string>
+    <string name="pref_automatically_manage_watchlist">Auto-Manage Watchlist</string>
+    <string name="pref_automatically_manage_watchlist_summ_on">Add and remove threads automatically</string>
+    <string name="pref_automatically_manage_watchlist_summ_off">Manually add and remove threads</string>
+    <string name="pref_reset_to_defaults">Clear Preferences</string>
+    <string name="pref_reset_to_defaults_summ">Reset all settings to their factory default</string>
 
     <!-- Help and about -->
     <string name="about_menu">About</string>

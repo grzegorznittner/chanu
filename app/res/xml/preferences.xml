@@ -31,4 +31,16 @@
             android:summaryOff="@string/pref_hide_all_text_summ_off"
             android:defaultValue="false" />
 
+    <CheckBoxPreference
+            android:key="pref_automatically_manage_watchlist"
+            android:title="@string/pref_automatically_manage_watchlist"
+            android:summaryOn="@string/pref_automatically_manage_watchlist_summ_on"
+            android:summaryOff="@string/pref_automatically_manage_watchlist_summ_off"
+            android:defaultValue="true" />
+
+    <Preference
+        android:key="pref_reset_to_defaults"
+        android:title="@string/pref_reset_to_defaults"
+        android:summary="@string/pref_reset_to_defaults_summ" />
+
 </PreferenceScreen>

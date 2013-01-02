@@ -63,6 +63,7 @@ public class PostReplyActivity extends Activity {
     public String boardCode = null;
     public long threadNo = 0;
     public long postNo = 0;
+    public long tim = 0;
     private boolean fromBoard = false;
 
     private Random randomGenerator = new Random();
@@ -137,6 +138,7 @@ public class PostReplyActivity extends Activity {
             boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
             threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
             postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
+            tim = intent.getLongExtra(ChanHelper.TIM, 0);
             String initialImageUri = intent.getStringExtra(ChanHelper.IMAGE_URL);
             if (initialImageUri != null && !initialImageUri.isEmpty())
                 try {
@@ -163,6 +165,7 @@ public class PostReplyActivity extends Activity {
             boardCode = prefs.getString(ChanHelper.BOARD_CODE, null);
             threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
             postNo = prefs.getLong(ChanHelper.POST_NO, 0);
+            tim = prefs.getLong(ChanHelper.POST_TIM, 0);
             messageText.append(prefs.getString(ChanHelper.TEXT, null));
             String initialImageUri = prefs.getString(ChanHelper.IMAGE_URL, null);
             if (initialImageUri != null && !initialImageUri.isEmpty())
@@ -198,6 +201,7 @@ public class PostReplyActivity extends Activity {
         ed.putLong(ChanHelper.POST_NO, postNo);
         ed.putString(ChanHelper.TEXT, getMessage());
         ed.putString(ChanHelper.IMAGE_URL, getImageUrl());
+        ed.putLong(ChanHelper.POST_TIM, tim);
         ed.commit();
         DispatcherHelper.saveActivityToPrefs(this);
     }

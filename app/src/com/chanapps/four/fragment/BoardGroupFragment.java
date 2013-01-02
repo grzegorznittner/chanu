@@ -89,7 +89,7 @@ public class BoardGroupFragment
         LoaderManager.enableDebugLogging(true);
         getLoaderManager().initLoader(0, null, this);
         Log.v(TAG, "BoardGroupFragment " + boardType + " onCreate");
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
     }
 
     @Override
@@ -100,7 +100,6 @@ public class BoardGroupFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        setHasOptionsMenu(true);
         Log.d(TAG, "BoardGroupFragment " + boardType + " onCreateView");
         gridView = (GridView) inflater.inflate(R.layout.board_selector_grid, container, false);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
@@ -139,8 +138,6 @@ public class BoardGroupFragment
         super.onResume();
         if (getLoaderManager().getLoader(0) == null || !getLoaderManager().getLoader(0).isStarted())
             ensureHandler().sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_MICRO_MS);
-
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -151,7 +148,6 @@ public class BoardGroupFragment
     @Override
     public void onStart() {
         super.onStart();
-        setHasOptionsMenu(true);
     }
 
     @Override

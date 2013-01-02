@@ -1,10 +1,14 @@
 package com.chanapps.four.task;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
+import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.multipartmime.FilePart;
 import com.chanapps.four.multipartmime.MultipartEntity;
 import com.chanapps.four.multipartmime.Part;
@@ -129,6 +133,18 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             }
             else {
                 Toast.makeText(context, R.string.post_reply_posted_reply, Toast.LENGTH_SHORT).show();
+            }
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            boolean addThreadToWatchlist = prefs.getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true);
+            if (addThreadToWatchlist && activity.tim != 0) {
+                ChanWatchlist.watchThread(context,
+                        activity.tim,
+                        activity.boardCode,
+                        activity.threadNo,
+                        "WatchingThread",
+                        activity.getImageUrl(),
+                        250,
+                        250);
             }
             activity.finish();
             //activity.navigateUp();

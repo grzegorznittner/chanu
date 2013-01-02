@@ -472,6 +472,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         Log.i(TAG, "Calling popup with id=" + id + " isDead=" + isDead);
         final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+        final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
         final long clickedThreadNo = resto == 0 ? postId : resto;
         final long clickedPostNo = resto != 0 ? postId : 0;
         ensurePopupWindow();
@@ -519,6 +520,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                     replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
                     replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
                     replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
+                    replyIntent.putExtra(ChanHelper.POST_TIM, tim);
                     startActivity(replyIntent);
                     popupWindow.dismiss();
                 }
@@ -532,6 +534,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                     replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
                     replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
                     replyIntent.putExtra(ChanHelper.TEXT, text);
+                    replyIntent.putExtra(ChanHelper.POST_TIM, tim);
                     startActivity(replyIntent);
                     popupWindow.dismiss();
                 }

@@ -21,6 +21,8 @@ public class SettingsActivity extends Activity {
     public static final String PREF_USE_FAVORITES = "pref_use_favorites";
     public static final String PREF_NOTIFICATIONS = "pref_notifications";
     public static final String PREF_HIDE_ALL_TEXT = "pref_hide_all_text";
+    public static final String PREF_AUTOMATICALLY_MANAGE_WATCHLIST = "pref_automatically_manage_watchlist";
+    public static final String PREF_RESET_TO_DEFAULTS = "pref_reset_to_defaults";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

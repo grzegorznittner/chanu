@@ -2,11 +2,14 @@ package com.chanapps.four.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 import android.util.Log;
+import android.widget.BaseAdapter;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.ToastRunnable;
 
 import java.net.URI;
 import java.net.URL;
@@ -76,6 +79,29 @@ public class ChanWatchlist {
         }
     }
 
+    public static class CleanWatchlistTask extends AsyncTask<Void, Void, Void> {
+        private Context ctx;
+        private BaseAdapter adapter;
+        private boolean userInteraction = false;
+        public CleanWatchlistTask(Context ctx, BaseAdapter adapter, boolean userInteraction) {
+            this.ctx = ctx;
+            this.adapter = adapter;
+            this.userInteraction = userInteraction;
+        }
+        public Void doInBackground(Void... params) {
+            if (userInteraction)
+                Toast.makeText(ctx, R.string.dialog_cleaning_watchlist, Toast.LENGTH_SHORT).show();
+            cleanWatchlistSynchronous(ctx);
+            return null;
+        }
+        protected void onPostExecute(Void result) {
+            if (adapter != null)
+                adapter.notifyDataSetChanged();
+            if (userInteraction)
+                Toast.makeText(ctx, R.string.dialog_cleaned_watchlist, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public static void clearWatchlist(Context ctx) {
         Log.i(TAG, "Clearing watchlist...");
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
@@ -84,7 +110,7 @@ public class ChanWatchlist {
         Log.i(TAG, "Watchlist cleared");
     }
 
-    public static void cleanWatchlist(Context ctx) {
+    private static void cleanWatchlistSynchronous(Context ctx) {
         Log.i(TAG, "Cleaning watchlist...");
         List<Long> deadTims = getDeadTims(ctx);
         deleteThreadsFromWatchlist(ctx, deadTims);

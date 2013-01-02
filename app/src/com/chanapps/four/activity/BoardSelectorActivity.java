@@ -5,6 +5,7 @@ import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.ExtendedImageDownloader;
+import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.data.SmartCache;
 import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.component.RawResourceDialog;
@@ -44,6 +45,8 @@ public class BoardSelectorActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.v(TAG, "onCreate");
+        if (ensurePrefs().getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
+            (new ChanWatchlist.CleanWatchlistTask(this, null, false)).execute();
         SmartCache.fillCache(this);
         Intent intent = getIntent();
         if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
@@ -67,8 +70,7 @@ public class BoardSelectorActivity extends FragmentActivity {
     }
 
     private void ensureTabsAdapter() {
-        ensurePrefs();
-        showNSFWBoards = prefs.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
+        showNSFWBoards = ensurePrefs().getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
         useFavoritesBoard = prefs.getBoolean(SettingsActivity.PREF_USE_FAVORITES, true);
 
         if (mTabsAdapter == null) { // create the board tabs
@@ -148,15 +150,15 @@ public class BoardSelectorActivity extends FragmentActivity {
             return null;
     }
 
-    private void ensurePrefs() {
+    private SharedPreferences ensurePrefs() {
         if (prefs == null)
             prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs;
     }
 
     private void restoreInstanceState() {
         ensureTabsAdapter();
-        ensurePrefs();
-        selectedBoardType = ChanBoard.Type.valueOf(prefs.getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
+        selectedBoardType = ChanBoard.Type.valueOf(ensurePrefs().getString(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString()));
         if (getSelectedTabIndex() == -1) { // reset if board is no longer visible
             selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
             saveSelectedBoardType();
@@ -232,9 +234,24 @@ public class BoardSelectorActivity extends FragmentActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        Log.i(TAG, "Activity-level onPrepareOptionsMenu called selectedBoardType="+selectedBoardType);
+        MenuInflater inflater = getMenuInflater();
+        if (selectedBoardType == ChanBoard.Type.FAVORITES) {
+            inflater.inflate(R.menu.favorites_menu, menu);
+        }
+        else if (selectedBoardType == ChanBoard.Type.WATCHLIST) {
+            inflater.inflate(R.menu.watchlist_menu, menu);
+        }
+
+        return true;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        Log.i(TAG, "onCreateOptionsMenu called selectedBoardType="+selectedBoardType);
+        Log.i(TAG, "Activity-level onCreateOptionsMenu called selectedBoardType="+selectedBoardType);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_selector_menu, menu);
         return true;
