@@ -30,8 +30,6 @@ import com.chanapps.four.service.BoardLoadService;
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshGridView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -54,7 +52,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     protected static final int IMAGE_URL_HASHCODE_KEY = R.id.grid_item_image;
 
     protected BoardCursorAdapter adapter;
-    protected PullToRefreshGridView gridView;
+    protected GridView gridView;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
     protected int prevTotalItemCount = 0;
@@ -100,7 +98,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
 
     protected void sizeGridToDisplay() {
         Display display = getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(gridView.getRefreshableView(), display, ChanGridSizer.ServiceType.BOARD);
+        ChanGridSizer cg = new ChanGridSizer(gridView, display, ChanGridSizer.ServiceType.BOARD);
         cg.sizeGridToDisplay();
     }
 
@@ -110,25 +108,18 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                 this,
                 new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_COUNTRY_URL},
                 new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag});
-        gridView.getRefreshableView().setAdapter(adapter);
+        gridView.setAdapter(adapter);
     }
 
     protected void createGridView() {
         setContentView(R.layout.board_grid_layout);
-        gridView = (PullToRefreshGridView)findViewById(R.id.board_grid_view);
+        gridView = (GridView)findViewById(R.id.board_grid_view);
         sizeGridToDisplay();
         initGridAdapter();
         gridView.setClickable(true);
-        gridView.getRefreshableView().setOnItemClickListener(this);
+        gridView.setOnItemClickListener(this);
         gridView.setLongClickable(true);
-        gridView.getRefreshableView().setOnItemLongClickListener(this);
-        gridView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<GridView>() {
-            @Override
-            public void onRefresh(PullToRefreshBase<GridView> refreshView) {
-                startLoadService();
-            }
-        });
-        gridView.setDisableScrollingWhileRefreshing(false);
+        gridView.setOnItemLongClickListener(this);
 /*
         RelativeLayout boardGridLayout = (RelativeLayout)findViewById(R.layout.board_grid_layout);
         adView.setGravity(Gravity.BOTTOM|Gravity.LEFT);
@@ -159,7 +150,8 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         restoreInstanceState();
 	}
 
-    public PullToRefreshGridView getGridView() {
+//    public PullToRefreshGridView getGridView() {
+    public GridView getGridView() {
         return gridView;
     }
 
@@ -212,12 +204,12 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         setActionBarTitle();
         scrollToLastPosition();
         if (getLoaderManager().getLoader(0) == null || !getLoaderManager().getLoader(0).isStarted()) {
-            Message m = Message.obtain(ensureHandler(), LoaderHandler.RESTART_LOADER_MSG);
-            handler.sendMessageDelayed(m, LOADER_RESTART_INTERVAL_MICRO_MS); // shorter than usual
+            ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_MICRO_MS); // shorter than usual
         }
     }
 
     protected void startLoadService() {
+        Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
         BoardLoadService.startService(this, boardCode);
     }
 
@@ -226,7 +218,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString(ChanHelper.BOARD_CODE, boardCode);
         editor.putLong(ChanHelper.THREAD_NO, 0);
-        editor.putInt(ChanHelper.LAST_BOARD_POSITION, gridView.getRefreshableView().getFirstVisiblePosition());
+        editor.putInt(ChanHelper.LAST_BOARD_POSITION, gridView.getFirstVisiblePosition());
         editor.commit();
         DispatcherHelper.saveActivityToPrefs(this);
     }
@@ -347,18 +339,14 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
-        gridView.onRefreshComplete();
-        gridView.setLastUpdatedLabel(getString(R.string.board_last_updated, (new Date()).toString()));
-        gridView.refreshLoadingViewsHeight();
 		adapter.swapCursor(data);
 
         int size = data == null ? 0 : data.getCount();
-        Message m = Message.obtain(ensureHandler(), LoaderHandler.RESTART_LOADER_MSG);
-        handler.sendMessageDelayed(m, getOptimalRefreshTime(size));
+        ensureHandler().sendEmptyMessageDelayed(0, getOptimalRefreshTime(size));
 
         if (gridView != null) {
             if (scrollOnNextLoaderFinished > 0) {
-                gridView.getRefreshableView().setSelection(scrollOnNextLoaderFinished);
+                gridView.setSelection(scrollOnNextLoaderFinished);
                 scrollOnNextLoaderFinished = 0;
             }
         }
@@ -406,13 +394,13 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                 intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
                 NavUtils.navigateUpTo(this, intent);
                 return true;
+            case R.id.refresh_board_menu:
+                startLoadService();
+                return true;
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
                 replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
                 startActivity(replyIntent);
-                return true;
-            case R.id.prefetch_board_menu:
-                Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.settings_menu:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/refresh_board_menu"
+          android:title="@string/refresh_board_menu"
+          android:icon="@drawable/navigation_refresh"
+          android:showAsAction="ifRoom"
+            />
     <item android:id="@+id/new_thread_menu"
           android:title="@string/new_thread_menu"
           android:icon="@drawable/content_new_picture"
-          android:showAsAction="ifRoom"
-            />
-    <item android:id="@+id/prefetch_board_menu"
-          android:title="@string/prefetch_board_menu"
-          android:icon="@drawable/av_download"
           android:showAsAction="ifRoom"
             />
     <item android:id="@+id/settings_menu"

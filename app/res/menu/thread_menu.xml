@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/refresh_thread_menu"
+          android:title="@string/refresh_thread_menu"
+          android:icon="@drawable/navigation_refresh"
+          android:showAsAction="ifRoom"
+            />
     <item android:id="@+id/hide_all_text"
           android:title="@string/pref_hide_all_text"
           android:icon="@drawable/content_picture"
@@ -8,12 +13,10 @@
     <item android:id="@+id/watch_thread_menu"
           android:title="@string/watch_thread_menu"
           android:icon="@drawable/rating_important"
-          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/download_all_images_menu"
           android:title="@string/download_all_images_menu"
           android:icon="@drawable/av_download"
-          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"

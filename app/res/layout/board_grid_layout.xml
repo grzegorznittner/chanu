@@ -10,6 +10,7 @@
                 android:paddingTop="0dp"
                 android:paddingBottom="0dp">
 
+    <!--
     <com.handmark.pulltorefresh.library.PullToRefreshGridView
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:ptr="http://schemas.android.com/apk/res-auto"
@@ -21,6 +22,17 @@
             android:layout_marginBottom="50dp"
             ptr:ptrShowIndicator="false"
             ptr:ptrOverScroll="false"
+            />
+            -->
+
+    <GridView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/board_grid_view"
+            style="@style/GridViewTemplate"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:gravity="top|left"
+            android:layout_marginBottom="50dp"
             />
 
     <LinearLayout

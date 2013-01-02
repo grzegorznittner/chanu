@@ -116,7 +116,7 @@ public class ThreadActivity extends BoardActivity {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString(ChanHelper.BOARD_CODE, boardCode);
         editor.putLong(ChanHelper.THREAD_NO, threadNo);
-        editor.putInt(ChanHelper.LAST_THREAD_POSITION, gridView.getRefreshableView().getFirstVisiblePosition());
+        editor.putInt(ChanHelper.LAST_THREAD_POSITION, gridView.getFirstVisiblePosition());
         editor.putLong(ChanHelper.TIM, tim);
         editor.putString(ChanHelper.TEXT, text);
         editor.putString(ChanHelper.IMAGE_URL, imageUrl);
@@ -133,7 +133,7 @@ public class ThreadActivity extends BoardActivity {
                 this,
                 new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_COUNTRY_URL},
                 new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag});
-        gridView.getRefreshableView().setAdapter(adapter);
+        gridView.setAdapter(adapter);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class ThreadActivity extends BoardActivity {
     @Override
     protected void sizeGridToDisplay() {
         Display display = getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(gridView.getRefreshableView(), display, ChanGridSizer.ServiceType.THREAD);
+        ChanGridSizer cg = new ChanGridSizer(gridView, display, ChanGridSizer.ServiceType.THREAD);
         cg.sizeGridToDisplay();
     }
 
@@ -167,6 +167,7 @@ public class ThreadActivity extends BoardActivity {
 
     @Override
     protected void startLoadService() {
+        Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
         ThreadLoadService.startService(this, boardCode, threadNo);
     }
 
@@ -237,8 +238,7 @@ public class ThreadActivity extends BoardActivity {
         editor.commit();
         invalidateOptionsMenu();
         createGridView();
-        Message m = Message.obtain(ensureHandler(), LoaderHandler.RESTART_LOADER_MSG);
-        handler.sendMessageDelayed(m, LOADER_RESTART_INTERVAL_SHORT_MS);
+        ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
     }
 
     @Override
@@ -250,6 +250,9 @@ public class ThreadActivity extends BoardActivity {
                 upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
                 upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
                 NavUtils.navigateUpTo(this, upIntent);
+                return true;
+            case R.id.refresh_thread_menu:
+                startLoadService();
                 return true;
             case R.id.hide_all_text:
                 toggleHideAllText();

@@ -4,9 +4,8 @@ import android.app.LoaderManager;
 import android.database.Cursor;
 import android.widget.AdapterView;
 
-import com.chanapps.four.component.ChanGridSizer;
+import android.widget.GridView;
 import com.chanapps.four.adapter.BoardCursorAdapter;
-import com.handmark.pulltorefresh.library.PullToRefreshGridView;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,5 +20,5 @@ public interface ClickableLoaderActivity extends
         LoaderManager.LoaderCallbacks<Cursor>,
         BoardCursorAdapter.ViewBinder {
     public LoaderManager getLoaderManager();
-    public PullToRefreshGridView getGridView();
+    public GridView getGridView();
 }
