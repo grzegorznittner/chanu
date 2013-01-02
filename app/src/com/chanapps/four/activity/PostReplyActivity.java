@@ -134,22 +134,30 @@ public class PostReplyActivity extends Activity {
 
     private void restoreInstanceState() {
         Intent intent = getIntent();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
             boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
             threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
             postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
             tim = intent.getLongExtra(ChanHelper.TIM, 0);
+            String text = intent.getStringExtra(ChanHelper.TEXT);
+            if (text != null) {
+                messageText.setText("");
+                messageText.append(text);
+            }
             String initialImageUri = intent.getStringExtra(ChanHelper.IMAGE_URL);
+            Log.i(TAG, "loaded from intent " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + "imageUrl=" + initialImageUri);
             if (initialImageUri != null && !initialImageUri.isEmpty())
                 try {
                     imageUri = Uri.parse(initialImageUri);
+                    Log.i(TAG, "successfully parsed from intent imageUri=" + imageUri);
                 }
                 catch (Exception e) {
                     Log.e(TAG, "Couldn't parse intent image uri=" + imageUri, e);
                     imageUri = null;
                 }
             else
-                imageUri = null;
+                Log.i(TAG, "Didn't find imageUrl in intent");
             String message = "";
             if (postNo != 0) {
                 message += ">>" + postNo + "\n";
@@ -161,24 +169,35 @@ public class PostReplyActivity extends Activity {
             messageText.append(message);
         }
         else {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             boardCode = prefs.getString(ChanHelper.BOARD_CODE, null);
             threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
             postNo = prefs.getLong(ChanHelper.POST_NO, 0);
             tim = prefs.getLong(ChanHelper.POST_TIM, 0);
-            messageText.append(prefs.getString(ChanHelper.TEXT, null));
+            String text = prefs.getString(ChanHelper.TEXT, "");
+            if (text != null) {
+                messageText.setText("");
+                messageText.append(text);
+            }
             String initialImageUri = prefs.getString(ChanHelper.IMAGE_URL, null);
+            Log.i(TAG, "loaded from prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + "imageUrl=" + initialImageUri);
             if (initialImageUri != null && !initialImageUri.isEmpty())
                 try {
                     imageUri = Uri.parse(initialImageUri);
+                    Log.i(TAG, "successfully parsed from prefs imageUri=" + imageUri);
                 }
                 catch (Exception e) {
                     Log.e(TAG, "Couldn't parse prefs image uri=" + imageUri, e);
                     imageUri = null;
                 }
             else
-                imageUri = null;
+                Log.i(TAG, "Didn't find imageUri in intent");
         }
+        if (imagePath == null || imagePath.isEmpty())
+            imagePath = prefs.getString(ChanHelper.IMAGE_PATH, null);
+        if (contentType == null || contentType.isEmpty())
+            contentType = prefs.getString(ChanHelper.CONTENT_TYPE, null);
+        if (orientation == null || orientation.isEmpty())
+            orientation = prefs.getString(ChanHelper.ORIENTATION, null);
         setBoardCode(boardCode);
         reloadCaptcha();
     }
@@ -203,6 +222,7 @@ public class PostReplyActivity extends Activity {
         ed.putString(ChanHelper.IMAGE_URL, getImageUrl());
         ed.putLong(ChanHelper.POST_TIM, tim);
         ed.commit();
+        Log.i(TAG, "Saved to prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " imageUrl=" + getImageUrl());
         DispatcherHelper.saveActivityToPrefs(this);
     }
 
@@ -212,7 +232,7 @@ public class PostReplyActivity extends Activity {
         String msg;
         try {
             if (requestCode == IMAGE_CAPTURE) {
-                if (resultCode == RESULT_OK && data != null) {
+                if (resultCode == RESULT_OK && data != null && data.getData() != null) {
                     msg = res.getString(R.string.post_reply_added_image);
                     processImage(data);
                 }
@@ -222,7 +242,7 @@ public class PostReplyActivity extends Activity {
                 }
             }
             else if (requestCode == IMAGE_GALLERY) {
-                if (resultCode == RESULT_OK && data != null) {
+                if (resultCode == RESULT_OK && data != null && data.getData() != null) {
                     msg = res.getString(R.string.post_reply_added_image);
                     processImage(data);
                 }
@@ -248,6 +268,7 @@ public class PostReplyActivity extends Activity {
     }
 
     private Bitmap getImagePreviewBitmap(boolean useWidth) throws Exception {
+        Log.e(TAG, "getImagePreviewBitmap with imageUri=" + imageUri);
         if (imageUri == null) {
             throw new Exception(res.getString(R.string.post_reply_no_image));
         }
@@ -290,16 +311,16 @@ public class PostReplyActivity extends Activity {
             if (b != null) {
                 resetImagePreview();
                 imagePreview.setImageBitmap(b);
-                Log.d(TAG, "Image: " + imageUri.toString() + " dimensions: " + b.getWidth() + "x" + b.getHeight());
+                Log.d(TAG, "setImagePreview with bitmap imageUri=" + imageUri.toString() + " dimensions: " + b.getWidth() + "x" + b.getHeight());
             }
             else {
-                Toast.makeText(ctx, R.string.post_reply_no_image, Toast.LENGTH_SHORT);
-                Log.e(TAG, "Image: " + imageUri + toString() + " couldn't get bitmap");
+                Toast.makeText(ctx, R.string.post_reply_no_image, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "setImagePreview null bitmap with imageUri=" + imageUri.toString());
             }
         }
         catch (Exception e) {
-            Toast.makeText(ctx, R.string.post_reply_no_image, Toast.LENGTH_SHORT);
-            Log.e(TAG, res.getString(R.string.post_reply_no_image), e);
+            Toast.makeText(ctx, R.string.post_reply_no_image, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "setImagePreview exception while loading bitmap", e);
         }
     }
 
@@ -322,12 +343,12 @@ public class PostReplyActivity extends Activity {
                 imagePreview.setImageBitmap(rotatedBitmap);
             }
             else {
-                Toast.makeText(ctx, R.string.post_reply_no_image_rotate, Toast.LENGTH_SHORT);
+                Toast.makeText(ctx, R.string.post_reply_no_image_rotate, Toast.LENGTH_SHORT).show();
                 Log.e(TAG, res.getString(R.string.post_reply_no_image_rotate));
             }
         }
         catch (Exception e) {
-            Toast.makeText(ctx, R.string.post_reply_no_image_rotate, Toast.LENGTH_SHORT);
+            Toast.makeText(ctx, R.string.post_reply_no_image_rotate, Toast.LENGTH_SHORT).show();
             Log.e(TAG, res.getString(R.string.post_reply_no_image_rotate), e);
         }
     }
@@ -341,33 +362,49 @@ public class PostReplyActivity extends Activity {
         values.put(MediaStore.Images.Media.MIME_TYPE, contentType);
         values.put(MediaStore.Images.Media.ORIENTATION, "0");
         Uri imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Log.i(TAG, "Got camera imageUri=" + imageUri);
         if (imageUri != null) {
+            saveInstanceState();
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
             startActivityForResult(intent, IMAGE_CAPTURE);
         }
         else {
             Toast.makeText(ctx, R.string.post_reply_no_camera, Toast.LENGTH_SHORT).show();
-            Log.e(TAG, res.getString(R.string.post_reply_no_camera));
+            Log.e(TAG, "Couldn't get camera image");
         }
     }
 
     private void startGallery() {
+        saveInstanceState();
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, IMAGE_GALLERY);
     }
 
     private void processImage(Intent data) {
         imageUri = data.getData();
+        Log.e(TAG, "Processing image with imageUri=" + imageUri);
         String[] filePathColumn = { MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns.MIME_TYPE, MediaStore.Images.ImageColumns.ORIENTATION };
         Cursor cursor = getContentResolver().query(imageUri, filePathColumn, null, null, null);
         cursor.moveToFirst();
         imagePath = cursor.getString(cursor.getColumnIndexOrThrow(filePathColumn[0]));
         contentType = cursor.getString(cursor.getColumnIndexOrThrow(filePathColumn[1]));
         orientation = cursor.getString(cursor.getColumnIndexOrThrow(filePathColumn[2]));
-
         cursor.close();
+        saveImageInfoToPrefs();
         setImagePreview();
+    }
+
+    private void saveImageInfoToPrefs() {
+        SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        ed.putString(ChanHelper.IMAGE_URL, imageUri.toString());
+        ed.putString(ChanHelper.IMAGE_PATH, imagePath);
+        ed.putString(ChanHelper.CONTENT_TYPE, contentType);
+        ed.putString(ChanHelper.ORIENTATION, orientation);
+        ed.commit();
+        Log.i(TAG, "Saved to prefs imageUri=" + imageUri);
     }
 
     protected void validateAndSendReply() {
@@ -376,7 +413,7 @@ public class PostReplyActivity extends Activity {
             Toast.makeText(ctx, validMsg, Toast.LENGTH_SHORT).show();
         }
         else {
-            Toast.makeText(ctx, R.string.post_reply_posting, Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, R.string.post_reply_posting, Toast.LENGTH_LONG).show();
             PostReplyTask postReplyTask = new PostReplyTask(this);
             postReplyTask.execute();
         }
@@ -394,6 +431,7 @@ public class PostReplyActivity extends Activity {
                 validateAndSendReply();
                 return true;
             case R.id.settings_menu:
+                saveInstanceState();
                 Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);

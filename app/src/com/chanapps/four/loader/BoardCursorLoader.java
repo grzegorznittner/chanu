@@ -60,7 +60,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         else {
             MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
             for (ChanPost thread : board.threads) {
-                if (thread.tn_w <= 0 || thread.tim == null) {
+                if (thread.tn_w <= 0 || thread.tim == 0) {
                     Log.e(TAG, "Board thread without image, should never happen, board=" + boardName + " threadNo=" + thread.no);
                     matrixCursor.addRow(new Object[] {
                             thread.no, boardName, 0, "",

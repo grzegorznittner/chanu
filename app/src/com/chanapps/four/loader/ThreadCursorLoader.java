@@ -66,7 +66,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
             for (ChanPost post : thread.posts) {
                 post.isDead = thread.isDead; // inherit from parent
-                if (post.tn_w <= 0 || post.tim == null) {
+                if (post.tn_w <= 0 || post.tim == 0) {
                     if (!hideAllText || post.resto == 0) {
                         String postText = post.resto == 0 ? post.getThreadText() : post.getPostText();
                         if (postText != null && !postText.isEmpty()) {

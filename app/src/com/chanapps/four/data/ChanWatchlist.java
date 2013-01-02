@@ -26,6 +26,8 @@ import java.util.*;
 public class ChanWatchlist {
     
     public static final String TAG = ChanWatchlist.class.getSimpleName();
+    public static final String DEFAULT_WATCHTEXT = "WatchingThread";
+
     private static final String FIELD_SEPARATOR = "\t";
     private static final String FIELD_SEPARATOR_REGEX = "\\t";
 
@@ -62,21 +64,37 @@ public class ChanWatchlist {
             String imageUrl,
             int imageWidth,
             int imageHeight) {
-        Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
-        String threadPath = getThreadPath(tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
-        if (savedWatchlist.contains(threadPath)) {
-            Log.i(TAG, "Thread " + threadPath + " already in watchlist");
-            Toast.makeText(ctx, R.string.thread_already_in_watchlist, Toast.LENGTH_SHORT);
+        if (isThreadWatched(ctx, boardCode, threadNo)) {
+            Log.i(TAG, "Thread " + boardCode + "/" + threadNo + " already in watchlist");
+            if (!text.equalsIgnoreCase(DEFAULT_WATCHTEXT))
+                Toast.makeText(ctx, R.string.thread_already_in_watchlist, Toast.LENGTH_SHORT).show();
         }
         else {
+            String threadPath = getThreadPath(tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
+            Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
             savedWatchlist.add(threadPath);
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
             editor.putStringSet(ChanHelper.THREAD_WATCHLIST, savedWatchlist);
             editor.commit();
             Log.i(TAG, "Thread " + threadPath + " added to watchlist");
             Log.d(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
-            Toast.makeText(ctx, R.string.thread_added_to_watchlist, Toast.LENGTH_SHORT);
+            Toast.makeText(ctx, R.string.thread_added_to_watchlist, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static boolean isThreadWatched(Context ctx, String boardCode, long threadNo) {
+        boolean isWatched = false;
+        Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
+        for (String threadPath : savedWatchlist) {
+            String[] components = getThreadPathComponents(threadPath);
+            String watchedBoardCode = components[1];
+            long watchedThreadNo = Long.valueOf(components[2]);
+            if (watchedBoardCode.equals(boardCode) && watchedThreadNo == threadNo) {
+                isWatched = true;
+                break;
+            }
+        }
+        return isWatched;
     }
 
     public static class CleanWatchlistTask extends AsyncTask<Void, Void, Void> {

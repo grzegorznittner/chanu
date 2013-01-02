@@ -46,9 +46,9 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
 
             try {
                 String[] threadComponents = ChanWatchlist.getThreadPathComponents(threadPath);
-                long tim = Long.valueOf(threadComponents[0]);
                 String boardCode = threadComponents[1];
                 long threadNo = Long.valueOf(threadComponents[2]);
+                long tim;
                 String shortText;
                 String headerText;
                 String text;
@@ -74,6 +74,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 if (threadPost != null) { // pull from cache, it will have the latest data
                     Log.i(TAG, "Found cached watchlist thread " + boardCode + "/" + threadNo + ", updating from cache");
                     threadPost.isDead = thread.isDead;
+                    tim = threadPost.tim;
                     shortText = threadPost.getBoardThreadText();
                     headerText = threadPost.getHeaderText();
                     text = threadPost.getFullText();
@@ -87,6 +88,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 }
                 else { // thread not in cache, pull last stored from watchlist prefs
                     Log.i(TAG, "Didn't find cached watchlist thread " + boardCode + "/" + threadNo + ", loading from prefs");
+                    tim = Long.valueOf(threadComponents[0]);
                     shortText = (threadComponents[3].length() > ChanPost.MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN
                             ? threadComponents[3].substring(0, ChanPost.MAX_BOARDTHREAD_IMAGETEXT_LEN) + "..."
                             : threadComponents[3]);

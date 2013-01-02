@@ -46,7 +46,7 @@ public class ChanPost {
     public String name;
     public String sub;
     public String com;
-    public String tim;
+    public long tim = 0;
     public String filename;
     public String ext;
     public int w = 0;
@@ -167,13 +167,13 @@ public class ChanPost {
 
 
    	public String getThumbnailUrl() {
-        return tim != null
+        return tim != 0
    			? "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg"
             : null;
     }
 
    	public String getImageUrl() {
-   		if (tim != null) {
+   		if (tim != 0) {
    			return "http://images.4chan.org/" + board + "/src/" + tim + ext;
    		}
    		return null;

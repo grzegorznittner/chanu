@@ -16,6 +16,7 @@ import com.chanapps.four.multipartmime.StringPart;
 import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanPostResponse;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 
@@ -65,6 +66,7 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             partsList.add(new StringPart("recaptcha_response_field", activity.getRecaptchaResponse()));
             String imageUrl = activity.getImageUrl();
             if (imageUrl != null) {
+                Log.i(TAG, "Trying to load image for imageUrl=" + imageUrl + " imagePath="+activity.imagePath+" contentType="+activity.contentType);
                 File file = new File(activity.imagePath);
                 FilePart filePart = new FilePart("upfile", file.getName(), file, activity.contentType, "UTF-8");
                 partsList.add(filePart);
@@ -84,9 +86,9 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             MultipartEntity entity = new MultipartEntity(parts);
             request.setEntity(entity);
 
-            Log.e(TAG, "Calling URL: " + request.getURI());
+            Log.i(TAG, "Calling URL: " + request.getURI());
             HttpResponse response = client.execute(request);
-            Log.e(TAG, "Response: " + response);
+            Log.i(TAG, "Response: " + (response == null ? "null" : "length: " + response.toString().length()));
             if (response == null) {
                 Log.e(TAG, context.getString(R.string.post_reply_no_response));
                 Toast.makeText(context, R.string.post_reply_no_response, Toast.LENGTH_SHORT).show();
@@ -96,6 +98,7 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             StringBuilder s = new StringBuilder();
             String line;
             while ((line = r.readLine()) != null) {
+                Log.i(TAG, "Response Line:" + line);
                 s.append(line);
             }
             return s.toString();
@@ -119,14 +122,15 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String response) {
-        Log.e(TAG, "Response: " + response);
+        Log.i(TAG, "Response: " + response);
         if (response == null || response.isEmpty()) {
-            Log.e(TAG, "Null response posting");
+            Log.i(TAG, "Null response posting");
             Toast.makeText(context, R.string.post_reply_error, Toast.LENGTH_SHORT).show();
             activity.reloadCaptcha();
             return;
         }
         ChanPostResponse chanPostResponse = new ChanPostResponse(context, response);
+        Log.i(TAG, "isPosted:" + chanPostResponse.isPosted());
         if (chanPostResponse.isPosted()) {
             if (activity.threadNo == 0) {
                 Toast.makeText(context, R.string.post_reply_posted_thread, Toast.LENGTH_SHORT).show();
@@ -136,12 +140,16 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             }
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             boolean addThreadToWatchlist = prefs.getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true);
-            if (addThreadToWatchlist && activity.tim != 0) {
+            long tim = activity.tim != 0 ? activity.tim : 1000 * (new Date()).getTime();// approximate until we get it back from the api
+            long postThreadNo = chanPostResponse.getThreadNo(); // direct from 4chan post response parsing
+            long threadNo = postThreadNo != 0 ? postThreadNo : activity.threadNo; // fallback
+            Log.i(TAG, "posted " + activity.boardCode + "/" + threadNo + " tim:" + tim + " addToWatchlist:" + addThreadToWatchlist);
+            if (addThreadToWatchlist && threadNo > 0) {
                 ChanWatchlist.watchThread(context,
-                        activity.tim,
+                        tim,
                         activity.boardCode,
-                        activity.threadNo,
-                        "WatchingThread",
+                        threadNo,
+                        ChanWatchlist.DEFAULT_WATCHTEXT,
                         activity.getImageUrl(),
                         250,
                         250);

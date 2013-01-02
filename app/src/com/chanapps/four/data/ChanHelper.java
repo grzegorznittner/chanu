@@ -21,6 +21,9 @@ public class ChanHelper {
     public static final String IMAGE_URL = "imageUrl";
     public static final String IMAGE_WIDTH = "imageWidth";
     public static final String IMAGE_HEIGHT = "imageHeight";
+    public static final String IMAGE_PATH = "imagePath";
+    public static final String CONTENT_TYPE = "contentType";
+    public static final String ORIENTATION = "orientation";
     public static final String FAVORITE_BOARDS = "favoriteBoards";
     public static final String THREAD_WATCHLIST = "threadWatchlist";
     public static final String POST_ID = "_id";
