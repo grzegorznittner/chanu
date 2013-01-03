@@ -3,6 +3,7 @@ package com.chanapps.four.activity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
@@ -26,6 +27,7 @@ import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.service.BoardLoadService;
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
@@ -37,7 +39,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import java.util.Date;
 
-public class BoardActivity extends Activity implements ClickableLoaderActivity {
+public class BoardActivity extends Activity implements ClickableLoaderActivity, ChanIdentifiedActivity {
 	public static final String TAG = BoardActivity.class.getSimpleName();
 
     public static final int LOADER_RESTART_INTERVAL_SUPER_MS = 10000;
@@ -560,4 +562,18 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         return true;
     }
 
+	@Override
+	public ChanActivityId getChanActivityId() {
+		return new ChanActivityId(LastActivity.BOARD_ACTIVITY, boardCode);
+	}
+
+	@Override
+	public AsyncTaskLoader<Cursor> getChanCursorLoader() {
+		return cursorLoader;
+	}
+	
+	@Override
+	public Handler getChanHandler() {
+		return handler;
+	}
 }

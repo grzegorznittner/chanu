@@ -15,12 +15,14 @@ import android.widget.*;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.data.*;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
 import android.app.DownloadManager.Request;
 import android.app.WallpaperManager;
+import android.content.AsyncTaskLoader;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -52,7 +54,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import javax.security.auth.login.LoginException;
 
-public class FullScreenImageActivity extends Activity {
+public class FullScreenImageActivity extends Activity implements ChanIdentifiedActivity {
 
 	public static final String TAG = FullScreenImageActivity.class.getSimpleName();
 
@@ -770,5 +772,20 @@ public class FullScreenImageActivity extends Activity {
             	this.sendEmptyMessageDelayed(0, 100);
             }
         }
-    };
+    }
+    
+    @Override
+	public ChanActivityId getChanActivityId() {
+		return new ChanActivityId(LastActivity.FULL_SCREEN_IMAGE_ACTIVITY);
+	}
+
+	@Override
+	public AsyncTaskLoader<Cursor> getChanCursorLoader() {
+		return null;
+	}
+	
+	@Override
+	public Handler getChanHandler() {
+		return handler;
+	}
 }

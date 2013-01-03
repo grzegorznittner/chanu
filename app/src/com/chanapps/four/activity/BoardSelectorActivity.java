@@ -1,5 +1,6 @@
 package com.chanapps.four.activity;
 
+import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
@@ -12,10 +13,13 @@ import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.adapter.TabsAdapter;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 
 import android.app.ActionBar;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -30,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class BoardSelectorActivity extends FragmentActivity {
+public class BoardSelectorActivity extends FragmentActivity implements ChanIdentifiedActivity {
     public static final String TAG = "BoardSelectorActivity";
 
     private ViewPager mViewPager;
@@ -278,4 +282,18 @@ public class BoardSelectorActivity extends FragmentActivity {
         }
     }
 
+	@Override
+	public ChanActivityId getChanActivityId() {
+		return new ChanActivityId(LastActivity.BOARD_SELECTOR_ACTIVITY);
+	}
+
+	@Override
+	public AsyncTaskLoader<Cursor> getChanCursorLoader() {
+		return null;
+	}
+	
+	@Override
+	public Handler getChanHandler() {
+		return null;
+	}
 }

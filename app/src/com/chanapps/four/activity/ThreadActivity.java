@@ -2,24 +2,33 @@ package com.chanapps.four.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Message;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.*;
-import android.widget.*;
+import android.view.Display;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.chanapps.four.adapter.ThreadCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanWatchlist;
-import com.chanapps.four.handler.LoaderHandler;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.ThreadLoadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -32,7 +41,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
  * Time: 12:26 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ThreadActivity extends BoardActivity {
+public class ThreadActivity extends BoardActivity implements ChanIdentifiedActivity {
 
     protected static final String TAG = ThreadActivity.class.getSimpleName();
 
@@ -301,4 +310,18 @@ public class ThreadActivity extends BoardActivity {
         a.setDisplayHomeAsUpEnabled(true);
     }
 
+    @Override
+	public ChanActivityId getChanActivityId() {
+		return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo);
+	}
+
+	@Override
+	public AsyncTaskLoader<Cursor> getChanCursorLoader() {
+		return cursorLoader;
+	}
+	
+	@Override
+	public Handler getChanHandler() {
+		return handler;
+	}
 }

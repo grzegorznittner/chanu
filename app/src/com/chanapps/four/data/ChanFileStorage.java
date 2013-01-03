@@ -1,5 +1,6 @@
 package com.chanapps.four.data;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -78,6 +79,37 @@ public class ChanFileStorage {
 		} catch (Exception e) {
 			Log.e(TAG, "Error while storing board '" + board.link + "' data. ", e);
 		}
+	}
+	
+    public static File storeBoardFile(Context context, String boardName, int page, BufferedReader reader) {
+		try {
+            File boardDir = getBoardCacheDirectory(context, boardName);
+			if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
+				File boardFile = new File(boardDir, boardName + "_page" + page + CACHE_EXT);
+				FileWriter writer = new FileWriter(boardFile, false);
+				try {
+					String line = null;
+					while ((line = reader.readLine()) != null) {
+						writer.write(line);
+					}
+				} finally {
+                    try {
+					    writer.flush();
+					    writer.close();
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "Exception while writing and closing board cache:" + e.getMessage(), e);
+                    }
+				}
+				Log.i(TAG, "Stored file for board " + boardName + " page " + page);
+				return boardFile;
+			} else {
+				Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Error while storing board " + boardName + " page " + page, e);
+		}
+		return null;
 	}
 	
 	public static void storeThreadData(Context context, ChanThread thread) {

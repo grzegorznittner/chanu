@@ -1,11 +1,13 @@
 package com.chanapps.four.activity;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
+import android.content.AsyncTaskLoader;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.Handler;
+
 import com.chanapps.four.component.DispatcherHelper;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.SettingsFragment;
 
 /**
@@ -13,7 +15,7 @@ import com.chanapps.four.fragment.SettingsFragment;
  * Date: 11/20/12
  * Time: 11:50 PM
  */
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends Activity implements ChanIdentifiedActivity {
 
     public static final String TAG = SettingsActivity.class.getSimpleName();
 
@@ -40,5 +42,19 @@ public class SettingsActivity extends Activity {
         DispatcherHelper.saveActivityToPrefs(this);
     }
 
+    @Override
+	public ChanActivityId getChanActivityId() {
+		return new ChanActivityId(LastActivity.SETTINGS_ACTIVITY);
+	}
+
+	@Override
+	public AsyncTaskLoader<Cursor> getChanCursorLoader() {
+		return null;
+	}
+	
+	@Override
+	public Handler getChanHandler() {
+		return null;
+	}
 }
 

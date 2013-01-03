@@ -1,20 +1,22 @@
 package com.chanapps.four.loader;
 
-import android.content.AsyncTaskLoader;
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.*;
-import com.chanapps.four.service.ThreadLoadService;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
+import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.service.ThreadLoadService;
 
 public class ThreadCursorLoader extends BoardCursorLoader {
 

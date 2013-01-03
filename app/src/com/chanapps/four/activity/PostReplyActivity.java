@@ -1,6 +1,7 @@
 package com.chanapps.four.activity;
 
 import android.app.Activity;
+import android.content.AsyncTaskLoader;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -22,6 +24,7 @@ import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.task.LoadCaptchaTask;
 import com.chanapps.four.task.PostReplyTask;
 
@@ -29,7 +32,7 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.util.Random;
 
-public class PostReplyActivity extends Activity {
+public class PostReplyActivity extends Activity implements ChanIdentifiedActivity {
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
 
@@ -530,4 +533,18 @@ public class PostReplyActivity extends Activity {
         return eightDigits.format(randomGenerator.nextInt(PASSWORD_MAX));
     }
 
+    @Override
+	public ChanActivityId getChanActivityId() {
+		return new ChanActivityId(LastActivity.POST_REPLY_ACTIVITY);
+	}
+
+	@Override
+	public AsyncTaskLoader<Cursor> getChanCursorLoader() {
+		return null;
+	}
+	
+	@Override
+	public Handler getChanHandler() {
+		return null;
+	}
 }

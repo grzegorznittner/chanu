@@ -4,6 +4,8 @@
 package com.chanapps.four.service;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -69,10 +71,16 @@ public class BoardLoadService extends BaseChanService {
             return;
         }
 
+        long startTime = Calendar.getInstance().getTimeInMillis();
         BufferedReader in = null;
         HttpURLConnection tc = null;
 		try {
+            URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/" + pageNo + ".json");
+
             board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
+            Log.w(TAG, "Loading " + chanApi + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+            startTime = Calendar.getInstance().getTimeInMillis();
+            
             if (pageNo == 0) {
                 Log.i(TAG, "page 0 request, therefore resetting board.lastPage to false");
                 board.lastPage = false;
@@ -82,8 +90,6 @@ public class BoardLoadService extends BaseChanService {
                 return;
             }
 
-            URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/" + pageNo + ".json");
-
             tc = (HttpURLConnection) chanApi.openConnection();
             Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode());
             if (pageNo > 0 && tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
@@ -92,10 +98,20 @@ public class BoardLoadService extends BaseChanService {
             }
             else {
                 in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
-                parseBoard(in);
+                File boardFile = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, in);
+                
+                Log.w(TAG, "Fetched and stored " + chanApi + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+                startTime = Calendar.getInstance().getTimeInMillis();
+                
+                parseBoard(new BufferedReader(new FileReader(boardFile)));
             }
 
+            Log.w(TAG, "Parsed " + chanApi + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+            startTime = Calendar.getInstance().getTimeInMillis();
+
             ChanFileStorage.storeBoardData(getBaseContext(), board);
+
+            Log.w(TAG, "Stored " + chanApi + " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
 
             if (!board.lastPage) {
                 pageNo++;

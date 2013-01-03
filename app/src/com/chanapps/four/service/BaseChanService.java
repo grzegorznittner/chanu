@@ -49,7 +49,20 @@ import android.widget.Toast;
  * <a href="{@docRoot}guide/topics/fundamentals/services.html">Services</a> developer guide.</p>
  * </div>
  *
- * @see android.os.AsyncTask
+ * 
+ * 
+ * Greg comments:
+ * * data parsing should be separated - after parsing we should notify current activity so it will refresh cursor
+ * * every screen should register here, so we'll know which activity is currently running (if not possible to do that in other way)
+ * * 4 threads - on 2G we'll operate only using one thread
+ * * class should use network status to determine its behaviour:
+ *   * on 2G latency is high and bandwith low - incoming intent should stop current operation and be executed immediatelly
+ *   * on 3G/4G - additional fetches performed with the intent (eg. fetch all boards), so we'll use mobile radio properly
+ *   * on WiFi - aggressive cache, boards refreshed periodically, watched/favourites should be also updated often
+ *   * 2G/3G/4G - mobile radio time window - fetch operations trigged in batches, at lest 1 min pause between operations (unless manual refresh)
+ * * need to verify average response time/fetch time/parse time on 2G, 3G and WiFi
+ * 
+ * * we can also prepare paid service which will allow users for unlimited uploads, uploads will be done via our server
  */
 public abstract class BaseChanService extends Service {
     private volatile Looper mServiceLooper;
