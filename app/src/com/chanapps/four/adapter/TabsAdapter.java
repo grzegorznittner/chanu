@@ -11,11 +11,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.activity.BoardSelectorActivity;
+import com.chanapps.four.fragment.BoardGroupFragment;
 
 import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
@@ -132,6 +134,11 @@ public class TabsAdapter extends FragmentPagerAdapter
             if (mTabs.get(i) == tag) {
                 Log.d(BoardSelectorActivity.TAG, "TabAdapter setting pager to " + i);
                 mViewPager.setCurrentItem(i);
+                Fragment fragment = getItem(i);
+                Menu menu = mContext.menu;
+                if (fragment != null && menu != null) {
+                    ((BoardGroupFragment)fragment).onPrepareOptionsMenu(menu, mContext, mContext.selectedBoardType);
+                }
             }
         }
     }

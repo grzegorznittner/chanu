@@ -306,61 +306,21 @@ public class BoardGroupFragment
         return handler;
     }
 
-    /*
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        Log.i(TAG, "Called onPrepareOptionsMenu fragment boardType=" + boardType);
-    }
-    */
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        Log.i(TAG, "Called onCreateOptionsMenu fragment boardType=" + boardType);
-        //MenuItem test = menu.add("Test");
-        //test.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        //getActivity().getActionBar().show();
-        if (inflater == null) {
-            Log.e(TAG, "Can't inflate, null menu inflater");
-        }
-        if (boardType == ChanBoard.Type.FAVORITES) {
+    public void onPrepareOptionsMenu(Menu menu, Context menuContext, ChanBoard.Type selectedBoardType) {
+        super.onPrepareOptionsMenu(menu);
+        Log.i(TAG, "Called onPrepareOptionsMenu fragment selectedBoardType=" + selectedBoardType + " menuContext=" + menuContext);
+        if (menuContext == null)
+            return;
+        menu.removeItem(R.id.clear_favorites_menu);
+        menu.removeItem(R.id.clear_watchlist_menu);
+        menu.removeItem(R.id.clean_watchlist_menu);
+        MenuInflater inflater = new MenuInflater(menuContext);
+        if (selectedBoardType == ChanBoard.Type.FAVORITES) {
             inflater.inflate(R.menu.favorites_menu, menu);
         }
-        else if (boardType == ChanBoard.Type.WATCHLIST) {
+        else if (selectedBoardType == ChanBoard.Type.WATCHLIST) {
             inflater.inflate(R.menu.watchlist_menu, menu);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.clear_favorites_menu:
-                FavoritesClearDialogFragment clearDialogFragment = new FavoritesClearDialogFragment(this);
-                clearDialogFragment.show(getFragmentManager(), clearDialogFragment.TAG);
-                return true;
-            case R.id.clean_watchlist_menu:
-                WatchlistCleanDialogFragment cleanWatchlistFragment = new WatchlistCleanDialogFragment(this);
-                cleanWatchlistFragment.show(getFragmentManager(), cleanWatchlistFragment.TAG);
-                return true;
-            case R.id.clear_watchlist_menu:
-                WatchlistClearDialogFragment clearWatchlistFragment = new WatchlistClearDialogFragment(this);
-                clearWatchlistFragment.show(getFragmentManager(), clearWatchlistFragment.TAG);
-                return true;
-            case R.id.settings_menu:
-                Intent settingsIntent = new Intent(this.getActivity(), SettingsActivity.class);
-                startActivity(settingsIntent);
-                return true;
-            case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this.getActivity(), R.raw.help_header, R.raw.help_board_selector);
-                rawResourceDialog.show();
-                return true;
-            case R.id.about_menu:
-                RawResourceDialog aboutDialog = new RawResourceDialog(this.getActivity(), R.raw.legal, R.raw.info);
-                aboutDialog.show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 

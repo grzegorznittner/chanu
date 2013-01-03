@@ -105,10 +105,10 @@ public class ChanWatchlist {
             this.ctx = ctx;
             this.adapter = adapter;
             this.userInteraction = userInteraction;
-        }
-        public Void doInBackground(Void... params) {
             if (userInteraction)
                 Toast.makeText(ctx, R.string.dialog_cleaning_watchlist, Toast.LENGTH_SHORT).show();
+        }
+        public Void doInBackground(Void... params) {
             cleanWatchlistSynchronous(ctx);
             return null;
         }
@@ -183,7 +183,7 @@ public class ChanWatchlist {
                     deadTims.add(tim);
             }
             catch (Exception e) {
-                Log.e(TAG, "Couldn't load thread to determine dead status " + boardCode + "/" + threadNo, e);
+                Log.d(TAG, "Couldn't load thread to determine dead status " + boardCode + "/" + threadNo, e);
             }
         }
         return deadTims;
