@@ -1,24 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/prev_image_menu"
+          android:title="@string/prev_image_menu"
+          android:icon="@drawable/navigation_previous_item"
+          android:enabled="false"
+          android:showAsAction="always"
+            />
+    <item android:id="@+id/next_image_menu"
+          android:title="@string/next_image_menu"
+          android:icon="@drawable/navigation_next_item"
+          android:enabled="false"
+          android:showAsAction="always"
+            />
     <item android:id="@+id/download_image_menu"
           android:title="@string/download_image_menu"
           android:icon="@drawable/content_save"
-          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/share_image_menu"
           android:title="@string/share_image_menu"
           android:icon="@drawable/social_share"
-          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/set_as_wallpaper_menu"
           android:title="@string/set_as_wallpaper_menu"
           android:icon="@drawable/content_picture"
-          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/view_image_gallery_menu"
           android:title="@string/view_image_gallery_menu"
           android:icon="@drawable/collections_view_as_grid"
-          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"
