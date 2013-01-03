@@ -36,6 +36,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import java.util.Date;
+import java.util.HashMap;
 
 public class BoardActivity extends Activity implements ClickableLoaderActivity {
 	public static final String TAG = BoardActivity.class.getSimpleName();
@@ -199,7 +200,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     protected void restoreInstanceState() {
         Log.i(TAG, "Restoring instance state...");
         loadFromIntentOrPrefs();
-        // FIXME: put in time-dependent refresh here
+        startLoadService();
         setActionBarTitle();
         scrollToLastPosition();
         if (getLoaderManager().getLoader(0) == null || !getLoaderManager().getLoader(0).isStarted()) {
@@ -208,8 +209,11 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     }
 
     protected void startLoadService() {
-        Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
-        BoardLoadService.startService(this, boardCode);
+        startLoadService(false);
+    }
+
+    protected void startLoadService(boolean force) {
+        BoardLoadService.startService(this, boardCode, force);
     }
 
     protected void saveInstanceState() {
@@ -394,7 +398,8 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                 NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.refresh_board_menu:
-                startLoadService();
+                Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_LONG).show();
+                startLoadService(true);
                 return true;
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);

@@ -32,21 +32,26 @@ public class BoardLoadService extends BaseChanService {
 	
 	protected static final long STORE_INTERVAL_MS = 2000;
     protected static final int MAX_THREAD_RETENTION_PER_BOARD = 100;
+    protected static final long MIN_BOARD_FORCE_INTERVAL = 10000; // 10 sec
+    protected static final long MIN_BOARD_FETCH_INTERVAL = 300000; // 5 min
 
 
     private String boardCode;
     private int pageNo;
+    private boolean force;
     private ChanBoard board;
 
-    public static void startService(Context context, String boardCode) {
-        startService(context, boardCode, 0);
+    public static void startService(Context context, String boardCode, boolean force) {
+        startService(context, boardCode, 0, force);
     }
 
-    private static void startService(Context context, String boardCode, int pageNo) {
-        Log.i(TAG, "Start board load service for " + boardCode + " page " + pageNo );
+    private static void startService(Context context, String boardCode, int pageNo, boolean force) {
+        Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + force );
         Intent intent = new Intent(context, BoardLoadService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.PAGE, pageNo);
+        if (force)
+            intent.putExtra(ChanHelper.FORCE_REFRESH, force);
         context.startService(intent);
     }
 
@@ -62,6 +67,7 @@ public class BoardLoadService extends BaseChanService {
 	protected void onHandleIntent(Intent intent) {
 		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
 		pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
+        force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false);
 		Log.i(TAG, "Handling board=" + boardCode + " page=" + pageNo);
 
         if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
@@ -73,19 +79,35 @@ public class BoardLoadService extends BaseChanService {
         HttpURLConnection tc = null;
 		try {
             board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
+            if (board == null) {
+                Log.e(TAG, "Couldn't load board, creation failed, thus exiting service for boardCode=" + boardCode);
+            }
+
+            if (pageNo > 0 && board.lastPage) {
+                Log.i(TAG, "Board request after last page, therefore service is terminating");
+                return;
+            }
+
+            long now = (new Date()).getTime();
             if (pageNo == 0) {
                 Log.i(TAG, "page 0 request, therefore resetting board.lastPage to false");
                 board.lastPage = false;
-            }
-            else if (pageNo > 0 && board.lastPage) {
-                Log.i(TAG, "Board request after last page, therefore service is terminating");
-                return;
+                long interval = now - board.lastFetched;
+                if (force && interval < MIN_BOARD_FORCE_INTERVAL) {
+                    Log.i(TAG, "board is forced but interval=" + interval + " is less than min=" + MIN_BOARD_FORCE_INTERVAL + " so exiting");
+                    return;
+                }
+                if (!force && interval < MIN_BOARD_FETCH_INTERVAL) {
+                    Log.i(TAG, "board interval=" + interval + " less than min=" + MIN_BOARD_FETCH_INTERVAL + " and not force thus exiting service");
+                    return;
+                }
             }
 
             URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/" + pageNo + ".json");
 
             tc = (HttpURLConnection) chanApi.openConnection();
             Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode());
+            board.lastFetched = now;
             if (pageNo > 0 && tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 Log.i(TAG, "Got 404 on next page, assuming last page at pageNo=" + pageNo);
                 board.lastPage = true;
@@ -100,7 +122,7 @@ public class BoardLoadService extends BaseChanService {
             if (!board.lastPage) {
                 pageNo++;
                 Log.i(TAG, "Starting serivce to load next page for " + boardCode + " page " + pageNo);
-                BoardLoadService.startService(getBaseContext(), boardCode, pageNo);
+                BoardLoadService.startService(getBaseContext(), boardCode, pageNo, force);
             }
 
         } catch (IOException e) {
@@ -178,6 +200,7 @@ public class BoardLoadService extends BaseChanService {
                 			thread = new ChanThread();
                 			thread.board = boardCode;
                 			thread.no = post.no;
+                            // note we don't set the lastUpdated here because we didn't pull the full thread yet
                 		}
                         post.mergeIntoThreadList(threads);
                 		first = false;
