@@ -82,6 +82,8 @@ public class FullScreenImageActivity extends Activity implements ChanIdentifiedA
     private long downloadEnqueueId;
     private DownloadManager dm;
     private BroadcastReceiver receiver;
+    private ChanPost prevPost = null;
+    private ChanPost nextPost = null;
 
     public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
@@ -275,6 +277,7 @@ public class FullScreenImageActivity extends Activity implements ChanIdentifiedA
 		super.onStart();
 		Log.i(TAG, "onStart");
         loadPrefs();
+        loadPrevNext();
     }
 
     private void loadPrefs() {
@@ -315,6 +318,19 @@ public class FullScreenImageActivity extends Activity implements ChanIdentifiedA
         }
         Log.i(TAG, "loaded image from prefs/intent url=" + imageUrl);
         setActionBarTitle();
+    }
+
+    private void loadPrevNext() {
+        ChanThread thread = ChanFileStorage.loadThreadData(this, boardCode, threadNo);
+        if (thread != null) {
+            ChanPost[] prevNext = thread.getPrevNextPosts(postNo);
+            prevPost = prevNext[0];
+            nextPost = prevNext[1];
+        }
+        else {
+            prevPost = null;
+            nextPost = null;
+        }
     }
 
     private void savePrefs() {
@@ -554,11 +570,30 @@ public class FullScreenImageActivity extends Activity implements ChanIdentifiedA
         return orientation;
     }
 
+    private void navigateToPost(ChanPost post) {
+        if (post == null || post.no == 0)
+            return;
+        Intent intent = new Intent(this, FullScreenImageActivity.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(ChanHelper.POST_NO, post.no);
+        intent.putExtra(ChanHelper.IMAGE_WIDTH, post.w);
+        intent.putExtra(ChanHelper.IMAGE_HEIGHT, post.h);
+        Log.i(TAG, "Starting navigate to prev/next image: " + boardCode + "/" + threadNo + ":" + postNo);
+        startActivity(intent);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 navigateUp();
+                return true;
+            case R.id.prev_image_menu:
+                navigateToPost(prevPost);
+                return true;
+            case R.id.next_image_menu:
+                navigateToPost(nextPost);
                 return true;
             case R.id.download_image_menu:
                 if (checkLocalImage() != null) {
@@ -725,9 +760,31 @@ public class FullScreenImageActivity extends Activity implements ChanIdentifiedA
         return true;
     }
 
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (prevPost != null) {
+            menu.getItem(0).setVisible(true);
+            menu.getItem(0).setEnabled(true);
+        }
+        else {
+            menu.getItem(0).setVisible(false);
+            menu.getItem(0).setEnabled(false);
+        }
+        if (nextPost != null) {
+            menu.getItem(1).setVisible(true);
+            menu.getItem(1).setEnabled(true);
+        }
+        else {
+            menu.getItem(1).setVisible(false);
+            menu.getItem(1).setEnabled(false);
+        }
+        return true;
+    }
+
     private void setActionBarTitle() {
         if (getActionBar() != null) {
-            getActionBar().setTitle("/" + boardCode + " " + postNo);
+            getActionBar().setTitle("/" + boardCode + " p" + postNo);
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }

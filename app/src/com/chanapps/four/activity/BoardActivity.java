@@ -201,8 +201,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     protected void restoreInstanceState() {
         Log.i(TAG, "Restoring instance state...");
         loadFromIntentOrPrefs();
-        if (getIntent().hasExtra(ChanHelper.FROM_PARENT))
-            startLoadService();
+        // FIXME: put in time-dependent refresh here
         setActionBarTitle();
         scrollToLastPosition();
         if (getLoaderManager().getLoader(0) == null || !getLoaderManager().getLoader(0).isStarted()) {
