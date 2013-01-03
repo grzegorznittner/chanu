@@ -25,6 +25,9 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import com.chanapps.four.fragment.FavoritesClearDialogFragment;
+import com.chanapps.four.fragment.WatchlistCleanDialogFragment;
+import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -44,6 +47,7 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     private boolean useFavoritesBoard = true;
     public List<ChanBoard.Type> activeBoardTypes = new ArrayList<ChanBoard.Type>();
     public ChanBoard.Type selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
+    public Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +158,14 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
             return null;
     }
 
+    public BoardGroupFragment getWatchlistFragment() {
+        int favoritesPos = getPositionOfTab(ChanBoard.Type.WATCHLIST);
+        if (favoritesPos >= 0)
+            return (BoardGroupFragment)mTabsAdapter.getItem(favoritesPos);
+        else
+            return null;
+    }
+
     private SharedPreferences ensurePrefs() {
         if (prefs == null)
             prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -176,6 +188,15 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
                 return i;
         }
         return -1;
+    }
+
+    private BoardGroupFragment getSelectedFragment() {
+        BoardGroupFragment fragment = null;
+        int i = getSelectedTabIndex();
+        if (i >= 0 && mTabsAdapter != null) {
+            fragment = (BoardGroupFragment)mTabsAdapter.getItem(i);
+        }
+        return fragment;
     }
 
     public void setTabToSelectedType(boolean force) {
@@ -238,32 +259,33 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        Log.i(TAG, "Activity-level onPrepareOptionsMenu called selectedBoardType="+selectedBoardType);
-        MenuInflater inflater = getMenuInflater();
-        if (selectedBoardType == ChanBoard.Type.FAVORITES) {
-            inflater.inflate(R.menu.favorites_menu, menu);
-        }
-        else if (selectedBoardType == ChanBoard.Type.WATCHLIST) {
-            inflater.inflate(R.menu.watchlist_menu, menu);
-        }
-
-        return true;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         Log.i(TAG, "Activity-level onCreateOptionsMenu called selectedBoardType="+selectedBoardType);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_selector_menu, menu);
+        this.menu = menu;
+        BoardGroupFragment fragment = getSelectedFragment();
+        if (fragment != null)
+            fragment.onPrepareOptionsMenu(menu, this, selectedBoardType);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.clear_favorites_menu:
+                FavoritesClearDialogFragment clearDialogFragment = new FavoritesClearDialogFragment(getFavoritesFragment());
+                clearDialogFragment.show(getSupportFragmentManager(), clearDialogFragment.TAG);
+                return true;
+            case R.id.clean_watchlist_menu:
+                WatchlistCleanDialogFragment cleanWatchlistFragment = new WatchlistCleanDialogFragment(getWatchlistFragment());
+                cleanWatchlistFragment.show(getSupportFragmentManager(), cleanWatchlistFragment.TAG);
+                return true;
+            case R.id.clear_watchlist_menu:
+                WatchlistClearDialogFragment clearWatchlistFragment = new WatchlistClearDialogFragment(getWatchlistFragment());
+                clearWatchlistFragment.show(getSupportFragmentManager(), clearWatchlistFragment.TAG);
+                return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
