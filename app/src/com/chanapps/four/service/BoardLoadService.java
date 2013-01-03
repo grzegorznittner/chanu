@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 
@@ -104,8 +105,9 @@ public class BoardLoadService extends BaseChanService {
             }
 
             URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/" + pageNo + ".json");
-
             tc = (HttpURLConnection) chanApi.openConnection();
+            if (board.lastFetched > 0)
+                tc.setIfModifiedSince(board.lastFetched);
             Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode());
             board.lastFetched = now;
             if (pageNo > 0 && tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {

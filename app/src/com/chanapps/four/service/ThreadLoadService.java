@@ -100,8 +100,9 @@ public class ThreadLoadService extends BaseChanService {
             }
 
             URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/res/" + threadNo + ".json");
-
             tc = (HttpURLConnection) chanApi.openConnection();
+            if (thread.lastFetched > 0)
+                tc.setIfModifiedSince(thread.lastFetched);
             Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode());
 
             thread.lastFetched = now;
