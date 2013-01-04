@@ -85,6 +85,8 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                     fullImageWidth = threadPost.w;
                     fullImageHeight = threadPost.h;
                     isDead = thread.isDead ? 1 : 0;
+                    ChanWatchlist.updateThreadInfo(context, boardCode, threadNo, tim,
+                            text, imageUrl, imageWidth, imageHeight, thread.isDead);
                 }
                 else { // thread not in cache, pull last stored from watchlist prefs
                     Log.i(TAG, "Didn't find cached watchlist thread " + boardCode + "/" + threadNo + ", loading from prefs");

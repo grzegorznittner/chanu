@@ -28,19 +28,34 @@ public class ChanWatchlist {
     public static final String TAG = ChanWatchlist.class.getSimpleName();
     public static final String DEFAULT_WATCHTEXT = "WatchingThread";
 
+    public static final long MAX_DEAD_THREAD_RETENTION_MS = 604800000; // 1 week
+
     private static final String FIELD_SEPARATOR = "\t";
     private static final String FIELD_SEPARATOR_REGEX = "\\t";
 
     private static String getThreadPath(long tim, String boardCode, long threadNo,
                                         String text, String imageUrl, int imageWidth, int imageHeight)
     {
-        return tim + FIELD_SEPARATOR
-                + boardCode + FIELD_SEPARATOR
-                + threadNo + FIELD_SEPARATOR
-                + (text == null ? "" : text.replaceAll(FIELD_SEPARATOR_REGEX,"")) + FIELD_SEPARATOR
-                + (imageUrl == null ? "" : imageUrl.replaceAll(FIELD_SEPARATOR_REGEX,"")) + FIELD_SEPARATOR
-                + imageWidth + FIELD_SEPARATOR
-                + imageHeight;
+        String[] components = {
+                Long.toString(tim),
+                boardCode,
+                Long.toString(threadNo),
+                text == null ? "" : text.replaceAll(FIELD_SEPARATOR_REGEX,""),
+                imageUrl == null ? "" : imageUrl.replaceAll(FIELD_SEPARATOR_REGEX,""),
+                Integer.toString(imageWidth),
+                Integer.toString(imageHeight)
+        };
+        return getThreadPath(components);
+    }
+
+    private static String getThreadPath(String[] components) {
+        String threadPath = "";
+        for (int i = 0; i < components.length; i++) {
+            threadPath += components[i];
+            if (i < components.length - 1)
+                threadPath += FIELD_SEPARATOR;
+        }
+        return threadPath;
     }
 
     public static String[] getThreadPathComponents(String threadPath) {
@@ -73,14 +88,51 @@ public class ChanWatchlist {
             String threadPath = getThreadPath(tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
             Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
             savedWatchlist.add(threadPath);
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
-            editor.putStringSet(ChanHelper.THREAD_WATCHLIST, savedWatchlist);
-            editor.commit();
+            saveWatchlist(ctx, savedWatchlist);
             Log.i(TAG, "Thread " + threadPath + " added to watchlist");
-            Log.d(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
             Toast.makeText(ctx, R.string.thread_added_to_watchlist, Toast.LENGTH_SHORT).show();
         }
     }
+
+    private static void saveWatchlist(Context ctx, Set<String> savedWatchlist) {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
+        editor.putStringSet(ChanHelper.THREAD_WATCHLIST, savedWatchlist);
+        editor.commit();
+        Log.d(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
+    }
+
+    public static void updateThreadInfo(Context ctx, String boardCode, long threadNo, long tim,
+                                        String text, String imageUrl, int imageWidth, int imageHeight, boolean isDead) {
+        Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
+        String[] matchingComponents = null;
+        String matchingThreadPath = null;
+        for (String threadPath : savedWatchlist) {
+            String[] components = getThreadPathComponents(threadPath);
+            String watchedBoardCode = components[1];
+            long watchedThreadNo = Long.valueOf(components[2]);
+            if (watchedBoardCode.equals(boardCode) && watchedThreadNo == threadNo) {
+                matchingThreadPath = threadPath;
+                matchingComponents = components;
+                break;
+            }
+        }
+        if (matchingThreadPath == null) {
+            Log.e(TAG, "Couldn't find thread in watchlist to update: " + boardCode + "/" + threadNo);
+        }
+        else {
+            savedWatchlist.remove(matchingThreadPath);
+            matchingComponents[0] = Long.toString(tim);
+            matchingComponents[3] = text;
+            matchingComponents[4] = imageUrl;
+            matchingComponents[5] = Integer.toString(imageWidth);
+            matchingComponents[6] = Integer.toString(imageHeight);
+            String newThreadPath = ChanWatchlist.getThreadPath(matchingComponents);
+            savedWatchlist.add(newThreadPath);
+            saveWatchlist(ctx, savedWatchlist);
+            Log.i(TAG, "Thread " + newThreadPath + " added to watchlist");
+        }
+    }
+
 
     public static boolean isThreadWatched(Context ctx, String boardCode, long threadNo) {
         boolean isWatched = false;
@@ -97,7 +149,7 @@ public class ChanWatchlist {
         return isWatched;
     }
 
-    public static class CleanWatchlistTask extends AsyncTask<Void, Void, Void> {
+    public static class CleanWatchlistTask extends AsyncTask<Void, Void, String> {
         private Context ctx;
         private BaseAdapter adapter;
         private boolean userInteraction = false;
@@ -108,11 +160,23 @@ public class ChanWatchlist {
             if (userInteraction)
                 Toast.makeText(ctx, R.string.dialog_cleaning_watchlist, Toast.LENGTH_SHORT).show();
         }
-        public Void doInBackground(Void... params) {
-            cleanWatchlistSynchronous(ctx);
-            return null;
+        public String doInBackground(Void... params) {
+            boolean cleanAllDeadThreads = userInteraction ? true : false;
+            try {
+                cleanWatchlistSynchronous(ctx, cleanAllDeadThreads);
+                return null;
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't clean watchlist", e);
+                return "Watchlist clean error: " + e.getLocalizedMessage();
+            }
         }
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(String result) {
+            if (result == null) {
+                if (userInteraction)
+                    Toast.makeText(ctx, R.string.dialog_watchlist_cleaning_error, Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (adapter != null)
                 adapter.notifyDataSetChanged();
             if (userInteraction)
@@ -128,9 +192,9 @@ public class ChanWatchlist {
         Log.i(TAG, "Watchlist cleared");
     }
 
-    private static void cleanWatchlistSynchronous(Context ctx) {
+    private static void cleanWatchlistSynchronous(Context ctx, boolean cleanAllDeadThreads) {
         Log.i(TAG, "Cleaning watchlist...");
-        List<Long> deadTims = getDeadTims(ctx);
+        List<Long> deadTims = getDeadTims(ctx, cleanAllDeadThreads);
         deleteThreadsFromWatchlist(ctx, deadTims);
         Log.i(TAG, "Watchlist cleaned");
     }
@@ -169,9 +233,11 @@ public class ChanWatchlist {
         return threadPathList;
     }
 
-    public static List<Long> getDeadTims(Context ctx) {
-        Set<String> threadPaths = getWatchlistFromPrefs(ctx);
+    public static List<Long> getDeadTims(Context ctx, boolean cleanAllDeadThreads) {
+        Set<String> threadPaths = new HashSet<String>();
+        threadPaths.addAll(getWatchlistFromPrefs(ctx));
         List<Long> deadTims = new ArrayList<Long>();
+        long now = (new Date()).getTime();
         for (String threadPath : threadPaths) {
             String[] threadComponents = getThreadPathComponents(threadPath);
             long tim = Long.valueOf(threadComponents[0]);
@@ -179,7 +245,9 @@ public class ChanWatchlist {
             long threadNo = Long.valueOf(threadComponents[2]);
             try {
                 ChanThread thread = ChanFileStorage.loadThreadData(ctx, boardCode, threadNo);
-                if (thread.isDead)
+                long interval = now - thread.lastFetched;
+                boolean threadIsOld = interval > MAX_DEAD_THREAD_RETENTION_MS;
+                if (thread.isDead && (cleanAllDeadThreads || threadIsOld))
                     deadTims.add(tim);
             }
             catch (Exception e) {

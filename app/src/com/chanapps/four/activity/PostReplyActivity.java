@@ -437,7 +437,7 @@ public class PostReplyActivity extends Activity {
                 startActivity(settingsIntent);
                 return true;
             case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.raw.help_header, R.raw.help_post_reply);
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_post_reply);
                 rawResourceDialog.show();
                 return true;
             default:

@@ -14,36 +14,51 @@ import java.io.InputStreamReader;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.util.Linkify;
-import android.graphics.Color;
+import android.util.Log;
+import android.view.View;
 import android.view.Window;
+import android.webkit.WebView;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
 
 public class RawResourceDialog extends Dialog {
-    private static Context mContext = null;
-    private int rawResourceUp;
-    private int rawResourceDown;
 
-    public RawResourceDialog(Context context, int rawResourceUp, int rawResourceDown ) {
+    private static final String TAG = RawResourceDialog.class.getSimpleName();
+    private static Context mContext = null;
+    private int layoutId;
+    private int headerId;
+    private int detailId;
+
+    public RawResourceDialog(Context context, int layoutId, int headerId, int detailId) {
         super(context);
         mContext = context;
-        this.rawResourceUp = rawResourceUp;
-        this.rawResourceDown = rawResourceDown;
+        this.layoutId = layoutId;
+        this.headerId = headerId;
+        this.detailId = detailId;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.about);
-        TextView tv = (TextView) findViewById(R.id.legal_text);
-        tv.setText(readRawTextFile(rawResourceUp));
-        tv = (TextView) findViewById(R.id.info_text);
-        tv.setText(Html.fromHtml(readRawTextFile(rawResourceDown)));
-        tv.setLinkTextColor(Color.WHITE);
-        Linkify.addLinks(tv, Linkify.ALL);
+        setContentView(layoutId);
+        TextView tv = (TextView) findViewById(R.id.header_text);
+        tv.setText(readRawTextFile(headerId));
+        View v = findViewById(R.id.detail_html);
+        if (v instanceof TextView) {
+            TextView detail = (TextView)v;
+            detail.setText(Html.fromHtml(readRawTextFile(detailId)));
+        }
+        else if (v instanceof WebView) {
+            WebView detail = (WebView)v;
+            detail.loadData(readRawTextFile(detailId), "text/html", null);
+        }
+        else {
+            Log.e(TAG, "Unsupported view class=" + v.getClass() + " for resourceId=" + detailId);
+        }
+//        Linkify.addLinks(tv, Linkify.ALL);
 
     }
 

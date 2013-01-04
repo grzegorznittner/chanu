@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -27,16 +26,10 @@ import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.service.BoardLoadService;
-import com.google.ads.AdRequest;
-import com.google.ads.AdSize;
-import com.google.ads.AdView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-
-import java.util.Date;
-import java.util.HashMap;
 
 public class BoardActivity extends Activity implements ClickableLoaderActivity {
 	public static final String TAG = BoardActivity.class.getSimpleName();
@@ -410,13 +403,26 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
-            case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.raw.help_header, R.raw.help_board_grid);
-                rawResourceDialog.show();
+            case R.id.board_rules_menu:
+                displayBoardRules();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void displayBoardRules() {
+        int boardRulesId = R.raw.global_rules_detail;
+        try {
+            boardRulesId = R.raw.class.getField("board_" + boardCode + "_rules").getInt(null);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't find rules for board:" + boardCode);
+        }
+        RawResourceDialog rawResourceDialog
+                = new RawResourceDialog(this, R.layout.board_rules_dialog, R.raw.board_rules_header, boardRulesId);
+        rawResourceDialog.show();
+
     }
 
     @Override

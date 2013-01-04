@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/four_leaf_clover_1"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:padding="16dp"
+                android:contentDescription="@string/about_menu"/>
+
+        <TextView
+                android:id="@+id/header_text"
+                android:text="About Product"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:paddingLeft="80dp"
+                android:gravity="center_vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="80dp"
+                android:textColor="#030303"/>
+
+        <TextView
+                android:id="@+id/detail_html"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="80dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:textSize="14dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="16dp"
+                android:paddingTop="0dp"
+                android:text="About the product description goes here"
+                android:textColor="#030303" />
+
+</RelativeLayout>

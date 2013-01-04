@@ -4,10 +4,14 @@
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"
             />
+    <item android:id="@+id/global_rules_menu"
+          android:title="@string/global_rules_menu"
+          android:icon="@drawable/action_help"
+            />
     <item android:id="@+id/help_menu"
           android:title="@string/help_menu"
           android:icon="@drawable/action_help"
-          />
+            />
     <item android:id="@+id/about_menu"
           android:title="@string/about_menu"
           android:icon="@drawable/action_help"

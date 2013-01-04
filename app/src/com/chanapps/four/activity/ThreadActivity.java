@@ -269,7 +269,7 @@ public class ThreadActivity extends BoardActivity {
                 startActivity(settingsIntent);
                 return true;
             case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.raw.help_header, R.raw.help_board_grid);
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_board_grid);
                 rawResourceDialog.show();
                 return true;
             default:

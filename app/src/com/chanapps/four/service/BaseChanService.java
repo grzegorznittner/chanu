@@ -45,7 +45,7 @@ import android.widget.Toast;
  *
  * <div class="special reference">
  * <h3>Developer Guides</h3>
- * <p>For a detailed discussion about how to create services, read the
+ * <p>For a detailed discussion about_dialog how to create services, read the
  * <a href="{@docRoot}guide/topics/fundamentals/services.html">Services</a> developer guide.</p>
  * </div>
  *

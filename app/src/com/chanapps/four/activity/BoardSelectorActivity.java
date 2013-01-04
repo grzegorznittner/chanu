@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import com.chanapps.four.component.DispatcherHelper;
-import com.chanapps.four.component.ExtendedImageDownloader;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.data.SmartCache;
 import com.chanapps.four.fragment.BoardGroupFragment;
@@ -24,14 +23,9 @@ import android.view.MenuInflater;
 import com.chanapps.four.fragment.FavoritesClearDialogFragment;
 import com.chanapps.four.fragment.WatchlistCleanDialogFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class BoardSelectorActivity extends FragmentActivity {
     public static final String TAG = "BoardSelectorActivity";
@@ -287,12 +281,16 @@ public class BoardSelectorActivity extends FragmentActivity {
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
-            case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.raw.help_header, R.raw.help_board_selector);
+            case R.id.global_rules_menu:
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
                 rawResourceDialog.show();
                 return true;
+            case R.id.help_menu:
+                RawResourceDialog rawResourceDialog2 = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_board_selector);
+                rawResourceDialog2.show();
+                return true;
             case R.id.about_menu:
-                RawResourceDialog aboutDialog = new RawResourceDialog(this, R.raw.legal, R.raw.info);
+                RawResourceDialog aboutDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.legal, R.raw.info);
                 aboutDialog.show();
                 return true;
             default:
