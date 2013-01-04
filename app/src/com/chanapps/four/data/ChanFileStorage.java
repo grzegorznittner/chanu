@@ -8,11 +8,9 @@ import java.util.Date;
 import java.util.WeakHashMap;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
-import com.chanapps.four.service.BoardLoadService;
-import com.chanapps.four.service.ThreadLoadService;
+import com.chanapps.four.service.UserPreferences;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.utils.StorageUtils;
@@ -28,6 +26,7 @@ public class ChanFileStorage {
     private static final String CACHE_PKG_DIR = "cache";
     private static final String FILE_SEP = "/";
     private static final String CACHE_EXT = ".txt";
+    private static final String USER_PREFS_FILENAME = "userprefs.txt";
 
     public static boolean isBoardCachedOnDisk(Context context, String boardCode) {
         File boardDir = getBoardCacheDirectory(context, boardCode);
@@ -37,6 +36,11 @@ public class ChanFileStorage {
     public static boolean isThreadCachedOnDisk(Context context, String boardCode, long threadNo) {
         File threadDir = getThreadCacheDirectory(context, boardCode, threadNo);
         return threadDir != null && threadDir.exists();
+    }
+
+    public static boolean isUserPreferencesOnDisk(Context context) {
+        File userPrefsFile = getUserPreferencesFile(context);
+        return userPrefsFile != null && userPrefsFile.exists();
     }
 
     private static File getBoardCacheDirectory(Context context, String boardCode) {
@@ -51,6 +55,19 @@ public class ChanFileStorage {
                 + CACHE_PKG_DIR + FILE_SEP + boardCode + FILE_SEP + threadNo;
         File threadDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
         return threadDir;
+    }
+    
+    private static File getUserPreferencesFile(Context context) {
+        String cacheDir = CACHE_ROOT + FILE_SEP + CACHE_DATA_DIR + FILE_SEP + context.getPackageName() + FILE_SEP
+                + CACHE_PKG_DIR;
+        File cacheFolder = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+        if (cacheFolder != null) {
+        	File userPrefsFile = new File(cacheFolder, USER_PREFS_FILENAME);
+        	return userPrefsFile;
+        } else {
+        	Log.e(TAG, "Cache folder returned empty");
+        	return null;
+        }
     }
 
     public static void storeBoardData(Context context, ChanBoard board) {
@@ -108,6 +125,37 @@ public class ChanFileStorage {
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Error while storing board " + boardName + " page " + page, e);
+		}
+		return null;
+	}
+	
+    public static File storeThreadFile(Context context, String boardName, long threadNo, BufferedReader reader) {
+		try {
+            File boardDir = getBoardCacheDirectory(context, boardName);
+			if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
+				File boardFile = new File(boardDir, "t_" + threadNo + "f" + CACHE_EXT);
+				FileWriter writer = new FileWriter(boardFile, false);
+				try {
+					String line = null;
+					while ((line = reader.readLine()) != null) {
+						writer.write(line);
+					}
+				} finally {
+                    try {
+					    writer.flush();
+					    writer.close();
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "Exception while writing and closing thread cache:" + e.getMessage(), e);
+                    }
+				}
+				Log.i(TAG, "Stored file for thread " + boardName + "/" + threadNo);
+				return boardFile;
+			} else {
+				Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Error while storing thread " + boardName + "/" + threadNo, e);
 		}
 		return null;
 	}
@@ -184,8 +232,6 @@ public class ChanFileStorage {
 		return ChanBoard.getBoardByCode(context, boardCode);
 	}
 
-
-
 	public static ChanThread loadThreadData(Context context, String boardCode, long threadNo) {
 		if (boardCode == null || threadNo <= 0) {
 			Log.w(TAG, "Trying to load '" + boardCode + FILE_SEP + threadNo + "' thread! Check stack trace why has it happened.", new Exception());
@@ -220,6 +266,66 @@ public class ChanFileStorage {
 			if (threadFile != null) {
 				threadFile.delete();
             }
+		}
+		return null;
+	}
+	
+	public static void storeUserPreferences(Context context, UserPreferences userPrefs) {
+		try {
+            File userPrefsFile = getUserPreferencesFile(context);
+			if (userPrefsFile != null) {
+				FileWriter writer = new FileWriter(userPrefsFile, false);
+				try {
+					userPrefs.lastStored = new Date();
+					Gson gson = new GsonBuilder().create();
+					gson.toJson(userPrefs, writer);
+				}
+                catch (Exception e) {
+                    Log.e(TAG, "Exception while writing user preferences", e);
+                }
+                finally {
+                    try {
+                        writer.flush();
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "Exception while flushing user preferences", e);
+                    }
+                    try {
+                        writer.close();
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "Exception while closing user preferences", e);
+                    }
+                }
+				Log.i(TAG, "Stored user preferences to file, last updated " + userPrefs.lastUpdate);
+			} else {
+				Log.e(TAG, "Cannot store user preferences");
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Error while storing user preferences", e);
+		}
+	}
+
+	public static UserPreferences loadUserPreferences(Context context) {
+		try {
+			File userPrefsFile = getUserPreferencesFile(context);
+			if (userPrefsFile != null && userPrefsFile.exists()) {
+				FileReader reader = new FileReader(userPrefsFile);
+				Gson gson = new GsonBuilder().create();
+				UserPreferences userPrefs = gson.fromJson(reader, UserPreferences.class);
+                if (userPrefs == null) {
+                    Log.e(TAG, "Couldn't load user preferences, null returned");
+                    return new UserPreferences();
+                } else {
+				    Log.i(TAG, "Loaded user preferences, last updated " + userPrefs.lastUpdate + ", last stored " + userPrefs.lastStored);
+					return userPrefs;
+                }
+			} else {
+				Log.w(TAG, "File for user preferences doesn't exist");
+				return new UserPreferences();
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Error while loading user preferences", e);
 		}
 		return null;
 	}

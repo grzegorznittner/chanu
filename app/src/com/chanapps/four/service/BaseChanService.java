@@ -23,7 +23,10 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.widget.Toast;
+
+import com.chanapps.four.data.ChanHelper;
 
 /**
  * IntentService is a base class for {@link Service}s that handle asynchronous
@@ -65,8 +68,19 @@ import android.widget.Toast;
  * * we can also prepare paid service which will allow users for unlimited uploads, uploads will be done via our server
  */
 public abstract class BaseChanService extends Service {
-    private volatile Looper mServiceLooper;
-    private volatile ServiceHandler mServiceHandler;
+	private static final String TAG = BaseChanService.class.getSimpleName();
+	
+    protected static int NON_PRIORITY_MESSAGE = 99;
+    protected static int PRIORITY_MESSAGE = 100;
+    
+    protected static final int MAX_NON_PRIORITY_MESSAGES = 20;
+    protected static final int MAX_PRIORITY_MESSAGES = 2;
+    
+    private static int nonPriorityMessageCounter = 0;
+    private static int priorityMessageCounter = 0;
+
+    protected volatile Looper mServiceLooper;
+    protected volatile ServiceHandler mServiceHandler;
     private String mName;
     private boolean mRedelivery;
 
@@ -79,7 +93,7 @@ public abstract class BaseChanService extends Service {
         });
     }
 
-    private final class ServiceHandler extends Handler {
+    protected final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {
             super(looper);
         }
@@ -88,7 +102,7 @@ public abstract class BaseChanService extends Service {
         public void handleMessage(Message msg) {
             onHandleIntent((Intent)msg.obj);
             stopSelf(msg.arg1);
-        }
+        }        
     }
 
     /**
@@ -135,12 +149,42 @@ public abstract class BaseChanService extends Service {
         mServiceHandler = new ServiceHandler(mServiceLooper);
     }
 
-    /**
-     * You should not override this method for your IntentService. Instead,
-     * override {@link #onHandleIntent}, which the system calls when the IntentService
-     * receives a start request.
-     * @see android.app.Service#onStartCommand
-     */
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+    	if (nonPriorityMessageCounter > MAX_NON_PRIORITY_MESSAGES) {
+    		Log.i(TAG, "Clearing chan fetch service message queue from non priority messages (" + nonPriorityMessageCounter + ")");
+        	mServiceHandler.removeMessages(NON_PRIORITY_MESSAGE);
+        	nonPriorityMessageCounter = 0;
+    	}
+    	if (priorityMessageCounter > MAX_PRIORITY_MESSAGES) {
+    		Log.i(TAG, "Clearing chan fetch service message queue from priority messages (" + priorityMessageCounter + ")");
+        	mServiceHandler.removeMessages(PRIORITY_MESSAGE);
+        	priorityMessageCounter = 0;
+    	}
+        if (intent != null && intent.getIntExtra(ChanHelper.CLEAR_FETCH_QUEUE, 0) == 1) {
+        	Log.i(TAG, "Clearing chan fetch service message queue");
+        	mServiceHandler.removeMessages(NON_PRIORITY_MESSAGE);
+        	mServiceHandler.removeMessages(PRIORITY_MESSAGE);
+        	return START_NOT_STICKY;
+        }
+        
+        Message msg = mServiceHandler.obtainMessage();
+        msg.arg1 = startId;
+        msg.obj = intent;
+        if (intent != null && intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) == 1) {
+        	msg.what = PRIORITY_MESSAGE;
+        	mServiceHandler.sendMessageAtFrontOfQueue(msg);
+        	priorityMessageCounter++;
+        } else {
+        	msg.what = NON_PRIORITY_MESSAGE;
+        	mServiceHandler.sendMessage(msg);
+        	nonPriorityMessageCounter++;
+        }
+        
+        return START_NOT_STICKY;
+    }
+	
+    /*
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Message msg = mServiceHandler.obtainMessage();
@@ -149,6 +193,7 @@ public abstract class BaseChanService extends Service {
         mServiceHandler.sendMessage(msg);
         return mRedelivery ? START_REDELIVER_INTENT : START_NOT_STICKY;
     }
+    */
 
     @Override
     public void onDestroy() {
