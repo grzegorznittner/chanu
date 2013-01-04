@@ -6,7 +6,9 @@ package com.chanapps.four.service;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.data.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,16 +30,21 @@ public class ThreadLoadService extends BaseChanService {
     protected static final String TAG = ThreadLoadService.class.getName();
 
     protected static final long STORE_INTERVAL_MS = 2000;
+    protected static final long MIN_THREAD_FORCE_INTERVAL = 10000; // 10 sec
+    protected static final long MIN_THREAD_FETCH_INTERVAL = 300000; // 5 min
 
     private String boardCode;
     private long threadNo;
+    private boolean force;
     private ChanThread thread;
 
-    public static void startService(Context context, String boardCode, long threadNo) {
+    public static void startService(Context context, String boardCode, long threadNo, boolean force) {
         Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
         Intent intent = new Intent(context, ThreadLoadService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        if (force)
+            intent.putExtra(ChanHelper.FORCE_REFRESH, force);
         context.startService(intent);
     }
 
@@ -53,7 +60,9 @@ public class ThreadLoadService extends BaseChanService {
 	protected void onHandleIntent(Intent intent) {
 		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
         threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-		Log.i(TAG, "Handling board=" + boardCode + " threadNo=" + threadNo);
+        force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false);
+
+        Log.i(TAG, "Handling board=" + boardCode + " threadNo=" + threadNo + " force=" + force);
 
         if (threadNo == 0) {
             Log.e(TAG, "Board loading must be done via the BoardLoadService");
@@ -67,21 +76,36 @@ public class ThreadLoadService extends BaseChanService {
         HttpURLConnection tc = null;
 		try {
             thread = ChanFileStorage.loadThreadData(this, boardCode, threadNo);
-            if (thread != null && thread.isDead) {
-                Log.i(TAG, "Dead thread retrieved from storage, therefore service is terminating");
-                return;
-            }
-            else if (thread == null) {
+            long now = (new Date()).getTime();
+            if (thread == null) {
                 thread = new ChanThread();
                 thread.board = boardCode;
                 thread.no = threadNo;
                 thread.isDead = false;
             }
+            else {
+                if (thread.isDead) {
+                    Log.i(TAG, "Dead thread retrieved from storage, therefore service is terminating");
+                    return;
+                }
+                long interval = now - thread.lastFetched;
+                if (force && interval < MIN_THREAD_FORCE_INTERVAL) {
+                    Log.i(TAG, "thread is forced but interval=" + interval + " is less than min=" + MIN_THREAD_FORCE_INTERVAL + " so exiting");
+                    return;
+                }
+                if (!force && interval < MIN_THREAD_FETCH_INTERVAL) {
+                    Log.i(TAG, "thread interval=" + interval + " less than min=" + MIN_THREAD_FETCH_INTERVAL + " and not force thus exiting service");
+                    return;
+                }
+            }
 
             URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/res/" + threadNo + ".json");
-
             tc = (HttpURLConnection) chanApi.openConnection();
+            if (thread.lastFetched > 0)
+                tc.setIfModifiedSince(thread.lastFetched);
             Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode());
+
+            thread.lastFetched = now;
             if (tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 Log.i(TAG, "Got 404 on thread, thread no longer exists");
                 markDead();

@@ -175,9 +175,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     @Override
-    protected void startLoadService() {
-        Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_SHORT).show();
-        ThreadLoadService.startService(this, boardCode, threadNo);
+    protected void startLoadService(boolean force) {
+        ThreadLoadService.startService(this, boardCode, threadNo, force);
     }
 
     @Override
@@ -261,7 +260,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 NavUtils.navigateUpTo(this, upIntent);
                 return true;
             case R.id.refresh_thread_menu:
-                startLoadService();
+                Toast.makeText(this, R.string.refresh_thread_menu, Toast.LENGTH_LONG);
+                startLoadService(true);
                 return true;
             case R.id.hide_all_text:
                 toggleHideAllText();

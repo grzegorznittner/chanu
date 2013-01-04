@@ -77,7 +77,6 @@ public class ChanFileStorage {
 			if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
 				FileWriter writer = new FileWriter(new File(boardDir, board.link + CACHE_EXT), false);
 				try {
-					board.lastFetched = new Date().getTime();
 					Gson gson = new GsonBuilder().create();
 					gson.toJson(board, writer);
 				} finally {
@@ -167,7 +166,6 @@ public class ChanFileStorage {
 			if (threadDir != null && (threadDir.exists() || threadDir.mkdirs())) {
 				FileWriter writer = new FileWriter(new File(threadDir, thread.no + CACHE_EXT), false);
 				try {
-					thread.lastFetched = new Date().getTime();
 					Gson gson = new GsonBuilder().create();
 					gson.toJson(thread, writer);
 				}
