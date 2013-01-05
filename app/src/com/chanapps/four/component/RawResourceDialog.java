@@ -17,6 +17,7 @@ import android.content.Context;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -51,14 +52,9 @@ public class RawResourceDialog extends Dialog {
             TextView detail = (TextView)v;
             detail.setText(Html.fromHtml(readRawTextFile(detailId)));
         }
-        else if (v instanceof WebView) {
-            WebView detail = (WebView)v;
-            detail.loadData(readRawTextFile(detailId), "text/html", null);
-        }
         else {
             Log.e(TAG, "Unsupported view class=" + v.getClass() + " for resourceId=" + detailId);
         }
-//        Linkify.addLinks(tv, Linkify.ALL);
 
     }
 

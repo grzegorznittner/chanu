@@ -1,3 +1,4 @@
-You are viewing the latest threads of this board.
-Scroll down to see more threads, or click to see
-all posts for this thread.
+<p>You are viewing the latest threads of this board.</p>
+<p>Scroll down to see more threads.</p>
+<p>Click a thread to see all post replies.</p>
+<p>Long-press a thread to see the full thread text.</p>

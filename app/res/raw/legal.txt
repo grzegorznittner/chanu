@@ -1,3 +1,0 @@
-All rights reserved.
-Copyright (c) 2012, John Burns, Greg Nittner, Mircea Pop
-Used Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich

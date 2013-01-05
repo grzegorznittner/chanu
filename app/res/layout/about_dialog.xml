@@ -39,6 +39,8 @@
                 android:paddingBottom="16dp"
                 android:paddingTop="0dp"
                 android:text="About the product description goes here"
-                android:textColor="#030303" />
+                android:textColor="#030303"
+                android:linksClickable="true"
+                android:autoLink="web"/>
 
 </RelativeLayout>

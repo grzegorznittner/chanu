@@ -5,14 +5,14 @@
 <p>5. All boards that default to the Yotsuba B or Burichan (blue) theme are to be considered "work safe." Violators may be temporarily banned and their posts removed. Note: Spoilered pornography or other not safe for work content is NOT allowed.</p>
 <p>6. The quality of posts is extremely important to this community. Contributors are encouraged to provide high-quality images and informative comments.</p>
 <p>7. Submitting false reports or otherwise abusing the report system will result in a ban of indeterminate length. Replying to a thread stating that you've reported it or another post is also disallowed&mdash;please do not announce your reports.</p>
-<p>8. Complaining about 4chan (its policies, moderation, etc.) on the imageboards can result in post deletion and banishment. The <a href="/faq#whoadmin">administrator</a> will address your questions, comments, complaints, and concerns via e-mail. Constructive criticism and feedback should be posted to /<a href="//boards.4chan.org/q/" title="4chan Discussion">q</a>/.</p>
-<p>9. Ban evasion will result in permanent bans&mdash;no exceptions. Instead, wait and <a href="/faq#banappeal">appeal</a> it!</p>
+<p>8. Complaining about 4chan (its policies, moderation, etc.) on the imageboards can result in post deletion and banishment. The administrator faq at <a href="http://4chan.org/faq#whoadmin">http://4chan.org/faq#whoadmin</a> will address your questions, comments, complaints, and concerns via e-mail. Constructive criticism and feedback should be posted to <a href="http://boards.4chan.org/q/">http://boards.4chan.org/q/</a>.</p>
+<p>9. Ban evasion will result in permanent bans&mdash;no exceptions. Instead, wait and appeal it at <a href="http://4chan.org/faq#banappeal">http://4chan.org/faq#banappeal</a></p>
 <p>10. No spamming or flooding of any kind.</p>
 <p>11. Advertising (all forms) is also not welcome&mdash;this includes any type of referral linking, "offers", stream threads, etc.</p>
 <p>12. Impersonating the 4chan administrator, moderators, or janitors is strictly forbidden.</p>
 <p>13. Do not use avatars or attach signatures to your posts.</p>
 <p>14. The use of scrapers, bots, or other automated posting or downloading scripts is prohibited. Users may not post from proxies or Tor exit nodes.</p>
-<p>15. All pony/brony threads, images, and avatars belong on /<a href="#mlp" title="Pony">mlp</a>/.</p>
-<p>16. All requests belong on /<a href="//boards.4chan.org/r/" title="Request">r</a>/ unless otherwise noted.</p>
+<p>15. All pony/brony threads, images, and avatars belong on the <a href="http://boards.4chan.org/mlp/">http://boards.4chan.org/mlp/</a> board.</p>
+<p>16. All requests belong on the requests board at <a href="http://boards.4chan.org/r/">http://boards.4chan.org/r/</a> unless otherwise noted.</p>
 <p>17. Remember: The use of 4chan is a privilege, not a right. The 4chan staff reserves the right to revoke access and remove content for any reason without notice.</p>
 <p>Global rules apply to all boards unless otherwise noted.</p>

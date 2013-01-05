@@ -406,12 +406,16 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             case R.id.board_rules_menu:
                 displayBoardRules();
                 return true;
+            case R.id.about_menu:
+                RawResourceDialog aboutDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.about_header, R.raw.about_detail);
+                aboutDialog.show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void displayBoardRules() {
+    protected void displayBoardRules() {
         int boardRulesId = R.raw.global_rules_detail;
         try {
             boardRulesId = R.raw.class.getField("board_" + boardCode + "_rules").getInt(null);

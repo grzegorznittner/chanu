@@ -1,0 +1,5 @@
+<p>Version 1.0 beta</p>
+<p>Copyright (c) 2012-3, John Burns, Greg Nittner, Mircea Pop</p>
+<p>All rights reserved.</p>
+<p>Used Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich</p>
+<p><a href="//www.chanapps.com">www.chanapps.com</a></p>

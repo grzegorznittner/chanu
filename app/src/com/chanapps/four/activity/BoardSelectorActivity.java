@@ -290,7 +290,7 @@ public class BoardSelectorActivity extends FragmentActivity {
                 rawResourceDialog2.show();
                 return true;
             case R.id.about_menu:
-                RawResourceDialog aboutDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.legal, R.raw.info);
+                RawResourceDialog aboutDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.about_header, R.raw.about_detail);
                 aboutDialog.show();
                 return true;
             default:

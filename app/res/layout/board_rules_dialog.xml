@@ -28,13 +28,15 @@
                 android:id="@+id/detail_html"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:paddingTop="16dp"
                 android:paddingLeft="8dp"
                 android:paddingBottom="16dp"
                 android:paddingRight="24dp"
                 android:background="#fffefefe"
-                android:textColor="#030303" />
+                android:textColor="#030303"
+                android:linksClickable="true"
+                android:autoLink="web"/>
 
     </ScrollView>
 

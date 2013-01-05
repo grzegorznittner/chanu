@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/settings_menu"
-          android:title="@string/settings_menu"
-          android:icon="@drawable/action_settings"
-            />
     <item android:id="@+id/global_rules_menu"
           android:title="@string/global_rules_menu"
           android:icon="@drawable/action_help"
+            />
+    <item android:id="@+id/settings_menu"
+          android:title="@string/settings_menu"
+          android:icon="@drawable/action_settings"
             />
     <item android:id="@+id/help_menu"
           android:title="@string/help_menu"

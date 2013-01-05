@@ -1,0 +1,4 @@
+<h3>/gif/ - Animated GIF</h3>
+
+<p>1. All GIFs should be animated&mdash;no static images.</p>
+
