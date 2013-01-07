@@ -3,23 +3,28 @@
  */
 package com.chanapps.four.service;
 
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
-import android.widget.Toast;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.component.ToastRunnable;
-import com.chanapps.four.data.*;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+
+import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -43,8 +48,21 @@ public class ThreadLoadService extends BaseChanService {
         Intent intent = new Intent(context, ThreadLoadService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        if (force)
+        if (force) {
             intent.putExtra(ChanHelper.FORCE_REFRESH, force);
+        }
+        context.startService(intent);
+    }
+
+    public static void startServiceWithPriority(Context context, String boardCode, long threadNo, boolean force) {
+        Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
+        Intent intent = new Intent(context, ThreadLoadService.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        if (force) {
+            intent.putExtra(ChanHelper.FORCE_REFRESH, force);
+        }
+        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
         context.startService(intent);
     }
 

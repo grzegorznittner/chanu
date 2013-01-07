@@ -139,8 +139,7 @@ public class BoardLoadService extends BaseChanService {
             if (pageNo > 0 && tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 Log.i(TAG, "Got 404 on next page, assuming last page at pageNo=" + pageNo);
                 board.lastPage = true;
-            }
-            else {
+            } else {
                 in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
                 File boardFile = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, in);
                 
