@@ -56,6 +56,11 @@
     <string name="board_click_for_more">(click for more)</string>
     <string name="board_last_updated">Last updated %s</string>
 
+    <!-- thread activity -->
+    <string name="thread_couldnt_load">Couldn\'t load thread</string>
+    <string name="thread_no_replies_found">No replies found</string>
+    <string name="thread_replies_found">Found %1$d previous and %2$d replies</string>
+
     <!-- watchlist -->
     <string name="thread_already_in_watchlist">Thread already in watchlist</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
@@ -94,7 +99,8 @@
     <string name="reply">Reply</string>
     <string name="quote">Quote</string>
     <string name="dismiss">Close</string>
-    <string name="dead_thread_reply">Close (Dead Thread)</string>
+    <string name="dead_thread_reply">DEAD THREAD NO REPLY</string>
+    <string name="highlight_replies">Replies</string>
     <string name="popup_country_flag">Country Flag</string>
 
     <!-- dialog text -->

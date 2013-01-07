@@ -22,7 +22,7 @@
             android:id="@+id/popup_full_text_scroll_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_marginBottom="48dp"
+            android:layout_marginBottom="96dp"
             android:scrollbars="vertical">
 
             <LinearLayout
@@ -67,7 +67,7 @@
                     android:textSize="14sp"
                     android:textColor="#010101"
                     android:linksClickable="true"
-                    android:autoLink="all"
+                    android:autoLink="web|email"
                     android:scrollHorizontally="true"
                     android:layout_gravity="top">
                 </TextView>
@@ -77,33 +77,60 @@
         </ScrollView>
 
         <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="48dp"
-            android:layout_gravity="bottom"
-            android:weightSum="3">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="vertical"
+                >
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:weightSum="2">
+
+                <TextView
+                        android:id="@+id/popup_dead_thread_text_view"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="bottom"
+                        android:gravity="center"
+                        android:layout_weight="2"
+                        android:visibility="gone"
+                        android:clickable="false"
+                        android:textStyle="bold"
+                        android:text="@string/dead_thread_reply" />
+
+                <Button
+                        android:id="@+id/popup_reply_button"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="bottom"
+                        android:layout_weight="1"
+                        android:text="@string/reply" />
+
+                <Button
+                        android:id="@+id/popup_quote_button"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="bottom"
+                        android:layout_weight="1"
+                        android:text="@string/quote" />
+
+            </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:weightSum="2">
+
             <Button
-                    android:id="@+id/popup_dead_thread_button"
+                    android:id="@+id/popup_highlight_button"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="3"
-                    android:visibility="gone"
-                    android:clickable="false"
-                    android:text="@string/dead_thread_reply" />
-            <Button
-                    android:id="@+id/popup_reply_button"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="48dp"
                     android:layout_gravity="bottom"
                     android:layout_weight="1"
-                    android:text="@string/reply" />
-            <Button
-                    android:id="@+id/popup_quote_button"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="1"
-                    android:text="@string/quote" />
+                    android:text="@string/highlight_replies" />
+
             <Button
                     android:id="@+id/popup_dismiss_button"
                     android:layout_width="0dp"
@@ -111,6 +138,18 @@
                     android:layout_gravity="bottom"
                     android:layout_weight="1"
                     android:text="@string/dismiss" />
+
+            <Button
+                    android:id="@+id/popup_full_width_dismiss_button"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="2"
+                    android:visibility="gone"
+                    android:text="@string/dismiss" />
+
+        </LinearLayout>
+
         </LinearLayout>
 
     </FrameLayout>

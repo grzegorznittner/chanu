@@ -18,6 +18,7 @@ public class ChanHelper {
     public static final String POST_NO = "postNo";
     public static final String TIM = "tim";
     public static final String TEXT = "text";
+    public static final String QUOTE_TEXT = "quoteText";
     public static final String IMAGE_URL = "imageUrl";
     public static final String IMAGE_WIDTH = "imageWidth";
     public static final String IMAGE_HEIGHT = "imageHeight";

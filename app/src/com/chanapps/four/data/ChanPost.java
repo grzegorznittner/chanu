@@ -6,6 +6,8 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.loader.BoardCursorLoader;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChanPost {
 
@@ -23,7 +25,7 @@ public class ChanPost {
     /* TWO COL SIZES */
     public static final int MAX_IMAGETEXT_LEN = MAX_BOARDTHREAD_IMAGETEXT_LEN;
     public static final int MAX_IMAGETEXT_ABBR_LEN = MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN;
-    public static final int MAX_TEXTONLY_LEN = MAX_BOARDTHREAD_IMAGETEXT_LEN * 4;
+    public static final int MAX_TEXTONLY_LEN = (int)(MAX_BOARDTHREAD_IMAGETEXT_LEN * 3.5);
     public static final int MAX_TEXTONLY_ABBR_LEN = MAX_TEXTONLY_LEN - 3;
 
 
@@ -298,6 +300,17 @@ public class ChanPost {
         omitted_images = from.omitted_images;
         omitted_posts = from.omitted_posts;
         replies = from.replies;
+    }
+
+    public boolean refersTo(long postNo) {
+        if (postNo <= 0 || com == null || com.isEmpty())
+            return false;
+        boolean matches = com.indexOf("#p" + postNo + "\"") >= 0;
+        //Pattern p = Pattern.compile("#p" + postNo + "\\");
+        //Matcher m = p.matcher(com);
+        Log.i(TAG, "Matching postNo=" + postNo + " is " + matches + " against com=" + com);
+        //return m.matches();
+        return matches;
     }
 
 }

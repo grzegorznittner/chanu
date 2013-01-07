@@ -135,63 +135,54 @@ public class PostReplyActivity extends Activity {
     private void restoreInstanceState() {
         Intent intent = getIntent();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String text = null;
+        String quoteText = null;
+        String imageUrl = null;
         if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
             boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
             threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
             postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
             tim = intent.getLongExtra(ChanHelper.TIM, 0);
-            String text = intent.getStringExtra(ChanHelper.TEXT);
-            if (text != null) {
-                messageText.setText("");
-                messageText.append(text);
-            }
-            String initialImageUri = intent.getStringExtra(ChanHelper.IMAGE_URL);
-            Log.i(TAG, "loaded from intent " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + "imageUrl=" + initialImageUri);
-            if (initialImageUri != null && !initialImageUri.isEmpty())
-                try {
-                    imageUri = Uri.parse(initialImageUri);
-                    Log.i(TAG, "successfully parsed from intent imageUri=" + imageUri);
-                }
-                catch (Exception e) {
-                    Log.e(TAG, "Couldn't parse intent image uri=" + imageUri, e);
-                    imageUri = null;
-                }
-            else
-                Log.i(TAG, "Didn't find imageUrl in intent");
-            String message = "";
-            if (postNo != 0) {
-                message += ">>" + postNo + "\n";
-            }
-            String initialText = intent.getStringExtra(ChanHelper.TEXT);
-            if (initialText != null && !initialText.isEmpty()) {
-                message += ChanPost.quoteText(initialText);
-            }
-            messageText.append(message);
+            text = intent.getStringExtra(ChanHelper.TEXT);
+            quoteText = ChanPost.quoteText(intent.getStringExtra(ChanHelper.QUOTE_TEXT));
+            imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
+            Log.i(TAG, "loaded from intent " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + "imageUrl=" + imageUrl + " text=" + " quoteText=" + quoteText);
         }
         else {
             boardCode = prefs.getString(ChanHelper.BOARD_CODE, null);
             threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
             postNo = prefs.getLong(ChanHelper.POST_NO, 0);
-            tim = prefs.getLong(ChanHelper.POST_TIM, 0);
-            String text = prefs.getString(ChanHelper.TEXT, "");
-            if (text != null) {
-                messageText.setText("");
-                messageText.append(text);
-            }
-            String initialImageUri = prefs.getString(ChanHelper.IMAGE_URL, null);
-            Log.i(TAG, "loaded from prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + "imageUrl=" + initialImageUri);
-            if (initialImageUri != null && !initialImageUri.isEmpty())
-                try {
-                    imageUri = Uri.parse(initialImageUri);
-                    Log.i(TAG, "successfully parsed from prefs imageUri=" + imageUri);
-                }
-                catch (Exception e) {
-                    Log.e(TAG, "Couldn't parse prefs image uri=" + imageUri, e);
-                    imageUri = null;
-                }
-            else
-                Log.i(TAG, "Didn't find imageUri in intent");
+            tim = prefs.getLong(ChanHelper.TIM, 0);
+            text = prefs.getString(ChanHelper.TEXT, "");
+            quoteText = ChanPost.quoteText(prefs.getString(ChanHelper.QUOTE_TEXT, ""));
+            imageUrl = prefs.getString(ChanHelper.IMAGE_URL, null);
+            Log.i(TAG, "loaded from prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " imageUrl=" + imageUrl + " text=" + " quoteText=" + quoteText);
         }
+
+        messageText.setText("");
+        if (text != null && !text.isEmpty()) {
+            messageText.append(text);
+        }
+        else {
+            if (postNo != 0) {
+                messageText.append(">>" + postNo + "\n");
+            }
+            if (quoteText != null && !quoteText.isEmpty())
+                messageText.append(quoteText);
+        }
+
+        if (imageUrl != null && !imageUrl.isEmpty())
+            try {
+                imageUri = Uri.parse(imageUrl);
+                Log.i(TAG, "successfully parsed imageUri=" + imageUri);
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't parse image uri=" + imageUri, e);
+                imageUri = null;
+            }
+        else
+            Log.i(TAG, "imageUrl passed was null or empty");
+
         if (imagePath == null || imagePath.isEmpty())
             imagePath = prefs.getString(ChanHelper.IMAGE_PATH, null);
         if (contentType == null || contentType.isEmpty())
@@ -219,8 +210,9 @@ public class PostReplyActivity extends Activity {
         ed.putLong(ChanHelper.THREAD_NO, threadNo);
         ed.putLong(ChanHelper.POST_NO, postNo);
         ed.putString(ChanHelper.TEXT, getMessage());
+        ed.putString(ChanHelper.QUOTE_TEXT, "");
         ed.putString(ChanHelper.IMAGE_URL, getImageUrl());
-        ed.putLong(ChanHelper.POST_TIM, tim);
+        ed.putLong(ChanHelper.TIM, tim);
         ed.commit();
         Log.i(TAG, "Saved to prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " imageUrl=" + getImageUrl());
         DispatcherHelper.saveActivityToPrefs(this);

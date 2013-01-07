@@ -1,5 +1,7 @@
 package com.chanapps.four.data;
 
+import android.util.Log;
+
 import java.util.*;
 
 public class ChanThread extends ChanPost {
@@ -59,4 +61,43 @@ public class ChanThread extends ChanPost {
         ChanPost[] posts = { prevPost, nextPost };
         return posts;
     }
+
+    public ChanPost getPost(long sourcePostNo) {
+        ChanPost sourcePost = null;
+        if (posts != null)
+            for (ChanPost post : posts)
+                if (post.no == sourcePostNo) {
+                    sourcePost = post;
+                    break;
+                }
+        return sourcePost;
+    }
+
+    public long[] getPrevPostsReferenced(long sourcePostNo) { // what posts does this post refer to
+        Log.i(TAG, "getPrevPostsRef postNo=" + sourcePostNo);
+        List<Long> prevPosts = new ArrayList<Long>();
+        ChanPost sourcePost = getPost(sourcePostNo);
+        Log.i(TAG, "Source post=" + sourcePost + " for postNo=" + sourcePostNo);
+        if (sourcePost != null)
+            for (ChanPost post : posts)
+                if (sourcePost.refersTo(post.no))
+                    prevPosts.add(post.no);
+        long[] prevPostsArr = new long[prevPosts.size()];
+        for (int i = 0; i < prevPostsArr.length; i++)
+            prevPostsArr[i] = prevPosts.get(i);
+        Log.i(TAG, "postNo=" + sourcePostNo + " found prevPosts=" + Arrays.toString(prevPostsArr));
+        return prevPostsArr;
+    }
+
+    public long[] getNextPostsReferredTo(long postNo) { // what other posts refer to this post
+        List<Long> nextPosts = new ArrayList<Long>();
+        for (ChanPost post : posts)
+            if (post.refersTo(postNo))
+                nextPosts.add(post.no);
+        long[] nextPostsArr = new long[nextPosts.size()];
+        for (int i = 0; i < nextPostsArr.length; i++)
+            nextPostsArr[i] = nextPosts.get(i);
+        return nextPostsArr;
+    }
+
 }

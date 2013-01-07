@@ -8,14 +8,28 @@
             style="@style/GridImageStyle"
             />
 
-    <TextView
-            android:id="@+id/grid_item_text"
-            style="@style/GridTextImageOverlayStyle"
-            />
 
     <ImageView
             android:id="@+id/grid_item_country_flag"
             style="@style/GridCountryFlagStyle"
             />
+
+    <View
+            android:id="@+id/grid_item_self_highlight"
+            style="@style/GridItemSelfHighlightStyle"/>
+
+    <View
+            android:id="@+id/grid_item_prev_highlight"
+            style="@style/GridItemPrevHighlightStyle"/>
+
+    <View
+            android:id="@+id/grid_item_next_highlight"
+            style="@style/GridItemNextHighlightStyle"/>
+
+    <TextView
+            android:id="@+id/grid_item_text"
+            style="@style/GridTextImageOverlayStyle"
+            />
+
 
 </RelativeLayout>

@@ -65,10 +65,12 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
     protected TextView popupHeader;
     protected TextView popupText;
     protected PopupWindow popupWindow;
-    protected Button deadThreadButton;
+    protected TextView deadThreadTextView;
     protected Button replyButton;
     protected Button quoteButton;
     protected Button dismissButton;
+    protected Button fullWidthDismissButton;
+    protected Button highlightButton;
 
     protected long tim;
     protected String boardCode;
@@ -419,6 +421,11 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
                 replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+                replyIntent.putExtra(ChanHelper.THREAD_NO, 0);
+                replyIntent.putExtra(ChanHelper.POST_NO, 0);
+                replyIntent.putExtra(ChanHelper.TIM, 0);
+                replyIntent.putExtra(ChanHelper.TEXT, "");
+                replyIntent.putExtra(ChanHelper.QUOTE_TEXT, "");
                 startActivity(replyIntent);
                 return true;
             case R.id.settings_menu:
@@ -498,10 +505,24 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
             popupHeader = (TextView)popupView.findViewById(R.id.popup_header);
             popupText = (TextView)popupView.findViewById(R.id.popup_full_text);
             popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            deadThreadButton = (Button)popupView.findViewById(R.id.popup_dead_thread_button);
+            deadThreadTextView = (TextView)popupView.findViewById(R.id.popup_dead_thread_text_view);
             replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
             quoteButton = (Button)popupView.findViewById(R.id.popup_quote_button);
+            highlightButton = (Button)popupView.findViewById(R.id.popup_highlight_button);
             dismissButton = (Button)popupView.findViewById(R.id.popup_dismiss_button);
+            dismissButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popupWindow.dismiss();
+                }
+            });
+            fullWidthDismissButton = (Button)popupView.findViewById(R.id.popup_full_width_dismiss_button);
+            fullWidthDismissButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popupWindow.dismiss();
+                }
+            });
         }
     }
 
@@ -514,12 +535,12 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         final int isDeadInt = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_IS_DEAD));
         final boolean isDead = isDeadInt == 0 ? false : true;
         final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
-        Log.i(TAG, "Calling popup with id=" + id + " isDead=" + isDead);
         final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
         final long clickedThreadNo = resto == 0 ? postId : resto;
-        final long clickedPostNo = resto != 0 ? postId : 0;
+        final long clickedPostNo = resto == 0 || postId == resto ? 0 : postId;
+        Log.i(TAG, "Calling popup with id=" + id + " isDead=" + isDead + " postNo=" + postId + " resto=" + resto + " text=" + text);
         ensurePopupWindow();
         popupHeader.setText(headerText);
         popupText.setText(text);
@@ -546,17 +567,10 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
         if (isDead) {
             replyButton.setVisibility(View.GONE);
             quoteButton.setVisibility(View.GONE);
-            dismissButton.setVisibility(View.GONE);
-            deadThreadButton.setVisibility(View.VISIBLE);
-            deadThreadButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    popupWindow.dismiss();
-                }
-            });
+            deadThreadTextView.setVisibility(View.VISIBLE);
         }
         else {
-            deadThreadButton.setVisibility(View.GONE);
+            deadThreadTextView.setVisibility(View.GONE);
             replyButton.setVisibility(View.VISIBLE);
             replyButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -565,7 +579,9 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                     replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
                     replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
                     replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
-                    replyIntent.putExtra(ChanHelper.POST_TIM, tim);
+                    replyIntent.putExtra(ChanHelper.TIM, tim);
+                    replyIntent.putExtra(ChanHelper.TEXT, "");
+                    replyIntent.putExtra(ChanHelper.QUOTE_TEXT, "");
                     startActivity(replyIntent);
                     popupWindow.dismiss();
                 }
@@ -578,22 +594,25 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity {
                     replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
                     replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
                     replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
-                    replyIntent.putExtra(ChanHelper.TEXT, text);
-                    replyIntent.putExtra(ChanHelper.POST_TIM, tim);
+                    replyIntent.putExtra(ChanHelper.TIM, tim);
+                    replyIntent.putExtra(ChanHelper.TEXT, "");
+                    replyIntent.putExtra(ChanHelper.QUOTE_TEXT, text);
                     startActivity(replyIntent);
                     popupWindow.dismiss();
                 }
             });
-            dismissButton.setVisibility(View.VISIBLE);
-            dismissButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    popupWindow.dismiss();
-                }
-            });
         }
+
+        displayHighlightButton(clickedPostNo);
+
         popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
         return true;
+    }
+
+    protected void displayHighlightButton(long postNo) { // board-level doesn't highlight, only thread-level does
+        highlightButton.setVisibility(View.GONE);
+        dismissButton.setVisibility(View.GONE);
+        fullWidthDismissButton.setVisibility(View.VISIBLE);
     }
 
 }

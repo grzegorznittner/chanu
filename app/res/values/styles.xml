@@ -24,13 +24,16 @@
         <item name="android:orientation">vertical</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">200dp</item>
+<!--
         <item name="android:paddingLeft">0dp</item>
         <item name="android:paddingRight">0dp</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">0dp</item>
+-->
         <item name="android:layout_marginLeft">0dp</item>
         <item name="android:layout_marginRight">0dp</item>
-        <item name="android:background">#e2e2e2</item>
+        <item name="android:background">@color/PaletteOffWhite</item>
+        <item name="android:padding">0dp</item>
     </style>
 
     <style name="GridItemStyle" parent="android:style/Theme">
@@ -38,9 +41,8 @@
     </style>
 
     <style name="GridTextImageOverlayStyle" parent="GridItemStyle">
-        <item name="android:textColor">#fffefefe</item>
-        <item name="android:background">#80010101</item>
-        <item name="android:textColorHint">#fff5f5f5</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:background">@color/PaletteBlackHalfOpacity</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentTop">true</item>
@@ -59,9 +61,8 @@
     </style>
 
     <style name="GridTextOnlyStyle" parent="GridTextImageOverlayStyle">
-        <item name="android:textColor">#ff010101</item>
-        <item name="android:background">#fffefefe</item>
-        <item name="android:textColorHint">#ff050505</item>
+        <item name="android:textColor">@color/PaletteBlack</item>
+        <item name="android:background">@color/PaletteWhite</item>
         <item name="android:layout_height">match_parent</item>
     </style>
 
@@ -79,8 +80,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerInParent">true</item>
-        <item name="android:color">#ea000000</item>
-        <item name="android:background">#00ffffff</item>
+        <item name="android:color">@color/PaletteBlackMostlyOpaque</item>
+        <item name="android:background">@color/PaletteTransparent</item> -->
         <item name="android:paddingBottom">5dp</item>
         <item name="android:gravity">center</item>
         <item name="android:padding">16dp</item>
@@ -107,5 +108,39 @@
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:contentDescription">@string/popup_country_flag</item>
     </style>
+
+    <style name="GridItemHighlightStyle" parent="GridItemStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="GridItemSelfHighlightStyle" parent="GridItemHighlightStyle">
+        <item name="android:background">@color/PaletteDarkGreenHalfOpacity</item>
+    </style>
+
+    <style name="GridItemPrevHighlightStyle" parent="GridItemHighlightStyle">
+        <item name="android:background">@color/PaletteDarkPinkHalfOpacity</item>
+    </style>
+
+    <style name="GridItemNextHighlightStyle" parent="GridItemHighlightStyle">
+        <item name="android:background">@color/PaletteLightBlueHalfOpacity</item>
+    </style>
+
+    <color name="PaletteDarkGreen">#58675a</color>
+    <color name="PaletteDarkGreenHalfOpacity">#8058675a</color>
+    <color name="PaletteDarkPink">#ca707c</color>
+    <color name="PaletteDarkPinkHalfOpacity">#80ca707c</color>
+    <color name="PaletteLightBlue">#79ccd4</color>
+    <color name="PaletteLightBlueHalfOpacity">#8079ccd4</color>
+    <color name="PaletteLightGreen">#77b496</color>
+    <color name="PaletteLightGreenHalfOpacity">#8077b496</color>
+    <color name="PaletteOffWhite">#ddd9d7</color>
+    <color name="PaletteOffWhiteHalfOpacity">#80ddd9d7</color>
+    <color name="PaletteWhite">#fefefe</color>
+    <color name="PaletteTransparent">#00000000</color>
+    <color name="PaletteBlack">#ff010101</color>
+    <color name="PaletteBlackHalfOpacity">#80010101</color>
+    <color name="PaletteBlackMostlyOpaque">#ea010101</color>
 
 </resources>
