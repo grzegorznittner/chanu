@@ -42,7 +42,7 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE/>"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="http" android:host="boards.4chan.org"/>
             </intent-filter>
         </activity>
@@ -69,6 +69,7 @@
             </intent-filter>
         </activity>
 
+        <service android:name="com.chanapps.four.service.FetchChanDataService"/>
         <service android:name="com.chanapps.four.service.BoardLoadService"/>
         <service android:name="com.chanapps.four.service.ThreadLoadService"/>
 

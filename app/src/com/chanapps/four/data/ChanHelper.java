@@ -1,12 +1,15 @@
 package com.chanapps.four.data;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 
 public class ChanHelper {
+	public static final int VERBOSE = 0;
+	public static final int DEBUG = 1;
+	public static final int INFO = 2;
+	public static final int WARNING = 3;
+	public static final int ERROR = 4;
+	
 	//public static final String PREF_NAME = "4Channer";
 
 	public static final String BOARD_TYPE = "boardType";
@@ -65,6 +68,9 @@ public class ChanHelper {
     public static final String LAST_FAVORITES_CACHE_TIME = "lastFavoritesCacheTime";
     public static final String LAST_WATCHLIST_CACHE_TIME = "lastWatchlistCacheTime";
     public static final String IGNORE_DISPATCH = "ignoreDispatch";
+    
+    public static final String PRIORITY_MESSAGE = "priorityFetch";
+    public static final String CLEAR_FETCH_QUEUE = "clearFetchQueue";
 
     public static final String[] POST_COLUMNS = {
             POST_ID,

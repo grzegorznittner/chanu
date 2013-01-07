@@ -1,24 +1,28 @@
 package com.chanapps.four.loader;
 
-import android.content.AsyncTaskLoader;
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.*;
-import com.chanapps.four.service.ThreadLoadService;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
+import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.ThreadLoadService;
 
 public class ThreadCursorLoader extends BoardCursorLoader {
 
     private static final String TAG = ThreadCursorLoader.class.getSimpleName();
+    private static final boolean DEBUG = false;
     protected SharedPreferences prefs;
 
     protected long threadNo;
@@ -42,7 +46,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
-    	Log.i(TAG, "loadInBackground");
+    	if (DEBUG) Log.i(TAG, "loadInBackground");
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         ChanThread thread;
         try {
@@ -53,14 +57,10 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             thread = null;
         }
         int isDead = thread != null && thread.isDead ? 1 : 0;
-        Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
+        if (DEBUG) Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
         if (thread == null) { // this shouldn't happen, so reload
-            Log.i(TAG, "Reloading thread " + boardName + "/" + threadNo + " - starting ThreadLoadService");
-            Intent threadIntent = new Intent(context, ThreadLoadService.class);
-            threadIntent.putExtra(ChanHelper.BOARD_CODE, boardName);
-            threadIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
-            // threadIntent.putExtra(ChanHelper.RETRIES, ++retries);
-            context.startService(threadIntent);
+            if (DEBUG) Log.i(TAG, "Reloading thread " + boardName + "/" + threadNo + " - starting ThreadLoadService");
+            FetchChanDataService.startService(context, boardName, threadNo);
         }
         else {
             MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
@@ -75,7 +75,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                                     "", post.getCountryFlagUrl(),
                                     postText, post.getHeaderText(), post.getFullText(),
                                     post.tn_w, post.tn_h, post.w, post.h, post.tim, isDead, 0, 0});
-                            Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
+                            if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
                         }
                     }
                 } else {
@@ -85,7 +85,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                             post.getThumbnailUrl(), post.getCountryFlagUrl(),
                             postText, post.getHeaderText(), post.getFullText(),
                             post.tn_w, post.tn_h, post.w, post.h, post.tim, isDead, 0, 0});
-                    Log.v(TAG, "added cursor row image+text no=" + post.no + " text=" + postText);
+                    if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " text=" + postText);
                 }
             }
             if (thread.posts.length > 0) {

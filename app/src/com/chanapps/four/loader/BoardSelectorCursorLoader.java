@@ -21,6 +21,7 @@ import java.util.List;
 public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = BoardSelectorCursorLoader.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     protected final ForceLoadContentObserver mObserver;
 
@@ -38,14 +39,14 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
-        Log.d(BoardSelectorActivity.TAG, "Loading boardType=" + boardType);
+        if (BoardSelectorActivity.DEBUG) Log.d(BoardSelectorActivity.TAG, "Loading boardType=" + boardType);
 
         List<ChanBoard> boards = ChanBoard.getBoardsByType(context, boardType);
         if (boards == null || boards.isEmpty()) {
             Log.e(TAG, "Null board list, something went wrong for boardType=" + boardType);
             return null; // shouldn't happen
         }
-        Log.i(TAG, "Creating board selector cursor for boardType=" + boardType);
+        if (DEBUG) Log.i(TAG, "Creating board selector cursor for boardType=" + boardType);
         MatrixCursor cursor = new MatrixCursor(ChanHelper.SELECTOR_COLUMNS);
         for (ChanBoard board : boards) {
             MatrixCursor.RowBuilder row = cursor.newRow();
@@ -74,7 +75,7 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
                 imageId = R.drawable.stub_image;
             }
         }
-        Log.v(BoardSelectorActivity.TAG, "Found image for board " + boardCode + " image Id: " + imageId);
+        if (DEBUG) Log.v(BoardSelectorActivity.TAG, "Found image for board " + boardCode + " image Id: " + imageId);
         return imageId;
     }
 
@@ -89,7 +90,7 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
     /* Runs on the UI thread */
     @Override
     public void deliverResult(Cursor cursor) {
-		Log.i(TAG, "deliverResult isReset(): " + isReset());
+		if (DEBUG) Log.i(TAG, "deliverResult isReset(): " + isReset());
         if (isReset()) {
             // An async query came in while the loader is stopped
             if (cursor != null) {
@@ -118,7 +119,7 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
      */
     @Override
     protected void onStartLoading() {
-    	Log.i(TAG, "onStartLoading mCursor: " + mCursor);
+    	if (DEBUG) Log.i(TAG, "onStartLoading mCursor: " + mCursor);
         if (mCursor != null) {
             deliverResult(mCursor);
         }
@@ -132,14 +133,14 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
      */
     @Override
     protected void onStopLoading() {
-    	Log.i(TAG, "onStopLoading");
+    	if (DEBUG) Log.i(TAG, "onStopLoading");
         // Attempt to cancel the current load task if possible.
         cancelLoad();
     }
 
     @Override
     public void onCanceled(Cursor cursor) {
-    	Log.i(TAG, "onCanceled cursor: " + cursor);
+    	if (DEBUG) Log.i(TAG, "onCanceled cursor: " + cursor);
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
@@ -148,7 +149,7 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     protected void onReset() {
         super.onReset();
-        Log.i(TAG, "onReset cursor: " + mCursor);
+        if (DEBUG) Log.i(TAG, "onReset cursor: " + mCursor);
         // Ensure the loader is stopped
         onStopLoading();
 

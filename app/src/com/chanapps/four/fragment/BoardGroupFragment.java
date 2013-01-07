@@ -1,29 +1,41 @@
 package com.chanapps.four.fragment;
 
-import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Message;
-import android.preference.PreferenceManager;
-import android.support.v4.app.LoaderManager;
-import android.content.Context;
-import android.support.v4.content.Loader;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.Log;
-import android.view.*;
-import android.widget.*;
-import com.chanapps.four.activity.*;
+import android.view.Display;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.ResourceCursorAdapter;
+import android.widget.TextView;
+
+import com.chanapps.four.activity.BoardActivity;
+import com.chanapps.four.activity.BoardSelectorActivity;
+import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.adapter.BoardCursorAdapter;
 import com.chanapps.four.adapter.BoardSelectorAdapter;
-import com.chanapps.four.component.*;
-import com.chanapps.four.data.*;
+import com.chanapps.four.component.ChanGridSizer;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.loader.BoardSelectorCursorLoader;
 import com.chanapps.four.loader.ChanWatchlistCursorLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -48,6 +60,7 @@ public class BoardGroupFragment
 {
 
     private static final String TAG = BoardSelectorActivity.class.getSimpleName();
+    private static final boolean DEBUG = false;
     protected static final int IMAGE_RESOURCE_ID_KEY = R.id.grid_item_image;
 
     private ChanBoard.Type boardType;
@@ -88,7 +101,7 @@ public class BoardGroupFragment
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
         getLoaderManager().initLoader(0, null, this);
-        Log.v(TAG, "BoardGroupFragment " + boardType + " onCreate");
+        if (DEBUG) Log.v(TAG, "BoardGroupFragment " + boardType + " onCreate");
         //setHasOptionsMenu(true);
     }
 
@@ -100,7 +113,7 @@ public class BoardGroupFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        Log.d(TAG, "BoardGroupFragment " + boardType + " onCreateView");
+        if (DEBUG) Log.d(TAG, "BoardGroupFragment " + boardType + " onCreateView");
         gridView = (GridView) inflater.inflate(R.layout.board_selector_grid, container, false);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         ChanGridSizer cg = new ChanGridSizer(gridView, display, ChanGridSizer.ServiceType.SELECTOR);
@@ -185,10 +198,10 @@ public class BoardGroupFragment
             try {
                 Integer viewResourceIdInt = (Integer)iv.getTag(IMAGE_RESOURCE_ID_KEY);
                 int viewResourceId = viewResourceIdInt != null ? viewResourceIdInt : 0;
-                Log.i(TAG, "iv imageId=" + imageResourceId + " viewId=" + viewResourceId);
+                if (DEBUG) Log.i(TAG, "iv imageId=" + imageResourceId + " viewId=" + viewResourceId);
                 try {
                     if (iv.getDrawable() == null || viewResourceId != imageResourceId) {
-                        Log.i(TAG, "setting resource id for imageId=" + imageResourceId);
+                        if (DEBUG) Log.i(TAG, "setting resource id for imageId=" + imageResourceId);
                         iv.setImageBitmap(null);
                         iv.setTag(IMAGE_RESOURCE_ID_KEY, imageResourceId);
                         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -200,11 +213,11 @@ public class BoardGroupFragment
                     }
                 }
                 catch (Exception e) {
-                    Log.e(TAG, "Couldn't load board selector image for boardCode=" + boardCode + " imageId=" + imageResourceId);
+                    if (DEBUG) Log.e(TAG, "Couldn't load board selector image for boardCode=" + boardCode + " imageId=" + imageResourceId);
                     iv.setImageBitmap(null);
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Exception setting image view with imageId=" + imageResourceId, e);
+                if (DEBUG) Log.e(TAG, "Exception setting image view with imageId=" + imageResourceId, e);
                 iv.setImageBitmap(null);
             }
             return true;
@@ -225,7 +238,7 @@ public class BoardGroupFragment
 
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
+		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         if (adapter != null) {
             if (boardType == ChanBoard.Type.WATCHLIST)
                 cursorLoader = new ChanWatchlistCursorLoader(getActivity().getBaseContext());
@@ -237,7 +250,7 @@ public class BoardGroupFragment
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		Log.v(TAG, ">>>>>>>>>>> onLoadFinished boardType=" + boardType);
+		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished boardType=" + boardType);
         if (adapter != null) {
 		    adapter.swapCursor(data);
         }
@@ -249,7 +262,7 @@ public class BoardGroupFragment
 
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.v(TAG, ">>>>>>>>>>> onLoaderReset boardType=" + boardType);
+		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset boardType=" + boardType);
         if (adapter != null) {
 		    adapter.swapCursor(null);
         }
@@ -309,7 +322,7 @@ public class BoardGroupFragment
 
     public void onPrepareOptionsMenu(Menu menu, Context menuContext, ChanBoard.Type selectedBoardType) {
         super.onPrepareOptionsMenu(menu);
-        Log.i(TAG, "Called onPrepareOptionsMenu fragment selectedBoardType=" + selectedBoardType + " menuContext=" + menuContext);
+        if (DEBUG) Log.i(TAG, "Called onPrepareOptionsMenu fragment selectedBoardType=" + selectedBoardType + " menuContext=" + menuContext);
         if (menuContext == null)
             return;
         menu.removeItem(R.id.clear_favorites_menu);
@@ -333,7 +346,7 @@ public class BoardGroupFragment
         }
         @Override
         public void handleMessage(Message msg) {
-            Log.v(TAG, ">>>>>>>>>>> refresh message received restarting loader");
+            if (DEBUG) Log.v(TAG, ">>>>>>>>>>> refresh message received restarting loader");
             if (fragment.isDetached())
                 return;
 
@@ -343,10 +356,10 @@ public class BoardGroupFragment
                 }
             }
             catch (IllegalStateException e) {
-                Log.d(TAG, "Detached favorites fragment loader called, shouldn't be a problem, ignoring", e);
+                if (DEBUG) Log.d(TAG, "Detached favorites fragment loader called, shouldn't be a problem, ignoring", e);
             }
             catch (Exception e) {
-                Log.e(TAG, "Couldn't notify adapter of favorites board type data changed");
+                if (DEBUG) Log.e(TAG, "Couldn't notify adapter of favorites board type data changed");
             }
 
             try {
@@ -356,10 +369,10 @@ public class BoardGroupFragment
                 }
             }
             catch (IllegalStateException e) {
-                Log.d(TAG, "Datached fragment loader restart called, shouldn't be a problem, ignoring", e);
+                if (DEBUG) Log.d(TAG, "Datached fragment loader restart called, shouldn't be a problem, ignoring", e);
             }
             catch (Exception e) {
-                Log.e(TAG, "Couldn't restart loader manager for watchlist fragment", e);
+                if (DEBUG) Log.e(TAG, "Couldn't restart loader manager for watchlist fragment", e);
             }
 
         }

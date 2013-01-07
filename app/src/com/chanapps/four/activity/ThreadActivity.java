@@ -3,18 +3,27 @@ package com.chanapps.four.activity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Message;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.*;
-import android.widget.*;
+import android.view.Display;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.chanapps.four.adapter.ThreadCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
@@ -23,8 +32,9 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.ChanWatchlist;
-import com.chanapps.four.handler.LoaderHandler;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.loader.ThreadCursorLoader;
+import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.ThreadLoadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -39,9 +49,10 @@ import java.util.Arrays;
  * Time: 12:26 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ThreadActivity extends BoardActivity {
+public class ThreadActivity extends BoardActivity implements ChanIdentifiedActivity {
 
     protected static final String TAG = ThreadActivity.class.getSimpleName();
+    public static final boolean DEBUG = false;
 
     protected long threadNo;
     protected String text;
@@ -52,7 +63,7 @@ public class ThreadActivity extends BoardActivity {
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo);
         return cursorLoader;
     }
@@ -64,7 +75,7 @@ public class ThreadActivity extends BoardActivity {
     public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id, boolean fromParent) {
             Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final long threadTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
-        Log.d(TAG, "threadTim: " + threadTim);
+        if (DEBUG) Log.d(TAG, "threadTim: " + threadTim);
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         final String boardName = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
         final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
@@ -86,7 +97,7 @@ public class ThreadActivity extends BoardActivity {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(from).edit();
         editor.putInt(ChanHelper.LAST_THREAD_POSITION, 0); // reset it
         editor.commit();
-        Log.i(TAG, "Calling thread activity with id=" + id);
+        if (DEBUG) Log.i(TAG, "Calling thread activity with id=" + id);
         from.startActivity(intent);
     }
 
@@ -115,7 +126,7 @@ public class ThreadActivity extends BoardActivity {
         imageHeight = intent.hasExtra(ChanHelper.IMAGE_HEIGHT)
                 ? intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0)
                 : prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
-        Log.i(TAG, "Thread no read from intent: " + threadNo);
+        if (DEBUG) Log.i(TAG, "Thread no read from intent: " + threadNo);
     }
 
     @Override
@@ -174,7 +185,11 @@ public class ThreadActivity extends BoardActivity {
 
     @Override
     protected void startLoadService(boolean force) {
-        ThreadLoadService.startService(this, boardCode, threadNo, force);
+    	if (force) {
+    		FetchChanDataService.startServiceWithPriority(this, boardCode, threadNo);
+    	} else {
+    		FetchChanDataService.startService(this, boardCode, threadNo);
+    	}
     }
 
     @Override
@@ -271,7 +286,7 @@ public class ThreadActivity extends BoardActivity {
                 Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.settings_menu:
-                Log.i(TAG, "Starting settings activity");
+                if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
@@ -293,7 +308,7 @@ public class ThreadActivity extends BoardActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "onCreateOptionsMenu called");
+        if (DEBUG) Log.i(TAG, "onCreateOptionsMenu called");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.thread_menu, menu);
         return true;
@@ -386,4 +401,19 @@ public class ThreadActivity extends BoardActivity {
             threadAdapter.notifyDataSetChanged();
         }
     }
+
+	public ChanActivityId getChanActivityId() {
+		return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo);
+	}
+
+	@Override
+	public AsyncTaskLoader<Cursor> getChanCursorLoader() {
+		return cursorLoader;
+	}
+	
+	@Override
+	public Handler getChanHandler() {
+		return handler;
+	}
+
 }

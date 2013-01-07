@@ -23,7 +23,10 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.widget.Toast;
+
+import com.chanapps.four.data.ChanHelper;
 
 /**
  * IntentService is a base class for {@link Service}s that handle asynchronous
@@ -49,11 +52,35 @@ import android.widget.Toast;
  * <a href="{@docRoot}guide/topics/fundamentals/services.html">Services</a> developer guide.</p>
  * </div>
  *
- * @see android.os.AsyncTask
+ * 
+ * 
+ * Greg comments:
+ * * data parsing should be separated - after parsing we should notify current activity so it will refresh cursor
+ * * every screen should register here, so we'll know which activity is currently running (if not possible to do that in other way)
+ * * 4 threads - on 2G we'll operate only using one thread
+ * * class should use network status to determine its behaviour:
+ *   * on 2G latency is high and bandwith low - incoming intent should stop current operation and be executed immediatelly
+ *   * on 3G/4G - additional fetches performed with the intent (eg. fetch all boards), so we'll use mobile radio properly
+ *   * on WiFi - aggressive cache, boards refreshed periodically, watched/favourites should be also updated often
+ *   * 2G/3G/4G - mobile radio time window - fetch operations trigged in batches, at lest 1 min pause between operations (unless manual refresh)
+ * * need to verify average response time/fetch time/parse time on 2G, 3G and WiFi
+ * 
+ * * we can also prepare paid service which will allow users for unlimited uploads, uploads will be done via our server
  */
 public abstract class BaseChanService extends Service {
-    private volatile Looper mServiceLooper;
-    private volatile ServiceHandler mServiceHandler;
+	private static final String TAG = BaseChanService.class.getSimpleName();
+	
+    protected static int NON_PRIORITY_MESSAGE = 99;
+    protected static int PRIORITY_MESSAGE = 100;
+    
+    protected static final int MAX_NON_PRIORITY_MESSAGES = 20;
+    protected static final int MAX_PRIORITY_MESSAGES = 2;
+    
+    protected int nonPriorityMessageCounter = 0;
+    protected int priorityMessageCounter = 0;
+
+    protected volatile Looper mServiceLooper;
+    protected volatile ServiceHandler mServiceHandler;
     private String mName;
     private boolean mRedelivery;
 
@@ -66,16 +93,32 @@ public abstract class BaseChanService extends Service {
         });
     }
 
-    private final class ServiceHandler extends Handler {
+    protected final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {
             super(looper);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            onHandleIntent((Intent)msg.obj);
+        	Intent intent = (Intent)msg.obj;
+        	if (intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) == 1) {
+        		synchronized(this) {
+        			priorityMessageCounter--;
+        			if (priorityMessageCounter < 0) {
+        				priorityMessageCounter = 0;
+        			}
+        		}
+        	} else {
+        		synchronized(this) {
+        			nonPriorityMessageCounter--;
+        			if (nonPriorityMessageCounter < 0) {
+        				nonPriorityMessageCounter = 0;
+        			}
+        		}
+        	}
+            onHandleIntent(intent);
             stopSelf(msg.arg1);
-        }
+        }        
     }
 
     /**
@@ -122,12 +165,56 @@ public abstract class BaseChanService extends Service {
         mServiceHandler = new ServiceHandler(mServiceLooper);
     }
 
-    /**
-     * You should not override this method for your IntentService. Instead,
-     * override {@link #onHandleIntent}, which the system calls when the IntentService
-     * receives a start request.
-     * @see android.app.Service#onStartCommand
-     */
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+    	if (nonPriorityMessageCounter > MAX_NON_PRIORITY_MESSAGES) {
+    		Log.i(TAG, "Clearing chan fetch service message queue from non priority messages (" + nonPriorityMessageCounter + ")");
+        	mServiceHandler.removeMessages(NON_PRIORITY_MESSAGE);
+        	synchronized(this) {
+        		nonPriorityMessageCounter = 0;
+        	}
+    	}
+    	if (priorityMessageCounter > MAX_PRIORITY_MESSAGES) {
+    		Log.i(TAG, "Clearing chan fetch service message queue from priority messages (" + priorityMessageCounter + ")");
+        	mServiceHandler.removeMessages(PRIORITY_MESSAGE);
+        	synchronized(this) {
+        		priorityMessageCounter = 0;
+        	}
+    	}
+        if (intent != null && intent.getIntExtra(ChanHelper.CLEAR_FETCH_QUEUE, 0) == 1) {
+        	Log.i(TAG, "Clearing chan fetch service message queue");
+        	mServiceHandler.removeMessages(NON_PRIORITY_MESSAGE);
+        	synchronized(this) {
+        		nonPriorityMessageCounter = 0;
+        	}
+        	mServiceHandler.removeMessages(PRIORITY_MESSAGE);
+        	synchronized(this) {
+        		priorityMessageCounter = 0;
+        	}
+        	return START_NOT_STICKY;
+        }
+        
+        Message msg = mServiceHandler.obtainMessage();
+        msg.arg1 = startId;
+        msg.obj = intent;
+        if (intent != null && intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) == 1) {
+        	msg.what = PRIORITY_MESSAGE;
+        	mServiceHandler.sendMessageAtFrontOfQueue(msg);
+        	synchronized(this) {
+        		priorityMessageCounter++;
+        	}
+        } else {
+        	msg.what = NON_PRIORITY_MESSAGE;
+        	mServiceHandler.sendMessage(msg);
+        	synchronized(this) {
+        		nonPriorityMessageCounter++;
+        	}
+        }
+        
+        return START_NOT_STICKY;
+    }
+	
+    /*
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Message msg = mServiceHandler.obtainMessage();
@@ -136,6 +223,7 @@ public abstract class BaseChanService extends Service {
         mServiceHandler.sendMessage(msg);
         return mRedelivery ? START_REDELIVER_INTENT : START_NOT_STICKY;
     }
+    */
 
     @Override
     public void onDestroy() {

@@ -16,10 +16,12 @@ import android.util.Log;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
 import com.chanapps.four.service.BoardLoadService;
+import com.chanapps.four.service.FetchChanDataService;
 
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = BoardCursorLoader.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     protected final ForceLoadContentObserver mObserver;
 
@@ -48,16 +50,12 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
-    	Log.i(TAG, "loadInBackground");
+    	if (DEBUG) Log.i(TAG, "loadInBackground");
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         if (board == null) { // this shouldn't happen, so reload
-            Log.i(TAG, "Reloading board " + boardName + " - starting BoardLoadService");
-            Intent threadIntent = new Intent(context, BoardLoadService.class);
-            threadIntent.putExtra(ChanHelper.BOARD_CODE, boardName);
-            //threadIntent.putExtra(ChanHelper.RETRIES, ++retries);
-            context.startService(threadIntent);
-        }
-        else {
+            if (DEBUG) Log.i(TAG, "Reloading board " + boardName + " - starting BoardLoadService");
+            FetchChanDataService.startService(context, boardName);
+        } else {
             MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
             for (ChanPost thread : board.threads) {
                 if (thread.tn_w <= 0 || thread.tim == 0) {
@@ -107,7 +105,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     /* Runs on the UI thread */
     @Override
     public void deliverResult(Cursor cursor) {
-		Log.i(TAG, "deliverResult isReset(): " + isReset());
+		if (DEBUG) Log.i(TAG, "deliverResult isReset(): " + isReset());
         if (isReset()) {
             // An async query came in while the loader is stopped
             if (cursor != null) {
@@ -136,7 +134,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
      */
     @Override
     protected void onStartLoading() {
-    	Log.i(TAG, "onStartLoading mCursor: " + mCursor);
+    	if (DEBUG) Log.i(TAG, "onStartLoading mCursor: " + mCursor);
         if (mCursor != null) {
             deliverResult(mCursor);
         }
@@ -150,14 +148,14 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
      */
     @Override
     protected void onStopLoading() {
-    	Log.i(TAG, "onStopLoading");
+    	if (DEBUG) Log.i(TAG, "onStopLoading");
         // Attempt to cancel the current load task if possible.
         cancelLoad();
     }
 
     @Override
     public void onCanceled(Cursor cursor) {
-    	Log.i(TAG, "onCanceled cursor: " + cursor);
+    	if (DEBUG) Log.i(TAG, "onCanceled cursor: " + cursor);
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
@@ -166,7 +164,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     protected void onReset() {
         super.onReset();
-        Log.i(TAG, "onReset cursor: " + mCursor);
+        if (DEBUG) Log.i(TAG, "onReset cursor: " + mCursor);
         // Ensure the loader is stopped
         onStopLoading();
 

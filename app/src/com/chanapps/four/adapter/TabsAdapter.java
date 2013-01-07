@@ -132,7 +132,7 @@ public class TabsAdapter extends FragmentPagerAdapter
         Object tag = tab.getTag();
         for (int i=0; i<mTabs.size(); i++) {
             if (mTabs.get(i) == tag) {
-                Log.d(BoardSelectorActivity.TAG, "TabAdapter setting pager to " + i);
+            	if (BoardSelectorActivity.DEBUG) Log.d(BoardSelectorActivity.TAG, "TabAdapter setting pager to " + i);
                 mViewPager.setCurrentItem(i);
                 Fragment fragment = getItem(i);
                 Menu menu = mContext.menu;
