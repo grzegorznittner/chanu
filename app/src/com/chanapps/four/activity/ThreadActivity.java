@@ -278,8 +278,15 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 startActivity(settingsIntent);
                 return true;
             case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.raw.help_header, R.raw.help_board_grid);
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_board_grid);
                 rawResourceDialog.show();
+                return true;
+            case R.id.board_rules_menu:
+                displayBoardRules();
+                return true;
+            case R.id.about_menu:
+                RawResourceDialog aboutDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.about_header, R.raw.about_detail);
+                aboutDialog.show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

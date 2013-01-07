@@ -1,8 +1,6 @@
 package com.chanapps.four.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class ChanThread extends ChanPost {
 	public long lastFetched;
@@ -23,6 +21,17 @@ public class ChanThread extends ChanPost {
                 mergedPosts.add(newPost);
             }
         }
+        Collections.sort(mergedPosts, new Comparator<ChanPost>() {
+            @Override
+            public int compare(ChanPost lhs, ChanPost rhs) {
+                if (lhs.no == rhs.no)
+                    return 0;
+                else if (lhs.no < rhs.no)
+                    return -1;
+                else
+                    return 1;
+            }
+        });
         this.posts = mergedPosts.toArray(new ChanPost[0]);
     }
 

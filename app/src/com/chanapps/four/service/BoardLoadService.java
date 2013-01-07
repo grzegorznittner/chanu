@@ -184,14 +184,14 @@ public class BoardLoadService extends BaseChanService {
 
     private void parseBoard(BufferedReader in) throws IOException {
     	long time = new Date().getTime();
-    	List<ChanPost> stickyPosts = new ArrayList<ChanPost>();
+//    	List<ChanPost> stickyPosts = new ArrayList<ChanPost>();
     	List<ChanPost> threads = new ArrayList<ChanPost>();
 
         if (pageNo != 0) { // preserve existing threads on subsequent page loads
-            if (board.stickyPosts != null && board.stickyPosts.length > 0) {
-                Collections.addAll(stickyPosts, board.stickyPosts);
-                Log.i(TAG, "Added " + board.stickyPosts.length + " sticky posts from storage");
-            }
+//            if (board.stickyPosts != null && board.stickyPosts.length > 0) {
+//                Collections.addAll(stickyPosts, board.stickyPosts);
+//                Log.i(TAG, "Added " + board.stickyPosts.length + " sticky posts from storage");
+//            }
             if (board.threads != null && board.threads.length > 0) {
                 if (board.threads.length < MAX_THREAD_RETENTION_PER_BOARD) {
                     Collections.addAll(threads, board.threads);
@@ -222,14 +222,14 @@ public class BoardLoadService extends BaseChanService {
             ChanThread thread = null;
             List<ChanPost> posts = new ArrayList<ChanPost>();
             boolean first = true;
-            boolean isSticky = false;
+//            boolean isSticky = false;
             while (reader.hasNext()) { // first object is the thread post, spin over rest
                 ChanPost post = gson.fromJson(reader, ChanPost.class);
                 post.board = boardCode;
-                if (post.sticky > 0 || isSticky) {
-                    post.mergeIntoThreadList(stickyPosts);
-                	isSticky = true;
-                } else {
+//                if (post.sticky > 0 || isSticky) {
+//                    post.mergeIntoThreadList(stickyPosts);
+//                	isSticky = true;
+//                } else {
                 	if (first) {
                 		thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
                 		// if thread was not stored create a new object
@@ -243,7 +243,7 @@ public class BoardLoadService extends BaseChanService {
                 		first = false;
                 	}
                 	posts.add(post);
-                }
+//                }
                 Log.v(TAG, post.toString());
             }
             if (thread != null) {
@@ -251,7 +251,7 @@ public class BoardLoadService extends BaseChanService {
             	ChanFileStorage.storeThreadData(getBaseContext(), thread);
             	if (new Date().getTime() - time > STORE_INTERVAL_MS) {
             		board.threads = threads.toArray(new ChanPost[0]);
-                    board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
+//                    board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
                     ChanFileStorage.storeBoardData(getBaseContext(), board);
             	}
             }
@@ -260,7 +260,7 @@ public class BoardLoadService extends BaseChanService {
         }
 
         board.threads = threads.toArray(new ChanPost[0]);
-        board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
+//        board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
         Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
 

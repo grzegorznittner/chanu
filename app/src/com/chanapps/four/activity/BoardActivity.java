@@ -11,7 +11,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -23,25 +22,24 @@ import android.widget.*;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.adapter.BoardCursorAdapter;
 import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.service.BoardLoadService;
-import com.google.ads.AdRequest;
-import com.google.ads.AdSize;
-import com.google.ads.AdView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
 
 public class BoardActivity extends Activity implements ClickableLoaderActivity, ChanIdentifiedActivity {
 	public static final String TAG = BoardActivity.class.getSimpleName();
+
+    private static final String DEFAULT_BOARD_CODE = "a";
 
     public static final int LOADER_RESTART_INTERVAL_SUPER_MS = 10000;
     public static final int LOADER_RESTART_INTERVAL_LONG_MS = 5000;
@@ -194,9 +192,26 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     protected void loadFromIntentOrPrefs() {
         ensurePrefs();
         Intent intent = getIntent();
-        boardCode = intent.hasExtra(ChanHelper.BOARD_CODE)
-                ? intent.getStringExtra(ChanHelper.BOARD_CODE)
-                : prefs.getString(ChanHelper.BOARD_CODE, "a");
+        Uri data = intent.getData();
+        if (data != null) {
+            List<String> params = data.getPathSegments();
+            String uriBoardCode = params.get(0);
+            if (ChanBoard.getBoardByCode(this, uriBoardCode) != null) {
+                boardCode = uriBoardCode;
+                Log.i(TAG, "loaded boardCode=" + boardCode + " from url intent");
+            }
+            else {
+                Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, ignoring");
+            }
+        }
+        else if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
+            boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+            Log.i(TAG, "loaded boardCode=" + boardCode + " from board code intent");
+        }
+        else {
+            boardCode = prefs.getString(ChanHelper.BOARD_CODE, DEFAULT_BOARD_CODE);
+            Log.i(TAG, "loaded boardCode=" + boardCode + " from prefs or default");
+        }
     }
 
     protected void restoreInstanceState() {
@@ -412,13 +427,30 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
-            case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.raw.help_header, R.raw.help_board_grid);
-                rawResourceDialog.show();
+            case R.id.board_rules_menu:
+                displayBoardRules();
+                return true;
+            case R.id.about_menu:
+                RawResourceDialog aboutDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.about_header, R.raw.about_detail);
+                aboutDialog.show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    protected void displayBoardRules() {
+        int boardRulesId = R.raw.global_rules_detail;
+        try {
+            boardRulesId = R.raw.class.getField("board_" + boardCode + "_rules").getInt(null);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't find rules for board:" + boardCode);
+        }
+        RawResourceDialog rawResourceDialog
+                = new RawResourceDialog(this, R.layout.board_rules_dialog, R.raw.board_rules_header, boardRulesId);
+        rawResourceDialog.show();
+
     }
 
     @Override

@@ -637,8 +637,12 @@ public class FullScreenImageActivity extends Activity implements ChanIdentifiedA
                 startActivity(settingsIntent);
                 return true;
             case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.raw.help_header, R.raw.help_full_screen);
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_full_screen);
                 rawResourceDialog.show();
+                return true;
+            case R.id.about_menu:
+                RawResourceDialog aboutDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.about_header, R.raw.about_detail);
+                aboutDialog.show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
