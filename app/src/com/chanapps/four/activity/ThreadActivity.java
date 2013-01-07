@@ -30,6 +30,7 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.loader.ThreadCursorLoader;
+import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.ThreadLoadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -44,6 +45,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public class ThreadActivity extends BoardActivity implements ChanIdentifiedActivity {
 
     protected static final String TAG = ThreadActivity.class.getSimpleName();
+    public static final boolean DEBUG = false;
 
     protected long threadNo;
     protected String text;
@@ -54,7 +56,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo);
         return cursorLoader;
     }
@@ -66,7 +68,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id, boolean fromParent) {
             Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final long threadTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
-        Log.d(TAG, "threadTim: " + threadTim);
+        if (DEBUG) Log.d(TAG, "threadTim: " + threadTim);
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         final String boardName = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
         final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
@@ -88,7 +90,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(from).edit();
         editor.putInt(ChanHelper.LAST_THREAD_POSITION, 0); // reset it
         editor.commit();
-        Log.i(TAG, "Calling thread activity with id=" + id);
+        if (DEBUG) Log.i(TAG, "Calling thread activity with id=" + id);
         from.startActivity(intent);
     }
 
@@ -117,7 +119,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         imageHeight = intent.hasExtra(ChanHelper.IMAGE_HEIGHT)
                 ? intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0)
                 : prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
-        Log.i(TAG, "Thread no read from intent: " + threadNo);
+        if (DEBUG) Log.i(TAG, "Thread no read from intent: " + threadNo);
     }
 
     @Override
@@ -176,7 +178,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     protected void startLoadService(boolean force) {
-        ThreadLoadService.startService(this, boardCode, threadNo, force);
+    	if (force) {
+    		FetchChanDataService.startServiceWithPriority(this, boardCode, threadNo);
+    	} else {
+    		FetchChanDataService.startService(this, boardCode, threadNo);
+    	}
     }
 
     @Override
@@ -273,7 +279,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.settings_menu:
-                Log.i(TAG, "Starting settings activity");
+                if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
@@ -295,7 +301,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "onCreateOptionsMenu called");
+        if (DEBUG) Log.i(TAG, "onCreateOptionsMenu called");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.thread_menu, menu);
         return true;

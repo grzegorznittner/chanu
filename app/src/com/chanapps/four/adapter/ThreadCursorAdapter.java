@@ -19,6 +19,7 @@ import com.chanapps.four.data.ChanHelper;
 public class ThreadCursorAdapter extends BoardCursorAdapter {
 
     private static final String TAG = BoardCursorAdapter.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     public ThreadCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
@@ -55,7 +56,7 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
                 //textView.setTag(shortText);
             }
         } else {
-            Log.d(TAG, "Reusing existing " + tag + " layout for " + position);
+            if (DEBUG) Log.d(TAG, "Reusing existing " + tag + " layout for " + position);
             /*
                if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
                    ImageView imageView = (ImageView)convertView.findViewById(R.id.board_activity_grid_item_image);
@@ -72,7 +73,7 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
 
     @Override
     protected View newView(Context context, ViewGroup parent, String tag, int position) {
-        Log.d(TAG, "Creating " + tag + " layout for " + position);
+        if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
         if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
             return mInflater.inflate(R.layout.thread_grid_item, parent, false);
         } else {

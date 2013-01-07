@@ -20,6 +20,7 @@ import com.chanapps.four.data.ChanHelper;
 public class BoardSelectorAdapter extends BoardCursorAdapter {
 
     private static final String TAG = BoardCursorAdapter.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     public BoardSelectorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
@@ -50,7 +51,7 @@ public class BoardSelectorAdapter extends BoardCursorAdapter {
                 imageView.setTag(imageId);
             }
         } else {
-            Log.d(TAG, "Reusing existing " + tag + " layout for " + position);
+            if (DEBUG) Log.d(TAG, "Reusing existing " + tag + " layout for " + position);
             v = convertView;
         }
         bindView(v, context, cursor);
@@ -59,7 +60,7 @@ public class BoardSelectorAdapter extends BoardCursorAdapter {
 
     @Override
     protected View newView(Context context, ViewGroup parent, String tag, int position) {
-        Log.d(TAG, "Creating " + tag + " layout for " + position);
+        if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
         return mInflater.inflate(R.layout.selector_grid_item, parent, false);
     }
 

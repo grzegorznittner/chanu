@@ -76,8 +76,8 @@ public abstract class BaseChanService extends Service {
     protected static final int MAX_NON_PRIORITY_MESSAGES = 20;
     protected static final int MAX_PRIORITY_MESSAGES = 2;
     
-    private static int nonPriorityMessageCounter = 0;
-    private static int priorityMessageCounter = 0;
+    protected int nonPriorityMessageCounter = 0;
+    protected int priorityMessageCounter = 0;
 
     protected volatile Looper mServiceLooper;
     protected volatile ServiceHandler mServiceHandler;
@@ -100,7 +100,23 @@ public abstract class BaseChanService extends Service {
 
         @Override
         public void handleMessage(Message msg) {
-            onHandleIntent((Intent)msg.obj);
+        	Intent intent = (Intent)msg.obj;
+        	if (intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) == 1) {
+        		synchronized(this) {
+        			priorityMessageCounter--;
+        			if (priorityMessageCounter < 0) {
+        				priorityMessageCounter = 0;
+        			}
+        		}
+        	} else {
+        		synchronized(this) {
+        			nonPriorityMessageCounter--;
+        			if (nonPriorityMessageCounter < 0) {
+        				nonPriorityMessageCounter = 0;
+        			}
+        		}
+        	}
+            onHandleIntent(intent);
             stopSelf(msg.arg1);
         }        
     }
@@ -154,17 +170,27 @@ public abstract class BaseChanService extends Service {
     	if (nonPriorityMessageCounter > MAX_NON_PRIORITY_MESSAGES) {
     		Log.i(TAG, "Clearing chan fetch service message queue from non priority messages (" + nonPriorityMessageCounter + ")");
         	mServiceHandler.removeMessages(NON_PRIORITY_MESSAGE);
-        	nonPriorityMessageCounter = 0;
+        	synchronized(this) {
+        		nonPriorityMessageCounter = 0;
+        	}
     	}
     	if (priorityMessageCounter > MAX_PRIORITY_MESSAGES) {
     		Log.i(TAG, "Clearing chan fetch service message queue from priority messages (" + priorityMessageCounter + ")");
         	mServiceHandler.removeMessages(PRIORITY_MESSAGE);
-        	priorityMessageCounter = 0;
+        	synchronized(this) {
+        		priorityMessageCounter = 0;
+        	}
     	}
         if (intent != null && intent.getIntExtra(ChanHelper.CLEAR_FETCH_QUEUE, 0) == 1) {
         	Log.i(TAG, "Clearing chan fetch service message queue");
         	mServiceHandler.removeMessages(NON_PRIORITY_MESSAGE);
+        	synchronized(this) {
+        		nonPriorityMessageCounter = 0;
+        	}
         	mServiceHandler.removeMessages(PRIORITY_MESSAGE);
+        	synchronized(this) {
+        		priorityMessageCounter = 0;
+        	}
         	return START_NOT_STICKY;
         }
         
@@ -174,11 +200,15 @@ public abstract class BaseChanService extends Service {
         if (intent != null && intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) == 1) {
         	msg.what = PRIORITY_MESSAGE;
         	mServiceHandler.sendMessageAtFrontOfQueue(msg);
-        	priorityMessageCounter++;
+        	synchronized(this) {
+        		priorityMessageCounter++;
+        	}
         } else {
         	msg.what = NON_PRIORITY_MESSAGE;
         	mServiceHandler.sendMessage(msg);
-        	nonPriorityMessageCounter++;
+        	synchronized(this) {
+        		nonPriorityMessageCounter++;
+        	}
         }
         
         return START_NOT_STICKY;

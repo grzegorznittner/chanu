@@ -33,6 +33,7 @@ import java.util.List;
 
 public class BoardSelectorActivity extends FragmentActivity implements ChanIdentifiedActivity {
     public static final String TAG = "BoardSelectorActivity";
+    public static final boolean DEBUG = false;
 
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
@@ -46,13 +47,13 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v(TAG, "onCreate");
+        if (DEBUG) Log.v(TAG, "onCreate");
         if (ensurePrefs().getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
             (new ChanWatchlist.CleanWatchlistTask(this, null, false)).execute();
         SmartCache.fillCache(this);
         Intent intent = getIntent();
         if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
-            Log.i(TAG, "Starting dispatch");
+        	if (DEBUG) Log.i(TAG, "Starting dispatch");
             DispatcherHelper.dispatchIfNecessaryFromPrefsState(this);
         }
         mViewPager = new ViewPager(this);
@@ -194,7 +195,7 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     }
 
     public void setTabToSelectedType(boolean force) {
-        Log.i(TAG, "setTabToSelectedType selectedBoardType: " + selectedBoardType);
+        if (DEBUG) Log.i(TAG, "setTabToSelectedType selectedBoardType: " + selectedBoardType);
         int selectedTab = getSelectedTabIndex();
         getActionBar().setSelectedNavigationItem(selectedTab);
         if (force) {
@@ -209,17 +210,17 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
 
     protected void onStop() {
         super.onStop();
-        Log.i(TAG, "onStop");
+        if (DEBUG) Log.i(TAG, "onStop");
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.i(TAG, "onRestart");
+        if (DEBUG) Log.i(TAG, "onRestart");
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
-        Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
+        if (DEBUG) Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
     }
 
     @Override
@@ -231,7 +232,7 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(TAG, "onPause");
+        if (DEBUG) Log.i(TAG, "onPause");
         saveInstanceState();
     }
 
@@ -239,7 +240,7 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString(ChanHelper.BOARD_TYPE, selectedBoardType.toString());
         editor.commit();
-        Log.i(TAG, "Saved selected board type to " + selectedBoardType);
+        if (DEBUG) Log.i(TAG, "Saved selected board type to " + selectedBoardType);
     }
 
     public void saveInstanceState() {
@@ -249,13 +250,13 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
 
     protected void onDestroy() {
         super.onDestroy();
-        Log.i(TAG, "onDestroy");
+        if (DEBUG) Log.i(TAG, "onDestroy");
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        Log.i(TAG, "Activity-level onCreateOptionsMenu called selectedBoardType="+selectedBoardType);
+        if (DEBUG) Log.i(TAG, "Activity-level onCreateOptionsMenu called selectedBoardType="+selectedBoardType);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_selector_menu, menu);
         this.menu = menu;
@@ -281,7 +282,7 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
                 clearWatchlistFragment.show(getSupportFragmentManager(), clearWatchlistFragment.TAG);
                 return true;
             case R.id.settings_menu:
-                Log.i(TAG, "Starting settings activity");
+                if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;

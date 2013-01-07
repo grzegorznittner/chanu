@@ -1,5 +1,7 @@
 package com.chanapps.four.activity;
 
+import java.util.List;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.LoaderManager;
@@ -14,30 +16,41 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.*;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.adapter.BoardCursorAdapter;
+import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.loader.BoardCursorLoader;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.service.BoardLoadService;
+import com.chanapps.four.handler.LoaderHandler;
+import com.chanapps.four.loader.BoardCursorLoader;
+import com.chanapps.four.service.FetchChanDataService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-import java.util.List;
-
 public class BoardActivity extends Activity implements ClickableLoaderActivity, ChanIdentifiedActivity {
 	public static final String TAG = BoardActivity.class.getSimpleName();
+	public static final boolean DEBUG = false;
 
     private static final String DEFAULT_BOARD_CODE = "a";
 
@@ -79,7 +92,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-		Log.v(TAG, "************ onCreate");
+		if (DEBUG) Log.v(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         loadFromIntentOrPrefs();
 //        adView = new AdView(this, AdSize.BANNER, AD_UNIT_ID);
@@ -93,7 +106,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         createGridView();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
-        Log.v(TAG, "onCreate init loader");
+        if (DEBUG) Log.v(TAG, "onCreate init loader");
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -141,13 +154,13 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     @Override
     protected void onStart() {
         super.onStart();
-		Log.v(TAG, "onStart");
+		if (DEBUG) Log.v(TAG, "onStart");
     }
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.v(TAG, "onResume");
+		if (DEBUG) Log.v(TAG, "onResume");
         restoreInstanceState();
 	}
 
@@ -169,18 +182,18 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         }
         if (lastPosition != 0)
             scrollOnNextLoaderFinished = lastPosition;
-        Log.v(TAG, "Scrolling to:" + lastPosition);
+        if (DEBUG) Log.v(TAG, "Scrolling to:" + lastPosition);
     }
 
     @Override
 	public void onWindowFocusChanged (boolean hasFocus) {
-		Log.v(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
+		if (DEBUG) Log.v(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
 	}
 
     @Override
 	protected void onPause() {
         super.onPause();
-        Log.v(TAG, "onPause");
+        if (DEBUG) Log.v(TAG, "onPause");
         saveInstanceState();
     }
 
@@ -198,24 +211,24 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
             String uriBoardCode = params.get(0);
             if (ChanBoard.getBoardByCode(this, uriBoardCode) != null) {
                 boardCode = uriBoardCode;
-                Log.i(TAG, "loaded boardCode=" + boardCode + " from url intent");
+                if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from url intent");
             }
             else {
-                Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, ignoring");
+                if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, ignoring");
             }
         }
         else if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
             boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-            Log.i(TAG, "loaded boardCode=" + boardCode + " from board code intent");
+            if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from board code intent");
         }
         else {
             boardCode = prefs.getString(ChanHelper.BOARD_CODE, DEFAULT_BOARD_CODE);
-            Log.i(TAG, "loaded boardCode=" + boardCode + " from prefs or default");
+            if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from prefs or default");
         }
     }
 
     protected void restoreInstanceState() {
-        Log.i(TAG, "Restoring instance state...");
+        if (DEBUG) Log.i(TAG, "Restoring instance state...");
         loadFromIntentOrPrefs();
         startLoadService();
         setActionBarTitle();
@@ -230,11 +243,15 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     }
 
     protected void startLoadService(boolean force) {
-        BoardLoadService.startService(this, boardCode, force);
+    	if (force) {
+    		FetchChanDataService.startService(this, boardCode);
+    	} else {
+    		FetchChanDataService.startServiceWithPriority(this, boardCode);
+    	}
     }
 
     protected void saveInstanceState() {
-        Log.i(TAG, "Saving instance state...");
+        if (DEBUG) Log.i(TAG, "Saving instance state...");
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString(ChanHelper.BOARD_CODE, boardCode);
         editor.putLong(ChanHelper.THREAD_NO, 0);
@@ -246,7 +263,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     @Override
     protected void onStop () {
     	super.onStop();
-    	Log.v(TAG, "onStop");
+    	if (DEBUG) Log.v(TAG, "onStop");
     	getLoaderManager().destroyLoader(0);
     	handler = null;
     }
@@ -254,7 +271,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     @Override
 	protected void onDestroy () {
 		super.onDestroy();
-		Log.v(TAG, "onDestroy");
+		if (DEBUG) Log.v(TAG, "onDestroy");
 		getLoaderManager().destroyLoader(0);
 		handler = null;
 //        if (adView != null)
@@ -297,7 +314,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         } else if (view instanceof ImageView && view.getId() == R.id.grid_item_country_flag) {
             ImageView iv = (ImageView) view;
             String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
-            Log.v(TAG, "Country flag url=" + countryFlagImageUrl);
+            if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagImageUrl);
             if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty()) {
                 smartSetImageView(iv, countryFlagImageUrl);
             }
@@ -320,9 +337,9 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
             Integer viewHashCodeInt = (Integer)iv.getTag(IMAGE_URL_HASHCODE_KEY);
             int viewHashCode = viewHashCodeInt != null ? viewHashCodeInt : 0;
             int urlHashCode = imageUrl.hashCode();
-            Log.i(TAG, "iv urlhash=" + urlHashCode + " viewhash=" + viewHashCode);
+            if (DEBUG) Log.i(TAG, "iv urlhash=" + urlHashCode + " viewhash=" + viewHashCode);
             if (iv.getDrawable() == null || viewHashCode != urlHashCode) {
-                Log.i(TAG, "calling imageloader for " + imageUrl);
+                if (DEBUG) Log.i(TAG, "calling imageloader for " + imageUrl);
                 iv.setImageBitmap(null);
                 iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
                 imageLoader.displayImage(imageUrl, iv, displayImageOptions);
@@ -351,14 +368,14 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
+		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         cursorLoader = new BoardCursorLoader(this, boardCode);
         return cursorLoader;
 	}
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
+		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
 
         int size = data == null ? 0 : data.getCount();
@@ -388,7 +405,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
+		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
 		adapter.swapCursor(null);
 	}
 
@@ -455,7 +472,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.v(TAG, "onCreateOptionsMenu called");
+        if (DEBUG) Log.v(TAG, "onCreateOptionsMenu called");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_menu, menu);
         return true;
@@ -464,14 +481,14 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     /*
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        Log.d(TAG, "onScroll firstVisibleItem=" + firstVisibleItem + " visibleItemCount=" + visibleItemCount + " totalItemCount=" + totalItemCount + " prevTotalItemCount=" + prevTotalItemCount);
+        if (DEBUG) Log.d(TAG, "onScroll firstVisibleItem=" + firstVisibleItem + " visibleItemCount=" + visibleItemCount + " totalItemCount=" + totalItemCount + " prevTotalItemCount=" + prevTotalItemCount);
         if (adapter != null
                 && !adapter.isEmpty()
                 && adapter.getCount() > 2
                 && (firstVisibleItem + visibleItemCount) >= totalItemCount
                 && totalItemCount != prevTotalItemCount)
         {
-            Log.v(TAG, "onListEnd, extending list");
+            if (DEBUG) Log.v(TAG, "onListEnd, extending list");
             prevTotalItemCount = totalItemCount;
             Toast.makeText(this, "Fetching next page...", Toast.LENGTH_SHORT).show();
             startLoadService();
@@ -516,7 +533,7 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         final int isDeadInt = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_IS_DEAD));
         final boolean isDead = isDeadInt == 0 ? false : true;
         final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
-        Log.i(TAG, "Calling popup with id=" + id + " isDead=" + isDead);
+        if (DEBUG) Log.i(TAG, "Calling popup with id=" + id + " isDead=" + isDead);
         final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
@@ -526,10 +543,10 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
         popupHeader.setText(headerText);
         popupText.setText(text);
 
-        Log.v(TAG, "Country flag url=" + countryFlagUrl);
+        if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagUrl);
         if (countryFlagUrl != null && !countryFlagUrl.isEmpty()) {
             try {
-                Log.v(TAG, "calling imageloader for country flag" + countryFlagUrl);
+                if (DEBUG) Log.v(TAG, "calling imageloader for country flag" + countryFlagUrl);
                 countryFlag.setVisibility(View.VISIBLE);
                 this.imageLoader.displayImage(countryFlagUrl, countryFlag, displayImageOptions);
 //                    countryFlag.setImageURI(Uri.parse(countryFlagUrl));

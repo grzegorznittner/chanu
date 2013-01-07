@@ -27,6 +27,7 @@ import com.chanapps.four.data.ChanHelper;
  */
 public class BoardCursorAdapter extends ResourceCursorAdapter {
 	private static final String TAG = BoardCursorAdapter.class.getSimpleName();
+	private static final boolean DEBUG = false;
 	
     /**
      * A list of columns containing the data to bind to the UI.
@@ -136,7 +137,7 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
         		imageView.setTag(imageUrl);
             }
         } else {
-        	Log.d(TAG, "Reusing existing " + tag + " layout for " + position);
+        	if (DEBUG) Log.d(TAG, "Reusing existing " + tag + " layout for " + position);
         	/*
             if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
         		ImageView imageView = (ImageView)convertView.findViewById(R.id.board_activity_grid_item_image);
@@ -152,7 +153,7 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
     }
     
     protected View newView(Context context, ViewGroup parent, String tag, int position) {
-		Log.d(TAG, "Creating " + tag + " layout for " + position);
+		if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
         if (ChanHelper.LOAD_PAGE.equals(tag)) {
        		return mInflater.inflate(R.layout.board_grid_item_load_page, parent, false);
        	}

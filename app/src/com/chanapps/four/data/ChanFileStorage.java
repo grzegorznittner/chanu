@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
 import java.util.WeakHashMap;
 
@@ -70,156 +71,98 @@ public class ChanFileStorage {
         }
     }
 
-    public static void storeBoardData(Context context, ChanBoard board) {
-		try {
-			boardCache.put(board.link, board);
-            File boardDir = getBoardCacheDirectory(context, board.link);
-			if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-				FileWriter writer = new FileWriter(new File(boardDir, board.link + CACHE_EXT), false);
-				try {
-					Gson gson = new GsonBuilder().create();
-					gson.toJson(board, writer);
-				} finally {
-                    try {
-					    writer.flush();
-					    writer.close();
-                    }
-                    catch (Exception e) {
-                        Log.e(TAG, "Exception while writing and closing board cache:" + e.getMessage(), e);
-                    }
-				}
-				Log.i(TAG, "Stored " + board.threads.length + " threads for board '" + board.link + "'");
-			} else {
-				Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
+    public static void storeBoardData(Context context, ChanBoard board) throws IOException {
+		boardCache.put(board.link, board);
+        File boardDir = getBoardCacheDirectory(context, board.link);
+		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
+			FileWriter writer = new FileWriter(new File(boardDir, board.link + CACHE_EXT), false);
+			try {
+				Gson gson = new GsonBuilder().create();
+				gson.toJson(board, writer);
+			} finally {
+			    writer.flush();
+			    writer.close();
 			}
-		} catch (Exception e) {
-			Log.e(TAG, "Error while storing board '" + board.link + "' data. ", e);
+			Log.i(TAG, "Stored " + board.threads.length + " threads for board '" + board.link + "'");
+		} else {
+			Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
 		}
 	}
     
     public static File getBoardFile(Context context, String boardName, int page) {
-		try {
-            File boardDir = getBoardCacheDirectory(context, boardName);
-			if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-				File boardFile = new File(boardDir, boardName + "_page" + page + CACHE_EXT);
-				if (boardFile.exists() && boardFile.isFile()) {
-					return boardFile;
-				} else {
-					Log.w(TAG, "Requested board file doesn't exist: " + boardName + " page " + page);
-				}
-			} else {
-				Log.w(TAG, "Board folder not found: " + boardName);
-			}
-		} catch (Exception e) {
-			Log.e(TAG, "Error while getting board file " + boardName + " page " + page, e);
+        File boardDir = getBoardCacheDirectory(context, boardName);
+		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
+			File boardFile = new File(boardDir, boardName + "_page" + page + CACHE_EXT);
+			return boardFile;
+		} else {
+			Log.w(TAG, "Board folder not found: " + boardName);
+			return null;
 		}
-		return null;    	
     }
 	
-    public static File storeBoardFile(Context context, String boardName, int page, BufferedReader reader) {
+    public static File storeBoardFile(Context context, String boardName, int page, BufferedReader reader) throws IOException {
+		File boardFile = getBoardFile(context, boardName, page);
+		FileWriter writer = new FileWriter(boardFile, false);
 		try {
-			File boardFile = getBoardFile(context, boardName, page);
-			FileWriter writer = new FileWriter(boardFile, false);
-			try {
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					writer.write(line);
-				}
-			} finally {
-                try {
-				    writer.flush();
-				    writer.close();
-                }
-                catch (Exception e) {
-                    Log.e(TAG, "Exception while flushing and closing board file: " + e.getMessage(), e);
-                }
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				writer.write(line);
 			}
-			Log.i(TAG, "Stored file for board " + boardName + " page " + page);
-			return boardFile;
-		} catch (Exception e) {
-			Log.e(TAG, "Error while storing board " + boardName + " page " + page, e);
+		} finally {
+            try {
+			    writer.flush();
+			    writer.close();
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Exception while flushing and closing board file: " + e.getMessage(), e);
+            }
 		}
-		return null;
+		Log.i(TAG, "Stored file for board " + boardName + " page " + page);
+		return boardFile;
 	}
 	
     public static File getThreadFile(Context context, String boardName, long threadNo) {
-		try {
-            File boardDir = getBoardCacheDirectory(context, boardName);
-			if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-				File boardFile = new File(boardDir, "t_" + threadNo + "f" + CACHE_EXT);
-				if (boardFile.exists() && boardFile.isFile()) {
-					return boardFile;
-				} else {
-					Log.w(TAG, "Requested thread file doesn't exist: " + boardName + "/" + threadNo);
-				}
-			} else {
-				Log.w(TAG, "Board folder not found: " + boardName);
-			}
-		} catch (Exception e) {
-			Log.e(TAG, "Error while getting thread file " + boardName + "/" + threadNo, e);
+        File boardDir = getBoardCacheDirectory(context, boardName);
+		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
+			File boardFile = new File(boardDir, "t_" + threadNo + "f" + CACHE_EXT);
+			return boardFile;
+		} else {
+			Log.w(TAG, "Board folder not found: " + boardName);
+			return null;
 		}
-		return null;    	
     }
 	
-    public static File storeThreadFile(Context context, String boardName, long threadNo, BufferedReader reader) {
+    public static File storeThreadFile(Context context, String boardName, long threadNo, BufferedReader reader) throws IOException {
+		File threadFile = getThreadFile(context, boardName, threadNo);
+		FileWriter writer = new FileWriter(threadFile, false);
 		try {
-			File threadFile = getThreadFile(context, boardName, threadNo);
-			FileWriter writer = new FileWriter(threadFile, false);
-			try {
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					writer.write(line);
-				}
-			} finally {
-                try {
-				    writer.flush();
-				    writer.close();
-                }
-                catch (Exception e) {
-                    Log.e(TAG, "Exception while flushing and closing thread file: " + e.getMessage(), e);
-                }
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				writer.write(line);
 			}
-			Log.i(TAG, "Stored file for thread " + boardName + "/" + threadNo);
-			return threadFile;
-		} catch (Exception e) {
-			Log.e(TAG, "Error while storing thread " + boardName + "/" + threadNo, e);
+		} finally {
+		    writer.flush();
+		    writer.close();
 		}
-		return null;
+		Log.i(TAG, "Stored file for thread " + boardName + "/" + threadNo);
+		return threadFile;
 	}
 	
-	public static void storeThreadData(Context context, ChanThread thread) {
-		try {
-			threadCache.put(thread.no, thread);
-            File threadDir = getThreadCacheDirectory(context, thread.board, thread.no);
-			if (threadDir != null && (threadDir.exists() || threadDir.mkdirs())) {
-				FileWriter writer = new FileWriter(new File(threadDir, thread.no + CACHE_EXT), false);
-				try {
-					Gson gson = new GsonBuilder().create();
-					gson.toJson(thread, writer);
-				}
-                catch (Exception e) {
-                    Log.e(TAG, "Exception while writing thread", e);
-                }
-                finally {
-                    try {
-                        writer.flush();
-                    }
-                    catch (Exception e) {
-                        Log.e(TAG, "Exception while flushing thread", e);
-                    }
-                    try {
-                        writer.close();
-                    }
-                    catch (Exception e) {
-                        Log.e(TAG, "Exception while closing thread", e);
-                    }
-                }
-				Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + FILE_SEP + thread.no + "'");
-			} else {
-				Log.e(TAG, "Cannot create board cache folder. " + (threadDir == null ? "null" : threadDir.getAbsolutePath()));
-			}
-		} catch (Exception e) {
-			Log.e(TAG, "Error while storing thread '" + thread.board + FILE_SEP + thread.no + "' data. ", e);
+	public static void storeThreadData(Context context, ChanThread thread) throws IOException {
+		threadCache.put(thread.no, thread);
+        File threadDir = getThreadCacheDirectory(context, thread.board, thread.no);
+		if (threadDir != null && (threadDir.exists() || threadDir.mkdirs())) {
+			FileWriter writer = new FileWriter(new File(threadDir, thread.no + CACHE_EXT), false);
+			try {
+				Gson gson = new GsonBuilder().create();
+				gson.toJson(thread, writer);
+			} finally {
+                writer.flush();
+                writer.close();
+            }
+			Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + FILE_SEP + thread.no + "'");
+		} else {
+			Log.e(TAG, "Cannot create board cache folder. " + (threadDir == null ? "null" : threadDir.getAbsolutePath()));
 		}
 	}
 	
