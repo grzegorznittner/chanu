@@ -33,6 +33,7 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.ThreadLoadService;
@@ -291,8 +292,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 startActivity(settingsIntent);
                 return true;
             case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_board_grid);
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_thread_list);
                 rawResourceDialog.show();
+                return true;
+            case R.id.go_to_board_menu:
+                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
                 return true;
             case R.id.board_rules_menu:
                 displayBoardRules();

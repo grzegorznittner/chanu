@@ -10,6 +10,10 @@
           android:icon="@drawable/content_new_picture"
           android:showAsAction="ifRoom"
             />
+    <item android:id="@+id/go_to_board_menu"
+          android:title="@string/go_to_board_menu"
+          android:icon="@drawable/navigation_forward"
+            />
     <item android:id="@+id/board_rules_menu"
           android:title="@string/board_rules_menu"
           android:icon="@drawable/action_help"

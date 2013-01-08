@@ -3,11 +3,12 @@ package com.chanapps.four.activity;
 import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.preference.PreferenceManager;
-import android.view.MenuItem;
+import android.view.*;
+import android.widget.Toast;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.data.SmartCache;
-import com.chanapps.four.fragment.BoardGroupFragment;
+import com.chanapps.four.fragment.*;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.adapter.TabsAdapter;
 import com.chanapps.four.data.ChanBoard;
@@ -22,11 +23,6 @@ import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import com.chanapps.four.fragment.FavoritesClearDialogFragment;
-import com.chanapps.four.fragment.WatchlistCleanDialogFragment;
-import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +56,7 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         mViewPager.setId(R.id.pager);
         setContentView(mViewPager);
     }
+
 
     @Override
     protected void onStart() {
@@ -286,6 +283,9 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
+            case R.id.go_to_board_menu:
+                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
+                return true;
             case R.id.global_rules_menu:
                 RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
                 rawResourceDialog.show();
@@ -303,7 +303,6 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         }
     }
 
-	@Override
 	public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(LastActivity.BOARD_SELECTOR_ACTIVITY);
 	}
@@ -317,4 +316,5 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
 	public Handler getChanHandler() {
 		return null;
 	}
+
 }

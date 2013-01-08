@@ -1,5 +1,6 @@
 package com.chanapps.four.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -276,15 +277,7 @@ public class BoardGroupFragment
         else {
             ChanBoard board = ChanBoard.getBoardsByType(getActivity(), boardType).get(position);
             String boardCode = board.link;
-            Intent intent = new Intent(this.getActivity(), BoardActivity.class);
-            intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-            intent.putExtra(ChanHelper.PAGE, 0);
-            intent.putExtra(ChanHelper.LAST_BOARD_POSITION, 0);
-            intent.putExtra(ChanHelper.FROM_PARENT, true);
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
-            editor.putInt(ChanHelper.LAST_BOARD_POSITION, 0); // reset it
-            editor.commit();
-            startActivity(intent);
+            BoardActivity.startActivity(getActivity(), boardCode);
         }
     }
 

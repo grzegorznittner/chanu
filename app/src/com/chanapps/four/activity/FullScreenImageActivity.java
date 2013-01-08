@@ -11,6 +11,7 @@ import java.net.URI;
 
 import android.media.MediaScannerConnection;
 import android.os.*;
+import android.support.v4.app.FragmentActivity;
 import android.widget.*;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.ToastRunnable;
@@ -46,6 +47,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -54,7 +56,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import javax.security.auth.login.LoginException;
 
-public class FullScreenImageActivity extends Activity implements ChanIdentifiedActivity {
+public class FullScreenImageActivity extends FragmentActivity implements ChanIdentifiedActivity {
 
 	public static final String TAG = FullScreenImageActivity.class.getSimpleName();
 
@@ -630,6 +632,9 @@ public class FullScreenImageActivity extends Activity implements ChanIdentifiedA
                 else {
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
                 }
+                return true;
+            case R.id.go_to_board_menu:
+                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
                 return true;
             case R.id.settings_menu:
                 Log.i(TAG, "Starting settings activity");
