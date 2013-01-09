@@ -36,7 +36,6 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     private TabsAdapter mTabsAdapter;
     private SharedPreferences prefs = null;
     private boolean showNSFWBoards = false;
-    private boolean useFavoritesBoard = true;
     public List<ChanBoard.Type> activeBoardTypes = new ArrayList<ChanBoard.Type>();
     public ChanBoard.Type selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
     public Menu menu;
@@ -86,32 +85,17 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
 
     private void ensureTabsAdapter() {
         showNSFWBoards = ensurePrefs().getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
-        useFavoritesBoard = prefs.getBoolean(SettingsActivity.PREF_USE_FAVORITES, true);
 
         if (mTabsAdapter == null) { // create the board tabs
             activeBoardTypes.clear();
             mTabsAdapter = new TabsAdapter(this, getSupportFragmentManager(), mViewPager);
             for (ChanBoard.Type type : ChanBoard.Type.values()) {
-                if (type == ChanBoard.Type.FAVORITES) {
-                    if (useFavoritesBoard)
-                        addTab(type, -1);
-                }
-                else if (showNSFWBoards || !ChanBoard.isNSFWBoardType(type)) {
+            if (showNSFWBoards || !ChanBoard.isNSFWBoardType(type)) {
                     addTab(type, -1);
                 }
             }
             return;
         }
-
-        /* can't get adding / removing 0th tab to work
-        if (useFavoritesBoard && getPositionOfTab(ChanBoard.Type.FAVORITES) == -1) { // need to add
-            addTab(ChanBoard.Type.FAVORITES, 0);
-        }
-        else if (!useFavoritesBoard && getPositionOfTab(ChanBoard.Type.FAVORITES) >= 0) { // need to remove
-            int pos = getPositionOfTab(ChanBoard.Type.FAVORITES);
-            removeTab(ChanBoard.Type.FAVORITES);
-        }
-        */
 
         if (showNSFWBoards && getPositionOfTab(ChanBoard.Type.ADULT) == -1) { // need to add
             addTab(ChanBoard.Type.ADULT, -1);
@@ -157,18 +141,10 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         return position;
     }
 
-    public BoardGroupFragment getFavoritesFragment() {
-        int favoritesPos = getPositionOfTab(ChanBoard.Type.FAVORITES);
-        if (favoritesPos >= 0)
-            return (BoardGroupFragment)mTabsAdapter.getItem(favoritesPos);
-        else
-            return null;
-    }
-
     public BoardGroupFragment getWatchlistFragment() {
-        int favoritesPos = getPositionOfTab(ChanBoard.Type.WATCHLIST);
-        if (favoritesPos >= 0)
-            return (BoardGroupFragment)mTabsAdapter.getItem(favoritesPos);
+        int pos = getPositionOfTab(ChanBoard.Type.WATCHLIST);
+        if (pos >= 0)
+            return (BoardGroupFragment)mTabsAdapter.getItem(pos);
         else
             return null;
     }
@@ -281,10 +257,6 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.clear_favorites_menu:
-                FavoritesClearDialogFragment clearDialogFragment = new FavoritesClearDialogFragment(getFavoritesFragment());
-                clearDialogFragment.show(getSupportFragmentManager(), clearDialogFragment.TAG);
-                return true;
             case R.id.clean_watchlist_menu:
                 WatchlistCleanDialogFragment cleanWatchlistFragment = new WatchlistCleanDialogFragment(getWatchlistFragment());
                 cleanWatchlistFragment.show(getSupportFragmentManager(), cleanWatchlistFragment.TAG);

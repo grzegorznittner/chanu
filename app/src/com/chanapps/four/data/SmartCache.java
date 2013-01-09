@@ -29,7 +29,6 @@ public class SmartCache {
 
     private static final String TAG = SmartCache.class.getSimpleName();
 
-    private static final long MAX_FAVORITES_CACHE_REFRESH_INTERVAL_MS = 360000; // 6 minutes
     private static final long MAX_WATCHLIST_CACHE_REFRESH_INTERVAL_MS = 360000; // 6 minutes
     private static final long MAX_NO_BOARD_CACHE_REFRESH_INTERVAL_MS = 3600000; // 1 hour
 
@@ -46,15 +45,6 @@ public class SmartCache {
             return;
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        if (shouldFillCache(prefs, ChanHelper.LAST_FAVORITES_CACHE_TIME, MAX_FAVORITES_CACHE_REFRESH_INTERVAL_MS)) {
-            Log.i(TAG, "Filling favorites cache");
-            cacheFavoritesOnLaunch(context);
-            saveCacheFillTime(prefs, ChanHelper.LAST_FAVORITES_CACHE_TIME);
-        }
-        else {
-            Log.i(TAG, "Favorites cache interval has not expired, not filling cache");
-        }
 
         if (shouldFillCache(prefs, ChanHelper.LAST_WATCHLIST_CACHE_TIME, MAX_WATCHLIST_CACHE_REFRESH_INTERVAL_MS)) {
             Log.i(TAG, "Filling watchlist cache");
@@ -85,14 +75,6 @@ public class SmartCache {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putLong(cachePref, (new Date()).getTime());
         editor.commit();
-    }
-
-    private static void cacheFavoritesOnLaunch(Context context) {
-        List<ChanBoard> boards = ChanBoard.getBoardsByType(context, ChanBoard.Type.FAVORITES);
-        for (ChanBoard board : boards) {
-            Log.i(TAG, "Starting load service for favorite board " + board.link);
-            FetchChanDataService.startService(context, board.link);
-        }
     }
 
     private static void cacheWatchlistOnLaunch(Context context) {
