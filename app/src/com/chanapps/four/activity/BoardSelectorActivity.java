@@ -1,5 +1,6 @@
 package com.chanapps.four.activity;
 
+import android.app.Activity;
 import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.preference.PreferenceManager;
@@ -40,6 +41,13 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     public ChanBoard.Type selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
     public Menu menu;
 
+    public static void startActivity(Activity from, ChanBoard.Type boardType) {
+        Intent intent = new Intent(from, BoardSelectorActivity.class);
+        intent.putExtra(ChanHelper.BOARD_TYPE, boardType != null ? boardType.toString() : ChanBoard.Type.JAPANESE_CULTURE.toString());
+        intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
+        from.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +60,13 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         	if (DEBUG) Log.i(TAG, "Starting dispatch");
             DispatcherHelper.dispatchIfNecessaryFromPrefsState(this);
         }
+        if (intent.hasExtra(ChanHelper.BOARD_TYPE)) {
+            selectedBoardType = ChanBoard.Type.valueOf(intent.getStringExtra(ChanHelper.BOARD_TYPE));
+            SharedPreferences.Editor ed = ensurePrefs().edit();
+            ed.putString(ChanHelper.BOARD_TYPE, selectedBoardType.toString());
+            ed.commit();
+        }
+
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
         setContentView(mViewPager);

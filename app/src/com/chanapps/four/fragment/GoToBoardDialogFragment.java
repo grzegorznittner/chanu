@@ -41,8 +41,9 @@ public class GoToBoardDialogFragment extends DialogFragment {
                 return lhs.link.compareToIgnoreCase(rhs.link);
             }
         });
-        boards = new String[chanBoards.size()];
-        int i = 0;
+        boards = new String[chanBoards.size()+1];
+        boards[0] = "Watchlist";
+        int i = 1;
         for (ChanBoard chanBoard : chanBoards) {
             String boardCode = chanBoard.link;
             String boardName = chanBoard.name;
@@ -60,8 +61,13 @@ public class GoToBoardDialogFragment extends DialogFragment {
         .setItems(boards, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 String boardLine = boards[which];
-                String boardCode = boardLine.substring(1, boardLine.indexOf(' '));
-                BoardActivity.startActivity(getActivity(), boardCode);
+                if (boardLine.equalsIgnoreCase("watchlist")) {
+                    BoardSelectorActivity.startActivity(getActivity(), ChanBoard.Type.WATCHLIST);
+                }
+                else {
+                    String boardCode = boardLine.substring(1, boardLine.indexOf(' '));
+                    BoardActivity.startActivity(getActivity(), boardCode);
+                }
             }
         })
         .setNegativeButton(R.string.dialog_cancel,
