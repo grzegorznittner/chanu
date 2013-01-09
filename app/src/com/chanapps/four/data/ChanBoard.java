@@ -35,6 +35,8 @@ public class ChanBoard {
 
     public static final String WATCH_BOARD_CODE = "watch";
 
+    public static final String DEFAULT_BOARD_CODE = "a";
+
 	public String board;
 	public String name;
     public String link;

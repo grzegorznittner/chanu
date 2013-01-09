@@ -5,10 +5,7 @@ import java.util.List;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.LoaderManager;
-import android.content.AsyncTaskLoader;
-import android.content.Intent;
-import android.content.Loader;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -95,15 +92,21 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 //    protected AdView adView;
 
     public static void startActivity(Activity from, String boardCode) {
-        Intent intent = new Intent(from, BoardActivity.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        Intent intent = createIntentForActivity(from, boardCode);
+        from.startActivity(intent);
+    }
+
+    public static Intent createIntentForActivity(Context context, String boardCode) {
+        String intentBoardCode = boardCode == null || boardCode.isEmpty() ? ChanBoard.DEFAULT_BOARD_CODE : boardCode;
+        Intent intent = new Intent(context, BoardActivity.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, intentBoardCode);
         intent.putExtra(ChanHelper.PAGE, 0);
         intent.putExtra(ChanHelper.LAST_BOARD_POSITION, 0);
         intent.putExtra(ChanHelper.FROM_PARENT, true);
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(from).edit();
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putInt(ChanHelper.LAST_BOARD_POSITION, 0); // reset it
         editor.commit();
-        from.startActivity(intent);
+        return intent;
     }
 
     @Override
