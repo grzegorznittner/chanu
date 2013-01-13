@@ -1,5 +1,6 @@
 package com.chanapps.four.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -95,14 +96,10 @@ public class BoardGroupFragment
                     .imageScaleType(ImageScaleType.EXACT)
                     .build();
         }
-        //if (boardType == ChanBoard.Type.WATCHLIST || boardType == ChanBoard.Type.FAVORITES) {
-        //    setHasOptionsMenu(true);
-        //}
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
         getLoaderManager().initLoader(0, null, this);
         if (DEBUG) Log.v(TAG, "BoardGroupFragment " + boardType + " onCreate");
-        //setHasOptionsMenu(true);
     }
 
     @Override
@@ -276,15 +273,7 @@ public class BoardGroupFragment
         else {
             ChanBoard board = ChanBoard.getBoardsByType(getActivity(), boardType).get(position);
             String boardCode = board.link;
-            Intent intent = new Intent(this.getActivity(), BoardActivity.class);
-            intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-            intent.putExtra(ChanHelper.PAGE, 0);
-            intent.putExtra(ChanHelper.LAST_BOARD_POSITION, 0);
-            intent.putExtra(ChanHelper.FROM_PARENT, true);
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
-            editor.putInt(ChanHelper.LAST_BOARD_POSITION, 0); // reset it
-            editor.commit();
-            startActivity(intent);
+            BoardActivity.startActivity(getActivity(), boardCode);
         }
     }
 
@@ -296,20 +285,11 @@ public class BoardGroupFragment
             final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
             WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, tim);
             d.show(getFragmentManager(), d.TAG);
-        }
-        else if (boardType == ChanBoard.Type.FAVORITES) {
-            ChanBoard board = ChanBoard.getBoardsByType(getActivity(), boardType).get(position);
-            String boardCode = board.link;
-            FavoritesDeleteDialogFragment d = new FavoritesDeleteDialogFragment(this, boardCode);
-            d.show(getFragmentManager(), d.TAG);
+            return true;
         }
         else {
-            ChanBoard board = ChanBoard.getBoardsByType(getActivity(), boardType).get(position);
-            String boardCode = board.link;
-            FavoritesAddDialogFragment d = new FavoritesAddDialogFragment(this, boardCode);
-            d.show(getFragmentManager(), d.TAG);
+            return false;
         }
-        return true;
     }
 
     protected Handler ensureHandler() {
@@ -325,14 +305,10 @@ public class BoardGroupFragment
         if (DEBUG) Log.i(TAG, "Called onPrepareOptionsMenu fragment selectedBoardType=" + selectedBoardType + " menuContext=" + menuContext);
         if (menuContext == null)
             return;
-        menu.removeItem(R.id.clear_favorites_menu);
         menu.removeItem(R.id.clear_watchlist_menu);
         menu.removeItem(R.id.clean_watchlist_menu);
         MenuInflater inflater = new MenuInflater(menuContext);
-        if (selectedBoardType == ChanBoard.Type.FAVORITES) {
-            inflater.inflate(R.menu.favorites_menu, menu);
-        }
-        else if (selectedBoardType == ChanBoard.Type.WATCHLIST) {
+        if (selectedBoardType == ChanBoard.Type.WATCHLIST) {
             inflater.inflate(R.menu.watchlist_menu, menu);
         }
     }
@@ -349,19 +325,6 @@ public class BoardGroupFragment
             if (DEBUG) Log.v(TAG, ">>>>>>>>>>> refresh message received restarting loader");
             if (fragment.isDetached())
                 return;
-
-            try {
-                if (fragment.boardType == ChanBoard.Type.FAVORITES && fragment.adapter != null) {
-                    fragment.adapter.notifyDataSetChanged();
-                }
-            }
-            catch (IllegalStateException e) {
-                if (DEBUG) Log.d(TAG, "Detached favorites fragment loader called, shouldn't be a problem, ignoring", e);
-            }
-            catch (Exception e) {
-                if (DEBUG) Log.e(TAG, "Couldn't notify adapter of favorites board type data changed");
-            }
-
             try {
                 if (fragment.getLoaderManager() != null) {
                     fragment.ensureHandler();

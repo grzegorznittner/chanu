@@ -5,6 +5,7 @@ import java.util.List;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
@@ -13,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Display;
@@ -30,7 +32,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.chanapps.four.adapter.BoardCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
@@ -39,16 +40,16 @@ import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.BoardCursorLoader;
-import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class BoardActivity extends Activity implements ClickableLoaderActivity, ChanIdentifiedActivity {
+public class BoardActivity extends FragmentActivity implements ClickableLoaderActivity, ChanIdentifiedActivity {
 	public static final String TAG = BoardActivity.class.getSimpleName();
 	public static final boolean DEBUG = false;
 
@@ -91,6 +92,24 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
     protected String boardCode;
 
 //    protected AdView adView;
+
+    public static void startActivity(Activity from, String boardCode) {
+        Intent intent = createIntentForActivity(from, boardCode);
+        from.startActivity(intent);
+    }
+
+    public static Intent createIntentForActivity(Context context, String boardCode) {
+        String intentBoardCode = boardCode == null || boardCode.isEmpty() ? ChanBoard.DEFAULT_BOARD_CODE : boardCode;
+        Intent intent = new Intent(context, BoardActivity.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, intentBoardCode);
+        intent.putExtra(ChanHelper.PAGE, 0);
+        intent.putExtra(ChanHelper.LAST_BOARD_POSITION, 0);
+        intent.putExtra(ChanHelper.FROM_PARENT, true);
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        editor.putInt(ChanHelper.LAST_BOARD_POSITION, 0); // reset it
+        editor.commit();
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -439,6 +458,9 @@ public class BoardActivity extends Activity implements ClickableLoaderActivity, 
             case R.id.settings_menu:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
+                return true;
+            case R.id.go_to_board_menu:
+                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
                 return true;
             case R.id.board_rules_menu:
                 displayBoardRules();

@@ -11,13 +11,6 @@
             android:defaultValue="false" />
 
     <CheckBoxPreference
-            android:key="pref_use_favorites"
-            android:title="@string/pref_favorites"
-            android:summaryOn="@string/pref_favorites_summ_on"
-            android:summaryOff="@string/pref_favorites_summ_off"
-            android:defaultValue="true" />
-
-    <CheckBoxPreference
             android:key="pref_notifications"
             android:title="@string/pref_notifications"
             android:summaryOn="@string/pref_notifications_summ_on"

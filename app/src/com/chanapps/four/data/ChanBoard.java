@@ -31,9 +31,11 @@ public class ChanBoard {
         this.lastPage = lastPage;
 	}
 	
-	public enum Type { FAVORITES, WATCHLIST, JAPANESE_CULTURE, INTERESTS, CREATIVE, OTHER, ADULT, MISC };
+	public enum Type { WATCHLIST, JAPANESE_CULTURE, INTERESTS, CREATIVE, OTHER, ADULT, MISC };
 
     public static final String WATCH_BOARD_CODE = "watch";
+
+    public static final String DEFAULT_BOARD_CODE = "a";
 
 	public String board;
 	public String name;
@@ -73,7 +75,6 @@ public class ChanBoard {
             case ADULT: return ctx.getString(R.string.board_type_adult);
             case MISC: return ctx.getString(R.string.board_type_misc);
             case OTHER: return ctx.getString(R.string.board_type_other);
-            case FAVORITES: return ctx.getString(R.string.board_type_favorites);
             case WATCHLIST: return ctx.getString(R.string.board_watch);
             default:
                 return ctx.getString(R.string.board_type_japanese_culture);
@@ -120,92 +121,6 @@ public class ChanBoard {
         return boardByCode.get(boardCode);
 	}
 	
-    public static void addBoardToFavorites(Context ctx, String boardCode) {
-        if (boards == null) {
-            initBoards(ctx);
-        }
-        List<ChanBoard> favorites = boardsByType.get(Type.FAVORITES);
-        ChanBoard board = getBoardByCode(ctx, boardCode);
-        if (favorites.contains(board)) {
-            Log.i(TAG, "Board " + boardCode + " already in favorites");
-        }
-        else {
-            favorites.add(board);
-            Set<String> savedFavorites = getFavoritesFromPrefs(ctx);
-            savedFavorites.add(boardCode);
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
-            editor.putStringSet(ChanHelper.FAVORITE_BOARDS, savedFavorites);
-            editor.commit();
-            Log.i(TAG, "Board " + boardCode + " added to favorites");
-            Log.i(TAG, "Put favorites list to prefs: " + Arrays.toString(savedFavorites.toArray()));
-        }
-    }
-
-    public static void deleteBoardFromFavorites(Context ctx, String boardCode) {
-        if (boards == null) {
-            initBoards(ctx);
-        }
-        List<ChanBoard> favorites = boardsByType.get(Type.FAVORITES);
-        ChanBoard board = getBoardByCode(ctx, boardCode);
-        if (!favorites.contains(board)) {
-            Log.i(TAG, "Board " + boardCode + " not in favorites, cannot delete");
-        }
-        else {
-            favorites.remove(board);
-            Set<String> savedFavorites = getFavoritesFromPrefs(ctx);
-            savedFavorites.remove(boardCode);
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
-            editor.putStringSet(ChanHelper.FAVORITE_BOARDS, savedFavorites);
-            editor.commit();
-            Log.i(TAG, "Board " + boardCode + " deleted from favorites");
-            Log.i(TAG, "Put favorites list to prefs: " + Arrays.toString(savedFavorites.toArray()));
-        }
-    }
-
-    public static void clearFavorites(Context ctx) {
-        if (boards == null) {
-            initBoards(ctx);
-        }
-        Log.i(TAG, "Clearing favorites...");
-        List<ChanBoard> favorites = boardsByType.get(Type.FAVORITES);
-        List<ChanBoard> toDelete = new ArrayList<ChanBoard>();
-        toDelete.addAll(favorites);
-        favorites.removeAll(toDelete);
-        //favorites.clear();
-        Set<String> savedFavorites = getFavoritesFromPrefs(ctx);
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
-        savedFavorites.clear();
-        editor.putStringSet(ChanHelper.FAVORITE_BOARDS, savedFavorites);
-        //editor.remove(ChanHelper.FAVORITE_BOARDS);
-        editor.commit();
-        Log.i(TAG, "Favorites cleared");
-    }
-
-    private static Set<String> getFavoritesFromPrefs(Context ctx) {
-        Log.i(TAG, "Getting favorites from prefs...");
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        Set<String> savedFavorites = prefs.getStringSet(ChanHelper.FAVORITE_BOARDS, new HashSet<String>());
-        Log.i(TAG, "Loaded favorites from prefs:" + Arrays.toString(savedFavorites.toArray()));
-        return savedFavorites;
-    }
-
-    private static void loadFavoritesFromPrefs(Context ctx) {
-        Set<String> savedFavorites = getFavoritesFromPrefs(ctx);
-        List<String> favoriteCodes = new ArrayList<String>(savedFavorites);
-        Collections.sort(favoriteCodes);
-
-        List<ChanBoard> favorites = new ArrayList<ChanBoard>();
-        for (String boardCode : favoriteCodes) {
-            ChanBoard existingBoard = boardByCode.get(boardCode);
-            Log.i(TAG, "found board: " + boardCode + " with val: " + (existingBoard != null ? existingBoard.name : "none"));
-            if (existingBoard != null) {
-                favorites.add(existingBoard);
-            }
-        }
-
-        boardsByType.put(Type.FAVORITES, favorites);
-    }
-
 	private static void initBoards(Context ctx) {
 		boards = new ArrayList<ChanBoard>();
 		boardsByType = new HashMap<Type, List<ChanBoard>>();
@@ -227,15 +142,11 @@ public class ChanBoard {
             }
             boardsByType.put(boardType, boardsForType);
         }
-
-        loadFavoritesFromPrefs(ctx);
    	}
 
     private static String[][] initBoardCodes(Context ctx) {
         String[][] boardCodesByType = {
 
-                {   Type.FAVORITES.toString()
-                },
                 {   Type.WATCHLIST.toString()
                 },
                 {   Type.JAPANESE_CULTURE.toString(),

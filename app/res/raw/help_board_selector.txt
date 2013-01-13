@@ -1,6 +1,4 @@
 <p>You are viewing the board selector.</p>
 <p>Click on the top tab or scroll left and right to select the board category.</p>
 <p>Click on a board to view the latest threads for that board.</p>
-<p>Long-press a board to add the board to the favorites list.</p>
-<p>Long-press a board already on favorites to remove it from the favorites list.</p>
 <p>Long-press a thread in the watchlist to remove it from the watchlist.</p>

@@ -28,7 +28,6 @@ public class ChanHelper {
     public static final String IMAGE_PATH = "imagePath";
     public static final String CONTENT_TYPE = "contentType";
     public static final String ORIENTATION = "orientation";
-    public static final String FAVORITE_BOARDS = "favoriteBoards";
     public static final String THREAD_WATCHLIST = "threadWatchlist";
     public static final String POST_ID = "_id";
     public static final String POST_BOARD_NAME = "board_name";
@@ -65,7 +64,6 @@ public class ChanHelper {
     public static final String LAST_THREAD_POSITION = "lastThreadPosition";
     public static final String LAST_ACTIVITY = "lastActivity";
     public static final String LAST_NO_BOARD_CACHE_TIME = "lastNoBoardCacheTime";
-    public static final String LAST_FAVORITES_CACHE_TIME = "lastFavoritesCacheTime";
     public static final String LAST_WATCHLIST_CACHE_TIME = "lastWatchlistCacheTime";
     public static final String IGNORE_DISPATCH = "ignoreDispatch";
     

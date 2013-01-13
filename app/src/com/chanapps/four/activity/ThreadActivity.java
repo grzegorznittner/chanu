@@ -33,6 +33,7 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -83,23 +84,39 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         final int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
         final int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
-        Intent intent = new Intent(from, ThreadActivity.class);
-        intent.putExtra(ChanHelper.TIM, threadTim);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardName);
-        intent.putExtra(ChanHelper.THREAD_NO, postId);
+        final int pos = adapterView.getFirstVisiblePosition();
+        Intent intent = createIntentForActivity(from, boardName, postId, text, imageUrl, tn_w, tn_h, threadTim, fromParent, pos);
+        if (DEBUG) Log.i(TAG, "Calling thread activity with id=" + id);
+        from.startActivity(intent);
+    }
+
+    public static Intent createIntentForActivity(Context context,
+                                                 final String boardCode,
+                                                 final long threadNo,
+                                                 final String text,
+                                                 final String imageUrl,
+                                                 final int tn_w,
+                                                 final int tn_h,
+                                                 final long tim,
+                                                 final boolean fromParent,
+                                                 final int firstVisiblePosition)
+    {
+        Intent intent = new Intent(context, ThreadActivity.class);
+        intent.putExtra(ChanHelper.TIM, tim);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
         intent.putExtra(ChanHelper.TEXT, text);
         intent.putExtra(ChanHelper.IMAGE_URL, imageUrl);
         intent.putExtra(ChanHelper.IMAGE_WIDTH, tn_w);
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, tn_h);
-        intent.putExtra(ChanHelper.LAST_BOARD_POSITION, adapterView.getFirstVisiblePosition());
+        intent.putExtra(ChanHelper.LAST_BOARD_POSITION, firstVisiblePosition);
         intent.putExtra(ChanHelper.LAST_THREAD_POSITION, 0);
         if (fromParent)
             intent.putExtra(ChanHelper.FROM_PARENT, true);
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(from).edit();
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putInt(ChanHelper.LAST_THREAD_POSITION, 0); // reset it
         editor.commit();
-        if (DEBUG) Log.i(TAG, "Calling thread activity with id=" + id);
-        from.startActivity(intent);
+        return intent;
     }
 
     @Override
@@ -283,8 +300,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 startActivity(settingsIntent);
                 return true;
             case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_board_grid);
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_thread_list);
                 rawResourceDialog.show();
+                return true;
+            case R.id.go_to_board_menu:
+                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
                 return true;
             case R.id.board_rules_menu:
                 displayBoardRules();

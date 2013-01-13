@@ -13,17 +13,16 @@
     <string name="settings_activity">Settings</string>
 
     <!-- menus -->
-    <string name="clear_favorites_menu">Clear Favorites</string>
     <string name="clean_watchlist_menu">Clean Watchlist</string>
     <string name="clear_watchlist_menu">Clear Watchlist</string>
     <string name="settings_menu">Settings</string>
     <string name="help_menu">Help</string>
     <string name="global_rules_menu">Global Rules</string>
+    <string name="go_to_board_menu">Board Jump</string>
     <string name="board_rules_menu">Board Rules</string>
     <string name="refresh_board_menu">Refresh Board</string>
     <string name="refresh_thread_menu">Refresh Thread</string>
     <string name="new_thread_menu">New Thread</string>
-    <string name="add_to_favorites_menu">Add to Favorites</string>
     <string name="prefetch_board_menu">Prefetch Board Threads</string>
     <string name="watch_thread_menu">Watch Thread</string>
     <string name="view_as_grid_menu">View As Grid</string>
@@ -49,9 +48,6 @@
     <!-- board activity -->
     <string name="board_activity_refresh">Refreshing...</string>
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
-    <string name="board_already_in_favorites">Board already in favorites</string>
-    <string name="board_added_to_favorites">Board added to favorites</string>
-    <string name="board_favorites_cleared">Cleared board favorites</string>
     <string name="board_end_of_board">End of board</string>
     <string name="board_click_for_more">(click for more)</string>
     <string name="board_last_updated">Last updated %s</string>
@@ -105,10 +101,7 @@
 
     <!-- dialog text -->
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
-    <string name="dialog_delete_favorites_board">Remove board from favorites?</string>
-    <string name="dialog_add_favorites_board">Add board to favorites?</string>
-    <string name="dialog_clear_favorites">Clear favorites?</string>
-    <string name="dialog_clear_watchlist">Clear favorites?</string>
+    <string name="dialog_clear_watchlist">Clear watchlist?</string>
     <string name="dialog_clean_watchlist">Clean dead threads?</string>
     <string name="dialog_reset_preferences_confirm">Reset all preferences?</string>
     <string name="dialog_add">Add</string>
@@ -117,11 +110,8 @@
     <string name="dialog_clean">Clean</string>
     <string name="dialog_reset">Reset</string>
     <string name="dialog_cancel">Cancel</string>
-    <string name="dialog_added_to_favorites">Added to favorites</string>
-    <string name="dialog_deleted_from_favorites">Removed from favorites</string>
     <string name="dialog_added_to_watchlist">Added to watchlist</string>
     <string name="dialog_deleted_from_watchlist">Removed from watchlist</string>
-    <string name="dialog_cleared_favorites">Favorites cleared</string>
     <string name="dialog_cleared_watchlist">Watchlist cleared</string>
     <string name="dialog_cleaning_watchlist">Cleaning watchlist...</string>
     <string name="dialog_cleaned_watchlist">Watchlist cleaned</string>
@@ -169,9 +159,6 @@
         potentially contain offensive material.  If you are under 18 or it is illegal
         to view restricted content in your jurisdiction, do not check this button.
     </string>
-    <string name="pref_favorites">Favorites Board</string>
-    <string name="pref_favorites_summ_on">On</string>
-    <string name="pref_favorites_summ_off">Off</string>
     <string name="pref_notifications">Notifications</string>
     <string name="pref_notifications_summ_on">On</string>
     <string name="pref_notifications_summ_off">Off</string>
@@ -251,8 +238,7 @@
     <string name="board_r9k">ROBOT9001</string>
     <string name="board_pol">Politically Incorrect</string>
     <string name="board_soc">Social</string>
-    <string name="board_type_favorites">Favorites</string>
-    <string name="board_watch">Watching</string>
-    <string name="fullscreen_image_progress_upper">Loading 4Chan Image ...</string>
+    <string name="board_watch">Watchlist</string>
+    <string name="fullscreen_image_progress_upper">Loading 4Chan Image</string>
 
 </resources>

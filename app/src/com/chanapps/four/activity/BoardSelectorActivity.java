@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -25,7 +26,7 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.data.SmartCache;
 import com.chanapps.four.fragment.BoardGroupFragment;
-import com.chanapps.four.fragment.FavoritesClearDialogFragment;
+import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.fragment.WatchlistCleanDialogFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -38,10 +39,16 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     private TabsAdapter mTabsAdapter;
     private SharedPreferences prefs = null;
     private boolean showNSFWBoards = false;
-    private boolean useFavoritesBoard = true;
     public List<ChanBoard.Type> activeBoardTypes = new ArrayList<ChanBoard.Type>();
     public ChanBoard.Type selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
     public Menu menu;
+
+    public static void startActivity(Activity from, ChanBoard.Type boardType) {
+        Intent intent = new Intent(from, BoardSelectorActivity.class);
+        intent.putExtra(ChanHelper.BOARD_TYPE, boardType != null ? boardType.toString() : ChanBoard.Type.JAPANESE_CULTURE.toString());
+        intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
+        from.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,10 +63,18 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         	if (DEBUG) Log.i(TAG, "Starting dispatch");
             DispatcherHelper.dispatchIfNecessaryFromPrefsState(this);
         }
+        if (intent.hasExtra(ChanHelper.BOARD_TYPE)) {
+            selectedBoardType = ChanBoard.Type.valueOf(intent.getStringExtra(ChanHelper.BOARD_TYPE));
+            SharedPreferences.Editor ed = ensurePrefs().edit();
+            ed.putString(ChanHelper.BOARD_TYPE, selectedBoardType.toString());
+            ed.commit();
+        }
+
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
         setContentView(mViewPager);
     }
+
 
     @Override
     protected void onStart() {
@@ -74,32 +89,17 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
 
     private void ensureTabsAdapter() {
         showNSFWBoards = ensurePrefs().getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
-        useFavoritesBoard = prefs.getBoolean(SettingsActivity.PREF_USE_FAVORITES, true);
 
         if (mTabsAdapter == null) { // create the board tabs
             activeBoardTypes.clear();
             mTabsAdapter = new TabsAdapter(this, getSupportFragmentManager(), mViewPager);
             for (ChanBoard.Type type : ChanBoard.Type.values()) {
-                if (type == ChanBoard.Type.FAVORITES) {
-                    if (useFavoritesBoard)
-                        addTab(type, -1);
-                }
-                else if (showNSFWBoards || !ChanBoard.isNSFWBoardType(type)) {
+            if (showNSFWBoards || !ChanBoard.isNSFWBoardType(type)) {
                     addTab(type, -1);
                 }
             }
             return;
         }
-
-        /* can't get adding / removing 0th tab to work
-        if (useFavoritesBoard && getPositionOfTab(ChanBoard.Type.FAVORITES) == -1) { // need to add
-            addTab(ChanBoard.Type.FAVORITES, 0);
-        }
-        else if (!useFavoritesBoard && getPositionOfTab(ChanBoard.Type.FAVORITES) >= 0) { // need to remove
-            int pos = getPositionOfTab(ChanBoard.Type.FAVORITES);
-            removeTab(ChanBoard.Type.FAVORITES);
-        }
-        */
 
         if (showNSFWBoards && getPositionOfTab(ChanBoard.Type.ADULT) == -1) { // need to add
             addTab(ChanBoard.Type.ADULT, -1);
@@ -145,18 +145,10 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         return position;
     }
 
-    public BoardGroupFragment getFavoritesFragment() {
-        int favoritesPos = getPositionOfTab(ChanBoard.Type.FAVORITES);
-        if (favoritesPos >= 0)
-            return (BoardGroupFragment)mTabsAdapter.getItem(favoritesPos);
-        else
-            return null;
-    }
-
     public BoardGroupFragment getWatchlistFragment() {
-        int favoritesPos = getPositionOfTab(ChanBoard.Type.WATCHLIST);
-        if (favoritesPos >= 0)
-            return (BoardGroupFragment)mTabsAdapter.getItem(favoritesPos);
+        int pos = getPositionOfTab(ChanBoard.Type.WATCHLIST);
+        if (pos >= 0)
+            return (BoardGroupFragment)mTabsAdapter.getItem(pos);
         else
             return null;
     }
@@ -270,10 +262,6 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.clear_favorites_menu:
-                FavoritesClearDialogFragment clearDialogFragment = new FavoritesClearDialogFragment(getFavoritesFragment());
-                clearDialogFragment.show(getSupportFragmentManager(), clearDialogFragment.TAG);
-                return true;
             case R.id.clean_watchlist_menu:
                 WatchlistCleanDialogFragment cleanWatchlistFragment = new WatchlistCleanDialogFragment(getWatchlistFragment());
                 cleanWatchlistFragment.show(getSupportFragmentManager(), cleanWatchlistFragment.TAG);
@@ -286,6 +274,9 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
+                return true;
+            case R.id.go_to_board_menu:
+                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
                 return true;
             case R.id.global_rules_menu:
                 RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
@@ -304,7 +295,6 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         }
     }
 
-	@Override
 	public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(LastActivity.BOARD_SELECTOR_ACTIVITY);
 	}
@@ -313,4 +303,5 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
 	public Handler getChanHandler() {
 		return null;
 	}
+
 }
