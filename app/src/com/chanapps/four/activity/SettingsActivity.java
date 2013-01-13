@@ -48,11 +48,6 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
 	}
 
 	@Override
-	public AsyncTaskLoader<Cursor> getChanCursorLoader() {
-		return null;
-	}
-	
-	@Override
 	public Handler getChanHandler() {
 		return null;
 	}

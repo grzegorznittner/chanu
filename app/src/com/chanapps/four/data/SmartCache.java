@@ -91,7 +91,7 @@ public class SmartCache {
         List<ChanBoard> boards = ChanBoard.getBoardsByType(context, ChanBoard.Type.FAVORITES);
         for (ChanBoard board : boards) {
             Log.i(TAG, "Starting load service for favorite board " + board.link);
-            FetchChanDataService.startService(context, board.link);
+            FetchChanDataService.scheduleBoardFetch(context, board.link);
         }
     }
 
@@ -102,7 +102,7 @@ public class SmartCache {
             long threadNo = ChanWatchlist.getThreadNoFromThreadPath(threadPath);
             // FIXME should say if !threadIsDead we should store this somewhere
             Log.i(TAG, "Starting load service for watching thread " + boardCode + "/" + threadNo);
-            FetchChanDataService.startService(context, boardCode, threadNo);
+            FetchChanDataService.scheduleThreadFetch(context, boardCode, threadNo);
         }
     }
 
@@ -111,7 +111,7 @@ public class SmartCache {
         for (ChanBoard board : boards) {
             if (!ChanFileStorage.isBoardCachedOnDisk(context, board.link)) { // if user never visited board before
                 Log.i(TAG, "Starting load service for uncached board " + board.link);
-                FetchChanDataService.startService(context, board.link);
+                FetchChanDataService.scheduleBoardFetch(context, board.link);
             }
         }
     }

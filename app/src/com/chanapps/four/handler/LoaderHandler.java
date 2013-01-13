@@ -15,16 +15,18 @@ import com.chanapps.four.activity.ClickableLoaderActivity;
 public class LoaderHandler extends Handler {
     private ClickableLoaderActivity activity;
     private static final String TAG = LoaderHandler.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     public LoaderHandler() {}
     public LoaderHandler(ClickableLoaderActivity activity) {
         this.activity = activity;
     }
+    
     @Override
     public void handleMessage(Message msg) {
         try {
             super.handleMessage(msg);
-            Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
+            if (DEBUG) Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
             activity.getLoaderManager().restartLoader(0, null, activity);
         }
         catch (Exception e) {

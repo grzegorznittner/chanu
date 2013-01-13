@@ -1,35 +1,34 @@
 package com.chanapps.four.activity;
 
-import android.content.AsyncTaskLoader;
-import android.content.Intent;
-import android.preference.PreferenceManager;
-import android.view.MenuItem;
-import com.chanapps.four.component.DispatcherHelper;
-import com.chanapps.four.data.ChanWatchlist;
-import com.chanapps.four.data.SmartCache;
-import com.chanapps.four.fragment.BoardGroupFragment;
-import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.adapter.TabsAdapter;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanHelper.LastActivity;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
+
+import com.chanapps.four.adapter.TabsAdapter;
+import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.ChanWatchlist;
+import com.chanapps.four.data.SmartCache;
+import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.fragment.FavoritesClearDialogFragment;
 import com.chanapps.four.fragment.WatchlistCleanDialogFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.chanapps.four.service.NetworkProfileManager;
 
 public class BoardSelectorActivity extends FragmentActivity implements ChanIdentifiedActivity {
     public static final String TAG = "BoardSelectorActivity";
@@ -47,6 +46,7 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        NetworkProfileManager.instance().activityChange(this);
         if (DEBUG) Log.v(TAG, "onCreate");
         if (ensurePrefs().getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
             (new ChanWatchlist.CleanWatchlistTask(this, null, false)).execute();
@@ -227,6 +227,7 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     protected void onResume() {
         super.onResume();
         restoreInstanceState();
+        NetworkProfileManager.instance().activityChange(this);
     }
 
     @Override
@@ -308,11 +309,6 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
 		return new ChanActivityId(LastActivity.BOARD_SELECTOR_ACTIVITY);
 	}
 
-	@Override
-	public AsyncTaskLoader<Cursor> getChanCursorLoader() {
-		return null;
-	}
-	
 	@Override
 	public Handler getChanHandler() {
 		return null;

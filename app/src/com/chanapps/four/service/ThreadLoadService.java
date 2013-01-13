@@ -16,12 +16,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.service.NetworkProfile.Failure;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -30,7 +33,7 @@ import com.google.gson.stream.JsonReader;
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
  *
  */
-public class ThreadLoadService extends BaseChanService {
+public class ThreadLoadService extends BaseChanService implements ChanIdentifiedService {
 
     protected static final String TAG = ThreadLoadService.class.getName();
 
@@ -97,11 +100,10 @@ public class ThreadLoadService extends BaseChanService {
             ChanFileStorage.storeThreadData(getBaseContext(), thread);
             Log.w(TAG, "Stored thread " + boardCode + "/" + threadNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
-        } catch (IOException e) {
-            toastUI(R.string.board_service_couldnt_read);
-            Log.e(TAG, "IO Error reading Chan board json. " + e.getMessage(), e);
-		} catch (Exception e) {
-            toastUI(R.string.board_service_couldnt_load);
+            NetworkProfileManager.instance().finishedParsingData(this);
+        } catch (Exception e) {
+            //toastUI(R.string.board_service_couldnt_load);
+        	NetworkProfileManager.instance().failedParsingData(this, Failure.WRONG_DATA);
 			Log.e(TAG, "Error parsing Chan board json. " + e.getMessage(), e);
 		}
 	}
@@ -133,4 +135,10 @@ public class ThreadLoadService extends BaseChanService {
 
         Log.i(TAG, "finished parsing thread " + boardCode + "/" + threadNo);
     }
+	
+	@Override
+	public ChanActivityId getChanActivityId() {
+		return new ChanActivityId(boardCode, threadNo, force);
+	}
+
 }

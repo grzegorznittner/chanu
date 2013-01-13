@@ -1,45 +1,35 @@
 package com.chanapps.four.service;
 
+import android.content.Context;
+
 public class NoConnectionProfile extends AbstractNetworkProfile {
 
+	
 	@Override
-	public void onApplicationStart() {
-		super.onApplicationStart();
+	public void onProfileActivated(Context context) {
+		super.onProfileActivated(context);
+		
+		FetchChanDataService.clearServiceQueue(context);
+		
+		makeToast("Lost connectivity");
 	}
 
 	@Override
-	public void onBoardSelectorSelected() {
-		super.onBoardSelectorSelected();
+	public void onApplicationStart(Context context) {
+		super.onApplicationStart(context);
 	}
 
 	@Override
-	public void onBoardSelected(String board) {
-		super.onBoardSelected(board);
+	public void onBoardSelected(Context context, String board) {
+		super.onBoardSelected(context, board);
+		
+		makeToast("No data connection");
 	}
 
 	@Override
-	public void onBoardRefreshed(String board) {
-		super.onBoardRefreshed(board);
+	public void onThreadSelected(Context context, String board, long threadId) {
+		super.onThreadSelected(context, board, threadId);
+
+		makeToast("No data connection");
 	}
-
-	@Override
-	public void onThreadSelected(String board, long threadId) {
-		super.onThreadSelected(board, threadId);
-	}
-
-	@Override
-	public void onThreadRefreshed(String board, long threadId) {
-		super.onThreadRefreshed(board, threadId);
-	}
-
-	@Override
-	public void onFullImageLoading(String board, long threadId, long postId) {
-		super.onFullImageLoading(board, threadId, postId);
-	}
-
-	@Override
-	public void onProfileDeactivated() {
-		super.onProfileDeactivated();
-	}	
-
 }

@@ -60,7 +60,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         if (DEBUG) Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
         if (thread == null) { // this shouldn't happen, so reload
             if (DEBUG) Log.i(TAG, "Reloading thread " + boardName + "/" + threadNo + " - starting ThreadLoadService");
-            FetchChanDataService.startService(context, boardName, threadNo);
+            FetchChanDataService.scheduleThreadFetch(context, boardName, threadNo);
         }
         else {
             MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);

@@ -17,7 +17,8 @@ import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanFileStorage {
-	public static final String TAG = ChanFileStorage.class.getSimpleName();
+	private static final String TAG = ChanFileStorage.class.getSimpleName();
+	private static final boolean DEBUG = false;
 	
 	private static WeakHashMap<String, ChanBoard> boardCache = new WeakHashMap<String, ChanBoard>();
 	private static WeakHashMap<Long, ChanThread> threadCache = new WeakHashMap<Long, ChanThread>();
@@ -83,7 +84,7 @@ public class ChanFileStorage {
 			    writer.flush();
 			    writer.close();
 			}
-			Log.i(TAG, "Stored " + board.threads.length + " threads for board '" + board.link + "'");
+			if (DEBUG) Log.i(TAG, "Stored " + board.threads.length + " threads for board '" + board.link + "'");
 		} else {
 			Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
 		}
@@ -95,12 +96,12 @@ public class ChanFileStorage {
 			File boardFile = new File(boardDir, boardName + "_page" + page + CACHE_EXT);
 			return boardFile;
 		} else {
-			Log.w(TAG, "Board folder not found: " + boardName);
+			Log.w(TAG, "Board folder could not be created: " + boardName);
 			return null;
 		}
     }
 	
-    public static File storeBoardFile(Context context, String boardName, int page, BufferedReader reader) throws IOException {
+    public static long storeBoardFile(Context context, String boardName, int page, BufferedReader reader) throws IOException {
 		File boardFile = getBoardFile(context, boardName, page);
 		FileWriter writer = new FileWriter(boardFile, false);
 		try {
@@ -117,8 +118,8 @@ public class ChanFileStorage {
                 Log.e(TAG, "Exception while flushing and closing board file: " + e.getMessage(), e);
             }
 		}
-		Log.i(TAG, "Stored file for board " + boardName + " page " + page);
-		return boardFile;
+		if (DEBUG) Log.i(TAG, "Stored file for board " + boardName + " page " + page);
+		return boardFile.length();
 	}
 	
     public static File getThreadFile(Context context, String boardName, long threadNo) {
@@ -127,12 +128,12 @@ public class ChanFileStorage {
 			File boardFile = new File(boardDir, "t_" + threadNo + "f" + CACHE_EXT);
 			return boardFile;
 		} else {
-			Log.w(TAG, "Board folder not found: " + boardName);
+			Log.w(TAG, "Board folder could not be created: " + boardName);
 			return null;
 		}
     }
 	
-    public static File storeThreadFile(Context context, String boardName, long threadNo, BufferedReader reader) throws IOException {
+    public static long storeThreadFile(Context context, String boardName, long threadNo, BufferedReader reader) throws IOException {
 		File threadFile = getThreadFile(context, boardName, threadNo);
 		FileWriter writer = new FileWriter(threadFile, false);
 		try {
@@ -144,8 +145,8 @@ public class ChanFileStorage {
 		    writer.flush();
 		    writer.close();
 		}
-		Log.i(TAG, "Stored file for thread " + boardName + "/" + threadNo);
-		return threadFile;
+		if (DEBUG) Log.i(TAG, "Stored file for thread " + boardName + "/" + threadNo);
+		return threadFile.length();
 	}
 	
 	public static void storeThreadData(Context context, ChanThread thread) throws IOException {
@@ -160,7 +161,7 @@ public class ChanFileStorage {
                 writer.flush();
                 writer.close();
             }
-			Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + FILE_SEP + thread.no + "'");
+			if (DEBUG) Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + FILE_SEP + thread.no + "'");
 		} else {
 			Log.e(TAG, "Cannot create board cache folder. " + (threadDir == null ? "null" : threadDir.getAbsolutePath()));
 		}
@@ -172,7 +173,7 @@ public class ChanFileStorage {
 			return null;
 		}
 		if (boardCache.containsKey(boardCode)) {
-			Log.i(TAG, "Retruning board " + boardCode + " data from cache");
+			if (DEBUG) Log.i(TAG, "Retruning board " + boardCode + " data from cache");
 			return boardCache.get(boardCode);
 		}
 		File boardFile = null;
@@ -184,10 +185,10 @@ public class ChanFileStorage {
 					FileReader reader = new FileReader(boardFile);
 					Gson gson = new GsonBuilder().create();
 					ChanBoard board = gson.fromJson(reader, ChanBoard.class);
-					Log.i(TAG, "Loaded " + board.threads.length + " threads for board '" + board.link + "'");
+					if (DEBUG) Log.i(TAG, "Loaded " + board.threads.length + " threads for board '" + board.link + "'");
 					return board;
 				} else {
-					Log.i(TAG, "File for board '" + boardCode + "' doesn't exist");
+					if (DEBUG) Log.i(TAG, "File for board '" + boardCode + "' doesn't exist");
 				}
 			} else {
 				Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
@@ -207,7 +208,7 @@ public class ChanFileStorage {
 			return null;
 		}
 		if (threadCache.containsKey(threadNo)) {
-			Log.i(TAG, "Retruning thread " + boardCode + FILE_SEP +  threadNo + " data from cache");
+			if (DEBUG) Log.i(TAG, "Retruning thread " + boardCode + FILE_SEP +  threadNo + " data from cache");
 			return threadCache.get(threadNo);
 		}
 		File threadFile = null;
@@ -222,7 +223,7 @@ public class ChanFileStorage {
                     if (thread == null)
                         Log.e(TAG, "Couldn't load thread, null thread returned for " + boardCode + FILE_SEP + threadNo);
                     else
-					    Log.i(TAG, "Loaded " + thread.posts.length + " posts for board '" + boardCode + FILE_SEP + threadNo + "'");
+					    if (DEBUG) Log.i(TAG, "Loaded " + thread.posts.length + " posts for board '" + boardCode + FILE_SEP + threadNo + "'");
 					return thread;
 				} else {
 					Log.w(TAG, "File for thread '" + boardCode + FILE_SEP + threadNo + "' doesn't exist");
@@ -266,7 +267,7 @@ public class ChanFileStorage {
                         Log.e(TAG, "Exception while closing user preferences", e);
                     }
                 }
-				Log.i(TAG, "Stored user preferences to file, last updated " + userPrefs.lastUpdate);
+				if (DEBUG) Log.i(TAG, "Stored user preferences to file, last updated " + userPrefs.lastUpdate);
 			} else {
 				Log.e(TAG, "Cannot store user preferences");
 			}
@@ -286,7 +287,7 @@ public class ChanFileStorage {
                     Log.e(TAG, "Couldn't load user preferences, null returned");
                     return new UserPreferences();
                 } else {
-				    Log.i(TAG, "Loaded user preferences, last updated " + userPrefs.lastUpdate + ", last stored " + userPrefs.lastStored);
+				    if (DEBUG) Log.i(TAG, "Loaded user preferences, last updated " + userPrefs.lastUpdate + ", last stored " + userPrefs.lastStored);
 					return userPrefs;
                 }
 			} else {
