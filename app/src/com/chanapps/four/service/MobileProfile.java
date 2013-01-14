@@ -168,7 +168,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 					&& currentActivityId.boardCode.equals(data.boardCode);
 			makeToast("Loaded data for board " + data.boardCode);
 			ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
-			if (board.no < 0) {
+			if (board.defData) {
 				// board data corrupted, we need to reload it
 				Log.w(TAG, "Board " + data.boardCode + " is corrupted, it is scheduled for reload");
 				FetchChanDataService.scheduleBoardFetchService(service.getApplicationContext(), data.boardCode, 0);
@@ -203,7 +203,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 					&& currentActivityId.threadNo == data.threadNo;
 			makeToast("Loaded data for " + data.boardCode + "/" + data.threadNo);
 			ChanThread thread = ChanFileStorage.loadThreadData(service.getApplicationContext(), data.boardCode, data.threadNo);
-			if (thread.no < 0 && threadActivity) {
+			if (thread.defData && threadActivity) {
 				// thread file is corrupted, and user stays on thread page (or loads image), we need to refetch thread
 				Log.w(TAG, "Thread " + data.boardCode + "/" + data.threadNo + " is corrupted, it is scheduled for reload");
 				FetchChanDataService.scheduleThreadFetch(service.getApplicationContext(), data.boardCode, data.threadNo);

@@ -66,7 +66,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
-        cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo);
+        if (threadNo > 0) {
+        	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo);
+        }
         return cursorLoader;
     }
 
@@ -80,6 +82,10 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (DEBUG) Log.d(TAG, "threadTim: " + threadTim);
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         final String boardName = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+        if (ChanFileStorage.loadBoardData(from.getBaseContext(), boardName).defData) {
+        	// def data are not clicable
+        	return;
+        }
         final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         final int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));

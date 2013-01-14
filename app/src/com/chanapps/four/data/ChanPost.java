@@ -1,13 +1,12 @@
 package com.chanapps.four.data;
 
+import java.util.Date;
+import java.util.List;
+
 import android.content.Context;
 import android.util.Log;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.loader.BoardCursorLoader;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.chanapps.four.activity.R;
 
 public class ChanPost {
 
@@ -64,6 +63,7 @@ public class ChanPost {
     public int bumplimit = 0;
     public int imagelimit = 0;
     public boolean isDead = false;
+    public boolean defData = false;
 
     public static final String quoteText(String s) {
         if (s == null || s.isEmpty())
@@ -214,7 +214,7 @@ public class ChanPost {
     }
 
     public String getPostText(boolean hideAllText) {
-    	if (no < 0) {
+    	if (defData) {
     		return "We're preparing images for you.\n"
     				+ "Please wait.";
     	}
@@ -248,7 +248,7 @@ public class ChanPost {
     }
 
     public String getThreadText(boolean hideAllText, int maxImageTextLen, int maxImageTextAbbrLen, boolean onBoard) {
-    	if (no < 0) {
+    	if (defData) {
     		return "We're preparing images for you.\n"
     				+ "Please wait.";
     	}

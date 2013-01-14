@@ -204,7 +204,7 @@ public class ChanFileStorage {
 	}
 	
 	private static ChanBoard prepareDefaultBoardData(Context context, String boardCode) {
-		ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
+		ChanBoard board = ChanBoard.getBoardByCode(context, boardCode).copy();
 		int boardImageId = ChanHelper.getImageResourceId(board.link);
 		
 		ChanThread thread = new ChanThread();
@@ -216,9 +216,11 @@ public class ChanFileStorage {
 		thread.tim = thread.created.getTime() * 1000;
 		thread.tn_w = 240;
 		thread.tn_h = 240;
+		thread.defData = true;
 		
 		board.threads = new ChanThread[] { thread };
 		board.lastFetched = 0;
+		board.defData = true;
 		
 		return board;
 	}
@@ -267,24 +269,27 @@ public class ChanFileStorage {
 		thread.closed = 0;
 		thread.created = new Date();
 		thread.images = 0;
-		thread.no = -100;
+		thread.replies = 0;
+		thread.no = threadNo;
 		thread.tim = thread.created.getTime() * 1000;
 		thread.tn_w = 0;
 		thread.tn_h = 0;
 		
 		ChanPost post = new ChanPost();
-		post.no = -100;
+		post.no = threadNo;
 		post.board = boardCode;
 		post.closed = 0;
 		post.created = new Date();
 		post.images = 0;
-		post.no = -101;
+		post.no = threadNo;
 		post.tim = thread.created.getTime() * 1000;
 		post.tn_w = 0;
 		post.tn_h = 0;
+		post.defData = true;
 		
 		thread.posts = new ChanPost[] { post };
 		thread.lastFetched = 0;
+		thread.defData = true;
 		
 		return thread;
 	}

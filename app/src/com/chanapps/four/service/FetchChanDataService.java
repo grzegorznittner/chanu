@@ -152,7 +152,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         HttpURLConnection tc = null;
 		try {
 			board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
-			if (board.no < 0) {
+			if (board.defData) {
 				board = ChanBoard.getBoardByCode(getBaseContext(), boardCode);
 			}
 			URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/" + pageNo + ".json");
@@ -225,7 +225,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 		try {
             thread = ChanFileStorage.loadThreadData(this, boardCode, threadNo);
             long now = (new Date()).getTime();
-            if (thread.no < 0) {
+            if (thread.defData) {
                 thread = new ChanThread();
                 thread.board = boardCode;
                 thread.no = threadNo;

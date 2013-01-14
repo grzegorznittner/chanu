@@ -18,7 +18,6 @@ import android.util.Log;
 
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
@@ -89,7 +88,7 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
         long startTime = Calendar.getInstance().getTimeInMillis();
 		try {
 			thread = ChanFileStorage.loadThreadData(this, boardCode, threadNo);
-			if (thread.no < 0) {
+			if (thread == null || thread.defData) {
 				thread = new ChanThread();
                 thread.board = boardCode;
                 thread.no = threadNo;
@@ -132,10 +131,6 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
             post.board = boardCode;
             posts.add(post);
             Log.v(TAG, "Added post " + post.no + " to thread " + boardCode + "/" + threadNo);
-            if (new Date().getTime() - time > STORE_INTERVAL_MS) {
-            	thread.mergePosts(posts);
-                ChanFileStorage.storeThreadData(getBaseContext(), thread);
-        	}
         }
         thread.mergePosts(posts);
 
