@@ -8,7 +8,7 @@ public class ChanThread extends ChanPost {
 	public long lastFetched;
 
 	public ChanPost posts[] = new ChanPost[0];
-
+	
     public void mergePosts(List<ChanPost> posts) {
         List<ChanPost> mergedPosts = new ArrayList<ChanPost>(Arrays.asList(this.posts));
         for (ChanPost newPost : posts) {

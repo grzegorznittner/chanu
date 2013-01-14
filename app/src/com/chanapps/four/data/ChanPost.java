@@ -327,5 +327,5 @@ public class ChanPost {
         //return m.matches();
         return matches;
     }
-
+    
 }

@@ -108,6 +108,10 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
 //    	List<ChanPost> stickyPosts = new ArrayList<ChanPost>();
     	List<ChanPost> threads = new ArrayList<ChanPost>();
     	board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
+    	if (board.no < 0) {
+    		// default board we should not use it
+    		board = ChanBoard.getBoardByCode(getBaseContext(), boardCode);
+    	}
 
         if (pageNo != 0) { // preserve existing threads on subsequent page loads
 //            if (board.stickyPosts != null && board.stickyPosts.length > 0) {

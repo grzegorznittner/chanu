@@ -89,6 +89,12 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
         long startTime = Calendar.getInstance().getTimeInMillis();
 		try {
 			thread = ChanFileStorage.loadThreadData(this, boardCode, threadNo);
+			if (thread.no < 0) {
+				thread = new ChanThread();
+                thread.board = boardCode;
+                thread.no = threadNo;
+                thread.isDead = false;
+			}
 			
 			File threadFile = ChanFileStorage.getThreadFile(getBaseContext(), boardCode, threadNo);
 			parseThread(new BufferedReader(new FileReader(threadFile)));
