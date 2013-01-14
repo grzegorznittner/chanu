@@ -159,16 +159,6 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             if (pageNo == 0) {
                 if (DEBUG) Log.i(TAG, "page 0 request, therefore resetting board.lastPage to false");
                 board.lastPage = false;
-            }
-
-            if (pageNo > 0 && board.lastPage) {
-                if (DEBUG) Log.i(TAG, "Board request after last page, therefore service is terminating");
-                return;
-            }
-
-            if (pageNo == 0) {
-                if (DEBUG) Log.i(TAG, "page 0 request, therefore resetting board.lastPage to false");
-                board.lastPage = false;
                 long interval = now - board.lastFetched;
                 if (force && interval < MIN_BOARD_FORCE_INTERVAL) {
                     if (DEBUG) Log.i(TAG, "board is forced but interval=" + interval + " is less than min=" + MIN_BOARD_FORCE_INTERVAL + " so exiting");

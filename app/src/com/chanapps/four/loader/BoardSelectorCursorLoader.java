@@ -52,7 +52,7 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
             MatrixCursor.RowBuilder row = cursor.newRow();
             row.add(board.link.hashCode());
             row.add(board.link);
-            row.add(getImageResourceId(board.link));
+            row.add(ChanHelper.getImageResourceId(board.link));
             row.add(board.name);
         }
 
@@ -62,21 +62,6 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
 
         registerContentObserver(cursor, mObserver);
   		return cursor;
-    }
-
-    private int getImageResourceId(String boardCode) {
-        int imageId = 0;
-        try {
-            imageId = R.drawable.class.getField(boardCode).getInt(null);
-        } catch (Exception e) {
-            try {
-                imageId = R.drawable.class.getField("board_" + boardCode).getInt(null);
-            } catch (Exception e1) {
-                imageId = R.drawable.stub_image;
-            }
-        }
-        if (DEBUG) Log.v(BoardSelectorActivity.TAG, "Found image for board " + boardCode + " image Id: " + imageId);
-        return imageId;
     }
 
     /**

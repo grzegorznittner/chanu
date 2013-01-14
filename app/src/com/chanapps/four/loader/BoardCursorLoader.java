@@ -5,17 +5,15 @@ import java.io.PrintWriter;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.*;
-import com.chanapps.four.service.BoardLoadService;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.service.FetchChanDataService;
 
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
@@ -52,46 +50,40 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     public Cursor loadInBackground() {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
-        if (board == null) { // this shouldn't happen, so reload
-            if (DEBUG) Log.i(TAG, "Reloading board " + boardName + " - starting BoardLoadService");
-            FetchChanDataService.scheduleBoardFetch(context, boardName);
-        } else {
-            MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
-            for (ChanPost thread : board.threads) {
-                if (thread.tn_w <= 0 || thread.tim == 0) {
-                    Log.e(TAG, "Board thread without image, should never happen, board=" + boardName + " threadNo=" + thread.no);
-                    matrixCursor.addRow(new Object[] {
-                            thread.no, boardName, 0, "",
-                            thread.getCountryFlagUrl(),
-                            thread.getBoardThreadText(), thread.getHeaderText(), thread.getFullText(),
-                            thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.isDead ? 1 : 0, 0, 0});
+        MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
+        for (ChanPost thread : board.threads) {
+            if (thread.tn_w <= 0 || thread.tim == 0) {
+                Log.e(TAG, "Board thread without image, should never happen, board=" + boardName + " threadNo=" + thread.no);
+                matrixCursor.addRow(new Object[] {
+                        thread.no, boardName, 0, "",
+                        thread.getCountryFlagUrl(),
+                        thread.getBoardThreadText(), thread.getHeaderText(), thread.getFullText(),
+                        thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.isDead ? 1 : 0, 0, 0});
 
-                } else {
-                    matrixCursor.addRow(new Object[] {
-                            thread.no, boardName, 0,
-                            thread.getThumbnailUrl(), thread.getCountryFlagUrl(),
-                            thread.getBoardThreadText(), thread.getHeaderText(), thread.getFullText(),
-                            thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.isDead ? 1 : 0, 0, 0});
-                }
-            }
-            if (board.lastPage) {
+            } else {
                 matrixCursor.addRow(new Object[] {
-                        2, boardName, 0,
-                        "", "",
-                        "", "", "",
-                        -1, -1, -1, -1, 0, 1, 0, 1});
+                        thread.no, boardName, 0,
+                        thread.getThumbnailUrl(), thread.getCountryFlagUrl(),
+                        thread.getBoardThreadText(), thread.getHeaderText(), thread.getFullText(),
+                        thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.isDead ? 1 : 0, 0, 0});
             }
-            else {
-                matrixCursor.addRow(new Object[] {
-                        2, boardName, 0,
-                        "", "",
-                        "", "", "",
-                        -1, -1, -1, -1, 0, 1, 1, 0});
-                registerContentObserver(matrixCursor, mObserver);
-            }
-            return matrixCursor;
         }
-        return null;
+        if (board.lastPage) {
+            matrixCursor.addRow(new Object[] {
+                    2, boardName, 0,
+                    "", "",
+                    "", "", "",
+                    -1, -1, -1, -1, 0, 1, 0, 1});
+        }
+        else {
+            matrixCursor.addRow(new Object[] {
+                    2, boardName, 0,
+                    "", "",
+                    "", "", "",
+                    -1, -1, -1, -1, 0, 1, 1, 0});
+            registerContentObserver(matrixCursor, mObserver);
+        }
+        return matrixCursor;
     }
 
     /**

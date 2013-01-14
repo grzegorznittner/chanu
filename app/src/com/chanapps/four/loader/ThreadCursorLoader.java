@@ -58,45 +58,38 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         }
         int isDead = thread != null && thread.isDead ? 1 : 0;
         if (DEBUG) Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
-        if (thread == null) { // this shouldn't happen, so reload
-            if (DEBUG) Log.i(TAG, "Reloading thread " + boardName + "/" + threadNo + " - starting ThreadLoadService");
-            FetchChanDataService.scheduleThreadFetch(context, boardName, threadNo);
+        MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
+        for (ChanPost post : thread.posts) {
+            post.isDead = thread.isDead; // inherit from parent
+            if (post.tn_w <= 0 || post.tim == 0) {
+                if (!hideAllText || post.resto == 0) {
+                    String postText = post.resto == 0 ? post.getThreadText() : post.getPostText();
+                    if (postText != null && !postText.isEmpty()) {
+                        matrixCursor.addRow(new Object[] {
+                                post.no, boardName, threadNo,
+                                "", post.getCountryFlagUrl(),
+                                postText, post.getHeaderText(), post.getFullText(),
+                                post.tn_w, post.tn_h, post.w, post.h, post.tim, isDead, 0, 0});
+                        if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
+                    }
+                }
+            } else {
+                String postText = post.resto == 0 ? post.getThreadText(hideAllText) : post.getPostText(hideAllText);
+                matrixCursor.addRow(new Object[] {
+                        post.no, boardName, threadNo,
+                        post.getThumbnailUrl(), post.getCountryFlagUrl(),
+                        postText, post.getHeaderText(), post.getFullText(),
+                        post.tn_w, post.tn_h, post.w, post.h, post.tim, isDead, 0, 0});
+                if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " text=" + postText);
+            }
+        }
+        if (thread.posts.length > 0) {
+            registerContentObserver(matrixCursor, mObserver);
+            return matrixCursor;
         }
         else {
-            MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
-            for (ChanPost post : thread.posts) {
-                post.isDead = thread.isDead; // inherit from parent
-                if (post.tn_w <= 0 || post.tim == 0) {
-                    if (!hideAllText || post.resto == 0) {
-                        String postText = post.resto == 0 ? post.getThreadText() : post.getPostText();
-                        if (postText != null && !postText.isEmpty()) {
-                            matrixCursor.addRow(new Object[] {
-                                    post.no, boardName, threadNo,
-                                    "", post.getCountryFlagUrl(),
-                                    postText, post.getHeaderText(), post.getFullText(),
-                                    post.tn_w, post.tn_h, post.w, post.h, post.tim, isDead, 0, 0});
-                            if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
-                        }
-                    }
-                } else {
-                    String postText = post.resto == 0 ? post.getThreadText(hideAllText) : post.getPostText(hideAllText);
-                    matrixCursor.addRow(new Object[] {
-                            post.no, boardName, threadNo,
-                            post.getThumbnailUrl(), post.getCountryFlagUrl(),
-                            postText, post.getHeaderText(), post.getFullText(),
-                            post.tn_w, post.tn_h, post.w, post.h, post.tim, isDead, 0, 0});
-                    if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " text=" + postText);
-                }
-            }
-            if (thread.posts.length > 0) {
-                registerContentObserver(matrixCursor, mObserver);
-                return matrixCursor;
-            }
-            else {
-                return null;
-            }
+            return null;
         }
-        return null;
     }
 
     @Override

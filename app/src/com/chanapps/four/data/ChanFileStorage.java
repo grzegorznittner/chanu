@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.util.Date;
 import java.util.WeakHashMap;
 
@@ -169,8 +170,8 @@ public class ChanFileStorage {
 	
 	public static ChanBoard loadBoardData(Context context, String boardCode) {
 		if (boardCode == null) {
-			Log.w(TAG, "Trying to load 'null' board! Check stack trace why has it happened.", new Exception());
-			return null;
+			Log.e(TAG, "Trying to load 'null' board! Check stack trace why has it happened.", new Exception());
+			throw new RuntimeException("Null board code was passed!");
 		}
 		if (boardCache.containsKey(boardCode)) {
 			if (DEBUG) Log.i(TAG, "Retruning board " + boardCode + " data from cache");
@@ -199,7 +200,27 @@ public class ChanFileStorage {
 				boardFile.delete();
             }
 		}
-		return ChanBoard.getBoardByCode(context, boardCode);
+		return prepareDefaultBoardData(context, boardCode);
+	}
+	
+	private static ChanBoard prepareDefaultBoardData(Context context, String boardCode) {
+		ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
+		int boardImageId = ChanHelper.getImageResourceId(board.link);
+		
+		ChanThread thread = new ChanThread();
+		thread.board = boardCode;
+		thread.closed = 0;
+		thread.created = new Date();
+		thread.images = 1;
+		thread.no = -100;
+		thread.tim = thread.created.getTime() * 1000;
+		thread.tn_w = 240;
+		thread.tn_h = 240;
+		
+		board.threads = new ChanThread[] { thread };
+		board.lastFetched = 0;
+		
+		return board;
 	}
 
 	public static ChanThread loadThreadData(Context context, String boardCode, long threadNo) {
@@ -237,7 +258,35 @@ public class ChanFileStorage {
 				threadFile.delete();
             }
 		}
-		return null;
+		return prepareDefaultThreadData(context, boardCode, threadNo);
+	}
+	
+	private static ChanThread prepareDefaultThreadData(Context context, String boardCode, long threadNo) {
+		ChanThread thread = new ChanThread();
+		thread.board = boardCode;
+		thread.closed = 0;
+		thread.created = new Date();
+		thread.images = 0;
+		thread.no = -100;
+		thread.tim = thread.created.getTime() * 1000;
+		thread.tn_w = 0;
+		thread.tn_h = 0;
+		
+		ChanPost post = new ChanPost();
+		post.no = -100;
+		post.board = boardCode;
+		post.closed = 0;
+		post.created = new Date();
+		post.images = 0;
+		post.no = -101;
+		post.tim = thread.created.getTime() * 1000;
+		post.tn_w = 0;
+		post.tn_h = 0;
+		
+		thread.posts = new ChanPost[] { post };
+		thread.lastFetched = 0;
+		
+		return thread;
 	}
 	
 	public static void storeUserPreferences(Context context, UserPreferences userPrefs) {

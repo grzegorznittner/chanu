@@ -1,7 +1,11 @@
 package com.chanapps.four.data;
 
+import com.chanapps.four.activity.BoardSelectorActivity;
+import com.chanapps.four.activity.R;
+
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 public class ChanHelper {
 	public static final int VERBOSE = 0;
@@ -122,5 +126,21 @@ public class ChanHelper {
             return Orientation.PORTRAIT;
         }
     }
+
+    public static int getImageResourceId(String boardCode) {
+        int imageId = 0;
+        try {
+            imageId = R.drawable.class.getField(boardCode).getInt(null);
+        } catch (Exception e) {
+            try {
+                imageId = R.drawable.class.getField("board_" + boardCode).getInt(null);
+            } catch (Exception e1) {
+                imageId = R.drawable.stub_image;
+            }
+        }
+        // if (DEBUG) Log.v(BoardSelectorActivity.TAG, "Found image for board " + boardCode + " image Id: " + imageId);
+        return imageId;
+    }
+
 
 }

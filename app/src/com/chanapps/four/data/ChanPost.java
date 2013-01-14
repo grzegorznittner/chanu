@@ -169,9 +169,14 @@ public class ChanPost {
 
 
    	public String getThumbnailUrl() {
-        return tim != 0
-   			? "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg"
-            : null;
+   		if (tim > 0) {
+   			return "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg";
+   		} else if (tim == 0) {
+   			return null;
+   		} else {
+   			// default board image should be returned
+   			return null;
+   		}
     }
 
    	public String getImageUrl() {
@@ -209,6 +214,11 @@ public class ChanPost {
     }
 
     public String getPostText(boolean hideAllText) {
+    	if (no < 0) {
+    		return "We're preparing images for you.\n"
+    				+ "Please wait.";
+    	}
+
         int maxImageTextLen = fsize > 0 ? MAX_IMAGETEXT_LEN : MAX_TEXTONLY_LEN;
         int maxImageTextAbbrLen = fsize > 0 ? MAX_IMAGETEXT_ABBR_LEN : MAX_TEXTONLY_ABBR_LEN;
         String text = "";
@@ -238,6 +248,11 @@ public class ChanPost {
     }
 
     public String getThreadText(boolean hideAllText, int maxImageTextLen, int maxImageTextAbbrLen, boolean onBoard) {
+    	if (no < 0) {
+    		return "We're preparing images for you.\n"
+    				+ "Please wait.";
+    	}
+    	
         String text = "";
         if (!hideAllText) {
             if (!onBoard)
