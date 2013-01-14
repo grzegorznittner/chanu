@@ -2,7 +2,6 @@ package com.chanapps.four.activity;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -16,7 +15,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
+import com.chanapps.four.widget.UpdateWidgetService;
+import com.chanapps.four.widget.WidgetAlarmReceiver;
 import com.chanapps.four.adapter.TabsAdapter;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
@@ -57,7 +57,13 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         if (DEBUG) Log.v(TAG, "onCreate");
         if (ensurePrefs().getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
             (new ChanWatchlist.CleanWatchlistTask(this, null, false)).execute();
+        // ready the widget updating
+        Intent updateIntent = new Intent(this, UpdateWidgetService.class);
+        startService(updateIntent);
+        WidgetAlarmReceiver.scheduleAlarms(this);
+
         //SmartCache.fillCache(this);
+
         Intent intent = getIntent();
         if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
         	if (DEBUG) Log.i(TAG, "Starting dispatch");

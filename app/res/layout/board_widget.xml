@@ -9,14 +9,14 @@
             android:verticalSpacing="8dp"
             android:horizontalSpacing="8dp"
             android:weightSum="3"
-            android:background="@android:color/background_dark"
+            android:background="@android:color/transparent"
         >
 
     <ImageView android:id="@+id/image_left"
                android:layout_height="fill_parent"
                android:layout_width="0dp"
                android:contentDescription="Left Thumbnail Image"
-               android:scaleType="centerCrop"
+               android:scaleType="centerInside"
                android:layout_weight="1"
                android:padding="2dp"
             />
@@ -25,7 +25,7 @@
                android:layout_height="fill_parent"
                android:layout_width="0dp"
                android:contentDescription="Center Thumbnail Image"
-               android:scaleType="centerCrop"
+               android:scaleType="centerInside"
                android:layout_weight="1"
                android:padding="2dp"
             />
@@ -34,7 +34,7 @@
                android:layout_height="fill_parent"
                android:layout_width="0dp"
                android:contentDescription="Right Thumbnail Image"
-               android:scaleType="centerCrop"
+               android:scaleType="centerInside"
                android:layout_weight="1"
                android:padding="2dp"
             />

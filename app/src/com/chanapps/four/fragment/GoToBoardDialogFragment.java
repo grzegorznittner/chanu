@@ -34,13 +34,7 @@ public class GoToBoardDialogFragment extends DialogFragment {
     synchronized private static void lazyInitBoards(Context context) {
         if (boards != null)
             return;
-        List<ChanBoard> chanBoards = ChanBoard.getBoards(context);
-        Collections.sort(chanBoards, new Comparator<ChanBoard>() {
-            @Override
-            public int compare(ChanBoard lhs, ChanBoard rhs) {
-                return lhs.link.compareToIgnoreCase(rhs.link);
-            }
-        });
+        List<ChanBoard> chanBoards = ChanBoard.getSortedBoards(context);
         boards = new String[chanBoards.size()+1];
         boards[0] = "Watchlist";
         int i = 1;

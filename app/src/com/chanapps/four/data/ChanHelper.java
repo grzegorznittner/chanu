@@ -74,6 +74,8 @@ public class ChanHelper {
     public static final String PRIORITY_MESSAGE = "priorityFetch";
     public static final String CLEAR_FETCH_QUEUE = "clearFetchQueue";
 
+    public static final String FIRST_TIME_INIT = "firstTimeInit";
+
     public static final String[] POST_COLUMNS = {
             POST_ID,
             POST_BOARD_NAME,

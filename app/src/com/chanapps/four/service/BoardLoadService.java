@@ -24,6 +24,7 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.widget.UpdateWidgetService;
 import com.chanapps.four.service.NetworkProfile.Failure;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -85,16 +86,25 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
 
         long startTime = Calendar.getInstance().getTimeInMillis();
 		try {
-            File boardFile = ChanFileStorage.getBoardFile(getBaseContext(), boardCode, pageNo);
+            Context context = getBaseContext();
+
+            File boardFile = ChanFileStorage.getBoardFile(context, boardCode, pageNo);
             parseBoard(new BufferedReader(new FileReader(boardFile)));
 
             Log.w(TAG, "Parsed board " + boardCode + " page " + pageNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             startTime = Calendar.getInstance().getTimeInMillis();
 
-            ChanFileStorage.storeBoardData(getBaseContext(), board);
+            ChanFileStorage.storeBoardData(context, board);
             Log.w(TAG, "Stored board " + boardCode + " page " + pageNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+
+            // tell it to refresh widget
+            if (boardCode.equals(UpdateWidgetService.getConfiguredBoardWidget(context))) {
+                Intent updateIntent = new Intent(context, UpdateWidgetService.class);
+                context.startService(updateIntent);
+            }
+
             NetworkProfileManager.instance().finishedParsingData(this);
         } catch (Exception e) {
             //toastUI(R.string.board_service_couldnt_read);

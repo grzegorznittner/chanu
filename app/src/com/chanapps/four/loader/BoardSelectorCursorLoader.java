@@ -1,22 +1,19 @@
 package com.chanapps.four.loader;
 
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.List;
+
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import com.chanapps.four.activity.BoardSelectorActivity;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.data.*;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.List;
+import com.chanapps.four.activity.BoardSelectorActivity;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanHelper;
 
 public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
 
