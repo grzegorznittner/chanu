@@ -5,7 +5,10 @@ import java.util.List;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.LoaderManager;
-import android.content.*;
+import android.content.Context;
+import android.content.Intent;
+import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,7 +32,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.chanapps.four.adapter.BoardCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
@@ -41,7 +43,7 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.BoardCursorLoader;
-import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -114,6 +116,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 		if (DEBUG) Log.v(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         loadFromIntentOrPrefs();
+        NetworkProfileManager.instance().activityChange(this);
 //        adView = new AdView(this, AdSize.BANNER, AD_UNIT_ID);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(this));
@@ -181,6 +184,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 		super.onResume();
 		if (DEBUG) Log.v(TAG, "onResume");
         restoreInstanceState();
+		NetworkProfileManager.instance().activityChange(this);
 	}
 
 //    public PullToRefreshGridView getGridView() {
@@ -249,24 +253,11 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
     protected void restoreInstanceState() {
         if (DEBUG) Log.i(TAG, "Restoring instance state...");
         loadFromIntentOrPrefs();
-        startLoadService();
         setActionBarTitle();
         scrollToLastPosition();
-        if (getLoaderManager().getLoader(0) == null || !getLoaderManager().getLoader(0).isStarted()) {
-            ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_MICRO_MS); // shorter than usual
-        }
-    }
-
-    protected void startLoadService() {
-        startLoadService(false);
-    }
-
-    protected void startLoadService(boolean force) {
-    	if (force) {
-    		FetchChanDataService.startService(this, boardCode);
-    	} else {
-    		FetchChanDataService.startServiceWithPriority(this, boardCode);
-    	}
+//        if (getLoaderManager().getLoader(0) == null || !getLoaderManager().getLoader(0).isStarted()) {
+//            ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_MICRO_MS); // shorter than usual
+//        }
     }
 
     protected void saveInstanceState() {
@@ -398,7 +389,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 		adapter.swapCursor(data);
 
         int size = data == null ? 0 : data.getCount();
-        ensureHandler().sendEmptyMessageDelayed(0, getOptimalRefreshTime(size));
+        //ensureHandler().sendEmptyMessageDelayed(0, getOptimalRefreshTime(size));
 
         if (gridView != null) {
             if (scrollOnNextLoaderFinished > 0) {
@@ -451,8 +442,8 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
                 NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.refresh_board_menu:
-                Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_LONG).show();
-                startLoadService(true);
+                //Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_LONG).show();
+            	NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
@@ -659,11 +650,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 		return new ChanActivityId(LastActivity.BOARD_ACTIVITY, boardCode);
 	}
 
-	@Override
-	public AsyncTaskLoader<Cursor> getChanCursorLoader() {
-		return cursorLoader;
-	}
-	
 	@Override
 	public Handler getChanHandler() {
 		return handler;

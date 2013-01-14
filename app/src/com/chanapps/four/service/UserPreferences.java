@@ -18,4 +18,19 @@ public class UserPreferences {
 	
 	public Date lastUpdate;
 	public Date lastStored;
+	
+	public void boardOpened(String boardCode) {
+		boardOpen.put(boardCode, boardOpen.get(boardCode) + 1);
+		lastUpdate = new Date();
+	}
+	
+	public void threadOpened(String boardCode, long threadNo) {
+		boardThread.put(boardCode, boardThread.get(boardCode) + 1);
+		lastUpdate = new Date();
+	}
+	
+	public void imageDownloaded(String boardCode, long postNo) {
+		boardFullImage.put(boardCode, boardFullImage.get(boardCode) + 1);
+		lastUpdate = new Date();
+	}
 }

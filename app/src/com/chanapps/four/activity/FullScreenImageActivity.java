@@ -17,6 +17,7 @@ import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.service.NetworkProfileManager;
 
 import android.app.Activity;
 import android.app.DownloadManager;
@@ -130,6 +131,8 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+        NetworkProfileManager.instance().activityChange(this);
 
         ctx = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -366,6 +369,8 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 		super.onResume();
 		Log.i(TAG, "onResume");
         loadOrShowImage();
+        
+        NetworkProfileManager.instance().activityChange(this);
 	}
 	
 	public void onWindowFocusChanged (boolean hasFocus) {
@@ -845,11 +850,6 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 		return new ChanActivityId(LastActivity.FULL_SCREEN_IMAGE_ACTIVITY);
 	}
 
-	@Override
-	public AsyncTaskLoader<Cursor> getChanCursorLoader() {
-		return null;
-	}
-	
 	@Override
 	public Handler getChanHandler() {
 		return handler;

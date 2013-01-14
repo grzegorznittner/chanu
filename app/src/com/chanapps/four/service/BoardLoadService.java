@@ -17,14 +17,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.widget.UpdateWidgetService;
-import com.chanapps.four.widget.WidgetAlarmReceiver;
+import com.chanapps.four.service.NetworkProfile.Failure;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -33,7 +34,7 @@ import com.google.gson.stream.JsonReader;
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
  *
  */
-public class BoardLoadService extends BaseChanService {
+public class BoardLoadService extends BaseChanService implements ChanIdentifiedService {
 
     protected static final String TAG = BoardLoadService.class.getSimpleName();
 	
@@ -98,18 +99,17 @@ public class BoardLoadService extends BaseChanService {
             Log.w(TAG, "Stored board " + boardCode + " page " + pageNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
 
-            // tell it to refresh
+            // tell it to refresh widget
             if (boardCode.equals(UpdateWidgetService.getConfiguredBoardWidget(context))) {
                 Intent updateIntent = new Intent(context, UpdateWidgetService.class);
                 context.startService(updateIntent);
             }
 
-        } catch (IOException e) {
-            toastUI(R.string.board_service_couldnt_read);
+            NetworkProfileManager.instance().finishedParsingData(this);
+        } catch (Exception e) {
+            //toastUI(R.string.board_service_couldnt_read);
+        	NetworkProfileManager.instance().failedParsingData(this, Failure.WRONG_DATA);
             Log.e(TAG, "IO Error reading Chan board json", e);
-		} catch (Exception e) {
-            toastUI(R.string.board_service_couldnt_load);
-			Log.e(TAG, "Error parsing Chan board json", e);
 		}
 	}
 
@@ -196,4 +196,8 @@ public class BoardLoadService extends BaseChanService {
         Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
 
+	@Override
+	public ChanActivityId getChanActivityId() {
+		return new ChanActivityId(boardCode, pageNo, force);
+	}
 }

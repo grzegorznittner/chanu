@@ -36,6 +36,7 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadLoadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -201,15 +202,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     @Override
-    protected void startLoadService(boolean force) {
-    	if (force) {
-    		FetchChanDataService.startServiceWithPriority(this, boardCode, threadNo);
-    	} else {
-    		FetchChanDataService.startService(this, boardCode, threadNo);
-    	}
-    }
-
-    @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         return setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions, hideAllText);
     }
@@ -290,8 +282,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 NavUtils.navigateUpTo(this, upIntent);
                 return true;
             case R.id.refresh_thread_menu:
-                Toast.makeText(this, R.string.refresh_thread_menu, Toast.LENGTH_LONG);
-                startLoadService(true);
+                //Toast.makeText(this, R.string.refresh_thread_menu, Toast.LENGTH_LONG);
+                NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.hide_all_text:
                 toggleHideAllText();
@@ -426,11 +418,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 		return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo);
 	}
 
-	@Override
-	public AsyncTaskLoader<Cursor> getChanCursorLoader() {
-		return cursorLoader;
-	}
-	
 	@Override
 	public Handler getChanHandler() {
 		return handler;

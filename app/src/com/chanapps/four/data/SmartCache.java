@@ -1,22 +1,18 @@
 package com.chanapps.four.data;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.nfc.Tag;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import com.chanapps.four.service.BoardLoadService;
-import com.chanapps.four.service.FetchChanDataService;
-import com.chanapps.four.service.ThreadLoadService;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.chanapps.four.service.FetchChanDataService;
 
 /**
  * Created with IntelliJ IDEA.
@@ -84,7 +80,7 @@ public class SmartCache {
             long threadNo = ChanWatchlist.getThreadNoFromThreadPath(threadPath);
             // FIXME should say if !threadIsDead we should store this somewhere
             Log.i(TAG, "Starting load service for watching thread " + boardCode + "/" + threadNo);
-            FetchChanDataService.startService(context, boardCode, threadNo);
+            FetchChanDataService.scheduleThreadFetch(context, boardCode, threadNo);
         }
     }
 
@@ -93,7 +89,7 @@ public class SmartCache {
         for (ChanBoard board : boards) {
             if (!ChanFileStorage.isBoardCachedOnDisk(context, board.link)) { // if user never visited board before
                 Log.i(TAG, "Starting load service for uncached board " + board.link);
-                FetchChanDataService.startService(context, board.link);
+                FetchChanDataService.scheduleBoardFetch(context, board.link);
             }
         }
     }

@@ -54,7 +54,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         if (board == null) { // this shouldn't happen, so reload
             if (DEBUG) Log.i(TAG, "Reloading board " + boardName + " - starting BoardLoadService");
-            FetchChanDataService.startService(context, boardName);
+            FetchChanDataService.scheduleBoardFetch(context, boardName);
         } else {
             MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
             for (ChanPost thread : board.threads) {

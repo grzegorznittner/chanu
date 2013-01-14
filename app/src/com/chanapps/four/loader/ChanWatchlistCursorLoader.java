@@ -20,6 +20,7 @@ import java.util.List;
 public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = ChanWatchlistCursorLoader.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     protected final ForceLoadContentObserver mObserver;
 
@@ -39,10 +40,10 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
         if (savedWatchlist == null || savedWatchlist.isEmpty()) {
             return null;
         }
-        Log.d(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
+        if (DEBUG) Log.d(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
         MatrixCursor cursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
         for (String threadPath : savedWatchlist) {
-            Log.d(TAG, "Parsing threadpath: " + threadPath);
+            if (DEBUG) Log.d(TAG, "Parsing threadpath: " + threadPath);
 
             try {
                 String[] threadComponents = ChanWatchlist.getThreadPathComponents(threadPath);
@@ -62,7 +63,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 ChanThread thread = null;
                 ChanPost threadPost = null;
                 try {
-                    Log.i(TAG, "trying to load thread " + boardCode + "/" + threadNo + " from storage");
+                    if (DEBUG) Log.i(TAG, "trying to load thread " + boardCode + "/" + threadNo + " from storage");
                     thread = ChanFileStorage.loadThreadData(getContext(), boardCode, threadNo);
                     if (thread != null) {
                         threadPost = thread.posts[0];
@@ -72,7 +73,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                     Log.e(TAG, "Error loading thread data from storage", e);
                 }
                 if (threadPost != null) { // pull from cache, it will have the latest data
-                    Log.i(TAG, "Found cached watchlist thread " + boardCode + "/" + threadNo + ", updating from cache");
+                    if (DEBUG) Log.i(TAG, "Found cached watchlist thread " + boardCode + "/" + threadNo + ", updating from cache");
                     threadPost.isDead = thread.isDead;
                     tim = threadPost.tim;
                     shortText = threadPost.getBoardThreadText();
@@ -89,7 +90,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                             text, imageUrl, imageWidth, imageHeight, thread.isDead);
                 }
                 else { // thread not in cache, pull last stored from watchlist prefs
-                    Log.i(TAG, "Didn't find cached watchlist thread " + boardCode + "/" + threadNo + ", loading from prefs");
+                    if (DEBUG) Log.i(TAG, "Didn't find cached watchlist thread " + boardCode + "/" + threadNo + ", loading from prefs");
                     tim = Long.valueOf(threadComponents[0]);
                     shortText = (threadComponents[3].length() > ChanPost.MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN
                             ? threadComponents[3].substring(0, ChanPost.MAX_BOARDTHREAD_IMAGETEXT_LEN) + "..."
@@ -121,8 +122,8 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 row.add(isDead);
                 row.add(0);
                 row.add(0);
-                Log.i(TAG, "Thread dead status for " + boardCode + "/" + threadNo + " is " + isDead);
-                Log.d(TAG, "Watchlist cursor has: " + threadNo + " " + boardCode + " " + imageUrl + " " + shortText);
+                if (DEBUG) Log.i(TAG, "Thread dead status for " + boardCode + "/" + threadNo + " is " + isDead);
+                if (DEBUG) Log.d(TAG, "Watchlist cursor has: " + threadNo + " " + boardCode + " " + imageUrl + " " + shortText);
             }
             catch (Exception e) {
                 Log.e(TAG, "Error parsing watch preferences ", e);
@@ -146,7 +147,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
     /* Runs on the UI thread */
     @Override
     public void deliverResult(Cursor cursor) {
-		Log.i(TAG, "deliverResult isReset(): " + isReset());
+		if (DEBUG) Log.i(TAG, "deliverResult isReset(): " + isReset());
         if (isReset()) {
             // An async query came in while the loader is stopped
             if (cursor != null) {
@@ -175,7 +176,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
      */
     @Override
     protected void onStartLoading() {
-    	Log.i(TAG, "onStartLoading mCursor: " + mCursor);
+    	if (DEBUG) Log.i(TAG, "onStartLoading mCursor: " + mCursor);
         if (mCursor != null) {
             deliverResult(mCursor);
         }
@@ -189,14 +190,14 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
      */
     @Override
     protected void onStopLoading() {
-    	Log.i(TAG, "onStopLoading");
+    	if (DEBUG) Log.i(TAG, "onStopLoading");
         // Attempt to cancel the current load task if possible.
         cancelLoad();
     }
 
     @Override
     public void onCanceled(Cursor cursor) {
-    	Log.i(TAG, "onCanceled cursor: " + cursor);
+    	if (DEBUG) Log.i(TAG, "onCanceled cursor: " + cursor);
         if (cursor != null && !cursor.isClosed()) {
             cursor.close();
         }
@@ -205,7 +206,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     protected void onReset() {
         super.onReset();
-        Log.i(TAG, "onReset cursor: " + mCursor);
+        if (DEBUG) Log.i(TAG, "onReset cursor: " + mCursor);
         // Ensure the loader is stopped
         onStopLoading();
 
