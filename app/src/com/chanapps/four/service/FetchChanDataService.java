@@ -186,7 +186,12 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             if (board.lastFetched > 0) {
                 tc.setIfModifiedSince(board.lastFetched);
             }
-            if (DEBUG) Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode());
+            String contentType = tc.getContentType();
+            if (DEBUG) Log.i(TAG, "Calling API " + tc.getURL() + " response length=" + tc.getContentLength() + " code=" + tc.getResponseCode() + " type=" + contentType);
+            if (contentType == null || !contentType.contains("json")) {
+            	throw new IOException("Wrong content type returned '" + contentType + "'");
+            }
+            
             board.lastFetched = now;
             if (pageNo > 0 && tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 if (DEBUG) Log.i(TAG, "Got 404 on next page, assuming last page at pageNo=" + pageNo);

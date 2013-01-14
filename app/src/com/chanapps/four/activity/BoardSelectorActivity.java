@@ -57,7 +57,7 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         if (DEBUG) Log.v(TAG, "onCreate");
         if (ensurePrefs().getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
             (new ChanWatchlist.CleanWatchlistTask(this, null, false)).execute();
-        SmartCache.fillCache(this);
+        //SmartCache.fillCache(this);
         Intent intent = getIntent();
         if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
         	if (DEBUG) Log.i(TAG, "Starting dispatch");

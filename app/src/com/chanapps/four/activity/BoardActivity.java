@@ -115,8 +115,8 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
     protected void onCreate(Bundle savedInstanceState) {
 		if (DEBUG) Log.v(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
-        NetworkProfileManager.instance().activityChange(this);
         loadFromIntentOrPrefs();
+        NetworkProfileManager.instance().activityChange(this);
 //        adView = new AdView(this, AdSize.BANNER, AD_UNIT_ID);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(this));

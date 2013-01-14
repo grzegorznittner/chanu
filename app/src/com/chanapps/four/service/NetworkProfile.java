@@ -11,8 +11,37 @@ import android.content.Context;
  *
  */
 public interface NetworkProfile {
+	/**
+	 * Connection type
+	 */
 	enum Type {WIFI, MOBILE, NO_CONNECTION};
+	/**
+	 * NETWORK - all connection and transmission errors (eg. timeouts)
+	 * MISSING_DATA - requested resource is not available (eg. board page doesn't exist)
+	 * WRONG_DATA - data parse error
+	 */
 	enum Failure {NETWORK, MISSING_DATA, WRONG_DATA};
+	/**
+	 * NO_CONNECTION - phisical connection not established
+	 * BAD - connection established but non of recent request worked
+	 * VERY_SLOW - data are received but at rate 10kB/s or slower
+	 * SLOW - data received at rate 50kB/s or slower
+	 * GOOD - data received at rate 200kB/s or slower
+	 * PERFECT - data received above rate 200kB/s
+	 */
+	enum Health {NO_CONNECTION, BAD, VERY_SLOW, SLOW, GOOD, PERFECT};
+
+	/**
+	 * Returns health status of the connection.
+	 * NO_CONNECTION is only returned when there is no phisical connection established.
+	 */
+	Health getConnectionHealth();
+	
+	/**
+	 * Returns default connection health status. Used when health couldn't be calculated based on
+	 * previous data transfers.
+	 */
+	Health getDefaultConnectionHealth();
 	
 	/**
 	 * Called when application starts.

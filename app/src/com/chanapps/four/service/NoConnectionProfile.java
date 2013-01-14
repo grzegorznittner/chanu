@@ -4,6 +4,10 @@ import android.content.Context;
 
 public class NoConnectionProfile extends AbstractNetworkProfile {
 
+	@Override
+	public Health getConnectionHealth() {
+		return Health.NO_CONNECTION;
+	}
 	
 	@Override
 	public void onProfileActivated(Context context) {

@@ -10,6 +10,7 @@ import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 
 public class MobileProfile extends AbstractNetworkProfile {
@@ -21,25 +22,49 @@ public class MobileProfile extends AbstractNetworkProfile {
 	
 	private static final long MIN_AUTO_REFRESH_INTERVAL = 600000;  // 10 min
 	private static final long MIN_FORCED_REFRESH_INTERVAL = 120000;  // 2 min
+	
+	private String networkType = "3G";
+	
+	public void setNetworkType(String networkType) {
+		this.networkType = networkType;
+	}
 
+	@Override
+	public Health getDefaultConnectionHealth() {
+		if ("2G".equalsIgnoreCase(networkType)) {
+			return Health.VERY_SLOW;
+		} else {
+			return Health.SLOW;
+		}
+	}
+	
 	@Override
 	public void onProfileActivated(Context context) {
 		super.onProfileActivated(context);
 		
-		ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
-		if (activityId != null) {
-			if (activityId.threadNo != 0) {
-				makeToast("Reloading thread data");
-				FetchChanDataService.scheduleThreadFetch(context, activityId.boardCode, activityId.threadNo);
-			} else if (activityId.boardCode != null) {
-				makeToast("Reloading board data");
-				FetchChanDataService.scheduleBoardFetch(context, activityId.boardCode);
-			} else if (activityId.activity == ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY) {
-				makeToast("Preloading boards a, b and s");
-				FetchChanDataService.scheduleBoardFetch(context, "a");
-				FetchChanDataService.scheduleBoardFetch(context, "b");
-				FetchChanDataService.scheduleBoardFetch(context, "s");
+		Health health = getConnectionHealth();
+		if (health != Health.BAD) {
+			ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
+			if (activityId != null) {
+				if (activityId.threadNo != 0) {
+					makeToast("Reloading thread data");
+					FetchChanDataService.scheduleThreadFetch(context, activityId.boardCode, activityId.threadNo);
+				} else if (activityId.boardCode != null) {
+					makeToast("Reloading board data");
+					FetchChanDataService.scheduleBoardFetch(context, activityId.boardCode);
+				} else if (activityId.activity == ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY) {
+					if (health != Health.VERY_SLOW) {
+						makeToast("Preloading boards a, b and s");
+						FetchChanDataService.scheduleBoardFetch(context, "a");
+						FetchChanDataService.scheduleBoardFetch(context, "b");
+						FetchChanDataService.scheduleBoardFetch(context, "s");
+					} else {
+						makeToast("No preloading " + health);
+					}
+				}
 			}
+		} else {
+			makeToast("No auto refresh");
 		}
 	}
 
@@ -52,20 +77,30 @@ public class MobileProfile extends AbstractNetworkProfile {
 	public void onApplicationStart(Context context) {
 		super.onApplicationStart(context);
 		
-		makeToast("Preloading boards a, b and s");
-		FetchChanDataService.scheduleBoardFetch(context, "a");
-		FetchChanDataService.scheduleBoardFetch(context, "b");
-		FetchChanDataService.scheduleBoardFetch(context, "s");
+		Health health = getConnectionHealth();
+		if (health != Health.BAD && health != Health.VERY_SLOW) {
+			makeToast("Preloading boards a, b and s");
+			FetchChanDataService.scheduleBoardFetch(context, "a");
+			FetchChanDataService.scheduleBoardFetch(context, "b");
+			FetchChanDataService.scheduleBoardFetch(context, "s");
+		} else {
+			makeToast("No preloading " + health);
+		}
 	}
 
 	@Override
 	public void onBoardSelectorSelected(Context context) {
 		super.onBoardSelectorSelected(context);
 
-		makeToast("Preloading boards a, b and s");
-		FetchChanDataService.scheduleBoardFetch(context, "a");
-		FetchChanDataService.scheduleBoardFetch(context, "b");
-		FetchChanDataService.scheduleBoardFetch(context, "s");
+		Health health = getConnectionHealth();
+		if (health != Health.BAD && health != Health.VERY_SLOW) {
+			makeToast("Preloading boards a, b and s");
+			FetchChanDataService.scheduleBoardFetch(context, "a");
+			FetchChanDataService.scheduleBoardFetch(context, "b");
+			FetchChanDataService.scheduleBoardFetch(context, "s");
+		} else {
+			makeToast("No preloading " + health);
+		}
 	}
 
 	@Override
@@ -73,6 +108,22 @@ public class MobileProfile extends AbstractNetworkProfile {
 		super.onBoardSelected(context, board);
 		
 		FetchChanDataService.scheduleBoardFetch(context, board);
+		Health health = getConnectionHealth();
+		if (health == Health.GOOD || health == Health.PERFECT) {
+			ChanBoard boardObj = ChanFileStorage.loadBoardData(context, board);
+			int threadPrefechCounter = health == Health.GOOD ? 3 : 7;
+			if (boardObj != null) {
+				for(ChanPost post : boardObj.threads) {
+					if (threadPrefechCounter <= 0) {
+						break;
+					}
+					if (post.closed == 0 && post.sticky == 0 && post.replies > 5 && post.images > 1) {
+						threadPrefechCounter--;
+						FetchChanDataService.scheduleThreadFetch(context, board, post.no);
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -98,27 +149,8 @@ public class MobileProfile extends AbstractNetworkProfile {
 
 	@Override
 	public void onDataFetchSuccess(ChanIdentifiedService service, int time, int size) {
+		// default behaviour is to parse properly loaded item
 		super.onDataFetchSuccess(service, time, size);
-		storeDataTransfer(time, size);
-		
-		ChanActivityId data = service.getChanActivityId();
-		if (data.threadNo == 0) {
-			// board fetching
-	        if (data.priority) {
-	        	BoardLoadService.startServiceWithPriority(service.getApplicationContext(), data.boardCode, data.pageNo);
-	        } else {
-	        	BoardLoadService.startService(service.getApplicationContext(), data.boardCode, data.pageNo);
-	        }
-		} else if (data.postNo == 0) {
-			// thread fetching
-            if (data.priority) {
-            	ThreadLoadService.startServiceWithPriority(service.getApplicationContext(), data.boardCode, data.threadNo);
-            } else {
-            	ThreadLoadService.startService(service.getApplicationContext(), data.boardCode, data.threadNo);
-            }
-		} else {
-			// image fetching
-		}
 	}
 
 	@Override
@@ -193,9 +225,9 @@ public class MobileProfile extends AbstractNetworkProfile {
 
 	@Override
 	public void onDataFetchFailure(ChanIdentifiedService service, Failure failure) {
-		storeFailedDataTransfer();
+		super.onDataFetchFailure(service, failure);
 
-		ChanActivityId data = service.getChanActivityId();		
+		ChanActivityId data = service.getChanActivityId();
 		if (data.threadNo == 0) {
 			// board fetch failed
 			makeToast("Fetching " + data.boardCode + " failed");

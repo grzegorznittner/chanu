@@ -3,6 +3,7 @@
  */
 package com.chanapps.four.service;
 
+import java.util.Date;
 import java.util.Stack;
 
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.DataTransfer;
@@ -24,21 +26,86 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	
 	protected int usageCounter = 0;
 	
-	private static final int MAX_STORED_DATATRANSFERS = 20;
-	protected Stack<DataTransfer> dataTransfers = new Stack<DataTransfer>();
+	private static final int MAX_STORED_DATATRANSFERS = 5;
+	private static final int MAX_DATATRANSFER_INACTIVITY = 600000;  // 10 min
+	private Stack<DataTransfer> dataTransfers = new Stack<DataTransfer>();
 	
-	protected void storeDataTransfer(int time, int size) {
-		dataTransfers.push(new DataTransfer(time, size));
+	private Health currentHealth = null;
+	
+	protected synchronized void checkDataTransfer() {
+		if (dataTransfers.size() > 0) {
+			if (new Date().getTime() - dataTransfers.get(0).time.getTime() > MAX_DATATRANSFER_INACTIVITY) {
+				dataTransfers.clear();
+			}
+		}
+	}
+	
+	protected synchronized void storeDataTransfer(int time, int size) {
+		DataTransfer transfer = new DataTransfer(time, size);
+		dataTransfers.push(transfer);
+		if (DEBUG) Log.i(TAG, "Storing transfer " + transfer);
 		if (dataTransfers.size() > MAX_STORED_DATATRANSFERS) {
 			dataTransfers.setSize(MAX_STORED_DATATRANSFERS);
 		}
 	}
 	
-	protected void storeFailedDataTransfer() {
-		dataTransfers.push(new DataTransfer());
+	protected synchronized void storeFailedDataTransfer() {
+		DataTransfer transfer = new DataTransfer();
+		dataTransfers.push(transfer);
+		if (DEBUG) Log.i(TAG, "Storing transfer " + transfer);
 		if (dataTransfers.size() > MAX_STORED_DATATRANSFERS) {
 			dataTransfers.setSize(MAX_STORED_DATATRANSFERS);
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Health getConnectionHealth() {
+		double rateSum = 0.0;
+		int rateNum = 0;
+		int failures = 0;
+		Stack<DataTransfer> clonedTransfers = (Stack<DataTransfer>)dataTransfers.clone();
+		if (clonedTransfers.size() < 2) {
+			Health defaultHealth = getDefaultConnectionHealth();
+			if (DEBUG) Log.i(TAG, "Less than 2 transfers, setting default health " + defaultHealth);
+			currentHealth = defaultHealth;
+			return defaultHealth;
+		}
+		for (DataTransfer transfer : clonedTransfers) {
+			if (transfer.failed) {
+				rateNum++;
+				rateSum /= 2.0;
+				failures++;
+			} else {
+				rateSum += transfer.dataRate;
+				rateNum++;
+			}
+		}
+		if (failures > 2) {
+			if (DEBUG) Log.i(TAG, "More than 2 failures, switching to BAD from " + currentHealth);
+			if (currentHealth != Health.BAD) {
+				makeToast("Internet connection is not working!");
+			}
+			currentHealth = Health.BAD;
+			return currentHealth;
+		}
+		double avgRate = rateSum / rateNum;
+		if (avgRate > 200) {
+			currentHealth = Health.PERFECT;
+		} else if (avgRate > 50) {
+			currentHealth = Health.GOOD;
+		} else if (avgRate > 10) {
+			currentHealth = Health.SLOW;
+		} else {
+			currentHealth = Health.VERY_SLOW;
+		}
+		if (DEBUG) Log.i(TAG, "Avg rate " + avgRate + " kB/s, setting health " + currentHealth);
+		return currentHealth;
+	}
+	
+	@Override
+	public Health getDefaultConnectionHealth() {
+		return Health.GOOD;
 	}
 
 	@Override
@@ -86,6 +153,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	@Override
 	public void onProfileActivated(Context context) {
 		if (DEBUG) Log.d(TAG, "onProfileActivated called");
+		checkDataTransfer();
 	}
 
 	@Override
@@ -96,11 +164,34 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	@Override
 	public void onDataFetchSuccess(ChanIdentifiedService service, int time, int size) {
 		if (DEBUG) Log.d(TAG, "finishedFetchingData called for " + service + " " + size + " bytes during " + time + "ms");
+		
+		storeDataTransfer(time, size);
+		
+		ChanActivityId data = service.getChanActivityId();
+		if (data.threadNo == 0) {
+			// board fetching
+	        if (data.priority) {
+	        	BoardLoadService.startServiceWithPriority(service.getApplicationContext(), data.boardCode, data.pageNo);
+	        } else {
+	        	BoardLoadService.startService(service.getApplicationContext(), data.boardCode, data.pageNo);
+	        }
+		} else if (data.postNo == 0) {
+			// thread fetching
+            if (data.priority) {
+            	ThreadLoadService.startServiceWithPriority(service.getApplicationContext(), data.boardCode, data.threadNo);
+            } else {
+            	ThreadLoadService.startService(service.getApplicationContext(), data.boardCode, data.threadNo);
+            }
+		} else {
+			// image fetching
+		}
+
 	}
 
 	@Override
 	public void onDataFetchFailure(ChanIdentifiedService service, Failure failure) {
 		if (DEBUG) Log.d(TAG, "failedFetchingData called for " + service);
+		storeFailedDataTransfer();
 	}
 
 	@Override

@@ -22,8 +22,19 @@ public class DataTransfer {
 		failed = true;
 	}
 	public Date time;
+	/** Fetch time in ms */
 	public int duration;
+	/** Fetched data size in bytes */
 	public int size;
+	/** Download rate B/ms, same as kB/s */
 	public double dataRate;
 	public boolean failed;
+	
+	public String toString() {
+		if (failed) {
+			return "failed at " + time;
+		} else {
+			return "size " + size + "b during " + duration + "ms at " + dataRate + "kB/s on " + time;
+		}
+	}
 }
