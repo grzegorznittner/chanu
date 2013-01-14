@@ -23,6 +23,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_NOTIFICATIONS = "pref_notifications";
     public static final String PREF_HIDE_ALL_TEXT = "pref_hide_all_text";
     public static final String PREF_AUTOMATICALLY_MANAGE_WATCHLIST = "pref_automatically_manage_watchlist";
+    public static final String PREF_WIDGET_BOARD = "pref_widget_board";
     public static final String PREF_RESET_TO_DEFAULTS = "pref_reset_to_defaults";
 
     @Override

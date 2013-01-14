@@ -1,19 +1,13 @@
 package com.chanapps.four.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 
 public class ChanBoard {
@@ -96,7 +90,18 @@ public class ChanBoard {
 		}
 		return boards;
 	}
-	
+
+    public static List<ChanBoard> getSortedBoards(Context context) {
+        List<ChanBoard> chanBoards = ChanBoard.getBoards(context);
+        Collections.sort(chanBoards, new Comparator<ChanBoard>() {
+            @Override
+            public int compare(ChanBoard lhs, ChanBoard rhs) {
+                return lhs.link.compareToIgnoreCase(rhs.link);
+            }
+        });
+        return chanBoards;
+    }
+
 	public static boolean isValidBoardCode(Context context, String boardCode) {
         if (boards == null) {
    			initBoards(context);
@@ -135,7 +140,8 @@ public class ChanBoard {
                 String boardCode = boardCodesForType[i];
                 String boardName = boardCodesForType[i+1];
                 boolean workSafe = !(boardType == Type.ADULT || boardType == Type.MISC);
-                ChanBoard b = new ChanBoard(boardType, boardName, boardCode, 0, workSafe, true, false, false);
+                int iconId = getImageResourceId(boardCode);
+                ChanBoard b = new ChanBoard(boardType, boardName, boardCode, iconId, workSafe, true, false, false);
                 boardsForType.add(b);
                 boards.add(b);
                 boardByCode.put(boardCode, b);
@@ -143,6 +149,21 @@ public class ChanBoard {
             boardsByType.put(boardType, boardsForType);
         }
    	}
+
+    private static int getImageResourceId(String boardCode) {
+        int imageId = 0;
+        try {
+            imageId = R.drawable.class.getField(boardCode).getInt(null);
+        } catch (Exception e) {
+            try {
+                imageId = R.drawable.class.getField("board_" + boardCode).getInt(null);
+            } catch (Exception e1) {
+                imageId = R.drawable.stub_image;
+            }
+        }
+        return imageId;
+    }
+
 
     private static String[][] initBoardCodes(Context ctx) {
         String[][] boardCodesByType = {

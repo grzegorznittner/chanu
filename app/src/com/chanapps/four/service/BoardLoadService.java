@@ -23,6 +23,8 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.widget.UpdateWidgetService;
+import com.chanapps.four.widget.WidgetAlarmReceiver;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -83,16 +85,25 @@ public class BoardLoadService extends BaseChanService {
 
         long startTime = Calendar.getInstance().getTimeInMillis();
 		try {
-            File boardFile = ChanFileStorage.getBoardFile(getBaseContext(), boardCode, pageNo);
+            Context context = getBaseContext();
+
+            File boardFile = ChanFileStorage.getBoardFile(context, boardCode, pageNo);
             parseBoard(new BufferedReader(new FileReader(boardFile)));
 
             Log.w(TAG, "Parsed board " + boardCode + " page " + pageNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             startTime = Calendar.getInstance().getTimeInMillis();
 
-            ChanFileStorage.storeBoardData(getBaseContext(), board);
+            ChanFileStorage.storeBoardData(context, board);
             Log.w(TAG, "Stored board " + boardCode + " page " + pageNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+
+            // tell it to refresh
+            if (boardCode.equals(UpdateWidgetService.getConfiguredBoardWidget(context))) {
+                Intent updateIntent = new Intent(context, UpdateWidgetService.class);
+                context.startService(updateIntent);
+            }
+
         } catch (IOException e) {
             toastUI(R.string.board_service_couldnt_read);
             Log.e(TAG, "IO Error reading Chan board json", e);

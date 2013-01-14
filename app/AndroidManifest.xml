@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.SET_WALLPAPER"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
             android:icon="@drawable/four_leaf_clover_1"
@@ -79,12 +80,18 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
         </activity>
-        <receiver android:name="com.chanapps.four.widget.TopBoard4ChannerWidget">
+        <receiver android:name="com.chanapps.four.widget.BoardWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/channer_widget_info"/>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/board_widget_info"/>
         </receiver>
+        <receiver android:name="com.chanapps.four.widget.WidgetAlarmReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        <service android:name="com.chanapps.four.widget.UpdateWidgetService"/>
 
         <!-- advertising -->
         <activity android:name="com.google.ads.AdActivity"
