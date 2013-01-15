@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.WeakHashMap;
 
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
@@ -359,23 +360,14 @@ public class ChanFileStorage {
             throws IOException
     {
         long totalBytes = 0;
-        String bitmapPath = getBoardWidgetBitmapPath(context, boardName, index);
-        FileOutputStream fos = new FileOutputStream(bitmapPath, false);
+        FileOutputStream fos = null;
         try {
-            byte[] buffer = new byte[BITMAP_BUFFER_SIZE];
-            int bytes = 0;
-            while ((bytes = is.read(buffer, 0, buffer.length)) > 0) {
-                fos.write(buffer, 0, bytes);
-                totalBytes += bytes;
-            }
+	        String bitmapPath = getBoardWidgetBitmapPath(context, boardName, index);
+	        fos = new FileOutputStream(bitmapPath, false);
+	        totalBytes = IOUtils.copy(is, fos);
         } finally {
-            try {
-                fos.flush();
-                fos.close();
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Exception while flushing and closing board widget bitmap file: " + e.getMessage(), e);
-            }
+        	IOUtils.closeQuietly(is);
+        	IOUtils.closeQuietly(fos);
         }
         if (DEBUG) Log.i(TAG, "Stored widget bitmap file for board " + boardName + " index " + index + " totalBytes=" + totalBytes);
         return totalBytes;
