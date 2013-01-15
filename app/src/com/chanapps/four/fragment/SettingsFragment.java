@@ -65,8 +65,22 @@ public class SettingsFragment extends PreferenceFragment {
         widgetBoard.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
+                final Context context = SettingsFragment.this.getActivity().getApplicationContext();
+                WidgetAlarmReceiver.cancelAlarms(context); // cancel before we update to new value so pending intent matches
                 updateWidgetSummary(preference, (String)newValue);
-                WidgetAlarmReceiver.refreshWidget(SettingsFragment.this.getActivity().getApplicationContext());
+                // we have to schedule with some delay so it runs AFTER the preference is saved so we refresh the new board
+                (new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(1000);
+                        }
+                        catch (InterruptedException e) {
+                            // I don't care
+                        }
+                        WidgetAlarmReceiver.refreshWidget(context);
+                    }
+                })).run();
                 return true;
             }
         });

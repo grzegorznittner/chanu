@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
+import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.service.BoardLoadService;
 
 /**
  * Created with IntelliJ IDEA.
@@ -50,7 +52,8 @@ public class WidgetAlarmReceiver extends BroadcastReceiver {
     }
 
     public static PendingIntent getPendingIntentForWidgetAlarms(Context context) {
-        Intent intent = new Intent(context, UpdateWidgetService.class);
+        Intent intent = new Intent(context, BoardLoadService.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, BoardWidgetProvider.getConfiguredBoardWidget(context));
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return pendingIntent;
     }
