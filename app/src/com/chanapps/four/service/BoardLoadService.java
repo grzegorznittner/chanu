@@ -13,6 +13,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.map.DeserializationConfig.Feature;
+import org.codehaus.jackson.map.ObjectMapper;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -26,9 +32,6 @@ import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.widget.UpdateWidgetService;
 import com.chanapps.four.service.NetworkProfile.Failure;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -142,25 +145,15 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
             }
         }
 
-        Gson gson = new GsonBuilder().create();
-
-        JsonReader reader = new JsonReader(in);
-        reader.setLenient(true);
-        reader.beginObject(); // has "threads" as single property
-        reader.nextName(); // "threads"
-        reader.beginArray();
-
-        while (reader.hasNext()) { // iterate over threads
-            reader.beginObject(); // has "posts" as single property
-            reader.nextName(); // "posts"
-            reader.beginArray();
-            
+        ObjectMapper mapper = ChanHelper.getJsonMapper();
+        JsonNode rootNode = mapper.readValue(in, JsonNode.class);
+        for (JsonNode threadValue : rootNode.path("threads")) { // iterate over threads
             ChanThread thread = null;
             List<ChanPost> posts = new ArrayList<ChanPost>();
             boolean first = true;
 //            boolean isSticky = false;
-            while (reader.hasNext()) { // first object is the thread post, spin over rest
-                ChanPost post = gson.fromJson(reader, ChanPost.class);
+            for (JsonNode postValue : threadValue.path("posts")) { // first object is the thread post
+                ChanPost post = mapper.readValue(postValue, ChanPost.class);
                 post.board = boardCode;
 //                if (post.sticky > 0 || isSticky) {
 //                    post.mergeIntoThreadList(stickyPosts);
@@ -191,8 +184,6 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
                     ChanFileStorage.storeBoardData(getBaseContext(), board);
             	}
             }
-            reader.endArray();
-            reader.endObject();
         }
 
         board.threads = threads.toArray(new ChanPost[0]);

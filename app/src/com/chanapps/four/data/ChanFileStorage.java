@@ -2,19 +2,17 @@ package com.chanapps.four.data;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.PreparedStatement;
 import java.util.Date;
 import java.util.WeakHashMap;
+
+import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.chanapps.four.service.UserPreferences;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanFileStorage {
@@ -81,14 +79,8 @@ public class ChanFileStorage {
 		boardCache.put(board.link, board);
         File boardDir = getBoardCacheDirectory(context, board.link);
 		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-			FileWriter writer = new FileWriter(new File(boardDir, board.link + CACHE_EXT), false);
-			try {
-				Gson gson = new GsonBuilder().create();
-				gson.toJson(board, writer);
-			} finally {
-			    writer.flush();
-			    writer.close();
-			}
+			ObjectMapper mapper = ChanHelper.getJsonMapper();
+			mapper.writeValue(new File(boardDir, board.link + CACHE_EXT), board);
 			if (DEBUG) Log.i(TAG, "Stored " + board.threads.length + " threads for board '" + board.link + "'");
 		} else {
 			Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
@@ -162,14 +154,8 @@ public class ChanFileStorage {
 		threadCache.put(thread.no, thread);
         File threadDir = getThreadCacheDirectory(context, thread.board, thread.no);
 		if (threadDir != null && (threadDir.exists() || threadDir.mkdirs())) {
-			FileWriter writer = new FileWriter(new File(threadDir, thread.no + CACHE_EXT), false);
-			try {
-				Gson gson = new GsonBuilder().create();
-				gson.toJson(thread, writer);
-			} finally {
-                writer.flush();
-                writer.close();
-            }
+			ObjectMapper mapper = ChanHelper.getJsonMapper();
+			mapper.writeValue(new File(threadDir, thread.no + CACHE_EXT), thread);
 			if (DEBUG) Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + FILE_SEP + thread.no + "'");
 		} else {
 			Log.e(TAG, "Cannot create board cache folder. " + (threadDir == null ? "null" : threadDir.getAbsolutePath()));
@@ -191,9 +177,8 @@ public class ChanFileStorage {
 			if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
 				boardFile = new File(boardDir, boardCode + CACHE_EXT);
 				if (boardFile != null && boardFile.exists()) {
-					FileReader reader = new FileReader(boardFile);
-					Gson gson = new GsonBuilder().create();
-					ChanBoard board = gson.fromJson(reader, ChanBoard.class);
+					ObjectMapper mapper = ChanHelper.getJsonMapper();
+					ChanBoard board = mapper.readValue(boardFile, ChanBoard.class);
 					if (DEBUG) Log.i(TAG, "Loaded " + board.threads.length + " threads for board '" + board.link + "'");
 					return board;
 				} else {
@@ -248,13 +233,14 @@ public class ChanFileStorage {
 			if (threadDir != null && (threadDir.exists() || threadDir.mkdirs())) {
 				threadFile = new File(threadDir, "" + threadNo + CACHE_EXT);
 				if (threadFile != null && threadFile.exists()) {
-					FileReader reader = new FileReader(threadFile);
-					Gson gson = new GsonBuilder().create();
-					ChanThread thread = gson.fromJson(reader, ChanThread.class);
-                    if (thread == null)
+					ObjectMapper mapper = ChanHelper.getJsonMapper();
+					ChanThread thread = mapper.readValue(threadFile, ChanThread.class);
+                    if (thread == null) {
                         Log.e(TAG, "Couldn't load thread, null thread returned for " + boardCode + FILE_SEP + threadNo);
-                    else
+                        throw new RuntimeException("Parsed json is null");
+                    } else {
 					    if (DEBUG) Log.i(TAG, "Loaded " + thread.posts.length + " posts for board '" + boardCode + FILE_SEP + threadNo + "'");
+                    }
 					return thread;
 				} else {
 					Log.w(TAG, "File for thread '" + boardCode + FILE_SEP + threadNo + "' doesn't exist");
@@ -306,28 +292,12 @@ public class ChanFileStorage {
 		try {
             File userPrefsFile = getUserPreferencesFile(context);
 			if (userPrefsFile != null) {
-				FileWriter writer = new FileWriter(userPrefsFile, false);
 				try {
 					userPrefs.lastStored = new Date();
-					Gson gson = new GsonBuilder().create();
-					gson.toJson(userPrefs, writer);
-				}
-                catch (Exception e) {
+					ObjectMapper mapper = ChanHelper.getJsonMapper();
+					mapper.writeValue(userPrefsFile, userPrefs);
+				} catch (Exception e) {
                     Log.e(TAG, "Exception while writing user preferences", e);
-                }
-                finally {
-                    try {
-                        writer.flush();
-                    }
-                    catch (Exception e) {
-                        Log.e(TAG, "Exception while flushing user preferences", e);
-                    }
-                    try {
-                        writer.close();
-                    }
-                    catch (Exception e) {
-                        Log.e(TAG, "Exception while closing user preferences", e);
-                    }
                 }
 				if (DEBUG) Log.i(TAG, "Stored user preferences to file, last updated " + userPrefs.lastUpdate);
 			} else {
@@ -342,9 +312,8 @@ public class ChanFileStorage {
 		try {
 			File userPrefsFile = getUserPreferencesFile(context);
 			if (userPrefsFile != null && userPrefsFile.exists()) {
-				FileReader reader = new FileReader(userPrefsFile);
-				Gson gson = new GsonBuilder().create();
-				UserPreferences userPrefs = gson.fromJson(reader, UserPreferences.class);
+				ObjectMapper mapper = ChanHelper.getJsonMapper();
+				UserPreferences userPrefs = mapper.readValue(userPrefsFile, UserPreferences.class);
                 if (userPrefs == null) {
                     Log.e(TAG, "Couldn't load user preferences, null returned");
                     return new UserPreferences();

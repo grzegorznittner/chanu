@@ -12,6 +12,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -24,9 +27,6 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.service.NetworkProfile.Failure;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -118,16 +118,11 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
         long time = new Date().getTime();
 
     	List<ChanPost> posts = new ArrayList<ChanPost>();
-        Gson gson = new GsonBuilder().create();
+    	ObjectMapper mapper = ChanHelper.getJsonMapper();
+        JsonNode rootNode = mapper.readValue(in, JsonNode.class);
 
-        JsonReader reader = new JsonReader(in);
-        reader.setLenient(true);
-        reader.beginObject(); // has "posts" as single property
-        reader.nextName(); // "posts"
-        reader.beginArray();
-
-        while (reader.hasNext()) {
-            ChanPost post = gson.fromJson(reader, ChanPost.class);
+        for (JsonNode postValue : rootNode.path("posts")) { // first object is the thread post
+            ChanPost post = mapper.readValue(postValue, ChanPost.class);
             post.board = boardCode;
             posts.add(post);
             Log.v(TAG, "Added post " + post.no + " to thread " + boardCode + "/" + threadNo);

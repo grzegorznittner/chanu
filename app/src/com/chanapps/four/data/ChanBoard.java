@@ -12,6 +12,10 @@ import com.chanapps.four.activity.R;
 
 public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();
+	
+	public ChanBoard() {
+		// public default constructor for Jackson
+	}
 
 	private ChanBoard(Type type, String name, String link, int iconId,
 			boolean workSafe, boolean classic, boolean textOnly, boolean lastPage) {
