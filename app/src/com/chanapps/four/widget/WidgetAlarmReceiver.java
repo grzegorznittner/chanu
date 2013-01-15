@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
-import com.chanapps.four.data.ChanHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,13 +25,16 @@ public class WidgetAlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) { // when first boot up, default and then schedule for refresh
+        refreshWidget(context);
+    }
+
+    public static void refreshWidget(Context context) {
         Intent updateIntent = new Intent(context, UpdateWidgetService.class);
-        updateIntent.putExtra(ChanHelper.FIRST_TIME_INIT, true);
         context.startService(updateIntent);
         scheduleAlarms(context);
     }
 
-    public static void scheduleAlarms(Context context) {
+    private static void scheduleAlarms(Context context) {
         int[] appWidgetIds = BoardWidgetProvider.getAppWidgetIds(context);
         if (appWidgetIds == null || appWidgetIds.length == 0) {
             if (DEBUG)

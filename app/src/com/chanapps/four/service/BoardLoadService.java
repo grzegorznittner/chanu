@@ -24,6 +24,7 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.widget.BoardWidgetProvider;
 import com.chanapps.four.widget.UpdateWidgetService;
 import com.chanapps.four.service.NetworkProfile.Failure;
 import com.google.gson.Gson;
@@ -100,7 +101,7 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
 
             // tell it to refresh widget
-            if (boardCode.equals(UpdateWidgetService.getConfiguredBoardWidget(context))) {
+            if (boardCode.equals(BoardWidgetProvider.getConfiguredBoardWidget(context))) {
                 Intent updateIntent = new Intent(context, UpdateWidgetService.class);
                 context.startService(updateIntent);
             }

@@ -6,32 +6,27 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.activity.ThreadActivity;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.*;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 
 /**
  * Created with IntelliJ IDEA.
@@ -50,10 +45,7 @@ public class UpdateWidgetService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (DEBUG)
             Log.i(TAG, "starting UpdateWidgetService");
-        if (intent.hasExtra(ChanHelper.FIRST_TIME_INIT))
-            (new WidgetUpdateTask()).defaultWidgetInit();
-        else
-            (new WidgetUpdateTask()).execute();
+        (new WidgetUpdateTask()).execute();
         return Service.START_NOT_STICKY;
     }
 
@@ -62,12 +54,7 @@ public class UpdateWidgetService extends Service {
         return null;
     }
 
-    public static String getConfiguredBoardWidget(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(SettingsActivity.PREF_WIDGET_BOARD, ChanBoard.DEFAULT_BOARD_CODE);
-    }
-
-    public class WidgetUpdateTask extends AsyncTask<Void, Void, Boolean> {
+    public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
 
         private static final int NUM_TOP_THREADS = 3;
         private static final int BITMAP_BUFFER_SIZE = 8192;
@@ -79,156 +66,157 @@ public class UpdateWidgetService extends Service {
 
         public WidgetUpdateTask() {
             context = getApplicationContext();
-            boardCode = getConfiguredBoardWidget(context);
+            boardCode = BoardWidgetProvider.getConfiguredBoardWidget(context);
             if (DEBUG)
                 Log.i(TAG, "Found boardCode=" + boardCode + " for widget update");
         }
 
         @Override
-        public Boolean doInBackground(Void... params) {
+        public Void doInBackground(Void... params) {
             if (DEBUG)
                 Log.i(TAG, "Starting background thread for widget update");
-            if (!isConnected()) {
-                if (DEBUG)
-                    Log.i(TAG, "Network not active, skipping widget update");
-                return false;
-            }
-            if (!loadBoard()) {
-                Log.e(TAG, "Couldn't load board for widget, skipping update");
-                return false;
-            }
-            boolean success = downloadBitmaps();
-            return success;
+            loadBoard();
+            loadBitmaps();
+            return null;
         }
 
         @Override
-        public void onPostExecute(Boolean result) {
-            if (result) {
-                if (DEBUG)
-                    Log.i(TAG, "Successful data load, now setting widget views");
-                updateWidgetViews(); // run on UI thread since setting views
-            }
-            else {
-                if (DEBUG)
-                    Log.i(TAG, "Bypassing widget update, unable to load fresh data, defaulting");
-                defaultWidgetInit();
-            }
-        }
-
-        public void defaultWidgetInit() { // fast inits to default with no loading or downloading
-            if (DEBUG)
-                Log.i(TAG, "Default init for widget");
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            ComponentName widgetProvider = new ComponentName(context, BoardWidgetProvider.class);
-            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widgetProvider);
-            final int N = appWidgetIds.length;
-            // Perform this loop procedure for each App Widget that belongs to this provider
-            for (int i=0; i<N; i++) {
-                int appWidgetId = appWidgetIds[i];
-
-                int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
-                RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.board_widget);
-                for (int j = 0; j < imageIds.length; j++) {
-                    setDefaultImageView(views, imageIds[j]);
-                    bindDefaultImageView(views, imageIds[j]);
-                }
-                appWidgetManager.updateAppWidget(appWidgetId, views);
-
-                if (DEBUG)
-                    Log.i(TAG, "Finished default init for widgetId=" + appWidgetId);
-            }
+        public void onPostExecute(Void result) {
+            updateWidgetViews(); // run on UI thread since setting views
         }
 
         private boolean isConnected() {
-            boolean success = false;
             ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-            if (networkInfo != null && networkInfo.isConnected())
-                success = true;
-            return success;
+            return networkInfo != null && networkInfo.isConnected();
         }
 
-        private boolean loadBoard() {
-            boolean success = false;
-            int threadWidgetCount = 0;
+        private void loadBoard() {
             try {
                 ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-                if (board.threads != null) {
-                    threadWidgetCount = board.threads.length > NUM_TOP_THREADS
-                            ? NUM_TOP_THREADS : board.threads.length;
-                    for (int j = 0; j < threadWidgetCount; j++) {
-                        threads[j] = board.threads[j];
-                    }
+                if (board == null || board.threads == null || board.threads.length == 0) {
+                    if (DEBUG) Log.i(TAG, "Couldn't load board=" + boardCode + " with valid threads for widget");
+                    return;
                 }
-                Log.i(TAG, "Found board=" + boardCode + " with thread count=" + threadWidgetCount);
-                success = true;
+
+                int threadIndex = 0;
+                for (int i = 0; i < NUM_TOP_THREADS; i++) {
+                    ChanPost thread = null;
+                    while (threadIndex < board.threads.length
+                            && ((thread = board.threads[threadIndex]) == null || thread.sticky != 0))
+                        threadIndex++;
+                    threads[i] = thread;
+                    if (DEBUG)
+                        if (thread != null)
+                            Log.i(TAG, "Loaded board=" + boardCode + "/" + thread.no + " threadIndex=" + threadIndex + " i=" + i + " with widget threads");
+                        else
+                            Log.i(TAG, "Loaded board=" + boardCode + " i=" + i + " with null thread");
+                    threadIndex++;
+                }
+                if (DEBUG) Log.i(TAG, "Loaded board=" + boardCode + " with widget threads");
             }
             catch (Exception e) {
-                Log.e(TAG, "Couldn't load board=" + boardCode + " so defaulting to board intent");
+                Log.e(TAG, "Couldn't load board=" + boardCode + ", defaulting to cached values");
             }
-            if (threads == null || threads.length == 0)
-                success = false;
-            return success;
         }
 
-        private boolean downloadBitmaps() {
-            boolean success = false;
+        private void loadBitmaps() {
             bitmaps.clear();
-            for (int i = 0; i < NUM_TOP_THREADS; i++)
-                bitmaps.add(null);
-            int i = 0;
-            for (ChanPost thread : threads) {
-                if (thread != null) {
-                    String thumbnailUrl = thread.getThumbnailUrl();
-                    try {
-                        if (!isConnected()) {
-                            if (DEBUG)
-                                Log.i(TAG, "Network went down, skipping bitmap download and widget update");
-                            return false;
-                        }
+            for (int i = 0; i < NUM_TOP_THREADS; i++) {
+                InputStream is = null;
+                Bitmap b = null;
+                try {
+                    ChanPost thread = threads == null ? null : threads[i];
+                    if (thread == null) {
+                        if (DEBUG) Log.i(TAG, "no thread found for i=" + i + " skipping download");
+                    }
+                    else if (!isConnected()) {
+                        if (DEBUG) Log.i(TAG, "network down, can't load bitmap for i=" + i + " skipping download");
+                    }
+                    else {
+                        String thumbnailUrl = thread.getThumbnailUrl();
                         URLConnection conn = new URL(thumbnailUrl).openConnection();
                         conn.connect();
-                        InputStream is = conn.getInputStream();
+                        is = conn.getInputStream();
                         BufferedInputStream bis = new BufferedInputStream(is, BITMAP_BUFFER_SIZE);
-                        Bitmap b = BitmapFactory.decodeStream(bis);
+                        ChanFileStorage.storeBoardWidgetBitmapFile(context, boardCode, i, bis);
+                        b = BitmapFactory.decodeStream(bis);
                         if (b != null) {
-                            bitmaps.set(i, b);
-                            success = true;
+                            if (DEBUG) Log.i(TAG, "Successfully downloaded and cached bitmap from url=" + thumbnailUrl);
                         }
-                        if (DEBUG)
-                            Log.i(TAG, "Set bitmap for thread=" + thread.no + " i=" + i + " b=" + b);
-
-                    }
-                    catch (Exception e) {
-                        Log.e(TAG, "Couldn't download image for thread=" + thread.no + " imageUrl=" + thumbnailUrl, e);
+                        else {
+                            Log.i(TAG, "Null bitmap for url=" + thumbnailUrl);
+                        }
                     }
                 }
-                i++;
+                catch (Exception e) {
+                    Log.e(TAG, "Exception downloading image for board=" + boardCode + " i=" + i + " imageUrl=", e);
+                }
+                finally {
+                    try {
+                        if (is != null)
+                            is.close();
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "Exception closing input stream for url download", e);
+                    }
+                    try {
+                        if (b == null) {
+                            b = ChanFileStorage.getBoardWidgetBitmap(context, boardCode, i);
+                            if (DEBUG) Log.i(TAG, "Null bitmap for i=" + i + " thus loading from cache");
+                        }
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "Exception loading cached bitmap for i=" + i, e);
+                    }
+                    if (b == null) { // load as resource
+                        b = loadDefaultBoardBitmap(i);
+                        Log.i(TAG, "Null bitmap loaded for i=" + i + " thus loading from board default");
+                    }
+                    if (DEBUG)  Log.i(TAG, "Set bitmap for board=" + boardCode + " i=" + i + " b=" + b);
+                    bitmaps.add(b);
+                }
             }
-            return success; // at least one bitmap worked, so update
+        }
+
+        private Bitmap loadDefaultBoardBitmap(int i) {
+            ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
+            int imageResourceId = board.iconId;
+            return BitmapFactory.decodeResource(getResources(), imageResourceId);
         }
 
         private void updateWidgetViews() {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             ComponentName widgetProvider = new ComponentName(context, BoardWidgetProvider.class);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widgetProvider);
-            final int N = appWidgetIds.length;
+
             // Perform this loop procedure for each App Widget that belongs to this provider
-            for (int i=0; i<N; i++) {
+            for (int i=0; i < appWidgetIds.length; i++) {
                 int appWidgetId = appWidgetIds[i];
 
-                int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
+                // git views
                 RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.board_widget);
+
+                Intent intent = BoardActivity.createIntentForLaunchFromWidget(context);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // doesn't really work well
+                PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+                // fill images
+                int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
                 for (int j = 0; j < imageIds.length; j++) {
-                    setImageView(views, imageIds[j], bitmaps.get(j), threads[j]);
+                    int imageId = imageIds[j];
+                    Bitmap b = bitmaps.get(j);
+                    views.setImageViewBitmap(imageId, b);
+                    views.setOnClickPendingIntent(imageId, pendingIntent);
                 }
+
                 appWidgetManager.updateAppWidget(appWidgetId, views);
 
                 if (DEBUG)
                     Log.i(TAG, "Updated widgetId=" + appWidgetId);
             }
         }
-
+        /*
         private Intent createIntentForThread(ChanPost thread) {
             return ThreadActivity.createIntentForActivity(
                     context,
@@ -243,12 +231,7 @@ public class UpdateWidgetService extends Service {
                     0
             );
         }
-
-        private void setDefaultImageView(RemoteViews views, int imageId) {
-            ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
-            int imageResourceId = board.iconId;
-            views.setImageViewResource(imageId, imageResourceId);
-        }
+        */
 
         /*
         private void bindThreadImageView(RemoteViews views, int imageId, ChanPost thread) {
@@ -260,42 +243,6 @@ public class UpdateWidgetService extends Service {
         */
 
         private void bindDefaultImageView(RemoteViews views, int imageId) {
-            Intent intent = BoardActivity.createIntentForActivity(context, boardCode);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // doesn't really work well
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-            views.setOnClickPendingIntent(imageId, pendingIntent);
-        }
-
-        private void setImageView(RemoteViews views, int imageId, Bitmap b, ChanPost thread) {
-            if (thread != null) {
-                try {
-                    if (b != null)
-                        views.setImageViewBitmap(imageId, b);
-                    else
-                        setDefaultImageView(views, imageId);
-                    if (DEBUG)
-                        if (b == null)
-                            Log.i(TAG, "Set image id=" + imageId + " to default bitmap click threadNo=" + thread.no);
-                        else
-                            Log.i(TAG, "Set image id=" + imageId + " to bitmap=" + b + " click threadNo=" + thread.no);
-
-                    /* FIXME
-                    can't get anything except the first thread click to work
-                    bindThreadImageView(views, imageId, thread);
-                    */
-                    bindDefaultImageView(views, imageId);
-                }
-                catch (Exception e) {
-                    Log.e(TAG, "Error setting image id=" + imageId + " for thread=" + thread.no + " setting to default click board=" + boardCode, e);
-                    setDefaultImageView(views, imageId);
-                    bindDefaultImageView(views, imageId);
-                }
-            }
-            else {
-                Log.e(TAG, "Null thread, setting default image for imageId=" + imageId + " click board=" + boardCode);
-                setDefaultImageView(views, imageId);
-                bindDefaultImageView(views, imageId);
-            }
         }
 
     }

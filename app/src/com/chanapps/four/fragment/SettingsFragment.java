@@ -48,7 +48,7 @@ public class SettingsFragment extends PreferenceFragment {
             }
         });
 
-        List<ChanBoard> boards = ChanBoard.getBoards(this.getActivity().getApplicationContext());
+        List<ChanBoard> boards = ChanBoard.getSortedBoards(this.getActivity().getApplicationContext());
         int numBoards = boards.size();
         String[] entries = new String[numBoards];
         String[] entryValues = new String[numBoards];
@@ -59,20 +59,23 @@ public class SettingsFragment extends PreferenceFragment {
         }
 
         ListPreference widgetBoard = (ListPreference)findPreference(SettingsActivity.PREF_WIDGET_BOARD);
-        String summary = getString(R.string.pref_widget_board_summ) + " /" + widgetBoard.getValue();
-        widgetBoard.setSummary(summary);
+        updateWidgetSummary(widgetBoard, widgetBoard.getValue());
         widgetBoard.setEntries(entries);
         widgetBoard.setEntryValues(entryValues);
         widgetBoard.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String newSummary = getString(R.string.pref_widget_board_summ) + " /" + newValue;
-                preference.setSummary(newSummary);
-                WidgetAlarmReceiver.scheduleAlarms(SettingsFragment.this.getActivity().getApplicationContext());
+                updateWidgetSummary(preference, (String)newValue);
+                WidgetAlarmReceiver.refreshWidget(SettingsFragment.this.getActivity().getApplicationContext());
                 return true;
             }
         });
 
+    }
+
+    private void updateWidgetSummary(Preference preference, String boardCode) {
+        String newSummary = getString(R.string.pref_widget_board_summ) + " /" + boardCode;
+        preference.setSummary(newSummary);
     }
 
     public Handler ensureHandler() {
