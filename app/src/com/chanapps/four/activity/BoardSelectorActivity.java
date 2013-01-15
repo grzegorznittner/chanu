@@ -57,10 +57,8 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         if (DEBUG) Log.v(TAG, "onCreate");
         if (ensurePrefs().getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
             (new ChanWatchlist.CleanWatchlistTask(this, null, false)).execute();
-        // ready the widget updating
-        Intent updateIntent = new Intent(this, UpdateWidgetService.class);
-        startService(updateIntent);
-        WidgetAlarmReceiver.scheduleAlarms(this);
+
+        WidgetAlarmReceiver.refreshWidget(this);
 
         //SmartCache.fillCache(this);
 

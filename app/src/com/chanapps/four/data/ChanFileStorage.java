@@ -1,7 +1,9 @@
 package com.chanapps.four.data;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
@@ -10,6 +12,8 @@ import java.util.WeakHashMap;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.chanapps.four.service.UserPreferences;
@@ -27,6 +31,7 @@ public class ChanFileStorage {
     private static final String CACHE_PKG_DIR = "cache";
     private static final String FILE_SEP = "/";
     private static final String CACHE_EXT = ".txt";
+    private static final String BITMAP_CACHE_EXT = ".jpg";
     private static final String USER_PREFS_FILENAME = "userprefs.txt";
 
     public static boolean isBoardCachedOnDisk(Context context, String boardCode) {
@@ -97,7 +102,7 @@ public class ChanFileStorage {
 			return null;
 		}
     }
-	
+
     public static long storeBoardFile(Context context, String boardName, int page, BufferedReader reader) throws IOException {
 		File boardFile = getBoardFile(context, boardName, page);
 		FileWriter writer = new FileWriter(boardFile, false);
@@ -330,5 +335,50 @@ public class ChanFileStorage {
 		}
 		return null;
 	}
+
+    public static String getBoardWidgetBitmapPath(Context context, String boardName, int index) {
+        File boardDir = getBoardCacheDirectory(context, boardName);
+        if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
+            File boardFile = new File(boardDir, boardName + "_widgetbitmap_" + index + "." + BITMAP_CACHE_EXT);
+            return boardFile.getAbsolutePath();
+        } else {
+            Log.w(TAG, "Board widget bitmap file could not be created: " + boardName);
+            return null;
+        }
+    }
+
+    public static Bitmap getBoardWidgetBitmap(Context context, String boardName, int index) {
+        String boardPath = getBoardWidgetBitmapPath(context, boardName, index);
+        Bitmap b = BitmapFactory.decodeFile(boardPath);
+        return b;
+    }
+
+    public static final int BITMAP_BUFFER_SIZE = 512;
+
+    public static long storeBoardWidgetBitmapFile(Context context, String boardName, int index, BufferedInputStream is)
+            throws IOException
+    {
+        long totalBytes = 0;
+        String bitmapPath = getBoardWidgetBitmapPath(context, boardName, index);
+        FileOutputStream fos = new FileOutputStream(bitmapPath, false);
+        try {
+            byte[] buffer = new byte[BITMAP_BUFFER_SIZE];
+            int bytes = 0;
+            while ((bytes = is.read(buffer, 0, buffer.length)) > 0) {
+                fos.write(buffer, 0, bytes);
+                totalBytes += bytes;
+            }
+        } finally {
+            try {
+                fos.flush();
+                fos.close();
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Exception while flushing and closing board widget bitmap file: " + e.getMessage(), e);
+            }
+        }
+        if (DEBUG) Log.i(TAG, "Stored widget bitmap file for board " + boardName + " index " + index + " totalBytes=" + totalBytes);
+        return totalBytes;
+    }
 
 }

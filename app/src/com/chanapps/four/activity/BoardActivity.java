@@ -111,6 +111,12 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         return intent;
     }
 
+    public static Intent createIntentForLaunchFromWidget(Context context) {
+        Intent intent = new Intent(context, BoardActivity.class);
+        intent.putExtra(ChanHelper.LOAD_WIDGET_CONFIG, true);
+        return intent;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 		if (DEBUG) Log.v(TAG, "************ onCreate");
@@ -200,8 +206,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         String intentExtra = getLastPositionName();
         int lastPosition = getIntent().getIntExtra(intentExtra, 0);
         if (lastPosition == 0) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            lastPosition = prefs.getInt(intentExtra, 0);
+            lastPosition = ensurePrefs().getInt(intentExtra, 0);
         }
         if (lastPosition != 0)
             scrollOnNextLoaderFinished = lastPosition;
@@ -220,16 +225,20 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         saveInstanceState();
     }
 
-    protected void ensurePrefs() {
+    protected SharedPreferences ensurePrefs() {
         if (prefs == null)
             prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs;
     }
 
     protected void loadFromIntentOrPrefs() {
-        ensurePrefs();
         Intent intent = getIntent();
         Uri data = intent.getData();
-        if (data != null) {
+        if (intent.hasExtra(ChanHelper.LOAD_WIDGET_CONFIG)) {
+            boardCode = ensurePrefs().getString(SettingsActivity.PREF_WIDGET_BOARD, ChanBoard.DEFAULT_BOARD_CODE);
+            if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from widget prefs");
+        }
+        else if (data != null) {
             List<String> params = data.getPathSegments();
             String uriBoardCode = params.get(0);
             if (ChanBoard.getBoardByCode(this, uriBoardCode) != null) {
@@ -245,7 +254,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
             if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from board code intent");
         }
         else {
-            boardCode = prefs.getString(ChanHelper.BOARD_CODE, DEFAULT_BOARD_CODE);
+            boardCode = ensurePrefs().getString(ChanHelper.BOARD_CODE, DEFAULT_BOARD_CODE);
             if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from prefs or default");
         }
     }

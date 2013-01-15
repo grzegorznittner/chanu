@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.service.BoardLoadService;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,13 +27,16 @@ public class WidgetAlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) { // when first boot up, default and then schedule for refresh
+        refreshWidget(context);
+    }
+
+    public static void refreshWidget(Context context) {
         Intent updateIntent = new Intent(context, UpdateWidgetService.class);
-        updateIntent.putExtra(ChanHelper.FIRST_TIME_INIT, true);
         context.startService(updateIntent);
         scheduleAlarms(context);
     }
 
-    public static void scheduleAlarms(Context context) {
+    private static void scheduleAlarms(Context context) {
         int[] appWidgetIds = BoardWidgetProvider.getAppWidgetIds(context);
         if (appWidgetIds == null || appWidgetIds.length == 0) {
             if (DEBUG)
@@ -48,7 +52,8 @@ public class WidgetAlarmReceiver extends BroadcastReceiver {
     }
 
     public static PendingIntent getPendingIntentForWidgetAlarms(Context context) {
-        Intent intent = new Intent(context, UpdateWidgetService.class);
+        Intent intent = new Intent(context, BoardLoadService.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, BoardWidgetProvider.getConfiguredBoardWidget(context));
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return pendingIntent;
     }

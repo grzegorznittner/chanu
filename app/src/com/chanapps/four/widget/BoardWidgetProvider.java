@@ -4,8 +4,10 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import com.chanapps.four.data.ChanHelper;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.data.ChanBoard;
 
 /**
  * User: mpop
@@ -22,9 +24,14 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         return appWidgetIds;
     }
 
+    public static String getConfiguredBoardWidget(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(SettingsActivity.PREF_WIDGET_BOARD, ChanBoard.DEFAULT_BOARD_CODE);
+    }
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        WidgetAlarmReceiver.scheduleAlarms(context);
+        WidgetAlarmReceiver.refreshWidget(context);
     }
 
     @Override
@@ -34,10 +41,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onEnabled(Context context) {
-        Intent intent = new Intent(context, UpdateWidgetService.class);
-        intent.putExtra(ChanHelper.FIRST_TIME_INIT, true);
-        context.startService(intent);
-        WidgetAlarmReceiver.scheduleAlarms(context);
+        WidgetAlarmReceiver.refreshWidget(context);
     }
 
     @Override
