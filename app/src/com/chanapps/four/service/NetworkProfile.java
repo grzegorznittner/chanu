@@ -1,6 +1,7 @@
 package com.chanapps.four.service;
 
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.data.FetchParams;
 
 import android.content.Context;
 
@@ -36,6 +37,11 @@ public interface NetworkProfile {
 	 * NO_CONNECTION is only returned when there is no phisical connection established.
 	 */
 	Health getConnectionHealth();
+	
+	/**
+	 * Returns fetch params based on the connection type and health
+	 */
+	FetchParams getFetchParams();
 	
 	/**
 	 * Returns default connection health status. Used when health couldn't be calculated based on

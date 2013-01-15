@@ -15,6 +15,7 @@ import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.DataTransfer;
+import com.chanapps.four.data.FetchParams;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -31,7 +32,13 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	private Stack<DataTransfer> dataTransfers = new Stack<DataTransfer>();
 	
 	private Health currentHealth = null;
+	private static final FetchParams DEFAULT_FETCH_PARAMS = new FetchParams(1800000L, 1800000L, 3000);
 	
+	@Override
+	public FetchParams getFetchParams() {
+		return DEFAULT_FETCH_PARAMS;
+	}
+
 	protected synchronized void checkDataTransfer() {
 		if (dataTransfers.size() > 0) {
 			if (new Date().getTime() - dataTransfers.get(0).time.getTime() > MAX_DATATRANSFER_INACTIVITY) {

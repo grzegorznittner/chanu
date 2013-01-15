@@ -74,6 +74,10 @@ public class ChanFileStorage {
     }
 
     public static void storeBoardData(Context context, ChanBoard board) throws IOException {
+    	if (board.defData) {
+    		// default data should never be stored
+    		return;
+    	}
 		boardCache.put(board.link, board);
         File boardDir = getBoardCacheDirectory(context, board.link);
 		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
@@ -151,6 +155,10 @@ public class ChanFileStorage {
 	}
 	
 	public static void storeThreadData(Context context, ChanThread thread) throws IOException {
+    	if (thread.defData) {
+    		// default data should never be stored
+    		return;
+    	}
 		threadCache.put(thread.no, thread);
         File threadDir = getThreadCacheDirectory(context, thread.board, thread.no);
 		if (threadDir != null && (threadDir.exists() || threadDir.mkdirs())) {
