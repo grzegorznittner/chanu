@@ -72,6 +72,10 @@ public class ChanFileStorage {
     }
 
     public static void storeBoardData(Context context, ChanBoard board) throws IOException {
+    	if (board.defData) {
+    		// default data should never be stored
+    		return;
+    	}
 		boardCache.put(board.link, board);
         File boardDir = getBoardCacheDirectory(context, board.link);
 		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
@@ -149,6 +153,10 @@ public class ChanFileStorage {
 	}
 	
 	public static void storeThreadData(Context context, ChanThread thread) throws IOException {
+    	if (thread.defData) {
+    		// default data should never be stored
+    		return;
+    	}
 		threadCache.put(thread.no, thread);
         File threadDir = getThreadCacheDirectory(context, thread.board, thread.no);
 		if (threadDir != null && (threadDir.exists() || threadDir.mkdirs())) {
@@ -168,8 +176,8 @@ public class ChanFileStorage {
 	
 	public static ChanBoard loadBoardData(Context context, String boardCode) {
 		if (boardCode == null) {
-			Log.w(TAG, "Trying to load 'null' board! Check stack trace why has it happened.", new Exception());
-			return null;
+			Log.e(TAG, "Trying to load 'null' board! Check stack trace why has it happened.", new Exception());
+			throw new RuntimeException("Null board code was passed!");
 		}
 		if (boardCache.containsKey(boardCode)) {
 			if (DEBUG) Log.i(TAG, "Retruning board " + boardCode + " data from cache");
@@ -198,7 +206,29 @@ public class ChanFileStorage {
 				boardFile.delete();
             }
 		}
-		return ChanBoard.getBoardByCode(context, boardCode);
+		return prepareDefaultBoardData(context, boardCode);
+	}
+	
+	private static ChanBoard prepareDefaultBoardData(Context context, String boardCode) {
+		ChanBoard board = ChanBoard.getBoardByCode(context, boardCode).copy();
+		int boardImageId = ChanHelper.getImageResourceId(board.link);
+		
+		ChanThread thread = new ChanThread();
+		thread.board = boardCode;
+		thread.closed = 0;
+		thread.created = new Date();
+		thread.images = 1;
+		thread.no = -100;
+		thread.tim = thread.created.getTime() * 1000;
+		thread.tn_w = 240;
+		thread.tn_h = 240;
+		thread.defData = true;
+		
+		board.threads = new ChanThread[] { thread };
+		board.lastFetched = 0;
+		board.defData = true;
+		
+		return board;
 	}
 
 	public static ChanThread loadThreadData(Context context, String boardCode, long threadNo) {
@@ -236,7 +266,38 @@ public class ChanFileStorage {
 				threadFile.delete();
             }
 		}
-		return null;
+		return prepareDefaultThreadData(context, boardCode, threadNo);
+	}
+	
+	private static ChanThread prepareDefaultThreadData(Context context, String boardCode, long threadNo) {
+		ChanThread thread = new ChanThread();
+		thread.board = boardCode;
+		thread.closed = 0;
+		thread.created = new Date();
+		thread.images = 0;
+		thread.replies = 0;
+		thread.no = threadNo;
+		thread.tim = thread.created.getTime() * 1000;
+		thread.tn_w = 0;
+		thread.tn_h = 0;
+		
+		ChanPost post = new ChanPost();
+		post.no = threadNo;
+		post.board = boardCode;
+		post.closed = 0;
+		post.created = new Date();
+		post.images = 0;
+		post.no = threadNo;
+		post.tim = thread.created.getTime() * 1000;
+		post.tn_w = 0;
+		post.tn_h = 0;
+		post.defData = true;
+		
+		thread.posts = new ChanPost[] { post };
+		thread.lastFetched = 0;
+		thread.defData = true;
+		
+		return thread;
 	}
 	
 	public static void storeUserPreferences(Context context, UserPreferences userPrefs) {

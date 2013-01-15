@@ -1,5 +1,8 @@
 package com.chanapps.four.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
@@ -12,6 +15,7 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.FetchParams;
 
 public class MobileProfile extends AbstractNetworkProfile {
 	private static final String TAG = "";
@@ -25,6 +29,24 @@ public class MobileProfile extends AbstractNetworkProfile {
 	
 	private String networkType = "3G";
 	
+	private static final Map<Health, FetchParams> REFRESH_TIME = new HashMap<Health, FetchParams> ();
+	
+	static {
+		/* Mapping between connection health and fetch params
+		 *               HEALTH  ----->   REFRESH_DELAY, FORCE_REFRESH_DELAY, READ_TIMEOUT
+		 */
+		REFRESH_TIME.put(Health.BAD, new FetchParams(600000L, 30000L, 20000));  // 10 min
+		REFRESH_TIME.put(Health.VERY_SLOW, new FetchParams(300000L, 20000L, 20000));  // 5 min
+		REFRESH_TIME.put(Health.SLOW, new FetchParams(180000L, 15000L, 20000));  // 3 min
+		REFRESH_TIME.put(Health.GOOD, new FetchParams(120000L, 12000L, 12000));  // 2 min
+		REFRESH_TIME.put(Health.PERFECT, new FetchParams(60000L, 10000L, 8000));  // 1 min
+	}
+	
+	@Override
+	public FetchParams getFetchParams() {
+		return REFRESH_TIME.get(getConnectionHealth());
+	}
+
 	public void setNetworkType(String networkType) {
 		this.networkType = networkType;
 	}
@@ -168,7 +190,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 					&& currentActivityId.boardCode.equals(data.boardCode);
 			makeToast("Loaded data for board " + data.boardCode);
 			ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
-			if (board == null) {
+			if (board.defData) {
 				// board data corrupted, we need to reload it
 				Log.w(TAG, "Board " + data.boardCode + " is corrupted, it is scheduled for reload");
 				FetchChanDataService.scheduleBoardFetchService(service.getApplicationContext(), data.boardCode, 0);
@@ -203,7 +225,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 					&& currentActivityId.threadNo == data.threadNo;
 			makeToast("Loaded data for " + data.boardCode + "/" + data.threadNo);
 			ChanThread thread = ChanFileStorage.loadThreadData(service.getApplicationContext(), data.boardCode, data.threadNo);
-			if (thread == null && threadActivity) {
+			if (thread.defData && threadActivity) {
 				// thread file is corrupted, and user stays on thread page (or loads image), we need to refetch thread
 				Log.w(TAG, "Thread " + data.boardCode + "/" + data.threadNo + " is corrupted, it is scheduled for reload");
 				FetchChanDataService.scheduleThreadFetch(service.getApplicationContext(), data.boardCode, data.threadNo);

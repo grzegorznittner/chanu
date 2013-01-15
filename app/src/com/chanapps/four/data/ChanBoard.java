@@ -47,6 +47,8 @@ public class ChanBoard {
 	public ChanPost threads[] = new ChanThread[0];
 	public long lastFetched;
 	
+	public boolean defData = false;
+	
 	public ChanBoard copy() {
 		ChanBoard copy = new ChanBoard(this.type, this.name, this.link, this.iconId,
 				this.workSafe, this.classic, this.textOnly, this.lastPage);

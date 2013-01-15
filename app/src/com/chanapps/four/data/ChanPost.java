@@ -1,13 +1,12 @@
 package com.chanapps.four.data;
 
+import java.util.Date;
+import java.util.List;
+
 import android.content.Context;
 import android.util.Log;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.loader.BoardCursorLoader;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.chanapps.four.activity.R;
 
 public class ChanPost {
 
@@ -64,6 +63,7 @@ public class ChanPost {
     public int bumplimit = 0;
     public int imagelimit = 0;
     public boolean isDead = false;
+    public boolean defData = false;
 
     public static final String quoteText(String s) {
         if (s == null || s.isEmpty())
@@ -169,9 +169,14 @@ public class ChanPost {
 
 
    	public String getThumbnailUrl() {
-        return tim != 0
-   			? "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg"
-            : null;
+   		if (tim > 0) {
+   			return "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg";
+   		} else if (tim == 0) {
+   			return null;
+   		} else {
+   			// default board image should be returned
+   			return null;
+   		}
     }
 
    	public String getImageUrl() {
@@ -209,6 +214,11 @@ public class ChanPost {
     }
 
     public String getPostText(boolean hideAllText) {
+    	if (defData) {
+    		return "We're preparing images for you.\n"
+    				+ "Please wait.";
+    	}
+
         int maxImageTextLen = fsize > 0 ? MAX_IMAGETEXT_LEN : MAX_TEXTONLY_LEN;
         int maxImageTextAbbrLen = fsize > 0 ? MAX_IMAGETEXT_ABBR_LEN : MAX_TEXTONLY_ABBR_LEN;
         String text = "";
@@ -238,6 +248,11 @@ public class ChanPost {
     }
 
     public String getThreadText(boolean hideAllText, int maxImageTextLen, int maxImageTextAbbrLen, boolean onBoard) {
+    	if (defData) {
+    		return "We're preparing images for you.\n"
+    				+ "Please wait.";
+    	}
+    	
         String text = "";
         if (!hideAllText) {
             if (!onBoard)
@@ -312,5 +327,5 @@ public class ChanPost {
         //return m.matches();
         return matches;
     }
-
+    
 }

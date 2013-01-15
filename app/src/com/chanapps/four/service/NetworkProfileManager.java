@@ -16,6 +16,7 @@ import android.util.Log;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.NetworkProfile.Failure;
 
 /**
@@ -54,6 +55,14 @@ public class NetworkProfileManager {
 	
 	public ChanIdentifiedActivity getActivity() {
 		return currentActivity.get();
+	}
+	
+	public FetchParams getFetchParams() {
+		if (activeProfile != null) {
+			return activeProfile.getFetchParams();
+		} else {
+			return noConnectionProfile.getFetchParams();
+		}
 	}
 
 	public void activityChange(ChanIdentifiedActivity newActivity) {
