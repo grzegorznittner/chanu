@@ -29,11 +29,6 @@ import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.service.NetworkProfile.Failure;
 import com.chanapps.four.widget.BoardWidgetProvider;
-import com.chanapps.four.service.NetworkProfile.Failure;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
-import com.chanapps.four.widget.UpdateWidgetService;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
