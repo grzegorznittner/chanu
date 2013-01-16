@@ -12,7 +12,11 @@ import android.app.DialogFragment;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanWatchlist;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
 * Created with IntelliJ IDEA.
@@ -36,9 +40,18 @@ public class ResetPreferencesDialogFragment extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
-                                ed.clear();
-                                ed.commit();
+                                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+                                // do this jazz to save widget conf even on clear because you can't programmatically remove widgets
+                                Set<String> widgetConf = pref.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
+                                Set<String> savedWidgetConf = new HashSet<String>();
+                                for (String widget : widgetConf) {
+                                    String savedWidget = new String(widget);
+                                    savedWidgetConf.add(savedWidget);
+                                }
+                                SharedPreferences.Editor ed = pref.edit();
+                                ed.clear().putStringSet(ChanHelper.PREF_WIDGET_BOARDS, savedWidgetConf).commit();
+
                                 // I tried to call notifyStateChange on the root adapter instead but it does nothing
                                 Activity activity = fragment.getActivity();
                                 Intent intent = activity.getIntent();

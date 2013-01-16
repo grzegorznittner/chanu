@@ -3,7 +3,6 @@ package com.chanapps.four.widget;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,8 +19,6 @@ import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.*;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -39,13 +36,19 @@ public class UpdateWidgetService extends Service {
 
     public static final String TAG = UpdateWidgetService.class.getSimpleName();
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (DEBUG)
-            Log.i(TAG, "starting UpdateWidgetService");
-        (new WidgetUpdateTask()).execute();
+        int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            Log.e(TAG, "Invalid app widget id passed, service terminating");
+        }
+        else {
+            boolean firstTimeInit = intent.getBooleanExtra(ChanHelper.FIRST_TIME_INIT, false);
+            if (DEBUG) Log.i(TAG, "starting update widget service for widget=" + appWidgetId + " firstTime=" + firstTimeInit);
+            (new WidgetUpdateTask(appWidgetId, firstTimeInit)).execute();
+        }
         return Service.START_NOT_STICKY;
     }
 
@@ -59,30 +62,46 @@ public class UpdateWidgetService extends Service {
         private static final int NUM_TOP_THREADS = 3;
         private static final int BITMAP_BUFFER_SIZE = 8192;
 
+        private int appWidgetId;
+        private boolean firstTimeInit;
         private Context context;
         private String boardCode;
         private ChanPost[] threads = new ChanPost[NUM_TOP_THREADS];
         private List<Bitmap> bitmaps = new ArrayList<Bitmap>(NUM_TOP_THREADS);
 
-        public WidgetUpdateTask() {
+        public WidgetUpdateTask(int appWidgetId, boolean firstTimeInit) {
+            this.appWidgetId = appWidgetId;
+            this.firstTimeInit = firstTimeInit;
             context = getApplicationContext();
-            boardCode = BoardWidgetProvider.getConfiguredBoardWidget(context);
+            boardCode = BoardWidgetProvider.getBoardCodeForWidget(context, appWidgetId);
+            if (boardCode == null) {
+                Log.e(TAG, "Null board code found for widget=" + appWidgetId + " defaulting to /a");
+                boardCode = "a";
+            }
             if (DEBUG)
-                Log.i(TAG, "Found boardCode=" + boardCode + " for widget update");
+                Log.i(TAG, "Found boardCode=" + boardCode + " for widget=" + appWidgetId + " now updating");
         }
 
         @Override
         public Void doInBackground(Void... params) {
             if (DEBUG)
                 Log.i(TAG, "Starting background thread for widget update");
-            loadBoard();
-            loadBitmaps();
+            if (!firstTimeInit) {
+                loadBoard();
+                loadBitmaps();
+            }
             return null;
         }
 
         @Override
         public void onPostExecute(Void result) {
-            updateWidgetViews(); // run on UI thread since setting views
+            if (firstTimeInit) {
+                initWidgetViews();
+                (new WidgetUpdateTask(appWidgetId, false)).execute();
+            }
+            else {
+                updateWidgetViews(); // run on UI thread since setting views
+            }
         }
 
         private boolean isConnected() {
@@ -169,7 +188,7 @@ public class UpdateWidgetService extends Service {
                     catch (Exception e) {
                         Log.e(TAG, "Exception loading cached bitmap for i=" + i, e);
                     }
-                    if (b == null) { // load as resource
+                    if (b == null) { // load as resource and kill the thread so it just goes to the board
                         b = loadDefaultBoardBitmap(i);
                         Log.i(TAG, "Null bitmap loaded for i=" + i + " thus loading from board default");
                     }
@@ -185,38 +204,47 @@ public class UpdateWidgetService extends Service {
             return BitmapFactory.decodeResource(getResources(), imageResourceId);
         }
 
-        private void updateWidgetViews() {
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            ComponentName widgetProvider = new ComponentName(context, BoardWidgetProvider.class);
-            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widgetProvider);
-
-            // Perform this loop procedure for each App Widget that belongs to this provider
-            for (int i=0; i < appWidgetIds.length; i++) {
-                int appWidgetId = appWidgetIds[i];
-
-                // git views
-                RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.board_widget);
-
-                Intent intent = BoardActivity.createIntentForLaunchFromWidget(context);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // doesn't really work well
-                PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-                // fill images
-                int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
-                for (int j = 0; j < imageIds.length; j++) {
-                    int imageId = imageIds[j];
-                    Bitmap b = bitmaps.get(j);
-                    views.setImageViewBitmap(imageId, b);
-                    views.setOnClickPendingIntent(imageId, pendingIntent);
-                }
-
-                appWidgetManager.updateAppWidget(appWidgetId, views);
-
-                if (DEBUG)
-                    Log.i(TAG, "Updated widgetId=" + appWidgetId);
+        private void initWidgetViews() { // do this first time to avoid blank widget on network timeouts
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.board_widget);
+            int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
+            for (int i = 0; i < imageIds.length; i++) {
+                int imageId = imageIds[i];
+                Bitmap b = loadDefaultBoardBitmap(i);
+                views.setImageViewBitmap(imageId, b);
+                PendingIntent pendingIntent = makePendingIntent(null, i); // this will make a board intent
+                views.setOnClickPendingIntent(imageId, pendingIntent);
             }
+            AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
+            if (DEBUG) Log.i(TAG, "Init completed for widgetId=" + appWidgetId + " for board=" + boardCode);
         }
-        /*
+
+        private void updateWidgetViews() {
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.board_widget);
+            int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
+            for (int i = 0; i < imageIds.length; i++) {
+                int imageId = imageIds[i];
+
+                Bitmap b = bitmaps.get(i);
+                views.setImageViewBitmap(imageId, b);
+
+                ChanPost thread = threads[i];
+                PendingIntent pendingIntent = makePendingIntent(thread, i);
+                views.setOnClickPendingIntent(imageId, pendingIntent);
+            }
+
+            AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
+            if (DEBUG) Log.i(TAG, "Updated widgetId=" + appWidgetId + " for board=" + boardCode);
+        }
+
+        private PendingIntent makePendingIntent(ChanPost thread, int i) {
+            Intent intent = thread == null
+                ? BoardActivity.createIntentForActivity(context, new String(boardCode))
+                : createIntentForThread(thread);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            int uniqueId = 100 * appWidgetId + i;
+            return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+
         private Intent createIntentForThread(ChanPost thread) {
             return ThreadActivity.createIntentForActivity(
                     context,
@@ -231,7 +259,6 @@ public class UpdateWidgetService extends Service {
                     0
             );
         }
-        */
 
         /*
         private void bindThreadImageView(RemoteViews views, int imageId, ChanPost thread) {
@@ -241,9 +268,6 @@ public class UpdateWidgetService extends Service {
             views.setOnClickPendingIntent(imageId, pendingIntent);
         }
         */
-
-        private void bindDefaultImageView(RemoteViews views, int imageId) {
-        }
 
     }
 }

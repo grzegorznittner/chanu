@@ -9,6 +9,8 @@ import android.util.Log;
 
 import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.service.FetchChanDataService;
 
 public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();
@@ -59,7 +61,8 @@ public class ChanBoard {
         return "Board " + link + " page: " + no + ", stickyPosts: " + stickyPosts.length + ", threads: " + threads.length;
     }
 
-	private static List<ChanBoard> boards;
+    private static List<ChanBoard> boards;
+    private static List<ChanBoard> safeBoards;
     private static Map<Type, List<ChanBoard>> boardsByType;
     private static Map<String, ChanBoard> boardByCode;
 
@@ -93,18 +96,13 @@ public class ChanBoard {
 		return boards;
 	}
 
-    public static List<ChanBoard> getSortedBoards(Context context) {
-        List<ChanBoard> chanBoards = ChanBoard.getBoards(context);
-        Collections.sort(chanBoards, new Comparator<ChanBoard>() {
-            @Override
-            public int compare(ChanBoard lhs, ChanBoard rhs) {
-                return lhs.link.compareToIgnoreCase(rhs.link);
-            }
-        });
-        return chanBoards;
+    public static List<ChanBoard> getBoardsRespectingNSFW(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean showNSFW = prefs.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
+        return showNSFW ? boards : safeBoards;
     }
 
-	public static boolean isValidBoardCode(Context context, String boardCode) {
+    public static boolean isValidBoardCode(Context context, String boardCode) {
         if (boards == null) {
    			initBoards(context);
    		}
@@ -129,8 +127,9 @@ public class ChanBoard {
 	}
 	
 	private static void initBoards(Context ctx) {
-		boards = new ArrayList<ChanBoard>();
-		boardsByType = new HashMap<Type, List<ChanBoard>>();
+        boards = new ArrayList<ChanBoard>();
+        safeBoards = new ArrayList<ChanBoard>();
+        boardsByType = new HashMap<Type, List<ChanBoard>>();
         boardByCode = new HashMap<String, ChanBoard>();
 
         String[][] boardCodesByType = initBoardCodes(ctx);
@@ -146,11 +145,27 @@ public class ChanBoard {
                 ChanBoard b = new ChanBoard(boardType, boardName, boardCode, iconId, workSafe, true, false, false);
                 boardsForType.add(b);
                 boards.add(b);
+                if (workSafe)
+                    safeBoards.add(b);
                 boardByCode.put(boardCode, b);
             }
             boardsByType.put(boardType, boardsForType);
         }
-   	}
+
+        Collections.sort(boards, new Comparator<ChanBoard>() {
+            @Override
+            public int compare(ChanBoard lhs, ChanBoard rhs) {
+                return lhs.link.compareToIgnoreCase(rhs.link);
+            }
+        });
+        Collections.sort(safeBoards, new Comparator<ChanBoard>() {
+            @Override
+            public int compare(ChanBoard lhs, ChanBoard rhs) {
+                return lhs.link.compareToIgnoreCase(rhs.link);
+            }
+        });
+
+    }
 
     private static int getImageResourceId(String boardCode) {
         int imageId = 0;
@@ -243,6 +258,16 @@ public class ChanBoard {
 
         };
         return boardCodesByType;
+    }
+
+    public static void preloadUncachedBoards(Context context) {
+        List<ChanBoard> boards = ChanBoard.getBoards(context);
+        for (ChanBoard board : boards) {
+            if (!ChanFileStorage.isBoardCachedOnDisk(context, board.link)) { // if user never visited board before
+                Log.i(TAG, "Starting load service for uncached board " + board.link);
+                FetchChanDataService.scheduleBoardFetch(context, board.link);
+            }
+        }
     }
 
 }

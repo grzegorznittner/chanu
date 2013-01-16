@@ -1,23 +1,14 @@
 package com.chanapps.four.fragment;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
-import android.util.Log;
 import android.widget.BaseAdapter;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.widget.WidgetAlarmReceiver;
 
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -47,49 +38,6 @@ public class SettingsFragment extends PreferenceFragment {
                 return true;
             }
         });
-
-        List<ChanBoard> boards = ChanBoard.getSortedBoards(this.getActivity().getApplicationContext());
-        int numBoards = boards.size();
-        String[] entries = new String[numBoards];
-        String[] entryValues = new String[numBoards];
-        for (int i = 0; i < numBoards; i++) {
-            ChanBoard board = boards.get(i);
-            entries[i] = "/" + board.link + " " + board.name;
-            entryValues[i] = board.link;
-        }
-
-        ListPreference widgetBoard = (ListPreference)findPreference(SettingsActivity.PREF_WIDGET_BOARD);
-        updateWidgetSummary(widgetBoard, widgetBoard.getValue());
-        widgetBoard.setEntries(entries);
-        widgetBoard.setEntryValues(entryValues);
-        widgetBoard.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                final Context context = SettingsFragment.this.getActivity().getApplicationContext();
-                WidgetAlarmReceiver.cancelAlarms(context); // cancel before we update to new value so pending intent matches
-                updateWidgetSummary(preference, (String)newValue);
-                // we have to schedule with some delay so it runs AFTER the preference is saved so we refresh the new board
-                (new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(1000);
-                        }
-                        catch (InterruptedException e) {
-                            // I don't care
-                        }
-                        WidgetAlarmReceiver.refreshWidget(context);
-                    }
-                })).run();
-                return true;
-            }
-        });
-
-    }
-
-    private void updateWidgetSummary(Preference preference, String boardCode) {
-        String newSummary = getString(R.string.pref_widget_board_summ) + " /" + boardCode;
-        preference.setSummary(newSummary);
     }
 
     public Handler ensureHandler() {

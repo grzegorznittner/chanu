@@ -4,7 +4,8 @@
                     android:minWidth="294dp"
                     android:minHeight="72dp"
                     android:updatePeriodMillis="0"
-                    android:previewImage="@drawable/four_leaf_clover_1"
+                    android:previewImage="@drawable/widget_preview"
                     android:initialLayout="@layout/board_widget"
                     android:resizeMode="horizontal|vertical"
+                    android:configure="com.chanapps.four.widget.WidgetConfigureActivity"
         />

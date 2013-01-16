@@ -169,10 +169,12 @@
     <string name="pref_automatically_manage_watchlist">Auto-Manage Watchlist</string>
     <string name="pref_automatically_manage_watchlist_summ_on">Add and remove threads automatically</string>
     <string name="pref_automatically_manage_watchlist_summ_off">Manually add and remove threads</string>
-    <string name="pref_widget_board">Widget Board</string>
-    <string name="pref_widget_board_summ">Board to use for widget images</string>
     <string name="pref_reset_to_defaults">Clear Preferences</string>
     <string name="pref_reset_to_defaults_summ">Reset all settings to their factory default</string>
+
+    <!-- widgets -->
+    <string name="widget_board">Pick Widget Board</string>
+    <string name="widget_board_summ">Select board to use for updating widget</string>
 
     <!-- Help and about_dialog -->
     <string name="about_menu">About</string>

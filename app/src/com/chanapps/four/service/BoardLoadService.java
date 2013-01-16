@@ -25,7 +25,6 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.widget.BoardWidgetProvider;
-import com.chanapps.four.widget.UpdateWidgetService;
 import com.chanapps.four.service.NetworkProfile.Failure;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -100,11 +99,8 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
             Log.w(TAG, "Stored board " + boardCode + " page " + pageNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
 
-            // tell it to refresh widget
-            if (boardCode.equals(BoardWidgetProvider.getConfiguredBoardWidget(context))) {
-                Intent updateIntent = new Intent(context, UpdateWidgetService.class);
-                context.startService(updateIntent);
-            }
+            // tell it to refresh widgets for board if any are configured
+            BoardWidgetProvider.updateAll(context, boardCode);
 
             NetworkProfileManager.instance().finishedParsingData(this);
         } catch (Exception e) {
