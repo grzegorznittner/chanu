@@ -285,7 +285,11 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             		+ " code=" + tc.getResponseCode() + " type=" + contentType);
             if (thread.lastFetched > 0 && tc.getResponseCode() == 304) {
             	if (DEBUG) Log.i(TAG, "Got 304 for " + chanApi + " so was not modified since " + thread.lastFetched);
-            	ChanFileStorage.storeThreadData(getBaseContext(), thread);
+            	try {
+            		ChanFileStorage.storeThreadData(getBaseContext(), thread);
+            	} catch (Exception e) {
+            		Log.w(TAG, "Could not update thread file", e);
+            	}
             	return;
             }
             if (contentType == null || !contentType.contains("json")) {
@@ -296,7 +300,11 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             if (tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 if (DEBUG) Log.i(TAG, "Got 404 on thread, thread no longer exists");
                 thread.isDead = true;
-                ChanFileStorage.storeThreadData(getBaseContext(), thread);
+                try {
+            		ChanFileStorage.storeThreadData(getBaseContext(), thread);
+            	} catch (Exception e) {
+            		Log.w(TAG, "Could not update thread file", e);
+            	}
             } else if (thread.lastFetched > 0 && tc.getResponseCode() == 304) {
             	if (DEBUG) Log.i(TAG, "Got 304 for " + chanApi + " so was not modified since " + thread.lastFetched);
             	return;

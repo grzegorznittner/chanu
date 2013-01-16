@@ -76,10 +76,12 @@ public class MobileProfile extends AbstractNetworkProfile {
 					FetchChanDataService.scheduleBoardFetch(context, activityId.boardCode);
 				} else if (activityId.activity == ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY) {
 					if (health != Health.VERY_SLOW) {
+						/*
 						makeToast("Preloading boards a, b and s");
 						FetchChanDataService.scheduleBoardFetch(context, "a");
 						FetchChanDataService.scheduleBoardFetch(context, "b");
 						FetchChanDataService.scheduleBoardFetch(context, "s");
+						*/
 					} else {
 						makeToast("No preloading " + health);
 					}
@@ -101,10 +103,12 @@ public class MobileProfile extends AbstractNetworkProfile {
 		
 		Health health = getConnectionHealth();
 		if (health != Health.BAD && health != Health.VERY_SLOW) {
+			/*
 			makeToast("Preloading boards a, b and s");
 			FetchChanDataService.scheduleBoardFetch(context, "a");
 			FetchChanDataService.scheduleBoardFetch(context, "b");
 			FetchChanDataService.scheduleBoardFetch(context, "s");
+			*/
 		} else {
 			makeToast("No preloading " + health);
 		}
@@ -116,10 +120,12 @@ public class MobileProfile extends AbstractNetworkProfile {
 
 		Health health = getConnectionHealth();
 		if (health != Health.BAD && health != Health.VERY_SLOW) {
+			/*
 			makeToast("Preloading boards a, b and s");
 			FetchChanDataService.scheduleBoardFetch(context, "a");
 			FetchChanDataService.scheduleBoardFetch(context, "b");
 			FetchChanDataService.scheduleBoardFetch(context, "s");
+			*/
 		} else {
 			makeToast("No preloading " + health);
 		}
@@ -129,23 +135,23 @@ public class MobileProfile extends AbstractNetworkProfile {
 	public void onBoardSelected(Context context, String board) {
 		super.onBoardSelected(context, board);
 		
-		FetchChanDataService.scheduleBoardFetch(context, board);
-		Health health = getConnectionHealth();
-		if (health == Health.GOOD || health == Health.PERFECT) {
-			ChanBoard boardObj = ChanFileStorage.loadBoardData(context, board);
-			int threadPrefechCounter = health == Health.GOOD ? 3 : 7;
-			if (boardObj != null) {
-				for(ChanPost post : boardObj.threads) {
-					if (threadPrefechCounter <= 0) {
-						break;
-					}
-					if (post.closed == 0 && post.sticky == 0 && post.replies > 5 && post.images > 1) {
-						threadPrefechCounter--;
-						FetchChanDataService.scheduleThreadFetch(context, board, post.no);
-					}
-				}
-			}
-		}
+		FetchChanDataService.scheduleBoardFetchWithPriority(context, board);
+//		Health health = getConnectionHealth();
+//		if (health == Health.GOOD || health == Health.PERFECT) {
+//			ChanBoard boardObj = ChanFileStorage.loadBoardData(context, board);
+//			int threadPrefechCounter = health == Health.GOOD ? 3 : 7;
+//			if (boardObj != null) {
+//				for(ChanPost post : boardObj.threads) {
+//					if (threadPrefechCounter <= 0) {
+//						break;
+//					}
+//					if (post.closed == 0 && post.sticky == 0 && post.replies > 5 && post.images > 1) {
+//						threadPrefechCounter--;
+//						FetchChanDataService.scheduleThreadFetch(context, board, post.no);
+//					}
+//				}
+//			}
+//		}
 	}
 
 	@Override
@@ -157,9 +163,10 @@ public class MobileProfile extends AbstractNetworkProfile {
 
 	@Override
 	public void onThreadSelected(Context context, String board, long threadId) {
+		Log.d(TAG, "onThreadSelected", new Exception("onThreadSelected called"));
 		super.onThreadSelected(context, board, threadId);
 		
-		FetchChanDataService.scheduleThreadFetch(context, board, threadId);
+		FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId);
 	}
 	
 	@Override
@@ -225,6 +232,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 					&& currentActivityId.threadNo == data.threadNo;
 			makeToast("Loaded data for " + data.boardCode + "/" + data.threadNo);
 			ChanThread thread = ChanFileStorage.loadThreadData(service.getApplicationContext(), data.boardCode, data.threadNo);
+			Log.i(TAG, "Loaded thread " + thread.board + "/" + thread.no + " posts " + thread.posts.length);
 			if (thread.defData && threadActivity) {
 				// thread file is corrupted, and user stays on thread page (or loads image), we need to refetch thread
 				Log.w(TAG, "Thread " + data.boardCode + "/" + data.threadNo + " is corrupted, it is scheduled for reload");

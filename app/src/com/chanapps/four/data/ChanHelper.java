@@ -1,11 +1,15 @@
 package com.chanapps.four.data;
 
-import com.chanapps.four.activity.BoardSelectorActivity;
-import com.chanapps.four.activity.R;
+import java.text.SimpleDateFormat;
+
+import org.codehaus.jackson.map.DeserializationConfig.Feature;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.util.Log;
+
+import com.chanapps.four.activity.R;
 
 public class ChanHelper {
 	public static final int VERBOSE = 0;
@@ -144,5 +148,11 @@ public class ChanHelper {
         return imageId;
     }
 
-
+    public static ObjectMapper getJsonMapper() {
+    	ObjectMapper mapper = new ObjectMapper();
+    	mapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    	// "Jan 15, 2013 10:16:20 AM"
+    	mapper.setDateFormat(new SimpleDateFormat("MMM d, yyyy h:mm:ss aaa"));
+    	return mapper;
+    }
 }

@@ -73,8 +73,8 @@ public abstract class BaseChanService extends Service {
     protected static int NON_PRIORITY_MESSAGE = 99;
     protected static int PRIORITY_MESSAGE = 100;
     
-    protected static final int MAX_NON_PRIORITY_MESSAGES = 20;
-    protected static final int MAX_PRIORITY_MESSAGES = 2;
+    protected static final int MAX_NON_PRIORITY_MESSAGES = 10;
+    protected static final int MAX_PRIORITY_MESSAGES = 0;
     
     protected int nonPriorityMessageCounter = 0;
     protected int priorityMessageCounter = 0;

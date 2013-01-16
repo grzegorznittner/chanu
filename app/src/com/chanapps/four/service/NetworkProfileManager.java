@@ -66,7 +66,7 @@ public class NetworkProfileManager {
 	}
 
 	public void activityChange(ChanIdentifiedActivity newActivity) {
-		Log.w(TAG, "activity change to " + newActivity.getChanActivityId());
+		Log.w(TAG, "activity change to " + newActivity.getChanActivityId(), new Exception("activity change"));
 		if (receiver == null) {
 			receiver = new NetworkBroadcastReceiver();
 			newActivity.getBaseContext().getApplicationContext()
@@ -108,6 +108,7 @@ public class NetworkProfileManager {
 	}
 	
 	public void manualRefresh(ChanIdentifiedActivity newActivity) {
+		Log.w(TAG, "manualRefresh " + newActivity.getChanActivityId(), new Exception("manualRefresh"));
 		if (newActivity == null) {
 			return;
 		}

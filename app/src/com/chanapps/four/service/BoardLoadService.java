@@ -13,6 +13,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -24,11 +27,13 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.service.NetworkProfile.Failure;
 import com.chanapps.four.widget.BoardWidgetProvider;
 import com.chanapps.four.service.NetworkProfile.Failure;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+import com.chanapps.four.widget.UpdateWidgetService;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -37,6 +42,7 @@ import com.google.gson.stream.JsonReader;
 public class BoardLoadService extends BaseChanService implements ChanIdentifiedService {
 
     protected static final String TAG = BoardLoadService.class.getSimpleName();
+    private static final boolean DEBUG = true;
 	
 	protected static final long STORE_INTERVAL_MS = 2000;
     protected static final int MAX_THREAD_RETENTION_PER_BOARD = 100;
@@ -47,7 +53,7 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
     private ChanBoard board;
 
     public static void startService(Context context, String boardCode, int pageNo) {
-        Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + false );
+        if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + false );
         Intent intent = new Intent(context, BoardLoadService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.PAGE, pageNo);
@@ -55,7 +61,7 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
     }
 
     public static void startServiceWithPriority(Context context, String boardCode, int pageNo) {
-        Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + true );
+        if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + true );
         Intent intent = new Intent(context, BoardLoadService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.PAGE, pageNo);
@@ -77,7 +83,7 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
 		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
 		pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
         force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false);
-		Log.i(TAG, "Handling board=" + boardCode + " page=" + pageNo);
+		if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " page=" + pageNo);
 
         if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
             Log.e(TAG, "Watching board must use ChanWatchlist instead of service");
@@ -91,12 +97,12 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
             File boardFile = ChanFileStorage.getBoardFile(context, boardCode, pageNo);
             parseBoard(new BufferedReader(new FileReader(boardFile)));
 
-            Log.w(TAG, "Parsed board " + boardCode + " page " + pageNo
+            if (DEBUG) Log.i(TAG, "Parsed board " + boardCode + " page " + pageNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             startTime = Calendar.getInstance().getTimeInMillis();
 
             ChanFileStorage.storeBoardData(context, board);
-            Log.w(TAG, "Stored board " + boardCode + " page " + pageNo
+            if (DEBUG) Log.i(TAG, "Stored board " + boardCode + " page " + pageNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
 
             // tell it to refresh widgets for board if any are configured
@@ -123,41 +129,31 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
         if (pageNo != 0) { // preserve existing threads on subsequent page loads
 //            if (board.stickyPosts != null && board.stickyPosts.length > 0) {
 //                Collections.addAll(stickyPosts, board.stickyPosts);
-//                Log.i(TAG, "Added " + board.stickyPosts.length + " sticky posts from storage");
+//                if (DEBUG) Log.i(TAG, "Added " + board.stickyPosts.length + " sticky posts from storage");
 //            }
             if (board.threads != null && board.threads.length > 0) {
                 if (board.threads.length < MAX_THREAD_RETENTION_PER_BOARD) {
                     Collections.addAll(threads, board.threads);
-                    Log.i(TAG, "Added " + board.threads.length + " threads from storage");
+                    if (DEBUG) Log.i(TAG, "Added " + board.threads.length + " threads from storage");
                 }
                 else {
                     for (int i = 0; i < MAX_THREAD_RETENTION_PER_BOARD; i++) {
                         threads.add(board.threads[i]);
                     }
-                    Log.i(TAG, "Hit thread retention limit, adding only " + MAX_THREAD_RETENTION_PER_BOARD + " threads from storage");
+                    if (DEBUG) Log.i(TAG, "Hit thread retention limit, adding only " + MAX_THREAD_RETENTION_PER_BOARD + " threads from storage");
                 }
             }
         }
 
-        Gson gson = new GsonBuilder().create();
-
-        JsonReader reader = new JsonReader(in);
-        reader.setLenient(true);
-        reader.beginObject(); // has "threads" as single property
-        reader.nextName(); // "threads"
-        reader.beginArray();
-
-        while (reader.hasNext()) { // iterate over threads
-            reader.beginObject(); // has "posts" as single property
-            reader.nextName(); // "posts"
-            reader.beginArray();
-            
+        ObjectMapper mapper = ChanHelper.getJsonMapper();
+        JsonNode rootNode = mapper.readValue(in, JsonNode.class);
+        for (JsonNode threadValue : rootNode.path("threads")) { // iterate over threads
             ChanThread thread = null;
             List<ChanPost> posts = new ArrayList<ChanPost>();
             boolean first = true;
 //            boolean isSticky = false;
-            while (reader.hasNext()) { // first object is the thread post, spin over rest
-                ChanPost post = gson.fromJson(reader, ChanPost.class);
+            for (JsonNode postValue : threadValue.path("posts")) { // first object is the thread post
+                ChanPost post = mapper.readValue(postValue, ChanPost.class);
                 post.board = boardCode;
 //                if (post.sticky > 0 || isSticky) {
 //                    post.mergeIntoThreadList(stickyPosts);
@@ -166,7 +162,7 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
                 	if (first) {
                 		thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
                 		// if thread was not stored create a new object
-                		if (thread == null) {
+                		if (thread == null || thread.defData) {
                 			thread = new ChanThread();
                 			thread.board = boardCode;
                 			thread.no = post.no;
@@ -177,7 +173,7 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
                 	}
                 	posts.add(post);
 //                }
-                Log.v(TAG, post.toString());
+                //if (DEBUG) Log.v(TAG, post.toString());
             }
             if (thread != null) {
                 thread.mergePosts(posts);
@@ -188,13 +184,11 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
                     ChanFileStorage.storeBoardData(getBaseContext(), board);
             	}
             }
-            reader.endArray();
-            reader.endObject();
         }
 
         board.threads = threads.toArray(new ChanPost[0]);
 //        board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
-        Log.i(TAG, "Now have " + threads.size() + " threads ");
+        if (DEBUG) Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
 
 	@Override

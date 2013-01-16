@@ -1,8 +1,17 @@
 package com.chanapps.four.data;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Date;
-import java.util.WeakHashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,16 +19,29 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.chanapps.four.service.UserPreferences;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanFileStorage {
 	private static final String TAG = ChanFileStorage.class.getSimpleName();
 	private static final boolean DEBUG = false;
 	
-	private static WeakHashMap<String, ChanBoard> boardCache = new WeakHashMap<String, ChanBoard>();
-	private static WeakHashMap<Long, ChanThread> threadCache = new WeakHashMap<Long, ChanThread>();
+	private static final int MAX_BOARDS_IN_CACHE = 30;
+	private static final int MAX_THREADS_IN_CACHE = 100;
+	
+	@SuppressWarnings("serial")
+	private static Map<String, ChanBoard> boardCache = new LinkedHashMap<String, ChanBoard>(MAX_BOARDS_IN_CACHE + 1, .75F, true) {
+	    // This method is called just after a new entry has been added
+	    public boolean removeEldestEntry(Map.Entry<String, ChanBoard> eldest) {
+	        return size() > MAX_BOARDS_IN_CACHE;
+	    }
+	};
+	@SuppressWarnings("serial")
+	private static Map<Long, ChanThread> threadCache = new LinkedHashMap<Long, ChanThread>(MAX_THREADS_IN_CACHE + 1, .75F, true) {
+	    // This method is called just after a new entry has been added
+	    public boolean removeEldestEntry(Map.Entry<Long, ChanThread> eldest) {
+	        return size() > MAX_THREADS_IN_CACHE;
+	    }
+	};
 
     private static final String CACHE_ROOT = "Android";
     private static final String CACHE_DATA_DIR = "data";
@@ -34,11 +56,6 @@ public class ChanFileStorage {
         return boardDir != null && boardDir.exists();
     }
 
-    public static boolean isThreadCachedOnDisk(Context context, String boardCode, long threadNo) {
-        File threadDir = getThreadCacheDirectory(context, boardCode, threadNo);
-        return threadDir != null && threadDir.exists();
-    }
-
     public static boolean isUserPreferencesOnDisk(Context context) {
         File userPrefsFile = getUserPreferencesFile(context);
         return userPrefsFile != null && userPrefsFile.exists();
@@ -51,13 +68,6 @@ public class ChanFileStorage {
         return boardDir;
     }
 
-    private static File getThreadCacheDirectory(Context context, String boardCode, long threadNo) {
-        String cacheDir = CACHE_ROOT + FILE_SEP + CACHE_DATA_DIR + FILE_SEP + context.getPackageName() + FILE_SEP
-                + CACHE_PKG_DIR + FILE_SEP + boardCode + FILE_SEP + threadNo;
-        File threadDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
-        return threadDir;
-    }
-    
     private static File getUserPreferencesFile(Context context) {
         String cacheDir = CACHE_ROOT + FILE_SEP + CACHE_DATA_DIR + FILE_SEP + context.getPackageName() + FILE_SEP
                 + CACHE_PKG_DIR;
@@ -79,14 +89,8 @@ public class ChanFileStorage {
 		boardCache.put(board.link, board);
         File boardDir = getBoardCacheDirectory(context, board.link);
 		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-			FileWriter writer = new FileWriter(new File(boardDir, board.link + CACHE_EXT), false);
-			try {
-				Gson gson = new GsonBuilder().create();
-				gson.toJson(board, writer);
-			} finally {
-			    writer.flush();
-			    writer.close();
-			}
+			ObjectMapper mapper = ChanHelper.getJsonMapper();
+			mapper.writeValue(new File(boardDir, board.link + CACHE_EXT), board);
 			if (DEBUG) Log.i(TAG, "Stored " + board.threads.length + " threads for board '" + board.link + "'");
 		} else {
 			Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
@@ -158,19 +162,26 @@ public class ChanFileStorage {
     		return;
     	}
 		threadCache.put(thread.no, thread);
-        File threadDir = getThreadCacheDirectory(context, thread.board, thread.no);
-		if (threadDir != null && (threadDir.exists() || threadDir.mkdirs())) {
-			FileWriter writer = new FileWriter(new File(threadDir, thread.no + CACHE_EXT), false);
+        File boardDir = getBoardCacheDirectory(context, thread.board);
+		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
+			//File tempThreadFile = new File(boardDir, "t_" + thread.no + "tmp" + CACHE_EXT);
+			File threadFile = new File(boardDir, "t_" + thread.no + CACHE_EXT);
 			try {
-				Gson gson = new GsonBuilder().create();
-				gson.toJson(thread, writer);
+				ObjectMapper mapper = ChanHelper.getJsonMapper();
+				mapper.writeValue(threadFile, thread);
+				
+//				mapper.writeValue(tempThreadFile, thread);
+//				
+//				ObjectMapper loadMapper = ChanHelper.getJsonMapper();
+//				loadMapper.readValue(tempThreadFile, ChanThread.class);
+//				
+//				FileUtils.copyFile(tempThreadFile, threadFile);
 			} finally {
-                writer.flush();
-                writer.close();
-            }
+//				FileUtils.deleteQuietly(tempThreadFile);
+			}
 			if (DEBUG) Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + FILE_SEP + thread.no + "'");
 		} else {
-			Log.e(TAG, "Cannot create board cache folder. " + (threadDir == null ? "null" : threadDir.getAbsolutePath()));
+			Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
 		}
 	}
 	
@@ -189,9 +200,8 @@ public class ChanFileStorage {
 			if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
 				boardFile = new File(boardDir, boardCode + CACHE_EXT);
 				if (boardFile != null && boardFile.exists()) {
-					FileReader reader = new FileReader(boardFile);
-					Gson gson = new GsonBuilder().create();
-					ChanBoard board = gson.fromJson(reader, ChanBoard.class);
+					ObjectMapper mapper = ChanHelper.getJsonMapper();
+					ChanBoard board = mapper.readValue(boardFile, ChanBoard.class);
 					if (DEBUG) Log.i(TAG, "Loaded " + board.threads.length + " threads for board '" + board.link + "'");
 					return board;
 				} else {
@@ -237,36 +247,30 @@ public class ChanFileStorage {
 			return null;
 		}
 		if (threadCache.containsKey(threadNo)) {
-			if (DEBUG) Log.i(TAG, "Retruning thread " + boardCode + FILE_SEP +  threadNo + " data from cache");
-			return threadCache.get(threadNo);
+			ChanThread thread = threadCache.get(threadNo);
+			if (thread == null) {
+				Log.w(TAG, "Null thread " + boardCode + "/" + threadNo + " stored in cache, removing key");
+				threadCache.remove(threadNo);
+			} else {
+				if (DEBUG) Log.i(TAG, "Returning thread " + boardCode + FILE_SEP +  threadNo + " data from cache, posts: " + thread.posts.length);
+				return thread;
+			}
 		}
 		File threadFile = null;
 		try {
-            File threadDir = getThreadCacheDirectory(context, boardCode, threadNo);
-			if (threadDir != null && (threadDir.exists() || threadDir.mkdirs())) {
-				threadFile = new File(threadDir, "" + threadNo + CACHE_EXT);
-				if (threadFile != null && threadFile.exists()) {
-					FileReader reader = new FileReader(threadFile);
-					Gson gson = new GsonBuilder().create();
-					ChanThread thread = gson.fromJson(reader, ChanThread.class);
-                    if (thread == null)
-                        Log.e(TAG, "Couldn't load thread, null thread returned for " + boardCode + FILE_SEP + threadNo);
-                    else
-					    if (DEBUG) Log.i(TAG, "Loaded " + thread.posts.length + " posts for board '" + boardCode + FILE_SEP + threadNo + "'");
-					return thread;
-				} else {
-					Log.w(TAG, "File for thread '" + boardCode + FILE_SEP + threadNo + "' doesn't exist");
-				}
-			} else {
-				Log.e(TAG, "Cannot create thread cache folder. " + (threadDir == null ? "null" : threadDir.getAbsolutePath()));
+			threadFile = new File(getBoardCacheDirectory(context, boardCode), "t_" + threadNo + CACHE_EXT);
+			if (!threadFile.exists()) {
+				if (DEBUG) Log.d(TAG, "Thread '" + boardCode + FILE_SEP + threadNo + "' doesn't exist.");
+				return prepareDefaultThreadData(context, boardCode, threadNo);
 			}
+			ObjectMapper mapper = ChanHelper.getJsonMapper();
+			ChanThread thread = mapper.readValue(threadFile, ChanThread.class);
+			Log.w(TAG, "Loaded thread '" + boardCode + FILE_SEP + threadNo + "' with " + thread.posts.length + " posts");
+			return thread;
 		} catch (Exception e) {
-			Log.e(TAG, "Error while loading thread '" + boardCode + FILE_SEP + threadNo + "' data. ", e);
-			if (threadFile != null) {
-				threadFile.delete();
-            }
+			Log.w(TAG, "Error while loading thread '" + boardCode + FILE_SEP + threadNo + "' data. ", e);
+			return prepareDefaultThreadData(context, boardCode, threadNo);
 		}
-		return prepareDefaultThreadData(context, boardCode, threadNo);
 	}
 	
 	private static ChanThread prepareDefaultThreadData(Context context, String boardCode, long threadNo) {
@@ -304,28 +308,12 @@ public class ChanFileStorage {
 		try {
             File userPrefsFile = getUserPreferencesFile(context);
 			if (userPrefsFile != null) {
-				FileWriter writer = new FileWriter(userPrefsFile, false);
 				try {
 					userPrefs.lastStored = new Date();
-					Gson gson = new GsonBuilder().create();
-					gson.toJson(userPrefs, writer);
-				}
-                catch (Exception e) {
+					ObjectMapper mapper = ChanHelper.getJsonMapper();
+					mapper.writeValue(userPrefsFile, userPrefs);
+				} catch (Exception e) {
                     Log.e(TAG, "Exception while writing user preferences", e);
-                }
-                finally {
-                    try {
-                        writer.flush();
-                    }
-                    catch (Exception e) {
-                        Log.e(TAG, "Exception while flushing user preferences", e);
-                    }
-                    try {
-                        writer.close();
-                    }
-                    catch (Exception e) {
-                        Log.e(TAG, "Exception while closing user preferences", e);
-                    }
                 }
 				if (DEBUG) Log.i(TAG, "Stored user preferences to file, last updated " + userPrefs.lastUpdate);
 			} else {
@@ -340,9 +328,8 @@ public class ChanFileStorage {
 		try {
 			File userPrefsFile = getUserPreferencesFile(context);
 			if (userPrefsFile != null && userPrefsFile.exists()) {
-				FileReader reader = new FileReader(userPrefsFile);
-				Gson gson = new GsonBuilder().create();
-				UserPreferences userPrefs = gson.fromJson(reader, UserPreferences.class);
+				ObjectMapper mapper = ChanHelper.getJsonMapper();
+				UserPreferences userPrefs = mapper.readValue(userPrefsFile, UserPreferences.class);
                 if (userPrefs == null) {
                     Log.e(TAG, "Couldn't load user preferences, null returned");
                     return new UserPreferences();
@@ -383,23 +370,13 @@ public class ChanFileStorage {
             throws IOException
     {
         long totalBytes = 0;
-        String bitmapPath = getBoardWidgetBitmapPath(context, boardName, index);
-        FileOutputStream fos = new FileOutputStream(bitmapPath, false);
+        FileOutputStream fos = null;
         try {
-            byte[] buffer = new byte[BITMAP_BUFFER_SIZE];
-            int bytes = 0;
-            while ((bytes = is.read(buffer, 0, buffer.length)) > 0) {
-                fos.write(buffer, 0, bytes);
-                totalBytes += bytes;
-            }
+	        String bitmapPath = getBoardWidgetBitmapPath(context, boardName, index);
+	        fos = new FileOutputStream(bitmapPath, false);
+	        totalBytes = IOUtils.copy(is, fos);
         } finally {
-            try {
-                fos.flush();
-                fos.close();
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Exception while flushing and closing board widget bitmap file: " + e.getMessage(), e);
-            }
+        	IOUtils.closeQuietly(fos);
         }
         if (DEBUG) Log.i(TAG, "Stored widget bitmap file for board " + boardName + " index " + index + " totalBytes=" + totalBytes);
         return totalBytes;
