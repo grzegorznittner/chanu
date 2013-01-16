@@ -4,7 +4,6 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -16,13 +15,11 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.service.FetchChanDataService;
-import com.chanapps.four.service.ThreadLoadService;
 
 public class ThreadCursorLoader extends BoardCursorLoader {
 
     private static final String TAG = ThreadCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     protected SharedPreferences prefs;
 
     protected long threadNo;
@@ -46,11 +43,13 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
+    	try {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         ChanThread thread;
         try {
             thread = ChanFileStorage.loadThreadData(getContext(), boardName, threadNo);
+            Log.i(TAG, "Got thread " + thread);
         }
         catch (Exception e) {
             Log.e(TAG, "Couldn't load thread from storage " + boardName + "/" + threadNo, e);
@@ -90,6 +89,10 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         else {
             return null;
         }
+    	} catch (Exception e) {
+    		Log.e(TAG, "loadInBackground", e);
+    		return null;
+    	}
     }
 
     @Override

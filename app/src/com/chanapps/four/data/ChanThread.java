@@ -9,6 +9,11 @@ public class ChanThread extends ChanPost {
 
 	public ChanPost posts[] = new ChanPost[0];
 	
+	public String toString() {
+		return "Thread " + no + " " + com + ", posts: " + posts.length 
+				+ ", thumb: " + getThumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
+	}
+	
     public void mergePosts(List<ChanPost> posts) {
         List<ChanPost> mergedPosts = new ArrayList<ChanPost>(Arrays.asList(this.posts));
         if (mergedPosts.size() > 0 && mergedPosts.get(0).defData) {

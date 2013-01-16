@@ -164,7 +164,7 @@ public class ChanPost {
     }
 
     public String toString() {
-		return "Thread " + no + " " + com + ", thumb: " + getThumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
+		return "Post " + no + " " + com + ", thumb: " + getThumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
 	}
 
 

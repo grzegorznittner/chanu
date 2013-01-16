@@ -225,12 +225,13 @@ public class MobileProfile extends AbstractNetworkProfile {
 					&& currentActivityId.threadNo == data.threadNo;
 			makeToast("Loaded data for " + data.boardCode + "/" + data.threadNo);
 			ChanThread thread = ChanFileStorage.loadThreadData(service.getApplicationContext(), data.boardCode, data.threadNo);
-			if (thread.defData && threadActivity) {
-				// thread file is corrupted, and user stays on thread page (or loads image), we need to refetch thread
-				Log.w(TAG, "Thread " + data.boardCode + "/" + data.threadNo + " is corrupted, it is scheduled for reload");
-				FetchChanDataService.scheduleThreadFetch(service.getApplicationContext(), data.boardCode, data.threadNo);
-				return;
-			}
+			Log.i(TAG, "Loaded thread " + thread.board + "/" + thread.no + " posts " + thread.posts.length);
+//			if (thread.defData && threadActivity) {
+//				// thread file is corrupted, and user stays on thread page (or loads image), we need to refetch thread
+//				Log.w(TAG, "Thread " + data.boardCode + "/" + data.threadNo + " is corrupted, it is scheduled for reload");
+//				FetchChanDataService.scheduleThreadFetch(service.getApplicationContext(), data.boardCode, data.threadNo);
+//				return;
+//			}
 			
 			if (currentActivityId != null && threadActivity && currentActivityId.activity == ChanHelper.LastActivity.THREAD_ACTIVITY
 					&& currentActivityId.postNo == 0) {

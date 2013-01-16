@@ -35,6 +35,7 @@ import com.chanapps.four.service.NetworkProfile.Failure;
 public class ThreadLoadService extends BaseChanService implements ChanIdentifiedService {
 
     protected static final String TAG = ThreadLoadService.class.getName();
+    private static final boolean DEBUG = true;
 
     protected static final long STORE_INTERVAL_MS = 2000;
 
@@ -44,7 +45,7 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
     private ChanThread thread;
 
     public static void startService(Context context, String boardCode, long threadNo) {
-        Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
+        if (DEBUG) Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
         Intent intent = new Intent(context, ThreadLoadService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
@@ -52,7 +53,7 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
     }
 
     public static void startServiceWithPriority(Context context, String boardCode, long threadNo) {
-        Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
+        if (DEBUG) Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
         Intent intent = new Intent(context, ThreadLoadService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
@@ -75,7 +76,7 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
         threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
         force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false);
 
-        Log.i(TAG, "Handling board=" + boardCode + " threadNo=" + threadNo + " force=" + force);
+        if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " threadNo=" + threadNo + " force=" + force);
 
         if (threadNo == 0) {
             Log.e(TAG, "Board loading must be done via the FetchChanDataService");
@@ -98,23 +99,23 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
 			File threadFile = ChanFileStorage.getThreadFile(getBaseContext(), boardCode, threadNo);
 			parseThread(new BufferedReader(new FileReader(threadFile)));
 
-            Log.w(TAG, "Parsed thread " + boardCode + "/" + threadNo
+			if (DEBUG) Log.i(TAG, "Parsed thread " + boardCode + "/" + threadNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             startTime = Calendar.getInstance().getTimeInMillis();
 
             ChanFileStorage.storeThreadData(getBaseContext(), thread);
-            Log.w(TAG, "Stored thread " + boardCode + "/" + threadNo
+            if (DEBUG) Log.i(TAG, "Stored thread " + boardCode + "/" + threadNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             NetworkProfileManager.instance().finishedParsingData(this);
         } catch (Exception e) {
             //toastUI(R.string.board_service_couldnt_load);
-        	NetworkProfileManager.instance().failedParsingData(this, Failure.WRONG_DATA);
 			Log.e(TAG, "Error parsing Chan board json. " + e.getMessage(), e);
+        	NetworkProfileManager.instance().failedParsingData(this, Failure.WRONG_DATA);
 		}
 	}
 
 	protected void parseThread(BufferedReader in) throws IOException {
-    	Log.i(TAG, "starting parsing thread " + boardCode + "/" + threadNo);
+    	if (DEBUG) Log.i(TAG, "starting parsing thread " + boardCode + "/" + threadNo);
         long time = new Date().getTime();
 
     	List<ChanPost> posts = new ArrayList<ChanPost>();
@@ -125,11 +126,11 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
             ChanPost post = mapper.readValue(postValue, ChanPost.class);
             post.board = boardCode;
             posts.add(post);
-            Log.v(TAG, "Added post " + post.no + " to thread " + boardCode + "/" + threadNo);
+            //if (DEBUG) Log.v(TAG, "Added post " + post.no + " to thread " + boardCode + "/" + threadNo);
         }
         thread.mergePosts(posts);
 
-        Log.i(TAG, "finished parsing thread " + boardCode + "/" + threadNo);
+        if (DEBUG) Log.i(TAG, "finished parsing thread " + boardCode + "/" + threadNo);
     }
 	
 	@Override
