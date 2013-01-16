@@ -7,7 +7,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
-import java.util.WeakHashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -24,8 +25,23 @@ public class ChanFileStorage {
 	private static final String TAG = ChanFileStorage.class.getSimpleName();
 	private static final boolean DEBUG = false;
 	
-	private static WeakHashMap<String, ChanBoard> boardCache = new WeakHashMap<String, ChanBoard>();
-	private static WeakHashMap<Long, ChanThread> threadCache = new WeakHashMap<Long, ChanThread>();
+	private static final int MAX_BOARDS_IN_CACHE = 30;
+	private static final int MAX_THREADS_IN_CACHE = 100;
+	
+	@SuppressWarnings("serial")
+	private static Map<String, ChanBoard> boardCache = new LinkedHashMap<String, ChanBoard>(MAX_BOARDS_IN_CACHE + 1, .75F, true) {
+	    // This method is called just after a new entry has been added
+	    public boolean removeEldestEntry(Map.Entry<String, ChanBoard> eldest) {
+	        return size() > MAX_BOARDS_IN_CACHE;
+	    }
+	};
+	@SuppressWarnings("serial")
+	private static Map<Long, ChanThread> threadCache = new LinkedHashMap<Long, ChanThread>(MAX_THREADS_IN_CACHE + 1, .75F, true) {
+	    // This method is called just after a new entry has been added
+	    public boolean removeEldestEntry(Map.Entry<Long, ChanThread> eldest) {
+	        return size() > MAX_THREADS_IN_CACHE;
+	    }
+	};
 
     private static final String CACHE_ROOT = "Android";
     private static final String CACHE_DATA_DIR = "data";

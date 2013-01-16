@@ -7,6 +7,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import com.chanapps.four.activity.R;
 
@@ -152,5 +153,4 @@ public class ChanHelper {
     	mapper.setDateFormat(new SimpleDateFormat("MMM d, yyyy h:mm:ss aaa"));
     	return mapper;
     }
-
 }

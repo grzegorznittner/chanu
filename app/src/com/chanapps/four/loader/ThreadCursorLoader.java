@@ -44,17 +44,15 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     @Override
     public Cursor loadInBackground() {
     	try {
-    	if (DEBUG) Log.i(TAG, "loadInBackground");
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        ChanThread thread;
+        ChanThread thread = null;
         try {
             thread = ChanFileStorage.loadThreadData(getContext(), boardName, threadNo);
-            Log.i(TAG, "Got thread " + thread);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Couldn't load thread from storage " + boardName + "/" + threadNo, e);
             thread = null;
         }
+    	//if (DEBUG) Log.i(TAG, "loadInBackground " + thread.board + "/" + thread.no, new Exception("loadInBackground called"));
         int isDead = thread != null && thread.isDead ? 1 : 0;
         if (DEBUG) Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
         MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);

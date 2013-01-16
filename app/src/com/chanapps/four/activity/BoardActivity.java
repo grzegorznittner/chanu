@@ -122,7 +122,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 		if (DEBUG) Log.v(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         loadFromIntentOrPrefs();
-        NetworkProfileManager.instance().activityChange(this);
 //        adView = new AdView(this, AdSize.BANNER, AD_UNIT_ID);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(this));
@@ -406,20 +405,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
                 scrollOnNextLoaderFinished = 0;
             }
         }
-    }
-
-    private int getOptimalRefreshTime(int size) {
-        int restartInterval;
-        if (size > 300)
-            restartInterval = LOADER_RESTART_INTERVAL_SUPER_MS;
-        else if (size > 200)
-            restartInterval = LOADER_RESTART_INTERVAL_LONG_MS;
-        else if (size > 100)
-            restartInterval = LOADER_RESTART_INTERVAL_MED_MS;
-        else
-            restartInterval = LOADER_RESTART_INTERVAL_SHORT_MS;
-
-        return restartInterval;
     }
 
     @Override
