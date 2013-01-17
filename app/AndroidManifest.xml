@@ -73,7 +73,7 @@
 
         <service android:name="com.chanapps.four.service.FetchChanDataService"/>
         <service android:name="com.chanapps.four.service.BoardLoadService"/>
-        <service android:name="com.chanapps.four.service.BoardThreadParserService"/>
+        <service android:name="com.chanapps.four.service.BoardThreadsParserService"/>
         <service android:name="com.chanapps.four.service.ThreadLoadService"/>
 
         <!--widgets-->

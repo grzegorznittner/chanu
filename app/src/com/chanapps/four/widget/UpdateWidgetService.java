@@ -88,6 +88,9 @@ public class UpdateWidgetService extends Service {
                 Log.i(TAG, "Starting background thread for widget update");
             if (!firstTimeInit) {
                 loadBoard();
+                if (boardCode == null) {
+                	return null;
+                }
                 loadBitmaps();
             }
             return null;

@@ -61,7 +61,7 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
     }
 
     public BoardThreadsParserService() {
-   		super("board");
+   		super("boardThreads");
    	}
 
     protected BoardThreadsParserService(String name) {
@@ -75,15 +75,16 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
         force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false);
 		if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " page=" + pageNo);
 
-        if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
-            Log.e(TAG, "Watching board must use ChanWatchlist instead of service");
-            return;
-        }
-
         long startTime = Calendar.getInstance().getTimeInMillis();
 		try {
             Context context = getBaseContext();
 
+        	board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
+        	if (board.defData) {
+        		// at this point valid board object should be available
+        		return;
+        	}
+        	
             File boardFile = ChanFileStorage.getBoardFile(context, boardCode, pageNo);
             parseBoard(new BufferedReader(new FileReader(boardFile)));
 
@@ -98,11 +99,6 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
     private void parseBoard(BufferedReader in) throws IOException {
 //    	List<ChanPost> stickyPosts = new ArrayList<ChanPost>();
     	List<ChanPost> threads = new ArrayList<ChanPost>();
-    	board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
-    	if (board.defData) {
-    		// at this point valid board object should be available
-    		return;
-    	}
 
         ObjectMapper mapper = ChanHelper.getJsonMapper();
         JsonNode rootNode = mapper.readValue(in, JsonNode.class);

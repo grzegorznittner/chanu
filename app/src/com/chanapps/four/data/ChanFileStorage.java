@@ -162,7 +162,7 @@ public class ChanFileStorage {
     		return;
     	}
     	ChanThread currentThread = threadCache.get(thread.no);
-    	if (currentThread.lastFetched > thread.lastFetched) {
+    	if (currentThread != null && currentThread.lastFetched > thread.lastFetched) {
     		return;
     	}
 		threadCache.put(thread.no, thread);

@@ -124,7 +124,7 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
             NetworkProfileManager.instance().finishedParsingData(this);
         } catch (Exception e) {
             //toastUI(R.string.board_service_couldnt_load);
-			Log.e(TAG, "Error parsing Chan board json. " + e.getMessage(), e);
+			Log.e(TAG, "Error parsing thread json. " + e.getMessage(), e);
         	NetworkProfileManager.instance().failedParsingData(this, Failure.WRONG_DATA);
 		}
 	}

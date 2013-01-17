@@ -149,7 +149,7 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
         ObjectMapper mapper = ChanHelper.getJsonMapper();
         JsonNode rootNode = mapper.readValue(in, JsonNode.class);
         for (JsonNode threadValue : rootNode.path("threads")) { // iterate over threads
-            JsonNode postValue = threadValue.path("posts"); // first object is the thread post
+            JsonNode postValue = threadValue.path("posts").get(0); // first object is the thread post
             ChanPost post = mapper.readValue(postValue, ChanPost.class);
             post.board = boardCode;
             post.mergeIntoThreadList(threads);
