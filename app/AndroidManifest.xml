@@ -37,6 +37,10 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".ThreadActivity"
+                    />
         </activity>
 
         <activity android:name=".BoardActivity" android:label="@string/board_activity">
@@ -47,6 +51,10 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="http" android:host="boards.4chan.org"/>
             </intent-filter>
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".BoardSelectorActivity"
+                    />
         </activity>
 
         <activity android:name=".ThreadActivity" android:label="@string/thread_activity">
@@ -54,6 +62,10 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".BoardActivity"
+                    />
         </activity>
 
         <activity android:name=".SettingsActivity" android:label="@string/settings_activity">
