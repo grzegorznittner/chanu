@@ -43,12 +43,14 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
     private long threadNo;
     private boolean force;
     private ChanThread thread;
+    private long threadFetchTime;
 
     public static void startService(Context context, String boardCode, long threadNo) {
         if (DEBUG) Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
         Intent intent = new Intent(context, ThreadLoadService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(ChanHelper.THREAD_FETCH_TIME, new Date().getTime());
         context.startService(intent);
     }
 
@@ -59,6 +61,7 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
         intent.putExtra(ChanHelper.FORCE_REFRESH, true);
         intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+        intent.putExtra(ChanHelper.THREAD_FETCH_TIME, new Date().getTime());
         context.startService(intent);
     }
 
@@ -75,6 +78,7 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
 		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
         threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
         force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false);
+        threadFetchTime = intent.getLongExtra(ChanHelper.THREAD_FETCH_TIME, 0);
 
         if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " threadNo=" + threadNo + " force=" + force);
 
@@ -94,7 +98,14 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
                 thread.board = boardCode;
                 thread.no = threadNo;
                 thread.isDead = false;
+			} else if (thread.lastFetched > threadFetchTime) {
+				if (DEBUG) Log.i(TAG, "Thread " + boardCode + "/" + threadNo + " won't be parsed. "
+					+ "Last fetched " + new Date(thread.lastFetched) + ", scheduled " + new Date(threadFetchTime));
+				NetworkProfileManager.instance().finishedParsingData(this);
+				return;
 			}
+			thread.lastFetched = threadFetchTime;
+			int previousPostNum = thread.posts.length;
 			
 			File threadFile = ChanFileStorage.getThreadFile(getBaseContext(), boardCode, threadNo);
 			parseThread(new BufferedReader(new FileReader(threadFile)));
@@ -103,9 +114,13 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             startTime = Calendar.getInstance().getTimeInMillis();
 
-            ChanFileStorage.storeThreadData(getBaseContext(), thread);
-            if (DEBUG) Log.i(TAG, "Stored thread " + boardCode + "/" + threadNo
-            		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+            if (previousPostNum > 0 && thread.posts.length == 0) {
+            	Log.w(TAG, "Thread " + boardCode + "/" + threadNo + " has 0 posts after parsing, won't be stored");
+            } else {
+            	ChanFileStorage.storeThreadData(getBaseContext(), thread);
+                if (DEBUG) Log.i(TAG, "Stored thread " + boardCode + "/" + threadNo
+                		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+            }
             NetworkProfileManager.instance().finishedParsingData(this);
         } catch (Exception e) {
             //toastUI(R.string.board_service_couldnt_load);
@@ -116,7 +131,6 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
 
 	protected void parseThread(BufferedReader in) throws IOException {
     	if (DEBUG) Log.i(TAG, "starting parsing thread " + boardCode + "/" + threadNo);
-        long time = new Date().getTime();
 
     	List<ChanPost> posts = new ArrayList<ChanPost>();
     	ObjectMapper mapper = ChanHelper.getJsonMapper();
