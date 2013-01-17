@@ -29,6 +29,7 @@ import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.service.NetworkProfile.Failure;
 import com.chanapps.four.widget.BoardWidgetProvider;
+import com.chanapps.four.widget.UpdateWidgetService;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -100,6 +101,12 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
             if (DEBUG) Log.i(TAG, "Stored board " + boardCode + " page " + pageNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
 
+            // thread files are stored in separate service call to make board parsing faster
+            if (force) {
+            	BoardThreadsParserService.startServiceWithPriority(getBaseContext(), boardCode, pageNo);
+            } else {
+            	BoardThreadsParserService.startService(getBaseContext(), boardCode, pageNo);
+            }
             // tell it to refresh widgets for board if any are configured
             BoardWidgetProvider.updateAll(context, boardCode);
 
@@ -112,7 +119,6 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
 	}
 
     private void parseBoard(BufferedReader in) throws IOException {
-    	long time = new Date().getTime();
 //    	List<ChanPost> stickyPosts = new ArrayList<ChanPost>();
     	List<ChanPost> threads = new ArrayList<ChanPost>();
     	board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
@@ -143,46 +149,13 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
         ObjectMapper mapper = ChanHelper.getJsonMapper();
         JsonNode rootNode = mapper.readValue(in, JsonNode.class);
         for (JsonNode threadValue : rootNode.path("threads")) { // iterate over threads
-            ChanThread thread = null;
-            List<ChanPost> posts = new ArrayList<ChanPost>();
-            boolean first = true;
-//            boolean isSticky = false;
-            for (JsonNode postValue : threadValue.path("posts")) { // first object is the thread post
-                ChanPost post = mapper.readValue(postValue, ChanPost.class);
-                post.board = boardCode;
-//                if (post.sticky > 0 || isSticky) {
-//                    post.mergeIntoThreadList(stickyPosts);
-//                	isSticky = true;
-//                } else {
-                	if (first) {
-                		thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
-                		// if thread was not stored create a new object
-                		if (thread == null || thread.defData) {
-                			thread = new ChanThread();
-                			thread.board = boardCode;
-                			thread.no = post.no;
-                            // note we don't set the lastUpdated here because we didn't pull the full thread yet
-                		}
-                        post.mergeIntoThreadList(threads);
-                		first = false;
-                	}
-                	posts.add(post);
-//                }
-                //if (DEBUG) Log.v(TAG, post.toString());
-            }
-            if (thread != null) {
-                thread.mergePosts(posts);
-            	ChanFileStorage.storeThreadData(getBaseContext(), thread);
-            	if (new Date().getTime() - time > STORE_INTERVAL_MS) {
-            		board.threads = threads.toArray(new ChanPost[0]);
-//                    board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
-                    ChanFileStorage.storeBoardData(getBaseContext(), board);
-            	}
-            }
+            JsonNode postValue = threadValue.path("posts").get(0); // first object is the thread post
+            ChanPost post = mapper.readValue(postValue, ChanPost.class);
+            post.board = boardCode;
+            post.mergeIntoThreadList(threads);
         }
 
         board.threads = threads.toArray(new ChanPost[0]);
-//        board.stickyPosts = stickyPosts.toArray(new ChanPost[0]);
         if (DEBUG) Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
 

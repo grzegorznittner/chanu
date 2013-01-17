@@ -5,7 +5,7 @@ import android.util.Log;
 import java.util.*;
 
 public class ChanThread extends ChanPost {
-	public long lastFetched;
+	public long lastFetched = 0;
 
 	public ChanPost posts[] = new ChanPost[0];
 	

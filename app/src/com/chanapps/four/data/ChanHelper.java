@@ -76,6 +76,7 @@ public class ChanHelper {
     public static final String IGNORE_DISPATCH = "ignoreDispatch";
     public static final String PRIORITY_MESSAGE = "priorityFetch";
     public static final String CLEAR_FETCH_QUEUE = "clearFetchQueue";
+    public static final String THREAD_FETCH_TIME = "threadFetchTime";
     public static final String FIRST_TIME_INIT = "firstTimeInit";
 
     public static final String[] POST_COLUMNS = {

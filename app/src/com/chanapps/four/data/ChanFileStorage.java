@@ -161,6 +161,10 @@ public class ChanFileStorage {
     		// default data should never be stored
     		return;
     	}
+    	ChanThread currentThread = threadCache.get(thread.no);
+    	if (currentThread != null && currentThread.lastFetched > thread.lastFetched) {
+    		return;
+    	}
 		threadCache.put(thread.no, thread);
         File boardDir = getBoardCacheDirectory(context, thread.board);
 		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
