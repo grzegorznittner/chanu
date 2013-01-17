@@ -107,12 +107,9 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
             } else {
             	BoardThreadsParserService.startService(getBaseContext(), boardCode, pageNo);
             }
-            // tell it to refresh widget
-            if (boardCode.equals(BoardWidgetProvider.getConfiguredBoardWidget(context))) {
-                Intent updateIntent = new Intent(context, UpdateWidgetService.class);
-                context.startService(updateIntent);
-            }
-            
+            // tell it to refresh widgets for board if any are configured
+            BoardWidgetProvider.updateAll(context, boardCode);
+
             NetworkProfileManager.instance().finishedParsingData(this);
         } catch (Exception e) {
             //toastUI(R.string.board_service_couldnt_read);

@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ToastRunnable;
+import com.chanapps.four.service.FetchChanDataService;
 
 import java.net.URI;
 import java.net.URL;
@@ -265,6 +266,17 @@ public class ChanWatchlist {
         Set<String> savedWatchlist = prefs.getStringSet(ChanHelper.THREAD_WATCHLIST, new HashSet<String>());
         if (DEBUG) Log.d(TAG, "Loaded watchlist from prefs:" + Arrays.toString(savedWatchlist.toArray()));
         return savedWatchlist;
+    }
+
+    public static void fetchWatchlistThreads(Context context) {
+        Set<String> threadPaths = ChanWatchlist.getWatchlistFromPrefs(context);
+        for (String threadPath : threadPaths) {
+            String boardCode = ChanWatchlist.getBoardCodeFromThreadPath(threadPath);
+            long threadNo = ChanWatchlist.getThreadNoFromThreadPath(threadPath);
+            // FIXME should say if !threadIsDead we should store this somewhere
+            Log.i(TAG, "Starting load service for watching thread " + boardCode + "/" + threadNo);
+            FetchChanDataService.scheduleThreadFetch(context, boardCode, threadNo);
+        }
     }
 
 }

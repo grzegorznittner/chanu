@@ -111,12 +111,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         return intent;
     }
 
-    public static Intent createIntentForLaunchFromWidget(Context context) {
-        Intent intent = new Intent(context, BoardActivity.class);
-        intent.putExtra(ChanHelper.LOAD_WIDGET_CONFIG, true);
-        return intent;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 		if (DEBUG) Log.v(TAG, "************ onCreate");
@@ -233,11 +227,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
     protected void loadFromIntentOrPrefs() {
         Intent intent = getIntent();
         Uri data = intent.getData();
-        if (intent.hasExtra(ChanHelper.LOAD_WIDGET_CONFIG)) {
-            boardCode = ensurePrefs().getString(SettingsActivity.PREF_WIDGET_BOARD, ChanBoard.DEFAULT_BOARD_CODE);
-            if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from widget prefs");
-        }
-        else if (data != null) {
+        if (data != null) {
             List<String> params = data.getPathSegments();
             String uriBoardCode = params.get(0);
             if (ChanBoard.getBoardByCode(this, uriBoardCode) != null) {

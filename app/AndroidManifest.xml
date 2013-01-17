@@ -77,7 +77,7 @@
         <service android:name="com.chanapps.four.service.ThreadLoadService"/>
 
         <!--widgets-->
-        <activity android:name=".ChannerWidgetConfigureActivity">
+        <activity android:name="com.chanapps.four.widget.WidgetConfigureActivity">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
@@ -85,12 +85,16 @@
         <receiver android:name="com.chanapps.four.widget.BoardWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED"/>
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/board_widget_info"/>
         </receiver>
-        <receiver android:name="com.chanapps.four.widget.WidgetAlarmReceiver">
+        <receiver android:name="com.chanapps.four.component.GlobalAlarmReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="com.chanapps.four.component.GlobalAlarmReceiver.update"/>
             </intent-filter>
         </receiver>
         <service android:name="com.chanapps.four.widget.UpdateWidgetService"/>

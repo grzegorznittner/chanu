@@ -15,8 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import com.chanapps.four.widget.UpdateWidgetService;
-import com.chanapps.four.widget.WidgetAlarmReceiver;
+import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.adapter.TabsAdapter;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
@@ -24,7 +23,6 @@ import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanWatchlist;
-import com.chanapps.four.data.SmartCache;
 import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.fragment.WatchlistCleanDialogFragment;
@@ -58,9 +56,7 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         if (ensurePrefs().getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
             (new ChanWatchlist.CleanWatchlistTask(this, null, false)).execute();
 
-        WidgetAlarmReceiver.refreshWidget(this);
-
-        //SmartCache.fillCache(this);
+        GlobalAlarmReceiver.updateAndScheduleRepeating(this);
 
         Intent intent = getIntent();
         if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {

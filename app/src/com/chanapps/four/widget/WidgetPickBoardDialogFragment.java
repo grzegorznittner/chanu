@@ -1,22 +1,19 @@
-package com.chanapps.four.fragment;
+package com.chanapps.four.widget;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
-import android.widget.BaseAdapter;
-import android.widget.Toast;
-import com.chanapps.four.activity.BoardActivity;
-import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.data.ChanBoard;
 
-import java.util.*;
+import java.util.List;
 
 /**
 * Created with IntelliJ IDEA.
@@ -25,17 +22,19 @@ import java.util.*;
 * Time: 12:44 PM
 * To change this template use File | Settings | File Templates.
 */
-public class GoToBoardDialogFragment extends DialogFragment {
+public class WidgetPickBoardDialogFragment extends DialogFragment {
 
-    public static final String TAG = GoToBoardDialogFragment.class.getSimpleName();
+    public static final String TAG = WidgetPickBoardDialogFragment.class.getSimpleName();
 
+    private static final boolean DEBUG = false;
+
+    private int appWidgetId = 0;
     private String[] boards = null;
 
     private void initBoards(Context context) {
         List<ChanBoard> chanBoards = ChanBoard.getBoardsRespectingNSFW(context);
-        boards = new String[chanBoards.size()+1];
-        boards[0] = "Watchlist";
-        int i = 1;
+        boards = new String[chanBoards.size()];
+        int i = 0;
         for (ChanBoard chanBoard : chanBoards) {
             String boardCode = chanBoard.link;
             String boardName = chanBoard.name;
@@ -45,27 +44,34 @@ public class GoToBoardDialogFragment extends DialogFragment {
         }
     }
 
+    public WidgetPickBoardDialogFragment(int appWidgetId) {
+        this.appWidgetId = appWidgetId;
+        if (DEBUG) Log.i(TAG, "Init fragment for widget=" + appWidgetId);
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         initBoards(getActivity());
         return new AlertDialog.Builder(getActivity())
-        .setTitle(R.string.go_to_board_menu)
+        .setTitle(R.string.widget_board)
         .setItems(boards, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 String boardLine = boards[which];
-                if (boardLine.equalsIgnoreCase("watchlist")) {
-                    BoardSelectorActivity.startActivity(getActivity(), ChanBoard.Type.WATCHLIST);
-                }
-                else {
-                    String boardCode = boardLine.substring(1, boardLine.indexOf(' '));
-                    BoardActivity.startActivity(getActivity(), boardCode);
-                }
+                String boardCode = boardLine.substring(1, boardLine.indexOf(' '));
+                if (DEBUG) Log.i(TAG, "Configured widget=" + appWidgetId + " configuring for board=" + boardCode);
+                BoardWidgetProvider.initWidget(getActivity(), appWidgetId, boardCode);
+                Intent intent = new Intent();
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+                getActivity().setResult(Activity.RESULT_OK, intent);
+                getActivity().finish();
             }
         })
         .setNegativeButton(R.string.dialog_cancel,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        if (DEBUG) Log.i(TAG, "Configuration cancelled for widget=" + appWidgetId);
+                        getActivity().finish();
                     }
                 })
         .create();
