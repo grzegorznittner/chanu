@@ -13,7 +13,6 @@ import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
 
