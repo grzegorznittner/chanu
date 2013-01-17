@@ -422,6 +422,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = new Intent(this, BoardSelectorActivity.class);
+                intent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.getBoardByCode(this, boardCode).type.toString());
                 intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
                 NavUtils.navigateUpTo(this, intent);
                 return true;

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -285,7 +286,17 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 Intent upIntent = new Intent(this, BoardActivity.class);
                 upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
                 upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
-                NavUtils.navigateUpTo(this, upIntent);
+
+                if (DEBUG) Log.i(TAG, "Made up intent with board=" + boardCode);
+//                if (NavUtils.shouldUpRecreateTask(this, upIntent)) { // needed when calling from widget
+//                    Log.i(TAG, "Should recreate task");
+                    TaskStackBuilder.create(this).addParentStack(this).startActivities();
+                    this.finish();
+//                }
+//                else {
+//                    Log.i(TAG, "Navigating up...");
+//                    NavUtils.navigateUpTo(this, upIntent);
+//                }
                 return true;
             case R.id.refresh_thread_menu:
                 //Toast.makeText(this, R.string.refresh_thread_menu, Toast.LENGTH_LONG);
