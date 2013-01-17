@@ -120,7 +120,7 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
                 		if (thread == null || thread.defData) {
                 			thread = new ChanThread();
                 			thread.board = boardCode;
-                			thread.lastFetched = board.lastFetched;
+                			thread.lastFetched = 0;
                 			thread.no = post.no;
                             // note we don't set the lastUpdated here because we didn't pull the full thread yet
                 		} else if (board.lastFetched < thread.lastFetched) {

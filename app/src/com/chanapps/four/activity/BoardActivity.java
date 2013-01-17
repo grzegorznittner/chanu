@@ -165,7 +165,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         //adView.loadAd(new AdRequest());
     }
 
-    protected Handler ensureHandler() {
+    protected synchronized Handler ensureHandler() {
         if (handler == null) {
             handler = new LoaderHandler(this);
         }
@@ -184,6 +184,10 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 		if (DEBUG) Log.v(TAG, "onResume");
         restoreInstanceState();
 		NetworkProfileManager.instance().activityChange(this);
+		Loader loader = getLoaderManager().getLoader(0);
+		if (loader == null) {
+			getLoaderManager().initLoader(0, null, this);
+		}
 	}
 
 //    public PullToRefreshGridView getGridView() {
@@ -636,7 +640,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 
 	@Override
 	public Handler getChanHandler() {
-		return handler;
+		return ensureHandler();
 	}
 
 }

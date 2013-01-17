@@ -423,10 +423,4 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 	public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo);
 	}
-
-	@Override
-	public Handler getChanHandler() {
-		return handler;
-	}
-
 }
