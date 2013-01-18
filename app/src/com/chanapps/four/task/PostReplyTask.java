@@ -8,11 +8,16 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.multipartmime.FilePart;
 import com.chanapps.four.multipartmime.MultipartEntity;
 import com.chanapps.four.multipartmime.Part;
 import com.chanapps.four.multipartmime.StringPart;
+import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.NetworkProfileManager;
+import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanPostResponse;
@@ -153,6 +158,15 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
                         activity.getImageUrl(),
                         250,
                         250);
+            }
+            // forcing thread/board refresh
+            ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
+            if (activityId != null) {
+            	if (activityId.activity == LastActivity.THREAD_ACTIVITY) {
+            		ChanFileStorage.resetLastFetched(activityId.threadNo);
+            	} else if (activityId.activity == LastActivity.BOARD_ACTIVITY) {
+            		ChanFileStorage.resetLastFetched(activityId.boardCode);
+            	}
             }
             activity.finish();
             //activity.navigateUp();

@@ -44,9 +44,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -512,6 +514,17 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
             loadingView = inflater.inflate(R.layout.fullscreen_image_loading, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
             ImageView imageView = (ImageView)loadingView.findViewById(R.id.fullscreen_image_image);
             imageLoader.displayImage(thumbUrl, imageView, options);
+            
+            final Button loginButton = (Button) loadingView.findViewById(R.id.fullscreen_image_cancel_button);
+            	loginButton.setOnClickListener(new OnClickListener() {
+	                @Override
+	                public void onClick(final View v) {
+	                	unregisterReceiver(receiver);
+	                	dm.remove(downloadEnqueueId);
+	                    Log.w(TAG, "Download cancelled");
+	                    FullScreenImageActivity.this.finish();
+	                }
+            });
 
             TextView fileSizeTextView = (TextView)loadingView.findViewById(R.id.fullscreen_image_sizetext);
             fileSizeTextView.setText("" + post.w + "px x " + post.h + "px");

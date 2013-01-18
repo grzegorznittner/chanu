@@ -155,6 +155,20 @@ public class ChanFileStorage {
 		if (DEBUG) Log.i(TAG, "Stored file for thread " + boardName + "/" + threadNo);
 		return threadFile.length();
 	}
+    
+    public static void resetLastFetched(long threadNo) {
+    	ChanThread currentThread = threadCache.get(threadNo);
+    	if (currentThread != null) {
+    		currentThread.lastFetched = 0;
+    	}
+    }
+    
+    public static void resetLastFetched(String boardCode) {
+    	ChanBoard currentBoard = boardCache.get(boardCode);
+    	if (currentBoard != null) {
+    		currentBoard.lastFetched = 0;
+    	}
+    }
 	
 	public static void storeThreadData(Context context, ChanThread thread) throws IOException {
     	if (thread.defData) {

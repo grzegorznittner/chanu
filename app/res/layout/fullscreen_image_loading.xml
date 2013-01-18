@@ -69,4 +69,15 @@
         android:gravity="center"
         android:textSize="16dp"
     />
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:orientation="vertical"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_gravity="center_vertical|center_horizontal">
+        <Button android:id="@+id/fullscreen_image_cancel_button"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/full_screen_cancel_button">
+	    </Button>
+	</LinearLayout>
 </LinearLayout>
