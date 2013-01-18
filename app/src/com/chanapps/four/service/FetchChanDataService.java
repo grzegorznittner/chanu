@@ -12,6 +12,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -122,7 +124,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 		FetchParams params = NetworkProfileManager.instance().getFetchParams();
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
         long now = new Date().getTime();
-        if (!board.defData && pageNo == 0 && board.lastFetched > 0) {
+        if (board != null && !board.defData && pageNo == 0 && board.lastFetched > 0) {
         	long refresh = forceRefresh ? params.forceRefreshDelay : params.refreshDelay;
         	if (now - board.lastFetched < refresh) {
         		if (DEBUG) Log.i(TAG, "Skiping board " + boardCode + " fetch as it was fetched "
@@ -137,7 +139,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 		FetchParams params = NetworkProfileManager.instance().getFetchParams();
         ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
         long now = new Date().getTime();
-        if (!thread.defData && thread.lastFetched > 0) {
+        if (thread != null && !thread.defData && thread.lastFetched > 0) {
         	long refresh = forceRefresh ? params.forceRefreshDelay : params.refreshDelay;
         	if (now - thread.lastFetched < refresh) {
         		if (DEBUG) Log.i(TAG, "Skiping thread " + boardCode + "/" + threadNo + " fetch as it was fetched "
@@ -261,7 +263,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 		try {
             thread = ChanFileStorage.loadThreadData(this, boardCode, threadNo);
             long now = (new Date()).getTime();
-            if (thread.defData) {
+            if (thread == null) {
+            	if (DEBUG) Log.i(TAG, "Load thread data returned null, therefore service is terminating");
+            	return;
+            } else if (thread.defData) {
                 thread = new ChanThread();
                 thread.board = boardCode;
                 thread.no = threadNo;
@@ -330,9 +335,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 
 	protected void closeBufferAndConnection(BufferedReader in, HttpURLConnection tc) {
 		try {
-			if (in != null) {
-				in.close();
-			}
+			IOUtils.closeQuietly(in);
 		    if (tc != null) {
 		        tc.disconnect();
 		    }
