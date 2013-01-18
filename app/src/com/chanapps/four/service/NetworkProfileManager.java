@@ -145,6 +145,13 @@ public class NetworkProfileManager {
 		}
 	}
 	
+	public void finishedImageDownload(ChanIdentifiedActivity activity, int time, int size) {
+		if (activeProfile == null) {
+			NetworkBroadcastReceiver.checkNetwork(activity.getBaseContext());
+		}
+		activeProfile.onImageDownloadSuccess(activity.getBaseContext(), time, size);
+	}
+	
 	public void finishedFetchingData(ChanIdentifiedService service, int time, int size) {
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(service.getApplicationContext());

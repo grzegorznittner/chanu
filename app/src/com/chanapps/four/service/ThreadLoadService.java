@@ -108,11 +108,16 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
 			int previousPostNum = thread.posts.length;
 			
 			File threadFile = ChanFileStorage.getThreadFile(getBaseContext(), boardCode, threadNo);
+			if (threadFile == null || !threadFile.exists()) {
+				Log.i(TAG, "Thread file " + threadFile.getAbsolutePath() + " was deleted, probably already parsed.");
+				return;
+			}
 			parseThread(new BufferedReader(new FileReader(threadFile)));
 
 			if (DEBUG) Log.i(TAG, "Parsed thread " + boardCode + "/" + threadNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             startTime = Calendar.getInstance().getTimeInMillis();
+            threadFile.delete();
 
             if (previousPostNum > 0 && thread.posts.length == 0) {
             	Log.w(TAG, "Thread " + boardCode + "/" + threadNo + " has 0 posts after parsing, won't be stored");

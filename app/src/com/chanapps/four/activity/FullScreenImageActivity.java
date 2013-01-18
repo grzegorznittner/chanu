@@ -8,23 +8,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Date;
 
-import android.media.MediaScannerConnection;
-import android.os.*;
-import android.support.v4.app.FragmentActivity;
-import android.widget.*;
-import com.chanapps.four.component.DispatcherHelper;
-import com.chanapps.four.component.ToastRunnable;
-import com.chanapps.four.data.*;
-import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.service.NetworkProfileManager;
+import org.apache.commons.io.IOUtils;
 
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
 import android.app.DownloadManager.Request;
 import android.app.WallpaperManager;
-import android.content.AsyncTaskLoader;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -34,8 +26,16 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -44,18 +44,31 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.component.ToastRunnable;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.fragment.GoToBoardDialogFragment;
+import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.utils.StorageUtils;
-
-import javax.security.auth.login.LoginException;
 
 public class FullScreenImageActivity extends FragmentActivity implements ChanIdentifiedActivity {
 
@@ -87,6 +100,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
     private BroadcastReceiver receiver;
     private ChanPost prevPost = null;
     private ChanPost nextPost = null;
+    private long downloadStartTime = 0;
 
     public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
@@ -132,8 +146,6 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        NetworkProfileManager.instance().activityChange(this);
-
         ctx = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -164,8 +176,11 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 	                        if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
 	                        	localImageUri = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
 	                        	
+	                        	int time = (int)(new Date().getTime() - downloadStartTime);
 	                        	ParcelFileDescriptor parcel = dm.openDownloadedFile(downloadEnqueueId);
-	                        	copyImageFileToBoardFolder(parcel);
+	                        	int size = copyImageFileToBoardFolder(parcel);
+	                        	
+	                        	NetworkProfileManager.instance().finishedImageDownload(FullScreenImageActivity.this, time, size);	                        	
 	                        	showImage();
 	                        }
 	                    }
@@ -213,11 +228,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
             boardFile = new FileInputStream(new File(URI.create(this.localImageUri)));
             newFile = new FileOutputStream(galleryFile);
 
-            byte[] buffer = new byte[1024];
-            int length;
-            while((length = boardFile.read(buffer)) > 0) {
-                newFile.write(buffer, 0, length);
-            }
+            IOUtils.copy(boardFile, newFile);
 
             MediaScannerConnection.scanFile(this,
                     new String[] { galleryFile.toString()},
@@ -235,22 +246,14 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
             return getString(R.string.full_screen_save_image_error);
         }
         finally {
-            try {
-                if (boardFile != null) {
-                    boardFile.close();
-                }
-                if (newFile != null) {
-                    newFile.close();
-                }
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Couldn't close files while saving to image folder", e);
-            }
+            IOUtils.closeQuietly(boardFile);
+            IOUtils.closeQuietly(newFile);
         }
         return null;
     }
 
-	private void copyImageFileToBoardFolder(ParcelFileDescriptor parcel) throws FileNotFoundException, IOException {
+	private int copyImageFileToBoardFolder(ParcelFileDescriptor parcel) throws FileNotFoundException, IOException {
+		int size = 0;
 		InputStream downloadedFile = null;
 		OutputStream newFile = null;
 		try {
@@ -259,22 +262,15 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 			Log.i(TAG, "Image downloaded, copying to " + imageFile);
 			newFile = new FileOutputStream(new File(URI.create(imageFile)), false);
 
-		    byte[] buffer = new byte[1024];
-		    int length;
-		    while((length = downloadedFile.read(buffer)) > 0) {
-		        newFile.write(buffer, 0, length);
-		    }
+			size = IOUtils.copy(downloadedFile, newFile);
 		    localImageUri = imageFile;
 		    Log.i(TAG, "Image file copied to " + imageFile);
 		    dm.remove(downloadEnqueueId);
 		} finally {
-			if (downloadedFile != null) {
-				downloadedFile.close();
-			}
-			if (newFile != null) {
-				newFile.close();
-			}
+			IOUtils.closeQuietly(downloadedFile);
+			IOUtils.closeQuietly(newFile);
 		}
+		return size;
 	}
 
     @Override
@@ -508,6 +504,8 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 
             Request request = new Request(Uri.parse(imageUrl));
             ensureDm();
+            
+            downloadStartTime = new Date().getTime();
             downloadEnqueueId = dm.enqueue(request);
             Log.i(TAG, "Equeuing image " + imageUrl + " in DM, id " + downloadEnqueueId);
 
@@ -516,6 +514,17 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
             loadingView = inflater.inflate(R.layout.fullscreen_image_loading, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
             ImageView imageView = (ImageView)loadingView.findViewById(R.id.fullscreen_image_image);
             imageLoader.displayImage(thumbUrl, imageView, options);
+            
+            final Button loginButton = (Button) loadingView.findViewById(R.id.fullscreen_image_cancel_button);
+            	loginButton.setOnClickListener(new OnClickListener() {
+	                @Override
+	                public void onClick(final View v) {
+	                	unregisterReceiver(receiver);
+	                	dm.remove(downloadEnqueueId);
+	                    Log.w(TAG, "Download cancelled");
+	                    FullScreenImageActivity.this.finish();
+	                }
+            });
 
             TextView fileSizeTextView = (TextView)loadingView.findViewById(R.id.fullscreen_image_sizetext);
             fileSizeTextView.setText("" + post.w + "px x " + post.h + "px");

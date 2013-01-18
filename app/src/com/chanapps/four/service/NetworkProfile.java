@@ -123,4 +123,9 @@ public interface NetworkProfile {
 	 * Called when data parsing has failed. It's intended to decide what will be done next.
 	 */
 	void onDataParseFailure(ChanIdentifiedService service, Failure failure);
+
+	/**
+	 * Called when image download is completed. It's intended to decide what will be done next.
+	 */
+	void onImageDownloadSuccess(Context context, int time, int size);	
 }

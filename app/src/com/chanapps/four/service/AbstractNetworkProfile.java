@@ -211,6 +211,11 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 		if (DEBUG) Log.d(TAG, "failedParsingData called for " + service);
 	}
 	
+	@Override
+	public void onImageDownloadSuccess(Context context, int time, int size) {
+		storeDataTransfer(time, size);
+	}
+
 	protected void makeToast(final String text) {
 		final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
 		if (activity != null) {

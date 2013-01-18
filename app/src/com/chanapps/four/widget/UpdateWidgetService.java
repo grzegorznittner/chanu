@@ -259,7 +259,8 @@ public class UpdateWidgetService extends Service {
                     thread.tn_h,
                     thread.tim,
                     false,
-                    0
+                    0,
+                    true
             );
         }
 

@@ -13,7 +13,6 @@ import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
 
@@ -35,11 +34,11 @@ public class MobileProfile extends AbstractNetworkProfile {
 		/* Mapping between connection health and fetch params
 		 *               HEALTH  ----->   REFRESH_DELAY, FORCE_REFRESH_DELAY, READ_TIMEOUT
 		 */
-		REFRESH_TIME.put(Health.BAD, new FetchParams(600000L, 30000L, 20000));  // 10 min
-		REFRESH_TIME.put(Health.VERY_SLOW, new FetchParams(300000L, 20000L, 20000));  // 5 min
-		REFRESH_TIME.put(Health.SLOW, new FetchParams(180000L, 15000L, 20000));  // 3 min
-		REFRESH_TIME.put(Health.GOOD, new FetchParams(120000L, 12000L, 12000));  // 2 min
-		REFRESH_TIME.put(Health.PERFECT, new FetchParams(60000L, 10000L, 8000));  // 1 min
+		REFRESH_TIME.put(Health.BAD, new FetchParams(600000L, 240000L, 20000));  // 10 min
+		REFRESH_TIME.put(Health.VERY_SLOW, new FetchParams(300000L, 200000L, 20000));  // 5 min
+		REFRESH_TIME.put(Health.SLOW, new FetchParams(180000L, 120000L, 20000));  // 3 min
+		REFRESH_TIME.put(Health.GOOD, new FetchParams(120000L, 80000L, 12000));  // 2 min
+		REFRESH_TIME.put(Health.PERFECT, new FetchParams(60000L, 40000L, 8000));  // 1 min
 	}
 	
 	@Override

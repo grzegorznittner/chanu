@@ -1,18 +1,17 @@
 package com.chanapps.four.activity;
 
+import java.util.Arrays;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
-import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.Display;
@@ -31,19 +30,15 @@ import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.ChanWatchlist;
-import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
-import com.chanapps.four.service.ThreadLoadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-
-import javax.security.auth.login.LoginException;
-import java.util.Arrays;
 
 /**
  * Created with IntelliJ IDEA.
@@ -98,6 +93,20 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     public static Intent createIntentForActivity(Context context,
+            final String boardCode,
+            final long threadNo,
+            final String text,
+            final String imageUrl,
+            final int tn_w,
+            final int tn_h,
+            final long tim,
+            final boolean fromParent,
+            final int firstVisiblePosition)
+    {
+    	return createIntentForActivity(context, boardCode, threadNo, text, imageUrl, tn_w, tn_h, tim, fromParent, firstVisiblePosition, false);
+    }
+
+    public static Intent createIntentForActivity(Context context,
                                                  final String boardCode,
                                                  final long threadNo,
                                                  final String text,
@@ -106,7 +115,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                                                  final int tn_h,
                                                  final long tim,
                                                  final boolean fromParent,
-                                                 final int firstVisiblePosition)
+                                                 final int firstVisiblePosition,
+                                                 final boolean refreshBoard)
     {
         Intent intent = new Intent(context, ThreadActivity.class);
         intent.putExtra(ChanHelper.TIM, tim);
@@ -118,6 +128,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, tn_h);
         intent.putExtra(ChanHelper.LAST_BOARD_POSITION, firstVisiblePosition);
         intent.putExtra(ChanHelper.LAST_THREAD_POSITION, 0);
+        intent.putExtra(ChanHelper.TRIGGER_BOARD_REFRESH, refreshBoard);
         if (fromParent)
             intent.putExtra(ChanHelper.FROM_PARENT, true);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
@@ -151,6 +162,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         imageHeight = intent.hasExtra(ChanHelper.IMAGE_HEIGHT)
                 ? intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0)
                 : prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
+        if (intent.getBooleanExtra(ChanHelper.TRIGGER_BOARD_REFRESH, false)) {
+        	FetchChanDataService.scheduleBoardFetchService(getBaseContext(), boardCode, 0);
+        }
         if (DEBUG) Log.i(TAG, "Thread no read from intent: " + threadNo);
     }
 

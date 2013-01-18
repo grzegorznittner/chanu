@@ -87,6 +87,7 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
         	
             File boardFile = ChanFileStorage.getBoardFile(context, boardCode, pageNo);
             parseBoard(new BufferedReader(new FileReader(boardFile)));
+            boardFile.delete();
 
             if (DEBUG) Log.i(TAG, "Parsed board " + boardCode + " page " + pageNo
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");

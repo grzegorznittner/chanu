@@ -43,6 +43,7 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.BoardCursorLoader;
+import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
