@@ -9,14 +9,14 @@
             android:summaryOn="@string/pref_show_nsfw_boards_summ_on"
             android:summaryOff="@string/pref_show_nsfw_boards_summ_off"
             android:defaultValue="false" />
-<!-- not yet implemented
+
     <CheckBoxPreference
             android:key="pref_notifications"
             android:title="@string/pref_notifications"
             android:summaryOn="@string/pref_notifications_summ_on"
             android:summaryOff="@string/pref_notifications_summ_off"
             android:defaultValue="true" />
--->
+
     <CheckBoxPreference
             android:key="pref_hide_all_text"
             android:title="@string/pref_hide_all_text"
@@ -30,6 +30,11 @@
             android:summaryOn="@string/pref_automatically_manage_watchlist_summ_on"
             android:summaryOff="@string/pref_automatically_manage_watchlist_summ_off"
             android:defaultValue="true" />
+
+    <Preference
+            android:key="pref_clear_cache"
+            android:title="@string/pref_clear_cache"
+            android:summary="@string/pref_clear_cache_summ" />
 
     <Preference
         android:key="pref_reset_to_defaults"

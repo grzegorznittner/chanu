@@ -102,6 +102,7 @@
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
     <string name="dialog_clear_watchlist">Clear watchlist?</string>
     <string name="dialog_clean_watchlist">Clean dead threads?</string>
+    <string name="dialog_clear_cache_confirm">Clear all cached data?  This may take several minutes.</string>
     <string name="dialog_reset_preferences_confirm">Reset all preferences?</string>
     <string name="dialog_add">Add</string>
     <string name="dialog_delete">Remove</string>
@@ -168,6 +169,14 @@
     <string name="pref_automatically_manage_watchlist">Auto-Manage Watchlist</string>
     <string name="pref_automatically_manage_watchlist_summ_on">Add and remove threads automatically</string>
     <string name="pref_automatically_manage_watchlist_summ_off">Manually add and remove threads</string>
+    <string name="pref_clear_cache">Clear Cache</string>
+    <string name="pref_clear_cache_summ">Remove all cached data and images</string>
+    <string name="pref_clear_cache_pre_execute">Clearing cache, you will be notified when complete</string>
+    <string name="pref_clear_cache_pre_execute_no_notify">Clearing cache, you will receive a popup message when complete</string>
+    <string name="pref_clear_cache_already_running">Already clearing cache, you will be notified when complete</string>
+    <string name="pref_clear_cache_error">Couldn\'t clear cache</string>
+    <string name="pref_clear_cache_success">Cleared cache successfully</string>
+    <string name="pref_clear_cache_notification_title">4Channer Cache Status</string>
     <string name="pref_reset_to_defaults">Clear Preferences</string>
     <string name="pref_reset_to_defaults_summ">Reset all settings to their factory default</string>
 
