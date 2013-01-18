@@ -38,6 +38,16 @@ public class SettingsFragment extends PreferenceFragment {
                 return true;
             }
         });
+
+        Preference clearCacheButton = (Preference)findPreference(SettingsActivity.PREF_CLEAR_CACHE);
+        clearCacheButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                ClearCacheDialogFragment dialog = new ClearCacheDialogFragment(SettingsFragment.this);
+                dialog.show(getFragmentManager(), SettingsFragment.TAG);
+                return true;
+            }
+        });
     }
 
     public Handler ensureHandler() {

@@ -11,6 +11,8 @@ import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.NetworkProfile;
+import com.chanapps.four.service.NetworkProfileManager;
 
 public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();
@@ -270,6 +272,7 @@ public class ChanBoard {
             if (!ChanFileStorage.isBoardCachedOnDisk(context, board.link)) { // if user never visited board before
                 Log.i(TAG, "Starting load service for uncached board " + board.link);
                 FetchChanDataService.scheduleBoardFetch(context, board.link);
+                break; // don't schedule more than one per call to avoid overloading
             }
         }
     }

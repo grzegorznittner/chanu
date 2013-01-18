@@ -1,15 +1,11 @@
 package com.chanapps.four.data;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.chanapps.four.activity.R;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -61,16 +57,21 @@ public class ChanFileStorage {
         return userPrefsFile != null && userPrefsFile.exists();
     }
 
+    private static String getRootCacheDirectory(Context context) {
+        return CACHE_ROOT + FILE_SEP
+                + CACHE_DATA_DIR + FILE_SEP
+                + context.getPackageName() + FILE_SEP
+                + CACHE_PKG_DIR ;
+    }
+
     private static File getBoardCacheDirectory(Context context, String boardCode) {
-        String cacheDir = CACHE_ROOT + FILE_SEP + CACHE_DATA_DIR + FILE_SEP + context.getPackageName() + FILE_SEP
-                + CACHE_PKG_DIR + FILE_SEP + boardCode;
+        String cacheDir = getRootCacheDirectory(context) + FILE_SEP + boardCode;
         File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
         return boardDir;
     }
 
     private static File getUserPreferencesFile(Context context) {
-        String cacheDir = CACHE_ROOT + FILE_SEP + CACHE_DATA_DIR + FILE_SEP + context.getPackageName() + FILE_SEP
-                + CACHE_PKG_DIR;
+        String cacheDir = getRootCacheDirectory(context);
         File cacheFolder = StorageUtils.getOwnCacheDirectory(context, cacheDir);
         if (cacheFolder != null) {
         	File userPrefsFile = new File(cacheFolder, USER_PREFS_FILENAME);
@@ -386,4 +387,44 @@ public class ChanFileStorage {
         return totalBytes;
     }
 
+    private static final String RM_CMD = "/system/bin/rm -r";
+
+    public static boolean deleteCacheDirectory(Context context) {
+        try {
+            String cacheDir = getRootCacheDirectory(context);
+            File cacheFolder = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+
+            String cmd = RM_CMD + " " + cacheFolder.getAbsolutePath();
+            if (DEBUG) Log.i(TAG, "Running delete cache command: " + cmd);
+            Process process = Runtime.getRuntime().exec(cmd);
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+            int read;
+            char[] buffer = new char[4096];
+            StringBuffer output = new StringBuffer();
+            while ((read = reader.read(buffer)) > 0) {
+                output.append(buffer, 0, read);
+            }
+            reader.close();
+
+            process.waitFor();
+            int exitVal = process.exitValue();
+            String outputStr = output.toString();
+            if (DEBUG) Log.i(TAG, "Finished deleting cache exitValue=" + exitVal + " output=" + outputStr);
+
+            if (exitVal == 0) {
+                return true;
+            }
+            else {
+                Log.e(TAG, "Error deleting cache exitValue=" + exitVal + " output=" + outputStr);
+                return false;
+            }
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Exception deleting cache", e);
+            return false;
+        }
+
+    }
 }
