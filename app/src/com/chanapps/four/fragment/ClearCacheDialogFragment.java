@@ -105,7 +105,7 @@ public class ClearCacheDialogFragment extends DialogFragment {
                         ChanNotificationManager.CLEAR_CACHE_NOTIFY_ID,
                         makeNotification(context.getString(R.string.pref_clear_cache_error)));
             else
-                Toast.makeText(context, R.string.pref_clear_cache_error, Toast.LENGTH_LONG);
+                Toast.makeText(context, R.string.pref_clear_cache_error, Toast.LENGTH_LONG).show();
         }
 
         @Override

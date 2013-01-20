@@ -41,7 +41,7 @@ public class ChanGridSizer {
         }
     }
 
-    private int dpToPx(Display d, int dp) {
+    static public int dpToPx(Display d, int dp) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         d.getMetrics(displayMetrics);
         float dpf = dp;

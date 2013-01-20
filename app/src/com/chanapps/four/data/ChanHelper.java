@@ -30,6 +30,8 @@ public class ChanHelper {
     public static final String TEXT = "text";
     public static final String QUOTE_TEXT = "quoteText";
     public static final String IMAGE_URL = "imageUrl";
+    public static final String POST_REPLY_IMAGE_URL = "postReplyImageUrl";
+    public static final String CAMERA_IMAGE_URL = "cameraImageUrl";
     public static final String IMAGE_WIDTH = "imageWidth";
     public static final String IMAGE_HEIGHT = "imageHeight";
     public static final String IMAGE_PATH = "imagePath";

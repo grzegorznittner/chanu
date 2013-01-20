@@ -2,12 +2,15 @@ package com.chanapps.four.task;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.ExifInterface;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanWatchlist;
@@ -21,13 +24,12 @@ import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanPostResponse;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -43,6 +45,7 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
 
     public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final String MAX_FILE_SIZE = "3145728";
+    public static final boolean DEBUG = true;
 
     private PostReplyActivity activity = null;
     private Context context = null;
@@ -62,19 +65,47 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             List<Part> partsList = new ArrayList<Part>();
             partsList.add(new StringPart("MAX-FILE-SIZE", MAX_FILE_SIZE));
             partsList.add(new StringPart("mode", "regist"));
-            partsList.add(new StringPart("resto", Long.toString(activity.getRestoForPosting())));
+            partsList.add(new StringPart("resto", Long.toString(activity.threadNo)));
             partsList.add(new StringPart("name", ""));
             partsList.add(new StringPart("email", ""));
             partsList.add(new StringPart("sub", ""));
             partsList.add(new StringPart("com", activity.getMessage()));
             partsList.add(new StringPart("recaptcha_challenge_field", activity.getRecaptchaChallenge()));
             partsList.add(new StringPart("recaptcha_response_field", activity.getRecaptchaResponse()));
-            String imageUrl = activity.getImageUrl();
+            String imageUrl = activity.imageUri == null ? null : activity.imageUri.toString();
             if (imageUrl != null) {
-                Log.i(TAG, "Trying to load image for imageUrl=" + imageUrl + " imagePath="+activity.imagePath+" contentType="+activity.contentType);
-                File file = new File(activity.imagePath);
-                FilePart filePart = new FilePart("upfile", file.getName(), file, activity.contentType, "UTF-8");
-                partsList.add(filePart);
+                if (DEBUG) Log.i(TAG, "Trying to load image for imageUrl=" + imageUrl + " imagePath="+activity.imagePath+" contentType="+activity.contentType);
+                File file = null;
+                if (activity.imagePath == null || activity.imagePath.startsWith("http")) { // non-local path, load to tmp
+                    InputStream in = null;
+                    try {
+                        String prefix = UUID.randomUUID().toString();
+                        String suffix = MimeTypeMap.getFileExtensionFromUrl(imageUrl);
+                        String fileName = prefix + "." + suffix;
+                        file = new File(activity.getExternalCacheDir(), fileName);
+                        in = activity.getContentResolver().openInputStream(activity.imageUri);
+                        FileUtils.copyInputStreamToFile(in, file);
+
+                    }
+                    catch (Exception e) {
+                        Log.e(TAG, "Couldn't get file from uri=" + activity.imageUri, e);
+                    }
+                    finally {
+                        if (in != null) {
+                            in.close();
+                        }
+                    }
+                }
+                else { // local file, load it directly
+                    file = new File(activity.imagePath);
+                }
+                ExifInterface exif = new ExifInterface(file.getAbsolutePath());
+                if (DEBUG) Log.i(TAG, "Found exif orientation: " + exif.getAttribute(ExifInterface.TAG_ORIENTATION));
+
+                if (file != null) {
+                    FilePart filePart = new FilePart("upfile", file.getName(), file, activity.contentType, "UTF-8");
+                    partsList.add(filePart);
+                }
             }
             partsList.add(new StringPart("pwd", activity.generatePwd()));
 
@@ -91,9 +122,9 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             MultipartEntity entity = new MultipartEntity(parts);
             request.setEntity(entity);
 
-            Log.i(TAG, "Calling URL: " + request.getURI());
+            if (DEBUG) Log.i(TAG, "Calling URL: " + request.getURI());
             HttpResponse response = client.execute(request);
-            Log.i(TAG, "Response: " + (response == null ? "null" : "length: " + response.toString().length()));
+            if (DEBUG) Log.i(TAG, "Response: " + (response == null ? "null" : "length: " + response.toString().length()));
             if (response == null) {
                 Log.e(TAG, context.getString(R.string.post_reply_no_response));
                 Toast.makeText(context, R.string.post_reply_no_response, Toast.LENGTH_SHORT).show();
@@ -103,7 +134,7 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             StringBuilder s = new StringBuilder();
             String line;
             while ((line = r.readLine()) != null) {
-                Log.i(TAG, "Response Line:" + line);
+                if (DEBUG) Log.i(TAG, "Response Line:" + line);
                 s.append(line);
             }
             return s.toString();
@@ -127,15 +158,15 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String response) {
-        Log.i(TAG, "Response: " + response);
+        if (DEBUG) Log.i(TAG, "Response: " + response);
         if (response == null || response.isEmpty()) {
-            Log.i(TAG, "Null response posting");
+            if (DEBUG) Log.i(TAG, "Null response posting");
             Toast.makeText(context, R.string.post_reply_error, Toast.LENGTH_SHORT).show();
             activity.reloadCaptcha();
             return;
         }
         ChanPostResponse chanPostResponse = new ChanPostResponse(context, response);
-        Log.i(TAG, "isPosted:" + chanPostResponse.isPosted());
+        if (DEBUG) Log.i(TAG, "isPosted:" + chanPostResponse.isPosted());
         if (chanPostResponse.isPosted()) {
             if (activity.threadNo == 0) {
                 Toast.makeText(context, R.string.post_reply_posted_thread, Toast.LENGTH_SHORT).show();
@@ -148,26 +179,29 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
             long tim = activity.tim != 0 ? activity.tim : 1000 * (new Date()).getTime();// approximate until we get it back from the api
             long postThreadNo = chanPostResponse.getThreadNo(); // direct from 4chan post response parsing
             long threadNo = postThreadNo != 0 ? postThreadNo : activity.threadNo; // fallback
-            Log.i(TAG, "posted " + activity.boardCode + "/" + threadNo + " tim:" + tim + " addToWatchlist:" + addThreadToWatchlist);
+            if (DEBUG) Log.i(TAG, "posted " + activity.boardCode + "/" + threadNo + " tim:" + tim + " addToWatchlist:" + addThreadToWatchlist);
+            // forcing thread/board refresh
+            ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
+            if (activityId != null) {
+            	if (activityId.activity == LastActivity.THREAD_ACTIVITY) {
+            		ChanFileStorage.resetLastFetched(activityId.threadNo);
+                    FetchChanDataService.scheduleThreadFetchWithPriority(activity, activity.boardCode, activity.threadNo);
+            	} else if (activityId.activity == LastActivity.BOARD_ACTIVITY) {
+            		ChanFileStorage.resetLastFetched(activityId.boardCode);
+                    FetchChanDataService.scheduleBoardFetchWithPriority(activity, activity.boardCode);
+            	}
+            }
             if (addThreadToWatchlist && threadNo > 0) {
                 ChanWatchlist.watchThread(context,
                         tim,
                         activity.boardCode,
                         threadNo,
                         ChanWatchlist.DEFAULT_WATCHTEXT,
-                        activity.getImageUrl(),
+                        activity.imageUri == null ? null : activity.imageUri.toString(),
                         250,
                         250);
             }
-            // forcing thread/board refresh
-            ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
-            if (activityId != null) {
-            	if (activityId.activity == LastActivity.THREAD_ACTIVITY) {
-            		ChanFileStorage.resetLastFetched(activityId.threadNo);
-            	} else if (activityId.activity == LastActivity.BOARD_ACTIVITY) {
-            		ChanFileStorage.resetLastFetched(activityId.boardCode);
-            	}
-            }
+            activity.ensurePrefs().edit().putString(ChanHelper.POST_REPLY_IMAGE_URL, null).commit(); // clear it so it's empty next time
             activity.finish();
             //activity.navigateUp();
         }
