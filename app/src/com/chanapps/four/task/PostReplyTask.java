@@ -201,9 +201,8 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
                         250,
                         250);
             }
-            activity.ensurePrefs().edit().putString(ChanHelper.POST_REPLY_IMAGE_URL, null).commit(); // clear it so it's empty next time
-            activity.finish();
-            //activity.navigateUp();
+            activity.imageUri = null; // now we've processed so don't use it again
+            activity.navigateUp();
         }
         else {
             Toast.makeText(

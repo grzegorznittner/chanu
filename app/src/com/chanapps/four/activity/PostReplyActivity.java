@@ -16,6 +16,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.*;
 import android.webkit.WebView;
@@ -495,6 +497,23 @@ public class PostReplyActivity extends Activity implements ChanIdentifiedActivit
             PostReplyTask postReplyTask = new PostReplyTask(this);
             postReplyTask.execute();
         }
+    }
+
+    public void navigateUp() {
+        Intent intent = ThreadActivity.createIntentForActivity(
+                this,
+                boardCode,
+                threadNo,
+                null,
+                null,
+                0,
+                0,
+                tim,
+                false,
+                0,
+                true
+        );
+        NavUtils.navigateUpTo(this, intent);
     }
 
     @Override
