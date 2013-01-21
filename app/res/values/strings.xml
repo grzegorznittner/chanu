@@ -99,6 +99,7 @@
     <string name="popup_country_flag">Country Flag</string>
 
     <!-- dialog text -->
+    <string name="dialog_posting_reply">Posting Reply...</string>
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
     <string name="dialog_clear_watchlist">Clear watchlist?</string>
     <string name="dialog_clean_watchlist">Clean dead threads?</string>
@@ -146,6 +147,7 @@
     <string name="post_reply_response_error">Couldn\'t post, unknown response</string>
     <string name="post_reply_no_response">Couldn\'t post, no response</string>
     <string name="post_reply_error">Couldn\'t post</string>
+    <string name="post_reply_cancelled">Cancelled post</string>
     <string name="post_reply_posted_reply">Posted reply</string>
     <string name="post_reply_posted_thread">Posted new thread</string>
     <string name="post_reply_send">Send</string>

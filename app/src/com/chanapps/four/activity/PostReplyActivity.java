@@ -1,6 +1,5 @@
 package com.chanapps.four.activity;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -14,12 +13,14 @@ import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.*;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.*;
 import com.chanapps.four.component.ChanGridSizer;
@@ -28,15 +29,15 @@ import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.fragment.PostingReplyDialogFragment;
 import com.chanapps.four.task.LoadCaptchaTask;
 import com.chanapps.four.task.PostReplyTask;
 
-import javax.security.auth.login.LoginException;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.Random;
 
-public class PostReplyActivity extends Activity implements ChanIdentifiedActivity {
+public class PostReplyActivity extends FragmentActivity implements ChanIdentifiedActivity {
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
 
@@ -288,6 +289,7 @@ public class PostReplyActivity extends Activity implements ChanIdentifiedActivit
     }
 
     public void reloadCaptcha() {
+        recaptchaText.setText("");
         loadCaptchaTask = new LoadCaptchaTask(ctx, recaptchaView);
         loadCaptchaTask.execute(res.getString(R.string.post_reply_recaptcha_url_root));
     }
@@ -493,9 +495,18 @@ public class PostReplyActivity extends Activity implements ChanIdentifiedActivit
             Toast.makeText(ctx, validMsg, Toast.LENGTH_SHORT).show();
         }
         else {
-            Toast.makeText(ctx, R.string.post_reply_posting, Toast.LENGTH_LONG).show();
+            //Toast.makeText(ctx, R.string.post_reply_posting, Toast.LENGTH_LONG).show();
+            IBinder windowToken = getCurrentFocus() != null ? getCurrentFocus().getWindowToken() : null;
+            if (windowToken != null) { // close the keyboard
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(windowToken, 0);
+            }
             PostReplyTask postReplyTask = new PostReplyTask(this);
-            postReplyTask.execute();
+            PostingReplyDialogFragment dialogFragment = new PostingReplyDialogFragment(postReplyTask);
+            dialogFragment.show(getSupportFragmentManager(), PostingReplyDialogFragment.TAG);
+            if (!postReplyTask.isCancelled()) {
+                postReplyTask.execute(dialogFragment);
+            }
         }
     }
 

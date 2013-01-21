@@ -14,6 +14,7 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanWatchlist;
+import com.chanapps.four.fragment.PostingReplyDialogFragment;
 import com.chanapps.four.multipartmime.FilePart;
 import com.chanapps.four.multipartmime.MultipartEntity;
 import com.chanapps.four.multipartmime.Part;
@@ -39,7 +40,7 @@ import java.util.*;
  * Time: 2:42 PM
  * To change this template use File | Settings | File Templates.
  */
-public class PostReplyTask extends AsyncTask<String, Void, String> {
+public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, String> {
 
     public static final String TAG = PostReplyTask.class.getSimpleName();
 
@@ -49,6 +50,7 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
 
     private PostReplyActivity activity = null;
     private Context context = null;
+    private PostingReplyDialogFragment dialogFragment = null;
 
     public PostReplyTask(PostReplyActivity activity) {
         this.activity = activity;
@@ -56,7 +58,8 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
     }
 
     @Override
-    protected String doInBackground(String... params) {
+    protected String doInBackground(PostingReplyDialogFragment... params) { // dialog is for callback
+        dialogFragment = params[0];
         AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
         try {
             String url = POST_URL_ROOT + activity.boardCode + "/post";
@@ -153,11 +156,13 @@ public class PostReplyTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onCancelled() {
         Log.e(TAG, "Post cancelled");
-        Toast.makeText(context, R.string.post_reply_error, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, R.string.post_reply_cancelled, Toast.LENGTH_SHORT).show();
+        activity.reloadCaptcha(); // always need to do this after each request
     }
 
     @Override
     protected void onPostExecute(String response) {
+        dialogFragment.dismiss();
         if (DEBUG) Log.i(TAG, "Response: " + response);
         if (response == null || response.isEmpty()) {
             if (DEBUG) Log.i(TAG, "Null response posting");
