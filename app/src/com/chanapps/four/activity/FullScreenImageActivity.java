@@ -63,6 +63,7 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.fragment.GoToBoardDialogFragment;
+import com.chanapps.four.service.NetworkProfile.Type;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -72,7 +73,9 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class FullScreenImageActivity extends FragmentActivity implements ChanIdentifiedActivity {
 
-	public static final String TAG = FullScreenImageActivity.class.getSimpleName();
+	public static final String TAG = "FullScreenImageActivity";
+	public static final int PROGRESS_REFRESH_MSG = 0;
+	public static final int START_DOWNLOAD_MSG = 1;
 
 	private WebView webView = null;
 
@@ -497,54 +500,90 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
     }
 
     private void loadImage() {
-    	try {
-            this.localImageUri = null;
-            Log.i(TAG, "Loading image from URL: " + imageUrl);
-            registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-
-            Request request = new Request(Uri.parse(imageUrl));
-            ensureDm();
-            
-            downloadStartTime = new Date().getTime();
-            downloadEnqueueId = dm.enqueue(request);
-            Log.i(TAG, "Equeuing image " + imageUrl + " in DM, id " + downloadEnqueueId);
-
-            String thumbUrl = "http://0.thumbs.4chan.org/" + post.board + "/thumb/" + post.tim + "s.jpg";
-
-            loadingView = inflater.inflate(R.layout.fullscreen_image_loading, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
-            ImageView imageView = (ImageView)loadingView.findViewById(R.id.fullscreen_image_image);
-            imageLoader.displayImage(thumbUrl, imageView, options);
-            
-            final Button loginButton = (Button) loadingView.findViewById(R.id.fullscreen_image_cancel_button);
-            	loginButton.setOnClickListener(new OnClickListener() {
-	                @Override
-	                public void onClick(final View v) {
-	                	unregisterReceiver(receiver);
-	                	dm.remove(downloadEnqueueId);
-	                    Log.w(TAG, "Download cancelled");
-	                    FullScreenImageActivity.this.finish();
-	                }
-            });
-
-            TextView fileSizeTextView = (TextView)loadingView.findViewById(R.id.fullscreen_image_sizetext);
-            fileSizeTextView.setText("" + post.w + "px x " + post.h + "px");
-            TextView textView = (TextView)loadingView.findViewById(R.id.fullscreen_image_text);
-            textView.setText("0kB / " + ((post.fsize / 1024) + 1));
-
-            ProgressBar progressBar = (ProgressBar)loadingView.findViewById(R.id.fullscreen_image_progressbar);
-            progressBar.setProgress(0);
-            progressBar.setMax(post.fsize);
-
-            setContentView(loadingView);
-
-            handler = new ProgressHandler(this);
-            handler.sendEmptyMessageDelayed(0, 100);
-        }
-        catch (Exception e) {
-            Log.e(TAG, "Couldn't load image for full screen view with url=" + imageUrl, e);
-            runOnUiThread(new ToastRunnable(this, R.string.full_screen_view_image_error));
-        }
+    	if (NetworkProfileManager.instance().getCurrentProfile().getConnectionType() == Type.NO_CONNECTION) {
+    		Log.i(TAG, "Off-line mode, download not started");    		
+            showOfflineScreen();
+    	} else if (downloadEnqueueId != 0) {
+    		Log.i(TAG, "Download has already started for " + imageUrl);    		
+    	} else {
+	    	showDownloadScreen();
+    	}
     }
+
+	private void showOfflineScreen() {
+		try {
+			loadingView = inflater.inflate(R.layout.fullscreen_image_offline, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
+			ImageView imageView = (ImageView)loadingView.findViewById(R.id.fullscreen_image_image);
+			imageLoader.displayImage(post.getThumbnailUrl(), imageView, options);
+			
+			final Button loginButton = (Button) loadingView.findViewById(R.id.fullscreen_image_close_button);
+				loginButton.setOnClickListener(new OnClickListener() {
+			        @Override
+			        public void onClick(final View v) {
+			            Log.w(TAG, "Download page closed");
+			            FullScreenImageActivity.this.finish();
+			        }
+			});
+	
+			TextView fileSizeTextView = (TextView)loadingView.findViewById(R.id.fullscreen_image_sizetext);
+			fileSizeTextView.setText("" + post.w + "px x " + post.h + "px");
+	
+			setContentView(loadingView);
+	
+			handler = new ProgressHandler(this);
+		} catch (Exception e) {
+		    Log.e(TAG, "Couldn't open offline view for image with url=" + imageUrl, e);
+		    runOnUiThread(new ToastRunnable(this, R.string.full_screen_view_image_error));
+		}
+	}
+
+	private void showDownloadScreen() {
+		try {
+		    this.localImageUri = null;
+		    Log.i(TAG, "Loading image from URL: " + imageUrl);
+		    registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+
+		    Request request = new Request(Uri.parse(imageUrl));
+		    ensureDm();
+		    
+		    downloadStartTime = new Date().getTime();
+		    downloadEnqueueId = dm.enqueue(request);
+		    Log.i(TAG, "Equeuing image " + imageUrl + " in DM, id " + downloadEnqueueId);
+
+		    loadingView = inflater.inflate(R.layout.fullscreen_image_loading, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
+		    ImageView imageView = (ImageView)loadingView.findViewById(R.id.fullscreen_image_image);
+		    imageLoader.displayImage(post.getThumbnailUrl(), imageView, options);
+		    
+		    final Button loginButton = (Button) loadingView.findViewById(R.id.fullscreen_image_cancel_button);
+		    	loginButton.setOnClickListener(new OnClickListener() {
+		            @Override
+		            public void onClick(final View v) {
+		            	unregisterReceiver(receiver);
+		            	dm.remove(downloadEnqueueId);
+		            	downloadEnqueueId = 0;
+		                Log.w(TAG, "Download cancelled");
+		                FullScreenImageActivity.this.finish();
+		            }
+		    });
+
+		    TextView fileSizeTextView = (TextView)loadingView.findViewById(R.id.fullscreen_image_sizetext);
+		    fileSizeTextView.setText("" + post.w + "px x " + post.h + "px");
+		    TextView textView = (TextView)loadingView.findViewById(R.id.fullscreen_image_text);
+		    textView.setText("0kB / " + ((post.fsize / 1024) + 1));
+
+		    ProgressBar progressBar = (ProgressBar)loadingView.findViewById(R.id.fullscreen_image_progressbar);
+		    progressBar.setProgress(0);
+		    progressBar.setMax(post.fsize);
+
+		    setContentView(loadingView);
+
+		    handler = new ProgressHandler(this);
+		    handler.sendEmptyMessageDelayed(PROGRESS_REFRESH_MSG, 100);
+		} catch (Exception e) {
+		    Log.e(TAG, "Couldn't load image for full screen view with url=" + imageUrl, e);
+		    runOnUiThread(new ToastRunnable(this, R.string.full_screen_view_image_error));
+		}
+	}
 
     private String getLocalImagePath(String cacheFolder, String separator) {
         return (cacheFolder != null ? (cacheFolder + separator) : "") + post.board + separator + post.no + post.ext;
@@ -589,6 +628,12 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
     private void navigateToPost(ChanPost post) {
         if (post == null || post.no == 0)
             return;
+        if (downloadEnqueueId > 0) {
+        	unregisterReceiver(receiver);
+        	dm.remove(downloadEnqueueId);
+        	downloadEnqueueId = 0;
+            Log.w(TAG, "Download cancelled");
+        }
         Intent intent = new Intent(this, FullScreenImageActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
@@ -823,33 +868,37 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             
-            int localFileSize = 0;
-            Cursor c = null;
-            try {
-	            Query query = new Query();
-	            query.setFilterById(activity.downloadEnqueueId);
-	            c = activity.dm.query(query);
-	            if (c.moveToFirst()) {
-	                int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
-	                localFileSize = c.getInt(columnIndex);
+            if (msg.what == PROGRESS_REFRESH_MSG) {
+	            int localFileSize = 0;
+	            Cursor c = null;
+	            try {
+		            Query query = new Query();
+		            query.setFilterById(activity.downloadEnqueueId);
+		            c = activity.dm.query(query);
+		            if (c.moveToFirst()) {
+		                int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
+		                localFileSize = c.getInt(columnIndex);
+		            }
+	            } catch (Exception e) {
+	            	Log.e(TAG, "Error while getting download progress");
+	            } finally {
+	            	c.close();
 	            }
-            } catch (Exception e) {
-            	Log.e(TAG, "Error while getting download progress");
-            } finally {
-            	c.close();
-            }
-            Log.i(TAG, "handle message: updating progress bar " + localFileSize);
-            
-            int totalSize = (activity.post.fsize / 1024) + 1;
-            int downloadedSize = (localFileSize / 1024);
-            
-            ProgressBar progressBar = (ProgressBar)activity.loadingView.findViewById(R.id.fullscreen_image_progressbar);
-    		progressBar.setProgress(localFileSize);
-    		TextView textView = (TextView)activity.loadingView.findViewById(R.id.fullscreen_image_text);
-    		textView.setText("" + downloadedSize + "kB / " + totalSize + "kB");
-    		
-            if (activity.hasWindowFocus() && activity.localImageUri == null) {
-            	this.sendEmptyMessageDelayed(0, 100);
+	            Log.i(TAG, "handle message: updating progress bar " + localFileSize);
+	            
+	            int totalSize = (activity.post.fsize / 1024) + 1;
+	            int downloadedSize = (localFileSize / 1024);
+	            
+	            ProgressBar progressBar = (ProgressBar)activity.loadingView.findViewById(R.id.fullscreen_image_progressbar);
+	    		progressBar.setProgress(localFileSize);
+	    		TextView textView = (TextView)activity.loadingView.findViewById(R.id.fullscreen_image_text);
+	    		textView.setText("" + downloadedSize + "kB / " + totalSize + "kB");
+	    		
+	            if (activity.hasWindowFocus() && activity.localImageUri == null) {
+	            	this.sendEmptyMessageDelayed(PROGRESS_REFRESH_MSG, 100);
+	            }
+            } else if (msg.what == START_DOWNLOAD_MSG) {
+            	activity.loadImage();
             }
         }
     }

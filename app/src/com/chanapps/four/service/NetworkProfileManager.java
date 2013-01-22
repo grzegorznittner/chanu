@@ -53,6 +53,14 @@ public class NetworkProfileManager {
 		return currentActivityId;
 	}
 	
+	/**
+	 * Returns current network profile.
+	 * CALL ONLY GET METHODS.
+	 */
+	public NetworkProfile getCurrentProfile() {
+		return activeProfile == null ? noConnectionProfile : activeProfile;
+	}
+	
 	public ChanIdentifiedActivity getActivity() {
 		return currentActivity.get();
 	}

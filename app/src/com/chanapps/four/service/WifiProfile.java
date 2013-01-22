@@ -21,6 +21,11 @@ public class WifiProfile extends MobileProfile {
 	}
 	
 	@Override
+	public Type getConnectionType() {
+		return Type.WIFI;
+	}
+
+	@Override
 	public FetchParams getFetchParams() {
 		return REFRESH_TIME.get(getConnectionHealth());
 	}

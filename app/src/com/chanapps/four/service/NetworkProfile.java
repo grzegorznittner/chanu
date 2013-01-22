@@ -33,6 +33,11 @@ public interface NetworkProfile {
 	enum Health {NO_CONNECTION, BAD, VERY_SLOW, SLOW, GOOD, PERFECT};
 
 	/**
+	 * Returns connection type.
+	 */
+	Type getConnectionType();
+	
+	/**
 	 * Returns health status of the connection.
 	 * NO_CONNECTION is only returned when there is no phisical connection established.
 	 */
