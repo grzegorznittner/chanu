@@ -61,13 +61,13 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         scheduleBoardFetchService(context, boardCode, 0);
     }
     
-    public static void scheduleBoardFetchWithPriority(Context context, String boardCode) {
-    	scheduleBoardFetchWithPriority(context, boardCode, 0);
+    public static boolean scheduleBoardFetchWithPriority(Context context, String boardCode) {
+    	return scheduleBoardFetchWithPriority(context, boardCode, 0);
     }
 
-    public static void scheduleBoardFetchService(Context context, String boardCode, int pageNo) {
+    public static boolean scheduleBoardFetchService(Context context, String boardCode, int pageNo) {
     	if (!boardNeedsRefresh(context, boardCode, pageNo, false)) {
-        	return;
+        	return false;
         }
         if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + " page " + pageNo );
 
@@ -75,11 +75,12 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.PAGE, pageNo);        
         context.startService(intent);
+        return true;
     }
 
-    public static void scheduleBoardFetchWithPriority(Context context, String boardCode, int pageNo) {
+    public static boolean scheduleBoardFetchWithPriority(Context context, String boardCode, int pageNo) {
     	if (!boardNeedsRefresh(context, boardCode, pageNo, true)) {
-        	return;
+        	return false;
         }
         if (DEBUG) Log.i(TAG, "Start chan priorty fetch service for " + boardCode + " page " + pageNo );
         Intent intent = new Intent(context, FetchChanDataService.class);
@@ -87,11 +88,12 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         intent.putExtra(ChanHelper.PAGE, pageNo);
         intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
         context.startService(intent);
+        return true;
     }
     
-    public static void scheduleThreadFetch(Context context, String boardCode, long threadNo) {
+    public static boolean scheduleThreadFetch(Context context, String boardCode, long threadNo) {
     	if (!threadNeedsRefresh(context, boardCode, threadNo, false)) {
-        	return;
+        	return false;
         }
         if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + "/" + threadNo );
         
@@ -99,11 +101,12 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
         context.startService(intent);
+        return true;
     }
 
-    public static void scheduleThreadFetchWithPriority(Context context, String boardCode, long threadNo) {
+    public static boolean scheduleThreadFetchWithPriority(Context context, String boardCode, long threadNo) {
     	if (!threadNeedsRefresh(context, boardCode, threadNo, true)) {
-        	return;
+        	return false;
         }
         if (DEBUG) Log.i(TAG, "Start chan priority fetch service for " + boardCode + "/" + threadNo );
         Intent intent = new Intent(context, FetchChanDataService.class);
@@ -111,6 +114,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
         intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
         context.startService(intent);
+        return true;
     }
     
     public static void clearServiceQueue(Context context) {

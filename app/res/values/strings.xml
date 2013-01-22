@@ -89,7 +89,11 @@
     <string name="full_screen_sharing_error">Couldn\'t share image</string>
     <string name="full_screen_saved_to_gallery">Saved image to gallery</string>
     <string name="full_screen_wait_until_downloaded">Wait until downloaded</string>
-
+    <string name="fullscreen_image_progress_upper">Loading an Image</string>
+    <string name="fullscreen_image_offline_upper">Off-line mode</string>
+    <string name="full_screen_cancel_button">Cancel Download</string>
+    <string name="full_screen_close_button">Close</string>
+    
     <!-- popup text -->
     <string name="reply">Reply</string>
     <string name="quote">Quote</string>
@@ -253,7 +257,5 @@
     <string name="board_pol">Politically Incorrect</string>
     <string name="board_soc">Social</string>
     <string name="board_watch">Watchlist</string>
-    <string name="fullscreen_image_progress_upper">Loading 4Chan Image</string>
-    <string name="full_screen_cancel_button">Cancel Download</string>
 
 </resources>

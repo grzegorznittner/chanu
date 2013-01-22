@@ -11,6 +11,11 @@ import com.chanapps.four.data.ChanHelper;
 public class NoConnectionProfile extends AbstractNetworkProfile {
 
 	@Override
+	public Type getConnectionType() {
+		return Type.NO_CONNECTION;
+	}
+
+	@Override
 	public Health getConnectionHealth() {
 		return Health.NO_CONNECTION;
 	}

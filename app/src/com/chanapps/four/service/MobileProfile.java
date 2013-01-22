@@ -10,9 +10,11 @@ import android.util.Log;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.activity.FullScreenImageActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
 
@@ -21,10 +23,6 @@ public class MobileProfile extends AbstractNetworkProfile {
 	private static final boolean DEBUG = true;
 	
 	private static final int MIN_THREADS_PER_BOARD = 20;
-	private static final int MAX_THREADS_PER_BOARD = 100;
-	
-	private static final long MIN_AUTO_REFRESH_INTERVAL = 600000;  // 10 min
-	private static final long MIN_FORCED_REFRESH_INTERVAL = 120000;  // 2 min
 	
 	private String networkType = "3G";
 	
@@ -41,6 +39,11 @@ public class MobileProfile extends AbstractNetworkProfile {
 		REFRESH_TIME.put(Health.PERFECT, new FetchParams(60000L, 40000L, 8000));  // 1 min
 	}
 	
+	@Override
+	public Type getConnectionType() {
+		return Type.MOBILE;
+	}
+
 	@Override
 	public FetchParams getFetchParams() {
 		return REFRESH_TIME.get(getConnectionHealth());
@@ -65,14 +68,21 @@ public class MobileProfile extends AbstractNetworkProfile {
 		
 		Health health = getConnectionHealth();
 		if (health != Health.BAD) {
+			ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
 			ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
 			if (activityId != null) {
-				if (activityId.threadNo != 0) {
-					makeToast("Reloading thread data");
+				if (activityId.activity == LastActivity.THREAD_ACTIVITY) {
+					makeToast("Reloading thread ...");
 					FetchChanDataService.scheduleThreadFetch(context, activityId.boardCode, activityId.threadNo);
-				} else if (activityId.boardCode != null) {
-					makeToast("Reloading board data");
+				} else if (activityId.activity == LastActivity.BOARD_ACTIVITY) {
+					makeToast("Reloading board ...");
 					FetchChanDataService.scheduleBoardFetch(context, activityId.boardCode);
+				} else if (activityId.activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
+					Handler handler = activity.getChanHandler();
+					if (handler != null) {
+						makeToast("Loading image ...");
+						handler.sendEmptyMessageDelayed(FullScreenImageActivity.START_DOWNLOAD_MSG, 100);
+					}
 				} else if (activityId.activity == ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY) {
 					if (health != Health.VERY_SLOW) {
 						/*
@@ -157,7 +167,11 @@ public class MobileProfile extends AbstractNetworkProfile {
 	public void onBoardRefreshed(Context context, String board) {
 		super.onBoardRefreshed(context, board);
 		
-		FetchChanDataService.scheduleBoardFetchWithPriority(context, board);
+		if (FetchChanDataService.scheduleBoardFetchWithPriority(context, board)) {
+			makeToast("Refreshing board ...");
+		} else {
+			makeToast("Board is fresh");
+		}
 	}
 
 	@Override
@@ -172,7 +186,11 @@ public class MobileProfile extends AbstractNetworkProfile {
 	public void onThreadRefreshed(Context context, String board, long threadId) {
 		super.onThreadRefreshed(context, board, threadId);
 		
-		FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId);
+		if (FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId)) {
+			makeToast("Refreshing thread ...");
+		} else {
+			makeToast("Thread is fresh");
+		}
 	}
 
 	@Override

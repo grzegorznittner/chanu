@@ -1,5 +1,18 @@
 package com.chanapps.four.task;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.ExifInterface;
@@ -9,10 +22,14 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
+
+import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.PostReplyActivity;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.ChanPostResponse;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.fragment.PostingReplyDialogFragment;
 import com.chanapps.four.multipartmime.FilePart;
@@ -21,17 +38,6 @@ import com.chanapps.four.multipartmime.Part;
 import com.chanapps.four.multipartmime.StringPart;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
-import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.PostReplyActivity;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanPostResponse;
-import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-
-import java.io.*;
-import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
