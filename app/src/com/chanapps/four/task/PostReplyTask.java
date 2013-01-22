@@ -120,12 +120,15 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, S
 
             Part[] parts = partsList.toArray(new Part[partsList.size()]);
 
-            String foo = "";
-            for (Part p : partsList) {
-                if (!(p instanceof StringPart))
-                    continue;
-                StringPart s = (StringPart)p;
-                foo += s.getName() + ": " + s.getValue() + ", ";
+            if (DEBUG) {
+                Log.i(TAG, "Dumping mime parts list:");
+                for (Part p : partsList) {
+                    if (!(p instanceof StringPart))
+                        continue;
+                    StringPart s = (StringPart)p;
+                    String line = s.getName() + ": " + s.getValue() + ", ";
+                    Log.i(TAG, line);
+                }
             }
 
             MultipartEntity entity = new MultipartEntity(parts);

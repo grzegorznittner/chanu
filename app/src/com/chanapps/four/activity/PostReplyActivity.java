@@ -49,6 +49,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     private ImageButton cameraButton;
     private ImageButton pictureButton;
+    private ImageButton deleteButton;
     private ImageButton rotateLeftButton;
     private ImageButton rotateRightButton;
 
@@ -96,6 +97,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
         cameraButton = (ImageButton)findViewById(R.id.post_reply_camera_button);
         pictureButton = (ImageButton)findViewById(R.id.post_reply_picture_button);
+        deleteButton = (ImageButton)findViewById(R.id.post_reply_delete_button);
         rotateLeftButton = (ImageButton)findViewById(R.id.post_reply_rotate_left_button);
         rotateRightButton = (ImageButton)findViewById(R.id.post_reply_rotate_right_button);
 
@@ -121,6 +123,11 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         pictureButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 startGallery();
+            }
+        });
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                deleteImage();
             }
         });
         rotateLeftButton.setOnClickListener(new View.OnClickListener() {
@@ -230,6 +237,16 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         setMessageText(text, quoteText);
         adjustSubjectHint();
 
+        String name = intent.getStringExtra(ChanHelper.NAME);
+        if (name != null && !name.isEmpty())
+            nameText.setText(name);
+        String email = intent.getStringExtra(ChanHelper.EMAIL);
+        if (email != null && !email.isEmpty())
+            emailText.setText(email);
+        String subject = intent.getStringExtra(ChanHelper.SUBJECT);
+        if (subject != null && !subject.isEmpty())
+            subjectText.setText(subject);
+
         String imageUrl = intent.getStringExtra(ChanHelper.POST_REPLY_IMAGE_URL);
         if (imageUrl != null && !imageUrl.isEmpty()) {
             setImageUri(imageUrl);
@@ -259,6 +276,16 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         String quoteText = ChanPost.quoteText(prefs.getString(ChanHelper.QUOTE_TEXT, ""));
         setMessageText(text, quoteText);
         adjustSubjectHint();
+
+        String name = prefs.getString(ChanHelper.NAME, "");
+        if (!name.isEmpty())
+            nameText.setText(name);
+        String email = prefs.getString(ChanHelper.EMAIL, "");
+        if (!email.isEmpty())
+            emailText.setText(email);
+        String subject = prefs.getString(ChanHelper.SUBJECT, "");
+        if (!subject.isEmpty())
+            subjectText.setText(subject);
 
         setActionBarTitle();
         if (DEBUG) Log.i(TAG, "loaded from prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " text=" + " quoteText=" + quoteText);
@@ -295,6 +322,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         ed.putLong(ChanHelper.THREAD_NO, threadNo);
         ed.putLong(ChanHelper.POST_NO, postNo);
         ed.putString(ChanHelper.TEXT, messageText.getText().toString());
+        ed.putString(ChanHelper.NAME, nameText.getText().toString());
+        ed.putString(ChanHelper.EMAIL, emailText.getText().toString());
+        ed.putString(ChanHelper.SUBJECT, subjectText.getText().toString());
         ed.putString(ChanHelper.QUOTE_TEXT, null);
         ed.putLong(ChanHelper.TIM, tim);
         ed.putString(ChanHelper.CAMERA_IMAGE_URL, cameraImageUri == null ? null : cameraImageUri.toString());
@@ -422,6 +452,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     }
 
     private void resetImagePreview() {
+        deleteButton.setVisibility(View.VISIBLE);
         rotateLeftButton.setVisibility(View.VISIBLE);
         rotateRightButton.setVisibility(View.VISIBLE);
         imagePreview.setVisibility(View.VISIBLE);
@@ -452,6 +483,15 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             Toast.makeText(ctx, R.string.post_reply_no_image, Toast.LENGTH_SHORT).show();
             Log.e(TAG, "setImagePreview exception while loading bitmap", e);
         }
+    }
+
+    private void deleteImage() {
+        imagePreview.setVisibility(View.GONE);
+        deleteButton.setVisibility(View.GONE);
+        imageUri = null;
+        imagePath = null;
+        contentType = null;
+        orientation = null;
     }
 
     private void rotateLeft() {
@@ -609,6 +649,18 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     }
 
     private String validatePost() {
+        String subject = subjectText.getText().toString();
+        String message = messageText.getText().toString();
+        String image = imageUri != null ? imageUri.getPath() : null;
+        boolean hasSubject = subject != null && !subject.trim().isEmpty();
+        boolean hasMessage = message != null && !message.trim().isEmpty();
+        boolean hasImage = image != null && !image.trim().isEmpty();
+        if (threadNo == 0 && !hasImage)
+        return res.getString(R.string.post_reply_add_image);
+        if (threadNo == 0 && boardCode.equals("q") && !(hasSubject && hasMessage))
+            return res.getString(R.string.post_reply_board_q_special_needs);
+        if (threadNo != 0 && !hasMessage && !hasImage)
+            return res.getString(R.string.post_reply_add_text_or_image);
         String recaptchaChallenge = loadCaptchaTask.getRecaptchaChallenge();
         if (recaptchaChallenge == null || recaptchaChallenge.trim().isEmpty()) {
             return res.getString(R.string.post_reply_captcha_error);
@@ -617,20 +669,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (recaptcha == null || recaptcha.trim().isEmpty()) {
             return res.getString(R.string.post_reply_enter_captcha);
         }
-        String message = messageText.getText().toString();
-        String subject = subjectText.getText().toString();
-        String image = imageUri != null ? imageUri.getPath() : null;
-        boolean hasMessage = message != null && !message.trim().isEmpty();
-        boolean hasImage = image != null && !image.trim().isEmpty();
-        if (threadNo == 0 && !hasImage)
-            return res.getString(R.string.post_reply_add_image);
-        if (threadNo != 0 && !hasMessage && !hasImage)
-            return res.getString(R.string.post_reply_add_text_or_image);
-        if (threadNo == 0
-                && boardCode.equals("q")
-                && !(subject != null && !subject.isEmpty())
-                && !(message != null && !message.isEmpty()))
-            return res.getString(R.string.post_reply_board_q_special_needs);
         return null;
     }
 

@@ -29,6 +29,9 @@ public class ChanHelper {
     public static final String TIM = "tim";
     public static final String TEXT = "text";
     public static final String QUOTE_TEXT = "quoteText";
+    public static final String NAME = "name";
+    public static final String EMAIL = "email";
+    public static final String SUBJECT = "subject";
     public static final String IMAGE_URL = "imageUrl";
     public static final String POST_REPLY_IMAGE_URL = "postReplyImageUrl";
     public static final String CAMERA_IMAGE_URL = "cameraImageUrl";
