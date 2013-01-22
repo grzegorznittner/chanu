@@ -11,55 +11,47 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <!--
-            <TextView
-                android:id="@+id/post_reply_title"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/post_reply_title"
-                android:textSize="22sp"
-                android:textColor="#121212"
-                android:layout_gravity="top"
-                android:paddingBottom="16dp">
-            </TextView>
-            -->
+
             <EditText
                 android:id="@+id/post_reply_text"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                style="@style/PostReplyEditTextStyle"
                 android:hint="@string/post_reply_text_hint"
                 android:inputType="textMultiLine"
-                android:lines="9"
-                android:padding="8dp"
-                android:textSize="14sp"
+                android:lines="3"
                 android:layout_marginTop="16dp"
+            >
+            </EditText>
+
+            <ImageButton
+                android:id="@+id/post_reply_recaptcha_imgview"
+                android:src="@drawable/captcha"
+                android:scaleType="fitXY"
+                android:layout_gravity="center"
+                android:layout_width="fill_parent"
+                android:layout_height="72dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="16dp"
-                android:scrollbars="vertical"
-                android:gravity="top|left"
-                android:background="@drawable/border_background"
-                    >
+                android:background="#00000000">
+            </ImageButton>
+
+            <EditText
+                android:id="@+id/post_reply_recaptcha_response"
+                style="@style/PostReplyEditTextStyle"
+                android:hint="@string/post_reply_recaptcha_hint"
+                android:inputType="textNoSuggestions"
+                android:imeOptions="actionSend"
+                android:imeActionLabel="@string/post_reply_send"
+                >
             </EditText>
 
-            <ImageView
-                android:id="@+id/post_reply_image_preview"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:visibility="invisible"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                >
-            </ImageView>
-
             <FrameLayout
-                android:layout_width="fill_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:layout_marginBottom="16dp">
+                    android:layout_width="fill_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginBottom="16dp">
 
                 <LinearLayout
                         android:layout_width="wrap_content"
@@ -68,92 +60,87 @@
                         android:orientation="horizontal">
 
                     <ImageButton
-                        android:id="@+id/post_reply_camera_button"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_gravity="left"
-                        android:contentDescription="@string/post_reply_camera_hint"
-                        android:hint="@string/post_reply_camera_hint"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/device_access_camera">
+                            android:id="@+id/post_reply_picture_button"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="left"
+                            android:scaleType="centerInside"
+                            android:contentDescription="@string/post_reply_picture_hint"
+                            android:hint="@string/post_reply_picture_hint"
+                            android:src="@drawable/content_picture">
                     </ImageButton>
 
                     <ImageButton
-                        android:id="@+id/post_reply_picture_button"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_gravity="left"
-                        android:scaleType="centerInside"
-                        android:contentDescription="@string/post_reply_picture_hint"
-                        android:hint="@string/post_reply_picture_hint"
-                        android:src="@drawable/content_picture">
+                            android:id="@+id/post_reply_rotate_left_button"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:scaleType="centerInside"
+                            android:visibility="invisible"
+                            android:layout_gravity="left"
+                            android:contentDescription="@string/post_reply_rotate_left_hint"
+                            android:hint="@string/post_reply_rotate_left_hint"
+                            android:src="@drawable/images_rotate_left">
                     </ImageButton>
 
                     <ImageButton
-                        android:id="@+id/post_reply_rotate_left_button"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:scaleType="centerInside"
-                        android:visibility="invisible"
-                        android:layout_gravity="left"
-                        android:contentDescription="@string/post_reply_rotate_left_hint"
-                        android:hint="@string/post_reply_rotate_left_hint"
-                        android:src="@drawable/images_rotate_left">
-                    </ImageButton>
-
-                    <ImageButton
-                        android:id="@+id/post_reply_rotate_right_button"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:scaleType="centerInside"
-                        android:visibility="invisible"
-                        android:layout_gravity="left"
-                        android:contentDescription="@string/post_reply_rotate_right_hint"
-                        android:hint="@string/post_reply_rotate_right_hint"
-                        android:src="@drawable/images_rotate_right">
+                            android:id="@+id/post_reply_rotate_right_button"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:scaleType="centerInside"
+                            android:visibility="invisible"
+                            android:layout_gravity="left"
+                            android:contentDescription="@string/post_reply_rotate_right_hint"
+                            android:hint="@string/post_reply_rotate_right_hint"
+                            android:src="@drawable/images_rotate_right">
                     </ImageButton>
 
                 </LinearLayout>
 
                 <ImageButton
-                    android:id="@+id/post_reply_reload_captcha"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:scaleType="centerInside"
-                    android:layout_gravity="right"
-                    android:contentDescription="@string/post_reply_reload_captcha_hint"
-                    android:hint="@string/post_reply_reload_captcha_hint"
-                    android:src="@drawable/navigation_refresh">
+                        android:id="@+id/post_reply_camera_button"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="right"
+                        android:contentDescription="@string/post_reply_camera_hint"
+                        android:hint="@string/post_reply_camera_hint"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/device_access_camera">
                 </ImageButton>
 
             </FrameLayout>
 
-            <WebView
-                android:id="@+id/post_reply_recaptcha_webview"
-                android:layout_gravity="center"
-                android:layout_width="fill_parent"
-                android:layout_height="57dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="16dp">
-            </WebView>
+            <ImageView
+                    android:id="@+id/post_reply_image_preview"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:visibility="gone"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:contentDescription="@string/post_reply_add_image"
+                    >
+            </ImageView>
 
             <EditText
-                android:id="@+id/post_reply_recaptcha_response"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/post_reply_recaptcha_hint"
-                android:textSize="18sp"
-                android:gravity="top|left"
-                android:inputType="textNoSuggestions"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="16dp"
-                android:padding="8dp"
-                android:background="@drawable/border_background"
-                android:imeOptions="actionSend"
-                android:imeActionLabel="@string/post_reply_send"
-                >
+                    android:id="@+id/post_reply_name"
+                    android:hint="@string/post_reply_name_hint"
+                    style="@style/PostReplyEditTextStyle"
+                    >
+            </EditText>
+
+            <EditText
+                    android:id="@+id/post_reply_email"
+                    android:hint="@string/post_reply_email_hint"
+                    style="@style/PostReplyEditTextStyle"
+                    >
+            </EditText>
+
+            <EditText
+                    android:id="@+id/post_reply_subject"
+                    android:hint="@string/post_reply_subject_hint"
+                    style="@style/PostReplyEditTextStyle"
+                    >
             </EditText>
 
         </LinearLayout>

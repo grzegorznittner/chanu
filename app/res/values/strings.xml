@@ -122,13 +122,18 @@
     <!-- post reply activity -->
     <string name="post_reply_title">Post Reply</string>
     <string name="post_reply_thread_title">New Thread</string>
-    <string name="post_reply_text_hint">Type message here...</string>
+    <string name="post_reply_text_hint">Comment (Optional)</string>
+    <string name="post_reply_text_hint_board_q">Comment (Required for /q New Threads)</string>
     <string name="post_reply_camera_hint">Camera</string>
     <string name="post_reply_picture_hint">Gallery</string>
     <string name="post_reply_rotate_left_hint">Rotate Left</string>
     <string name="post_reply_rotate_right_hint">Rotate Right</string>
     <string name="post_reply_reload_captcha_hint">Reload Captcha</string>
-    <string name="post_reply_recaptcha_hint">Type recaptcha text here...</string>
+    <string name="post_reply_recaptcha_hint">reCAPTCHA Challenge (Required)</string>
+    <string name="post_reply_name_hint">Name (Optional)</string>
+    <string name="post_reply_email_hint">Email (Optional)</string>
+    <string name="post_reply_subject_hint">Subject (Optional)</string>
+    <string name="post_reply_subject_hint_board_q">Subject (Required for /q New Threads)</string>
     <string name="post_reply_recaptcha_url_root">http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc</string>
     <string name="post_reply_no_board">Can\'t post, unknown board</string>
     <string name="post_reply_added_image">Added image to post</string>
@@ -144,6 +149,7 @@
     <string name="post_reply_enter_captcha">Enter captcha</string>
     <string name="post_reply_add_image">Add image to post</string>
     <string name="post_reply_add_text_or_image">Add text or image to post</string>
+    <string name="post_reply_board_q_special_needs">Add a subject and comment for board /q new threads</string>
     <string name="post_reply_response_error">Couldn\'t post, unknown response</string>
     <string name="post_reply_no_response">Couldn\'t post, no response</string>
     <string name="post_reply_error">Couldn\'t post</string>

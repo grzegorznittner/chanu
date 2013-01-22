@@ -1,10 +1,12 @@
 package com.chanapps.four.task;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.webkit.WebView;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.Captcha;
@@ -12,7 +14,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,19 +25,20 @@ import java.io.InputStreamReader;
  * Time: 2:27 PM
  * To change this template use File | Settings | File Templates.
  */
-public class LoadCaptchaTask extends AsyncTask<String, Void, String> {
+public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
 
     public static final String TAG = LoadCaptchaTask.class.getSimpleName();
 
-    public static final String CAPTCHA_DEFAULT_URL = "file:///android_res/drawable/captcha.png";
+    private static final boolean DEBUG = true;
 
     private Context context = null;
-    private WebView recaptchaView = null;
+    private ImageButton recaptchaButton = null;
     private String recaptchaChallenge = null;
+    private Bitmap recaptchaBitmap = null;
 
-    public LoadCaptchaTask(Context context, WebView recaptchaView) {
+    public LoadCaptchaTask(Context context, ImageButton recaptchaButton) {
         this.context = context;
-        this.recaptchaView = recaptchaView;
+        this.recaptchaButton = recaptchaButton;
     }
 
     public String getRecaptchaChallenge() {
@@ -41,11 +46,22 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, String> {
     }
 
     @Override
-    protected String doInBackground(String... params) {
+    protected void onPreExecute() {
+        recaptchaButton.setImageResource(R.drawable.captcha);
+    }
+
+    @Override
+    protected Integer doInBackground(String... params) {
+        String getCaptchaUrl = params[0];
+        int result = loadRecaptcha(getCaptchaUrl);
+        return result;
+    }
+
+    private Integer loadRecaptcha(String recaptchaUrl) {
+        String captchaResponse = null;
         AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
         try {
-            String url = params[0];
-            HttpGet request = new HttpGet(url);
+            HttpGet request = new HttpGet(recaptchaUrl);
             HttpResponse response = client.execute(request);
             BufferedReader r = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
             StringBuilder s = new StringBuilder();
@@ -53,51 +69,69 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, String> {
             while ((line = r.readLine()) != null) {
                 s.append(line);
             }
-            return s.toString();
+            captchaResponse = s.toString();
+            if (captchaResponse == null || captchaResponse.isEmpty()) {
+                Log.e(TAG, "Null captcha response for url=" + recaptchaUrl);
+                return R.string.post_reply_captcha_error;
+            }
         } catch (Exception e) {
             Log.e(TAG, "Error getting recaptcha url", e);
+            return R.string.post_reply_captcha_error;
         }
         finally {
             if (client != null) {
                 client.close();
             }
         }
-        return null;
+
+        try {
+            Captcha captcha = new Captcha(captchaResponse);
+            String challenge = captcha.getChallenge();
+            String imageUrl = captcha.getImageUrl();
+            if (imageUrl == null || imageUrl.isEmpty()) {
+                Log.e(TAG, "Null image url found in response=" + captchaResponse);
+                return R.string.post_reply_captcha_error;
+            }
+            else if (challenge == null || challenge.isEmpty()) {
+                Log.e(TAG, "Null challenge found in response=" + captchaResponse);
+                return R.string.post_reply_captcha_error;
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "Found recaptcha imageUrl=" + imageUrl + " challenge=" + challenge);
+                recaptchaChallenge = challenge;
+                InputStream is = new URL(imageUrl).openStream();
+                recaptchaBitmap = BitmapFactory.decodeStream(is);
+                if (recaptchaBitmap == null) {
+                    Log.e(TAG, "Null bitmap loaded from recaptcha imageUrl=" + imageUrl);
+                    return R.string.post_reply_captcha_error;
+                }
+                return 0;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting recaptcha url", e);
+            return R.string.post_reply_captcha_error;
+        }
     }
 
     @Override
     protected void onCancelled() {
         Log.e(TAG, "Captcha load task cancelled");
+        if (recaptchaBitmap != null)
+            recaptchaBitmap.recycle();
+        recaptchaButton.setImageResource(R.drawable.captcha);
         Toast.makeText(context, R.string.post_reply_captcha_error, Toast.LENGTH_SHORT).show();
-        recaptchaView.loadUrl(CAPTCHA_DEFAULT_URL);
     }
 
     @Override
-    protected void onPostExecute(String response) {
-        if (response == null) {
-            Log.e(TAG, "Null response loading recaptcha");
-            Toast.makeText(context, R.string.post_reply_captcha_error, Toast.LENGTH_SHORT).show();
-            return;
+    protected void onPostExecute(Integer result) {
+        if (result == 0) {
+            recaptchaButton.setImageBitmap(recaptchaBitmap);
         }
-        try {
-            Captcha captcha = new Captcha(response);
-            String challenge = captcha.getChallenge();
-            String url = captcha.getImageUrl();
-            if (url != null && !url.isEmpty()
-                    && challenge != null && !challenge.isEmpty()) {
-                Log.e(TAG, "Found recaptcha url: " + url);
-                recaptchaChallenge = challenge;
-                recaptchaView.loadUrl(url);
-            }
-            else {
-                Log.e(TAG, "Error reading recaptcha response");
-                Toast.makeText(context, R.string.post_reply_captcha_error, Toast.LENGTH_SHORT).show();
-                recaptchaView.loadUrl(CAPTCHA_DEFAULT_URL);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error reading recaptcha response", e);
-            Toast.makeText(context, R.string.post_reply_captcha_error, Toast.LENGTH_SHORT).show();
-            recaptchaView.loadUrl(CAPTCHA_DEFAULT_URL);
+        else {
+            if (recaptchaBitmap != null)
+                recaptchaBitmap.recycle();
+            recaptchaButton.setImageResource(R.drawable.captcha);
+            Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
         }
     }
 }

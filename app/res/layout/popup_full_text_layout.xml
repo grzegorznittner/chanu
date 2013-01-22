@@ -102,18 +102,12 @@
 
                 <Button
                         android:id="@+id/popup_reply_button"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="bottom"
-                        android:layout_weight="1"
+                        style="@style/PopupFullTextButtonStyle"
                         android:text="@string/reply" />
 
                 <Button
                         android:id="@+id/popup_quote_button"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="bottom"
-                        android:layout_weight="1"
+                        style="@style/PopupFullTextButtonStyle"
                         android:text="@string/quote" />
 
             </LinearLayout>
@@ -125,25 +119,17 @@
 
             <Button
                     android:id="@+id/popup_highlight_button"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="1"
+                    style="@style/PopupFullTextButtonStyle"
                     android:text="@string/highlight_replies" />
 
             <Button
                     android:id="@+id/popup_dismiss_button"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="1"
+                    style="@style/PopupFullTextButtonStyle"
                     android:text="@string/dismiss" />
 
             <Button
                     android:id="@+id/popup_full_width_dismiss_button"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
+                    style="@style/PopupFullTextButtonStyle"
                     android:layout_weight="2"
                     android:visibility="gone"
                     android:text="@string/dismiss" />

@@ -21,7 +21,6 @@ import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView;
 import android.widget.*;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
@@ -52,16 +51,19 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private ImageButton pictureButton;
     private ImageButton rotateLeftButton;
     private ImageButton rotateRightButton;
-    private ImageButton refreshCaptchaButton;
 
     private Context ctx;
     private Resources res;
 
-    private WebView recaptchaView;
+    private ImageButton recaptchaButton;
     private LoadCaptchaTask loadCaptchaTask;
 
     private EditText messageText;
     private EditText recaptchaText;
+    private EditText nameText;
+    private EditText emailText;
+    private EditText subjectText;
+    TextView.OnEditorActionListener fastSend;
 
     private ImageView imagePreview;
     private int angle = 0;
@@ -96,17 +98,20 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         pictureButton = (ImageButton)findViewById(R.id.post_reply_picture_button);
         rotateLeftButton = (ImageButton)findViewById(R.id.post_reply_rotate_left_button);
         rotateRightButton = (ImageButton)findViewById(R.id.post_reply_rotate_right_button);
-        refreshCaptchaButton = (ImageButton)findViewById(R.id.post_reply_reload_captcha);
 
-        messageText = (EditText)findViewById(R.id.post_reply_text);
-        recaptchaText = (EditText)findViewById(R.id.post_reply_recaptcha_response);
-        recaptchaText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        fastSend = new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 validateAndSendReply();
-                return true;  //To change body of implemented methods use File | Settings | File Templates.
+                return true;
             }
-        });
+        };
+        messageText = (EditText)findViewById(R.id.post_reply_text);
+        nameText = (EditText)findViewById(R.id.post_reply_name);
+        emailText = (EditText)findViewById(R.id.post_reply_email);
+        subjectText = (EditText)findViewById(R.id.post_reply_subject);
+        recaptchaText = (EditText)findViewById(R.id.post_reply_recaptcha_response);
+        recaptchaText.setOnEditorActionListener(fastSend);
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -128,14 +133,12 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 rotateRight();
             }
         });
-        refreshCaptchaButton.setOnClickListener(new View.OnClickListener() {
+        recaptchaButton = (ImageButton) findViewById(R.id.post_reply_recaptcha_imgview);
+        recaptchaButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 reloadCaptcha();
             }
         });
-
-        recaptchaView = (WebView) findViewById(R.id.post_reply_recaptcha_webview);
-        recaptchaView.getSettings().setAllowFileAccess(true);
     }
 
     @Override
@@ -204,9 +207,11 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             catch (Exception e) {
                 Log.e(TAG, "Couldn't parse image uri=" + imageUri, e);
                 imageUri = null;
+                imagePreview.setVisibility(View.GONE);
             }
         else {
             imageUri = null;
+            imagePreview.setVisibility(View.GONE);
             if (DEBUG) Log.i(TAG, "imageUrl passed was null or empty");
         }
     }
@@ -223,11 +228,15 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         String text = intent.getStringExtra(ChanHelper.TEXT);
         String quoteText = ChanPost.quoteText(intent.getStringExtra(ChanHelper.QUOTE_TEXT));
         setMessageText(text, quoteText);
+        adjustSubjectHint();
 
         String imageUrl = intent.getStringExtra(ChanHelper.POST_REPLY_IMAGE_URL);
         if (imageUrl != null && !imageUrl.isEmpty()) {
             setImageUri(imageUrl);
             setImagePreview();
+        }
+        else {
+            imagePreview.setVisibility(View.GONE);
         }
         cameraImageUri = null;
 
@@ -249,9 +258,21 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         String text = prefs.getString(ChanHelper.TEXT, "");
         String quoteText = ChanPost.quoteText(prefs.getString(ChanHelper.QUOTE_TEXT, ""));
         setMessageText(text, quoteText);
+        adjustSubjectHint();
 
         setActionBarTitle();
         if (DEBUG) Log.i(TAG, "loaded from prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " text=" + " quoteText=" + quoteText);
+    }
+
+    protected void adjustSubjectHint() {
+        if (boardCode.equals("q") && threadNo == 0) {
+            messageText.setHint(R.string.post_reply_text_hint_board_q);
+            subjectText.setHint(R.string.post_reply_subject_hint_board_q);
+        }
+        else {
+            messageText.setHint(R.string.post_reply_text_hint);
+            subjectText.setHint(R.string.post_reply_subject_hint);
+        }
     }
 
     protected void loadImageFromPrefs() {
@@ -290,7 +311,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     public void reloadCaptcha() {
         recaptchaText.setText("");
-        loadCaptchaTask = new LoadCaptchaTask(ctx, recaptchaView);
+        recaptchaText.setHint(R.string.post_reply_recaptcha_hint);
+        loadCaptchaTask = new LoadCaptchaTask(ctx, recaptchaButton);
         loadCaptchaTask.execute(res.getString(R.string.post_reply_recaptcha_url_root));
     }
 
@@ -410,6 +432,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private void setImagePreview() {
         try {
             if (imageUri == null) {
+                imagePreview.setVisibility(View.GONE);
                 if (DEBUG) Log.i(TAG, "No image uri found, not setting image");
                 return;
             }
@@ -421,6 +444,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             }
             else {
                 //Toast.makeText(ctx, R.string.post_reply_no_image, Toast.LENGTH_SHORT).show();
+                imagePreview.setVisibility(View.GONE);
                 Log.e(TAG, "setImagePreview null bitmap with imageUri=" + imageUri.toString());
             }
         }
@@ -557,7 +581,23 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     }
 
     public String getMessage() {
-        return messageText.getText().toString();
+        String s = messageText.getText().toString();
+        return (s != null) ? s : "";
+    }
+
+    public String getName() {
+        String s = nameText.getText().toString();
+        return (s != null) ? s : "";
+    }
+
+    public String getEmail() {
+        String s = emailText.getText().toString();
+        return (s != null) ? s : "";
+    }
+
+    public String getSubject() {
+        String s = subjectText.getText().toString();
+        return (s != null) ? s : "";
     }
 
     public String getRecaptchaChallenge() {
@@ -578,15 +618,19 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             return res.getString(R.string.post_reply_enter_captcha);
         }
         String message = messageText.getText().toString();
+        String subject = subjectText.getText().toString();
         String image = imageUri != null ? imageUri.getPath() : null;
         boolean hasMessage = message != null && !message.trim().isEmpty();
         boolean hasImage = image != null && !image.trim().isEmpty();
-        if (threadNo == 0 && !hasImage) {
+        if (threadNo == 0 && !hasImage)
             return res.getString(R.string.post_reply_add_image);
-        }
-        if (threadNo != 0 && !hasMessage && !hasImage) {
+        if (threadNo != 0 && !hasMessage && !hasImage)
             return res.getString(R.string.post_reply_add_text_or_image);
-        }
+        if (threadNo == 0
+                && boardCode.equals("q")
+                && !(subject != null && !subject.isEmpty())
+                && !(message != null && !message.isEmpty()))
+            return res.getString(R.string.post_reply_board_q_special_needs);
         return null;
     }
 
