@@ -69,7 +69,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class FullScreenImageActivity extends FragmentActivity implements ChanIdentifiedActivity {
 
@@ -224,7 +223,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
         InputStream boardFile = null;
         OutputStream newFile = null;
         try {
-            String galleryFilename = getLocalGalleryImageFilename();
+            String galleryFilename = ChanFileStorage.getLocalGalleryImageFilename(post);
             File gallery4chanFolder = ensureGalleryFolder();
             File galleryFile = new File(gallery4chanFolder, galleryFilename);
 
@@ -261,7 +260,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 		OutputStream newFile = null;
 		try {
 			downloadedFile = new FileInputStream(parcel.getFileDescriptor());
-			String imageFile = getLocalImagePath(getCacheFolder());
+			String imageFile = ChanFileStorage.getLocalImageUrl(getBaseContext(), post);
 			Log.i(TAG, "Image downloaded, copying to " + imageFile);
 			newFile = new FileOutputStream(new File(URI.create(imageFile)), false);
 
@@ -413,8 +412,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 
 	private String checkLocalImage() {
     	try {
-            String cacheFolder = getCacheFolder();
-            String localImageUri = getLocalImagePath(cacheFolder);
+            String localImageUri = ChanFileStorage.getLocalImageUrl(getBaseContext(), post);
             File localImage = new File(URI.create(localImageUri));
 	    	if (localImage.exists()) {
 //	    		if (localImage.length() == post.fsize) {
@@ -585,27 +583,6 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 		}
 	}
 
-    private String getLocalImagePath(String cacheFolder, String separator) {
-        return (cacheFolder != null ? (cacheFolder + separator) : "") + post.board + separator + post.no + post.ext;
-    }
-
-    private String getLocalGalleryImageFilename() {
-        return getLocalImagePath(null, "_");
-    }
-
-    private String getLocalImagePath(String cacheFolder) {
-        return getLocalImagePath(cacheFolder, "/");
-    }
-
-    private String getCacheFolder() {
-		String cacheDir = "Android/data/" + getBaseContext().getPackageName() + "/cache/";
-		File picCacheDir = StorageUtils.getOwnCacheDirectory(getBaseContext(), cacheDir);
-		String baseDir = "";
-		if (picCacheDir != null && (picCacheDir.exists() || picCacheDir.mkdirs())) {
-			baseDir = "file://" + picCacheDir.getAbsolutePath();
-		}
-		return baseDir;
-	}
 
     public int getScreenOrientation() {
         DisplayMetrics displayMetrics = new DisplayMetrics();

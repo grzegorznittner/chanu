@@ -1,11 +1,16 @@
 package com.chanapps.four.data;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.chanapps.four.activity.R;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -441,4 +446,13 @@ public class ChanFileStorage {
         }
 
     }
+    
+    public static String getLocalGalleryImageFilename(ChanPost post) {
+        return post.board + "_" + post.getImageName();
+    }
+
+    public static String getLocalImageUrl(Context context, ChanPost post) {
+        return "file://" + getBoardCacheDirectory(context, post.board) + FILE_SEP + post.getImageName();
+    }
+
 }

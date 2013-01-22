@@ -185,6 +185,10 @@ public class ChanPost {
    		}
    		return null;
    	}
+   	
+   	public String getImageName() {
+   		return no + ext;
+   	}
 
     public String getCountryFlagUrl() {
         if (country != null && !country.isEmpty())
