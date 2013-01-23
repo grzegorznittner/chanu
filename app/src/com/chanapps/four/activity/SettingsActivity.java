@@ -2,13 +2,20 @@ package com.chanapps.four.activity;
 
 import android.app.Activity;
 import android.content.AsyncTaskLoader;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.preference.PreferenceManager;
 import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.SettingsFragment;
+
+import java.text.DecimalFormat;
+import java.util.Random;
 
 /**
  * User: mpop
@@ -51,5 +58,6 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
 	public Handler getChanHandler() {
 		return null;
 	}
+
 }
 

@@ -1,7 +1,7 @@
 <p>Enter the text you want to post, this may be empty if you wish, however threads generally must have text.</p>
-<p>Click on the camera button to take a new picture to post.</p>
 <p>Click on the gallery button to select an existing picture from your phone.</p>
-<p>Click on the rotate left and rotate right buttons until the picture is as you want it.</p>
+<p>Click on the camera button to take a new picture to post.</p>
 <p>Pictures are required for new threads in most boards, but optional for replies.</p>
+<p>Click on the sage button to make a post without bumping it to the top.</p>
 <p>Enter the captcha text to prove you are a human.</p>
 <p>Click submit to submit the post.</p>

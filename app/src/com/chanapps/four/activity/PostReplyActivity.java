@@ -20,6 +20,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.chanapps.four.component.ChanGridSizer;
@@ -28,6 +30,7 @@ import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.fragment.EditMessageTextDialogFragment;
 import com.chanapps.four.fragment.PostingReplyDialogFragment;
 import com.chanapps.four.task.LoadCaptchaTask;
 import com.chanapps.four.task.PostReplyTask;
@@ -40,9 +43,11 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
 
-    public static final int PASSWORD_MAX = 100000000;
-
     private static final boolean DEBUG = true;
+
+    public static final int PASSWORD_MAX = 100000000;
+    private static final Random randomGenerator = new Random();
+    private static final DecimalFormat eightDigits = new DecimalFormat("00000000");
 
     private static final int IMAGE_CAPTURE = 0x10;
     private static final int IMAGE_GALLERY = 0x11;
@@ -52,18 +57,21 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private ImageButton deleteButton;
     private ImageButton rotateLeftButton;
     private ImageButton rotateRightButton;
+    private ImageButton sageButton;
 
     private Context ctx;
     private Resources res;
 
     private ImageButton recaptchaButton;
+    private ImageView recaptchaLoading;
     private LoadCaptchaTask loadCaptchaTask;
 
-    private EditText messageText;
+    private TextView messageText;
     private EditText recaptchaText;
     private EditText nameText;
     private EditText emailText;
     private EditText subjectText;
+    private EditText passwordText;
     TextView.OnEditorActionListener fastSend;
 
     private ImageView imagePreview;
@@ -78,9 +86,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     public long threadNo = 0;
     public long postNo = 0;
     public long tim = 0;
-
-    private Random randomGenerator = new Random();
-    private DecimalFormat eightDigits = new DecimalFormat("00000000");
 
     private SharedPreferences prefs = null;
 
@@ -100,6 +105,24 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         deleteButton = (ImageButton)findViewById(R.id.post_reply_delete_button);
         rotateLeftButton = (ImageButton)findViewById(R.id.post_reply_rotate_left_button);
         rotateRightButton = (ImageButton)findViewById(R.id.post_reply_rotate_right_button);
+        sageButton = (ImageButton)findViewById(R.id.post_reply_sage_button);
+
+        // do this popup jazz because android doesn't really handle multiline edit text views very well
+        messageText = (TextView)findViewById(R.id.post_reply_text);
+        messageText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //closeKeyboard();
+                //Toast.makeText(PostReplyActivity.this, "popup goes here", Toast.LENGTH_SHORT).show();
+                (new EditMessageTextDialogFragment()).show(getSupportFragmentManager(), EditMessageTextDialogFragment.TAG);
+            }
+        });
+
+        nameText = (EditText)findViewById(R.id.post_reply_name);
+        emailText = (EditText)findViewById(R.id.post_reply_email);
+        subjectText = (EditText)findViewById(R.id.post_reply_subject);
+        passwordText = (EditText)findViewById(R.id.post_reply_password);
+        passwordText.setText(generatePassword()); // always default random generate, then we store for later use
 
         fastSend = new TextView.OnEditorActionListener() {
             @Override
@@ -108,10 +131,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 return true;
             }
         };
-        messageText = (EditText)findViewById(R.id.post_reply_text);
-        nameText = (EditText)findViewById(R.id.post_reply_name);
-        emailText = (EditText)findViewById(R.id.post_reply_email);
-        subjectText = (EditText)findViewById(R.id.post_reply_subject);
         recaptchaText = (EditText)findViewById(R.id.post_reply_recaptcha_response);
         recaptchaText.setOnEditorActionListener(fastSend);
 
@@ -140,12 +159,19 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 rotateRight();
             }
         });
+        sageButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                sage();
+            }
+        });
         recaptchaButton = (ImageButton) findViewById(R.id.post_reply_recaptcha_imgview);
         recaptchaButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 reloadCaptcha();
             }
         });
+
+        recaptchaLoading = (ImageView) findViewById(R.id.post_reply_recaptcha_loading);
     }
 
     @Override
@@ -246,6 +272,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         String subject = intent.getStringExtra(ChanHelper.SUBJECT);
         if (subject != null && !subject.isEmpty())
             subjectText.setText(subject);
+        String password = intent.getStringExtra(ChanHelper.PASSWORD);
+        if (password != null && !password.isEmpty())
+            passwordText.setText(password);
 
         String imageUrl = intent.getStringExtra(ChanHelper.POST_REPLY_IMAGE_URL);
         if (imageUrl != null && !imageUrl.isEmpty()) {
@@ -286,6 +315,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         String subject = prefs.getString(ChanHelper.SUBJECT, "");
         if (!subject.isEmpty())
             subjectText.setText(subject);
+        String password = prefs.getString(ChanHelper.PASSWORD, "");
+        if (!password.isEmpty())
+            passwordText.setText(password);
 
         setActionBarTitle();
         if (DEBUG) Log.i(TAG, "loaded from prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " text=" + " quoteText=" + quoteText);
@@ -325,6 +357,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         ed.putString(ChanHelper.NAME, nameText.getText().toString());
         ed.putString(ChanHelper.EMAIL, emailText.getText().toString());
         ed.putString(ChanHelper.SUBJECT, subjectText.getText().toString());
+        ed.putString(ChanHelper.PASSWORD, passwordText.getText().toString());
         ed.putString(ChanHelper.QUOTE_TEXT, null);
         ed.putLong(ChanHelper.TIM, tim);
         ed.putString(ChanHelper.CAMERA_IMAGE_URL, cameraImageUri == null ? null : cameraImageUri.toString());
@@ -342,7 +375,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     public void reloadCaptcha() {
         recaptchaText.setText("");
         recaptchaText.setHint(R.string.post_reply_recaptcha_hint);
-        loadCaptchaTask = new LoadCaptchaTask(ctx, recaptchaButton);
+        loadCaptchaTask = new LoadCaptchaTask(ctx, recaptchaButton, recaptchaLoading);
         loadCaptchaTask.execute(res.getString(R.string.post_reply_recaptcha_url_root));
     }
 
@@ -502,6 +535,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         rotateImagePreview(90);
     }
 
+    private void sage() {
+        emailText.setText("sage"); // 4chan way to post without bumping
+    }
+
     private void rotateImagePreview(int theta) {
         try {
             Bitmap b = getImagePreviewBitmap();
@@ -559,18 +596,21 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             Toast.makeText(ctx, validMsg, Toast.LENGTH_SHORT).show();
         }
         else {
-            //Toast.makeText(ctx, R.string.post_reply_posting, Toast.LENGTH_LONG).show();
-            IBinder windowToken = getCurrentFocus() != null ? getCurrentFocus().getWindowToken() : null;
-            if (windowToken != null) { // close the keyboard
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(windowToken, 0);
-            }
+            closeKeyboard();
             PostReplyTask postReplyTask = new PostReplyTask(this);
             PostingReplyDialogFragment dialogFragment = new PostingReplyDialogFragment(postReplyTask);
             dialogFragment.show(getSupportFragmentManager(), PostingReplyDialogFragment.TAG);
             if (!postReplyTask.isCancelled()) {
                 postReplyTask.execute(dialogFragment);
             }
+        }
+    }
+
+    private void closeKeyboard() {
+        IBinder windowToken = getCurrentFocus() != null ? getCurrentFocus().getWindowToken() : null;
+        if (windowToken != null) { // close the keyboard
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(windowToken, 0);
         }
     }
 
@@ -625,6 +665,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         return (s != null) ? s : "";
     }
 
+    public void setMessage(String text) {
+        messageText.setText(text);
+    }
+
     public String getName() {
         String s = nameText.getText().toString();
         return (s != null) ? s : "";
@@ -638,6 +682,19 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     public String getSubject() {
         String s = subjectText.getText().toString();
         return (s != null) ? s : "";
+    }
+
+    public String getPassword() {
+        String s = passwordText.getText().toString();
+        if (s == null || s.isEmpty()) {
+            s = generatePassword();
+            passwordText.setText(s);
+        }
+        return (s != null) ? s : "";
+    }
+
+    private String generatePassword() {
+        return eightDigits.format(randomGenerator.nextInt(PASSWORD_MAX));
     }
 
     public String getRecaptchaChallenge() {
@@ -710,10 +767,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         }
     }
 
-    public String generatePwd() {
-        return eightDigits.format(randomGenerator.nextInt(PASSWORD_MAX));
-    }
-
     @Override
 	public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(LastActivity.POST_REPLY_ACTIVITY);
@@ -723,4 +776,5 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 	public Handler getChanHandler() {
 		return null;
 	}
+
 }
