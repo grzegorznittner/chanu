@@ -1,4 +1,4 @@
-package com.chanapps.four.service;
+package com.chanapps.four.service.profile;
 
 import java.util.HashMap;
 import java.util.Map;

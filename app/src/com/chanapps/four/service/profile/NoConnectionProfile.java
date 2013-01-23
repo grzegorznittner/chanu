@@ -1,4 +1,4 @@
-package com.chanapps.four.service;
+package com.chanapps.four.service.profile;
 
 import android.content.Context;
 import android.os.Handler;
@@ -7,6 +7,8 @@ import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.NetworkProfileManager;
 
 public class NoConnectionProfile extends AbstractNetworkProfile {
 

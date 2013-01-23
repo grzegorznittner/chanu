@@ -1,4 +1,4 @@
-package com.chanapps.four.service;
+package com.chanapps.four.service.profile;
 
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.FetchParams;

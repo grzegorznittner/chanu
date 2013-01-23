@@ -27,7 +27,7 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.service.NetworkProfile.Failure;
+import com.chanapps.four.service.profile.NetworkProfile.Failure;
 import com.chanapps.four.widget.BoardWidgetProvider;
 import com.chanapps.four.widget.UpdateWidgetService;
 

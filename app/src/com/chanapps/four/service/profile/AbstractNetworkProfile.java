@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chanapps.four.service;
+package com.chanapps.four.service.profile;
 
 import java.util.Date;
 import java.util.Stack;
@@ -16,6 +16,9 @@ import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.DataTransfer;
 import com.chanapps.four.data.FetchParams;
+import com.chanapps.four.service.BoardLoadService;
+import com.chanapps.four.service.NetworkProfileManager;
+import com.chanapps.four.service.ThreadLoadService;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>

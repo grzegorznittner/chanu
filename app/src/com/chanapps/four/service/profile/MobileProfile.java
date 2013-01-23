@@ -1,4 +1,4 @@
-package com.chanapps.four.service;
+package com.chanapps.four.service.profile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +17,8 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
+import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.NetworkProfileManager;
 
 public class MobileProfile extends AbstractNetworkProfile {
 	private static final String TAG = "";

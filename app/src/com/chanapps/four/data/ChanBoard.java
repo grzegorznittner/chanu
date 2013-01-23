@@ -11,8 +11,8 @@ import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.service.FetchChanDataService;
-import com.chanapps.four.service.NetworkProfile;
 import com.chanapps.four.service.NetworkProfileManager;
+import com.chanapps.four.service.profile.NetworkProfile;
 
 public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();

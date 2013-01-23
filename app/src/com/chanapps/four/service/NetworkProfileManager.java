@@ -17,7 +17,11 @@ import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.FetchParams;
-import com.chanapps.four.service.NetworkProfile.Failure;
+import com.chanapps.four.service.profile.MobileProfile;
+import com.chanapps.four.service.profile.NetworkProfile;
+import com.chanapps.four.service.profile.NoConnectionProfile;
+import com.chanapps.four.service.profile.WifiProfile;
+import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
 /**
  * Class manages network profile switching.

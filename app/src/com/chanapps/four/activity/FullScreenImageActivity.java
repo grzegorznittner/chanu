@@ -63,7 +63,7 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.fragment.GoToBoardDialogFragment;
-import com.chanapps.four.service.NetworkProfile.Type;
+import com.chanapps.four.service.profile.NetworkProfile.Type;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
