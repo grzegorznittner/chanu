@@ -92,6 +92,7 @@
         <service android:name="com.chanapps.four.service.BoardParserService"/>
         <service android:name="com.chanapps.four.service.BoardThreadsParserService"/>
         <service android:name="com.chanapps.four.service.ThreadParserService"/>
+        <service android:name="com.chanapps.four.service.CleanUpService"/>
 
         <!--widgets-->
         <activity android:name="com.chanapps.four.widget.WidgetConfigureActivity">

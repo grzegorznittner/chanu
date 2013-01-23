@@ -47,11 +47,11 @@ public abstract class BaseChanService extends Service {
     protected volatile ServiceHandler mServiceHandler;
     private String mName;
 
-    protected void toastUI(final int stringId) {
-        Handler handler = new Handler(Looper.getMainLooper());
+    protected void toastUI(final String string) {
+        Handler handler = NetworkProfileManager.instance().getActivity().getChanHandler();
         handler.post(new Runnable() {
             public void run() {
-                Toast.makeText(getApplicationContext(), stringId, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), string, Toast.LENGTH_LONG).show();
             }
         });
     }
