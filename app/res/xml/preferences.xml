@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-        >
+    	xmlns:chanapps="http://chanapps.com">
 
     <CheckBoxPreference
             android:key="pref_show_nsfw_boards"
@@ -31,6 +31,16 @@
             android:summaryOff="@string/pref_automatically_manage_watchlist_summ_off"
             android:defaultValue="true" />
 
+    <com.chanapps.four.component.CacheSizePreference
+        	android:key="cacheSize"
+            android:title="Cache size"
+            android:summary="Adjust cache size"
+            android:max="256"
+            chanapps:min="32"
+        	chanapps:unitsLeft=""
+            chanapps:unitsRight="MB"
+    />
+    
     <Preference
             android:key="pref_clear_cache"
             android:title="@string/pref_clear_cache"
