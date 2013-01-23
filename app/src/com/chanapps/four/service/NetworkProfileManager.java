@@ -17,6 +17,7 @@ import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.FetchParams;
+import com.chanapps.four.data.UserPreferences;
 import com.chanapps.four.service.profile.MobileProfile;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NoConnectionProfile;

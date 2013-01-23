@@ -19,7 +19,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.chanapps.four.service.UserPreferences;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanFileStorage {
@@ -444,7 +443,6 @@ public class ChanFileStorage {
             Log.e(TAG, "Exception deleting cache", e);
             return false;
         }
-
     }
     
     public static String getLocalGalleryImageFilename(ChanPost post) {

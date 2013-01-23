@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chanapps.four.service;
+package com.chanapps.four.data;
 
 import java.util.Date;
 import java.util.HashMap;
