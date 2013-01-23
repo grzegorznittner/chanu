@@ -75,9 +75,9 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, S
             partsList.add(new StringPart("MAX-FILE-SIZE", MAX_FILE_SIZE));
             partsList.add(new StringPart("mode", "regist"));
             partsList.add(new StringPart("resto", Long.toString(activity.threadNo)));
-            partsList.add(new StringPart("name", ""));
-            partsList.add(new StringPart("email", ""));
-            partsList.add(new StringPart("sub", ""));
+            partsList.add(new StringPart("name", activity.getName()));
+            partsList.add(new StringPart("email", activity.getEmail()));
+            partsList.add(new StringPart("sub", activity.getSubject()));
             partsList.add(new StringPart("com", activity.getMessage()));
             partsList.add(new StringPart("recaptcha_challenge_field", activity.getRecaptchaChallenge()));
             partsList.add(new StringPart("recaptcha_response_field", activity.getRecaptchaResponse()));
@@ -120,12 +120,15 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, S
 
             Part[] parts = partsList.toArray(new Part[partsList.size()]);
 
-            String foo = "";
-            for (Part p : partsList) {
-                if (!(p instanceof StringPart))
-                    continue;
-                StringPart s = (StringPart)p;
-                foo += s.getName() + ": " + s.getValue() + ", ";
+            if (DEBUG) {
+                Log.i(TAG, "Dumping mime parts list:");
+                for (Part p : partsList) {
+                    if (!(p instanceof StringPart))
+                        continue;
+                    StringPart s = (StringPart)p;
+                    String line = s.getName() + ": " + s.getValue() + ", ";
+                    Log.i(TAG, line);
+                }
             }
 
             MultipartEntity entity = new MultipartEntity(parts);
