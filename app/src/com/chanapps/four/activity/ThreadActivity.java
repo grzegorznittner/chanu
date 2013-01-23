@@ -320,7 +320,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 toggleHideAllText();
                 return true;
             case R.id.watch_thread_menu:
-                ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
+                int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
+                Toast.makeText(this, stringId, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.download_all_images_menu:
                 Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();

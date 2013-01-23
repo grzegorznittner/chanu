@@ -6,7 +6,11 @@ import android.graphics.BitmapFactory;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.Captcha;
@@ -33,12 +37,14 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
 
     private Context context = null;
     private ImageButton recaptchaButton = null;
+    private ImageView recaptchaLoading = null;
     private String recaptchaChallenge = null;
     private Bitmap recaptchaBitmap = null;
 
-    public LoadCaptchaTask(Context context, ImageButton recaptchaButton) {
+    public LoadCaptchaTask(Context context, ImageButton recaptchaButton, ImageView recaptchaLoading) {
         this.context = context;
         this.recaptchaButton = recaptchaButton;
+        this.recaptchaLoading = recaptchaLoading;
     }
 
     public String getRecaptchaChallenge() {
@@ -47,7 +53,11 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
 
     @Override
     protected void onPreExecute() {
-        recaptchaButton.setImageResource(R.drawable.captcha);
+        Animation rotation = AnimationUtils.loadAnimation(context, R.animator.clockwise_refresh);
+        rotation.setRepeatCount(Animation.INFINITE);
+        recaptchaLoading.setVisibility(View.VISIBLE);
+        recaptchaLoading.startAnimation(rotation);
+        recaptchaButton.setImageBitmap(null);
     }
 
     @Override
@@ -115,7 +125,9 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
 
     @Override
     protected void onCancelled() {
-        Log.e(TAG, "Captcha load task cancelled");
+        if (DEBUG) Log.i(TAG, "Captcha load task cancelled");
+        recaptchaLoading.clearAnimation();
+        recaptchaLoading.setVisibility(View.GONE);
         if (recaptchaBitmap != null)
             recaptchaBitmap.recycle();
         recaptchaButton.setImageResource(R.drawable.captcha);
@@ -124,6 +136,8 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
 
     @Override
     protected void onPostExecute(Integer result) {
+        recaptchaLoading.clearAnimation();
+        recaptchaLoading.setVisibility(View.GONE);
         if (result == 0) {
             recaptchaButton.setImageBitmap(recaptchaBitmap);
         }

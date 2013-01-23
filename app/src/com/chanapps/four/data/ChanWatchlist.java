@@ -73,7 +73,7 @@ public class ChanWatchlist {
         return Long.valueOf(threadPath.split(FIELD_SEPARATOR_REGEX)[2]);
     }
 
-    public static void watchThread(
+    public static int watchThread(
             Context ctx,
             long tim,
             String boardCode,
@@ -84,8 +84,7 @@ public class ChanWatchlist {
             int imageHeight) {
         if (isThreadWatched(ctx, boardCode, threadNo)) {
             if (DEBUG) Log.i(TAG, "Thread " + boardCode + "/" + threadNo + " already in watchlist");
-            if (!text.equalsIgnoreCase(DEFAULT_WATCHTEXT))
-                Toast.makeText(ctx, R.string.thread_already_in_watchlist, Toast.LENGTH_SHORT).show();
+            return R.string.thread_already_in_watchlist;
         }
         else {
             String threadPath = getThreadPath(tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
@@ -93,7 +92,7 @@ public class ChanWatchlist {
             savedWatchlist.add(threadPath);
             saveWatchlist(ctx, savedWatchlist);
             if (DEBUG) Log.i(TAG, "Thread " + threadPath + " added to watchlist");
-            Toast.makeText(ctx, R.string.thread_added_to_watchlist, Toast.LENGTH_SHORT).show();
+            return R.string.thread_added_to_watchlist;
         }
     }
 

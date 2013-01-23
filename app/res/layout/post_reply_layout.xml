@@ -12,28 +12,41 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/post_reply_text"
-                style="@style/PostReplyEditTextStyle"
-                android:hint="@string/post_reply_text_hint"
-                android:inputType="textMultiLine"
-                android:lines="3"
-                android:layout_marginTop="16dp"
-            >
-            </EditText>
+            <TextView
+                    android:id="@+id/post_reply_text"
+                    style="@style/PostReplyEditTextStyle"
+                    android:hint="@string/post_reply_text_hint"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:lines="6"
+                    android:layout_marginTop="8dp"
+                    android:scrollbars="none"
+                    >
+            </TextView>
 
-            <ImageButton
-                android:id="@+id/post_reply_recaptcha_imgview"
-                android:src="@drawable/captcha"
-                android:scaleType="fitXY"
-                android:layout_gravity="center"
-                android:layout_width="fill_parent"
-                android:layout_height="72dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="#00000000">
-            </ImageButton>
+            <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="72dp">
+                <ImageButton
+                        android:id="@+id/post_reply_recaptcha_imgview"
+                        android:scaleType="fitXY"
+                        android:layout_gravity="center"
+                        android:layout_width="fill_parent"
+                        android:layout_height="72dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="#00000000">
+                </ImageButton>
+                <ImageView
+                    android:id="@+id/post_reply_recaptcha_loading"
+                    android:src="@drawable/navigation_refresh"
+                    android:scaleType="centerCrop"
+                    android:layout_height="72dp"
+                    android:layout_width="72dp"
+                    android:layout_gravity="center">
+                </ImageView>
+            </FrameLayout>
 
             <EditText
                 android:id="@+id/post_reply_recaptcha_response"
@@ -51,7 +64,7 @@
                     android:orientation="horizontal"
                     android:layout_marginLeft="12dp"
                     android:layout_marginRight="12dp"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="8dp">
 
                 <LinearLayout
                         android:layout_width="wrap_content"
@@ -104,6 +117,15 @@
 
                 </LinearLayout>
 
+                <ImageButton
+                        android:id="@+id/post_reply_sage_button"
+                        style="@style/PostReplyButtonStyle"
+                        android:contentDescription="@string/post_reply_sage_hint"
+                        android:hint="@string/post_reply_sage_hint"
+                        android:src="@drawable/rating_bad"
+                        android:layout_gravity="right">
+                </ImageButton>
+
             </FrameLayout>
 
             <ImageView
@@ -114,7 +136,7 @@
                     android:visibility="gone"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="8dp"
                     android:contentDescription="@string/post_reply_add_image"
                     >
             </ImageView>
@@ -122,21 +144,35 @@
             <EditText
                     android:id="@+id/post_reply_name"
                     android:hint="@string/post_reply_name_hint"
+                    android:inputType="textPersonName"
                     style="@style/PostReplyEditTextStyle"
+                    android:maxLength="255"
                     >
             </EditText>
 
             <EditText
                     android:id="@+id/post_reply_email"
                     android:hint="@string/post_reply_email_hint"
+                    android:inputType="textEmailAddress"
                     style="@style/PostReplyEditTextStyle"
+                    android:maxLength="255"
                     >
             </EditText>
 
             <EditText
                     android:id="@+id/post_reply_subject"
                     android:hint="@string/post_reply_subject_hint"
+                    android:inputType="textEmailSubject"
                     style="@style/PostReplyEditTextStyle"
+                    >
+            </EditText>
+
+            <EditText
+                    android:id="@+id/post_reply_password"
+                    android:hint="@string/post_reply_password_hint"
+                    android:inputType="textVisiblePassword|numberPassword"
+                    style="@style/PostReplyEditTextStyle"
+                    android:maxLength="8"
                     >
             </EditText>
 
