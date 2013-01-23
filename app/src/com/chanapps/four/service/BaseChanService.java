@@ -29,43 +29,7 @@ import android.widget.Toast;
 import com.chanapps.four.data.ChanHelper;
 
 /**
- * IntentService is a base class for {@link Service}s that handle asynchronous
- * requests (expressed as {@link Intent}s) on demand.  Clients send requests
- * through {@link android.content.Context#startService(Intent)} calls; the
- * service is started as needed, handles each Intent in turn using a worker
- * thread, and stops itself when it runs out of work.
- *
- * <p>This "work queue processor" pattern is commonly used to offload tasks
- * from an application's main thread.  The IntentService class exists to
- * simplify this pattern and take care of the mechanics.  To use it, extend
- * IntentService and implement {@link #onHandleIntent(Intent)}.  IntentService
- * will receive the Intents, launch a worker thread, and stop the service as
- * appropriate.
- *
- * <p>All requests are handled on a single worker thread -- they may take as
- * long as necessary (and will not block the application's main loop), but
- * only one request will be processed at a time.
- *
- * <div class="special reference">
- * <h3>Developer Guides</h3>
- * <p>For a detailed discussion about_dialog how to create services, read the
- * <a href="{@docRoot}guide/topics/fundamentals/services.html">Services</a> developer guide.</p>
- * </div>
- *
- * 
- * 
- * Greg comments:
- * * data parsing should be separated - after parsing we should notify current activity so it will refresh cursor
- * * every screen should register here, so we'll know which activity is currently running (if not possible to do that in other way)
- * * 4 threads - on 2G we'll operate only using one thread
- * * class should use network status to determine its behaviour:
- *   * on 2G latency is high and bandwith low - incoming intent should stop current operation and be executed immediatelly
- *   * on 3G/4G - additional fetches performed with the intent (eg. fetch all boards), so we'll use mobile radio properly
- *   * on WiFi - aggressive cache, boards refreshed periodically, watched/favourites should be also updated often
- *   * 2G/3G/4G - mobile radio time window - fetch operations trigged in batches, at lest 1 min pause between operations (unless manual refresh)
- * * need to verify average response time/fetch time/parse time on 2G, 3G and WiFi
- * 
- * * we can also prepare paid service which will allow users for unlimited uploads, uploads will be done via our server
+ * Base service class based on IntentService class
  */
 public abstract class BaseChanService extends Service {
 	private static final String TAG = BaseChanService.class.getSimpleName();
@@ -82,7 +46,6 @@ public abstract class BaseChanService extends Service {
     protected volatile Looper mServiceLooper;
     protected volatile ServiceHandler mServiceHandler;
     private String mName;
-    private boolean mRedelivery;
 
     protected void toastUI(final int stringId) {
         Handler handler = new Handler(Looper.getMainLooper());
@@ -129,26 +92,6 @@ public abstract class BaseChanService extends Service {
     public BaseChanService(String name) {
         super();
         mName = name;
-    }
-
-    /**
-     * Sets intent redelivery preferences.  Usually called from the constructor
-     * with your preferred semantics.
-     *
-     * <p>If enabled is true,
-     * {@link #onStartCommand(Intent, int, int)} will return
-     * {@link Service#START_REDELIVER_INTENT}, so if this process dies before
-     * {@link #onHandleIntent(Intent)} returns, the process will be restarted
-     * and the intent redelivered.  If multiple Intents have been sent, only
-     * the most recent one is guaranteed to be redelivered.
-     *
-     * <p>If enabled is false (the default),
-     * {@link #onStartCommand(Intent, int, int)} will return
-     * {@link Service#START_NOT_STICKY}, and if the process dies, the Intent
-     * dies along with it.
-     */
-    public void setIntentRedelivery(boolean enabled) {
-        mRedelivery = enabled;
     }
 
     @Override

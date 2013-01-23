@@ -32,9 +32,9 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
  *
  */
-public class ThreadLoadService extends BaseChanService implements ChanIdentifiedService {
+public class ThreadParserService extends BaseChanService implements ChanIdentifiedService {
 
-    protected static final String TAG = ThreadLoadService.class.getName();
+    protected static final String TAG = ThreadParserService.class.getName();
     private static final boolean DEBUG = true;
 
     protected static final long STORE_INTERVAL_MS = 2000;
@@ -47,7 +47,7 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
 
     public static void startService(Context context, String boardCode, long threadNo) {
         if (DEBUG) Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
-        Intent intent = new Intent(context, ThreadLoadService.class);
+        Intent intent = new Intent(context, ThreadParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
         intent.putExtra(ChanHelper.THREAD_FETCH_TIME, new Date().getTime());
@@ -56,7 +56,7 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
 
     public static void startServiceWithPriority(Context context, String boardCode, long threadNo) {
         if (DEBUG) Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
-        Intent intent = new Intent(context, ThreadLoadService.class);
+        Intent intent = new Intent(context, ThreadParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
         intent.putExtra(ChanHelper.FORCE_REFRESH, true);
@@ -65,11 +65,11 @@ public class ThreadLoadService extends BaseChanService implements ChanIdentified
         context.startService(intent);
     }
 
-    public ThreadLoadService() {
+    public ThreadParserService() {
    		super("thread");
    	}
 
-    protected ThreadLoadService(String name) {
+    protected ThreadParserService(String name) {
    		super(name);
    	}
 	

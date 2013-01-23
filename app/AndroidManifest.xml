@@ -89,9 +89,9 @@
         </activity>
 
         <service android:name="com.chanapps.four.service.FetchChanDataService"/>
-        <service android:name="com.chanapps.four.service.BoardLoadService"/>
+        <service android:name="com.chanapps.four.service.BoardParserService"/>
         <service android:name="com.chanapps.four.service.BoardThreadsParserService"/>
-        <service android:name="com.chanapps.four.service.ThreadLoadService"/>
+        <service android:name="com.chanapps.four.service.ThreadParserService"/>
 
         <!--widgets-->
         <activity android:name="com.chanapps.four.widget.WidgetConfigureActivity">

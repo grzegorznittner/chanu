@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
@@ -26,18 +25,16 @@ import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 import com.chanapps.four.widget.BoardWidgetProvider;
-import com.chanapps.four.widget.UpdateWidgetService;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
  *
  */
-public class BoardLoadService extends BaseChanService implements ChanIdentifiedService {
+public class BoardParserService extends BaseChanService implements ChanIdentifiedService {
 
-    protected static final String TAG = BoardLoadService.class.getSimpleName();
+    protected static final String TAG = BoardParserService.class.getSimpleName();
     private static final boolean DEBUG = true;
 	
 	protected static final long STORE_INTERVAL_MS = 2000;
@@ -50,7 +47,7 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
 
     public static void startService(Context context, String boardCode, int pageNo) {
         if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + false );
-        Intent intent = new Intent(context, BoardLoadService.class);
+        Intent intent = new Intent(context, BoardParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.PAGE, pageNo);
         context.startService(intent);
@@ -58,7 +55,7 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
 
     public static void startServiceWithPriority(Context context, String boardCode, int pageNo) {
         if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + true );
-        Intent intent = new Intent(context, BoardLoadService.class);
+        Intent intent = new Intent(context, BoardParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.PAGE, pageNo);
         intent.putExtra(ChanHelper.FORCE_REFRESH, true);
@@ -66,11 +63,11 @@ public class BoardLoadService extends BaseChanService implements ChanIdentifiedS
         context.startService(intent);
     }
 
-    public BoardLoadService() {
+    public BoardParserService() {
    		super("board");
    	}
 
-    protected BoardLoadService(String name) {
+    protected BoardParserService(String name) {
    		super(name);
    	}
 	

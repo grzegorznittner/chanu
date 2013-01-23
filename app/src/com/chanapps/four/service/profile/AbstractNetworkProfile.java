@@ -16,9 +16,9 @@ import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.DataTransfer;
 import com.chanapps.four.data.FetchParams;
-import com.chanapps.four.service.BoardLoadService;
+import com.chanapps.four.service.BoardParserService;
 import com.chanapps.four.service.NetworkProfileManager;
-import com.chanapps.four.service.ThreadLoadService;
+import com.chanapps.four.service.ThreadParserService;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -181,16 +181,16 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 		if (data.threadNo == 0) {
 			// board fetching
 	        if (data.priority) {
-	        	BoardLoadService.startServiceWithPriority(service.getApplicationContext(), data.boardCode, data.pageNo);
+	        	BoardParserService.startServiceWithPriority(service.getApplicationContext(), data.boardCode, data.pageNo);
 	        } else {
-	        	BoardLoadService.startService(service.getApplicationContext(), data.boardCode, data.pageNo);
+	        	BoardParserService.startService(service.getApplicationContext(), data.boardCode, data.pageNo);
 	        }
 		} else if (data.postNo == 0) {
 			// thread fetching
             if (data.priority) {
-            	ThreadLoadService.startServiceWithPriority(service.getApplicationContext(), data.boardCode, data.threadNo);
+            	ThreadParserService.startServiceWithPriority(service.getApplicationContext(), data.boardCode, data.threadNo);
             } else {
-            	ThreadLoadService.startService(service.getApplicationContext(), data.boardCode, data.threadNo);
+            	ThreadParserService.startService(service.getApplicationContext(), data.boardCode, data.threadNo);
             }
 		} else {
 			// image fetching
