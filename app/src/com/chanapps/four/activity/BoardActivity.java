@@ -313,8 +313,12 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         } else if (view instanceof ImageView && view.getId() == R.id.grid_item_image) {
             String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
             int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
+            int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
-            if (imageUrl != null && !imageUrl.isEmpty() && loadPage == 0) {
+            if (spoiler > 0) {
+                iv.setImageResource(R.drawable.spoiler);
+            }
+            else if (imageUrl != null && !imageUrl.isEmpty() && loadPage == 0) {
                 smartSetImageView(iv, imageUrl);
             }
             else if (loadPage > 0) {

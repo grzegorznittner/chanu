@@ -277,4 +277,56 @@ public class ChanBoard {
         }
     }
 
+    static private Set<String> spoilerBoardCodes = new HashSet<String>();
+    static public boolean hasSpoiler(String boardCode) {
+        if (spoilerBoardCodes.isEmpty()) {
+            synchronized (spoilerBoardCodes) {
+                String[] spoilers = { "a", "m", "u", "v", "vg", "r9k", "co", "jp", "lit", "mlp", "tg", "tv", "vp" };
+                for (int i = 0; i < spoilers.length; i++)
+                    spoilerBoardCodes.add(spoilers[i]);
+            }
+        }
+        return spoilerBoardCodes.contains(boardCode);
+    }
+
+    static public boolean hasName(String boardCode) {
+        if (boardCode.equals("b") || boardCode.equals("soc") || boardCode.equals("q"))
+            return false;
+        else
+            return true;
+    }
+
+    static public boolean hasSubject(String boardCode) {
+        if (boardCode.equals("b") || boardCode.equals("soc"))
+            return false;
+        else
+            return true;
+    }
+
+    static public boolean requiresThreadSubject(String boardCode) {
+        if (boardCode.equals("q"))
+            return true;
+        else
+            return false;
+    }
+
+    static public boolean requiresThreadImage(String boardCode) {
+        if (boardCode.equals("q"))
+            return false;
+        else
+            return true;
+    }
+
+    static public boolean allowsBump(String boardCode) {
+        if (boardCode.equals("q"))
+            return false;
+        else
+            return true;
+    }
+
+    /*
+   /i - lots of stuff
+   /q - "No File" checkbox
+    */
+
 }

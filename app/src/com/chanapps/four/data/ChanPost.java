@@ -62,6 +62,7 @@ public class ChanPost {
     public int omitted_images = -1;
     public int bumplimit = 0;
     public int imagelimit = 0;
+    public int spoiler = 0;
     public boolean isDead = false;
     public boolean defData = false;
 

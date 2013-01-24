@@ -144,6 +144,11 @@
 
             </FrameLayout>
 
+            <CheckBox
+                android:id="@+id/post_reply_spoiler_checkbox"
+                style="@style/PostReplyCheckboxStyle"
+                android:text="@string/post_reply_spoiler" />
+
             <ImageView
                     android:id="@+id/post_reply_image_preview"
                     android:layout_width="fill_parent"

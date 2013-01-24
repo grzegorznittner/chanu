@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import com.chanapps.four.data.ChanPostlist;
+import com.chanapps.four.data.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -28,10 +28,7 @@ import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.ChanPostResponse;
-import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.fragment.PostingReplyDialogFragment;
 import com.chanapps.four.multipartmime.FilePart;
 import com.chanapps.four.multipartmime.MultipartEntity;
@@ -103,7 +100,13 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
         partsList.add(new StringPart("pwd", password));
         partsList.add(new StringPart("recaptcha_challenge_field", activity.getRecaptchaChallenge()));
         partsList.add(new StringPart("recaptcha_response_field", activity.getRecaptchaResponse()));
+        if (activity.hasSpoiler()) {
+            partsList.add(new StringPart("spoiler", "on"));
+        }
         String imageUrl = activity.imageUri == null ? null : activity.imageUri.toString();
+        if (imageUrl == null && activity.threadNo == 0 && !ChanBoard.requiresThreadImage(activity.boardCode)) {
+            partsList.add(new StringPart("textonly", "on"));
+        }
         if (imageUrl != null) {
             if (DEBUG) Log.i(TAG, "Trying to load image for imageUrl=" + imageUrl + " imagePath="+activity.imagePath+" contentType="+activity.contentType);
             File file = null;

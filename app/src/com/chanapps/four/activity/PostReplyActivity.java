@@ -20,13 +20,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanHelper.LastActivity;
@@ -73,6 +72,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private EditText emailText;
     private EditText subjectText;
     private EditText passwordText;
+    private CheckBox spoilerCheckbox;
+
     TextView.OnEditorActionListener fastSend;
 
     private ImageView imagePreview;
@@ -114,8 +115,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         messageText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //closeKeyboard();
-                //Toast.makeText(PostReplyActivity.this, "popup goes here", Toast.LENGTH_SHORT).show();
                 (new EditMessageTextDialogFragment()).show(getSupportFragmentManager(), EditMessageTextDialogFragment.TAG);
             }
         });
@@ -125,6 +124,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         subjectText = (EditText)findViewById(R.id.post_reply_subject);
         passwordText = (EditText)findViewById(R.id.post_reply_password);
         passwordText.setText(generatePassword()); // always default random generate, then we store for later use
+        spoilerCheckbox = (CheckBox)findViewById(R.id.post_reply_spoiler_checkbox);
 
         fastSend = new TextView.OnEditorActionListener() {
             @Override
@@ -179,6 +179,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         });
 
         recaptchaLoading = (ImageView) findViewById(R.id.post_reply_recaptcha_loading);
+
     }
 
     @Override
@@ -269,7 +270,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         String text = intent.getStringExtra(ChanHelper.TEXT);
         String quoteText = ChanPost.quoteText(intent.getStringExtra(ChanHelper.QUOTE_TEXT));
         setMessageText(text, quoteText);
-        adjustSubjectHint();
+        adjustFieldVisibility();
 
         String name = intent.getStringExtra(ChanHelper.NAME);
         if (name != null && !name.isEmpty())
@@ -283,6 +284,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         String password = intent.getStringExtra(ChanHelper.PASSWORD);
         if (password != null && !password.isEmpty())
             passwordText.setText(password);
+        boolean spoilerChecked = intent.getBooleanExtra(ChanHelper.SPOILER, false);
+            spoilerCheckbox.setChecked(spoilerChecked);
 
         String imageUrl = intent.getStringExtra(ChanHelper.POST_REPLY_IMAGE_URL);
         if (imageUrl != null && !imageUrl.isEmpty()) {
@@ -312,7 +315,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         String text = prefs.getString(ChanHelper.TEXT, "");
         String quoteText = ChanPost.quoteText(prefs.getString(ChanHelper.QUOTE_TEXT, ""));
         setMessageText(text, quoteText);
-        adjustSubjectHint();
+        adjustFieldVisibility();
 
         String name = prefs.getString(ChanHelper.NAME, "");
         if (!name.isEmpty())
@@ -326,20 +329,42 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         String password = prefs.getString(ChanHelper.PASSWORD, "");
         if (!password.isEmpty())
             passwordText.setText(password);
+        boolean spoilerChecked = prefs.getBoolean(ChanHelper.SPOILER, false);
+            spoilerCheckbox.setChecked(spoilerChecked);
 
         setActionBarTitle();
         if (DEBUG) Log.i(TAG, "loaded from prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " text=" + " quoteText=" + quoteText);
     }
 
-    protected void adjustSubjectHint() {
-        if (boardCode.equals("q") && threadNo == 0) {
-            messageText.setHint(R.string.post_reply_text_hint_board_q);
-            subjectText.setHint(R.string.post_reply_subject_hint_board_q);
+    protected void adjustFieldVisibility() {
+        if (ChanBoard.hasName(boardCode))
+            nameText.setVisibility(View.VISIBLE);
+        else
+            nameText.setVisibility(View.GONE);
+
+        if (ChanBoard.hasSubject(boardCode))
+            subjectText.setVisibility(View.VISIBLE);
+        else
+            subjectText.setVisibility(View.GONE);
+
+        if (ChanBoard.hasSpoiler(boardCode))
+            spoilerCheckbox.setVisibility(View.VISIBLE);
+        else
+            spoilerCheckbox.setVisibility(View.GONE);
+
+        // subject hints
+        if (threadNo == 0 && ChanBoard.requiresThreadSubject(boardCode)) {
+            messageText.setHint(R.string.post_reply_text_hint_required);
+            subjectText.setHint(R.string.post_reply_subject_hint_required);
         }
         else {
             messageText.setHint(R.string.post_reply_text_hint);
             subjectText.setHint(R.string.post_reply_subject_hint);
         }
+    }
+
+    public boolean hasSpoiler() {
+        return spoilerCheckbox.isChecked();
     }
 
     protected void loadImageFromPrefs() {
@@ -366,6 +391,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         ed.putString(ChanHelper.EMAIL, emailText.getText().toString());
         ed.putString(ChanHelper.SUBJECT, subjectText.getText().toString());
         ed.putString(ChanHelper.PASSWORD, passwordText.getText().toString());
+        ed.putBoolean(ChanHelper.SPOILER, spoilerCheckbox.isChecked());
         ed.putString(ChanHelper.QUOTE_TEXT, null);
         ed.putLong(ChanHelper.TIM, tim);
         ed.putString(ChanHelper.CAMERA_IMAGE_URL, cameraImageUri == null ? null : cameraImageUri.toString());
@@ -545,7 +571,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     private void updateBump() {
         String s = messageText.getText().toString();
-        if (boardCode.equals("q"))
+        if (ChanBoard.allowsBump(boardCode))
             bumpButton.setVisibility(View.GONE);
         else if (s == null || s.isEmpty())
             bumpButton.setVisibility(View.VISIBLE);
@@ -737,12 +763,16 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         boolean hasSubject = subject != null && !subject.trim().isEmpty();
         boolean hasMessage = message != null && !message.trim().isEmpty();
         boolean hasImage = image != null && !image.trim().isEmpty();
-        if (threadNo == 0 && !hasImage)
-        return res.getString(R.string.post_reply_add_image);
-        if (threadNo == 0 && boardCode.equals("q") && !(hasSubject && hasMessage))
-            return res.getString(R.string.post_reply_board_q_special_needs);
-        if (threadNo != 0 && !hasMessage && !hasImage)
+
+        if (threadNo == 0) {
+            if (ChanBoard.requiresThreadImage(boardCode) && !hasImage)
+                return res.getString(R.string.post_reply_add_image);
+            if (ChanBoard.requiresThreadSubject(boardCode) && !hasSubject)
+                return res.getString(R.string.post_reply_board_requires_subject);
+        }
+        if (!hasImage && !hasMessage)
             return res.getString(R.string.post_reply_add_text_or_image);
+
         String recaptchaChallenge = loadCaptchaTask.getRecaptchaChallenge();
         if (recaptchaChallenge == null || recaptchaChallenge.trim().isEmpty()) {
             return res.getString(R.string.post_reply_captcha_error);
@@ -751,6 +781,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (recaptcha == null || recaptcha.trim().isEmpty()) {
             return res.getString(R.string.post_reply_enter_captcha);
         }
+
         return null;
     }
 

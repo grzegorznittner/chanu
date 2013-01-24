@@ -244,8 +244,12 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             return true;
         } else if (view instanceof ImageView && view.getId() == R.id.grid_item_image) {
             String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+            int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
-            if (imageUrl != null && !imageUrl.isEmpty()) {
+            if (spoiler > 0) {
+                iv.setImageResource(R.drawable.spoiler);
+            }
+            else if (imageUrl != null && !imageUrl.isEmpty()) {
                 smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
             }
             else {

@@ -59,6 +59,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 int imageHeight;
                 int fullImageWidth;
                 int fullImageHeight;
+                int spoiler;
                 int isDead;
                 ChanThread thread = null;
                 ChanPost threadPost = null;
@@ -85,6 +86,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                     imageHeight = threadPost.tn_h;
                     fullImageWidth = threadPost.w;
                     fullImageHeight = threadPost.h;
+                    spoiler = threadPost.spoiler;
                     isDead = thread.isDead ? 1 : 0;
                     ChanWatchlist.updateThreadInfo(context, boardCode, threadNo, tim,
                             text, imageUrl, imageWidth, imageHeight, thread.isDead);
@@ -103,6 +105,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                     imageHeight = Integer.valueOf(threadComponents[6]);
                     fullImageWidth = imageWidth;
                     fullImageHeight = imageHeight;
+                    spoiler = 0;
                     isDead = 0; // we don't know if it's dead or not, assume alive
                 }
                 MatrixCursor.RowBuilder row = cursor.newRow();
@@ -119,6 +122,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 row.add(fullImageWidth);
                 row.add(fullImageHeight);
                 row.add(tim);
+                row.add(spoiler);
                 row.add(isDead);
                 row.add(0);
                 row.add(0);

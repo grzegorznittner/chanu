@@ -33,6 +33,7 @@ public class ChanHelper {
     public static final String EMAIL = "email";
     public static final String SUBJECT = "subject";
     public static final String PASSWORD = "password";
+    public static final String SPOILER = "spoiler";
     public static final String IMAGE_URL = "imageUrl";
     public static final String POST_REPLY_IMAGE_URL = "postReplyImageUrl";
     public static final String CAMERA_IMAGE_URL = "cameraImageUrl";
@@ -69,8 +70,9 @@ public class ChanHelper {
     public static final String POST_TEXT = "text"; // we construct and filter this
     public static final String POST_IMAGE_URL = "image_url"; // we construct this from board and tim
     public static final String POST_COUNTRY_URL = "country_url"; // we construct this from the country code
+    public static final String POST_SPOILER = "spoiler";
     public static final String POST_IS_DEAD = "isDead";
-    
+
     public static final String LOAD_PAGE = "load_page";
     public static final String LAST_PAGE = "last_page";
     public static final String LAST_BOARD_POSITION = "lastBoardPosition";
@@ -101,6 +103,7 @@ public class ChanHelper {
             POST_W,
             POST_H,
             POST_TIM,
+            POST_SPOILER,
             POST_IS_DEAD,
             LOAD_PAGE,
             LAST_PAGE

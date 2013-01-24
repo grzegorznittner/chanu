@@ -32,29 +32,27 @@ public class GoToBoardDialogFragment extends DialogFragment {
     private String[] boards = null;
 
     private void initBoards(Context context) {
-        if (boards != null)
-            return;
         List<ChanBoard> chanBoards = ChanBoard.getBoardsRespectingNSFW(context);
-        if (chanBoards == null) // something screwed up
-            return;
-        boards = new String[chanBoards.size()+1];
+        int size = chanBoards == null ? 1 : chanBoards.size() + 1;
+        boards = new String[size];
         boards[0] = "Watchlist";
-        int i = 1;
-        for (ChanBoard chanBoard : chanBoards) {
-            String boardCode = chanBoard.link;
-            String boardName = chanBoard.name;
-            String boardLine = "/" + boardCode + " " + boardName;
-            boards[i] = boardLine;
-            i++;
+        if (chanBoards != null) { // just in case
+            int i = 1;
+            for (ChanBoard chanBoard : chanBoards) {
+                String boardCode = chanBoard.link;
+                String boardName = chanBoard.name;
+                String boardLine = "/" + boardCode + " " + boardName;
+                boards[i] = boardLine;
+                i++;
+            }
         }
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        initBoards(getActivity());
-        if (boards == null)
-            return null;
-        return new AlertDialog.Builder(getActivity())
+        Context context = getActivity();
+        initBoards(context);
+        return new AlertDialog.Builder(context)
         .setTitle(R.string.go_to_board_menu)
         .setItems(boards, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
