@@ -134,6 +134,7 @@
     <string name="post_reply_delete_hint">Delete Image</string>
     <string name="post_reply_rotate_left_hint">Rotate Left</string>
     <string name="post_reply_rotate_right_hint">Rotate Right</string>
+    <string name="post_reply_bump_hint">Bump</string>
     <string name="post_reply_sage_hint">Sage</string>
     <string name="post_reply_reload_captcha_hint">Reload Captcha</string>
     <string name="post_reply_recaptcha_hint">reCAPTCHA Challenge (Required)</string>

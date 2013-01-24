@@ -57,6 +57,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private ImageButton deleteButton;
     private ImageButton rotateLeftButton;
     private ImageButton rotateRightButton;
+    private ImageButton bumpButton;
     private ImageButton sageButton;
 
     private Context ctx;
@@ -105,6 +106,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         deleteButton = (ImageButton)findViewById(R.id.post_reply_delete_button);
         rotateLeftButton = (ImageButton)findViewById(R.id.post_reply_rotate_left_button);
         rotateRightButton = (ImageButton)findViewById(R.id.post_reply_rotate_right_button);
+        bumpButton = (ImageButton)findViewById(R.id.post_reply_bump_button);
         sageButton = (ImageButton)findViewById(R.id.post_reply_sage_button);
 
         // do this popup jazz because android doesn't really handle multiline edit text views very well
@@ -157,6 +159,11 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         rotateRightButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 rotateRight();
+            }
+        });
+        bumpButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                bump();
             }
         });
         sageButton.setOnClickListener(new View.OnClickListener() {
@@ -228,6 +235,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             if (quoteText != null && !quoteText.isEmpty())
                 messageText.append(quoteText);
         }
+        updateBump();
     }
 
     protected void setImageUri(String imageUrl) {
@@ -535,6 +543,22 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         rotateImagePreview(90);
     }
 
+    private void updateBump() {
+        String s = messageText.getText().toString();
+        if (boardCode.equals("q"))
+            bumpButton.setVisibility(View.GONE);
+        else if (s == null || s.isEmpty())
+            bumpButton.setVisibility(View.VISIBLE);
+        else
+            bumpButton.setVisibility(View.GONE);
+    }
+
+    private void bump() {
+        String s = messageText.getText().toString(); // defensive coding
+        if (s == null || s.isEmpty())
+            messageText.setText("bump");
+    }
+
     private void sage() {
         emailText.setText("sage"); // 4chan way to post without bumping
     }
@@ -667,6 +691,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     public void setMessage(String text) {
         messageText.setText(text);
+        updateBump();
     }
 
     public String getName() {

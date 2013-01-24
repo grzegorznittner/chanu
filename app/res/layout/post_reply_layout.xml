@@ -118,14 +118,29 @@
 
                 </LinearLayout>
 
-                <ImageButton
-                        android:id="@+id/post_reply_sage_button"
-                        style="@style/PostReplyButtonStyle"
-                        android:contentDescription="@string/post_reply_sage_hint"
-                        android:hint="@string/post_reply_sage_hint"
-                        android:src="@drawable/rating_bad"
-                        android:layout_gravity="right">
-                </ImageButton>
+                <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_gravity="right"
+                        android:orientation="horizontal">
+
+                    <ImageButton
+                            android:id="@+id/post_reply_bump_button"
+                            style="@style/PostReplyButtonStyle"
+                            android:contentDescription="@string/post_reply_bump_hint"
+                            android:hint="@string/post_reply_bump_hint"
+                            android:src="@drawable/rating_good">
+                    </ImageButton>
+
+                    <ImageButton
+                            android:id="@+id/post_reply_sage_button"
+                            style="@style/PostReplyButtonStyle"
+                            android:contentDescription="@string/post_reply_sage_hint"
+                            android:hint="@string/post_reply_sage_hint"
+                            android:src="@drawable/rating_bad">
+                    </ImageButton>
+
+                </LinearLayout>
 
             </FrameLayout>
 

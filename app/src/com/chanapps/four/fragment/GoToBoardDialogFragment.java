@@ -32,7 +32,11 @@ public class GoToBoardDialogFragment extends DialogFragment {
     private String[] boards = null;
 
     private void initBoards(Context context) {
+        if (boards != null)
+            return;
         List<ChanBoard> chanBoards = ChanBoard.getBoardsRespectingNSFW(context);
+        if (chanBoards == null) // something screwed up
+            return;
         boards = new String[chanBoards.size()+1];
         boards[0] = "Watchlist";
         int i = 1;
@@ -48,6 +52,8 @@ public class GoToBoardDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         initBoards(getActivity());
+        if (boards == null)
+            return null;
         return new AlertDialog.Builder(getActivity())
         .setTitle(R.string.go_to_board_menu)
         .setItems(boards, new DialogInterface.OnClickListener() {
