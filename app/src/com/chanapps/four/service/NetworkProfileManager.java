@@ -79,7 +79,7 @@ public class NetworkProfileManager {
 	}
 
 	public void activityChange(ChanIdentifiedActivity newActivity) {
-		Log.w(TAG, "activity change to " + newActivity.getChanActivityId(), new Exception("activity change"));
+		Log.w(TAG, "activity change to " + newActivity.getChanActivityId() + " receiver=" + receiver + " activity=" + currentActivity, new Exception("activity change"));
 		if (receiver == null) {
 			receiver = new NetworkBroadcastReceiver();
 			newActivity.getBaseContext().getApplicationContext()
@@ -201,7 +201,7 @@ public class NetworkProfileManager {
 		switch(type) {
 		case NO_CONNECTION:
 			if (activeProfile != noConnectionProfile) {
-				if (activeProfile != null && currentActivity != null) {
+				if (activeProfile != null && currentActivity != null && currentActivity.get() != null) {
 					activeProfile.onProfileDeactivated(currentActivity.get().getBaseContext());
 				}
 				activeProfile = noConnectionProfile;
@@ -213,7 +213,7 @@ public class NetworkProfileManager {
 			break;
 		case WIFI:
 			if (activeProfile != wifiProfile) {
-				if (activeProfile != null && currentActivity != null) {
+				if (activeProfile != null && currentActivity != null && currentActivity.get() != null) {
 					activeProfile.onProfileDeactivated(currentActivity.get().getBaseContext());
 				}
 				activeProfile = wifiProfile;
@@ -225,7 +225,7 @@ public class NetworkProfileManager {
 			break;
 		case MOBILE:
 			if (activeProfile != mobileProfile) {
-				if (activeProfile != null && currentActivity != null) {
+				if (activeProfile != null && currentActivity != null && currentActivity.get() != null) {
 					activeProfile.onProfileDeactivated(currentActivity.get().getBaseContext());
 				}
 				activeProfile = mobileProfile;

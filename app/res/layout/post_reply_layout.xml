@@ -55,7 +55,8 @@
                 android:inputType="textNoSuggestions"
                 android:imeOptions="actionSend"
                 android:imeActionLabel="@string/post_reply_send"
-                >
+                android:maxLength="100"
+                    >
             </EditText>
 
             <FrameLayout
@@ -146,7 +147,7 @@
                     android:hint="@string/post_reply_name_hint"
                     android:inputType="textPersonName"
                     style="@style/PostReplyEditTextStyle"
-                    android:maxLength="255"
+                    android:maxLength="100"
                     >
             </EditText>
 
@@ -155,7 +156,7 @@
                     android:hint="@string/post_reply_email_hint"
                     android:inputType="textEmailAddress"
                     style="@style/PostReplyEditTextStyle"
-                    android:maxLength="255"
+                    android:maxLength="100"
                     >
             </EditText>
 
@@ -164,6 +165,7 @@
                     android:hint="@string/post_reply_subject_hint"
                     android:inputType="textEmailSubject"
                     style="@style/PostReplyEditTextStyle"
+                    android:maxLength="100"
                     >
             </EditText>
 

@@ -6,6 +6,7 @@ package com.chanapps.four.service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
@@ -302,9 +303,13 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             	return;
             }
             if (contentType == null || !contentType.contains("json")) {
-            	throw new IOException("Wrong content type returned '" + contentType + "'");
+                Log.e(TAG, "Wrong content type returned '" + contentType + "'");
+                StringWriter writer = new StringWriter();
+                IOUtils.copy(tc.getInputStream(), writer, "UTF-8");
+                Log.e(TAG, "Wrong content type for result=" + writer.toString());
+                throw new IOException("Wrong content type returned '" + contentType + "'");
             }
-            
+
             thread.lastFetched = now;
             if (tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 if (DEBUG) Log.i(TAG, "Got 404 on thread, thread no longer exists");
