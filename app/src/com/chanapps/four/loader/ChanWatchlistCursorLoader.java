@@ -20,7 +20,7 @@ import java.util.List;
 public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = ChanWatchlistCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     protected final ForceLoadContentObserver mObserver;
 
@@ -40,10 +40,10 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
         if (savedWatchlist == null || savedWatchlist.isEmpty()) {
             return null;
         }
-        if (DEBUG) Log.d(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
+        if (DEBUG) Log.i(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
         MatrixCursor cursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
         for (String threadPath : savedWatchlist) {
-            if (DEBUG) Log.d(TAG, "Parsing threadpath: " + threadPath);
+            if (DEBUG) Log.i(TAG, "Parsing threadpath: " + threadPath);
 
             try {
                 String[] threadComponents = ChanWatchlist.getThreadPathComponents(threadPath);
@@ -123,7 +123,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 row.add(0);
                 row.add(0);
                 if (DEBUG) Log.i(TAG, "Thread dead status for " + boardCode + "/" + threadNo + " is " + isDead);
-                if (DEBUG) Log.d(TAG, "Watchlist cursor has: " + threadNo + " " + boardCode + " " + imageUrl + " " + shortText);
+                if (DEBUG) Log.i(TAG, "Watchlist cursor has: " + threadNo + " " + boardCode + " " + imageUrl + " " + shortText);
             }
             catch (Exception e) {
                 Log.e(TAG, "Error parsing watch preferences ", e);

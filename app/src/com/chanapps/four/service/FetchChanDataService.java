@@ -302,16 +302,9 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             	}
             	return;
             }
-            if (contentType == null || !contentType.contains("json")) {
-                Log.e(TAG, "Wrong content type returned '" + contentType + "'");
-                StringWriter writer = new StringWriter();
-                IOUtils.copy(tc.getInputStream(), writer, "UTF-8");
-                Log.e(TAG, "Wrong content type for result=" + writer.toString());
-                throw new IOException("Wrong content type returned '" + contentType + "'");
-            }
 
             thread.lastFetched = now;
-            if (tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+            if (contentType == null || !contentType.contains("json") || tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 if (DEBUG) Log.i(TAG, "Got 404 on thread, thread no longer exists");
                 thread.isDead = true;
                 try {

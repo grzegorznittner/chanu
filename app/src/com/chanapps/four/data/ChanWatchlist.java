@@ -106,32 +106,34 @@ public class ChanWatchlist {
     public static void updateThreadInfo(Context ctx, String boardCode, long threadNo, long tim,
                                         String text, String imageUrl, int imageWidth, int imageHeight, boolean isDead) {
         Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
-        String[] matchingComponents = null;
-        String matchingThreadPath = null;
-        for (String threadPath : savedWatchlist) {
-            String[] components = getThreadPathComponents(threadPath);
-            String watchedBoardCode = components[1];
-            long watchedThreadNo = Long.valueOf(components[2]);
-            if (watchedBoardCode.equals(boardCode) && watchedThreadNo == threadNo) {
-                matchingThreadPath = threadPath;
-                matchingComponents = components;
-                break;
+        synchronized (savedWatchlist) {
+            String[] matchingComponents = null;
+            String matchingThreadPath = null;
+            for (String threadPath : savedWatchlist) {
+                String[] components = getThreadPathComponents(threadPath);
+                String watchedBoardCode = components[1];
+                long watchedThreadNo = Long.valueOf(components[2]);
+                if (watchedBoardCode.equals(boardCode) && watchedThreadNo == threadNo) {
+                    matchingThreadPath = threadPath;
+                    matchingComponents = components;
+                    break;
+                }
             }
-        }
-        if (matchingThreadPath == null) {
-            Log.e(TAG, "Couldn't find thread in watchlist to update: " + boardCode + "/" + threadNo);
-        }
-        else {
-            savedWatchlist.remove(matchingThreadPath);
-            matchingComponents[0] = Long.toString(tim);
-            matchingComponents[3] = text;
-            matchingComponents[4] = imageUrl;
-            matchingComponents[5] = Integer.toString(imageWidth);
-            matchingComponents[6] = Integer.toString(imageHeight);
-            String newThreadPath = ChanWatchlist.getThreadPath(matchingComponents);
-            savedWatchlist.add(newThreadPath);
-            saveWatchlist(ctx, savedWatchlist);
-            if (DEBUG) Log.i(TAG, "Thread " + newThreadPath + " added to watchlist");
+            if (matchingThreadPath == null) {
+                Log.e(TAG, "Couldn't find thread in watchlist to update: " + boardCode + "/" + threadNo);
+            }
+            else {
+                savedWatchlist.remove(matchingThreadPath);
+                matchingComponents[0] = Long.toString(tim);
+                matchingComponents[3] = text;
+                matchingComponents[4] = imageUrl;
+                matchingComponents[5] = Integer.toString(imageWidth);
+                matchingComponents[6] = Integer.toString(imageHeight);
+                String newThreadPath = ChanWatchlist.getThreadPath(matchingComponents);
+                savedWatchlist.add(newThreadPath);
+                saveWatchlist(ctx, savedWatchlist);
+                if (DEBUG) Log.i(TAG, "Thread " + newThreadPath + " added to watchlist");
+            }
         }
     }
 
@@ -139,13 +141,15 @@ public class ChanWatchlist {
     public static boolean isThreadWatched(Context ctx, String boardCode, long threadNo) {
         boolean isWatched = false;
         Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
-        for (String threadPath : savedWatchlist) {
-            String[] components = getThreadPathComponents(threadPath);
-            String watchedBoardCode = components[1];
-            long watchedThreadNo = Long.valueOf(components[2]);
-            if (watchedBoardCode.equals(boardCode) && watchedThreadNo == threadNo) {
-                isWatched = true;
-                break;
+        synchronized (savedWatchlist) {
+            for (String threadPath : savedWatchlist) {
+                String[] components = getThreadPathComponents(threadPath);
+                String watchedBoardCode = components[1];
+                long watchedThreadNo = Long.valueOf(components[2]);
+                if (watchedBoardCode.equals(boardCode) && watchedThreadNo == threadNo) {
+                    isWatched = true;
+                    break;
+                }
             }
         }
         return isWatched;
@@ -268,7 +272,13 @@ public class ChanWatchlist {
     }
 
     public static void fetchWatchlistThreads(Context context) {
-        Set<String> threadPaths = ChanWatchlist.getWatchlistFromPrefs(context);
+        Set<String> threadPaths = new HashSet<String>(); // copy so we don't get concurrent exception
+        Set<String> origThreadPaths = ChanWatchlist.getWatchlistFromPrefs(context);
+        synchronized (origThreadPaths) {
+            for (String path : threadPaths) {
+                threadPaths.add(new String(path));
+            }
+        }
         for (String threadPath : threadPaths) {
             String boardCode = ChanWatchlist.getBoardCodeFromThreadPath(threadPath);
             long threadNo = ChanWatchlist.getThreadNoFromThreadPath(threadPath);
