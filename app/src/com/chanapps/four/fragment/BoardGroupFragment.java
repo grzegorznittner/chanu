@@ -177,7 +177,7 @@ public class BoardGroupFragment
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         if (boardType == ChanBoard.Type.WATCHLIST)
-            return ThreadActivity.setViewValue(view, cursor, columnIndex, getImageLoader(), getDisplayImageOptions(), false);
+            return BoardActivity.setViewValue(view, cursor, columnIndex, getImageLoader(), getDisplayImageOptions());
         else
             return setViewValueForBoardSelector(view, cursor, columnIndex);
     }

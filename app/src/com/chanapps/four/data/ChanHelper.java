@@ -71,6 +71,8 @@ public class ChanHelper {
     public static final String POST_IMAGE_URL = "image_url"; // we construct this from board and tim
     public static final String POST_COUNTRY_URL = "country_url"; // we construct this from the country code
     public static final String POST_SPOILER = "spoiler";
+    public static final String POST_SPOILER_TEXT = "spoilerText";
+    public static final String POST_EXIF_TEXT = "exifText";
     public static final String POST_IS_DEAD = "isDead";
 
     public static final String LOAD_PAGE = "load_page";
@@ -104,6 +106,8 @@ public class ChanHelper {
             POST_H,
             POST_TIM,
             POST_SPOILER,
+            POST_SPOILER_TEXT,
+            POST_EXIF_TEXT,
             POST_IS_DEAD,
             LOAD_PAGE,
             LAST_PAGE

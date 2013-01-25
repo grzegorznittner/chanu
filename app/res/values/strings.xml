@@ -95,6 +95,8 @@
     <string name="full_screen_close_button">Close</string>
     
     <!-- popup text -->
+    <string name="spoiler">Show Spoiler</string>
+    <string name="exif">Show EXIF Data</string>
     <string name="reply">Reply</string>
     <string name="quote">Quote</string>
     <string name="dismiss">Close</string>

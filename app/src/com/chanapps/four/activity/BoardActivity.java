@@ -83,6 +83,10 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
     protected TextView popupText;
     protected PopupWindow popupWindow;
     protected TextView deadThreadTextView;
+    protected Button spoilerButton;
+    protected TextView spoilerTextView;
+    protected Button exifButton;
+    protected TextView exifTextView;
     protected Button replyButton;
     protected Button quoteButton;
     protected Button dismissButton;
@@ -293,6 +297,11 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+        return setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions);
+    }
+
+    public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
+                                       ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
         if (view instanceof TextView) {
             final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
             final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
@@ -316,10 +325,11 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
             int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
             if (spoiler > 0) {
-                smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode));
+                String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+                smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
             }
             else if (imageUrl != null && !imageUrl.isEmpty() && loadPage == 0) {
-                smartSetImageView(iv, imageUrl);
+                smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
             }
             else if (loadPage > 0) {
                 setImageViewToLoading(iv);
@@ -333,7 +343,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
             String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
             if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagImageUrl);
             if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty()) {
-                smartSetImageView(iv, countryFlagImageUrl);
+                smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions);
             }
             else {
                 iv.setImageBitmap(null); // blank
@@ -376,9 +386,9 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         }
     }
 
-    protected void setImageViewToLoading(ImageView iv) {
+    protected static void setImageViewToLoading(ImageView iv) {
         iv.setImageResource(R.drawable.navigation_refresh_light);
-        Animation rotation = AnimationUtils.loadAnimation(this, R.animator.clockwise_refresh);
+        Animation rotation = AnimationUtils.loadAnimation(iv.getContext(), R.animator.clockwise_refresh);
         rotation.setRepeatCount(Animation.INFINITE);
         iv.startAnimation(rotation);
     }
@@ -530,6 +540,24 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
             popupText = (TextView)popupView.findViewById(R.id.popup_full_text);
             popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             deadThreadTextView = (TextView)popupView.findViewById(R.id.popup_dead_thread_text_view);
+            spoilerTextView = (TextView)popupView.findViewById(R.id.popup_spoiler_text);
+            spoilerButton = (Button)popupView.findViewById(R.id.popup_spoiler_button);
+            spoilerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    spoilerTextView.setVisibility(View.VISIBLE);
+                    spoilerButton.setVisibility(View.GONE);
+                }
+            });
+            exifTextView = (TextView)popupView.findViewById(R.id.popup_exif_text);
+            exifButton = (Button)popupView.findViewById(R.id.popup_exif_button);
+            exifButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    exifTextView.setVisibility(View.VISIBLE);
+                    exifButton.setVisibility(View.GONE);
+                }
+            });
             replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
             quoteButton = (Button)popupView.findViewById(R.id.popup_quote_button);
             highlightButton = (Button)popupView.findViewById(R.id.popup_highlight_button);
@@ -537,7 +565,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
             dismissButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    popupWindow.dismiss();
+                   popupWindow.dismiss();
                 }
             });
             fullWidthDismissButton = (Button)popupView.findViewById(R.id.popup_full_width_dismiss_button);
@@ -562,13 +590,26 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
+        final String spoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
+        final String exifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
         final long clickedThreadNo = resto == 0 ? postId : resto;
         final long clickedPostNo = resto == 0 || postId == resto ? 0 : postId;
-        Log.i(TAG, "Calling popup with id=" + id + " isDead=" + isDead + " postNo=" + postId + " resto=" + resto + " text=" + text);
+        if (DEBUG) Log.i(TAG, "Calling popup with id=" + id + " isDead=" + isDead + " postNo=" + postId + " resto=" + resto + " text=" + text);
         ensurePopupWindow();
         popupHeader.setText(headerText);
         popupText.setText(text);
 
+        setCountryFlag(countryFlagUrl);
+        setSpoilerButton(spoilerText);
+        setExifButton(exifText);
+        setReplyButtons(isDead, clickedBoardCode, clickedThreadNo, clickedPostNo, tim, text);
+        displayHighlightButton(clickedPostNo);
+
+        popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
+        return true;
+    }
+
+    protected void setCountryFlag(String countryFlagUrl) {
         if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagUrl);
         if (countryFlagUrl != null && !countryFlagUrl.isEmpty()) {
             try {
@@ -587,7 +628,36 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
             countryFlag.setVisibility(View.GONE);
             countryFlag.setImageBitmap(null);
         }
+    }
 
+    protected void setSpoilerButton(String spoilerText) {
+        spoilerTextView.setVisibility(View.GONE);
+        if (spoilerText != null && !spoilerText.isEmpty()) {
+            spoilerButton.setVisibility(View.VISIBLE);
+            spoilerTextView.setText(spoilerText);
+        }
+        else {
+            spoilerButton.setVisibility(View.GONE);
+            spoilerTextView.setText("");
+        }
+    }
+
+    protected void setExifButton(String exifText) {
+        exifTextView.setVisibility(View.GONE);
+        if (exifText != null && !exifText.isEmpty()) {
+            exifButton.setVisibility(View.VISIBLE);
+            exifTextView.setText(exifText);
+        }
+        else {
+            exifButton.setVisibility(View.GONE);
+            exifTextView.setText("");
+        }
+    }
+
+    protected void setReplyButtons(boolean isDead,
+                                   final String clickedBoardCode, final long clickedThreadNo, final long clickedPostNo,
+                                   final long tim, final String text)
+    {
         if (isDead) {
             replyButton.setVisibility(View.GONE);
             quoteButton.setVisibility(View.GONE);
@@ -626,11 +696,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
                 }
             });
         }
-
-        displayHighlightButton(clickedPostNo);
-
-        popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
-        return true;
     }
 
     protected void displayHighlightButton(long postNo) { // board-level doesn't highlight, only thread-level does

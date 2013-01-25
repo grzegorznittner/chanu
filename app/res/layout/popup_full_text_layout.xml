@@ -64,15 +64,23 @@
 
                 <TextView
                     android:id="@+id/popup_full_text"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:textColor="#010101"
-                    android:linksClickable="true"
-                    android:autoLink="web|email"
-                    android:scrollHorizontally="true"
-                    android:layout_gravity="top">
-                </TextView>
+                    style="@style/PopupFullTextViewStyle"
+                    />
+
+                <TextView
+                        android:id="@+id/popup_spoiler_text"
+                        style="@style/PopupFullTextViewStyle"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone"
+                        />
+
+                <TextView
+                        android:id="@+id/popup_exif_text"
+                        style="@style/PopupFullTextViewStyle"
+                        android:layout_marginTop="8dp"
+                        android:textSize="12dp"
+                        android:visibility="gone"
+                        />
 
             </LinearLayout>
 
@@ -84,6 +92,20 @@
                 android:layout_gravity="bottom"
                 android:orientation="vertical"
                 >
+
+            <Button
+                    android:id="@+id/popup_spoiler_button"
+                    style="@style/PopupFullTextButtonStyle"
+                    android:layout_width="match_parent"
+                    android:visibility="gone"
+                    android:text="@string/spoiler" />
+
+            <Button
+                    android:id="@+id/popup_exif_button"
+                    style="@style/PopupFullTextButtonStyle"
+                    android:layout_width="match_parent"
+                    android:visibility="gone"
+                    android:text="@string/exif" />
 
             <LinearLayout
                     android:layout_width="match_parent"
