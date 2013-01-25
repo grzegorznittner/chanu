@@ -46,6 +46,7 @@
                         android:textColor="#010101"
                         android:textStyle="bold"
                         android:paddingBottom="16dp"
+                        android:focusable="true"
                         android:layout_gravity="top|left">
                     </TextView>
 
@@ -54,6 +55,7 @@
                         android:layout_width="16dp"
                         android:layout_height="11dp"
                         android:layout_gravity="top|right"
+                        android:focusable="false"
                         android:contentDescription="@string/popup_country_flag"
                         >
                     </ImageView>

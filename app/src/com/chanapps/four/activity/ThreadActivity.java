@@ -28,11 +28,8 @@ import com.chanapps.four.adapter.ThreadCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
@@ -247,7 +244,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
             if (spoiler > 0) {
-                iv.setImageResource(R.drawable.spoiler);
+                String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+                smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
             }
             else if (imageUrl != null && !imageUrl.isEmpty()) {
                 smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);

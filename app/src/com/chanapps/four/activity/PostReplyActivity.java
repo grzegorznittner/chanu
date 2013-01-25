@@ -570,13 +570,12 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     }
 
     private void updateBump() {
-        String s = messageText.getText().toString();
-        if (ChanBoard.allowsBump(boardCode))
+        String s = messageText.getText().toString().trim();
+        if (DEBUG) Log.i(TAG, "updateBump for s=" + s);
+        if (!ChanBoard.allowsBump(boardCode) || !s.isEmpty())
             bumpButton.setVisibility(View.GONE);
-        else if (s == null || s.isEmpty())
-            bumpButton.setVisibility(View.VISIBLE);
         else
-            bumpButton.setVisibility(View.GONE);
+            bumpButton.setVisibility(View.VISIBLE);
     }
 
     private void bump() {

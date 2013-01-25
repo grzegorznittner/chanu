@@ -103,6 +103,9 @@ public class ChanBoard {
 	}
 
     public static List<ChanBoard> getBoardsRespectingNSFW(Context context) {
+        if (boards == null) {
+            initBoards(context);
+        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean showNSFW = prefs.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
         return showNSFW ? boards : safeBoards;
@@ -326,7 +329,27 @@ public class ChanBoard {
 
     /*
    /i - lots of stuff
-   /q - "No File" checkbox
     */
+
+    static public final String SPOILER_THUMBNAIL_IMAGE_ROOT = "http://static.4chan.org/image/spoiler-";
+    static public final String SPOILER_THUMBNAIL_IMAGE_EXTENSION = ".png";
+    static public final Map<String, Integer> spoilerImageCount = new HashMap<String, Integer>();
+    static public final Random spoilerGenerator = new Random();
+    static public String spoilerThumbnailUrl(String boardCode) {
+        if (spoilerImageCount.isEmpty()) {
+            spoilerImageCount.put("m", 4);
+            spoilerImageCount.put("co", 5);
+            spoilerImageCount.put("tg", 3);
+            spoilerImageCount.put("tv", 5);
+        }
+        int spoilerImages = spoilerImageCount.containsKey(boardCode) ? spoilerImageCount.get(boardCode) : 1;
+        if (spoilerImages > 1) {
+            int spoilerImageNum = spoilerGenerator.nextInt(spoilerImages) + 1;
+            return SPOILER_THUMBNAIL_IMAGE_ROOT + boardCode + spoilerImageNum + SPOILER_THUMBNAIL_IMAGE_EXTENSION;
+        }
+        else {
+            return SPOILER_THUMBNAIL_IMAGE_ROOT + boardCode + SPOILER_THUMBNAIL_IMAGE_EXTENSION;
+        }
+    }
 
 }

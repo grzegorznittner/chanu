@@ -16,15 +16,18 @@
 
     <View
             android:id="@+id/grid_item_self_highlight"
-            style="@style/GridItemSelfHighlightStyle"/>
+            style="@style/GridItemSelfHighlightStyle"
+            />
 
     <View
             android:id="@+id/grid_item_prev_highlight"
-            style="@style/GridItemPrevHighlightStyle"/>
+            style="@style/GridItemPrevHighlightStyle"
+            />
 
     <View
             android:id="@+id/grid_item_next_highlight"
-            style="@style/GridItemNextHighlightStyle"/>
+            style="@style/GridItemNextHighlightStyle"
+            />
 
     <TextView
             android:id="@+id/grid_item_text"

@@ -316,7 +316,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
             int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
             if (spoiler > 0) {
-                iv.setImageResource(R.drawable.spoiler);
+                smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode));
             }
             else if (imageUrl != null && !imageUrl.isEmpty() && loadPage == 0) {
                 smartSetImageView(iv, imageUrl);
