@@ -182,36 +182,48 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (DEBUG) Log.i(TAG, "onStart");
-    }
-
     public SharedPreferences ensurePrefs() {
         if (prefs == null)
             prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         return prefs;
     }
 
+    private boolean restarted = false;
+
+    public void onRestart() {
+        super.onRestart();
+        if (DEBUG) Log.i(TAG, "onStart");
+        restoreOnRestart();
+        restarted = true;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (DEBUG) Log.i(TAG, "onStart");
+        if (restarted)
+            restarted = false;
+        else
+            restoreInstanceState();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         if (DEBUG) Log.i(TAG, "onResume");
-        restoreInstanceState();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         if (DEBUG) Log.i(TAG, "onPause");
-        saveInstanceState();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         if (DEBUG) Log.i(TAG, "onStop");
+        saveInstanceState();
     }
 
     private void restoreInstanceState() {
@@ -219,9 +231,11 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             loadFromIntent(getIntent());
         else
             loadFromPrefs();
-
-        loadImageFromPrefs();
         reloadCaptcha();
+    }
+
+    private void restoreOnRestart() {
+        loadFromPrefs();
     }
 
     protected void setMessageText(String text, String quoteText) {
@@ -268,6 +282,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         orientation = null;
 
         String text = intent.getStringExtra(ChanHelper.TEXT);
+        Log.i(TAG, "Intent has text? " + intent.hasExtra(ChanHelper.TEXT));
+        Log.i(TAG, "Intent has text=" + text);
         String quoteText = ChanPost.quoteText(intent.getStringExtra(ChanHelper.QUOTE_TEXT));
         setMessageText(text, quoteText);
         adjustFieldVisibility();
@@ -332,11 +348,17 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         boolean spoilerChecked = prefs.getBoolean(ChanHelper.SPOILER, false);
             spoilerCheckbox.setChecked(spoilerChecked);
 
+        loadImageFromPrefs();
+
         setActionBarTitle();
         if (DEBUG) Log.i(TAG, "loaded from prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " text=" + " quoteText=" + quoteText);
     }
 
     protected void adjustFieldVisibility() {
+
+        if (threadNo == 0) // new thread
+            sageButton.setVisibility(View.GONE);
+
         if (ChanBoard.hasName(boardCode))
             nameText.setVisibility(View.VISIBLE);
         else
@@ -572,7 +594,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private void updateBump() {
         String s = messageText.getText().toString().trim();
         if (DEBUG) Log.i(TAG, "updateBump for s=" + s);
-        if (!ChanBoard.allowsBump(boardCode) || !s.isEmpty())
+        if (threadNo == 0 || !ChanBoard.allowsBump(boardCode) || !s.isEmpty())
             bumpButton.setVisibility(View.GONE);
         else
             bumpButton.setVisibility(View.VISIBLE);
