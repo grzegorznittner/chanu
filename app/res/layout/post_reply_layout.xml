@@ -98,24 +98,6 @@
                             android:src="@drawable/content_backspace">
                     </ImageButton>
 
-                    <ImageButton
-                            android:id="@+id/post_reply_rotate_left_button"
-                            style="@style/PostReplyButtonStyle"
-                            android:visibility="gone"
-                            android:contentDescription="@string/post_reply_rotate_left_hint"
-                            android:hint="@string/post_reply_rotate_left_hint"
-                            android:src="@drawable/images_rotate_left">
-                    </ImageButton>
-
-                    <ImageButton
-                            android:id="@+id/post_reply_rotate_right_button"
-                            style="@style/PostReplyButtonStyle"
-                            android:visibility="gone"
-                            android:contentDescription="@string/post_reply_rotate_right_hint"
-                            android:hint="@string/post_reply_rotate_right_hint"
-                            android:src="@drawable/images_rotate_right">
-                    </ImageButton>
-
                 </LinearLayout>
 
                 <LinearLayout

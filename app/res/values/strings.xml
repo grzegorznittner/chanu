@@ -207,6 +207,12 @@
     <!-- Help and about_dialog -->
     <string name="about_menu">About</string>
 
+    <!-- camera -->
+    <string name="camera_capture">Capture picture</string>
+    <string name="camera_open_error">Couldn\'t open camera</string>
+    <string name="camera_capture_error">Couldn\'t take picture</string>
+    <string name="camera_folder_name">4Channer Camera</string>
+
     <!-- board names -->
     <string name="board_type_japanese_culture">Japanese Culture</string>
     <string name="board_a">Anime &amp; Manga</string>

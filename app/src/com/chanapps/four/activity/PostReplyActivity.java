@@ -1,10 +1,8 @@
 package com.chanapps.four.activity;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -42,7 +40,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static final int PASSWORD_MAX = 100000000;
     private static final Random randomGenerator = new Random();
@@ -54,8 +52,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private ImageButton cameraButton;
     private ImageButton pictureButton;
     private ImageButton deleteButton;
-    private ImageButton rotateLeftButton;
-    private ImageButton rotateRightButton;
     private ImageButton bumpButton;
     private ImageButton sageButton;
 
@@ -105,8 +101,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         cameraButton = (ImageButton)findViewById(R.id.post_reply_camera_button);
         pictureButton = (ImageButton)findViewById(R.id.post_reply_picture_button);
         deleteButton = (ImageButton)findViewById(R.id.post_reply_delete_button);
-        rotateLeftButton = (ImageButton)findViewById(R.id.post_reply_rotate_left_button);
-        rotateRightButton = (ImageButton)findViewById(R.id.post_reply_rotate_right_button);
         bumpButton = (ImageButton)findViewById(R.id.post_reply_bump_button);
         sageButton = (ImageButton)findViewById(R.id.post_reply_sage_button);
 
@@ -151,16 +145,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 deleteImage();
             }
         });
-        rotateLeftButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                rotateLeft();
-            }
-        });
-        rotateRightButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                rotateRight();
-            }
-        });
         bumpButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 bump();
@@ -179,7 +163,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         });
 
         recaptchaLoading = (ImageView) findViewById(R.id.post_reply_recaptcha_loading);
-
     }
 
     public SharedPreferences ensurePrefs() {
@@ -416,7 +399,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         ed.putBoolean(ChanHelper.SPOILER, spoilerCheckbox.isChecked());
         ed.putString(ChanHelper.QUOTE_TEXT, null);
         ed.putLong(ChanHelper.TIM, tim);
-        ed.putString(ChanHelper.CAMERA_IMAGE_URL, cameraImageUri == null ? null : cameraImageUri.toString());
+        //ed.putString(ChanHelper.CAMERA_IMAGE_URL, cameraImageUri == null ? null : cameraImageUri.toString());
         ed.putString(ChanHelper.POST_REPLY_IMAGE_URL, imageUri == null ? null : imageUri.toString());
         ed.putString(ChanHelper.IMAGE_PATH, imagePath);
         ed.putString(ChanHelper.CONTENT_TYPE, contentType);
@@ -444,7 +427,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             if (requestCode == IMAGE_CAPTURE) {
                 if (resultCode == RESULT_OK) {
                     msg = res.getString(R.string.post_reply_added_image);
-                    cameraImageUri = Uri.parse(ensurePrefs().getString(ChanHelper.CAMERA_IMAGE_URL, null));
+                    cameraImageUri = Uri.parse(intent.getStringExtra(ChanHelper.CAMERA_IMAGE_URL));
+                    //cameraImageUri = Uri.parse(ensurePrefs().getString(ChanHelper.CAMERA_IMAGE_URL, null));
                     imageUri = cameraImageUri;
                     ensurePrefs().edit().putString(ChanHelper.POST_REPLY_IMAGE_URL, imageUri.toString()).commit();
                     if (DEBUG) Log.i(TAG, "Got camera result for activity url=" + imageUri);
@@ -542,8 +526,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     private void resetImagePreview() {
         deleteButton.setVisibility(View.VISIBLE);
-        rotateLeftButton.setVisibility(View.VISIBLE);
-        rotateRightButton.setVisibility(View.VISIBLE);
         imagePreview.setVisibility(View.VISIBLE);
         imagePreview.setPadding(0, 0, 0, 16);
         angle = 0;
@@ -583,14 +565,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         orientation = null;
     }
 
-    private void rotateLeft() {
-        rotateImagePreview(-90);
-    }
-
-    private void rotateRight() {
-        rotateImagePreview(90);
-    }
-
     private void updateBump() {
         String s = messageText.getText().toString().trim();
         if (DEBUG) Log.i(TAG, "updateBump for s=" + s);
@@ -610,48 +584,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         emailText.setText("sage"); // 4chan way to post without bumping
     }
 
-    private void rotateImagePreview(int theta) {
-        try {
-            Bitmap b = getImagePreviewBitmap();
-            if (b != null) {
-                Matrix matrix = new Matrix();
-                angle += theta;
-                matrix.postRotate(angle);
-                Bitmap rotatedBitmap = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), matrix, true);
-                imagePreview.setImageBitmap(rotatedBitmap);
-            }
-            else {
-                Toast.makeText(ctx, R.string.post_reply_no_image_rotate, Toast.LENGTH_SHORT).show();
-                Log.e(TAG, res.getString(R.string.post_reply_no_image_rotate));
-            }
-        }
-        catch (Exception e) {
-            Toast.makeText(ctx, R.string.post_reply_no_image_rotate, Toast.LENGTH_SHORT).show();
-            Log.e(TAG, res.getString(R.string.post_reply_no_image_rotate), e);
-        }
-    }
-
     private void startCamera() {
-        String fileName = java.util.UUID.randomUUID().toString() + ".jpg";
-        String contentType = "image/jpeg";
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, fileName);
-        values.put(MediaStore.Images.Media.DESCRIPTION, res.getString(R.string.post_reply_camera_capture));
-        values.put(MediaStore.Images.Media.MIME_TYPE, contentType);
-        values.put(MediaStore.Images.Media.ORIENTATION, "0");
-        Uri reservedCameraUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        if (reservedCameraUri != null) {
-            cameraImageUri = reservedCameraUri;
-            if (DEBUG) Log.i(TAG, "Starting camera with imageUri=" + cameraImageUri);
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri);
-            intent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            startActivityForResult(intent, IMAGE_CAPTURE);
-        }
-        else {
-            Toast.makeText(ctx, R.string.post_reply_no_camera, Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "Couldn't get camera image");
-        }
+        Intent intent = new Intent(this, CameraActivity.class);
+        startActivityForResult(intent, IMAGE_CAPTURE);
     }
 
     private void startGallery() {
