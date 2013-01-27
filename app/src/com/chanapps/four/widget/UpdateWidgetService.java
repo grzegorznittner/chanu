@@ -149,14 +149,17 @@ public class UpdateWidgetService extends Service {
                 Bitmap b = null;
                 try {
                     ChanPost thread = threads == null ? null : threads[i];
+                    String thumbnailUrl;
                     if (thread == null) {
                         if (DEBUG) Log.i(TAG, "no thread found for i=" + i + " skipping download");
                     }
                     else if (!isConnected()) {
                         if (DEBUG) Log.i(TAG, "network down, can't load bitmap for i=" + i + " skipping download");
                     }
+                    else if ((thumbnailUrl = thread.getThumbnailUrl()) == null) {
+                        if (DEBUG) Log.i(TAG, "no thumbnail url found for i=" + i + " skipping download");
+                    }
                     else {
-                        String thumbnailUrl = thread.getThumbnailUrl();
                         URLConnection conn = new URL(thumbnailUrl).openConnection();
                         conn.connect();
                         is = conn.getInputStream();

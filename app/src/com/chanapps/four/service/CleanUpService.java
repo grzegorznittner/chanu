@@ -26,7 +26,7 @@ import com.chanapps.four.data.FileDesc;
 public class CleanUpService extends BaseChanService {
 
     protected static final String TAG = CleanUpService.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     
     public static void startService(Context context) {
         if (DEBUG) Log.i(TAG, "Start clean up service");

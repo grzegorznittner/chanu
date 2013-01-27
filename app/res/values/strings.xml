@@ -30,9 +30,9 @@
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
     <string name="download_all_images_menu">Download All Images</string>
-    <string name="download_image_menu">Save Image</string>
+    <string name="download_image_menu">Save to Gallery</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
-    <string name="view_image_gallery_menu">View Gallery</string>
+    <string name="view_image_gallery_menu">View in Gallery</string>
     <string name="share_image_menu">Share Image</string>
     <string name="post_reply_send_menu">Post Reply</string>
 
@@ -95,6 +95,8 @@
     <string name="full_screen_close_button">Close</string>
     
     <!-- popup text -->
+    <string name="spoiler">Show Spoiler</string>
+    <string name="exif">Show EXIF Data</string>
     <string name="reply">Reply</string>
     <string name="quote">Quote</string>
     <string name="dismiss">Close</string>
@@ -107,6 +109,7 @@
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
     <string name="dialog_clear_watchlist">Clear watchlist?</string>
     <string name="dialog_clean_watchlist">Clean dead threads?</string>
+    <string name="dialog_set_wallpaper">Set as wallpaper?</string>
     <string name="dialog_clear_cache_confirm">Clear all cached data?  This may take several minutes.</string>
     <string name="dialog_reset_preferences_confirm">Reset all preferences?</string>
     <string name="dialog_close">Close</string>
@@ -114,6 +117,7 @@
     <string name="dialog_delete">Remove</string>
     <string name="dialog_clear">Clear</string>
     <string name="dialog_clean">Clean</string>
+    <string name="dialog_set">Set</string>
     <string name="dialog_reset">Reset</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_added_to_watchlist">Added to watchlist</string>
@@ -128,20 +132,22 @@
     <string name="post_reply_title">Post Reply</string>
     <string name="post_reply_thread_title">New Thread</string>
     <string name="post_reply_text_hint">Comment (Optional)</string>
-    <string name="post_reply_text_hint_board_q">Comment (Required for /q New Threads)</string>
+    <string name="post_reply_text_hint_required">Comment (Required)</string>
     <string name="post_reply_camera_hint">Camera</string>
     <string name="post_reply_picture_hint">Gallery</string>
     <string name="post_reply_delete_hint">Delete Image</string>
     <string name="post_reply_rotate_left_hint">Rotate Left</string>
     <string name="post_reply_rotate_right_hint">Rotate Right</string>
+    <string name="post_reply_bump_hint">Bump</string>
     <string name="post_reply_sage_hint">Sage</string>
     <string name="post_reply_reload_captcha_hint">Reload Captcha</string>
     <string name="post_reply_recaptcha_hint">reCAPTCHA Challenge (Required)</string>
     <string name="post_reply_name_hint">Name (Optional)</string>
     <string name="post_reply_email_hint">Email (Optional)</string>
     <string name="post_reply_subject_hint">Subject (Optional)</string>
-    <string name="post_reply_subject_hint_board_q">Subject (Required for /q New Threads)</string>
+    <string name="post_reply_subject_hint_required">Subject (Required)</string>
     <string name="post_reply_password_hint">Password (Optional)</string>
+    <string name="post_reply_spoiler">Spoiler Image</string>
     <string name="post_reply_recaptcha_url_root">http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc</string>
     <string name="post_reply_no_board">Can\'t post, unknown board</string>
     <string name="post_reply_added_image">Added image to post</string>
@@ -156,8 +162,8 @@
     <string name="post_reply_captcha_error">Couldn\'t load captcha</string>
     <string name="post_reply_enter_captcha">Enter captcha</string>
     <string name="post_reply_add_image">Add image for a new thread</string>
-    <string name="post_reply_add_text_or_image">Add text or image to post</string>
-    <string name="post_reply_board_q_special_needs">Add a subject and comment for board /q new threads</string>
+    <string name="post_reply_add_text_or_image">Add comment or image</string>
+    <string name="post_reply_board_requires_subject">Add a subject</string>
     <string name="post_reply_response_error">Couldn\'t post, unknown response</string>
     <string name="post_reply_no_response">Couldn\'t post, no response</string>
     <string name="post_reply_error">Couldn\'t post</string>
@@ -202,6 +208,12 @@
 
     <!-- Help and about_dialog -->
     <string name="about_menu">About</string>
+
+    <!-- camera -->
+    <string name="camera_capture">Capture picture</string>
+    <string name="camera_open_error">Couldn\'t open camera</string>
+    <string name="camera_capture_error">Couldn\'t take picture</string>
+    <string name="camera_folder_name">4Channer Camera</string>
 
     <!-- board names -->
     <string name="board_type_japanese_culture">Japanese Culture</string>

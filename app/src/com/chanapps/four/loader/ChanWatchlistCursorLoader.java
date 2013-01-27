@@ -40,10 +40,10 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
         if (savedWatchlist == null || savedWatchlist.isEmpty()) {
             return null;
         }
-        if (DEBUG) Log.d(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
+        if (DEBUG) Log.i(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
         MatrixCursor cursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
         for (String threadPath : savedWatchlist) {
-            if (DEBUG) Log.d(TAG, "Parsing threadpath: " + threadPath);
+            if (DEBUG) Log.i(TAG, "Parsing threadpath: " + threadPath);
 
             try {
                 String[] threadComponents = ChanWatchlist.getThreadPathComponents(threadPath);
@@ -59,6 +59,9 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 int imageHeight;
                 int fullImageWidth;
                 int fullImageHeight;
+                int spoiler;
+                String spoilerText;
+                String exifText;
                 int isDead;
                 ChanThread thread = null;
                 ChanPost threadPost = null;
@@ -85,6 +88,9 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                     imageHeight = threadPost.tn_h;
                     fullImageWidth = threadPost.w;
                     fullImageHeight = threadPost.h;
+                    spoiler = threadPost.spoiler;
+                    spoilerText = threadPost.getSpoilerText();
+                    exifText = threadPost.getExifText();
                     isDead = thread.isDead ? 1 : 0;
                     ChanWatchlist.updateThreadInfo(context, boardCode, threadNo, tim,
                             text, imageUrl, imageWidth, imageHeight, thread.isDead);
@@ -103,6 +109,9 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                     imageHeight = Integer.valueOf(threadComponents[6]);
                     fullImageWidth = imageWidth;
                     fullImageHeight = imageHeight;
+                    spoiler = 0;
+                    spoilerText = "";
+                    exifText = "";
                     isDead = 0; // we don't know if it's dead or not, assume alive
                 }
                 MatrixCursor.RowBuilder row = cursor.newRow();
@@ -119,11 +128,14 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 row.add(fullImageWidth);
                 row.add(fullImageHeight);
                 row.add(tim);
+                row.add(spoiler);
+                row.add(spoilerText);
+                row.add(exifText);
                 row.add(isDead);
                 row.add(0);
                 row.add(0);
                 if (DEBUG) Log.i(TAG, "Thread dead status for " + boardCode + "/" + threadNo + " is " + isDead);
-                if (DEBUG) Log.d(TAG, "Watchlist cursor has: " + threadNo + " " + boardCode + " " + imageUrl + " " + shortText);
+                if (DEBUG) Log.i(TAG, "Watchlist cursor has: " + threadNo + " " + boardCode + " " + imageUrl + " " + shortText);
             }
             catch (Exception e) {
                 Log.e(TAG, "Error parsing watch preferences ", e);

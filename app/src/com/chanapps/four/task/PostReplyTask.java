@@ -9,7 +9,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import com.chanapps.four.data.ChanPostlist;
+import com.chanapps.four.component.ToastRunnable;
+import com.chanapps.four.data.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -28,10 +29,7 @@ import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.ChanPostResponse;
-import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.fragment.PostingReplyDialogFragment;
 import com.chanapps.four.multipartmime.FilePart;
 import com.chanapps.four.multipartmime.MultipartEntity;
@@ -53,7 +51,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
     public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final String MAX_FILE_SIZE = "3145728";
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private PostReplyActivity activity = null;
     private String password = null;
@@ -83,7 +81,13 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
                 return R.string.post_reply_error;
             }
 
-            return updateThreadsAndWatchlist(response);
+            ChanPostResponse chanPostResponse = new ChanPostResponse(context, response);
+            chanPostResponse.processResponse();
+
+            if (!postSuccessful(chanPostResponse))
+                return R.string.post_reply_error;
+
+            return updateThreadsAndWatchlist(chanPostResponse);
         }
         catch (Exception e) {
             Log.e(TAG, "Error posting", e);
@@ -103,7 +107,37 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
         partsList.add(new StringPart("pwd", password));
         partsList.add(new StringPart("recaptcha_challenge_field", activity.getRecaptchaChallenge()));
         partsList.add(new StringPart("recaptcha_response_field", activity.getRecaptchaResponse()));
+        if (activity.hasSpoiler()) {
+            partsList.add(new StringPart("spoiler", "on"));
+        }
+        if (!addImage(partsList))
+            return null;
+
+        Part[] parts = partsList.toArray(new Part[partsList.size()]);
+
+        if (DEBUG)
+            dumpPartsList(partsList);
+
+        MultipartEntity entity = new MultipartEntity(parts);
+        return entity;
+    }
+
+    protected void dumpPartsList(List<Part> partsList) {
+        Log.i(TAG, "Dumping mime parts list:");
+        for (Part p : partsList) {
+            if (!(p instanceof StringPart))
+                continue;
+            StringPart s = (StringPart)p;
+            String line = s.getName() + ": " + s.getValue() + ", ";
+            Log.i(TAG, line);
+        }
+    }
+
+    protected boolean addImage(List<Part> partsList) {
         String imageUrl = activity.imageUri == null ? null : activity.imageUri.toString();
+        if (imageUrl == null && activity.threadNo == 0 && !ChanBoard.requiresThreadImage(activity.boardCode)) {
+            partsList.add(new StringPart("textonly", "on"));
+        }
         if (imageUrl != null) {
             if (DEBUG) Log.i(TAG, "Trying to load image for imageUrl=" + imageUrl + " imagePath="+activity.imagePath+" contentType="+activity.contentType);
             File file = null;
@@ -120,7 +154,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
                 }
                 catch (Exception e) {
                     Log.e(TAG, "Couldn't get file from uri=" + activity.imageUri, e);
-                    return null;
+                    return false;
                 }
                 finally {
                     if (in != null) {
@@ -153,25 +187,10 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
             }
             catch (Exception e) {
                 Log.e(TAG, "Couldn't add file to entity, file=" + file.getAbsolutePath(), e);
-                return null;
+                return false;
             }
         }
-
-        Part[] parts = partsList.toArray(new Part[partsList.size()]);
-
-        if (DEBUG) {
-            Log.i(TAG, "Dumping mime parts list:");
-            for (Part p : partsList) {
-                if (!(p instanceof StringPart))
-                    continue;
-                StringPart s = (StringPart)p;
-                String line = s.getName() + ": " + s.getValue() + ", ";
-                Log.i(TAG, line);
-            }
-        }
-
-        MultipartEntity entity = new MultipartEntity(parts);
-        return entity;
+        return true;
     }
 
     protected String executePostReply(MultipartEntity entity) {
@@ -210,19 +229,22 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
     protected String errorMessage = null;
 
-    protected int updateThreadsAndWatchlist(String response) {
-        ChanPostResponse chanPostResponse = new ChanPostResponse(context, response);
-        String errorMessage = chanPostResponse.getError(activity);
+    protected boolean postSuccessful(ChanPostResponse chanPostResponse) {
+        errorMessage = chanPostResponse.getError(activity);
         if (errorMessage != null && !errorMessage.isEmpty()) {
-            return R.string.post_reply_error;
+            return false;
         }
 
         if (DEBUG) Log.i(TAG, "isPosted:" + chanPostResponse.isPosted());
         if (!chanPostResponse.isPosted()) {
-            Log.e(TAG, "Unable to post response=" + response);
-            return R.string.post_reply_error;
+            Log.e(TAG, "Unable to post response=" + chanPostResponse.getResponse());
+            return false;
         }
 
+        return true;
+    }
+
+    protected int updateThreadsAndWatchlist(ChanPostResponse chanPostResponse) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean addThreadToWatchlist = prefs.getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true);
         long tim = activity.tim != 0 ? activity.tim : 1000 * (new Date()).getTime();// approximate until we get it back from the api
@@ -284,7 +306,8 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
             Toast.makeText(context, R.string.post_reply_posted_reply, Toast.LENGTH_SHORT).show();
         }
         dialogFragment.dismiss();
-        activity.navigateUp();
+        activity.finish();
+        //activity.navigateUp(); // had trouble with this
     }
 
 }

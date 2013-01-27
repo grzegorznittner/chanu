@@ -34,7 +34,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
     private static final boolean DEBUG = false;
 
     @Override
-    public void onReceive(Context context, Intent intent) { // when first boot up, default and then schedule for refresh
+    public void onReceive(final Context context, Intent intent) { // when first boot up, default and then schedule for refresh
         String action = intent.getAction();
 
         if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
@@ -43,11 +43,21 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
             editor.remove(ChanHelper.PREF_WIDGET_BOARDS);
             editor.commit();
             */
-            updateAndScheduleRepeating(context);
-            fetchAll(context);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    updateAndScheduleRepeating(context);
+                    fetchAll(context);
+                }
+            }).start();
         }
         else if (action.equals(GLOBAL_ALARM_RECEIVER_UPDATE_ACTION)) {
-            fetchAll(context);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    fetchAll(context);
+                }
+            }).start();
         }
         else {
             Log.e(TAG, "Received unknown action: " + action);

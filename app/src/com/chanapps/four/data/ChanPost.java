@@ -2,6 +2,8 @@ package com.chanapps.four.data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.util.Log;
@@ -62,6 +64,7 @@ public class ChanPost {
     public int omitted_images = -1;
     public int bumplimit = 0;
     public int imagelimit = 0;
+    public int spoiler = 0;
     public boolean isDead = false;
     public boolean defData = false;
 
@@ -100,7 +103,7 @@ public class ChanPost {
         return getFullText(true);
     }
 
-    public String getFullText(boolean withNumbers) {
+    private String getFullText(boolean withNumbers) {
         String text = sub != null && sub.trim().length() > 0
                   ? sub + (com != null && com.trim().length() > 0 ? "<br/>" + com : "")
                   : com;
@@ -123,7 +126,60 @@ public class ChanPost {
             text = text.replaceAll("<a[^>]*class=\"quotelink\">[^<]*</a>", "");
 
         text = text
-                .replaceAll("<br */?>", "\n")
+                .replaceAll("<span[^>]*class=\"abbr\"[^>]*>.*</span>", "")    // exif reference
+                .replaceAll("<table[^>]*class=\"exif\"[^>]*>.*</table>", "")  // exif info
+                .replaceAll("<s>[^<]*</s>", "");                         // spoiler text
+        text = textViewFilter(text);
+
+        long end = System.currentTimeMillis();
+        Log.v(TAG, "Regexp: " + (end - start) + "ms");
+
+        return text;
+    }
+
+    public String getExifText() {
+        return exifText(com);
+    }
+
+    private static final String exifText(String text) {
+        if (text == null || text.isEmpty())
+            return null;
+        Pattern p = Pattern.compile(".*<table[^>]*class=\"exif\"[^>]*>(.*)</table>.*");
+        Matcher m = p.matcher(text);
+        if (!m.matches())
+            return null;
+        String g = m.group(1);
+        if (g == null || g.isEmpty())
+            return null;
+        String s = g.replaceAll("<tr[^>]*><td colspan=\"2\"[^>]*><b>([^<]*)</b></td></tr>", "$1\n");
+        String t = s.replaceAll("<tr[^>]*><td[^>]*>([^<]*)</td><td[^>]*>([^<]*)</td></tr>", "$1: $2\n");
+        return textViewFilter(t);
+    }
+
+    public String getSpoilerText() {
+        return spoilerText(com);
+    }
+
+    private static final String spoilerText(String text) {
+        if (text == null || text.isEmpty())
+            return null;
+        Pattern p = Pattern.compile("<s>([^<]*)</s>");
+        Matcher m = p.matcher(text);
+        int start = 0;
+        String s = "";
+        while (m.find(start)) {
+            String g = m.group(1);
+            if (g != null && !g.isEmpty())
+                s += (s.isEmpty() ? "" : "\n") + g;
+            start = m.end();
+        }
+        if (s.isEmpty())
+            return null;
+        return "SPOILER:\n" + textViewFilter(s);
+    }
+
+    private static final String textViewFilter(String s) {
+        return s.replaceAll("<br */?>", "\n")
                 .replaceAll("\n\n\n+", "\n\n")
                 .replaceAll("<[^>]+>", "")
                 .replaceAll("&lt;", "<")
@@ -133,11 +189,6 @@ public class ChanPost {
                 .replaceAll("&#44;", ",")
                 .replaceAll("&#[0-9abcdef]*;", "")
                 .trim();
-
-        long end = System.currentTimeMillis();
-        Log.v(TAG, "Regexp: " + (end - start) + "ms");
-
-        return text;
     }
 
     private static final String collapseNewlines(String s) {

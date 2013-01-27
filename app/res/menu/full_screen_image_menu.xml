@@ -12,22 +12,6 @@
           android:enabled="false"
           android:showAsAction="always"
             />
-    <item android:id="@+id/download_image_menu"
-          android:title="@string/download_image_menu"
-          android:icon="@drawable/content_save"
-            />
-    <item android:id="@+id/share_image_menu"
-          android:title="@string/share_image_menu"
-          android:icon="@drawable/social_share"
-            />
-    <item android:id="@+id/set_as_wallpaper_menu"
-          android:title="@string/set_as_wallpaper_menu"
-          android:icon="@drawable/content_picture"
-            />
-    <item android:id="@+id/view_image_gallery_menu"
-          android:title="@string/view_image_gallery_menu"
-          android:icon="@drawable/collections_view_as_grid"
-            />
     <item android:id="@+id/go_to_board_menu"
           android:title="@string/go_to_board_menu"
           android:icon="@drawable/navigation_forward"

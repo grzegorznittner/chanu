@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
  */
 public class ChanPostResponse {
 
+    private Context ctx = null;
+    private String response = null;
     private boolean isPosted = false;
     private long threadNo = 0;
     private long postNo = 0;
@@ -25,18 +27,25 @@ public class ChanPostResponse {
 
     private static final Pattern SUCCESS_REG = Pattern.compile("(<title.*)(Post successful)");
     private static final Pattern POST_REG = Pattern.compile("thread:([0-9]*),no:([0-9]*)"); // <!-- thread:44593688,no:44595010 -->
+    private static final Pattern BAN_REG = Pattern.compile("<h2>([^<]*)<span class=\"banType\">([^<]*)</span>([^<]*)</h2>");
     private static final Pattern ERROR_REG = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<]*)");
 
-    public ChanPostResponse(Context ctx, String page) {
+    public ChanPostResponse(Context ctx, String response) {
+        this.ctx = ctx;
+        this.response = response;
+    }
+
+    public void processResponse() {
+        isPosted = false;
         try {
             error = ctx.getString(R.string.post_reply_response_error);
 
-            Matcher successMatch = SUCCESS_REG.matcher(page);
+            Matcher successMatch = SUCCESS_REG.matcher(response);
             if (successMatch.find()) {
                 isPosted = true;
                 error = null;
                 try {
-                    Matcher threadMatch = POST_REG.matcher(page);
+                    Matcher threadMatch = POST_REG.matcher(response);
                     if (threadMatch.find()) {
                         threadNo = Long.valueOf(threadMatch.group(1));
                         postNo = Long.valueOf(threadMatch.group(2));
@@ -53,15 +62,22 @@ public class ChanPostResponse {
                 }
             }
             else {
-                Matcher errorMatch = ERROR_REG.matcher(page);
-                if (errorMatch.find()) {
+                Matcher banMatch = BAN_REG.matcher(response);
+                Matcher errorMatch = ERROR_REG.matcher(response);
+                if (banMatch.find())
+                    error = banMatch.group(1) + " " + banMatch.group(2) + " " + banMatch.group(3);
+                else if (errorMatch.find())
                     error = errorMatch.group(2).replaceFirst("Error: ", "");
-                }
             }
         }
-        catch(Exception e) {
+        catch (Exception e) {
+            error = e.getLocalizedMessage();
             isPosted = false;
         }
+    }
+
+    public String getResponse() {
+        return response;
     }
 
     public boolean isPosted() {

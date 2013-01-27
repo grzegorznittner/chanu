@@ -58,14 +58,16 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                         thread.no, boardName, 0, "",
                         thread.getCountryFlagUrl(),
                         thread.getBoardThreadText(), thread.getHeaderText(), thread.getFullText(),
-                        thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.isDead ? 1 : 0, 0, 0});
+                        thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
+                        thread.getSpoilerText(), thread.getExifText(), thread.isDead ? 1 : 0, 0, 0});
 
             } else {
                 matrixCursor.addRow(new Object[] {
                         thread.no, boardName, 0,
                         thread.getThumbnailUrl(), thread.getCountryFlagUrl(),
                         thread.getBoardThreadText(), thread.getHeaderText(), thread.getFullText(),
-                        thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.isDead ? 1 : 0, 0, 0});
+                        thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
+                        thread.getSpoilerText(), thread.getExifText(), thread.isDead ? 1 : 0, 0, 0});
             }
         }
         if (board.lastPage) {
@@ -73,14 +75,16 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                     2, boardName, 0,
                     "", "",
                     "", "", "",
-                    -1, -1, -1, -1, 0, 1, 0, 1});
+                    -1, -1, -1, -1, 0, 0,
+                    "", "", 1, 0, 1});
         }
         else {
             matrixCursor.addRow(new Object[] {
                     2, boardName, 0,
                     "", "",
                     "", "", "",
-                    -1, -1, -1, -1, 0, 1, 1, 0});
+                    -1, -1, -1, -1, 0, 0,
+                    "", "", 1, 1, 0});
             registerContentObserver(matrixCursor, mObserver);
         }
         return matrixCursor;

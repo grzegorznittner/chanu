@@ -10,13 +10,14 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.Date;
 
+import android.view.*;
+import com.chanapps.four.fragment.SetWallpaperDialogFragment;
 import org.apache.commons.io.IOUtils;
 
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
 import android.app.DownloadManager.Request;
-import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,8 +25,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -39,13 +38,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -75,6 +68,8 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 	public static final String TAG = "FullScreenImageActivity";
 	public static final int PROGRESS_REFRESH_MSG = 0;
 	public static final int START_DOWNLOAD_MSG = 1;
+
+    private static final boolean DEBUG = false;
 
 	private WebView webView = null;
 
@@ -118,7 +113,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
         intent.putExtra(ChanHelper.IMAGE_WIDTH, w);
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, h);
         intent.putExtra(ChanHelper.LAST_THREAD_POSITION, adapterView.getFirstVisiblePosition());
-        Log.i(TAG, "Starting full screen image viewer for: " + boardCode + "/" + threadNo + "/" + postId);
+        if (DEBUG) Log.i(TAG, "Starting full screen image viewer for: " + boardCode + "/" + threadNo + "/" + postId);
         from.startActivity(intent);
     }
 
@@ -219,7 +214,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
         return gallery4chanFolder;
     }
 
-    private String copyImageFileToGallery() {
+    private Integer copyImageFileToGallery() {
         InputStream boardFile = null;
         OutputStream newFile = null;
         try {
@@ -238,14 +233,14 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
                     new MediaScannerConnection.OnScanCompletedListener() {
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
-                            Log.i(TAG, "Scanned file for gallery: " + path + " " + uri);
+                            if (DEBUG) Log.i(TAG, "Scanned file for gallery: " + path + " " + uri);
                             runOnUiThread(new ToastRunnable(FullScreenImageActivity.this, R.string.full_screen_saved_to_gallery));
                         }
                     });
         }
         catch (Exception e) {
             Log.e(TAG, "Error saving image file to gallery", e);
-            return getString(R.string.full_screen_save_image_error);
+            return R.string.full_screen_save_image_error;
         }
         finally {
             IOUtils.closeQuietly(boardFile);
@@ -261,12 +256,12 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 		try {
 			downloadedFile = new FileInputStream(parcel.getFileDescriptor());
 			String imageFile = ChanFileStorage.getLocalImageUrl(getBaseContext(), post);
-			Log.i(TAG, "Image downloaded, copying to " + imageFile);
+			if (DEBUG) Log.i(TAG, "Image downloaded, copying to " + imageFile);
 			newFile = new FileOutputStream(new File(URI.create(imageFile)), false);
 
 			size = IOUtils.copy(downloadedFile, newFile);
 		    localImageUri = imageFile;
-		    Log.i(TAG, "Image file copied to " + imageFile);
+		    if (DEBUG) Log.i(TAG, "Image file copied to " + imageFile);
 		    dm.remove(downloadEnqueueId);
 		} finally {
 			IOUtils.closeQuietly(downloadedFile);
@@ -278,7 +273,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
     @Override
 	protected void onStart() {
 		super.onStart();
-		Log.i(TAG, "onStart");
+		if (DEBUG) Log.i(TAG, "onStart");
         loadPrefs();
         loadPrevNext();
     }
@@ -293,7 +288,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
                 imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
                 imageWidth = intent.getIntExtra(ChanHelper.IMAGE_WIDTH, 0);
                 imageHeight = intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0);
-                Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
+                if (DEBUG) Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
             } else {
                 Log.e(TAG, "Intent received without postno");
             }
@@ -305,7 +300,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
             imageUrl = prefs.getString(ChanHelper.IMAGE_URL, "");
             imageWidth = prefs.getInt(ChanHelper.IMAGE_WIDTH, 0);
             imageHeight = prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
-            Log.i(TAG, "Post no " + postNo + " laoded from preferences");
+            if (DEBUG) Log.i(TAG, "Post no " + postNo + " laoded from preferences");
         }
         if (!loadChanPostData()) { // fill in the best we can
             post = new ChanPost();
@@ -316,10 +311,10 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
             post.h = imageHeight;
         }
         if (imageUrl == null || imageUrl.isEmpty()) {
-            Log.i(TAG, "trying to load imageurl from prefs as last-ditch attempt");
+            if (DEBUG) Log.i(TAG, "trying to load imageurl from prefs as last-ditch attempt");
             imageUrl = prefs.getString(ChanHelper.IMAGE_URL, "");
         }
-        Log.i(TAG, "loaded image from prefs/intent url=" + imageUrl);
+        if (DEBUG) Log.i(TAG, "loaded image from prefs/intent url=" + imageUrl);
         setActionBarTitle();
     }
 
@@ -344,7 +339,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
         ed.putString(ChanHelper.IMAGE_URL, imageUrl);
         ed.putInt(ChanHelper.IMAGE_WIDTH, imageWidth);
         ed.putInt(ChanHelper.IMAGE_HEIGHT, imageHeight);
-        Log.i(TAG, "Stored in prefs, post no: " + postNo);
+        if (DEBUG) Log.i(TAG, "Stored in prefs, post no: " + postNo);
         ed.commit();
         DispatcherHelper.saveActivityToPrefs(this);
     }
@@ -353,33 +348,33 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
     protected void onStop () {
     	super.onStop();
         savePrefs();
-    	Log.i(TAG, "onStop");
+    	if (DEBUG) Log.i(TAG, "onStop");
     }
 
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-        Log.i(TAG, "onRestart");
+        if (DEBUG) Log.i(TAG, "onRestart");
 	}
 
     @Override
 	protected void onResume () {
 		super.onResume();
-		Log.i(TAG, "onResume");
+		if (DEBUG) Log.i(TAG, "onResume");
         loadOrShowImage();
         
         NetworkProfileManager.instance().activityChange(this);
 	}
 	
 	public void onWindowFocusChanged (boolean hasFocus) {
-		Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
+		if (DEBUG) Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
 	}
 
     @Override
 	protected void onPause() {
         super.onPause();
         saveInstanceState();
-        Log.i(TAG, "onPause - removing download id " + downloadEnqueueId);
+        if (DEBUG) Log.i(TAG, "onPause - removing download id " + downloadEnqueueId);
         dm.remove(downloadEnqueueId);
     }
 
@@ -391,7 +386,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
     @Override
 	protected void onDestroy () {
 		super.onDestroy();
-		Log.i(TAG, "onDestroy");
+		if (DEBUG) Log.i(TAG, "onDestroy");
 	}
 
     @Override
@@ -416,15 +411,15 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
             File localImage = new File(URI.create(localImageUri));
 	    	if (localImage.exists()) {
 //	    		if (localImage.length() == post.fsize) {
-//	    			Log.i(TAG, "Image " + localImageUri + " already exists and has correct size");
+//	    			if (DEBUG) Log.i(TAG, "Image " + localImageUri + " already exists and has correct size");
 	    			return localImageUri;
 //	    		} else {
-//	    			Log.i(TAG, "Image " + localImageUri + " available but size is not correct, should be: " + post.fsize
+//	    			if (DEBUG) Log.i(TAG, "Image " + localImageUri + " available but size is not correct, should be: " + post.fsize
 //	    					+ ", current file size: " + localImage.length());
 //	    			//localImage.delete();
 //	    		}
 	    	} else {
-	    		Log.i(TAG, "Image " + localImageUri + " doesn't exist");
+	    		if (DEBUG) Log.i(TAG, "Image " + localImageUri + " doesn't exist");
 	    	}
     	} catch (Exception e) {
     		Log.e(TAG, "Image file checking error", e);
@@ -443,31 +438,31 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
             : displayMetrics.widthPixels;
         double trialWidth = imageWidth;
         double trialHeight = imageHeight;
-        Log.v(TAG, "screenWidth,screenHeight = " + screenWidth + ", " + screenHeight);
-        Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        if (DEBUG) Log.v(TAG, "screenWidth,screenHeight = " + screenWidth + ", " + screenHeight);
+        if (DEBUG) Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
         if (trialWidth > screenWidth) { // need to scale width down
             double scale = screenWidth / trialWidth;
             trialWidth = screenWidth;
             trialHeight = (int)(Math.floor(scale * trialHeight));
         }
-        Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        if (DEBUG) Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
         if (trialHeight > screenHeight) { // need to scale height down
             double scale = screenHeight / trialHeight;
             trialWidth = (int)(Math.floor(scale * trialWidth));
             trialHeight = screenHeight;
         }
-        Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        if (DEBUG) Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
         if (trialWidth < screenWidth) { // try and scale up to width
             double scale = screenWidth / trialWidth;
-            Log.v(TAG, "scale = " + scale);
+            if (DEBUG) Log.v(TAG, "scale = " + scale);
             int testHeight = (int)(Math.floor(scale * trialHeight));
-            Log.v(TAG, "testHeight = " + testHeight);
+            if (DEBUG) Log.v(TAG, "testHeight = " + testHeight);
             if (testHeight <= screenHeight) {
                 trialWidth = screenWidth;
                 trialHeight = testHeight;
             }
         }
-        Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        if (DEBUG) Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
         if (trialHeight < screenHeight) { // try and scale up to height
             double scale = screenHeight / trialHeight;
             int testWidth = (int)(Math.floor(scale * trialWidth));
@@ -476,16 +471,17 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
                 trialHeight = screenHeight;
             }
         }
-        Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
+        if (DEBUG) Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
         int initialScalePct = (int)Math.floor(100 * screenWidth / imageWidth);
         webView.setInitialScale(initialScalePct);
-        Log.v(TAG, "initial Scale = " + initialScalePct);
+        if (DEBUG) Log.v(TAG, "initial Scale = " + initialScalePct);
     }
     
     private void showImage() {
-    	Log.i(TAG, "Displaying image " + localImageUri);
+    	if (DEBUG) Log.i(TAG, "Displaying image " + localImageUri);
     	webView = new WebView(this);
         setContentView(webView);
+        registerForContextMenu(webView);
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
@@ -499,10 +495,10 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 
     private void loadImage() {
     	if (NetworkProfileManager.instance().getCurrentProfile().getConnectionType() == Type.NO_CONNECTION) {
-    		Log.i(TAG, "Off-line mode, download not started");    		
+    		if (DEBUG) Log.i(TAG, "Off-line mode, download not started");    		
             showOfflineScreen();
     	} else if (downloadEnqueueId != 0) {
-    		Log.i(TAG, "Download has already started for " + imageUrl);    		
+    		if (DEBUG) Log.i(TAG, "Download has already started for " + imageUrl);    		
     	} else {
 	    	showDownloadScreen();
     	}
@@ -518,7 +514,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 				loginButton.setOnClickListener(new OnClickListener() {
 			        @Override
 			        public void onClick(final View v) {
-			            Log.w(TAG, "Download page closed");
+			            if (DEBUG) Log.w(TAG, "Download page closed");
 			            FullScreenImageActivity.this.finish();
 			        }
 			});
@@ -538,7 +534,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 	private void showDownloadScreen() {
 		try {
 		    this.localImageUri = null;
-		    Log.i(TAG, "Loading image from URL: " + imageUrl);
+		    if (DEBUG) Log.i(TAG, "Loading image from URL: " + imageUrl);
 		    registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
 		    Request request = new Request(Uri.parse(imageUrl));
@@ -546,11 +542,11 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 		    
 		    downloadStartTime = new Date().getTime();
 		    downloadEnqueueId = dm.enqueue(request);
-		    Log.i(TAG, "Equeuing image " + imageUrl + " in DM, id " + downloadEnqueueId);
+		    if (DEBUG) Log.i(TAG, "Equeuing image " + imageUrl + " in DM, id " + downloadEnqueueId);
 
 		    loadingView = inflater.inflate(R.layout.fullscreen_image_loading, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
 		    ImageView imageView = (ImageView)loadingView.findViewById(R.id.fullscreen_image_image);
-		    imageLoader.displayImage(post.getThumbnailUrl(), imageView, options);
+            imageLoader.displayImage(post.getThumbnailUrl(), imageView, options);
 		    
 		    final Button loginButton = (Button) loadingView.findViewById(R.id.fullscreen_image_cancel_button);
 		    	loginButton.setOnClickListener(new OnClickListener() {
@@ -559,7 +555,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 		            	unregisterReceiver(receiver);
 		            	dm.remove(downloadEnqueueId);
 		            	downloadEnqueueId = 0;
-		                Log.w(TAG, "Download cancelled");
+		                if (DEBUG) Log.w(TAG, "Download cancelled");
 		                FullScreenImageActivity.this.finish();
 		            }
 		    });
@@ -583,7 +579,6 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 		}
 	}
 
-
     public int getScreenOrientation() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -606,10 +601,17 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
         if (post == null || post.no == 0)
             return;
         if (downloadEnqueueId > 0) {
-        	unregisterReceiver(receiver);
+            if (receiver != null) {
+        	    try {
+                    unregisterReceiver(receiver);
+                }
+                catch (IllegalArgumentException e) {
+                    if (DEBUG) Log.i(TAG, "Harmless receiver unregister called multiple times", e);
+                }
+            }
         	dm.remove(downloadEnqueueId);
         	downloadEnqueueId = 0;
-            Log.w(TAG, "Download cancelled");
+            if (DEBUG) Log.w(TAG, "Download cancelled");
         }
         Intent intent = new Intent(this, FullScreenImageActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
@@ -617,8 +619,49 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
         intent.putExtra(ChanHelper.POST_NO, post.no);
         intent.putExtra(ChanHelper.IMAGE_WIDTH, post.w);
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, post.h);
-        Log.i(TAG, "Starting navigate to prev/next image: " + boardCode + "/" + threadNo + ":" + postNo);
+        if (DEBUG) Log.i(TAG, "Starting navigate to prev/next image: " + boardCode + "/" + threadNo + ":" + postNo);
         startActivity(intent);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, view, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.full_screen_image_context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.download_image_menu:
+                if (checkLocalImage() != null)
+                    (new CopyImageToGalleryTask(getApplicationContext())).execute();
+                else
+                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.share_image_menu:
+                if (checkLocalImage() != null)
+                    shareImage();
+                else
+                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.set_as_wallpaper_menu:
+                if (checkLocalImage() != null)
+                    (new SetWallpaperDialogFragment(localImageUri))
+                            .show(getSupportFragmentManager(), SetWallpaperDialogFragment.TAG);
+                else
+                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.view_image_gallery_menu:
+                if (checkLocalImage() != null)
+                    viewImageGallery();
+                else
+                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 
     @Override
@@ -633,47 +676,11 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
             case R.id.next_image_menu:
                 navigateToPost(nextPost);
                 return true;
-            case R.id.download_image_menu:
-                if (checkLocalImage() != null) {
-                    Toast.makeText(ctx, R.string.full_screen_saving_image, Toast.LENGTH_SHORT).show();
-                    CopyImageToGalleryTask copyToGalleryTask = new CopyImageToGalleryTask(getApplicationContext());
-                    copyToGalleryTask.execute();
-                }
-                else {
-                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            case R.id.share_image_menu:
-                if (checkLocalImage() != null) {
-                    shareImage();
-                }
-                else {
-                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            case R.id.set_as_wallpaper_menu:
-                if (checkLocalImage() != null) {
-                    Toast.makeText(ctx, R.string.full_screen_setting_wallpaper, Toast.LENGTH_SHORT).show();
-                    SetImageAsWallpaperTask wallpaperTask = new SetImageAsWallpaperTask(getApplicationContext());
-                    wallpaperTask.execute(imageUrl);
-                }
-                else {
-                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            case R.id.view_image_gallery_menu:
-                if (checkLocalImage() != null) {
-                    viewImageGallery();
-                }
-                else {
-                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
-                }
-                return true;
             case R.id.go_to_board_menu:
                 new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
                 return true;
             case R.id.settings_menu:
-                Log.i(TAG, "Starting settings activity");
+                if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
@@ -690,7 +697,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
         }
     }
 
-    private class CopyImageToGalleryTask extends AsyncTask<String, Void, String> {
+    private class CopyImageToGalleryTask extends AsyncTask<String, Void, Integer> {
         private Context context;
 
         public CopyImageToGalleryTask(Context context) {
@@ -698,74 +705,17 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Integer doInBackground(String... params) {
             return copyImageFileToGallery();
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            if (result != null && !result.isEmpty())
+        protected void onPostExecute(Integer result) {
+            if (result != null && !(result.equals(0)))
                 Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private class SetImageAsWallpaperTask extends AsyncTask<String, Void, String> {
-        private String url;
-        private Context context;
-
-        public SetImageAsWallpaperTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            return setImageAsWallpaper();
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private String setImageAsWallpaper() {
-        WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
-        String result = "";
-        try {
-        	DisplayMetrics displayMetrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-            double screenWidth = getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT
-                ? displayMetrics.widthPixels
-                : displayMetrics.heightPixels;
-            double screenHeight  = getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT
-                ? displayMetrics.heightPixels
-                : displayMetrics.widthPixels;
-
-            // wallpapers are twice wider than screen
-            screenWidth *= 2;
-            
-            int scale = 1;
-            while (post.w/scale/2 >= screenWidth && post.h/scale/2 >= screenHeight) {
-            	scale *= 2;
-            }
-            
-            FileInputStream is = new FileInputStream(new File(URI.create(this.localImageUri)));
-            BitmapFactory.Options options=new BitmapFactory.Options();
-            options.inSampleSize = scale;
-            Log.i(TAG, "Setting wallpaper from file " + this.localImageUri + ", scaled down " + scale + " times");
-
-            Bitmap wallpaperBitmap = BitmapFactory.decodeStream(is, null, options);
-            
-            wallpaperManager.setBitmap(wallpaperBitmap);
-            result = ctx.getString(R.string.full_screen_wallpaper_set);
-            Log.i(TAG, result);
-        }
-        catch (Exception e) {
-            result = ctx.getString(R.string.full_screen_wallpaper_error);
-            Log.e(TAG, result, e);
-        }
-        return result;
-    }
 
     private void shareImage() {
         try {
@@ -861,7 +811,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 	            } finally {
 	            	c.close();
 	            }
-	            Log.i(TAG, "handle message: updating progress bar " + localFileSize);
+	            if (DEBUG) Log.i(TAG, "handle message: updating progress bar " + localFileSize);
 	            
 	            int totalSize = (activity.post.fsize / 1024) + 1;
 	            int downloadedSize = (localFileSize / 1024);

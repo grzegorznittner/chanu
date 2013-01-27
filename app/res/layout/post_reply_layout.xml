@@ -55,7 +55,8 @@
                 android:inputType="textNoSuggestions"
                 android:imeOptions="actionSend"
                 android:imeActionLabel="@string/post_reply_send"
-                >
+                android:maxLength="100"
+                    >
             </EditText>
 
             <FrameLayout
@@ -97,36 +98,38 @@
                             android:src="@drawable/content_backspace">
                     </ImageButton>
 
+                </LinearLayout>
+
+                <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_gravity="right"
+                        android:orientation="horizontal">
+
                     <ImageButton
-                            android:id="@+id/post_reply_rotate_left_button"
+                            android:id="@+id/post_reply_bump_button"
                             style="@style/PostReplyButtonStyle"
-                            android:visibility="gone"
-                            android:contentDescription="@string/post_reply_rotate_left_hint"
-                            android:hint="@string/post_reply_rotate_left_hint"
-                            android:src="@drawable/images_rotate_left">
+                            android:contentDescription="@string/post_reply_bump_hint"
+                            android:hint="@string/post_reply_bump_hint"
+                            android:src="@drawable/rating_good">
                     </ImageButton>
 
                     <ImageButton
-                            android:id="@+id/post_reply_rotate_right_button"
+                            android:id="@+id/post_reply_sage_button"
                             style="@style/PostReplyButtonStyle"
-                            android:visibility="gone"
-                            android:contentDescription="@string/post_reply_rotate_right_hint"
-                            android:hint="@string/post_reply_rotate_right_hint"
-                            android:src="@drawable/images_rotate_right">
+                            android:contentDescription="@string/post_reply_sage_hint"
+                            android:hint="@string/post_reply_sage_hint"
+                            android:src="@drawable/rating_bad">
                     </ImageButton>
 
                 </LinearLayout>
 
-                <ImageButton
-                        android:id="@+id/post_reply_sage_button"
-                        style="@style/PostReplyButtonStyle"
-                        android:contentDescription="@string/post_reply_sage_hint"
-                        android:hint="@string/post_reply_sage_hint"
-                        android:src="@drawable/rating_bad"
-                        android:layout_gravity="right">
-                </ImageButton>
-
             </FrameLayout>
+
+            <CheckBox
+                android:id="@+id/post_reply_spoiler_checkbox"
+                style="@style/PostReplyCheckboxStyle"
+                android:text="@string/post_reply_spoiler" />
 
             <ImageView
                     android:id="@+id/post_reply_image_preview"
@@ -146,7 +149,7 @@
                     android:hint="@string/post_reply_name_hint"
                     android:inputType="textPersonName"
                     style="@style/PostReplyEditTextStyle"
-                    android:maxLength="255"
+                    android:maxLength="100"
                     >
             </EditText>
 
@@ -155,7 +158,7 @@
                     android:hint="@string/post_reply_email_hint"
                     android:inputType="textEmailAddress"
                     style="@style/PostReplyEditTextStyle"
-                    android:maxLength="255"
+                    android:maxLength="100"
                     >
             </EditText>
 
@@ -164,6 +167,7 @@
                     android:hint="@string/post_reply_subject_hint"
                     android:inputType="textEmailSubject"
                     style="@style/PostReplyEditTextStyle"
+                    android:maxLength="100"
                     >
             </EditText>
 

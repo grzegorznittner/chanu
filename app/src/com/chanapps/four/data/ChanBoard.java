@@ -105,6 +105,9 @@ public class ChanBoard {
 	}
 
     public static List<ChanBoard> getBoardsRespectingNSFW(Context context) {
+        if (boards == null) {
+            initBoards(context);
+        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean showNSFW = prefs.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
         return showNSFW ? boards : safeBoards;
@@ -276,6 +279,78 @@ public class ChanBoard {
                 FetchChanDataService.scheduleBoardFetch(context, board.link);
                 break; // don't schedule more than one per call to avoid overloading
             }
+        }
+    }
+
+    static private Set<String> spoilerBoardCodes = new HashSet<String>();
+    static public boolean hasSpoiler(String boardCode) {
+        if (spoilerBoardCodes.isEmpty()) {
+            synchronized (spoilerBoardCodes) {
+                String[] spoilers = { "a", "m", "u", "v", "vg", "r9k", "co", "jp", "lit", "mlp", "tg", "tv", "vp" };
+                for (int i = 0; i < spoilers.length; i++)
+                    spoilerBoardCodes.add(spoilers[i]);
+            }
+        }
+        return spoilerBoardCodes.contains(boardCode);
+    }
+
+    static public boolean hasName(String boardCode) {
+        if (boardCode.equals("b") || boardCode.equals("soc") || boardCode.equals("q"))
+            return false;
+        else
+            return true;
+    }
+
+    static public boolean hasSubject(String boardCode) {
+        if (boardCode.equals("b") || boardCode.equals("soc"))
+            return false;
+        else
+            return true;
+    }
+
+    static public boolean requiresThreadSubject(String boardCode) {
+        if (boardCode.equals("q"))
+            return true;
+        else
+            return false;
+    }
+
+    static public boolean requiresThreadImage(String boardCode) {
+        if (boardCode.equals("q"))
+            return false;
+        else
+            return true;
+    }
+
+    static public boolean allowsBump(String boardCode) {
+        if (boardCode.equals("q"))
+            return false;
+        else
+            return true;
+    }
+
+    /*
+   /i - lots of stuff
+    */
+
+    static public final String SPOILER_THUMBNAIL_IMAGE_ROOT = "http://static.4chan.org/image/spoiler-";
+    static public final String SPOILER_THUMBNAIL_IMAGE_EXTENSION = ".png";
+    static public final Map<String, Integer> spoilerImageCount = new HashMap<String, Integer>();
+    static public final Random spoilerGenerator = new Random();
+    static public String spoilerThumbnailUrl(String boardCode) {
+        if (spoilerImageCount.isEmpty()) {
+            spoilerImageCount.put("m", 4);
+            spoilerImageCount.put("co", 5);
+            spoilerImageCount.put("tg", 3);
+            spoilerImageCount.put("tv", 5);
+        }
+        int spoilerImages = spoilerImageCount.containsKey(boardCode) ? spoilerImageCount.get(boardCode) : 1;
+        if (spoilerImages > 1) {
+            int spoilerImageNum = spoilerGenerator.nextInt(spoilerImages) + 1;
+            return SPOILER_THUMBNAIL_IMAGE_ROOT + boardCode + spoilerImageNum + SPOILER_THUMBNAIL_IMAGE_EXTENSION;
+        }
+        else {
+            return SPOILER_THUMBNAIL_IMAGE_ROOT + boardCode + SPOILER_THUMBNAIL_IMAGE_EXTENSION;
         }
     }
 

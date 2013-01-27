@@ -23,7 +23,7 @@ import com.chanapps.four.service.NetworkProfileManager;
 
 public class MobileProfile extends AbstractNetworkProfile {
 	private static final String TAG = "";
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	
 	private static final int MIN_THREADS_PER_BOARD = 20;
 	

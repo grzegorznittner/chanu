@@ -14,7 +14,7 @@ import android.util.Log;
  */
 public class FileDesc {
 	private static final String TAG = "FileDesc";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     
 	public FileDesc() {
 		size = 0;

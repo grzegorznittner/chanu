@@ -19,7 +19,7 @@ import com.chanapps.four.data.ChanThread;
 public class ThreadCursorLoader extends BoardCursorLoader {
 
     private static final String TAG = ThreadCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     protected SharedPreferences prefs;
 
     protected long threadNo;
@@ -66,7 +66,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                                 post.no, boardName, threadNo,
                                 "", post.getCountryFlagUrl(),
                                 postText, post.getHeaderText(), post.getFullText(),
-                                post.tn_w, post.tn_h, post.w, post.h, post.tim, isDead, 0, 0});
+                                post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
+                                post.getSpoilerText(), post.getExifText(), isDead, 0, 0});
                         if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
                     }
                 }
@@ -76,8 +77,9 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                         post.no, boardName, threadNo,
                         post.getThumbnailUrl(), post.getCountryFlagUrl(),
                         postText, post.getHeaderText(), post.getFullText(),
-                        post.tn_w, post.tn_h, post.w, post.h, post.tim, isDead, 0, 0});
-                if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " text=" + postText);
+                        post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
+                        post.getSpoilerText(), post.getExifText(), isDead, 0, 0});
+                if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
             }
         }
         if (thread.posts.length > 0) {

@@ -3,6 +3,7 @@
               android:id="@+id/grid_item"
               style="@style/GridLayout">
 
-    <TextView style="@style/GridEndOfBoardStyle" />
+    <TextView style="@style/GridEndOfBoardStyle"
+            />
 
 </RelativeLayout>

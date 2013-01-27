@@ -6,6 +6,7 @@ package com.chanapps.four.service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
@@ -35,7 +36,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
 	protected static final long STORE_INTERVAL_MS = 2000;
     protected static final int MAX_THREAD_RETENTION_PER_BOARD = 100;
@@ -301,12 +302,9 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             	}
             	return;
             }
-            if (contentType == null || !contentType.contains("json")) {
-            	throw new IOException("Wrong content type returned '" + contentType + "'");
-            }
-            
+
             thread.lastFetched = now;
-            if (tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+            if (contentType == null || !contentType.contains("json") || tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 if (DEBUG) Log.i(TAG, "Got 404 on thread, thread no longer exists");
                 thread.isDead = true;
                 try {

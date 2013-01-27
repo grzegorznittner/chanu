@@ -17,6 +17,7 @@
             android:minHeight="384dp"
             android:scrollbars="horizontal|vertical"
             android:imeOptions="actionNone"
+            android:maxLength="2000"
             >
     </EditText>
 
