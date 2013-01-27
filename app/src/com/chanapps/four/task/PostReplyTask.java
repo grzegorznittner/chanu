@@ -306,7 +306,8 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
             Toast.makeText(context, R.string.post_reply_posted_reply, Toast.LENGTH_SHORT).show();
         }
         dialogFragment.dismiss();
-        activity.navigateUp();
+        activity.finish();
+        //activity.navigateUp(); // had trouble with this
     }
 
 }

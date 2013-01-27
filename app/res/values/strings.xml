@@ -30,9 +30,9 @@
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
     <string name="download_all_images_menu">Download All Images</string>
-    <string name="download_image_menu">Save Image</string>
+    <string name="download_image_menu">Save to Gallery</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
-    <string name="view_image_gallery_menu">View Gallery</string>
+    <string name="view_image_gallery_menu">View in Gallery</string>
     <string name="share_image_menu">Share Image</string>
     <string name="post_reply_send_menu">Post Reply</string>
 
@@ -109,6 +109,7 @@
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
     <string name="dialog_clear_watchlist">Clear watchlist?</string>
     <string name="dialog_clean_watchlist">Clean dead threads?</string>
+    <string name="dialog_set_wallpaper">Set as wallpaper?</string>
     <string name="dialog_clear_cache_confirm">Clear all cached data?  This may take several minutes.</string>
     <string name="dialog_reset_preferences_confirm">Reset all preferences?</string>
     <string name="dialog_close">Close</string>
@@ -116,6 +117,7 @@
     <string name="dialog_delete">Remove</string>
     <string name="dialog_clear">Clear</string>
     <string name="dialog_clean">Clean</string>
+    <string name="dialog_set">Set</string>
     <string name="dialog_reset">Reset</string>
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_added_to_watchlist">Added to watchlist</string>

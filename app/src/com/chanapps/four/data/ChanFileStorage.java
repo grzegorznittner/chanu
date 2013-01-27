@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -46,9 +47,11 @@ public class ChanFileStorage {
     private static final String CACHE_ROOT = "Android";
     private static final String CACHE_DATA_DIR = "data";
     private static final String CACHE_PKG_DIR = "cache";
+    private static final String WALLPAPER_DIR = "wallpapers";
     private static final String FILE_SEP = "/";
     private static final String CACHE_EXT = ".txt";
     private static final String BITMAP_CACHE_EXT = ".jpg";
+    private static final String WALLPAPER_EXT = ".jpg";
     private static final String USER_PREFS_FILENAME = "userprefs.txt";
 
     public static boolean isBoardCachedOnDisk(Context context, String boardCode) {
@@ -70,6 +73,11 @@ public class ChanFileStorage {
     
     public static File getCacheDirectory(Context context) {
         String cacheDir = getRootCacheDirectory(context);
+        return StorageUtils.getOwnCacheDirectory(context, cacheDir);
+    }
+
+    private static File getWallpaperCacheDirectory(Context context) {
+        String cacheDir = getRootCacheDirectory(context) + FILE_SEP + WALLPAPER_DIR;
         return StorageUtils.getOwnCacheDirectory(context, cacheDir);
     }
 
@@ -456,6 +464,12 @@ public class ChanFileStorage {
 
     public static String getLocalImageUrl(Context context, ChanPost post) {
         return "file://" + getBoardCacheDirectory(context, post.board) + FILE_SEP + post.getImageName();
+    }
+
+    public static File createWallpaperFile(Context context) {
+        File dir = getWallpaperCacheDirectory(context);
+        String name = UUID.randomUUID().toString() + WALLPAPER_EXT;
+        return new File(dir, name);
     }
 
 }

@@ -7,7 +7,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -79,7 +78,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     public String contentType;
     public String orientation;
     public Uri imageUri;
-    public Uri cameraImageUri;
     public String boardCode = null;
     public long threadNo = 0;
     public long postNo = 0;
@@ -294,7 +292,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         else {
             imagePreview.setVisibility(View.GONE);
         }
-        cameraImageUri = null;
 
         setActionBarTitle();
 
@@ -382,8 +379,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         else {
             imageUri = null;
         }
-        // we have to do this because of a bug in android activity result intent for the camera which returns null instead of uri
-        cameraImageUri = null;
     }
 
     protected void saveInstanceState() {
@@ -399,15 +394,13 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         ed.putBoolean(ChanHelper.SPOILER, spoilerCheckbox.isChecked());
         ed.putString(ChanHelper.QUOTE_TEXT, null);
         ed.putLong(ChanHelper.TIM, tim);
-        //ed.putString(ChanHelper.CAMERA_IMAGE_URL, cameraImageUri == null ? null : cameraImageUri.toString());
         ed.putString(ChanHelper.POST_REPLY_IMAGE_URL, imageUri == null ? null : imageUri.toString());
         ed.putString(ChanHelper.IMAGE_PATH, imagePath);
         ed.putString(ChanHelper.CONTENT_TYPE, contentType);
         ed.putString(ChanHelper.ORIENTATION, orientation);
         ed.commit();
         if (DEBUG) Log.i(TAG, "Saved to prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim
-                + " imageUrl=" + (imageUri == null ? "" : imageUri.toString())
-                + " cameraImageUrl=" + (cameraImageUri == null ? "" : cameraImageUri.toString()));
+                + " imageUrl=" + (imageUri == null ? "" : imageUri.toString()));
         DispatcherHelper.saveActivityToPrefs(this);
     }
 
@@ -427,9 +420,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             if (requestCode == IMAGE_CAPTURE) {
                 if (resultCode == RESULT_OK) {
                     msg = res.getString(R.string.post_reply_added_image);
-                    cameraImageUri = Uri.parse(intent.getStringExtra(ChanHelper.CAMERA_IMAGE_URL));
-                    //cameraImageUri = Uri.parse(ensurePrefs().getString(ChanHelper.CAMERA_IMAGE_URL, null));
-                    imageUri = cameraImageUri;
+                    imageUri = Uri.parse(intent.getStringExtra(ChanHelper.CAMERA_IMAGE_URL));
                     ensurePrefs().edit().putString(ChanHelper.POST_REPLY_IMAGE_URL, imageUri.toString()).commit();
                     if (DEBUG) Log.i(TAG, "Got camera result for activity url=" + imageUri);
                 }
@@ -763,7 +754,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.post_relpy_menu, menu);
+        inflater.inflate(R.menu.post_reply_menu, menu);
         return true;
     }
 
