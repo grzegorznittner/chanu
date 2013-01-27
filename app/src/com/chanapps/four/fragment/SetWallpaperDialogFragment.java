@@ -36,7 +36,7 @@ public class SetWallpaperDialogFragment extends DialogFragment {
 
     public static final String TAG = SetWallpaperDialogFragment.class.getSimpleName();
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     // overcoming android broken wallpaper algorithms
     private static final int WALLPAPER_PADDING_PORTRAIT_PX = 100;

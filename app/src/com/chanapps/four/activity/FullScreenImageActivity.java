@@ -69,7 +69,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 	public static final int PROGRESS_REFRESH_MSG = 0;
 	public static final int START_DOWNLOAD_MSG = 1;
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
 	private WebView webView = null;
 
@@ -601,7 +601,14 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
         if (post == null || post.no == 0)
             return;
         if (downloadEnqueueId > 0) {
-        	unregisterReceiver(receiver);
+            if (receiver != null) {
+        	    try {
+                    unregisterReceiver(receiver);
+                }
+                catch (IllegalArgumentException e) {
+                    if (DEBUG) Log.i(TAG, "Harmless receiver unregister called multiple times", e);
+                }
+            }
         	dm.remove(downloadEnqueueId);
         	downloadEnqueueId = 0;
             if (DEBUG) Log.w(TAG, "Download cancelled");

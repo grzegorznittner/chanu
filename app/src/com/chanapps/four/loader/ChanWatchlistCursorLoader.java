@@ -20,7 +20,7 @@ import java.util.List;
 public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = ChanWatchlistCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     protected final ForceLoadContentObserver mObserver;
 
