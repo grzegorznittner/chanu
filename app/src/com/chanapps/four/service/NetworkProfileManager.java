@@ -16,8 +16,9 @@ import android.util.Log;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.FetchParams;
-import com.chanapps.four.data.UserPreferences;
+import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.service.profile.MobileProfile;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NoConnectionProfile;
@@ -48,7 +49,7 @@ public class NetworkProfileManager {
 	private ChanActivityId currentActivityId;
 	private WeakReference<ChanIdentifiedActivity> currentActivity;
 	private NetworkProfile activeProfile = null;
-	private UserPreferences userPrefs = null;
+	private UserStatistics userStats = null;
 	
 	private WifiProfile wifiProfile = new WifiProfile();
 	private NoConnectionProfile noConnectionProfile = new NoConnectionProfile();
@@ -77,10 +78,15 @@ public class NetworkProfileManager {
 			return noConnectionProfile.getFetchParams();
 		}
 	}
+	
+	public UserStatistics getUserStatistics() {
+		return userStats;
+	}
 
 	public void activityChange(ChanIdentifiedActivity newActivity) {
 		Log.w(TAG, "activity change to " + newActivity.getChanActivityId(), new Exception("activity change"));
 		if (receiver == null) {
+			// we need to register network changes receiver
 			receiver = new NetworkBroadcastReceiver();
 			newActivity.getBaseContext().getApplicationContext()
 				.registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -90,6 +96,11 @@ public class NetworkProfileManager {
 		currentActivityId = newActivity.getChanActivityId();
 		currentActivity = new WeakReference<ChanIdentifiedActivity>(newActivity);
 
+		if (userStats == null) {
+			userStats = ChanFileStorage.loadUserPreferences(newActivity.getBaseContext());
+		}
+		userStats.registerActivity(newActivity);
+		
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 		}

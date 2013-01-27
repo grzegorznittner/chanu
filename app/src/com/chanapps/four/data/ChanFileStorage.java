@@ -332,12 +332,12 @@ public class ChanFileStorage {
 		return thread;
 	}
 	
-	public static void storeUserPreferences(Context context, UserPreferences userPrefs) {
+	public static void storeUserPreferences(Context context, UserStatistics userPrefs) {
 		try {
             File userPrefsFile = getUserPreferencesFile(context);
 			if (userPrefsFile != null) {
 				try {
-					userPrefs.lastStored = new Date();
+					userPrefs.lastStored = new Date().getTime();
 					ObjectMapper mapper = ChanHelper.getJsonMapper();
 					mapper.writeValue(userPrefsFile, userPrefs);
 				} catch (Exception e) {
@@ -352,22 +352,22 @@ public class ChanFileStorage {
 		}
 	}
 
-	public static UserPreferences loadUserPreferences(Context context) {
+	public static UserStatistics loadUserPreferences(Context context) {
 		try {
 			File userPrefsFile = getUserPreferencesFile(context);
 			if (userPrefsFile != null && userPrefsFile.exists()) {
 				ObjectMapper mapper = ChanHelper.getJsonMapper();
-				UserPreferences userPrefs = mapper.readValue(userPrefsFile, UserPreferences.class);
+				UserStatistics userPrefs = mapper.readValue(userPrefsFile, UserStatistics.class);
                 if (userPrefs == null) {
                     Log.e(TAG, "Couldn't load user preferences, null returned");
-                    return new UserPreferences();
+                    return new UserStatistics();
                 } else {
 				    if (DEBUG) Log.i(TAG, "Loaded user preferences, last updated " + userPrefs.lastUpdate + ", last stored " + userPrefs.lastStored);
 					return userPrefs;
                 }
 			} else {
 				Log.w(TAG, "File for user preferences doesn't exist");
-				return new UserPreferences();
+				return new UserStatistics();
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Error while loading user preferences", e);

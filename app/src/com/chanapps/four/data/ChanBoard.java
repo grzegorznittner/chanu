@@ -1,18 +1,20 @@
 package com.chanapps.four.data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.service.FetchChanDataService;
-import com.chanapps.four.service.NetworkProfileManager;
-import com.chanapps.four.service.profile.NetworkProfile;
 
 public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();
