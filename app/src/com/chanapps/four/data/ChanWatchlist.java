@@ -1,21 +1,23 @@
 package com.chanapps.four.data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.text.format.Time;
 import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.component.ToastRunnable;
-import com.chanapps.four.service.FetchChanDataService;
 
-import java.net.URI;
-import java.net.URL;
-import java.security.KeyStore;
-import java.util.*;
+import com.chanapps.four.activity.R;
+import com.chanapps.four.service.FetchChanDataService;
 
 /**
  * Created with IntelliJ IDEA.
@@ -153,6 +155,24 @@ public class ChanWatchlist {
             }
         }
         return isWatched;
+    }
+
+    public static List<ChanThread> getWatchedThreads(Context ctx) {
+    	List<ChanThread> threadList = new ArrayList<ChanThread>();
+        Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
+        for (String threadPath : savedWatchlist) {
+            String[] components = getThreadPathComponents(threadPath);
+            ChanThread thread = new ChanThread();
+            thread.tim = Long.valueOf(components[0]);
+            thread.board = components[1];
+            thread.no = Long.valueOf(components[2]);
+            thread.sub = components[3];
+            //thread.imageurl = components[4];
+            thread.w = Integer.valueOf(components[5]);
+            thread.h = Integer.valueOf(components[6]);
+        }
+        
+        return threadList;
     }
 
     public static class CleanWatchlistTask extends AsyncTask<Void, Void, String> {

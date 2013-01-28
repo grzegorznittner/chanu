@@ -48,12 +48,19 @@ public abstract class BaseChanService extends Service {
     private String mName;
 
     protected void toastUI(final String string) {
-        Handler handler = NetworkProfileManager.instance().getActivity().getChanHandler();
-        handler.post(new Runnable() {
-            public void run() {
-                Toast.makeText(getApplicationContext(), string, Toast.LENGTH_LONG).show();
-            }
-        });
+    	try {
+	        Handler handler = NetworkProfileManager.instance().getActivity().getChanHandler();
+	        if (handler == null) {
+	        	return;
+	        }
+	        handler.post(new Runnable() {
+	            public void run() {
+	                Toast.makeText(getApplicationContext(), string, Toast.LENGTH_LONG).show();
+	            }
+	        });
+    	} catch (Exception e) {
+    		// we don't want to log that
+    	}
     }
 
     protected final class ServiceHandler extends Handler {

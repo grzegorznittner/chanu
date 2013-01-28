@@ -16,8 +16,9 @@ import android.util.Log;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.FetchParams;
-import com.chanapps.four.data.UserPreferences;
+import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.service.profile.MobileProfile;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NoConnectionProfile;
@@ -31,6 +32,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class NetworkProfileManager {
 	private static final String TAG = NetworkProfileManager.class.getSimpleName();
+	private static final boolean DEBUG = false;
 	
 	private static NetworkProfileManager instance;
 	
@@ -48,7 +50,7 @@ public class NetworkProfileManager {
 	private ChanActivityId currentActivityId;
 	private WeakReference<ChanIdentifiedActivity> currentActivity;
 	private NetworkProfile activeProfile = null;
-	private UserPreferences userPrefs = null;
+	private UserStatistics userStats = null;
 	
 	private WifiProfile wifiProfile = new WifiProfile();
 	private NoConnectionProfile noConnectionProfile = new NoConnectionProfile();
@@ -77,19 +79,29 @@ public class NetworkProfileManager {
 			return noConnectionProfile.getFetchParams();
 		}
 	}
+	
+	public UserStatistics getUserStatistics() {
+		return userStats;
+	}
 
 	public void activityChange(ChanIdentifiedActivity newActivity) {
-		Log.w(TAG, "activity change to " + newActivity.getChanActivityId() + " receiver=" + receiver + " activity=" + currentActivity, new Exception("activity change"));
+		if (DEBUG) Log.i(TAG, "activity change to " + newActivity.getChanActivityId() + " receiver=" + receiver + " activity=" + currentActivity);
 		if (receiver == null) {
+			// we need to register network changes receiver
 			receiver = new NetworkBroadcastReceiver();
 			newActivity.getBaseContext().getApplicationContext()
 				.registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-			Log.w(TAG, ConnectivityManager.CONNECTIVITY_ACTION + " receiver registered");
+			if (DEBUG) Log.i(TAG, ConnectivityManager.CONNECTIVITY_ACTION + " receiver registered");
 		}
 		
 		currentActivityId = newActivity.getChanActivityId();
 		currentActivity = new WeakReference<ChanIdentifiedActivity>(newActivity);
 
+		if (userStats == null) {
+			userStats = ChanFileStorage.loadUserStats(newActivity.getBaseContext());
+		}
+		userStats.registerActivity(newActivity);
+		
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 		}
@@ -121,7 +133,7 @@ public class NetworkProfileManager {
 	}
 	
 	public void manualRefresh(ChanIdentifiedActivity newActivity) {
-		Log.w(TAG, "manualRefresh " + newActivity.getChanActivityId(), new Exception("manualRefresh"));
+		if (DEBUG) Log.i(TAG, "manualRefresh " + newActivity.getChanActivityId(), new Exception("manualRefresh"));
 		if (newActivity == null) {
 			return;
 		}
@@ -205,7 +217,7 @@ public class NetworkProfileManager {
 					activeProfile.onProfileDeactivated(currentActivity.get().getBaseContext());
 				}
 				activeProfile = noConnectionProfile;
-				Log.w(TAG, "Setting " + type + " profile");
+				if (DEBUG) Log.i(TAG, "Setting " + type + " profile");
 				if (currentActivity != null) {
 					activeProfile.onProfileActivated(currentActivity.get().getBaseContext());
 				}
@@ -217,7 +229,7 @@ public class NetworkProfileManager {
 					activeProfile.onProfileDeactivated(currentActivity.get().getBaseContext());
 				}
 				activeProfile = wifiProfile;
-				Log.w(TAG, "Setting " + type + " profile");
+				if (DEBUG) Log.i(TAG, "Setting " + type + " profile");
 				if (currentActivity != null) {
 					activeProfile.onProfileActivated(currentActivity.get().getBaseContext());
 				}
@@ -229,7 +241,7 @@ public class NetworkProfileManager {
 					activeProfile.onProfileDeactivated(currentActivity.get().getBaseContext());
 				}
 				activeProfile = mobileProfile;
-				Log.w(TAG, "Setting " + type + " profile");
+				if (DEBUG) Log.i(TAG, "Setting " + type + " profile");
 				if (currentActivity != null) {
 					activeProfile.onProfileActivated(currentActivity.get().getBaseContext());
 				}
@@ -242,10 +254,10 @@ public class NetworkProfileManager {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Log.w(TAG, "Connection change action: " + action);
+            if (DEBUG) Log.i(TAG, "Connection change action: " + action);
             
             if (intent.getBooleanExtra("EXTRA_NO_CONNECTIVITY", false)) {
-            	Log.w(TAG, "Disconnected from any network");
+            	if (DEBUG) Log.i(TAG, "Disconnected from any network");
             	NetworkProfileManager.instance().changeNetworkProfile(NetworkProfile.Type.NO_CONNECTION);
             } else {
             	checkNetwork(context);
@@ -256,18 +268,18 @@ public class NetworkProfileManager {
             NetworkInfo activeNetwork = ((ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
             if (activeNetwork != null && activeNetwork.isConnected()) {
             	if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
-        			Log.w(TAG, "Connected to Wifi");
+        			if (DEBUG) Log.i(TAG, "Connected to Wifi");
         			NetworkProfileManager.instance().changeNetworkProfile(NetworkProfile.Type.WIFI);
                 } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                 	String networkType = activeNetwork.getSubtypeName();
-            		Log.w(TAG, "Connected to mobile " + networkType);
+            		if (DEBUG) Log.i(TAG, "Connected to mobile " + networkType);
             		NetworkProfileManager.instance().changeNetworkProfile(NetworkProfile.Type.MOBILE, networkType);
                 } else {
-                	Log.w(TAG, "Connected to other type of network " + activeNetwork.getType());
+                	if (DEBUG) Log.i(TAG, "Connected to other type of network " + activeNetwork.getType());
                 	NetworkProfileManager.instance().changeNetworkProfile(NetworkProfile.Type.MOBILE);
                 }
             } else {
-            	Log.w(TAG, "Not connected or connecting");
+            	if (DEBUG) Log.i(TAG, "Not connected or connecting");
             	NetworkProfileManager.instance().changeNetworkProfile(NetworkProfile.Type.NO_CONNECTION);
             }
         }

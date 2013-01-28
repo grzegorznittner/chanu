@@ -3,7 +3,10 @@
  */
 package com.chanapps.four.component;
 
+import java.io.File;
+
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanFileStorage;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -24,8 +27,7 @@ import android.widget.TextView;
  * 
  */
 public class CacheSizePreference extends Preference implements OnSeekBarChangeListener {
-
-	private final String TAG = getClass().getName();
+	private static final String TAG = "CacheSizePreference";
 
 	private static final String ANDROIDNS = "http://schemas.android.com/apk/res/android";
 	private static final String CHANAPPS = "http://chanapps.com";
@@ -61,6 +63,16 @@ public class CacheSizePreference extends Preference implements OnSeekBarChangeLi
 	private void setValuesFromXml(AttributeSet attrs) {
 		maxValue = attrs.getAttributeIntValue(ANDROIDNS, "max", 100);
 		minValue = attrs.getAttributeIntValue(CHANAPPS, "min", 0);
+		try {
+			File cacheFolder = ChanFileStorage.getCacheDirectory(getContext());
+			long totalSpace = cacheFolder.getTotalSpace() / (1024*1024);
+			maxValue = (int)totalSpace;
+			if (maxValue < minValue) {
+				minValue = maxValue / 2;
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Error while getting cache size", e);
+		}
 
 		unitsLeft = getAttributeStringValue(attrs, CHANAPPS, "unitsLeft", "");
 		String units = getAttributeStringValue(attrs, CHANAPPS, "units", "");

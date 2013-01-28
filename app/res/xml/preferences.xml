@@ -32,7 +32,7 @@
             android:defaultValue="true" />
 
     <com.chanapps.four.component.CacheSizePreference
-        	android:key="cacheSize"
+        	android:key="pref_cache_size"
             android:title="Cache size"
             android:summary="Adjust cache size"
             android:max="256"

@@ -1,5 +1,12 @@
 package com.chanapps.four.fragment;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URI;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -16,14 +23,9 @@ import android.support.v4.app.DialogFragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanWatchlist;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-
-import java.io.*;
-import java.net.URI;
-import java.util.regex.Matcher;
 
 /**
 * Created with IntelliJ IDEA.
