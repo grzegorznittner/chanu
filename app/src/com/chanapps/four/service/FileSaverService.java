@@ -53,7 +53,7 @@ public class FileSaverService extends BaseChanService {
 					Log.w(TAG, "User statistics object not loaded!");
 					return;
 				}
-				ChanFileStorage.storeUserPreferences(getBaseContext(), userStats);
+				ChanFileStorage.storeUserStats(getBaseContext(), userStats);
 				break;
 			}
 			

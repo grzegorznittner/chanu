@@ -10,16 +10,18 @@ import java.util.Date;
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
  *
  */
-public class ChanBoardStat {
+public class ChanThreadStat {
 	public String board;
+	public long no;
 	public int usage;
 	public long lastUsage;
 	
-	public ChanBoardStat() {
+	public ChanThreadStat() {
 		this.usage = 0;
 	}
-	public ChanBoardStat(String board) {
+	public ChanThreadStat(String board, long threadNo) {
 		this.board = board;
+		this.no = threadNo;
 		this.usage = 0;
 	}
 	public long use() {
@@ -29,6 +31,6 @@ public class ChanBoardStat {
 	}
 	
 	public String toString() {
-		return "board " + board + " used " + usage + " last at " + new Date(lastUsage);
+		return "thread " + board + "/" + no + " used " + usage + " last " + new Date(lastUsage);
 	}
 }

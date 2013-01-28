@@ -4,6 +4,7 @@
 package com.chanapps.four.data;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -26,20 +27,17 @@ public class UserStatistics {
 	public static final boolean DEBUG = true;
 	
 	public static final int MIN_TOP_BOARDS = 5;
+	public static final int MAX_TOP_THREADS = 50;
 	private static final long MIN_STORE_DELAY = 15000;  // 15s
 	
 	/*
-	 * board code -> number of board visits
+	 * board code -> number of visits (including threads and image view)
 	 */
-	public Map<String, ChanBoardStat> boardOpen = new HashMap<String, ChanBoardStat>();
+	public Map<String, ChanBoardStat> boardStats = new HashMap<String, ChanBoardStat>();
 	/*
-	 * board code -> number of threads opened
+	 * thread num -> number of visits (including image view)
 	 */
-	public Map<String, ChanBoardStat> boardThread = new HashMap<String, ChanBoardStat>();
-	/*
-	 * board code -> number of images downloaded
-	 */
-	public Map<String, ChanBoardStat> boardFullImage = new HashMap<String, ChanBoardStat>();
+	public Map<Long, ChanThreadStat> threadStats = new HashMap<Long, ChanThreadStat>();
 	
 	public long lastUpdate;
 	public long lastStored;
@@ -48,15 +46,13 @@ public class UserStatistics {
 		ChanActivityId activityId = activity.getChanActivityId();
 		switch(activityId.activity) {
 		case BOARD_ACTIVITY:
-			boardOpened(activityId.boardCode);
+			boardUse(activityId.boardCode);
 			break;
 		case THREAD_ACTIVITY:
-			threadOpened(activityId.boardCode, activityId.threadNo);
-			break;
 		case FULL_SCREEN_IMAGE_ACTIVITY:
-			imageDownloaded(activityId.boardCode, activityId.postNo);
-			break;
 		case POST_REPLY_ACTIVITY:
+			boardUse(activityId.boardCode);
+			threadUse(activityId.boardCode, activityId.threadNo);
 			break;
 		default:
 			// we don't register other activities
@@ -66,45 +62,36 @@ public class UserStatistics {
 		}
 	}
 	
-	public void boardOpened(String boardCode) {
-		if (!boardOpen.containsKey(boardCode)) {
-			boardOpen.put(boardCode, new ChanBoardStat(boardCode));
+	public void boardUse(String boardCode) {
+		if (boardCode == null) {
+			return;
 		}
-		boardOpen.get(boardCode).usage++;
-		lastUpdate = new Date().getTime();
+		if (!boardStats.containsKey(boardCode)) {
+			boardStats.put(boardCode, new ChanBoardStat(boardCode));
+		}
+		lastUpdate = boardStats.get(boardCode).use();
 	}
 	
-	public void threadOpened(String boardCode, long threadNo) {
-		if (!boardThread.containsKey(boardCode)) {
-			boardThread.put(boardCode, new ChanBoardStat(boardCode));
+	public void threadUse(String boardCode, long threadNo) {
+		if (boardCode == null || threadNo <= 0) {
+			return;
 		}
-		boardThread.get(boardCode).usage++;
-		lastUpdate = new Date().getTime();
-	}
-	
-	public void imageDownloaded(String boardCode, long postNo) {
-		if (!boardFullImage.containsKey(boardCode)) {
-			boardFullImage.put(boardCode, new ChanBoardStat(boardCode));
+		if (!threadStats.containsKey(threadNo)) {
+			threadStats.put(threadNo, new ChanThreadStat(boardCode, threadNo));
 		}
-		boardFullImage.get(boardCode).usage++;
-		lastUpdate = new Date().getTime();
+		ChanThreadStat stat = threadStats.get(threadNo);
+		if (stat.board == null) {
+			stat.board = boardCode;
+		}
+		lastUpdate = stat.use();
 	}
 	
 	/**
 	 * Returns short list of top used boards.
 	 */
-	public List<ChanBoardStat> getTopBoards() {
-		List<ChanBoardStat> topBoards = new ArrayList<ChanBoardStat>(boardOpen.values());
+	public List<ChanBoardStat> topBoards() {
+		List<ChanBoardStat> topBoards = new ArrayList<ChanBoardStat>(boardStats.values());
 		int sumOfUsages = 0;
-		for(ChanBoardStat board : topBoards) {
-			if (boardThread.containsKey(board.board)) {
-				board.usage += boardThread.get(board.board).usage;
-			}
-			if (boardFullImage.containsKey(board.board)) {
-				board.usage += boardFullImage.get(board.board).usage;
-			}
-			sumOfUsages += board.usage;
-		}
 		// sorting by last modification date desc order
         Collections.sort(topBoards, new Comparator<ChanBoardStat>() {
             public int compare(ChanBoardStat o1, ChanBoardStat o2) {
@@ -114,7 +101,7 @@ public class UserStatistics {
         });
 		if (topBoards.size() < MIN_TOP_BOARDS) {
 			if (DEBUG) {
-				Log.d(TAG, "Top boards: " + logStats(topBoards));
+				Log.d(TAG, "Top boards: " + logBoardStats(topBoards));
 			}
 			return topBoards;
 		}
@@ -131,15 +118,67 @@ public class UserStatistics {
         }
         topBoards = topBoards.subList(0, numOfTopBoards);
         if (DEBUG) {
-			Log.d(TAG, "Top boards: " + logStats(topBoards));
+			Log.d(TAG, "Top boards: " + logBoardStats(topBoards));
 		}
 		return topBoards;
 	}
 	
-	private String logStats(List<ChanBoardStat> boards) {
+	/**
+	 * Returns short list of top used boards.
+	 */
+	public List<ChanThreadStat> topThreads() {
+		List<ChanThreadStat> topThreads = new ArrayList<ChanThreadStat>(threadStats.values());
+		int sumOfUsages = 0;
+		// sorting by usage desc
+        Collections.sort(topThreads, new Comparator<ChanThreadStat>() {
+            public int compare(ChanThreadStat o1, ChanThreadStat o2) {
+                return o1.usage > o2.usage ? 1
+                		: o1.usage < o2.usage ? -1 : 0;
+            }
+        });
+		if (topThreads.size() < MAX_TOP_THREADS) {
+			if (DEBUG) {
+				Log.d(TAG, "Top threads: " + logThreadStats(topThreads));
+			}
+			return topThreads;
+		}
+		int averageUsage = sumOfUsages / topThreads.size();
+		int numOfTopThreads = 0;
+        for(ChanThreadStat board : topThreads) {
+        	numOfTopThreads++;
+        	if (board.usage < averageUsage) {
+        		break;
+        	}
+        }
+        topThreads = topThreads.subList(0, numOfTopThreads);
+        if (DEBUG) {
+			Log.d(TAG, "Top threads: " + logThreadStats(topThreads));
+		}
+		return topThreads;
+	}
+	
+	public void compactThreads() {
+		long weekAgo = Calendar.getInstance().getTimeInMillis() - 7 * 24 * 60 * 60 * 1000;
+		List<ChanThreadStat> topThreads = new ArrayList<ChanThreadStat>(threadStats.values());
+		for (ChanThreadStat threadStat : topThreads) {
+			if (threadStat.lastUsage < weekAgo) {
+				threadStats.remove(threadStat.no);
+			}
+		}
+	}
+
+	private String logBoardStats(List<ChanBoardStat> boards) {
 		StringBuffer buf = new StringBuffer();
 		for(ChanBoardStat board : boards) {
 			buf.append(board.board + ": " + board.usage + ", ");
+		}
+		return buf.toString();
+	}
+
+	private String logThreadStats(List<ChanThreadStat> threads) {
+		StringBuffer buf = new StringBuffer();
+		for(ChanThreadStat thread : threads) {
+			buf.append(thread.no + ": " + thread.usage + ", ");
 		}
 		return buf.toString();
 	}

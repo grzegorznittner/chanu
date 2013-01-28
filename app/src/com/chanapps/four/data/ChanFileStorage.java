@@ -52,7 +52,7 @@ public class ChanFileStorage {
     private static final String CACHE_EXT = ".txt";
     private static final String BITMAP_CACHE_EXT = ".jpg";
     private static final String WALLPAPER_EXT = ".jpg";
-    private static final String USER_PREFS_FILENAME = "userprefs.txt";
+    private static final String USER_STATS_FILENAME = "userstats.txt";
 
     public static boolean isBoardCachedOnDisk(Context context, String boardCode) {
         File boardDir = getBoardCacheDirectory(context, boardCode);
@@ -60,7 +60,7 @@ public class ChanFileStorage {
     }
 
     public static boolean isUserPreferencesOnDisk(Context context) {
-        File userPrefsFile = getUserPreferencesFile(context);
+        File userPrefsFile = getUserStatsFile(context);
         return userPrefsFile != null && userPrefsFile.exists();
     }
 
@@ -87,11 +87,11 @@ public class ChanFileStorage {
         return boardDir;
     }
 
-    private static File getUserPreferencesFile(Context context) {
+    private static File getUserStatsFile(Context context) {
         String cacheDir = getRootCacheDirectory(context);
         File cacheFolder = StorageUtils.getOwnCacheDirectory(context, cacheDir);
         if (cacheFolder != null) {
-        	File userPrefsFile = new File(cacheFolder, USER_PREFS_FILENAME);
+        	File userPrefsFile = new File(cacheFolder, USER_STATS_FILENAME);
         	return userPrefsFile;
         } else {
         	Log.e(TAG, "Cache folder returned empty");
@@ -340,47 +340,48 @@ public class ChanFileStorage {
 		return thread;
 	}
 	
-	public static void storeUserPreferences(Context context, UserStatistics userPrefs) {
+	public static void storeUserStats(Context context, UserStatistics userStats) {
 		try {
-            File userPrefsFile = getUserPreferencesFile(context);
+            File userPrefsFile = getUserStatsFile(context);
 			if (userPrefsFile != null) {
 				try {
-					userPrefs.lastStored = new Date().getTime();
+					userStats.compactThreads();
+					userStats.lastStored = new Date().getTime();
 					ObjectMapper mapper = ChanHelper.getJsonMapper();
-					mapper.writeValue(userPrefsFile, userPrefs);
+					mapper.writeValue(userPrefsFile, userStats);
 				} catch (Exception e) {
                     Log.e(TAG, "Exception while writing user preferences", e);
                 }
-				if (DEBUG) Log.i(TAG, "Stored user preferences to file, last updated " + userPrefs.lastUpdate);
+				if (DEBUG) Log.i(TAG, "Stored user statistics to file, last updated " + userStats.lastUpdate);
 			} else {
-				Log.e(TAG, "Cannot store user preferences");
+				Log.e(TAG, "Cannot store user statistics");
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "Error while storing user preferences", e);
+			Log.e(TAG, "Error while storing user statistics", e);
 		}
 	}
 
-	public static UserStatistics loadUserPreferences(Context context) {
+	public static UserStatistics loadUserStats(Context context) {
 		try {
-			File userPrefsFile = getUserPreferencesFile(context);
-			if (userPrefsFile != null && userPrefsFile.exists()) {
+			File userStatsFile = getUserStatsFile(context);
+			if (userStatsFile != null && userStatsFile.exists()) {
 				ObjectMapper mapper = ChanHelper.getJsonMapper();
-				UserStatistics userPrefs = mapper.readValue(userPrefsFile, UserStatistics.class);
+				UserStatistics userPrefs = mapper.readValue(userStatsFile, UserStatistics.class);
                 if (userPrefs == null) {
-                    Log.e(TAG, "Couldn't load user preferences, null returned");
+                    Log.e(TAG, "Couldn't load user statistics, null returned");
                     return new UserStatistics();
                 } else {
-				    if (DEBUG) Log.i(TAG, "Loaded user preferences, last updated " + userPrefs.lastUpdate + ", last stored " + userPrefs.lastStored);
+				    if (DEBUG) Log.i(TAG, "Loaded user statistics, last updated " + userPrefs.lastUpdate + ", last stored " + userPrefs.lastStored);
 					return userPrefs;
                 }
 			} else {
-				Log.w(TAG, "File for user preferences doesn't exist");
+				Log.w(TAG, "File for user statistics doesn't exist");
 				return new UserStatistics();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "Error while loading user preferences", e);
+			Log.e(TAG, "Error while loading user statistics", e);
 		}
-		return null;
+		return new UserStatistics();
 	}
 
     public static String getBoardWidgetBitmapPath(Context context, String boardName, int index) {

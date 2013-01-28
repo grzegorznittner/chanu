@@ -12,8 +12,11 @@ import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.activity.FullScreenImageActivity;
 import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanBoardStat;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanThreadStat;
+import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
@@ -129,6 +132,8 @@ public class MobileProfile extends AbstractNetworkProfile {
 	@Override
 	public void onBoardSelectorSelected(Context context) {
 		super.onBoardSelectorSelected(context);
+		
+    	CleanUpService.startService(context);
 
 		Health health = getConnectionHealth();
 		if (health != Health.BAD && health != Health.VERY_SLOW) {
@@ -176,9 +181,16 @@ public class MobileProfile extends AbstractNetworkProfile {
 			makeToast("Board is fresh");
 		}
 		if ("a".equals(board)) {
-			makeToast("Calculating cache size ...");
-        	CleanUpService.startService(context);
-        }
+			UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
+			int i = 1;
+			for (ChanBoardStat stat : userStats.topBoards()) {
+				Log.i(TAG, "Top boards: " + i++  + ". " + stat);
+			}
+			i = 1;
+			for (ChanThreadStat stat : userStats.topThreads()) {
+				Log.i(TAG, "Top threads: " + i++ + ". " + stat);
+			}
+		}
 	}
 
 	@Override
