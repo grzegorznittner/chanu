@@ -265,8 +265,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         String text = intent.getStringExtra(ChanHelper.TEXT);
         Log.i(TAG, "Intent has text? " + intent.hasExtra(ChanHelper.TEXT));
         Log.i(TAG, "Intent has text=" + text);
-        String quoteText = ChanPost.quoteText(intent.getStringExtra(ChanHelper.QUOTE_TEXT));
-        setMessageText(text, quoteText);
+        //String quoteText = ChanPost.quoteText(intent.getStringExtra(ChanHelper.QUOTE_TEXT));
+        setMessageText(text, "");
         adjustFieldVisibility();
 
         String name = intent.getStringExtra(ChanHelper.NAME);
@@ -295,7 +295,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
         setActionBarTitle();
 
-        if (DEBUG) Log.i(TAG, "loaded from intent " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " imageUrl=" + imageUrl + " text=" + " quoteText=" + quoteText);
+        if (DEBUG) Log.i(TAG, "loaded from intent " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " imageUrl=" + imageUrl + " text=" + text);
     }
 
     protected void loadFromPrefs() {
@@ -309,8 +309,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         orientation = prefs.getString(ChanHelper.ORIENTATION, null);
 
         String text = prefs.getString(ChanHelper.TEXT, "");
-        String quoteText = ChanPost.quoteText(prefs.getString(ChanHelper.QUOTE_TEXT, ""));
-        setMessageText(text, quoteText);
+        setMessageText(text, "");
         adjustFieldVisibility();
 
         String name = prefs.getString(ChanHelper.NAME, "");
@@ -331,7 +330,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         loadImageFromPrefs();
 
         setActionBarTitle();
-        if (DEBUG) Log.i(TAG, "loaded from prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " text=" + " quoteText=" + quoteText);
+        if (DEBUG) Log.i(TAG, "loaded from prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " text=" + text);
     }
 
     protected void adjustFieldVisibility() {
@@ -392,7 +391,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         ed.putString(ChanHelper.SUBJECT, subjectText.getText().toString());
         ed.putString(ChanHelper.PASSWORD, passwordText.getText().toString());
         ed.putBoolean(ChanHelper.SPOILER, spoilerCheckbox.isChecked());
-        ed.putString(ChanHelper.QUOTE_TEXT, null);
         ed.putLong(ChanHelper.TIM, tim);
         ed.putString(ChanHelper.POST_REPLY_IMAGE_URL, imageUri == null ? null : imageUri.toString());
         ed.putString(ChanHelper.IMAGE_PATH, imagePath);

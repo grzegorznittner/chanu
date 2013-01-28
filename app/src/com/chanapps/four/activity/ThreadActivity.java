@@ -215,6 +215,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     @Override
+    protected void setGoToThreadButton(final AdapterView<?> adapterView, final View view, final int position, final long id) {
+        goToThreadButton.setVisibility(View.GONE); // we are already at thread level
+    }
+
+    @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
         return showPopupText(adapterView, view, position, id);
     }
@@ -294,6 +299,17 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
     }
 
+    private void postReply() {
+        Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
+        replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        replyIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        replyIntent.putExtra(ChanHelper.POST_NO, 0);
+        replyIntent.putExtra(ChanHelper.TIM, tim);
+        replyIntent.putExtra(ChanHelper.TEXT, "");
+        //replyIntent.putExtra(ChanHelper.QUOTE_TEXT, "");
+        startActivity(replyIntent);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -317,6 +333,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             case R.id.refresh_thread_menu:
                 //Toast.makeText(this, R.string.refresh_thread_menu, Toast.LENGTH_LONG);
                 NetworkProfileManager.instance().manualRefresh(this);
+                return true;
+            case R.id.post_reply_menu:
+                postReply();
                 return true;
             case R.id.hide_all_text:
                 toggleHideAllText();
@@ -388,13 +407,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                     popupWindow.dismiss();
                 }
             });
-            dismissButton.setVisibility(View.VISIBLE);
-            fullWidthDismissButton.setVisibility(View.GONE);
         }
         else {
             highlightButton.setVisibility(View.GONE);
-            dismissButton.setVisibility(View.GONE);
-            fullWidthDismissButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -451,4 +466,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 	public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo);
 	}
+
+    protected int getLayoutId() {
+        return R.layout.thread_grid_layout;
+    }
+
 }

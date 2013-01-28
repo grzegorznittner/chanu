@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
-                android:id="@+id/board_grid_layout"
+                android:id="@+id/thread_grid_layout"
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
