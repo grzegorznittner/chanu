@@ -170,11 +170,11 @@ public class NetworkProfileManager {
 		}
 	}
 	
-	public void finishedImageDownload(ChanIdentifiedActivity activity, int time, int size) {
+	public void finishedImageDownload(ChanIdentifiedService service, int time, int size) {
 		if (activeProfile == null) {
-			NetworkBroadcastReceiver.checkNetwork(activity.getBaseContext());
+			NetworkBroadcastReceiver.checkNetwork(service.getApplicationContext());
 		}
-		activeProfile.onImageDownloadSuccess(activity.getBaseContext(), time, size);
+		activeProfile.onImageDownloadSuccess(service.getApplicationContext(), time, size);
 	}
 	
 	public void finishedFetchingData(ChanIdentifiedService service, int time, int size) {

@@ -60,7 +60,7 @@ public class FileSaverService extends BaseChanService {
 			long endTime = Calendar.getInstance().getTimeInMillis();
             if (DEBUG) Log.i(TAG, "Stored " + fileType + " in " + (endTime - startTime) + "ms.");            
 		} catch (Exception e) { 
-            Log.e(TAG, "Error in clean up service", e);
+            Log.e(TAG, "Error in file saver service", e);
 		}
 	}
 }

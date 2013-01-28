@@ -194,6 +194,9 @@ public class CleanUpService extends BaseChanService {
 	}
 
 	private int trimByDate(List<FileDesc> files, long timeOffset) {
+		if (files == null || files.size() == 0) {
+			return 0;
+		}
         Collections.sort(files, new Comparator<FileDesc>() {
             public int compare(FileDesc o1, FileDesc o2) {
                 return o1.lastModified > o2.lastModified ? 1
@@ -217,6 +220,9 @@ public class CleanUpService extends BaseChanService {
 	}
 
 	private int trimBySize(List<FileDesc> files, long size) {
+		if (files == null || files.size() == 0) {
+			return 0;
+		}
         Collections.sort(files, new Comparator<FileDesc>() {
             public int compare(FileDesc o1, FileDesc o2) {
                 return o1.size > o2.size ? -1
