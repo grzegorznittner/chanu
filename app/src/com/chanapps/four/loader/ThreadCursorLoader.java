@@ -10,6 +10,7 @@ import android.database.MatrixCursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import android.widget.GridView;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
@@ -19,20 +20,28 @@ import com.chanapps.four.data.ChanThread;
 public class ThreadCursorLoader extends BoardCursorLoader {
 
     private static final String TAG = ThreadCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     protected SharedPreferences prefs;
 
     protected long threadNo;
+    protected int numGridColumns;
 
     protected ThreadCursorLoader(Context context) {
         super(context);
     }
 
-    public ThreadCursorLoader(Context context, String boardName, long threadNo) {
+    private static final int DEFAULT_NUM_GRID_COLUMNS_PORTRAIT = 2;
+    private static final int DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE = 3;
+
+    public ThreadCursorLoader(Context context, String boardName, long threadNo, GridView gridView) {
         this(context);
         this.context = context;
         this.boardName = boardName;
         this.threadNo = threadNo;
+        ChanHelper.Orientation orientation = ChanHelper.getOrientation(context);
+        int defaultNumColumns = (orientation == ChanHelper.Orientation.PORTRAIT) ? DEFAULT_NUM_GRID_COLUMNS_PORTRAIT : DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE;
+        int currentNumGridColumns = gridView.getNumColumns();
+        this.numGridColumns = (gridView == null || currentNumGridColumns <= 0) ? defaultNumColumns : currentNumGridColumns;
         if (threadNo == 0) {
             throw new ExceptionInInitializerError("Can't have zero threadNo in a thread cursor loader");
         }
@@ -56,30 +65,41 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         int isDead = thread != null && thread.isDead ? 1 : 0;
         if (DEBUG) Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
         MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
+        Object[] currentRow = null;
         for (ChanPost post : thread.posts) {
             post.isDead = thread.isDead; // inherit from parent
             if (post.tn_w <= 0 || post.tim == 0) {
                 if (!hideAllText || post.resto == 0) {
                     String postText = post.resto == 0 ? post.getThreadText() : post.getPostText();
                     if (postText != null && !postText.isEmpty()) {
-                        matrixCursor.addRow(new Object[] {
+                        currentRow = new Object[] {
                                 post.no, boardName, threadNo,
                                 "", post.getCountryFlagUrl(),
                                 postText, post.getHeaderText(), post.getFullText(),
                                 post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                                post.getSpoilerText(), post.getExifText(), isDead, 0, 0});
+                                post.getSpoilerText(), post.getExifText(), isDead, 0, 0};
+                        matrixCursor.addRow(currentRow);
                         if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
                     }
                 }
             } else {
                 String postText = post.resto == 0 ? post.getThreadText(hideAllText) : post.getPostText(hideAllText);
-                matrixCursor.addRow(new Object[] {
+                currentRow = new Object[] {
                         post.no, boardName, threadNo,
                         post.getThumbnailUrl(), post.getCountryFlagUrl(),
                         postText, post.getHeaderText(), post.getFullText(),
                         post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                        post.getSpoilerText(), post.getExifText(), isDead, 0, 0});
+                        post.getSpoilerText(), post.getExifText(), isDead, 0, 0};
+                matrixCursor.addRow(currentRow);
                 if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
+            }
+            if (post.resto == 0) { // for initial thread, add extra null item to support full-width header
+                if (DEBUG) Log.v(TAG, "added extra null rows for grid columns=1.." + numGridColumns);
+                for (int i = 1; i < numGridColumns; i++) {
+                    Object[] nullRow = currentRow.clone();
+                    nullRow[0] = 0; // set postNo to zero to signal to rest of system that this is a null post
+                    matrixCursor.addRow(nullRow);
+                }
             }
         }
         if (thread.posts.length > 0) {

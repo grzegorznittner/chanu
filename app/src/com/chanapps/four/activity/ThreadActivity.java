@@ -60,7 +60,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         if (threadNo > 0) {
-        	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo);
+        	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, gridView);
         }
         return cursorLoader;
     }

@@ -33,6 +33,7 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.BoardCursorLoader;
+import com.chanapps.four.service.BaseChanService;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -421,7 +422,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
         final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
-        if (loadPage == 0 && lastPage == 0)
+        if (loadPage == 0 && lastPage == 0) //
             ThreadActivity.startActivity(this, adapterView, view, position, id, true);
     }
 
@@ -537,7 +538,12 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                        popupWindow.dismiss();
+                        handler.post(new Runnable() {
+                            public void run() {
+                                popupWindow.dismiss();
+                            }
+                        });
+                        //popupWindow.dismiss();
                         return true;
                     }
                     else {
@@ -613,7 +619,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
     private static final int POPUP_BUTTON_HEIGHT_DP = 48;
 
     protected void setScrollViewMargin() {
-        // 48dp for each one
         ScrollView.LayoutParams params = (ScrollView.LayoutParams)popupScrollView.getLayoutParams();
         if (params == null)
             params = new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

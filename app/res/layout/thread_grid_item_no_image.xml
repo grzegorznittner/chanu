@@ -8,11 +8,6 @@
             style="@style/GridTextOnlyStyle"
             />
 
-    <ImageView
-            android:id="@+id/grid_item_country_flag"
-            style="@style/GridCountryFlagStyle"
-            />
-
     <View
             android:id="@+id/grid_item_self_highlight"
             style="@style/GridItemSelfHighlightStyle"
@@ -26,6 +21,11 @@
     <View
             android:id="@+id/grid_item_next_highlight"
             style="@style/GridItemNextHighlightStyle"
+            />
+
+    <ImageView
+            android:id="@+id/grid_item_country_flag"
+            style="@style/GridCountryFlagStyle"
             />
 
 </RelativeLayout>

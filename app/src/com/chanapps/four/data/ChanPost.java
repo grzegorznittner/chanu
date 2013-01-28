@@ -15,20 +15,16 @@ public class ChanPost {
 	public static final String TAG = ChanPost.class.getSimpleName();
     public static final int MAX_BOARDTHREAD_IMAGETEXT_LEN = 75;
     public static final int MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN = MAX_BOARDTHREAD_IMAGETEXT_LEN - 3;
-
-    /* THREE COL SIZES
-    public static final int MAX_IMAGETEXT_LEN = 33;
-    public static final int MAX_IMAGETEXT_ABBR_LEN = 30;
-    public static final int MAX_TEXTONLY_LEN = 93;
-    public static final int MAX_TEXTONLY_ABBR_LEN = 90;
-    */
+    public static final int MAX_THREAD_IMAGETEXT_LEN = (int)(MAX_BOARDTHREAD_IMAGETEXT_LEN * 1.5);
+    public static final int MAX_THREAD_IMAGETEXT_ABBR_LEN = MAX_THREAD_IMAGETEXT_LEN - 3;
 
     /* TWO COL SIZES */
     public static final int MAX_IMAGETEXT_LEN = MAX_BOARDTHREAD_IMAGETEXT_LEN;
     public static final int MAX_IMAGETEXT_ABBR_LEN = MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN;
     public static final int MAX_TEXTONLY_LEN = (int)(MAX_BOARDTHREAD_IMAGETEXT_LEN * 3.5);
     public static final int MAX_TEXTONLY_ABBR_LEN = MAX_TEXTONLY_LEN - 3;
-
+    public static final int MAX_THREAD_TEXTONLY_LEN = (int)(MAX_TEXTONLY_LEN * 1.5);
+    public static final int MAX_THREAD_TEXTONLY_ABBR_LEN = MAX_THREAD_TEXTONLY_LEN - 3;
 
     private static final int MIN_LINE = 30;
     private static final int MAX_LINE = 40;
@@ -206,6 +202,8 @@ public class ChanPost {
     }
 
     private static String abbreviate(String s, int maxLen, int maxAbbrLen, boolean longtext) {
+        if (s == null || s.isEmpty())
+            return "";
         return
             (s.length() <= maxLen)
             ? s
@@ -270,15 +268,17 @@ public class ChanPost {
 
     public String getPostText(boolean hideAllText) {
     	if (defData) {
-    		return "We're preparing images for you.\n"
-    				+ "Please wait.";
+            return "Loading images..."; // FIXME: should be loading graphic or localized text
     	}
 
         int maxImageTextLen = fsize > 0 ? MAX_IMAGETEXT_LEN : MAX_TEXTONLY_LEN;
         int maxImageTextAbbrLen = fsize > 0 ? MAX_IMAGETEXT_ABBR_LEN : MAX_TEXTONLY_ABBR_LEN;
         String text = "";
         if (!hideAllText) {
-            text += no + "\n" + abbreviate(getFullText(), maxImageTextLen, maxImageTextAbbrLen);
+            text += no;
+            String textLine = abbreviate(getFullText(), maxImageTextLen, maxImageTextAbbrLen);
+            if (textLine != null && !textLine.isEmpty())
+                text += "\n" + textLine;
         }
         if (fsize > 0) {
             if (text.length() > 0) {
@@ -299,54 +299,70 @@ public class ChanPost {
     }
 
     public String getThreadText(boolean hideAllText) {
-        return getThreadText(hideAllText, MAX_IMAGETEXT_LEN, MAX_IMAGETEXT_ABBR_LEN, false);
+        if (fsize > 0) // has image
+            return getThreadText(hideAllText, MAX_THREAD_IMAGETEXT_LEN, MAX_THREAD_IMAGETEXT_ABBR_LEN, false);
+        else
+            return getThreadText(hideAllText, MAX_THREAD_TEXTONLY_LEN, MAX_THREAD_TEXTONLY_ABBR_LEN, false);
     }
 
     public String getThreadText(boolean hideAllText, int maxImageTextLen, int maxImageTextAbbrLen, boolean onBoard) {
-    	if (defData) {
-    		return "We're preparing images for you.\n"
-    				+ "Please wait.";
-    	}
-    	
+    	if (defData)
+    		return "Loading..."; // FIXME should be localized string
+
         String text = "";
         if (!hideAllText) {
-            if (!onBoard)
-                text += no + "\n";
-            text += abbreviate(getFullText(!onBoard), maxImageTextLen, maxImageTextAbbrLen);
-        }
-        if (fsize > 0 && !onBoard) {
-            if (text.length() > 0) {
-                text += "\n";
+            if (onBoard) {
+                text += abbreviate(getFullText(!onBoard), maxImageTextLen, maxImageTextAbbrLen);
             }
-            int kbSize = (fsize / 1024) + 1;
-            text += kbSize + "kB " + w + "x" + h; // + " " + ext;
+            else {
+                text += no;
+                String subText = abbreviate(sanitizeText(sub, onBoard), maxImageTextLen, maxImageTextAbbrLen);
+                String comText = abbreviate(sanitizeText(com, onBoard), maxImageTextLen, maxImageTextAbbrLen);
+                if (subText != null && !subText.isEmpty())
+                    text += " " + subText;
+                if (comText != null && !comText.isEmpty())
+                    text += "\n" + comText;
+            }
         }
         if (resto != 0) { // just a post, don't add thread stuff
-            return text;
+            if (fsize > 0 && !onBoard) {
+                int kbSize = (fsize / 1024) + 1;
+                text += "\n" + kbSize + "kB " + w + "x" + h; // + " " + ext;
+            }
         }
-        if (text.length() > 0) {
-            text += "\n";
-        }
-        text += replies
-                + " post" + (replies == 1 ? "" : "s")
-                + " "
-                + images
-                + " image"
-                + (images == 1 ? "" : "s");
-        if (imagelimit == 1) {
-            text += " (IL)";
-        }
-        if (bumplimit == 1) {
-            text += " (BL)";
-        }
-        if (isDead) {
-            text += "\nDEAD THREAD";
+        else {
+            if (text.length() > 0)
+                text += "\n";
+            text += replies
+                    + " post" + (replies == 1 ? "" : "s")
+                    + " "
+                    + images
+                    + " image"
+                    + (images == 1 ? "" : "s");
+            if (imagelimit == 1)
+                text += " (IL)";
+            if (bumplimit == 1)
+                text += " (BL)";
+            if (isDead) {
+                if (onBoard)
+                    text += "\n";
+                else
+                    text += " ";
+                text += "DEAD THREAD";
+            }
+            if (fsize > 0 && !onBoard) {
+                int kbSize = (fsize / 1024) + 1;
+                text += " " + kbSize + "kB " + w + "x" + h; // + " " + ext;
+            }
         }
         return text;
 	}
 
     public String getBoardThreadText() {
-        return getThreadText(false, MAX_BOARDTHREAD_IMAGETEXT_LEN, MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN, true);
+        if (fsize > 0) // has image
+            return getThreadText(false, MAX_BOARDTHREAD_IMAGETEXT_LEN, MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN, true);
+        else // text-only
+            return getThreadText(false, MAX_TEXTONLY_LEN, MAX_TEXTONLY_ABBR_LEN, true);
     }
 
     public void mergeIntoThreadList(List<ChanPost> threads) {

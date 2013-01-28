@@ -5,9 +5,11 @@ import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.data.ChanHelper;
 
 import java.util.Arrays;
@@ -29,7 +31,7 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
     private Set<Long> highlightPrevPostNos = new HashSet<Long>();
     private Set<Long> highlightNextPostNos = new HashSet<Long>();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public ThreadCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
@@ -56,11 +58,17 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
         if (!cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        //Log.i(TAG, "getView called for position="+position + " cursorCols=" + Arrays.toString(cursor.getColumnNames()));
         String tag = null;
-        String imageUrl = null;
-        imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        if (imageUrl != null && imageUrl.length() > 0) {
+        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        long postNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+        if (DEBUG) Log.d(TAG, "getView called for position="+position + " postNo=" + postNo);
+        if (position == 0) { // thread header
+            tag = ChanHelper.POST_RESTO;
+        }
+        else if (postNo == 0) { // null spacer to give room for thread header
+            tag = ChanHelper.POST_OMITTED_POSTS;
+        }
+        else if (imageUrl != null && imageUrl.length() > 0) {
             tag = ChanHelper.POST_IMAGE_URL;
         } else {
             tag = ChanHelper.POST_SHORT_TEXT;
@@ -70,10 +78,10 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
         if (convertView == null || !tag.equals(convertView.getTag())) {
             v = newView(context, parent, tag, position);
             v.setTag(tag);
-            if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
+            if (imageUrl != null && imageUrl.length() > 0) {
                 ImageView imageView = (ImageView)v.findViewById(R.id.grid_item_image);
-                imageView.setTag(imageUrl);
-
+                if (imageView != null)
+                    imageView.setTag(imageUrl);
             }
             else {
                 //TextView textView = (TextView)v.findViewById(R.id.thread_grid_item_text);
@@ -92,8 +100,7 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
             v = convertView;
         }
 
-        long postNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-        if (v instanceof  RelativeLayout) {
+        if (v != null && v instanceof RelativeLayout && postNo != 0) {
             RelativeLayout r = (RelativeLayout)v;
             if (highlightPostNo == postNo) {
                 v.findViewById(R.id.grid_item_self_highlight).setVisibility(View.VISIBLE);
@@ -117,14 +124,32 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
             }
         }
 
-        bindView(v, context, cursor);
+        //if (postNo != 0) {
+            bindView(v, context, cursor);
+        //}
         return v;
     }
+
+    private static final int GRID_ITEM_HEIGHT_DP = 200;
 
     @Override
     protected View newView(Context context, ViewGroup parent, String tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
+        if (ChanHelper.POST_RESTO.equals(tag)) { // first item is the post which started the thread
+            RelativeLayout view = (RelativeLayout)mInflater.inflate(R.layout.thread_grid_item_header, parent, false);
+            AbsListView.LayoutParams viewParams = (AbsListView.LayoutParams)view.getLayoutParams();
+            if (viewParams == null) {
+                int viewHeightPx = ChanGridSizer.dpToPx(context.getResources().getDisplayMetrics(), GRID_ITEM_HEIGHT_DP);
+                viewParams = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, viewHeightPx);
+            }
+            viewParams.width = parent.getWidth();
+            view.setLayoutParams(viewParams);
+            return view;
+        }
+        else if (ChanHelper.POST_OMITTED_POSTS.equals(tag)) {
+            return mInflater.inflate(R.layout.thread_grid_item_null, parent, false);
+        }
+        else if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
             return mInflater.inflate(R.layout.thread_grid_item, parent, false);
         } else {
             return mInflater.inflate(R.layout.thread_grid_item_no_image, parent, false);

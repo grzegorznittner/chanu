@@ -283,8 +283,10 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
             intent = getIntent();
             if (intent.hasExtra(ChanHelper.POST_NO)) {
                 boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-                postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
                 threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+                postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
+                if (postNo == 0)
+                    postNo = threadNo; // for calls from null thread grid items used in header
                 imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
                 imageWidth = intent.getIntExtra(ChanHelper.IMAGE_WIDTH, 0);
                 imageHeight = intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0);
