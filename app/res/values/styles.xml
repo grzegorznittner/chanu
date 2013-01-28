@@ -158,13 +158,19 @@
         <item name="android:scaleType">centerCrop</item>
     </style>
 
+    <style name="PopupFullTextHorizontalSeparator">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/PaletteLighterGray</item>
+    </style>
+
     <style name="PopupFullTextButtonStyle" parent="android:style/Theme">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_gravity">bottom</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_margin">2dp</item>
-        <item name="android:background">#ede9e7</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">47dp</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:background">@color/PaletteTransparent</item>
     </style>
 
     <style name="PopupFullTextViewStyle" parent="android:style/Theme">
@@ -191,6 +197,7 @@
     <color name="PaletteOffWhiteHalfOpacity">#80ddd9d7</color>
     <color name="PaletteWhite">#fefefe</color>
     <color name="PaletteTransparent">#00000000</color>
+    <color name="PaletteLighterGray">#ddd</color>
     <color name="PaletteBlack">#ff010101</color>
     <color name="PaletteBlackHalfOpacity">#80010101</color>
     <color name="PaletteBlackMostlyOpaque">#ea010101</color>
