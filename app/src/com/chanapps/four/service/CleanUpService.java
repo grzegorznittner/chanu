@@ -15,8 +15,11 @@ import java.util.Map;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanBoardStat;
 import com.chanapps.four.data.ChanFileStorage;
@@ -32,7 +35,7 @@ import com.chanapps.four.data.UserStatistics;
  */
 public class CleanUpService extends BaseChanService {
     protected static final String TAG = CleanUpService.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     
     private static final long MIN_DELAY_BETWEEN_CLEANUPS = 240000; // 4min
     private static long lastScheduled = 0;
@@ -91,7 +94,8 @@ public class CleanUpService extends BaseChanService {
             		+ " kB. Calculated in " + ((endTime - startTime)/1000) + "s.");
 
             startTime = Calendar.getInstance().getTimeInMillis();
-            long maxCacheSize = 2 * 1024 * 1024; // 2MB * 80%
+            long maxCacheSize = getPreferredCacheSize() * 1024 * 1024;
+            if (DEBUG) Log.i(TAG, "Preferred cache size is " + (maxCacheSize / (1024 * 1024)) + "MB");
             targetCacheSize = maxCacheSize * 80 / 100;
             
             if (totalSize > targetCacheSize) {
@@ -114,17 +118,13 @@ public class CleanUpService extends BaseChanService {
             		List<FileDesc> boardFiles = filesByBoard.get(board);
             		// delete old files first
             		numDeletedFiles = trimByDate(boardFiles, 3L * 24L * 60L * 60L * 1000L);
-            		if (DEBUG && numDeletedFiles > 0) {
-            			Log.i(TAG, "Deleted " + numDeletedFiles + " old files from board " + board);
-            		}
+            		if (DEBUG && numDeletedFiles > 0) Log.i(TAG, "Deleted " + numDeletedFiles + " old files from board " + board);
             		if (totalSize < targetCacheSize) {
             			break;
             		}
             		// then by file size
             		numDeletedFiles = trimBySize(boardFiles, 300*1024); // delete files larger than 300kB
-            		if (DEBUG && numDeletedFiles > 0) {
-            			Log.i(TAG, "Deleted " + numDeletedFiles + " large files from board " + board);
-            		}
+            		if (DEBUG && numDeletedFiles > 0) Log.i(TAG, "Deleted " + numDeletedFiles + " large files from board " + board);
             		totalDeletedFiles += numDeletedFiles;
             	}
             	
@@ -136,17 +136,13 @@ public class CleanUpService extends BaseChanService {
             		List<FileDesc> boardFiles = filesByBoard.get(board);
             		// delete old files first
             		numDeletedFiles = trimByDate(boardFiles, 5L * 24L * 60L * 60L * 1000L);
-            		if (DEBUG && numDeletedFiles > 0) {
-            			Log.i(TAG, "Deleted " + numDeletedFiles + " old files from board " + board);
-            		}
+            		if (DEBUG && numDeletedFiles > 0) Log.i(TAG, "Deleted " + numDeletedFiles + " old files from board " + board);
             		if (totalSize < targetCacheSize) {
             			break;
             		}
             		// then by file size
             		numDeletedFiles = trimBySize(boardFiles, 500*1024);
-            		if (DEBUG && numDeletedFiles > 0) {
-            			Log.i(TAG, "Deleted " + numDeletedFiles + " large files from board " + board);
-            		}
+            		if (DEBUG && numDeletedFiles > 0) Log.i(TAG, "Deleted " + numDeletedFiles + " large files from board " + board);
             		totalDeletedFiles += numDeletedFiles;
             	}
             }
@@ -159,6 +155,11 @@ public class CleanUpService extends BaseChanService {
             Log.e(TAG, "Error in clean up service", e);
 		}
 	}
+	
+	private int getPreferredCacheSize() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs.getInt(SettingsActivity.PREF_CACHE_SIZE, 128);
+    }
 
 	private List<String> prepareTopWatchedBoards(Context context) {
 		List<ChanThread> watchedThreads = ChanWatchlist.getWatchedThreads(context);
