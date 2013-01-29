@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -118,32 +119,29 @@ public class ChanFileStorage {
     public static File getBoardFile(Context context, String boardName, int page) {
         File boardDir = getBoardCacheDirectory(context, boardName);
 		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-			File boardFile = new File(boardDir, boardName + "_page" + page + CACHE_EXT);
-			return boardFile;
+			if (page >= 0) {
+				return new File(boardDir, boardName + "_page" + page + CACHE_EXT);
+			} else {
+				return new File(boardDir, boardName + "_catalog" + CACHE_EXT);
+			}
 		} else {
 			Log.w(TAG, "Board folder could not be created: " + boardName);
 			return null;
 		}
     }
 
-    public static long storeBoardFile(Context context, String boardName, int page, BufferedReader reader) throws IOException {
+    public static long storeBoardFile(Context context, String boardName, int page, Reader reader) throws IOException {
 		File boardFile = getBoardFile(context, boardName, page);
-		FileWriter writer = new FileWriter(boardFile, false);
+		FileWriter writer = null;
 		try {
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				writer.write(line);
-			}
+			writer = new FileWriter(boardFile, false);
+			IOUtils.copy(reader, writer);
 		} finally {
-            try {
-			    writer.flush();
-			    writer.close();
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Exception while flushing and closing board file: " + e.getMessage(), e);
-            }
+            IOUtils.closeQuietly(reader);
+            writer.flush();
+            IOUtils.closeQuietly(writer);
 		}
-		if (DEBUG) Log.i(TAG, "Stored file for board " + boardName + " page " + page);
+		if (DEBUG) Log.i(TAG, "Stored file for board " + boardName + (page == -1 ? " catalog" : " page " + page));
 		return boardFile.length();
 	}
 	
@@ -158,17 +156,16 @@ public class ChanFileStorage {
 		}
     }
 	
-    public static long storeThreadFile(Context context, String boardName, long threadNo, BufferedReader reader) throws IOException {
+    public static long storeThreadFile(Context context, String boardName, long threadNo, Reader reader) throws IOException {
 		File threadFile = getThreadFile(context, boardName, threadNo);
-		FileWriter writer = new FileWriter(threadFile, false);
+		FileWriter writer = null;
 		try {
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				writer.write(line);
-			}
+			writer = new FileWriter(threadFile, false);
+			IOUtils.copy(reader, writer);
 		} finally {
-		    writer.flush();
-		    writer.close();
+            IOUtils.closeQuietly(reader);
+            writer.flush();
+            IOUtils.closeQuietly(writer);
 		}
 		if (DEBUG) Log.i(TAG, "Stored file for thread " + boardName + "/" + threadNo);
 		return threadFile.length();
@@ -257,8 +254,6 @@ public class ChanFileStorage {
 	
 	private static ChanBoard prepareDefaultBoardData(Context context, String boardCode) {
 		ChanBoard board = ChanBoard.getBoardByCode(context, boardCode).copy();
-		int boardImageId = ChanHelper.getImageResourceId(board.link);
-		
 		ChanThread thread = new ChanThread();
 		thread.board = boardCode;
 		thread.closed = 0;

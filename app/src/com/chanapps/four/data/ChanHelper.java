@@ -1,8 +1,13 @@
 package com.chanapps.four.data;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.DeserializationConfig.Feature;
+import org.codehaus.jackson.map.MappingJsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
@@ -21,6 +26,7 @@ public class ChanHelper {
 
 	public static final String BOARD_TYPE = "boardType";
     public static final String BOARD_CODE = "boardCode";
+    public static final String BOARD_CATALOG = "boardCatalog";
     public static final String PAGE = "pageNo";
     public static final String FROM_PARENT = "fromParent";
     public static final String THREAD_NO = "threadNo";
@@ -171,4 +177,14 @@ public class ChanHelper {
     	mapper.setDateFormat(new SimpleDateFormat("MMM d, yyyy h:mm:ss aaa"));
     	return mapper;
     }
+    
+	public static void configureJsonParser(JsonParser jp) throws IOException, JsonParseException {
+		jp.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
+		jp.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+		jp.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
+		jp.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+		jp.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+		jp.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+		jp.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
+	}
 }

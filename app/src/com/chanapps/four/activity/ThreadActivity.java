@@ -160,7 +160,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 ? intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0)
                 : prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
         if (intent.getBooleanExtra(ChanHelper.TRIGGER_BOARD_REFRESH, false)) {
-        	FetchChanDataService.scheduleBoardFetchService(getBaseContext(), boardCode, 0);
+        	FetchChanDataService.scheduleBoardFetch(getBaseContext(), boardCode);
         }
         if (DEBUG) Log.i(TAG, "Thread no read from intent: " + threadNo);
     }

@@ -7,9 +7,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Calendar;
 
 import org.apache.commons.io.IOUtils;
@@ -26,6 +26,7 @@ import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.activity.FullScreenImageActivity;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
 /**
@@ -77,6 +78,7 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
         long startTime = Calendar.getInstance().getTimeInMillis();
         InputStream in = null;
         OutputStream out = null;
+        HttpURLConnection conn = null;
 		try {
 			stopDownload = false;
 			board = intent.getStringExtra(ChanHelper.BOARD_CODE);
@@ -91,8 +93,10 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 				targetFile.delete();
 			}
 			
-			URLConnection conn = new URL(imageUrl).openConnection();
-			conn.setReadTimeout(10000);
+			conn = (HttpURLConnection)new URL(imageUrl).openConnection();
+			FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
+			conn.setReadTimeout(fetchParams.readTimeout);
+			//conn.setConnectTimeout(fetchParams.connectTimeout);
 			
 			in = conn.getInputStream();
 			out = new FileOutputStream(targetFile);
@@ -125,6 +129,7 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 		} finally {
 			IOUtils.closeQuietly(in);
 			IOUtils.closeQuietly(out);
+			closeConnection(conn);
 			imageUrl = null;
 		}
 	}
