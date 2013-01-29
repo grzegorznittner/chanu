@@ -296,7 +296,7 @@ public class ChanFileStorage {
 			}
 			ObjectMapper mapper = ChanHelper.getJsonMapper();
 			ChanThread thread = mapper.readValue(threadFile, ChanThread.class);
-			Log.w(TAG, "Loaded thread '" + boardCode + FILE_SEP + threadNo + "' with " + thread.posts.length + " posts");
+			if (DEBUG) Log.i(TAG, "Loaded thread '" + boardCode + FILE_SEP + threadNo + "' with " + thread.posts.length + " posts");
 			return thread;
 		} catch (Exception e) {
 			Log.w(TAG, "Error while loading thread '" + boardCode + FILE_SEP + threadNo + "' data. ", e);

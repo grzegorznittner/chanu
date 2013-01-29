@@ -157,13 +157,17 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
         		jp.nextToken(); // should be JsonToken.START_OBJECT
         		JsonNode pageNode = jp.readValueAsTree();
     	        for (JsonNode threadValue : pageNode.path("threads")) { // iterate over threads
-    	        	ChanThread newThread = mapper.readValue(threadValue, ChanThread.class);    	            
-	        		ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, newThread.no);
+    	        	ChanPost post = mapper.readValue(threadValue, ChanPost.class);
+    	        	post.board = boardCode;
+	        		ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
 	        		if (thread == null || thread.defData) {
-	        			newThread.board = boardCode;
-	        			newThread.lastFetched = 0;
+	        			thread = new ChanThread();
+	        			thread.board = boardCode;
+            			thread.lastFetched = 0;
+            			thread.no = post.no;
+            			thread.posts = new ChanPost[]{post};
 	    	            if (thread != null) {
-	    	            	ChanFileStorage.storeThreadData(getBaseContext(), newThread);
+	    	            	ChanFileStorage.storeThreadData(getBaseContext(), thread);
 	    	            	updatedThreads++;
 	    	            }
 	        		}
