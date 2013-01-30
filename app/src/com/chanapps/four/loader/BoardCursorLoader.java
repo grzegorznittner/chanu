@@ -5,11 +5,14 @@ import java.io.PrintWriter;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
@@ -49,6 +52,9 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public Cursor loadInBackground() {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
         for (ChanPost thread : board.threads) {
@@ -57,7 +63,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 matrixCursor.addRow(new Object[] {
                         thread.no, boardName, 0, "",
                         thread.getCountryFlagUrl(),
-                        thread.getBoardThreadText(), thread.getHeaderText(), thread.getFullText(),
+                        thread.getBoardThreadText(hideAllText, hidePostNumbers),
+                        thread.getHeaderText(), thread.getFullText(hideAllText, hidePostNumbers),
                         thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
                         thread.getSpoilerText(), thread.getExifText(), thread.isDead ? 1 : 0, 0, 0});
 
@@ -65,7 +72,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 matrixCursor.addRow(new Object[] {
                         thread.no, boardName, 0,
                         thread.getThumbnailUrl(), thread.getCountryFlagUrl(),
-                        thread.getBoardThreadText(), thread.getHeaderText(), thread.getFullText(),
+                        thread.getBoardThreadText(hideAllText, hidePostNumbers),
+                        thread.getHeaderText(), thread.getFullText(hideAllText, hidePostNumbers),
                         thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
                         thread.getSpoilerText(), thread.getExifText(), thread.isDead ? 1 : 0, 0, 0});
             }

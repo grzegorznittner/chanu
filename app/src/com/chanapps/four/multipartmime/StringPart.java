@@ -54,9 +54,6 @@ public class StringPart extends PartBase {
     /** Default content encoding of string parameters. */
     public static final String DEFAULT_CONTENT_TYPE = "text/plain";
 
-    /** Default charset of string parameters*/
-    public static final String DEFAULT_CHARSET = "US-ASCII";
-
     /** Default transfer encoding of string parameters*/
     public static final String DEFAULT_TRANSFER_ENCODING = "8bit";
 
@@ -73,7 +70,6 @@ public class StringPart extends PartBase {
      * @param name The name of the part
      * @param value the string to post
      * @param charset the charset to be used to encode the string, if <code>null</code> 
-     * the {@link #DEFAULT_CHARSET default} is used
      */
     public StringPart(String name, String value, String charset) {
         
@@ -102,7 +98,7 @@ public class StringPart extends PartBase {
     public StringPart(String name, String value) {
         this(name, value, null);
     }
-    
+
     /**
      * Gets the content in bytes.  Bytes are lazily created to allow the charset to be changed
      * after the part is created.

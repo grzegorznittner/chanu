@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URLEncoder;
 
 import org.apache.commons.io.IOUtils;
 
@@ -570,6 +571,18 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
                 else
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
                 return true;
+            case R.id.image_search_menu:
+                if (checkLocalImage() != null)
+                    imageSearch();
+                else
+                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.anime_image_search_menu:
+                if (checkLocalImage() != null)
+                    animeImageSearch();
+                else
+                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
+                return true;
             default:
                 return super.onContextItemSelected(item);
         }
@@ -605,6 +618,30 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";
+    private static final String IMAGE_SEARCH_ROOT_ANIME = "http://iqdb.org/?url=";
+
+    private void imageSearch() {
+        imageSearch(IMAGE_SEARCH_ROOT);
+    }
+
+    private void animeImageSearch() {
+        imageSearch(IMAGE_SEARCH_ROOT_ANIME);
+    }
+
+    private void imageSearch(String rootUrl) {
+        try {
+            String encodedImageUrl = URLEncoder.encode(imageUrl, "UTF-8");
+            String url =  rootUrl + encodedImageUrl;
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(intent);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't do image search imageUrl=" + imageUrl, e);
+            Toast.makeText(this, R.string.full_screen_image_search_error, Toast.LENGTH_SHORT).show();
         }
     }
 

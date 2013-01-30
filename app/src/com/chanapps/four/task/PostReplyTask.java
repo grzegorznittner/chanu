@@ -1,17 +1,16 @@
 package com.chanapps.four.task;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.data.*;
+import com.chanapps.four.multipartmime.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 
@@ -31,10 +30,6 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.PostingReplyDialogFragment;
-import com.chanapps.four.multipartmime.FilePart;
-import com.chanapps.four.multipartmime.MultipartEntity;
-import com.chanapps.four.multipartmime.Part;
-import com.chanapps.four.multipartmime.StringPart;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 
@@ -51,16 +46,18 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
     public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final String MAX_FILE_SIZE = "3145728";
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private PostReplyActivity activity = null;
     private String password = null;
     private Context context = null;
     private PostingReplyDialogFragment dialogFragment = null;
+    private String charset = null;
 
     public PostReplyTask(PostReplyActivity activity) {
         this.activity = activity;
         this.context = activity.getApplicationContext();
+        this.charset = ChanBoard.isAsciiOnlyBoard(activity.boardCode) ? PartBase.ASCII_CHARSET : PartBase.UTF8_CHARSET;
     }
 
     @Override
@@ -97,18 +94,18 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
     protected MultipartEntity buildMultipartEntity() {
         List<Part> partsList = new ArrayList<Part>();
-        partsList.add(new StringPart("MAX-FILE-SIZE", MAX_FILE_SIZE));
-        partsList.add(new StringPart("mode", "regist"));
-        partsList.add(new StringPart("resto", Long.toString(activity.threadNo)));
-        partsList.add(new StringPart("name", activity.getName()));
-        partsList.add(new StringPart("email", activity.getEmail()));
-        partsList.add(new StringPart("sub", activity.getSubject()));
-        partsList.add(new StringPart("com", activity.getMessage()));
-        partsList.add(new StringPart("pwd", password));
-        partsList.add(new StringPart("recaptcha_challenge_field", activity.getRecaptchaChallenge()));
-        partsList.add(new StringPart("recaptcha_response_field", activity.getRecaptchaResponse()));
+        partsList.add(new StringPart("MAX-FILE-SIZE", MAX_FILE_SIZE, charset));
+        partsList.add(new StringPart("mode", "regist", charset));
+        partsList.add(new StringPart("resto", Long.toString(activity.threadNo), charset));
+        partsList.add(new StringPart("name", activity.getName(), charset));
+        partsList.add(new StringPart("email", activity.getEmail(), charset));
+        partsList.add(new StringPart("sub", activity.getSubject(), charset));
+        partsList.add(new StringPart("com", activity.getMessage(), charset));
+        partsList.add(new StringPart("pwd", password, charset));
+        partsList.add(new StringPart("recaptcha_challenge_field", activity.getRecaptchaChallenge(), charset));
+        partsList.add(new StringPart("recaptcha_response_field", activity.getRecaptchaResponse(), charset));
         if (activity.hasSpoiler()) {
-            partsList.add(new StringPart("spoiler", "on"));
+            partsList.add(new StringPart("spoiler", "on", charset));
         }
         if (!addImage(partsList))
             return null;
@@ -123,7 +120,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
     }
 
     protected void dumpPartsList(List<Part> partsList) {
-        Log.i(TAG, "Dumping mime parts list:");
+        if (DEBUG) Log.i(TAG, "Dumping mime parts list:");
         for (Part p : partsList) {
             if (!(p instanceof StringPart))
                 continue;
@@ -136,7 +133,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
     protected boolean addImage(List<Part> partsList) {
         String imageUrl = activity.imageUri == null ? null : activity.imageUri.toString();
         if (imageUrl == null && activity.threadNo == 0 && !ChanBoard.requiresThreadImage(activity.boardCode)) {
-            partsList.add(new StringPart("textonly", "on"));
+            partsList.add(new StringPart("textonly", "on", charset));
         }
         if (imageUrl != null) {
             if (DEBUG) Log.i(TAG, "Trying to load image for imageUrl=" + imageUrl + " imagePath="+activity.imagePath+" contentType="+activity.contentType);
@@ -181,7 +178,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
             try {
                 if (file != null) {
-                    FilePart filePart = new FilePart("upfile", file.getName(), file, activity.contentType, "UTF-8");
+                    FilePart filePart = new FilePart("upfile", file.getName(), file, activity.contentType, charset);
                     partsList.add(filePart);
                 }
             }
@@ -198,7 +195,10 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
         AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
         try {
             HttpPost request = new HttpPost(url);
+            entity.setContentEncoding(charset);
             request.setEntity(entity);
+            if (DEBUG)
+                dumpRequestContent(request.getEntity().getContent());
             if (DEBUG) Log.i(TAG, "Calling URL: " + request.getURI());
             HttpResponse httpResponse = client.execute(request);
             if (DEBUG) Log.i(TAG, "Response: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
@@ -224,6 +224,19 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
             if (client != null) {
                 client.close();
             }
+        }
+    }
+
+    protected void dumpRequestContent(InputStream is) {
+        Log.i(TAG, "Request Message Body:");
+        try {
+            BufferedReader r = new BufferedReader(new InputStreamReader(is));
+            String l;
+            while ((l = r.readLine()) != null)
+                Log.i(TAG, l);
+        }
+        catch (IOException e) {
+            Log.i(TAG, "Exception reading message for logging", e);
         }
     }
 

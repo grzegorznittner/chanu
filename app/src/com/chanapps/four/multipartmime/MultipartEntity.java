@@ -218,7 +218,7 @@ public class MultipartEntity extends AbstractHttpEntity {
           this.contentConsumed = true;
           
           ByteArrayOutputStream baos = new ByteArrayOutputStream();
-          Part.sendParts(baos, this.parts, this.multipartBoundary);
+          Part.sendParts(baos, this.parts, getMultipartBoundary());
           ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
           return bais;
     }

@@ -7,7 +7,8 @@
 
     <ImageView
             android:id="@+id/grid_item_image"
-            style="@style/GridImageStyle"
+            style="@style/SelectorGridImageStyle"
+            android:contentDescription="@string/board_image"
             />
 
     <TextView

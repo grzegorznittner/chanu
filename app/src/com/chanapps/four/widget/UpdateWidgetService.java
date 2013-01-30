@@ -5,16 +5,19 @@ import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.*;
 
@@ -252,11 +255,14 @@ public class UpdateWidgetService extends Service {
         }
 
         private Intent createIntentForThread(ChanPost thread) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+            boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
             return ThreadActivity.createIntentForActivity(
                     context,
                     thread.board,
                     thread.no,
-                    thread.getThreadText(),
+                    thread.getThreadText(hideAllText, hidePostNumbers),
                     thread.getThumbnailUrl(),
                     thread.tn_w,
                     thread.tn_h,

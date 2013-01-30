@@ -5,5 +5,6 @@
 <p>Click on this thumbnail for a full screen image, or to view the full text if it is a text-only post.</p>
 <p>Long-press a reply to see the full text of the reply, and to post your own reply if you wish.</p>
 <p>Long-press a reply and click "Highlight Replies" to see what posts this post replied to, and what replies there are for it as well.</p>
-<p>Click the menu Hide All Text (image button) to view only image replies.</p>
+<p>Click the menu Hide Post Numbers to hide all post numbers.</p>
+<p>Click the menu Hide All Text to view only image replies.</p>
 <p>Click the menu Download All to save all the images from thread.</p>

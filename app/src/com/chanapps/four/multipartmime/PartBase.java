@@ -38,6 +38,10 @@ package com.chanapps.four.multipartmime;
  */
 public abstract class PartBase extends Part {
 
+    /** Default charset of string parameters*/
+    public static final String ASCII_CHARSET = "US-ASCII";
+    public static final String UTF8_CHARSET = "UTF-8";
+    public static final String DEFAULT_CHARSET = UTF8_CHARSET;
     /** Name of the file part. */
     private String name;
         

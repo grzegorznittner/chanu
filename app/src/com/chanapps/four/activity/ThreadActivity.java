@@ -55,6 +55,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     protected int imageWidth;
     protected int imageHeight;
     protected boolean hideAllText = false;
+    protected boolean hidePostNumbers = true;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -277,13 +278,16 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        if (hideAllText) {
+        hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        if (hideAllText)
             menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_hide_all_text_on);
-        }
-        else {
+        else
             menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_hide_all_text);
-        }
+        hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+        if (hidePostNumbers)
+            menu.findItem(R.id.hide_post_numbers).setTitle(R.string.pref_hide_post_numbers_turn_off);
+        else
+            menu.findItem(R.id.hide_post_numbers).setTitle(R.string.pref_hide_post_numbers_turn_on);
         return true;
     }
 
@@ -299,6 +303,17 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
     }
 
+    protected void toggleHidePostNumbers() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
+        hidePostNumbers = !hidePostNumbers; // invert
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, hidePostNumbers);
+        editor.commit();
+        invalidateOptionsMenu();
+        createGridView();
+        ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+    }
     private void postReply() {
         Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
         replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
@@ -339,6 +354,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 return true;
             case R.id.hide_all_text:
                 toggleHideAllText();
+                return true;
+            case R.id.hide_post_numbers:
+                toggleHidePostNumbers();
                 return true;
             case R.id.watch_thread_menu:
                 int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
