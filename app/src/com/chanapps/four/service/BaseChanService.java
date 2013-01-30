@@ -16,6 +16,8 @@
 
 package com.chanapps.four.service;
 
+import java.net.HttpURLConnection;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
@@ -203,4 +205,13 @@ public abstract class BaseChanService extends Service {
      *               android.content.Context#startService(Intent)}.
      */
     protected abstract void onHandleIntent(Intent intent);
+
+	protected void closeConnection(HttpURLConnection tc) {
+		try {
+	        tc.disconnect();
+		} catch (Exception e) {
+			Log.e(TAG, "Error closing connection", e);
+		}
+	}
+	
 }

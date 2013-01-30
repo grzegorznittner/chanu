@@ -13,6 +13,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.map.MappingJsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
@@ -41,6 +45,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     protected static final int MAX_THREAD_RETENTION_PER_BOARD = 100;
 
     private String boardCode;
+    private boolean boardCatalog;
     private int pageNo;
     private boolean force;
     private ChanBoard board;
@@ -49,6 +54,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + false );
         Intent intent = new Intent(context, BoardParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
         intent.putExtra(ChanHelper.PAGE, pageNo);
         context.startService(intent);
     }
@@ -57,6 +63,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + true );
         Intent intent = new Intent(context, BoardParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
         intent.putExtra(ChanHelper.PAGE, pageNo);
         intent.putExtra(ChanHelper.FORCE_REFRESH, true);
         intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
@@ -74,6 +81,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
 		pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
         force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false);
 		if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " page=" + pageNo);
@@ -88,14 +96,19 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
             Context context = getBaseContext();
 
             File boardFile = ChanFileStorage.getBoardFile(context, boardCode, pageNo);
-            parseBoard(new BufferedReader(new FileReader(boardFile)));
+            if (boardCatalog) {
+            	parseBoardCatalog(new BufferedReader(new FileReader(boardFile)));
+            } else {
+            	parseBoard(new BufferedReader(new FileReader(boardFile)));
+            }
+            board.lastFetched = Calendar.getInstance().getTimeInMillis();
 
-            if (DEBUG) Log.i(TAG, "Parsed board " + boardCode + " page " + pageNo
+            if (DEBUG) Log.i(TAG, "Parsed board " + boardCode + (pageNo == -1 ? " catalog" : " page " + pageNo)
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             startTime = Calendar.getInstance().getTimeInMillis();
 
             ChanFileStorage.storeBoardData(context, board);
-            if (DEBUG) Log.i(TAG, "Stored board " + boardCode + " page " + pageNo
+            if (DEBUG) Log.i(TAG, "Stored board " + boardCode + (pageNo == -1 ? " catalog" : " page " + pageNo)
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
 
             // thread files are stored in separate service call to make board parsing faster
@@ -156,8 +169,42 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         if (DEBUG) Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
 
+    private void parseBoardCatalog(BufferedReader in) throws IOException {
+    	List<ChanPost> threads = new ArrayList<ChanPost>();
+    	board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
+    	if (board.defData) {
+    		// default board we should not use it
+    		board = ChanBoard.getBoardByCode(getBaseContext(), boardCode);
+    	}
+
+    	try {
+	        ObjectMapper mapper = ChanHelper.getJsonMapper();
+	        JsonParser jp = new MappingJsonFactory().createJsonParser(in);
+	    	ChanHelper.configureJsonParser(jp);
+	    	JsonToken current = jp.nextToken(); // will return JsonToken.START_ARRAY
+	    	while (jp.nextToken() != JsonToken.END_ARRAY) {
+        		current = jp.nextToken(); // should be JsonToken.START_OBJECT
+        		JsonNode pageNode = jp.readValueAsTree();
+    	        for (JsonNode threadValue : pageNode.path("threads")) { // iterate over threads
+    	            ChanPost post = mapper.readValue(threadValue, ChanPost.class);
+    	            post.board = boardCode;
+    	            threads.add(post);
+    	        }
+	    	}
+	    	jp.close();
+		} catch (Exception e) {
+			if (threads.size() == 0) {
+				throw new JsonParseException("Board catalog parse error", null, e);
+			}
+		}
+
+        board.threads = threads.toArray(new ChanPost[0]);
+        board.lastPage = true;
+        if (DEBUG) Log.i(TAG, "Now have " + threads.size() + " threads ");
+    }
+
 	@Override
 	public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(boardCode, pageNo, force);
-	}
+	}	
 }

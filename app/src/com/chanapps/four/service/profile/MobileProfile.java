@@ -236,7 +236,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 			if (board.defData) {
 				// board data corrupted, we need to reload it
 				Log.w(TAG, "Board " + data.boardCode + " is corrupted, it is scheduled for reload");
-				FetchChanDataService.scheduleBoardFetchService(service.getApplicationContext(), data.boardCode, 0);
+				FetchChanDataService.scheduleBoardFetch(service.getApplicationContext(), data.boardCode);
 				return;
 			}
 

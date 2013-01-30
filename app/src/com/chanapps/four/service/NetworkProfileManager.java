@@ -3,8 +3,6 @@
  */
 package com.chanapps.four.service;
 
-import java.lang.ref.WeakReference;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,9 +19,9 @@ import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.service.profile.MobileProfile;
 import com.chanapps.four.service.profile.NetworkProfile;
+import com.chanapps.four.service.profile.NetworkProfile.Failure;
 import com.chanapps.four.service.profile.NoConnectionProfile;
 import com.chanapps.four.service.profile.WifiProfile;
-import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
 /**
  * Class manages network profile switching.
@@ -48,7 +46,7 @@ public class NetworkProfileManager {
 	
 	private NetworkBroadcastReceiver receiver;
 	private ChanActivityId currentActivityId;
-	private WeakReference<ChanIdentifiedActivity> currentActivity;
+	private ChanIdentifiedActivity currentActivity;
 	private NetworkProfile activeProfile = null;
 	private UserStatistics userStats = null;
 	
@@ -69,7 +67,7 @@ public class NetworkProfileManager {
 	}
 	
 	public ChanIdentifiedActivity getActivity() {
-		return currentActivity.get();
+		return currentActivity;
 	}
 	
 	public FetchParams getFetchParams() {
@@ -95,7 +93,7 @@ public class NetworkProfileManager {
 		}
 		
 		currentActivityId = newActivity.getChanActivityId();
-		currentActivity = new WeakReference<ChanIdentifiedActivity>(newActivity);
+		currentActivity = newActivity;
 
 		if (userStats == null) {
 			userStats = ChanFileStorage.loadUserStats(newActivity.getBaseContext());
@@ -138,7 +136,7 @@ public class NetworkProfileManager {
 			return;
 		}
 		currentActivityId = newActivity.getChanActivityId();
-		currentActivity = new WeakReference<ChanIdentifiedActivity>(newActivity);
+		currentActivity = newActivity;
 		
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
@@ -213,37 +211,37 @@ public class NetworkProfileManager {
 		switch(type) {
 		case NO_CONNECTION:
 			if (activeProfile != noConnectionProfile) {
-				if (activeProfile != null && currentActivity != null && currentActivity.get() != null) {
-					activeProfile.onProfileDeactivated(currentActivity.get().getBaseContext());
+				if (activeProfile != null && currentActivity != null && currentActivity != null) {
+					activeProfile.onProfileDeactivated(currentActivity.getBaseContext());
 				}
 				activeProfile = noConnectionProfile;
 				if (DEBUG) Log.i(TAG, "Setting " + type + " profile");
 				if (currentActivity != null) {
-					activeProfile.onProfileActivated(currentActivity.get().getBaseContext());
+					activeProfile.onProfileActivated(currentActivity.getBaseContext());
 				}
 			}
 			break;
 		case WIFI:
 			if (activeProfile != wifiProfile) {
-				if (activeProfile != null && currentActivity != null && currentActivity.get() != null) {
-					activeProfile.onProfileDeactivated(currentActivity.get().getBaseContext());
+				if (activeProfile != null && currentActivity != null && currentActivity != null) {
+					activeProfile.onProfileDeactivated(currentActivity.getBaseContext());
 				}
 				activeProfile = wifiProfile;
 				if (DEBUG) Log.i(TAG, "Setting " + type + " profile");
 				if (currentActivity != null) {
-					activeProfile.onProfileActivated(currentActivity.get().getBaseContext());
+					activeProfile.onProfileActivated(currentActivity.getBaseContext());
 				}
 			}
 			break;
 		case MOBILE:
 			if (activeProfile != mobileProfile) {
-				if (activeProfile != null && currentActivity != null && currentActivity.get() != null) {
-					activeProfile.onProfileDeactivated(currentActivity.get().getBaseContext());
+				if (activeProfile != null && currentActivity != null && currentActivity != null) {
+					activeProfile.onProfileDeactivated(currentActivity.getBaseContext());
 				}
 				activeProfile = mobileProfile;
 				if (DEBUG) Log.i(TAG, "Setting " + type + " profile");
 				if (currentActivity != null) {
-					activeProfile.onProfileActivated(currentActivity.get().getBaseContext());
+					activeProfile.onProfileActivated(currentActivity.getBaseContext());
 				}
 			}
 			break;

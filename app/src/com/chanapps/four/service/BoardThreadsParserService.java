@@ -12,6 +12,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.map.MappingJsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
@@ -38,6 +41,7 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
     protected static final int MAX_THREAD_RETENTION_PER_BOARD = 100;
 
     private String boardCode;
+    private boolean boardCatalog;
     private int pageNo;
     private boolean force;
     private ChanBoard board;
@@ -46,6 +50,7 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
         if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + false );
         Intent intent = new Intent(context, BoardThreadsParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
         intent.putExtra(ChanHelper.PAGE, pageNo);
         context.startService(intent);
     }
@@ -54,6 +59,7 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
         if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + true );
         Intent intent = new Intent(context, BoardThreadsParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
         intent.putExtra(ChanHelper.PAGE, pageNo);
         intent.putExtra(ChanHelper.FORCE_REFRESH, true);
         intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
@@ -71,7 +77,8 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-		pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
+		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
+		pageNo = boardCatalog ? -1 : intent.getIntExtra(ChanHelper.PAGE, 0);
         force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false);
 		if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " page=" + pageNo);
 
@@ -86,7 +93,11 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
         	}
         	
             File boardFile = ChanFileStorage.getBoardFile(context, boardCode, pageNo);
-            parseBoard(new BufferedReader(new FileReader(boardFile)));
+            if (boardCatalog) {
+            	parseBoardCatalog(new BufferedReader(new FileReader(boardFile)));
+            } else {
+            	parseBoard(new BufferedReader(new FileReader(boardFile)));
+            }
             boardFile.delete();
 
             if (DEBUG) Log.i(TAG, "Parsed board " + boardCode + " page " + pageNo
@@ -98,7 +109,6 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
 	}
 
     private void parseBoard(BufferedReader in) throws IOException {
-//    	List<ChanPost> stickyPosts = new ArrayList<ChanPost>();
     	List<ChanPost> threads = new ArrayList<ChanPost>();
 
         ObjectMapper mapper = ChanHelper.getJsonMapper();
@@ -107,33 +117,26 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
             ChanThread thread = null;
             List<ChanPost> posts = new ArrayList<ChanPost>();
             boolean first = true;
-//            boolean isSticky = false;
             for (JsonNode postValue : threadValue.path("posts")) { // first object is the thread post
                 ChanPost post = mapper.readValue(postValue, ChanPost.class);
                 post.board = boardCode;
-//                if (post.sticky > 0 || isSticky) {
-//                    post.mergeIntoThreadList(stickyPosts);
-//                	isSticky = true;
-//                } else {
-                	if (first) {
-                		thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
-                		// if thread was not stored create a new object
-                		if (thread == null || thread.defData) {
-                			thread = new ChanThread();
-                			thread.board = boardCode;
-                			thread.lastFetched = 0;
-                			thread.no = post.no;
-                            // note we don't set the lastUpdated here because we didn't pull the full thread yet
-                		} else if (board.lastFetched < thread.lastFetched) {
-                			// do not update thread if was fetched later than board
-                			break;
-                		}
-                        post.mergeIntoThreadList(threads);
-                		first = false;
-                	}
-                	posts.add(post);
-//                }
-                //if (DEBUG) Log.v(TAG, post.toString());
+            	if (first) {
+            		thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
+            		// if thread was not stored create a new object
+            		if (thread == null || thread.defData) {
+            			thread = new ChanThread();
+            			thread.board = boardCode;
+            			thread.lastFetched = 0;
+            			thread.no = post.no;
+                        // note we don't set the lastUpdated here because we didn't pull the full thread yet
+            		} else if (board.lastFetched < thread.lastFetched) {
+            			// do not update thread if was fetched later than board
+            			break;
+            		}
+                    post.mergeIntoThreadList(threads);
+            		first = false;
+            	}
+            	posts.add(post);
             }
             if (thread != null) {
                 thread.mergePosts(posts);
@@ -143,7 +146,43 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
         if (DEBUG) Log.i(TAG, "Stored " + threads.size() + " threads for board " + boardCode);
     }
 
-	@Override
+    private void parseBoardCatalog(BufferedReader in) throws IOException {
+    	int updatedThreads = 0;
+    	try {
+	        ObjectMapper mapper = ChanHelper.getJsonMapper();
+	        JsonParser jp = new MappingJsonFactory().createJsonParser(in);
+	    	ChanHelper.configureJsonParser(jp);
+	    	jp.nextToken(); // will return JsonToken.START_ARRAY
+	    	while (jp.nextToken() != JsonToken.END_ARRAY) {
+        		jp.nextToken(); // should be JsonToken.START_OBJECT
+        		JsonNode pageNode = jp.readValueAsTree();
+    	        for (JsonNode threadValue : pageNode.path("threads")) { // iterate over threads
+    	        	ChanPost post = mapper.readValue(threadValue, ChanPost.class);
+    	        	post.board = boardCode;
+	        		ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
+	        		if (thread == null || thread.defData) {
+	        			thread = new ChanThread();
+	        			thread.board = boardCode;
+            			thread.lastFetched = 0;
+            			thread.no = post.no;
+            			thread.posts = new ChanPost[]{post};
+	    	            if (thread != null) {
+	    	            	ChanFileStorage.storeThreadData(getBaseContext(), thread);
+	    	            	updatedThreads++;
+	    	            }
+	        		}
+    	        }
+	    	}
+	    	jp.close();
+		} catch (Exception e) {
+			// we don't care about parse exceptions here
+			// error is thrown at the BoardParserService level
+		}
+    	
+        if (DEBUG) Log.i(TAG, "Updated " + updatedThreads + " threads for board " + boardCode);
+    }
+
+    @Override
 	public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(boardCode, pageNo, force);
 	}
