@@ -77,11 +77,14 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 }
                 if (threadPost != null) { // pull from cache, it will have the latest data
                     if (DEBUG) Log.i(TAG, "Found cached watchlist thread " + boardCode + "/" + threadNo + ", updating from cache");
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                    boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+                    boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
                     threadPost.isDead = thread.isDead;
                     tim = threadPost.tim;
-                    shortText = threadPost.getBoardThreadText();
+                    shortText = threadPost.getBoardThreadText(hideAllText, hidePostNumbers);
                     headerText = threadPost.getHeaderText();
-                    text = threadPost.getFullText();
+                    text = threadPost.getFullText(false, false);
                     imageUrl = threadPost.getThumbnailUrl();
                     countryUrl = threadPost.getCountryFlagUrl();
                     imageWidth = threadPost.tn_w;

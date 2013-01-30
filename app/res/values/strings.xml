@@ -10,6 +10,9 @@
     <string name="full_screen_image_activity">View Image</string>
     <string name="post_reply_activity">New Post</string>
     <string name="settings_activity">Settings</string>
+    <string name="board_image">Board Image</string>
+    <string name="thread_post_image">Thread Image</string>
+    <string name="thread_country_flag">Country Flag</string>
 
     <!-- menus -->
     <string name="clean_watchlist_menu">Clean Watchlist</string>
@@ -28,12 +31,15 @@
     <string name="view_as_list_menu">View As List</string>
     <string name="post_reply_menu">New Post</string>
     <string name="toggle_image_only_menu">Toggle Image Only</string>
+    <string name="toggle_hide_post_numbers_menu">Toggle Hide Post Numbers</string>
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
     <string name="download_all_images_menu">Download All Images</string>
     <string name="download_image_menu">Save to Gallery</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
     <string name="view_image_gallery_menu">View in Gallery</string>
+    <string name="image_search_menu">Reverse Image Search</string>
+    <string name="anime_image_search_menu">IQDB Image Search</string>
     <string name="share_image_menu">Share Image</string>
     <string name="post_reply_send_menu">Post Reply</string>
 
@@ -90,6 +96,7 @@
     <string name="full_screen_sharing_error">Couldn\'t share image</string>
     <string name="full_screen_saved_to_gallery">Saved image to gallery</string>
     <string name="full_screen_wait_until_downloaded">Wait until downloaded</string>
+    <string name="full_screen_image_search_error">Couldn\'t search for image</string>
     <string name="fullscreen_image_progress_upper">Loading an Image</string>
     <string name="fullscreen_image_offline_upper">Off-line mode</string>
     <string name="full_screen_cancel_button">Cancel Download</string>
@@ -191,6 +198,11 @@
     <string name="pref_hide_all_text_summ_on">Text-only posts and image text hidden</string>
     <string name="pref_hide_all_text_summ_off">Text-only posts and image text shown</string>
     <string name="pref_hide_all_text_on">Show All Text</string>
+    <string name="pref_hide_post_numbers">Hide Post Numbers</string>
+    <string name="pref_hide_post_numbers_summ_on">Post numbers are hidden</string>
+    <string name="pref_hide_post_numbers_summ_off">Post numbers are shown</string>
+    <string name="pref_hide_post_numbers_turn_on">Hide Post Numbers</string>
+    <string name="pref_hide_post_numbers_turn_off">Show Post Numbers</string>
     <string name="pref_automatically_manage_watchlist">Auto-Manage Watchlist</string>
     <string name="pref_automatically_manage_watchlist_summ_on">Add and remove threads automatically</string>
     <string name="pref_automatically_manage_watchlist_summ_off">Manually add and remove threads</string>

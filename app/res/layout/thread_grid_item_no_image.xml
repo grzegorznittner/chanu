@@ -26,6 +26,7 @@
     <ImageView
             android:id="@+id/grid_item_country_flag"
             style="@style/GridCountryFlagStyle"
+            android:contentDescription="@string/thread_country_flag"
             />
 
 </RelativeLayout>

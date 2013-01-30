@@ -95,31 +95,25 @@ public class ChanPost {
         return o;
     }
 
-    public String getFullText() {
-        return getFullText(true);
-    }
-
-    private String getFullText(boolean withNumbers) {
+    public String getFullText(boolean hideAllText, boolean hidePostNumbers) {
+        if (hideAllText)
+            return "";
         String text = sub != null && sub.trim().length() > 0
                   ? sub + (com != null && com.trim().length() > 0 ? "<br/>" + com : "")
                   : com;
-        return sanitizeText(text, withNumbers);
+        return sanitizeText(text, hidePostNumbers);
     }
 
-    private static final String sanitizeText(String text) {
-        return sanitizeText(text, true);
-    }
-
-    private static final String sanitizeText(String text, boolean withNumbers) {
+    private static final String sanitizeText(String text, boolean hidePostNumbers) {
         if (text == null || text.isEmpty())
             return "";
 
         long start = System.currentTimeMillis();
 
-        if (withNumbers)
-            text = text.replaceAll("<a[^>]*class=\"quotelink\">([^<]*)</a>", "$1");
-        else
+        if (hidePostNumbers)
             text = text.replaceAll("<a[^>]*class=\"quotelink\">[^<]*</a>", "");
+        else
+            text = text.replaceAll("<a[^>]*class=\"quotelink\">([^<]*)</a>", "$1");
 
         text = text
                 .replaceAll("<span[^>]*class=\"abbr\"[^>]*>.*</span>", "")    // exif reference
@@ -182,7 +176,8 @@ public class ChanPost {
                 .replaceAll("&gt;", ">")
                 .replaceAll("&amp;", "&")
                 .replaceAll("&quot;", "\"")
-                .replaceAll("&#44;", ",")
+                .replaceAll("&#0*39;", "'")
+                .replaceAll("&#0*44;", ",")
                 .replaceAll("&#[0-9abcdef]*;", "")
                 .trim();
     }
@@ -254,19 +249,35 @@ public class ChanPost {
     }
 
     public String getHeaderText() {
+        return getHeaderText(false);
+    }
+
+    public String getHeaderText(boolean useFriendlyIds) {
         return "No: " + no
                 + (resto > 0 ? "\nReply To: " + resto : "")
                 + (sticky > 0 ? "\nSticky" : "")
                 + (closed > 0 ? "\nClosed" : "")
                 + (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous") ? "\nName: " + name : "")
                 + (trip != null && !trip.isEmpty() ? "\nTripcode: " + trip : "")
-                + (id != null && !id.isEmpty() ? "\nId: " + id : "")
+                + (id != null && !id.isEmpty() ? "\nId: " + formatId(id, useFriendlyIds) : "")
                 + (email != null && !email.isEmpty() ? "\nEmail: " + email : "")
                 + (country_name != null && !country_name.isEmpty() ? "\nCountry: " + country_name : "")
                 + "\n" + (new Date(time)).toString();
     }
 
-    public String getPostText(boolean hideAllText) {
+    private static final String SAGE_POST_ID = "Heaven";
+    private static final String PATTERN_POST_ID = "(\\d)";
+    public String formatId(String id, boolean useFriendlyIds) {
+        if (!useFriendlyIds)
+            return id;
+        if (id.equalsIgnoreCase(SAGE_POST_ID))
+            return id;
+        Pattern pattern = Pattern.compile(PATTERN_POST_ID);
+        return id;
+
+    }
+
+    public String getPostText(boolean hideAllText, boolean hidePostNumbers) {
     	if (defData) {
             return "Loading images..."; // FIXME: should be loading graphic or localized text
     	}
@@ -275,10 +286,14 @@ public class ChanPost {
         int maxImageTextAbbrLen = fsize > 0 ? MAX_IMAGETEXT_ABBR_LEN : MAX_TEXTONLY_ABBR_LEN;
         String text = "";
         if (!hideAllText) {
-            text += no;
-            String textLine = abbreviate(getFullText(), maxImageTextLen, maxImageTextAbbrLen);
-            if (textLine != null && !textLine.isEmpty())
-                text += "\n" + textLine;
+            if (!hidePostNumbers)
+                text += no;
+            String textLine = abbreviate(getFullText(hideAllText, hidePostNumbers), maxImageTextLen, maxImageTextAbbrLen);
+            if (textLine != null && !textLine.isEmpty()) {
+                if (text != null && !text.isEmpty())
+                    text += "\n";
+                text += textLine;
+            }
         }
         if (fsize > 0) {
             if (text.length() > 0) {
@@ -290,38 +305,37 @@ public class ChanPost {
         return text;
 	}
 
-    public String getPostText() {
-        return getPostText(false);
-    }
-
-    public String getThreadText() {
-        return getThreadText(false);
-    }
-
-    public String getThreadText(boolean hideAllText) {
+    public String getThreadText(boolean hideAllText, boolean hidePostNumbers) {
         if (fsize > 0) // has image
-            return getThreadText(hideAllText, MAX_THREAD_IMAGETEXT_LEN, MAX_THREAD_IMAGETEXT_ABBR_LEN, false);
+            return getThreadText(hideAllText, hidePostNumbers, MAX_THREAD_IMAGETEXT_LEN, MAX_THREAD_IMAGETEXT_ABBR_LEN, false);
         else
-            return getThreadText(hideAllText, MAX_THREAD_TEXTONLY_LEN, MAX_THREAD_TEXTONLY_ABBR_LEN, false);
+            return getThreadText(hideAllText, hidePostNumbers, MAX_THREAD_TEXTONLY_LEN, MAX_THREAD_TEXTONLY_ABBR_LEN, false);
     }
 
-    public String getThreadText(boolean hideAllText, int maxImageTextLen, int maxImageTextAbbrLen, boolean onBoard) {
+    public String getThreadText(boolean hideAllText, boolean hidePostNumbers, int maxImageTextLen, int maxImageTextAbbrLen, boolean onBoard) {
     	if (defData)
     		return "Loading..."; // FIXME should be localized string
 
         String text = "";
         if (!hideAllText) {
             if (onBoard) {
-                text += abbreviate(getFullText(!onBoard), maxImageTextLen, maxImageTextAbbrLen);
+                text += abbreviate(getFullText(hideAllText, hidePostNumbers), maxImageTextLen, maxImageTextAbbrLen);
             }
             else {
-                text += no;
-                String subText = abbreviate(sanitizeText(sub, onBoard), maxImageTextLen, maxImageTextAbbrLen);
-                String comText = abbreviate(sanitizeText(com, onBoard), maxImageTextLen, maxImageTextAbbrLen);
-                if (subText != null && !subText.isEmpty())
-                    text += " " + subText;
-                if (comText != null && !comText.isEmpty())
-                    text += "\n" + comText;
+                if (!hidePostNumbers)
+                    text += no;
+                String subText = abbreviate(sanitizeText(sub, hidePostNumbers), maxImageTextLen, maxImageTextAbbrLen);
+                String comText = abbreviate(sanitizeText(com, hidePostNumbers), maxImageTextLen, maxImageTextAbbrLen);
+                if (subText != null && !subText.isEmpty()) {
+                    if (text != null && !text.isEmpty())
+                        text += " ";
+                    text += subText;
+                }
+                if (comText != null && !comText.isEmpty()) {
+                    if (text != null && !text.isEmpty())
+                        text += "\n";
+                    text += comText;
+                }
             }
         }
         if (resto != 0) { // just a post, don't add thread stuff
@@ -358,11 +372,11 @@ public class ChanPost {
         return text;
 	}
 
-    public String getBoardThreadText() {
+    public String getBoardThreadText(boolean hideAllText, boolean hidePostNumbers) {
         if (fsize > 0) // has image
-            return getThreadText(false, MAX_BOARDTHREAD_IMAGETEXT_LEN, MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN, true);
+            return getThreadText(hideAllText, hidePostNumbers, MAX_BOARDTHREAD_IMAGETEXT_LEN, MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN, true);
         else // text-only
-            return getThreadText(false, MAX_TEXTONLY_LEN, MAX_TEXTONLY_ABBR_LEN, true);
+            return getThreadText(hideAllText, hidePostNumbers, MAX_TEXTONLY_LEN, MAX_TEXTONLY_ABBR_LEN, true);
     }
 
     public void mergeIntoThreadList(List<ChanPost> threads) {
@@ -392,10 +406,7 @@ public class ChanPost {
         if (postNo <= 0 || com == null || com.isEmpty())
             return false;
         boolean matches = com.indexOf("#p" + postNo + "\"") >= 0;
-        //Pattern p = Pattern.compile("#p" + postNo + "\\");
-        //Matcher m = p.matcher(com);
         Log.i(TAG, "Matching postNo=" + postNo + " is " + matches + " against com=" + com);
-        //return m.matches();
         return matches;
     }
     

@@ -333,7 +333,7 @@ public class ChanBoard {
     }
 
     /*
-   /i - lots of stuff
+    /i - lots of stuff
     */
 
     static public final String SPOILER_THUMBNAIL_IMAGE_ROOT = "http://static.4chan.org/image/spoiler-";
@@ -357,4 +357,10 @@ public class ChanBoard {
         }
     }
 
+    static public boolean isAsciiOnlyBoard(String boardCode) {
+        if (boardCode.equals("q") || boardCode.equals("r9k"))
+            return true;
+        else
+            return false;
+    }
 }

@@ -61,7 +61,7 @@ public class FilePart extends PartBase {
     public static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
 
     /** Default charset of file attachments. */
-    public static final String DEFAULT_CHARSET = "ISO-8859-1";
+    public static final String DEFAULT_CHARSET = "UTF-8";
 
     /** Default transfer encoding of file attachments. */
     public static final String DEFAULT_TRANSFER_ENCODING = "binary";
