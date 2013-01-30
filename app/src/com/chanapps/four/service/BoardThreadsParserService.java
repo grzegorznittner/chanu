@@ -94,6 +94,7 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
         	
             File boardFile = ChanFileStorage.getBoardFile(context, boardCode, pageNo);
             if (boardCatalog) {
+            	// there's no point in parsing catalog for threads
             	parseBoardCatalog(new BufferedReader(new FileReader(boardFile)));
             } else {
             	parseBoard(new BufferedReader(new FileReader(boardFile)));

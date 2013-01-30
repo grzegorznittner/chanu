@@ -3,7 +3,10 @@
  */
 package com.chanapps.four.service;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Calendar;
+import java.util.Map;
 
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
@@ -21,12 +24,33 @@ public class FileSaverService extends BaseChanService {
     private static final String TAG = FileSaverService.class.getSimpleName();
     private static final boolean DEBUG = true;
     
-    public enum FileType {USER_STATISTICS};
+    private static final String PARAM_DATE = "paramDate";
+    private static final String PARAM_TYPE = "paramType";
+    private static final String PARAM_VALUE = "paramValue";
+    private static final String PARAM_STACKTRACE = "paramStack";
+    
+    public enum FileType {USER_STATISTICS, LOG_EVENT};
     
     public static void startService(Context context, FileType fileType) {
         if (DEBUG) Log.i(TAG, "Start file saver service for " + fileType);
         Intent intent = new Intent(context, FileSaverService.class);
         intent.putExtra(ChanHelper.NAME, fileType.toString());
+        context.startService(intent);
+    }
+    
+    public static void startService(Context context, FileType fileType, String type, String value) {
+        if (DEBUG) Log.i(TAG, "Start file saver service for " + fileType);
+        Intent intent = new Intent(context, FileSaverService.class);
+        intent.putExtra(ChanHelper.NAME, fileType.toString());
+        intent.putExtra(PARAM_DATE, Calendar.getInstance().getTimeInMillis());
+    	intent.putExtra(PARAM_TYPE, type);
+    	intent.putExtra(PARAM_VALUE, value);
+    	
+    	StringWriter sw = new StringWriter();
+    	PrintWriter pw = new PrintWriter(sw);
+    	new Exception("Stacktrace").printStackTrace(pw);
+    	intent.putExtra(PARAM_STACKTRACE, sw.toString());
+    	
         context.startService(intent);
     }
 
@@ -54,6 +78,12 @@ public class FileSaverService extends BaseChanService {
 					return;
 				}
 				ChanFileStorage.storeUserStats(getBaseContext(), userStats);
+				break;
+			case LOG_EVENT:
+				long logDate = intent.getLongExtra(PARAM_DATE, 0);
+				String type = intent.getStringExtra(PARAM_TYPE);
+				String value = intent.getStringExtra(PARAM_VALUE);
+				String stack = intent.getStringExtra(PARAM_STACKTRACE);
 				break;
 			}
 			

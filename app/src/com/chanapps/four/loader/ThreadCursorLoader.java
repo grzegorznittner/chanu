@@ -61,7 +61,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             Log.e(TAG, "Couldn't load thread from storage " + boardName + "/" + threadNo, e);
             thread = null;
         }
-    	//if (DEBUG) Log.i(TAG, "loadInBackground " + thread.board + "/" + thread.no, new Exception("loadInBackground called"));
+    	if (DEBUG) Log.i(TAG, "loadInBackground " + thread.board + "/" + thread.no + " num posts " + (thread.posts != null ? thread.posts.length : 0));
         int isDead = thread != null && thread.isDead ? 1 : 0;
         if (DEBUG) Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
         MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);

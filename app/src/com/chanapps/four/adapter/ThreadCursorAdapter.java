@@ -75,7 +75,7 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
         }
 
         View v;
-        if (convertView == null || !tag.equals(convertView.getTag())) {
+        if (convertView == null || !tag.equals(convertView.getTag()) || ChanHelper.POST_RESTO.equals(tag)) {
             v = newView(context, parent, tag, position);
             v.setTag(tag);
             if (imageUrl != null && imageUrl.length() > 0) {

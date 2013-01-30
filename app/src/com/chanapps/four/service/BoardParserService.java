@@ -111,11 +111,13 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
             if (DEBUG) Log.i(TAG, "Stored board " + boardCode + (pageNo == -1 ? " catalog" : " page " + pageNo)
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
 
-            // thread files are stored in separate service call to make board parsing faster
-            if (force) {
-            	BoardThreadsParserService.startServiceWithPriority(getBaseContext(), boardCode, pageNo);
-            } else {
-            	BoardThreadsParserService.startService(getBaseContext(), boardCode, pageNo);
+            if (!boardCatalog) {
+	            // thread files are stored in separate service call to make board parsing faster
+	            if (force) {
+	            	BoardThreadsParserService.startServiceWithPriority(getBaseContext(), boardCode, pageNo);
+	            } else {
+	            	BoardThreadsParserService.startService(getBaseContext(), boardCode, pageNo);
+	            }
             }
             // tell it to refresh widgets for board if any are configured
             BoardWidgetProvider.updateAll(context, boardCode);
