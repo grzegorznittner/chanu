@@ -31,7 +31,7 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
     private Set<Long> highlightPrevPostNos = new HashSet<Long>();
     private Set<Long> highlightNextPostNos = new HashSet<Long>();
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public ThreadCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
@@ -75,7 +75,7 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
         }
 
         View v;
-        if (convertView == null || !tag.equals(convertView.getTag())) {
+        if (convertView == null || !tag.equals(convertView.getTag()) || ChanHelper.POST_RESTO.equals(tag)) {
             v = newView(context, parent, tag, position);
             v.setTag(tag);
             if (imageUrl != null && imageUrl.length() > 0) {

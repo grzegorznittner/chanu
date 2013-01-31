@@ -38,13 +38,15 @@ public class CleanUpService extends BaseChanService {
     private static final boolean DEBUG = false;
     
     private static final long MIN_DELAY_BETWEEN_CLEANUPS = 240000; // 4min
-    private static long lastScheduled = 0;
+    private static long scheduleDelay = MIN_DELAY_BETWEEN_CLEANUPS;
+    private static long lastScheduled = Calendar.getInstance().getTimeInMillis();
     
     public static void startService(Context context) {
-    	if (lastScheduled > Calendar.getInstance().getTimeInMillis() - MIN_DELAY_BETWEEN_CLEANUPS) {
-            if (DEBUG) Log.d(TAG, "Cleanup service was called less than " + (MIN_DELAY_BETWEEN_CLEANUPS/1000) + "s ago");
+    	if (lastScheduled > Calendar.getInstance().getTimeInMillis() - scheduleDelay) {
+            if (DEBUG) Log.d(TAG, "Cleanup service was called less than " + (scheduleDelay/1000) + "s ago");
     		return;
     	}
+    	scheduleDelay += MIN_DELAY_BETWEEN_CLEANUPS;
         if (DEBUG) Log.i(TAG, "Scheduling clean up service");
         lastScheduled = Calendar.getInstance().getTimeInMillis();
         Intent intent = new Intent(context, CleanUpService.class);
@@ -90,8 +92,10 @@ public class CleanUpService extends BaseChanService {
             
             long endTime = Calendar.getInstance().getTimeInMillis();
             logCacheFileInfo("ClearUp init.", startTime, endTime);
-            toastUI("" + totalFiles + " files of size " + (totalSize/1024)
+            if (DEBUG) {
+            	toastUI("" + totalFiles + " files of size " + (totalSize/1024)
             		+ " kB. Calculated in " + ((endTime - startTime)/1000) + "s.");
+            }
 
             startTime = Calendar.getInstance().getTimeInMillis();
             long maxCacheSize = getPreferredCacheSize() * 1024 * 1024;
@@ -149,8 +153,10 @@ public class CleanUpService extends BaseChanService {
             
             endTime = Calendar.getInstance().getTimeInMillis();
             logCacheFileInfo("Deletion report.", startTime, endTime);
-            toastUI("" + totalFiles + " files of size " + (totalSize/1024) + " kB."
+            if (totalDeletedFiles > 0) {
+            	toastUI("" + totalFiles + " files of size " + (totalSize/1024) + " kB."
             		+ totalDeletedFiles + " files has been deleted in " + ((endTime - startTime)/1000) + "s.");
+            }
 		} catch (Exception e) { 
             Log.e(TAG, "Error in clean up service", e);
 		}

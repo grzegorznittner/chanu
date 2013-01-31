@@ -279,7 +279,7 @@ public class ChanFileStorage {
 		}
 		if (threadCache.containsKey(threadNo)) {
 			ChanThread thread = threadCache.get(threadNo);
-			if (thread == null) {
+			if (thread == null || thread.defData) {
 				Log.w(TAG, "Null thread " + boardCode + "/" + threadNo + " stored in cache, removing key");
 				threadCache.remove(threadNo);
 			} else {
@@ -292,7 +292,7 @@ public class ChanFileStorage {
 			threadFile = new File(getBoardCacheDirectory(context, boardCode), "t_" + threadNo + CACHE_EXT);
 			if (!threadFile.exists()) {
 				if (DEBUG) Log.d(TAG, "Thread '" + boardCode + FILE_SEP + threadNo + "' doesn't exist.");
-				return prepareDefaultThreadData(context, boardCode, threadNo);
+				return getThreadFromBoard(context, boardCode, threadNo);
 			}
 			ObjectMapper mapper = ChanHelper.getJsonMapper();
 			ChanThread thread = mapper.readValue(threadFile, ChanThread.class);
@@ -300,8 +300,26 @@ public class ChanFileStorage {
 			return thread;
 		} catch (Exception e) {
 			Log.w(TAG, "Error while loading thread '" + boardCode + FILE_SEP + threadNo + "' data. ", e);
-			return prepareDefaultThreadData(context, boardCode, threadNo);
+			return getThreadFromBoard(context, boardCode, threadNo);
 		}
+	}
+	
+	private static ChanThread getThreadFromBoard(Context context, String boardCode, long threadNo) {
+		ChanBoard board = loadBoardData(context, boardCode);
+		if (!board.defData) {
+			for (ChanPost post : board.threads) {
+				if (post.no == threadNo) {
+					ChanThread thread = new ChanThread();
+					thread.board = boardCode;
+					thread.no = threadNo;
+					thread.lastFetched = 0;
+					thread.posts = new ChanPost[]{post};
+					return thread;
+				}
+			}
+		}
+		
+		return prepareDefaultThreadData(context, boardCode, threadNo);
 	}
 	
 	private static ChanThread prepareDefaultThreadData(Context context, String boardCode, long threadNo) {
