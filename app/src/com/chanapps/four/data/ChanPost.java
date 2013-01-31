@@ -1,7 +1,6 @@
 package com.chanapps.four.data;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,6 +12,8 @@ import com.chanapps.four.activity.R;
 public class ChanPost {
 
 	public static final String TAG = ChanPost.class.getSimpleName();
+    private static final boolean DEBUG = false;
+    
     public static final int MAX_BOARDTHREAD_IMAGETEXT_LEN = 75;
     public static final int MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN = MAX_BOARDTHREAD_IMAGETEXT_LEN - 3;
     public static final int MAX_THREAD_IMAGETEXT_LEN = (int)(MAX_BOARDTHREAD_IMAGETEXT_LEN * 1.5);
@@ -249,7 +250,7 @@ public class ChanPost {
     }
 
     public String getHeaderText() {
-        return getHeaderText(false);
+        return getHeaderText(true);
     }
 
     public String getHeaderText(boolean useFriendlyIds) {
@@ -263,18 +264,6 @@ public class ChanPost {
                 + (email != null && !email.isEmpty() ? "\nEmail: " + email : "")
                 + (country_name != null && !country_name.isEmpty() ? "\nCountry: " + country_name : "")
                 + "\n" + (new Date(time)).toString();
-    }
-
-    private static final String SAGE_POST_ID = "Heaven";
-    private static final String PATTERN_POST_ID = "(\\d)";
-    public String formatId(String id, boolean useFriendlyIds) {
-        if (!useFriendlyIds)
-            return id;
-        if (id.equalsIgnoreCase(SAGE_POST_ID))
-            return id;
-        Pattern pattern = Pattern.compile(PATTERN_POST_ID);
-        return id;
-
     }
 
     public String getPostText(boolean hideAllText, boolean hidePostNumbers) {
@@ -406,8 +395,112 @@ public class ChanPost {
         if (postNo <= 0 || com == null || com.isEmpty())
             return false;
         boolean matches = com.indexOf("#p" + postNo + "\"") >= 0;
-        Log.i(TAG, "Matching postNo=" + postNo + " is " + matches + " against com=" + com);
+        if (DEBUG) Log.i(TAG, "Matching postNo=" + postNo + " is " + matches + " against com=" + com);
         return matches;
     }
-    
+
+    private static final String SAGE_POST_ID = "Heaven";
+    private static final String[] NAMES = {
+            "Aries",
+            "Bian",
+            "Cerberus",
+            "Dragon",
+            "Eki",
+            "Fidel",
+            "Goku",
+            "Hotaru",
+            "Ideki",
+            "Judo",
+            "Kendo",
+            "Lima",
+            "Moto",
+            "Noko",
+            "Onizuka",
+            "Piku",
+            "Queen",
+            "Radium",
+            "Sensei",
+            "Totoro",
+            "Uejima",
+            "Virgo",
+            "Waka",
+            "Xi",
+            "Yoto",
+            "Zulu",
+
+            "Akira",
+            "Balrog",
+            "Cat",
+            "Deathmask",
+            "Endo",
+            "Fap",
+            "Godo",
+            "Hoenheim",
+            "Ieyasu",
+            "Joro",
+            "Kimbo",
+            "Li",
+            "Mini",
+            "Nojimbo",
+            "Opa",
+            "Pei",
+            "Quest",
+            "Rune",
+            "Shura",
+            "Tempest",
+            "Unit",
+            "Victor",
+            "Wiki",
+            "Xenu",
+            "Yolo",
+            "Zolan",
+
+            "One",
+            "Two",
+            "Three",
+            "Four",
+            "Five",
+            "Six",
+            "Seven",
+            "Eight",
+            "Nine",
+            "Ten",
+
+            "Plus",
+            "Slash"
+
+    };
+    private static final String BASE_64_CODE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            + "abcdefghijklmnopqrstuvwxyz" + "0123456789" + "+/";
+    private static final Map<Character, String> nameMap = new HashMap<Character, String>();
+
+    private static void initNameMap() {
+        for (int i = 0; i < NAMES.length; i++) {
+            String s = NAMES[i];
+            char c = BASE_64_CODE.charAt(i);
+            if (DEBUG) Log.i(TAG, "Putting into map " + c + ", " + s);
+            nameMap.put(c, s);
+        }
+    }
+
+    private String formatId(String id, boolean useFriendlyIds) {
+        if (!useFriendlyIds)
+            return id;
+        if (id.equalsIgnoreCase(SAGE_POST_ID))
+            return id;
+        if (capcode != null && !capcode.isEmpty() && !capcode.equals("none"))
+            return id;
+        if (DEBUG) Log.d(TAG, "Initial: " + id);
+
+        synchronized (nameMap) {
+            if (nameMap.isEmpty()) {
+                initNameMap();
+            }
+        }
+
+        id = nameMap.get(id.charAt(0)) + nameMap.get(id.charAt(1)) + "." + id.substring(2);
+        if (DEBUG) Log.i(TAG, "Final: " + id);
+        return id;
+    }
+
 }
