@@ -241,16 +241,17 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             	if (DEBUG) Log.i(TAG, "Got 304 for " + chanApi + " so was not modified since " + board.lastFetched);
             	return;
             }
-            if (contentType == null || !contentType.contains("json")) {
-            	throw new IOException("Wrong content type returned '" + contentType + "' content: " + IOUtils.toString(tc.getInputStream()));
-            }
-            
+
             if (pageNo > 0 && tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 if (DEBUG) Log.i(TAG, "Got 404 on next page, assuming last page at pageNo=" + pageNo);
                 board.lastFetched = new Date().getTime();
                 board.lastPage = true;
                 ChanFileStorage.storeBoardData(getBaseContext(), board);
-            } else {
+            }
+            else if (contentType == null || !contentType.contains("json")) {
+                throw new IOException("Wrong content type returned '" + contentType + "' responseCode=" + tc.getResponseCode() + " content=" + tc.getContent().toString());
+            }
+            else {
             	long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, new InputStreamReader(tc.getInputStream()));
             	int fetchTime = (int)(new Date().getTime() - startTime);
                 
