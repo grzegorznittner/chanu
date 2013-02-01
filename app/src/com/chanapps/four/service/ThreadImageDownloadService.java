@@ -118,7 +118,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 				if (startPointFound || post.no == startPostNo) {
 					startPointFound = true;
 					if (post.tim != 0) {
-						int fileLength = downloadImage(post);
+						downloadImage(post);
 					}
 					startPostNo = post.no;  // setting last fetched image no
 				}
@@ -141,7 +141,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		String imageFile = ChanFileStorage.getLocalImageUrl(getBaseContext(), post);
 		File targetFile = new File(URI.create(imageFile));
 		if (targetFile.exists()) {
-			targetFile.delete();
+			return (int)targetFile.length();
 		}
 		
 		InputStream in = null;
