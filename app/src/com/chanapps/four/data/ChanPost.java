@@ -65,6 +65,11 @@ public class ChanPost {
     public boolean isDead = false;
     public boolean defData = false;
 
+    // settings from prefs
+    public boolean hideAllText = false;
+    public boolean hidePostNumbers = true;
+    public boolean useFriendlyIds = true;
+
     public static final String quoteText(String s) {
         if (s == null || s.isEmpty())
             return "";
@@ -96,16 +101,16 @@ public class ChanPost {
         return o;
     }
 
-    public String getFullText(boolean hideAllText, boolean hidePostNumbers) {
+    public String getFullText() {
         if (hideAllText)
             return "";
         String text = sub != null && sub.trim().length() > 0
                   ? sub + (com != null && com.trim().length() > 0 ? "<br/>" + com : "")
                   : com;
-        return sanitizeText(text, hidePostNumbers);
+        return sanitizeText(text);
     }
 
-    private static final String sanitizeText(String text, boolean hidePostNumbers) {
+    private String sanitizeText(String text) {
         if (text == null || text.isEmpty())
             return "";
 
@@ -260,13 +265,13 @@ public class ChanPost {
                 + (closed > 0 ? "\nClosed" : "")
                 + (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous") ? "\nName: " + name : "")
                 + (trip != null && !trip.isEmpty() ? "\nTripcode: " + trip : "")
-                + (id != null && !id.isEmpty() ? "\nId: " + formatId(id, useFriendlyIds) : "")
+                + (id != null && !id.isEmpty() ? "\nId: " + getFormattedId() : "")
                 + (email != null && !email.isEmpty() ? "\nEmail: " + email : "")
                 + (country_name != null && !country_name.isEmpty() ? "\nCountry: " + country_name : "")
                 + "\n" + (new Date(time)).toString();
     }
 
-    public String getPostText(boolean hideAllText, boolean hidePostNumbers) {
+    public String getPostText() {
     	if (defData) {
             return "Loading images..."; // FIXME: should be loading graphic or localized text
     	}
@@ -276,67 +281,57 @@ public class ChanPost {
         String text = "";
         if (!hideAllText) {
             if (!hidePostNumbers)
-                text += no;
-            String textLine = abbreviate(getFullText(hideAllText, hidePostNumbers), maxImageTextLen, maxImageTextAbbrLen);
-            if (textLine != null && !textLine.isEmpty()) {
-                if (text != null && !text.isEmpty())
-                    text += "\n";
-                text += textLine;
-            }
+                text += "<b>No: " + no + "</b>";
+            if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Name: " + name + "</b>";
+            if (id != null && !id.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getFormattedId() + "</b>";
+            String textLine = abbreviate(getFullText(), maxImageTextLen, maxImageTextAbbrLen);
+            if (textLine != null && !textLine.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/>\n") + textLine;
         }
         if (fsize > 0) {
-            if (text.length() > 0) {
-				text += "\n";
-			}
 			int kbSize = (fsize / 1024) + 1;
-			text += kbSize + "kB " + w + "x" + h; // + " " + ext;
+			text += (text.isEmpty() ? "" : "<br/>\n") + kbSize + "kB " + w + "x" + h; // + " " + ext;
 		}
         return text;
 	}
 
-    public String getThreadText(boolean hideAllText, boolean hidePostNumbers) {
+    public String getThreadText() {
         if (fsize > 0) // has image
-            return getThreadText(hideAllText, hidePostNumbers, MAX_THREAD_IMAGETEXT_LEN, MAX_THREAD_IMAGETEXT_ABBR_LEN, false);
+            return getThreadText(MAX_THREAD_IMAGETEXT_LEN, MAX_THREAD_IMAGETEXT_ABBR_LEN, false);
         else
-            return getThreadText(hideAllText, hidePostNumbers, MAX_THREAD_TEXTONLY_LEN, MAX_THREAD_TEXTONLY_ABBR_LEN, false);
+            return getThreadText(MAX_THREAD_TEXTONLY_LEN, MAX_THREAD_TEXTONLY_ABBR_LEN, false);
     }
 
-    public String getThreadText(boolean hideAllText, boolean hidePostNumbers, int maxImageTextLen, int maxImageTextAbbrLen, boolean onBoard) {
+    public String getThreadText(int maxImageTextLen, int maxImageTextAbbrLen, boolean onBoard) {
     	if (defData)
     		return "Loading..."; // FIXME should be localized string
 
         String text = "";
         if (!hideAllText) {
-            if (onBoard) {
-                text += abbreviate(getFullText(hideAllText, hidePostNumbers), maxImageTextLen, maxImageTextAbbrLen);
-            }
-            else {
-                if (!hidePostNumbers)
-                    text += no;
-                String subText = abbreviate(sanitizeText(sub, hidePostNumbers), maxImageTextLen, maxImageTextAbbrLen);
-                String comText = abbreviate(sanitizeText(com, hidePostNumbers), maxImageTextLen, maxImageTextAbbrLen);
-                if (subText != null && !subText.isEmpty()) {
-                    if (text != null && !text.isEmpty())
-                        text += " ";
-                    text += subText;
-                }
-                if (comText != null && !comText.isEmpty()) {
-                    if (text != null && !text.isEmpty())
-                        text += "\n";
-                    text += comText;
-                }
-            }
+            if (!hidePostNumbers)
+                text += "<b>No: " + no + "</b>";
+            if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Name: " + name + "</b>";
+            if (id != null && !id.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getFormattedId() + "</b>";
+            String subText = abbreviate(sanitizeText(sub), maxImageTextLen, maxImageTextAbbrLen);
+            String comText = abbreviate(sanitizeText(com), maxImageTextLen, maxImageTextAbbrLen);
+            if (subText != null && !subText.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/>\n") + subText;
+            if (comText != null && !comText.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/>\n") + comText;
         }
         if (resto != 0) { // just a post, don't add thread stuff
             if (fsize > 0 && !onBoard) {
                 int kbSize = (fsize / 1024) + 1;
-                text += "\n" + kbSize + "kB " + w + "x" + h; // + " " + ext;
+                text += (text.isEmpty() ? "" : "<br/>\n") + kbSize + "kB " + w + "x" + h; // + " " + ext;
             }
         }
         else {
-            if (text.length() > 0)
-                text += "\n";
-            text += replies
+            text += (text.isEmpty() ? "" : "<br/>\n")
+                    + replies
                     + " post" + (replies == 1 ? "" : "s")
                     + " "
                     + images
@@ -346,13 +341,8 @@ public class ChanPost {
                 text += " (IL)";
             if (bumplimit == 1)
                 text += " (BL)";
-            if (isDead) {
-                if (onBoard)
-                    text += "\n";
-                else
-                    text += " ";
-                text += "DEAD THREAD";
-            }
+            if (isDead)
+                text += (!text.isEmpty() ? "" : (onBoard ? "<br/>" : " ")) + "DEAD THREAD";
             if (fsize > 0 && !onBoard) {
                 int kbSize = (fsize / 1024) + 1;
                 text += " " + kbSize + "kB " + w + "x" + h; // + " " + ext;
@@ -361,11 +351,11 @@ public class ChanPost {
         return text;
 	}
 
-    public String getBoardThreadText(boolean hideAllText, boolean hidePostNumbers) {
+    public String getBoardThreadText() {
         if (fsize > 0) // has image
-            return getThreadText(hideAllText, hidePostNumbers, MAX_BOARDTHREAD_IMAGETEXT_LEN, MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN, true);
+            return getThreadText(MAX_BOARDTHREAD_IMAGETEXT_LEN, MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN, true);
         else // text-only
-            return getThreadText(hideAllText, hidePostNumbers, MAX_TEXTONLY_LEN, MAX_TEXTONLY_ABBR_LEN, true);
+            return getThreadText(MAX_TEXTONLY_LEN, MAX_TEXTONLY_ABBR_LEN, true);
     }
 
     public void mergeIntoThreadList(List<ChanPost> threads) {
@@ -403,7 +393,7 @@ public class ChanPost {
     private static final String[] NAMES = {
             "Aries",
             "Bian",
-            "Cerberus",
+            "Chikage",
             "Dragon",
             "Eki",
             "Fidel",
@@ -415,13 +405,13 @@ public class ChanPost {
             "Lima",
             "Moto",
             "Noko",
-            "Onizuka",
+            "Oni",
             "Piku",
             "Queen",
             "Radium",
             "Sensei",
             "Totoro",
-            "Uejima",
+            "Usagi",
             "Virgo",
             "Waka",
             "Xi",
@@ -430,24 +420,24 @@ public class ChanPost {
 
             "Akira",
             "Balrog",
-            "Cat",
-            "Deathmask",
+            "Chidori",
+            "Diva",
             "Endo",
             "Fap",
             "Godo",
-            "Hoenheim",
-            "Ieyasu",
+            "Hero",
+            "Ichigo",
             "Joro",
-            "Kimbo",
+            "Kai",
             "Li",
             "Mini",
-            "Nojimbo",
+            "Naruto",
             "Opa",
             "Pei",
             "Quest",
             "Rune",
             "Shura",
-            "Tempest",
+            "Tetsuo",
             "Unit",
             "Victor",
             "Wiki",
@@ -483,7 +473,7 @@ public class ChanPost {
         }
     }
 
-    private String formatId(String id, boolean useFriendlyIds) {
+    private String getFormattedId() {
         if (!useFriendlyIds)
             return id;
         if (id.equalsIgnoreCase(SAGE_POST_ID))
@@ -498,9 +488,9 @@ public class ChanPost {
             }
         }
 
-        id = nameMap.get(id.charAt(0)) + nameMap.get(id.charAt(1)) + "." + id.substring(2);
-        if (DEBUG) Log.i(TAG, "Final: " + id);
-        return id;
+        String newId = nameMap.get(id.charAt(0)) + nameMap.get(id.charAt(1)) + "." + id.substring(2);
+        if (DEBUG) Log.i(TAG, "Final: " + newId);
+        return newId;
     }
 
 }
