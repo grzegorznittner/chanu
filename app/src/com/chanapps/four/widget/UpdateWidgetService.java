@@ -22,6 +22,7 @@ import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.*;
 
 import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -81,14 +82,12 @@ public class UpdateWidgetService extends Service {
                 Log.e(TAG, "Null board code found for widget=" + appWidgetId + " defaulting to /a");
                 boardCode = "a";
             }
-            if (DEBUG)
-                Log.i(TAG, "Found boardCode=" + boardCode + " for widget=" + appWidgetId + " now updating");
+            if (DEBUG) Log.i(TAG, "Found boardCode=" + boardCode + " for widget=" + appWidgetId + " now updating");
         }
 
         @Override
         public Void doInBackground(Void... params) {
-            if (DEBUG)
-                Log.i(TAG, "Starting background thread for widget update");
+            if (DEBUG) Log.i(TAG, "Starting background thread for widget update");
             if (!firstTimeInit) {
                 loadBoard();
                 if (boardCode == null) {
@@ -131,11 +130,10 @@ public class UpdateWidgetService extends Service {
                             && ((thread = board.threads[threadIndex]) == null || thread.sticky != 0))
                         threadIndex++;
                     threads[i] = thread;
-                    if (DEBUG)
-                        if (thread != null)
-                            Log.i(TAG, "Loaded board=" + boardCode + "/" + thread.no + " threadIndex=" + threadIndex + " i=" + i + " with widget threads");
-                        else
-                            Log.i(TAG, "Loaded board=" + boardCode + " i=" + i + " with null thread");
+                    if (thread != null)
+                        if (DEBUG) Log.i(TAG, "Loaded board=" + boardCode + "/" + thread.no + " threadIndex=" + threadIndex + " i=" + i + " with widget threads");
+                    else
+                        if (DEBUG) Log.i(TAG, "Loaded board=" + boardCode + " i=" + i + " with null thread");
                     threadIndex++;
                 }
                 if (DEBUG) Log.i(TAG, "Loaded board=" + boardCode + " with widget threads");
@@ -150,9 +148,9 @@ public class UpdateWidgetService extends Service {
             for (int i = 0; i < NUM_TOP_THREADS; i++) {
                 InputStream is = null;
                 Bitmap b = null;
+                String thumbnailUrl = null;
                 try {
                     ChanPost thread = threads == null ? null : threads[i];
-                    String thumbnailUrl;
                     if (thread == null) {
                         if (DEBUG) Log.i(TAG, "no thread found for i=" + i + " skipping download");
                     }
@@ -161,6 +159,9 @@ public class UpdateWidgetService extends Service {
                     }
                     else if ((thumbnailUrl = thread.getThumbnailUrl()) == null) {
                         if (DEBUG) Log.i(TAG, "no thumbnail url found for i=" + i + " skipping download");
+                    }
+                    else if (thumbnailUrl.isEmpty()) {
+                        if (DEBUG) Log.i(TAG, "empty thumbnail url found for i=" + i + " skipping download");
                     }
                     else {
                         URLConnection conn = new URL(thumbnailUrl).openConnection();
@@ -173,12 +174,15 @@ public class UpdateWidgetService extends Service {
                             if (DEBUG) Log.i(TAG, "Successfully downloaded and cached bitmap from url=" + thumbnailUrl);
                         }
                         else {
-                            Log.i(TAG, "Null bitmap for url=" + thumbnailUrl);
+                            if (DEBUG) Log.i(TAG, "Null bitmap for url=" + thumbnailUrl);
                         }
                     }
                 }
+                catch (FileNotFoundException e) {
+                    if (DEBUG) Log.i(TAG, "FileNotFound for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
+                }
                 catch (Exception e) {
-                    Log.e(TAG, "Exception downloading image for board=" + boardCode + " i=" + i + " imageUrl=", e);
+                    Log.e(TAG, "Exception downloading image for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
                 }
                 finally {
                     try {
@@ -199,7 +203,7 @@ public class UpdateWidgetService extends Service {
                     }
                     if (b == null) { // load as resource and kill the thread so it just goes to the board
                         b = loadDefaultBoardBitmap(i);
-                        Log.i(TAG, "Null bitmap loaded for i=" + i + " thus loading from board default");
+                        if (DEBUG) Log.i(TAG, "Null bitmap loaded for i=" + i + " thus loading from board default");
                     }
                     if (DEBUG)  Log.i(TAG, "Set bitmap for board=" + boardCode + " i=" + i + " b=" + b);
                     bitmaps.add(b);

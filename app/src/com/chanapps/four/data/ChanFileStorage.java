@@ -8,11 +8,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import com.chanapps.four.widget.BoardWidgetProvider;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -435,6 +437,9 @@ public class ChanFileStorage {
     private static final String RM_CMD = "/system/bin/rm -r";
 
     public static boolean deleteCacheDirectory(Context context) {
+        // do this jazz to save widget conf even on clear because you can't programmatically remove widgets
+        Set<String> savedWidgetConf = BoardWidgetProvider.getActiveWidgetPref(context);
+
         try {
             String cacheDir = getRootCacheDirectory(context);
             File cacheFolder = StorageUtils.getOwnCacheDirectory(context, cacheDir);
@@ -469,6 +474,10 @@ public class ChanFileStorage {
         catch (Exception e) {
             Log.e(TAG, "Exception deleting cache", e);
             return false;
+        }
+        finally {
+            // add back widget conf
+            BoardWidgetProvider.saveWidgetPref(context, savedWidgetConf);
         }
     }
     
