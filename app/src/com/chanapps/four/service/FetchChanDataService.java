@@ -11,6 +11,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -240,7 +242,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             	return;
             }
             if (contentType == null || !contentType.contains("json")) {
-            	throw new IOException("Wrong content type returned '" + contentType + "'");
+            	throw new IOException("Wrong content type returned '" + contentType + "' content: " + IOUtils.toString(tc.getInputStream()));
             }
             
             if (pageNo > 0 && tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
