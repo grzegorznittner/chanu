@@ -54,17 +54,21 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
+        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+        boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
         for (ChanPost thread : board.threads) {
+            thread.hideAllText = hideAllText;
+            thread.hidePostNumbers = hidePostNumbers;
+            thread.useFriendlyIds = useFriendlyIds;
             if (thread.tn_w <= 0 || thread.tim == 0) {
                 Log.e(TAG, "Board thread without image, should never happen, board=" + boardName + " threadNo=" + thread.no);
                 matrixCursor.addRow(new Object[] {
                         thread.no, boardName, 0, "",
                         thread.getCountryFlagUrl(),
-                        thread.getBoardThreadText(hideAllText, hidePostNumbers),
-                        thread.getHeaderText(), thread.getFullText(hideAllText, hidePostNumbers),
+                        thread.getBoardThreadText(),
+                        thread.getHeaderText(), thread.getFullText(),
                         thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
                         thread.getSpoilerText(), thread.getExifText(), thread.isDead ? 1 : 0, 0, 0});
 
@@ -72,8 +76,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 matrixCursor.addRow(new Object[] {
                         thread.no, boardName, 0,
                         thread.getThumbnailUrl(), thread.getCountryFlagUrl(),
-                        thread.getBoardThreadText(hideAllText, hidePostNumbers),
-                        thread.getHeaderText(), thread.getFullText(hideAllText, hidePostNumbers),
+                        thread.getBoardThreadText(),
+                        thread.getHeaderText(), thread.getFullText(),
                         thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
                         thread.getSpoilerText(), thread.getExifText(), thread.isDead ? 1 : 0, 0, 0});
             }

@@ -105,15 +105,24 @@
     </style>
 
     <style name="BoardGridImageStyle" parent="GridImageStyle">
-        <item name="android:padding">16dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingBottom">8dp</item>
     </style>
 
     <style name="ThreadHeaderGridImageStyle" parent="GridImageStyle">
-        <item name="android:padding">24dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingBottom">8dp</item>
     </style>
 
     <style name="ThreadGridImageStyle" parent="GridImageStyle">
-        <item name="android:padding">32dp</item>
+        <item name="android:paddingLeft">32dp</item>
+        <item name="android:paddingTop">56dp</item>
+        <item name="android:paddingRight">32dp</item>
+        <item name="android:paddingBottom">8dp</item>
     </style>
 
     <style name="GridCountryFlagStyle" parent="GridItemStyle">

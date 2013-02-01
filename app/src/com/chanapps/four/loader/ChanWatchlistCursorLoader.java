@@ -41,6 +41,10 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
             return null;
         }
         if (DEBUG) Log.i(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+        boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         MatrixCursor cursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
         for (String threadPath : savedWatchlist) {
             if (DEBUG) Log.i(TAG, "Parsing threadpath: " + threadPath);
@@ -77,14 +81,14 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 }
                 if (threadPost != null) { // pull from cache, it will have the latest data
                     if (DEBUG) Log.i(TAG, "Found cached watchlist thread " + boardCode + "/" + threadNo + ", updating from cache");
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                    boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-                    boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
                     threadPost.isDead = thread.isDead;
+                    threadPost.hideAllText = hideAllText;
+                    threadPost.hidePostNumbers = hidePostNumbers;
+                    threadPost.useFriendlyIds = useFriendlyIds;
                     tim = threadPost.tim;
-                    shortText = threadPost.getBoardThreadText(hideAllText, hidePostNumbers);
+                    shortText = threadPost.getBoardThreadText();
                     headerText = threadPost.getHeaderText();
-                    text = threadPost.getFullText(false, false);
+                    text = threadPost.getFullText();
                     imageUrl = threadPost.getThumbnailUrl();
                     countryUrl = threadPost.getCountryFlagUrl();
                     imageWidth = threadPost.tn_w;

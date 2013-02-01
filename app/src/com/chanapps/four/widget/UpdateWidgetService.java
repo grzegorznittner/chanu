@@ -232,6 +232,10 @@ public class UpdateWidgetService extends Service {
         }
 
         private void updateWidgetViews() {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+            boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+            boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.board_widget);
             int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
             for (int i = 0; i < imageIds.length; i++) {
@@ -241,6 +245,11 @@ public class UpdateWidgetService extends Service {
                 views.setImageViewBitmap(imageId, b);
 
                 ChanPost thread = threads[i];
+                if (thread != null) {
+                    thread.hideAllText = hideAllText;
+                    thread.hidePostNumbers = hidePostNumbers;
+                    thread.useFriendlyIds = useFriendlyIds;
+                }
                 PendingIntent pendingIntent = makePendingIntent(thread, i);
                 views.setOnClickPendingIntent(imageId, pendingIntent);
             }
@@ -252,39 +261,11 @@ public class UpdateWidgetService extends Service {
         private PendingIntent makePendingIntent(ChanPost thread, int i) {
             Intent intent = thread == null
                 ? BoardActivity.createIntentForActivity(context, new String(boardCode))
-                : createIntentForThread(thread);
+                : ThreadActivity.createIntentForThread(context, thread);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = 100 * appWidgetId + i;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
-
-        private Intent createIntentForThread(ChanPost thread) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-            boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
-            return ThreadActivity.createIntentForActivity(
-                    context,
-                    thread.board,
-                    thread.no,
-                    thread.getThreadText(hideAllText, hidePostNumbers),
-                    thread.getThumbnailUrl(),
-                    thread.tn_w,
-                    thread.tn_h,
-                    thread.tim,
-                    false,
-                    0,
-                    true
-            );
-        }
-
-        /*
-        private void bindThreadImageView(RemoteViews views, int imageId, ChanPost thread) {
-            Intent intent = createIntentForThread(thread);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-            views.setOnClickPendingIntent(imageId, pendingIntent);
-        }
-        */
 
     }
 }

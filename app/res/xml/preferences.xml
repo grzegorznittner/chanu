@@ -32,6 +32,13 @@
             android:defaultValue="true" />
 
     <CheckBoxPreference
+            android:key="pref_use_friendly_ids"
+            android:title="@string/pref_use_friendly_ids"
+            android:summaryOn="@string/pref_use_friendly_ids_summ_on"
+            android:summaryOff="@string/pref_use_friendly_ids_summ_off"
+            android:defaultValue="true" />
+
+    <CheckBoxPreference
             android:key="pref_automatically_manage_watchlist"
             android:title="@string/pref_automatically_manage_watchlist"
             android:summaryOn="@string/pref_automatically_manage_watchlist_summ_on"

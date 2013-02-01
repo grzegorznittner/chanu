@@ -54,7 +54,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     public Cursor loadInBackground() {
     	try {
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
+        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+        boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         ChanThread thread = null;
         try {
             thread = ChanFileStorage.loadThreadData(getContext(), boardName, threadNo);
@@ -69,16 +70,19 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         Object[] currentRow = null;
         for (ChanPost post : thread.posts) {
             post.isDead = thread.isDead; // inherit from parent
+            post.hideAllText = hideAllText;
+            post.hidePostNumbers = hidePostNumbers;
+            post.useFriendlyIds = useFriendlyIds;
             if (post.tn_w <= 0 || post.tim == 0) {
                 if (!hideAllText || post.resto == 0) {
                     String postText = post.resto == 0
-                            ? post.getThreadText(hideAllText, hidePostNumbers)
-                            : post.getPostText(hideAllText, hidePostNumbers);
+                            ? post.getThreadText()
+                            : post.getPostText();
                     if (postText != null && !postText.isEmpty()) {
                         currentRow = new Object[] {
                                 post.no, boardName, threadNo,
                                 "", post.getCountryFlagUrl(),
-                                postText, post.getHeaderText(), post.getFullText(hideAllText, hidePostNumbers),
+                                postText, post.getHeaderText(), post.getFullText(),
                                 post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
                                 post.getSpoilerText(), post.getExifText(), isDead, 0, 0};
                         matrixCursor.addRow(currentRow);
@@ -87,12 +91,12 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 }
             } else {
                 String postText = post.resto == 0
-                        ? post.getThreadText(hideAllText, hidePostNumbers)
-                        : post.getPostText(hideAllText, hidePostNumbers);
+                        ? post.getThreadText()
+                        : post.getPostText();
                 currentRow = new Object[] {
                         post.no, boardName, threadNo,
                         post.getThumbnailUrl(), post.getCountryFlagUrl(),
-                        postText, post.getHeaderText(), post.getFullText(hideAllText, hidePostNumbers),
+                        postText, post.getHeaderText(), post.getFullText(),
                         post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
                         post.getSpoilerText(), post.getExifText(), isDead, 0, 0};
                 matrixCursor.addRow(currentRow);

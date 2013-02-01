@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
+import android.text.Html;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -89,6 +90,22 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         Intent intent = createIntentForActivity(from, boardName, postId, text, imageUrl, tn_w, tn_h, threadTim, fromParent, pos);
         if (DEBUG) Log.i(TAG, "Calling thread activity with id=" + id);
         from.startActivity(intent);
+    }
+
+    public static Intent createIntentForThread(Context context, ChanPost thread) {
+        return createIntentForActivity(
+                context,
+                thread.board,
+                thread.no,
+                thread.getThreadText(),
+                thread.getThumbnailUrl(),
+                thread.tn_w,
+                thread.tn_h,
+                thread.tim,
+                false,
+                0,
+                true
+        );
     }
 
     public static Intent createIntentForActivity(Context context,
@@ -243,7 +260,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 tv.setVisibility(View.INVISIBLE);
             }
             else {
-                tv.setText(shortText);
+                tv.setText(Html.fromHtml(shortText));
             }
             return true;
         } else if (view instanceof ImageView && view.getId() == R.id.grid_item_image) {

@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.text.Html;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -321,7 +322,7 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
                     tv.setVisibility(View.INVISIBLE);
                 }
                 else {
-                    tv.setText(shortText);
+                    tv.setText(Html.fromHtml(shortText));
                 }
             }
             return true;
