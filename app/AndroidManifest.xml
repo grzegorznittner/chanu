@@ -95,6 +95,7 @@
         <service android:name="com.chanapps.four.service.CleanUpService"/>
         <service android:name="com.chanapps.four.service.FileSaverService"/>
         <service android:name="com.chanapps.four.service.ImageDownloadService"/>
+        <service android:name="com.chanapps.four.service.ThreadImageDownloadService"/>
 
         <!--widgets-->
         <activity android:name="com.chanapps.four.widget.WidgetConfigureActivity">

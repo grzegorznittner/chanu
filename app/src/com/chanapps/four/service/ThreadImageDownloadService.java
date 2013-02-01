@@ -17,19 +17,23 @@ import java.util.Calendar;
 
 import org.apache.commons.io.IOUtils;
 
+import android.app.Notification;
+import android.app.Notification.Builder;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Message;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.activity.FullScreenImageActivity;
+import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
@@ -96,34 +100,35 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		try {
-			stopDownload = false;
-			board = intent.getStringExtra(ChanHelper.BOARD_CODE);
-			threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-			startPostNo = intent.getLongExtra(START_POST_NO, 0);
-			restartCounter = intent.getIntExtra(RESTART_COUNTER, 0);
-			targetType = TargetType.valueOf(intent.getStringExtra(TARGET_TYPE));
-			
+		stopDownload = false;
+		board = intent.getStringExtra(ChanHelper.BOARD_CODE);
+		threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+		startPostNo = intent.getLongExtra(START_POST_NO, 0);
+		restartCounter = intent.getIntExtra(RESTART_COUNTER, 0);
+		targetType = TargetType.valueOf(intent.getStringExtra(TARGET_TYPE));
+		ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), board, threadNo);
+		try {			
 			if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") 
 	        		+ " handling all image download service for thread " + board + "/" + threadNo
 	        		+ (startPostNo == 0 ? "" : " from post " + startPostNo)
 	        		+ (restartCounter > 0 ? ", restarted " + restartCounter + " time(s)." : ""));
 
 			boolean startPointFound = startPostNo == 0;
-			ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), board, threadNo);
 			for (ChanPost post : thread.posts) {
 				if (startPointFound || post.no == startPostNo) {
 					startPointFound = true;
-					int fileLength = downloadImage(post);
+					if (post.tim != 0) {
+						int fileLength = downloadImage(post);
+					}
 					startPostNo = post.no;  // setting last fetched image no
-					notifyDownloadFinished(fileLength);
 				}
 			}
+			notifyDownloadFinished(thread);
 		} catch (Exception e) {
             Log.e(TAG, "Error in image download service", e);
             if (restartCounter > MAX_RESTARTS) {
             	NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
-            	notifyDownloadError();
+            	notifyDownloadError(thread);
             } else {
             	startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter + 1);
             }
@@ -153,14 +158,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			byte[] buffer = new byte[IMAGE_BUFFER_SIZE];
 			int len = -1;
 			int fileLength = 0;
-			long lastNotify = startTime;
 			while ((len = in.read(buffer)) != -1) {
 			    out.write(buffer, 0, len);
 			    fileLength += len;
-			    if (Calendar.getInstance().getTimeInMillis() - lastNotify > MIN_DOWNLOAD_PROGRESS_UPDATE) {
-			    	notifyDownloadProgress(fileLength);
-			    	lastNotify = Calendar.getInstance().getTimeInMillis();
-			    }
 			}
 			long endTime = Calendar.getInstance().getTimeInMillis();
 			NetworkProfileManager.instance().finishedImageDownload(this, (int)(endTime - startTime), fileLength);
@@ -174,38 +174,54 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		}
 	}
 
-	private void notifyDownloadProgress(int fileLength) {
-		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
-			Handler handler = activity.getChanHandler();
-			if (handler != null) {
-				Message msg = handler.obtainMessage(FullScreenImageActivity.PROGRESS_REFRESH_MSG, fileLength, 0);
-				handler.sendMessage(msg);
-			}
-		}
+	private void notifyDownloadFinished(ChanThread thread) {
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		Builder notifBuilder = new Notification.Builder(getApplicationContext());
+		notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
+		notifBuilder.setAutoCancel(true);
+		notifBuilder.setContentTitle("Images downloaded for thread /" + board + " / " + threadNo);
+		notifBuilder.setContentText(thread.getBoardThreadText(false, true));
+		notifBuilder.setSmallIcon(R.drawable.four_leaf_clover_1);
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
+		Intent threadActivityIntent = ThreadActivity.createIntentForActivity(getApplicationContext(),
+				board, threadNo,
+                thread.getThreadText(hideAllText, hidePostNumbers),
+                thread.getThumbnailUrl(),
+                thread.tn_w, thread.tn_h, thread.tim,
+                false, 0);
+		PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
+				threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+		notifBuilder.setContentIntent(pendingIntent);
+		
+		notificationManager.notify((int)thread.no, notifBuilder.getNotification());
 	}
 	
-	private void notifyDownloadFinished(int fileLength) {
-		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
-			Handler handler = activity.getChanHandler();
-			if (handler != null) {
-				Message msg = handler.obtainMessage(FullScreenImageActivity.FINISHED_DOWNLOAD_MSG, fileLength, 0);
-				handler.sendMessage(msg);
-			}
-		}
-	}
-	
-	private void notifyDownloadError() {
-		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
-			Handler handler = activity.getChanHandler();
-			if (handler != null) {
-				Message msg = handler.obtainMessage(FullScreenImageActivity.DOWNLOAD_ERROR_MSG);
-				handler.sendMessage(msg);
-			}
-		}
-	}
+	private void notifyDownloadError(ChanThread thread) {
+		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		Builder notifBuilder = new Notification.Builder(getApplicationContext());
+		notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
+		notifBuilder.setAutoCancel(true);
+		notifBuilder.setContentTitle("Error downloading images for thread /" + board + " / " + threadNo);
+		notifBuilder.setContentText(thread.getBoardThreadText(false, true));
+		notifBuilder.setSmallIcon(R.drawable.four_leaf_clover_1);
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
+		Intent threadActivityIntent = ThreadActivity.createIntentForActivity(getApplicationContext(),
+				board, threadNo,
+                thread.getThreadText(hideAllText, hidePostNumbers),
+                thread.getThumbnailUrl(),
+                thread.tn_w, thread.tn_h, thread.tim,
+                false, 0);
+		PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
+				threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+		notifBuilder.setContentIntent(pendingIntent);
+		
+		notificationManager.notify((int)thread.no, notifBuilder.getNotification());	}
 	
 	@Override
 	public ChanActivityId getChanActivityId() {

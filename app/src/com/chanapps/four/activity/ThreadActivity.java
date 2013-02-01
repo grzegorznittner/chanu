@@ -34,6 +34,7 @@ import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
+import com.chanapps.four.service.ThreadImageDownloadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -363,7 +364,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 Toast.makeText(this, stringId, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.download_all_images_menu:
-                Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
+            	ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
+                Toast.makeText(this, "Download of all images scheduled", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
