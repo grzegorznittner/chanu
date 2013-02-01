@@ -175,20 +175,27 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	}
 
 	private void notifyDownloadFinished(ChanThread thread) {
-		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+        boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
+        if (thread != null) {
+            thread.hideAllText = hideAllText;
+            thread.hidePostNumbers = hidePostNumbers;
+            thread.useFriendlyIds = useFriendlyIds;
+        }
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		Builder notifBuilder = new Notification.Builder(getApplicationContext());
 		notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
 		notifBuilder.setAutoCancel(true);
 		notifBuilder.setContentTitle("Images downloaded for thread /" + board + " / " + threadNo);
-		notifBuilder.setContentText(thread.getBoardThreadText(false, true));
+		notifBuilder.setContentText(thread.getBoardThreadText());
 		notifBuilder.setSmallIcon(R.drawable.four_leaf_clover_1);
 		
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
 		Intent threadActivityIntent = ThreadActivity.createIntentForActivity(getApplicationContext(),
 				board, threadNo,
-                thread.getThreadText(hideAllText, hidePostNumbers),
+                thread.getThreadText(),
                 thread.getThumbnailUrl(),
                 thread.tn_w, thread.tn_h, thread.tim,
                 false, 0);
@@ -200,20 +207,27 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	}
 	
 	private void notifyDownloadError(ChanThread thread) {
-		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+        boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
+        if (thread != null) {
+            thread.hideAllText = hideAllText;
+            thread.hidePostNumbers = hidePostNumbers;
+            thread.useFriendlyIds = useFriendlyIds;
+        }
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		Builder notifBuilder = new Notification.Builder(getApplicationContext());
 		notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
 		notifBuilder.setAutoCancel(true);
 		notifBuilder.setContentTitle("Error downloading images for thread /" + board + " / " + threadNo);
-		notifBuilder.setContentText(thread.getBoardThreadText(false, true));
+		notifBuilder.setContentText(thread.getBoardThreadText());
 		notifBuilder.setSmallIcon(R.drawable.four_leaf_clover_1);
 		
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
 		Intent threadActivityIntent = ThreadActivity.createIntentForActivity(getApplicationContext(),
 				board, threadNo,
-                thread.getThreadText(hideAllText, hidePostNumbers),
+                thread.getThreadText(),
                 thread.getThumbnailUrl(),
                 thread.tn_w, thread.tn_h, thread.tim,
                 false, 0);
