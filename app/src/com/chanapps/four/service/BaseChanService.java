@@ -207,10 +207,12 @@ public abstract class BaseChanService extends Service {
     protected abstract void onHandleIntent(Intent intent);
 
 	protected void closeConnection(HttpURLConnection tc) {
-		try {
-	        tc.disconnect();
-		} catch (Exception e) {
-			Log.e(TAG, "Error closing connection", e);
+		if (tc != null) {
+			try {
+		        tc.disconnect();
+			} catch (Exception e) {
+				Log.e(TAG, "Error closing connection", e);
+			}
 		}
 	}
 	
