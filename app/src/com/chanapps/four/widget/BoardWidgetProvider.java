@@ -26,13 +26,51 @@ public class BoardWidgetProvider extends AppWidgetProvider {
 
     public static final String TAG = BoardWidgetProvider.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static int[] getAppWidgetIds(Context context) {
         ComponentName widgetProvider = new ComponentName(context, BoardWidgetProvider.class);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widgetProvider);
         return appWidgetIds;
+    }
+
+    public static Set<String> getActiveWidgetPref(Context context) {
+        ComponentName widgetProvider = new ComponentName(context, BoardWidgetProvider.class);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widgetProvider);
+        Set<Integer> activeWidgetIds = new HashSet<Integer>();
+        for (int appWidgetId : appWidgetIds) {
+            activeWidgetIds.add(appWidgetId);
+        }
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        Set<String> widgetConf = pref.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
+
+        Set<String> savedWidgetConf = new HashSet<String>();
+        for (String widget : widgetConf) {
+            String widgetBoard = new String(widget);
+            String[] components = widgetBoard.split("/");
+            int widgetId = Integer.valueOf(components[0]);
+            if (activeWidgetIds.contains(widgetId))
+                savedWidgetConf.add(widgetBoard);
+        }
+
+        if (DEBUG) {
+            Log.i(TAG, "Dumping active widget conf:");
+            for (String widgetBoard : savedWidgetConf) {
+                Log.i(TAG, widgetBoard);
+            }
+        }
+
+        return savedWidgetConf;
+    }
+
+    public static void saveWidgetPref(Context context, Set<String> savedWidgetConf) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putStringSet(ChanHelper.PREF_WIDGET_BOARDS, savedWidgetConf)
+                .commit();
     }
 
     public static String getBoardCodeForWidget(Context context, int appWidgetId) {
