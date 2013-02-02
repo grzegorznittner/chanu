@@ -45,6 +45,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     protected static final String TAG = ThreadActivity.class.getSimpleName();
     public static final boolean DEBUG = false;
 
+    public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
+
     protected long threadNo;
     protected String text;
     protected String imageUrl;
@@ -52,6 +54,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     protected int imageHeight;
     protected boolean hideAllText = false;
     protected boolean hidePostNumbers = true;
+    protected UserStatistics userStats = null;
+    protected boolean inWatchlist = false;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -212,6 +216,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        incrementCounterAndAddToWatchlistIfActive();
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         if (imageUrl == null || imageUrl.isEmpty()) {
@@ -224,6 +229,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+        incrementCounterAndAddToWatchlistIfActive();
         return showPopupText(adapterView, view, position, id);
     }
 
@@ -364,8 +370,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 toggleHidePostNumbers();
                 return true;
             case R.id.watch_thread_menu:
-                int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
-                Toast.makeText(this, stringId, Toast.LENGTH_SHORT).show();
+                addToWatchlist();
                 return true;
             case R.id.download_all_images_menu:
             	ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
@@ -421,6 +426,30 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 imageLoader,
                 displayImageOptions,
                 (ThreadCursorAdapter)adapter);
+    }
+
+    protected UserStatistics ensureUserStats() {
+        if (userStats == null) {
+            userStats = ChanFileStorage.loadUserStats(getBaseContext());
+        }
+        return userStats;
+    }
+
+    protected void incrementCounterAndAddToWatchlistIfActive() {
+        ensureUserStats().threadUse(boardCode, threadNo);
+        ChanThreadStat stat = ensureUserStats().threadStats.get(threadNo);
+        if (stat != null && stat.usage >= WATCHLIST_ACTIVITY_THRESHOLD && !inWatchlist) {
+            int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
+            if (stringId == R.string.thread_added_to_watchlist)
+                Toast.makeText(this, R.string.thread_added_to_watchlist_activity_based, Toast.LENGTH_SHORT).show();
+            inWatchlist = true;
+        }
+    }
+
+    protected void addToWatchlist() {
+        int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
+        Toast.makeText(this, stringId, Toast.LENGTH_SHORT).show();
+        inWatchlist = true;
     }
 
     public ChanActivityId getChanActivityId() {

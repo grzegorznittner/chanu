@@ -68,6 +68,7 @@
     <string name="board_end_of_watchlist">End of Watchlist</string>
     <string name="thread_already_in_watchlist">Thread already in watchlist</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
+    <string name="thread_added_to_watchlist_activity_based">Frequent usage, thread added to watchlist</string>
     <string name="thread_watchlist_cleared">Cleared watchlist</string>
 
     <!-- board service -->
