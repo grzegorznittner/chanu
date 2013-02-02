@@ -453,9 +453,80 @@ public class ChanPost {
             "Slash"
 
     };
+    private static final String[] NAMES_2 = {
+            "Arctic",
+            "Brain",
+            "Chimp",
+            "Duck",
+            "Elf",
+            "Frog",
+            "Gimp",
+            "Hippy",
+            "Imp",
+            "Jumper",
+            "Kitchen",
+            "Lamp",
+            "Mittens",
+            "Night",
+            "Owl",
+            "Phantom",
+            "Quack",
+            "Rocket",
+            "Storm",
+            "Thunder",
+            "Urchin",
+            "Vampire",
+            "Whale",
+            "Xerxes",
+            "Yuppie",
+            "Zebra",
+
+            "Ape",
+            "Banana",
+            "Crown",
+            "Dread",
+            "Eel",
+            "Factor",
+            "General",
+            "Hound",
+            "Ink",
+            "Jack",
+            "Killer",
+            "Loader",
+            "Master",
+            "Nasty",
+            "Onion",
+            "Paste",
+            "Quitter",
+            "Rim",
+            "Stampede",
+            "Tent",
+            "Unicorn",
+            "Vox",
+            "War",
+            "Xtender",
+            "Yogi",
+            "Zoo",
+
+            "Ten",
+            "Twenty",
+            "Thirty",
+            "Fourty",
+            "Fifty",
+            "Sixty",
+            "Seventy",
+            "Eighty",
+            "Ninety",
+            "Hundred",
+
+            "Minus",
+            "Dot"
+
+    };
     private static final String BASE_64_CODE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             + "abcdefghijklmnopqrstuvwxyz" + "0123456789" + "+/";
     private static final Map<Character, String> nameMap = new HashMap<Character, String>();
+    private static final Map<Character, String> nameMap2 = new HashMap<Character, String>();
 
     private static void initNameMap() {
         for (int i = 0; i < NAMES.length; i++) {
@@ -463,6 +534,12 @@ public class ChanPost {
             char c = BASE_64_CODE.charAt(i);
             if (DEBUG) Log.i(TAG, "Putting into map " + c + ", " + s);
             nameMap.put(c, s);
+        }
+        for (int i = 0; i < NAMES_2.length; i++) {
+            String s = NAMES_2[i];
+            char c = BASE_64_CODE.charAt(i);
+            if (DEBUG) Log.i(TAG, "Putting into map2 " + c + ", " + s);
+            nameMap2.put(c, s);
         }
     }
 
@@ -481,7 +558,7 @@ public class ChanPost {
             }
         }
 
-        String newId = nameMap.get(id.charAt(0)) + nameMap.get(id.charAt(1)) + "." + id.substring(2);
+        String newId = nameMap.get(id.charAt(0)) + nameMap2.get(id.charAt(1)) + "." + id.substring(2);
         if (DEBUG) Log.i(TAG, "Final: " + newId);
         return newId;
     }
