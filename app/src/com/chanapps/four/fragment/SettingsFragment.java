@@ -29,6 +29,16 @@ public class SettingsFragment extends PreferenceFragment {
 
         addPreferencesFromResource(R.xml.preferences);
 
+        Preference blocklistButton = (Preference)findPreference(SettingsActivity.PREF_BLOCKLIST_BUTTON);
+        blocklistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                BlocklistDialogFragment dialog = new BlocklistDialogFragment(SettingsFragment.this.getActivity());
+                dialog.show(getFragmentManager(), SettingsFragment.TAG);
+                return true;
+            }
+        });
+
         Preference resetPrefsButton = (Preference)findPreference(SettingsActivity.PREF_RESET_TO_DEFAULTS);
         resetPrefsButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override

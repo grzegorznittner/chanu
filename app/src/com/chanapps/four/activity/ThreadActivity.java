@@ -40,7 +40,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
  * Time: 12:26 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ThreadActivity extends BoardActivity implements ChanIdentifiedActivity {
+public class ThreadActivity extends BoardActivity implements ChanIdentifiedActivity, RefreshableActivity {
 
     protected static final String TAG = ThreadActivity.class.getSimpleName();
     public static final boolean DEBUG = false;
@@ -310,9 +310,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, hideAllText);
         editor.commit();
-        invalidateOptionsMenu();
-        createGridView();
-        ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+        refreshActivity();
     }
 
     protected void toggleHidePostNumbers() {

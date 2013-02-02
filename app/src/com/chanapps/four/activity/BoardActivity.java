@@ -31,10 +31,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chanapps.four.adapter.BoardCursorAdapter;
-import com.chanapps.four.component.BoardThreadPopup;
-import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.DispatcherHelper;
-import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.component.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
@@ -47,7 +44,10 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class BoardActivity extends FragmentActivity implements ClickableLoaderActivity, ChanIdentifiedActivity {
+public class BoardActivity
+        extends FragmentActivity
+        implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity
+{
 	public static final String TAG = BoardActivity.class.getSimpleName();
 	public static final boolean DEBUG = false;
 
@@ -479,5 +479,12 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 	public Handler getChanHandler() {
 		return ensureHandler();
 	}
+
+    @Override
+    public void refreshActivity() {
+        invalidateOptionsMenu();
+        createGridView();
+        ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+    }
 
 }

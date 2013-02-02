@@ -265,7 +265,7 @@ public class ChanPost {
                 + (closed > 0 ? "\nClosed" : "")
                 + (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous") ? "\nName: " + name : "")
                 + (trip != null && !trip.isEmpty() ? "\nTripcode: " + trip : "")
-                + (id != null && !id.isEmpty() ? "\nId: " + getFormattedId() : "")
+                + (id != null && !id.isEmpty() ? "\nId: " + getUserId() : "")
                 + (email != null && !email.isEmpty() ? "\nEmail: " + email : "")
                 + (country_name != null && !country_name.isEmpty() ? "\nCountry: " + country_name : "")
                 + "\n" + (new Date(time)).toString();
@@ -281,7 +281,7 @@ public class ChanPost {
             if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Name: " + name + "</b>";
             if (id != null && !id.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getFormattedId() + "</b>";
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getUserId() + "</b>";
             String textLine = abbreviate(getFullText(), maxImageTextLen, maxImageTextAbbrLen);
             if (textLine != null && !textLine.isEmpty())
                 text += (text.isEmpty() ? "" : "<br/>\n") + textLine;
@@ -308,7 +308,7 @@ public class ChanPost {
             if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Name: " + name + "</b>";
             if (id != null && !id.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getFormattedId() + "</b>";
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getUserId() + "</b>";
             String subText = abbreviate(sanitizeText(sub), maxImageTextLen, maxImageTextAbbrLen);
             String comText = abbreviate(sanitizeText(com), maxImageTextLen, maxImageTextAbbrLen);
             if (subText != null && !subText.isEmpty())
@@ -543,12 +543,19 @@ public class ChanPost {
         }
     }
 
-    private String getFormattedId() {
+    public String getUserId() {
+        if (id == null)
+            return "";
+        else
+            return getUserId(id, useFriendlyIds);
+    }
+
+    public static String getUserId(String id, boolean useFriendlyIds) {
         if (!useFriendlyIds)
             return id;
         if (id.equalsIgnoreCase(SAGE_POST_ID))
             return id;
-        if (capcode != null && !capcode.isEmpty() && !capcode.equals("none"))
+        if (id.equalsIgnoreCase("Admin") || id.equalsIgnoreCase("Mod") || id.equalsIgnoreCase("Developer"))
             return id;
         if (DEBUG) Log.d(TAG, "Initial: " + id);
 

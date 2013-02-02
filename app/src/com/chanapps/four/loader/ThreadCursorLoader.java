@@ -12,10 +12,7 @@ import android.util.Log;
 
 import android.widget.GridView;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.*;
 
 public class ThreadCursorLoader extends BoardCursorLoader {
 
@@ -77,6 +74,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             }
             else { // loaded at least one, show the posts
                 for (ChanPost post : thread.posts) {
+                    if (ChanBlocklist.contains(context, post.id))
+                        continue;
                     post.isDead = thread.isDead; // inherit from parent
                     post.hideAllText = hideAllText;
                     post.hidePostNumbers = hidePostNumbers;
@@ -116,7 +115,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                             "", post.getCountryFlagUrl(),
                             postText, post.getHeaderText(), post.getFullText(),
                             post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                            post.getSpoilerText(), post.getExifText(), post.isDead ? 1 : 0, 0, 0};
+                            post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, 0, 0};
                     matrixCursor.addRow(currentRow);
                     if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
         } else {
@@ -126,7 +125,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                     post.getThumbnailUrl(), post.getCountryFlagUrl(),
                     postText, post.getHeaderText(), post.getFullText(),
                     post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                    post.getSpoilerText(), post.getExifText(), post.isDead ? 1 : 0, 0, 0};
+                    post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, 0, 0};
             matrixCursor.addRow(currentRow);
             if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
         }
@@ -139,6 +138,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         }
     }
 
+    @Override
     protected void addTextOnlyRow(MatrixCursor matrixCursor, ChanPost post) {
         Object[] currentRow;
         if (!hideAllText) {
@@ -150,12 +150,13 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                         "", post.getCountryFlagUrl(),
                         postText, post.getHeaderText(), post.getFullText(),
                         post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                        post.getSpoilerText(), post.getExifText(), post.isDead ? 1 : 0, 0, 0};
+                        post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, 0, 0};
                 matrixCursor.addRow(currentRow);
                 if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
         }
     }
 
+    @Override
     protected void addImageRow(MatrixCursor matrixCursor, ChanPost post) {
         String postText = post.getPostText();
         if (postText == null)
@@ -165,27 +166,9 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 post.getThumbnailUrl(), post.getCountryFlagUrl(),
                 postText, post.getHeaderText(), post.getFullText(),
                 post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                post.getSpoilerText(), post.getExifText(), post.isDead ? 1 : 0, 0, 0};
+                post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, 0, 0};
         matrixCursor.addRow(currentRow);
         if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
-    }
-
-    protected void addLoadingRow(MatrixCursor matrixCursor) {
-        matrixCursor.addRow(new Object[] {
-                2, boardName, 0,
-                "", "",
-                "", "", "",
-                -1, -1, -1, -1, 0, 0,
-                "", "", 1, 1, 0});
-    }
-
-    protected void addFinalRow(MatrixCursor matrixCursor) {
-        matrixCursor.addRow(new Object[] {
-                2, boardName, 0,
-                "", "",
-                "", "", "",
-                -1, -1, -1, -1, 0, 0,
-                "", "", 1, 0, 1});
     }
 
     @Override

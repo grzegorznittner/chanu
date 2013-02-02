@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.RefreshableActivity;
 import com.chanapps.four.adapter.ThreadCursorAdapter;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanThread;
@@ -30,13 +31,13 @@ public class ThreadPostPopup extends BoardThreadPopup {
 
     protected ThreadCursorAdapter adapter;
 
-    public ThreadPostPopup(Context context,
+    public ThreadPostPopup(RefreshableActivity activity,
                            LayoutInflater layoutInflater,
                            ImageLoader imageLoader,
                            DisplayImageOptions displayImageOptions,
                            ThreadCursorAdapter adapter)
     {
-        super(context, layoutInflater, imageLoader, displayImageOptions);
+        super(activity, layoutInflater, imageLoader, displayImageOptions);
         this.adapter = adapter;
     }
 
@@ -54,7 +55,7 @@ public class ThreadPostPopup extends BoardThreadPopup {
             highlightButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    HighlighterTask task = new HighlighterTask(context, adapter, boardCode, threadNo);
+                    HighlighterTask task = new HighlighterTask(activity.getBaseContext(), adapter, boardCode, threadNo);
                     task.execute(postNo);
                     popupWindow.dismiss();
                 }

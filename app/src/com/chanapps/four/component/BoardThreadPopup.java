@@ -1,5 +1,6 @@
 package com.chanapps.four.component;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -8,8 +9,8 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.chanapps.four.activity.*;
-import com.chanapps.four.adapter.ThreadCursorAdapter;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.fragment.BlocklistAddDialogFragment;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -20,11 +21,11 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 * Time: 11:31 AM
 * To change this template use File | Settings | File Templates.
 */
-public class BoardThreadPopup {
+public class BoardThreadPopup implements Dismissable {
 
     private static final int POPUP_BUTTON_HEIGHT_DP = 48;
 
-    protected Context context;
+    protected RefreshableActivity activity;
     protected LayoutInflater layoutInflater;
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
@@ -43,6 +44,8 @@ public class BoardThreadPopup {
     protected Button spoilerButton;
     protected View exifButtonLine;
     protected Button exifButton;
+    protected View blockButtonLine;
+    protected Button blockButton;
     protected View replyButtonLine;
     protected Button replyButton;
     protected View highlightButtonLine;
@@ -52,15 +55,15 @@ public class BoardThreadPopup {
     protected View goToThreadButtonLine;
     protected Button goToThreadButton;
 
-    public BoardThreadPopup(Context context, LayoutInflater layoutInflater, ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
-        this.context = context;
+    public BoardThreadPopup(RefreshableActivity activity, LayoutInflater layoutInflater, ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
+        this.activity = activity;
         this.layoutInflater = layoutInflater;
         this.imageLoader = imageLoader;
         this.displayImageOptions = displayImageOptions;
 
         popupView = layoutInflater.inflate(R.layout.popup_full_text_layout, null);
         popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        popupWindow.setBackgroundDrawable(new BitmapDrawable(context.getResources())); // magic so back button dismiss works
+        popupWindow.setBackgroundDrawable(new BitmapDrawable(activity.getBaseContext().getResources())); // magic so back button dismiss works
         popupWindow.setFocusable(true);
         popupWindow.setOutsideTouchable(true); // magic so click outside window dismisses
         popupWindow.setTouchInterceptor(new View.OnTouchListener() {
@@ -106,6 +109,8 @@ public class BoardThreadPopup {
             }
         });
 
+        blockButtonLine = (View)popupView.findViewById(R.id.popup_block_button_line);
+        blockButton = (Button)popupView.findViewById(R.id.popup_block_button);
         replyButtonLine = (View)popupView.findViewById(R.id.popup_reply_button_line);
         replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
         highlightButtonLine = (View)popupView.findViewById(R.id.popup_highlight_button_line);
@@ -127,6 +132,7 @@ public class BoardThreadPopup {
         final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
         final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+        final String userId = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_USER_ID));
         final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
         final String spoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
         final String exifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
@@ -139,6 +145,7 @@ public class BoardThreadPopup {
         setCountryFlag(countryFlagUrl);
         setSpoilerButton(spoilerText);
         setExifButton(exifText);
+        setBlockButton(userId);
         setReplyButtons(isDead, clickedBoardCode, clickedThreadNo, clickedPostNo, tim, text);
         setShowImageButton(adapterView, view, position, id);
         setGoToThreadButton(adapterView, view, position, id);
@@ -157,7 +164,7 @@ public class BoardThreadPopup {
             showImageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FullScreenImageActivity.startActivity(context, adapterView, view, position, id);                }
+                    FullScreenImageActivity.startActivity((Activity)activity, adapterView, view, position, id);                }
             });
         }
         else {
@@ -172,7 +179,7 @@ public class BoardThreadPopup {
         goToThreadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ThreadActivity.startActivity(context, adapterView, view, position, id, true);
+                ThreadActivity.startActivity(activity.getBaseContext(), adapterView, view, position, id, true);
             }
         });
     }
@@ -225,6 +232,27 @@ public class BoardThreadPopup {
         }
     }
 
+    protected void setBlockButton(final String userId) {
+        if (userId != null && !userId.isEmpty()) {
+            blockButtonLine.setVisibility(View.VISIBLE);
+            blockButton.setVisibility(View.VISIBLE);
+            blockButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    (new BlocklistAddDialogFragment(BoardThreadPopup.this, activity, userId)).show(activity.getSupportFragmentManager(), BoardActivity.TAG);
+                }
+            });
+        }
+        else {
+            blockButtonLine.setVisibility(View.GONE);
+            blockButton.setVisibility(View.GONE);
+        }
+    }
+
+    public void dismiss() {
+        popupWindow.dismiss();
+    }
+
     protected void setReplyButtons(boolean isDead,
                                    final String clickedBoardCode, final long clickedThreadNo, final long clickedPostNo,
                                    final long tim, final String text)
@@ -241,14 +269,14 @@ public class BoardThreadPopup {
             replyButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent replyIntent = new Intent(context, PostReplyActivity.class);
+                    Intent replyIntent = new Intent(activity.getBaseContext(), PostReplyActivity.class);
                     replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
                     replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
                     replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
                     replyIntent.putExtra(ChanHelper.TIM, tim);
                     replyIntent.putExtra(ChanHelper.TEXT, "");
                     popupWindow.dismiss();
-                    context.startActivity(replyIntent);
+                    ((Activity)activity).startActivity(replyIntent);
                 }
             });
         }
@@ -268,6 +296,8 @@ public class BoardThreadPopup {
             numVisibleButtons++;
         if (exifButton.getVisibility() == View.VISIBLE)
             numVisibleButtons++;
+        if (blockButton.getVisibility() == View.VISIBLE)
+            numVisibleButtons++;
         if (replyButton.getVisibility() == View.VISIBLE)
             numVisibleButtons++;
         if (highlightButton.getVisibility() == View.VISIBLE)
@@ -277,7 +307,7 @@ public class BoardThreadPopup {
         if (goToThreadButton.getVisibility() == View.VISIBLE)
             numVisibleButtons++;
         int bottomMarginDp = numVisibleButtons * POPUP_BUTTON_HEIGHT_DP;
-        int bottomMarginPx = ChanGridSizer.dpToPx(context.getResources().getDisplayMetrics(), bottomMarginDp);
+        int bottomMarginPx = ChanGridSizer.dpToPx(activity.getBaseContext().getResources().getDisplayMetrics(), bottomMarginDp);
         params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, bottomMarginPx);
         popupScrollView.setLayoutParams(params);
     }

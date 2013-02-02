@@ -14,6 +14,15 @@
     <string name="thread_post_image">Thread Image</string>
     <string name="thread_country_flag">Country Flag</string>
 
+    <!-- blocklist -->
+    <string name="blocklist_button">Block Posts from Id</string>
+    <string name="blocklist_title">Blocklist</string>
+    <string name="blocklist_title_remove">Click to remove from blocklist</string>
+    <string name="blocklist_message">Click to delete from blocklist</string>
+    <string name="blocklist_message_empty">Your blocklist is empty</string>
+    <string name="blocklist_removed_id">Removed %1$s from blocklist</string>
+    <string name="blocklist_add_id_confirm">Add %1$s to blocklist?</string>
+
     <!-- menus -->
     <string name="clean_watchlist_menu">Clean Watchlist</string>
     <string name="clear_watchlist_menu">Clear Watchlist</string>
@@ -212,6 +221,8 @@
     <string name="pref_automatically_manage_watchlist">Auto-Manage Watchlist</string>
     <string name="pref_automatically_manage_watchlist_summ_on">Add and remove threads automatically</string>
     <string name="pref_automatically_manage_watchlist_summ_off">Manually add and remove threads</string>
+    <string name="pref_blocklist_button">Blocklist</string>
+    <string name="pref_blocklist_button_summ">Block all threads and posts from these Ids</string>
     <string name="pref_clear_cache">Clear Cache</string>
     <string name="pref_clear_cache_summ">Remove all cached data and images</string>
     <string name="pref_clear_cache_pre_execute">Clearing cache, you will be notified when complete</string>

@@ -77,6 +77,7 @@ public class ChanHelper {
     public static final String POST_SPOILER = "spoiler";
     public static final String POST_SPOILER_TEXT = "spoilerText";
     public static final String POST_EXIF_TEXT = "exifText";
+    public static final String POST_USER_ID = "id";
     public static final String POST_IS_DEAD = "isDead";
 
     public static final String LOADING_ITEM = "loadingItem";
@@ -110,6 +111,7 @@ public class ChanHelper {
             POST_SPOILER,
             POST_SPOILER_TEXT,
             POST_EXIF_TEXT,
+            POST_USER_ID,
             POST_IS_DEAD,
             LOADING_ITEM,
             LAST_ITEM
@@ -126,6 +128,7 @@ public class ChanHelper {
     };
 
     public static final String PREF_WIDGET_BOARDS = "prefWidgetBoards";
+    public static final String PREF_BLOCKLIST = "prefBlocklist";
 
     public enum Orientation {
         PORTRAIT,
