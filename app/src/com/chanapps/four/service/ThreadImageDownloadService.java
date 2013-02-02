@@ -44,7 +44,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class ThreadImageDownloadService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = ThreadImageDownloadService.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     
     private static final String TARGET_TYPE = "ThreadImageDownloadService.targetType";
     private static final String START_POST_NO = "ThreadImageDownloadService.startPostNo";

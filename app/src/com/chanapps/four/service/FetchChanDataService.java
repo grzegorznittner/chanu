@@ -245,7 +245,6 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             if (pageNo > 0 && tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 if (DEBUG) Log.i(TAG, "Got 404 on next page, assuming last page at pageNo=" + pageNo);
                 board.lastFetched = new Date().getTime();
-                board.lastPage = true;
                 ChanFileStorage.storeBoardData(getBaseContext(), board);
             }
             else if (contentType == null || !contentType.contains("json")) {

@@ -272,10 +272,6 @@ public class ChanPost {
     }
 
     public String getPostText() {
-    	if (defData) {
-            return "Loading images..."; // FIXME: should be loading graphic or localized text
-    	}
-
         int maxImageTextLen = fsize > 0 ? MAX_IMAGETEXT_LEN : MAX_TEXTONLY_LEN;
         int maxImageTextAbbrLen = fsize > 0 ? MAX_IMAGETEXT_ABBR_LEN : MAX_TEXTONLY_ABBR_LEN;
         String text = "";
@@ -305,9 +301,6 @@ public class ChanPost {
     }
 
     public String getThreadText(int maxImageTextLen, int maxImageTextAbbrLen, boolean onBoard) {
-    	if (defData)
-    		return "Loading..."; // FIXME should be localized string
-
         String text = "";
         if (!hideAllText) {
             if (!hidePostNumbers)

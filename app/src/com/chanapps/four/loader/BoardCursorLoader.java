@@ -13,10 +13,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.*;
 import com.chanapps.four.service.FetchChanDataService;
 
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
@@ -30,7 +27,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     protected Context context;
 
     protected String boardName;
-    private int pageNo;
 
     protected BoardCursorLoader(Context context) {
         super(context);
@@ -41,7 +37,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         this(context);
         this.context = context;
         this.boardName = boardName;
-        this.pageNo = pageNo;
     }
 
     public BoardCursorLoader(Context context, String boardName) {
@@ -58,48 +53,64 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
-        for (ChanPost thread : board.threads) {
-            thread.hideAllText = hideAllText;
-            thread.hidePostNumbers = hidePostNumbers;
-            thread.useFriendlyIds = useFriendlyIds;
-            if (thread.tn_w <= 0 || thread.tim == 0) {
-                Log.e(TAG, "Board thread without image, should never happen, board=" + boardName + " threadNo=" + thread.no);
-                matrixCursor.addRow(new Object[] {
-                        thread.no, boardName, 0, "",
-                        thread.getCountryFlagUrl(),
-                        thread.getBoardThreadText(),
-                        thread.getHeaderText(), thread.getFullText(),
-                        thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
-                        thread.getSpoilerText(), thread.getExifText(), thread.isDead ? 1 : 0, 0, 0});
-
-            } else {
-                matrixCursor.addRow(new Object[] {
-                        thread.no, boardName, 0,
-                        thread.getThumbnailUrl(), thread.getCountryFlagUrl(),
-                        thread.getBoardThreadText(),
-                        thread.getHeaderText(), thread.getFullText(),
-                        thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
-                        thread.getSpoilerText(), thread.getExifText(), thread.isDead ? 1 : 0, 0, 0});
-            }
-        }
-        if (board.lastPage) {
-            matrixCursor.addRow(new Object[] {
-                    2, boardName, 0,
-                    "", "",
-                    "", "", "",
-                    -1, -1, -1, -1, 0, 0,
-                    "", "", 1, 0, 1});
+        if (board.threads == null || board.threads.length == 0 || board.defData) { // show loading
+            if (DEBUG) Log.i(TAG, "No threads yet available");
+            addLoadingRow(matrixCursor);
         }
         else {
-            matrixCursor.addRow(new Object[] {
-                    2, boardName, 0,
-                    "", "",
-                    "", "", "",
-                    -1, -1, -1, -1, 0, 0,
-                    "", "", 1, 1, 0});
-            registerContentObserver(matrixCursor, mObserver);
+            if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
+            for (ChanPost thread : board.threads) {
+                thread.hideAllText = hideAllText;
+                thread.hidePostNumbers = hidePostNumbers;
+                thread.useFriendlyIds = useFriendlyIds;
+                if (thread.tn_w <= 0 || thread.tim == 0)
+                    addTextOnlyRow(matrixCursor, thread);
+                else
+                    addImageRow(matrixCursor, thread);
+            }
+            // end of board marker
+            addFinalRow(matrixCursor);
         }
+        registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;
+    }
+
+    protected void addTextOnlyRow(MatrixCursor matrixCursor, ChanPost thread) {
+        matrixCursor.addRow(new Object[] {
+                thread.no, boardName, 0, "",
+                thread.getCountryFlagUrl(),
+                thread.getBoardThreadText(),
+                thread.getHeaderText(), thread.getFullText(),
+                thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
+                thread.getSpoilerText(), thread.getExifText(), thread.isDead ? 1 : 0, 0, 0});
+    }
+
+    protected void addImageRow(MatrixCursor matrixCursor, ChanPost thread) {
+        matrixCursor.addRow(new Object[] {
+                thread.no, boardName, 0,
+                thread.getThumbnailUrl(), thread.getCountryFlagUrl(),
+                thread.getBoardThreadText(),
+                thread.getHeaderText(), thread.getFullText(),
+                thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
+                thread.getSpoilerText(), thread.getExifText(), thread.isDead ? 1 : 0, 0, 0});
+    }
+
+    protected void addLoadingRow(MatrixCursor matrixCursor) {
+        matrixCursor.addRow(new Object[] {
+                2, boardName, 0,
+                "", "",
+                "", "", "",
+                -1, -1, -1, -1, 0, 0,
+                "", "", 1, 1, 0});
+    }
+
+    protected void addFinalRow(MatrixCursor matrixCursor) {
+        matrixCursor.addRow(new Object[] {
+                2, boardName, 0,
+                "", "",
+                "", "", "",
+                -1, -1, -1, -1, 0, 0,
+                "", "", 1, 0, 1});
     }
 
     /**

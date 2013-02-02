@@ -24,7 +24,7 @@ import com.chanapps.four.service.FileSaverService;
  */
 public class UserStatistics {
 	public static final String TAG = "UserPreferences";
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	
 	public static final int MIN_TOP_BOARDS = 5;
 	public static final int MAX_TOP_THREADS = 50;

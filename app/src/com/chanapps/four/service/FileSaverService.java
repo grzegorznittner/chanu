@@ -22,7 +22,7 @@ import android.util.Log;
  */
 public class FileSaverService extends BaseChanService {
     private static final String TAG = FileSaverService.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     
     private static final String PARAM_DATE = "paramDate";
     private static final String PARAM_TYPE = "paramType";

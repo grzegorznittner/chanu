@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,24 +19,19 @@ import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.chanapps.four.adapter.BoardCursorAdapter;
+import com.chanapps.four.component.BoardThreadPopup;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
@@ -59,14 +53,9 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 
     private static final String DEFAULT_BOARD_CODE = "a";
 
-    public static final int LOADER_RESTART_INTERVAL_SUPER_MS = 10000;
-    public static final int LOADER_RESTART_INTERVAL_LONG_MS = 5000;
     public static final int LOADER_RESTART_INTERVAL_MED_MS = 2000;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 1000;
     public static final int LOADER_RESTART_INTERVAL_MICRO_MS = 100;
-
-//    private static final String AD_UNIT_ID = "1234";
-//    private static final String ARLEY_TEST_SAMSUNG_S3 = "42f758079ab89f7f";
 
     protected static final int IMAGE_URL_HASHCODE_KEY = R.id.grid_item_image;
 
@@ -74,32 +63,13 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
     protected GridView gridView;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
-    protected int prevTotalItemCount = 0;
     protected int scrollOnNextLoaderFinished = 0;
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
     protected SharedPreferences prefs;
-
-    protected View popupView;
-    protected ScrollView popupScrollView;
-    protected ImageView countryFlag;
-    protected TextView popupHeader;
-    protected TextView popupText;
-    protected PopupWindow popupWindow;
-    protected TextView deadThreadTextView;
-    protected TextView spoilerTextView;
-    protected TextView exifTextView;
-    protected Button spoilerButton;
-    protected Button exifButton;
-    protected Button replyButton;
-    protected Button highlightButton;
-    protected Button showImageButton;
-    protected Button goToThreadButton;
-
+    protected BoardThreadPopup boardThreadPopup;
     protected long tim;
     protected String boardCode;
-
-//    protected AdView adView;
 
     public static void startActivity(Activity from, String boardCode) {
         Intent intent = createIntentForActivity(from, boardCode);
@@ -124,7 +94,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 		if (DEBUG) Log.v(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         loadFromIntentOrPrefs();
-//        adView = new AdView(this, AdSize.BANNER, AD_UNIT_ID);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(this));
         displayImageOptions = new DisplayImageOptions.Builder()
@@ -167,14 +136,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         gridView.setOnItemClickListener(this);
         gridView.setLongClickable(true);
         gridView.setOnItemLongClickListener(this);
-/*
-        RelativeLayout boardGridLayout = (RelativeLayout)findViewById(R.layout.board_grid_layout);
-        adView.setGravity(Gravity.BOTTOM|Gravity.LEFT);
-        boardGridLayout.addView(adView);
-        AdRequest adRequest = new AdRequest();
-        adRequest.addTestDevice(ARLEY_TEST_SAMSUNG_S3);
-*/
-        //adView.loadAd(new AdRequest());
     }
 
     protected synchronized Handler ensureHandler() {
@@ -202,7 +163,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 		}
 	}
 
-//    public PullToRefreshGridView getGridView() {
     public GridView getGridView() {
         return gridView;
     }
@@ -269,9 +229,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         loadFromIntentOrPrefs();
         setActionBarTitle();
         scrollToLastPosition();
-//        if (getLoaderManager().getLoader(0) == null || !getLoaderManager().getLoader(0).isStarted()) {
-//            ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_MICRO_MS); // shorter than usual
-//        }
     }
 
     protected void saveInstanceState() {
@@ -298,8 +255,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 		if (DEBUG) Log.v(TAG, "onDestroy");
 		getLoaderManager().destroyLoader(0);
 		handler = null;
-//        if (adView != null)
-//            adView.destroy();
 	}
 
     @Override
@@ -310,35 +265,28 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
     public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
                                        ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
         if (view instanceof TextView) {
-            final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
-            final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
             TextView tv = (TextView) view;
-            if (loadPage > 0 || lastPage > 0) {
-                // nothing to set
+            String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
+            if (shortText == null || shortText.isEmpty()) {
+                tv.setVisibility(View.INVISIBLE);
             }
             else {
-                String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-                if (shortText == null || shortText.isEmpty()) {
-                    tv.setVisibility(View.INVISIBLE);
-                }
-                else {
-                    tv.setText(Html.fromHtml(shortText));
-                }
+                tv.setText(Html.fromHtml(shortText));
             }
             return true;
         } else if (view instanceof ImageView && view.getId() == R.id.grid_item_image) {
             String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-            int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
+            int loading = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
             int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
             if (spoiler > 0) {
                 String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
                 smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
             }
-            else if (imageUrl != null && !imageUrl.isEmpty() && loadPage == 0) {
+            else if (imageUrl != null && !imageUrl.isEmpty() && loading == 0) {
                 smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
             }
-            else if (loadPage > 0) {
+            else if (loading > 0) {
                 setImageViewToLoading(iv);
             }
             else {
@@ -359,10 +307,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         } else {
             return false;
         }
-    }
-
-    protected void smartSetImageView(ImageView iv, String imageUrl) {
-        smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
     }
 
     public static void smartSetImageView(ImageView iv, String imageUrl,
@@ -411,10 +355,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
-
-        int size = data == null ? 0 : data.getCount();
-        //ensureHandler().sendEmptyMessageDelayed(0, getOptimalRefreshTime(size));
-
         if (gridView != null) {
             if (scrollOnNextLoaderFinished > 0) {
                 gridView.setSelection(scrollOnNextLoaderFinished);
@@ -432,8 +372,8 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
-        final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
+        final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
         if (loadPage == 0 && lastPage == 0) //
             ThreadActivity.startActivity(this, adapterView, view, position, id, true);
     }
@@ -453,7 +393,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
                 NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.refresh_board_menu:
-                //Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_LONG).show();
             	NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.new_thread_menu:
@@ -463,7 +402,6 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
                 replyIntent.putExtra(ChanHelper.POST_NO, 0);
                 replyIntent.putExtra(ChanHelper.TIM, 0);
                 replyIntent.putExtra(ChanHelper.TEXT, "");
-                //replyIntent.putExtra(ChanHelper.QUOTE_TEXT, "");
                 startActivity(replyIntent);
                 return true;
             case R.id.settings_menu:
@@ -507,253 +445,29 @@ public class BoardActivity extends FragmentActivity implements ClickableLoaderAc
         return true;
     }
 
-    /*
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        if (DEBUG) Log.d(TAG, "onScroll firstVisibleItem=" + firstVisibleItem + " visibleItemCount=" + visibleItemCount + " totalItemCount=" + totalItemCount + " prevTotalItemCount=" + prevTotalItemCount);
-        if (adapter != null
-                && !adapter.isEmpty()
-                && adapter.getCount() > 2
-                && (firstVisibleItem + visibleItemCount) >= totalItemCount
-                && totalItemCount != prevTotalItemCount)
-        {
-            if (DEBUG) Log.v(TAG, "onListEnd, extending list");
-            prevTotalItemCount = totalItemCount;
-            Toast.makeText(this, "Fetching next page...", Toast.LENGTH_SHORT).show();
-            startLoadService();
-        }
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView view, int s) {
-    }
-    */
-
     protected void setActionBarTitle() {
         ActionBar a = getActionBar();
         if (a == null) {
-            return;
         }
         String title = "/" + boardCode; // + " " + getString(R.string.board_activity);
         a.setTitle(title);
         a.setDisplayHomeAsUpEnabled(true);
     }
 
-    protected void ensurePopupWindow() {
-        if (popupView == null) {
-            popupView = getLayoutInflater().inflate(R.layout.popup_full_text_layout, null);
-            popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            popupWindow.setBackgroundDrawable(new BitmapDrawable(getResources())); // magic so back button dismiss works
-            popupWindow.setFocusable(true);
-            popupWindow.setOutsideTouchable(true); // magic so click outside window dismisses
-            popupWindow.setTouchInterceptor(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                        handler.post(new Runnable() {
-                            public void run() {
-                                popupWindow.dismiss();
-                            }
-                        });
-                        //popupWindow.dismiss();
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                }
-            });
+    protected void initPopup() {
+        boardThreadPopup = new BoardThreadPopup(this, this.getLayoutInflater(), imageLoader, displayImageOptions);
+    }
 
-            popupScrollView = (ScrollView)popupView.findViewById(R.id.popup_full_text_scroll_view);
-            countryFlag = (ImageView)popupView.findViewById(R.id.popup_country_flag);
-            popupHeader = (TextView)popupView.findViewById(R.id.popup_header);
-            popupText = (TextView)popupView.findViewById(R.id.popup_full_text);
-            deadThreadTextView = (TextView)popupView.findViewById(R.id.popup_dead_thread_text_view);
-            spoilerTextView = (TextView)popupView.findViewById(R.id.popup_spoiler_text);
-            spoilerButton = (Button)popupView.findViewById(R.id.popup_spoiler_button);
-            spoilerButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    spoilerTextView.setVisibility(View.VISIBLE);
-                    spoilerButton.setVisibility(View.GONE);
-                }
-            });
-            exifTextView = (TextView)popupView.findViewById(R.id.popup_exif_text);
-            exifButton = (Button)popupView.findViewById(R.id.popup_exif_button);
-            exifButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    exifTextView.setVisibility(View.VISIBLE);
-                    exifButton.setVisibility(View.GONE);
-                }
-            });
-            replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
-            highlightButton = (Button)popupView.findViewById(R.id.popup_highlight_button);
-            showImageButton = (Button)popupView.findViewById(R.id.popup_show_image_button);
-            goToThreadButton = (Button)popupView.findViewById(R.id.popup_go_to_thread_button);
+    protected BoardThreadPopup ensurePopup() {
+        if (boardThreadPopup == null) {
+            initPopup();
         }
+        return boardThreadPopup;
     }
 
     public boolean showPopupText(AdapterView<?> adapterView, View view, int position, long id) {
-        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final String countryFlagUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
-        final String headerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_HEADER_TEXT));
-        final String rawText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        final String text = rawText == null ? "" : rawText;
-        final int isDeadInt = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_IS_DEAD));
-        final boolean isDead = isDeadInt == 0 ? false : true;
-        final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
-        final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
-        final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-        final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
-        final String spoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
-        final String exifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
-        final long clickedThreadNo = resto == 0 ? postId : resto;
-        final long clickedPostNo = resto == 0 || postId == resto ? 0 : postId;
-        if (DEBUG) Log.i(TAG, "Calling popup with id=" + id + " isDead=" + isDead + " postNo=" + postId + " resto=" + resto + " text=" + text);
-        ensurePopupWindow();
-        popupHeader.setText(headerText);
-        popupText.setText(text);
-
-        setCountryFlag(countryFlagUrl);
-        setSpoilerButton(spoilerText);
-        setExifButton(exifText);
-        setReplyButtons(isDead, clickedBoardCode, clickedThreadNo, clickedPostNo, tim, text);
-        setShowImageButton(adapterView, view, position, id);
-        setGoToThreadButton(adapterView, view, position, id);
-        displayHighlightButton(clickedPostNo);
-        setScrollViewMargin();
-
-        popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
+        ensurePopup().showFromCursor(adapterView, view, position, id);
         return true;
-    }
-
-    private static final int POPUP_BUTTON_HEIGHT_DP = 48;
-
-    protected void setScrollViewMargin() {
-        ScrollView.LayoutParams params = (ScrollView.LayoutParams)popupScrollView.getLayoutParams();
-        if (params == null)
-            params = new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        int numVisibleButtons = 0;
-        if (spoilerButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (exifButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (replyButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (highlightButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (showImageButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (goToThreadButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        int bottomMarginDp = numVisibleButtons * POPUP_BUTTON_HEIGHT_DP;
-        int bottomMarginPx = ChanGridSizer.dpToPx(getResources().getDisplayMetrics(), bottomMarginDp);
-        params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, bottomMarginPx);
-        popupScrollView.setLayoutParams(params);
-    }
-
-    protected void setShowImageButton(final AdapterView<?> adapterView, final View view, final int position, final long id) {
-        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            showImageButton.setVisibility(View.VISIBLE);
-            showImageButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FullScreenImageActivity.startActivity(BoardActivity.this, adapterView, view, position, id);                }
-            });
-        }
-        else {
-            showImageButton.setVisibility(View.GONE);
-        }
-    }
-
-    protected void setGoToThreadButton(final AdapterView<?> adapterView, final View view, final int position, final long id) {
-        goToThreadButton.setVisibility(View.VISIBLE);
-        goToThreadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ThreadActivity.startActivity(BoardActivity.this, adapterView, view, position, id, true);
-            }
-        });
-    }
-
-    protected void setCountryFlag(String countryFlagUrl) {
-        if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagUrl);
-        if (countryFlagUrl != null && !countryFlagUrl.isEmpty()) {
-            try {
-                if (DEBUG) Log.v(TAG, "calling imageloader for country flag" + countryFlagUrl);
-                countryFlag.setVisibility(View.VISIBLE);
-                this.imageLoader.displayImage(countryFlagUrl, countryFlag, displayImageOptions);
-//                    countryFlag.setImageURI(Uri.parse(countryFlagUrl));
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Couldn't set country flag image with url=" + countryFlagUrl, e);
-                countryFlag.setVisibility(View.GONE);
-                countryFlag.setImageBitmap(null);
-            }
-        }
-        else {
-            countryFlag.setVisibility(View.GONE);
-            countryFlag.setImageBitmap(null);
-        }
-    }
-
-    protected void setSpoilerButton(String spoilerText) {
-        spoilerTextView.setVisibility(View.GONE);
-        if (spoilerText != null && !spoilerText.isEmpty()) {
-            spoilerButton.setVisibility(View.VISIBLE);
-            spoilerTextView.setText(spoilerText);
-        }
-        else {
-            spoilerButton.setVisibility(View.GONE);
-            spoilerTextView.setText("");
-        }
-    }
-
-    protected void setExifButton(String exifText) {
-        exifTextView.setVisibility(View.GONE);
-        if (exifText != null && !exifText.isEmpty()) {
-            exifButton.setVisibility(View.VISIBLE);
-            exifTextView.setText(exifText);
-        }
-        else {
-            exifButton.setVisibility(View.GONE);
-            exifTextView.setText("");
-        }
-    }
-
-    protected void setReplyButtons(boolean isDead,
-                                   final String clickedBoardCode, final long clickedThreadNo, final long clickedPostNo,
-                                   final long tim, final String text)
-    {
-        if (isDead) {
-            replyButton.setVisibility(View.GONE);
-            deadThreadTextView.setVisibility(View.VISIBLE);
-        }
-        else {
-            deadThreadTextView.setVisibility(View.GONE);
-            replyButton.setVisibility(View.VISIBLE);
-            replyButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
-                    replyIntent.putExtra(ChanHelper.BOARD_CODE, clickedBoardCode);
-                    replyIntent.putExtra(ChanHelper.THREAD_NO, clickedThreadNo);
-                    replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
-                    replyIntent.putExtra(ChanHelper.TIM, tim);
-                    replyIntent.putExtra(ChanHelper.TEXT, "");
-                    //replyIntent.putExtra(ChanHelper.QUOTE_TEXT, "");
-                    startActivity(replyIntent);
-                    popupWindow.dismiss();
-                }
-            });
-        }
-    }
-
-    protected void displayHighlightButton(long postNo) { // board-level doesn't highlight, only thread-level does
-        highlightButton.setVisibility(View.GONE);
     }
 
 	@Override

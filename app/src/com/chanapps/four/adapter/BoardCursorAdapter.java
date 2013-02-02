@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
 
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 
 /**
@@ -42,6 +43,8 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
      */
     protected int[] mTo;
 
+    protected boolean isWatchlist = false;
+
     protected ViewBinder mViewBinder;
     protected Context context;
     protected LayoutInflater mInflater;
@@ -65,12 +68,17 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
      *            parameter.  Can be null if the cursor is not available yet.
      */
     public BoardCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
+        this(context, layout, viewBinder, from, to, false);
+    }
+
+    public BoardCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to, boolean isWatchlist) {
         super(context, layout, null, 0);
         this.context = context;
         mTo = to;
         mOriginalFrom = from;
         mViewBinder = viewBinder;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.isWatchlist = isWatchlist;
     }
 
     /**
@@ -110,14 +118,13 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
         }
         String tag = null;
         String imageUrl = null;
-        int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOAD_PAGE));
-        int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_PAGE));
-        long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
-    	if (loadPage > 0) {
-    		tag = ChanHelper.LOAD_PAGE;
+        int loading = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+    	if (loading > 0) {
+    		tag = ChanHelper.LOADING_ITEM;
     	}
         else if (lastPage > 0) {
-            tag = ChanHelper.LAST_PAGE;
+            tag = ChanHelper.LAST_ITEM;
         }
         else {
     		imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
@@ -138,29 +145,24 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
             }
         } else {
         	if (DEBUG) Log.d(TAG, "Reusing existing " + tag + " layout for " + position);
-        	/*
-            if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
-        		ImageView imageView = (ImageView)convertView.findViewById(R.id.board_activity_grid_item_image);
-        		if (imageView != null && !imageUrl.equals(imageView.getTag())) {
-        			//imageView.setImageResource(R.drawable.stub_image);
-        		}
-        	}
-        	*/
             v = convertView;
         }
         bindView(v, context, cursor);
         return v;
     }
-    
+
     protected View newView(Context context, ViewGroup parent, String tag, int position) {
-		if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        if (ChanHelper.LOAD_PAGE.equals(tag)) {
-       		return mInflater.inflate(R.layout.board_grid_item_load_page, parent, false);
-       	}
-        if (ChanHelper.LAST_PAGE.equals(tag)) {
-       		return mInflater.inflate(R.layout.board_grid_item_last_page, parent, false);
-       	}
-    	if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
+        if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
+        if (ChanHelper.LOADING_ITEM.equals(tag)) {
+            return mInflater.inflate(R.layout.board_grid_item_loading, parent, false);
+        }
+        else if (ChanHelper.LAST_ITEM.equals(tag) && isWatchlist) {
+            return mInflater.inflate(R.layout.board_grid_item_final_watchlist, parent, false);
+        }
+        else if (ChanHelper.LAST_ITEM.equals(tag)) {
+            return mInflater.inflate(R.layout.board_grid_item_final, parent, false);
+        }
+        else if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
     		return mInflater.inflate(R.layout.board_grid_item, parent, false);
     	} else {
     		return mInflater.inflate(R.layout.board_grid_item_no_image, parent, false);

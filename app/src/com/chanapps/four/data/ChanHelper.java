@@ -1,13 +1,11 @@
 package com.chanapps.four.data;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.DeserializationConfig.Feature;
-import org.codehaus.jackson.map.MappingJsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
@@ -81,13 +79,11 @@ public class ChanHelper {
     public static final String POST_EXIF_TEXT = "exifText";
     public static final String POST_IS_DEAD = "isDead";
 
-    public static final String LOAD_PAGE = "load_page";
-    public static final String LAST_PAGE = "last_page";
+    public static final String LOADING_ITEM = "loadingItem";
+    public static final String LAST_ITEM = "lastItem";
     public static final String LAST_BOARD_POSITION = "lastBoardPosition";
     public static final String LAST_THREAD_POSITION = "lastThreadPosition";
     public static final String LAST_ACTIVITY = "lastActivity";
-    public static final String LAST_NO_BOARD_CACHE_TIME = "lastNoBoardCacheTime";
-    public static final String LAST_WATCHLIST_CACHE_TIME = "lastWatchlistCacheTime";
     public static final String IGNORE_DISPATCH = "ignoreDispatch";
     public static final String PRIORITY_MESSAGE = "priorityFetch";
     public static final String CLEAR_FETCH_QUEUE = "clearFetchQueue";
@@ -115,8 +111,8 @@ public class ChanHelper {
             POST_SPOILER_TEXT,
             POST_EXIF_TEXT,
             POST_IS_DEAD,
-            LOAD_PAGE,
-            LAST_PAGE
+            LOADING_ITEM,
+            LAST_ITEM
     };
 
     public static final String BOARD_ID = "_id";

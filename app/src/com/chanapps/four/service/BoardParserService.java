@@ -201,7 +201,6 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 		}
 
         board.threads = threads.toArray(new ChanPost[0]);
-        board.lastPage = true;
         if (DEBUG) Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
 

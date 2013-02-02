@@ -54,16 +54,18 @@
     <!-- board activity -->
     <string name="board_activity_refresh">Refreshing...</string>
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
-    <string name="board_end_of_board">End of board</string>
+    <string name="board_end_of_board">End of Board</string>
     <string name="board_click_for_more">(click for more)</string>
     <string name="board_last_updated">Last updated %s</string>
 
     <!-- thread activity -->
+    <string name="thread_end_of_thread">End of Thread</string>
     <string name="thread_couldnt_load">Couldn\'t load thread</string>
     <string name="thread_no_replies_found">No replies found</string>
     <string name="thread_replies_found">Found %1$d previous and %2$d replies</string>
 
     <!-- watchlist -->
+    <string name="board_end_of_watchlist">End of Watchlist</string>
     <string name="thread_already_in_watchlist">Thread already in watchlist</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
     <string name="thread_watchlist_cleared">Cleared watchlist</string>
