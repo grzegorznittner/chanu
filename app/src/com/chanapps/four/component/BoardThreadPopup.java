@@ -37,6 +37,7 @@ public class BoardThreadPopup implements Dismissable {
     protected TextView popupText;
     protected PopupWindow popupWindow;
     protected TextView deadThreadTextView;
+    protected TextView closedThreadTextView;
     protected TextView spoilerTextView;
     protected TextView exifTextView;
 
@@ -84,6 +85,7 @@ public class BoardThreadPopup implements Dismissable {
         popupHeader = (TextView)popupView.findViewById(R.id.popup_header);
         popupText = (TextView)popupView.findViewById(R.id.popup_full_text);
         deadThreadTextView = (TextView)popupView.findViewById(R.id.popup_dead_thread_text_view);
+        closedThreadTextView = (TextView)popupView.findViewById(R.id.popup_closed_thread_text_view);
 
         spoilerTextView = (TextView)popupView.findViewById(R.id.popup_spoiler_text);
         spoilerButtonLine = (View)popupView.findViewById(R.id.popup_spoiler_button_line);
@@ -128,7 +130,9 @@ public class BoardThreadPopup implements Dismissable {
         final String rawText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         final String text = rawText == null ? "" : rawText;
         final int isDeadInt = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_IS_DEAD));
+        final int isClosedInt = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_CLOSED));
         final boolean isDead = isDeadInt == 0 ? false : true;
+        final boolean isClosed = isClosedInt == 0 ? false : true;
         final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
         final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
@@ -146,7 +150,7 @@ public class BoardThreadPopup implements Dismissable {
         setSpoilerButton(spoilerText);
         setExifButton(exifText);
         setBlockButton(userId);
-        setReplyButtons(isDead, clickedBoardCode, clickedThreadNo, clickedPostNo, tim, text);
+        setReplyButtons(isDead, isClosed, clickedBoardCode, clickedThreadNo, clickedPostNo, tim, text);
         setShowImageButton(adapterView, view, position, id);
         setGoToThreadButton(adapterView, view, position, id);
         displayHighlightButton(clickedBoardCode, clickedThreadNo, clickedPostNo);
@@ -179,7 +183,7 @@ public class BoardThreadPopup implements Dismissable {
         goToThreadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ThreadActivity.startActivity(activity.getBaseContext(), adapterView, view, position, id, true);
+                ThreadActivity.startActivity((Activity)activity, adapterView, view, position, id, true);
             }
         });
     }
@@ -253,7 +257,7 @@ public class BoardThreadPopup implements Dismissable {
         popupWindow.dismiss();
     }
 
-    protected void setReplyButtons(boolean isDead,
+    protected void setReplyButtons(boolean isDead, boolean isClosed,
                                    final String clickedBoardCode, final long clickedThreadNo, final long clickedPostNo,
                                    final long tim, final String text)
     {
@@ -261,9 +265,17 @@ public class BoardThreadPopup implements Dismissable {
             replyButtonLine.setVisibility(View.GONE);
             replyButton.setVisibility(View.GONE);
             deadThreadTextView.setVisibility(View.VISIBLE);
+            closedThreadTextView.setVisibility(View.GONE);
+        }
+        else if (isClosed) {
+            replyButtonLine.setVisibility(View.GONE);
+            replyButton.setVisibility(View.GONE);
+            deadThreadTextView.setVisibility(View.GONE);
+            closedThreadTextView.setVisibility(View.VISIBLE);
         }
         else {
             deadThreadTextView.setVisibility(View.GONE);
+            closedThreadTextView.setVisibility(View.GONE);
             replyButtonLine.setVisibility(View.VISIBLE);
             replyButton.setVisibility(View.VISIBLE);
             replyButton.setOnClickListener(new View.OnClickListener() {

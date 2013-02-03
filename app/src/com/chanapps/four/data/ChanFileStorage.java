@@ -317,6 +317,7 @@ public class ChanFileStorage {
 					thread.no = threadNo;
 					thread.lastFetched = 0;
 					thread.posts = new ChanPost[]{post};
+                    thread.closed = post.closed;
                     thread.loadedFromBoard = true;
                     return thread;
 				}

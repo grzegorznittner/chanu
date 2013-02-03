@@ -120,7 +120,8 @@
     <string name="reply">Post Reply</string>
     <string name="quote">Quote</string>
     <string name="dismiss">Close</string>
-    <string name="dead_thread_reply">DEAD THREAD NO REPLY</string>
+    <string name="dead_thread_reply">Dead Thread No Reply</string>
+    <string name="closed_thread_reply">Closed Thread No Reply</string>
     <string name="highlight_replies">Show Replies</string>
     <string name="popup_country_flag">Country Flag</string>
     <string name="popup_show_image">Show Image</string>

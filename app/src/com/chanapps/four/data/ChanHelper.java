@@ -113,6 +113,7 @@ public class ChanHelper {
             POST_EXIF_TEXT,
             POST_USER_ID,
             POST_IS_DEAD,
+            POST_CLOSED,
             LOADING_ITEM,
             LAST_ITEM
     };

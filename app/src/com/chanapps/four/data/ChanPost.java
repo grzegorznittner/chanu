@@ -335,7 +335,9 @@ public class ChanPost {
             if (bumplimit == 1)
                 text += " (BL)";
             if (isDead)
-                text += (!text.isEmpty() ? "" : (onBoard ? "<br/>" : " ")) + "DEAD THREAD";
+                text += (text.isEmpty() ? "" : (onBoard ? "<br/>" : " ")) + "DEAD";
+            if (closed > 0)
+                text += (text.isEmpty() ? "" : (onBoard ? "<br/>" : " ")) + "CLOSED";
             if (fsize > 0 && !onBoard) {
                 int kbSize = (fsize / 1024) + 1;
                 text += " " + kbSize + "kB " + w + "x" + h; // + " " + ext;
@@ -366,6 +368,7 @@ public class ChanPost {
     }
 
     public void copyThreadStatusFields(ChanPost from) {
+        closed = from.closed;
         bumplimit = from.bumplimit;
         imagelimit = from.imagelimit;
         images = from.images;

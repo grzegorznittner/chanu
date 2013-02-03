@@ -67,6 +67,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             int isDead = thread != null && thread.isDead ? 1 : 0;
             if (DEBUG) Log.i(TAG, "loadInBackground " + thread.board + "/" + thread.no + " num posts " + (thread.posts != null ? thread.posts.length : 0));
             if (DEBUG) Log.i(TAG, "Thread dead status for " + boardName + "/" + threadNo + " is " + isDead);
+            if (DEBUG) Log.i(TAG, "Thread closed status for " + boardName + "/" + threadNo + " is closed=" + thread.closed);
             MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
 
             if (thread == null || thread.posts == null || thread.posts.length == 0) { // show loading for no thread data
@@ -77,6 +78,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                     if (ChanBlocklist.contains(context, post.id))
                         continue;
                     post.isDead = thread.isDead; // inherit from parent
+                    post.closed = thread.closed; // inherit
                     post.hideAllText = hideAllText;
                     post.hidePostNumbers = hidePostNumbers;
                     post.useFriendlyIds = useFriendlyIds;
@@ -115,7 +117,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                             "", post.getCountryFlagUrl(),
                             postText, post.getHeaderText(), post.getFullText(),
                             post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                            post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, 0, 0};
+                            post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, post.closed, 0, 0};
                     matrixCursor.addRow(currentRow);
                     if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
         } else {
@@ -125,7 +127,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                     post.getThumbnailUrl(), post.getCountryFlagUrl(),
                     postText, post.getHeaderText(), post.getFullText(),
                     post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                    post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, 0, 0};
+                    post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, post.closed, 0, 0};
             matrixCursor.addRow(currentRow);
             if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
         }
@@ -150,7 +152,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                         "", post.getCountryFlagUrl(),
                         postText, post.getHeaderText(), post.getFullText(),
                         post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                        post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, 0, 0};
+                        post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, post.closed, 0, 0};
                 matrixCursor.addRow(currentRow);
                 if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
         }
@@ -166,7 +168,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 post.getThumbnailUrl(), post.getCountryFlagUrl(),
                 postText, post.getHeaderText(), post.getFullText(),
                 post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, 0, 0};
+                post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, post.closed, 0, 0};
         matrixCursor.addRow(currentRow);
         if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
     }

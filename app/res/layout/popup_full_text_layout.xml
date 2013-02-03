@@ -85,12 +85,22 @@
                 <TextView
                         android:id="@+id/popup_dead_thread_text_view"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:gravity="center"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:visibility="gone"
                         android:clickable="false"
                         android:textStyle="bold"
                         android:text="@string/dead_thread_reply" />
+
+                <TextView
+                        android:id="@+id/popup_closed_thread_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone"
+                        android:clickable="false"
+                        android:textStyle="bold"
+                        android:text="@string/closed_thread_reply" />
 
             </LinearLayout>
 

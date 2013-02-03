@@ -1,6 +1,7 @@
 package com.chanapps.four.activity;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
@@ -66,7 +67,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         return cursorLoader;
     }
 
-    public static void startActivity(Context from, AdapterView<?> adapterView, View view, int position, long id, boolean fromParent) {
+    public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id, boolean fromParent) {
             Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final long threadTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
         if (DEBUG) Log.d(TAG, "threadTim: " + threadTim);
