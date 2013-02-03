@@ -4,11 +4,14 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.RefreshableActivity;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.Dismissable;
 import com.chanapps.four.data.ChanBlocklist;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanWatchlist;
 
 /**
@@ -25,17 +28,22 @@ public class BlocklistAddDialogFragment extends DialogFragment {
     Dismissable dismissable;
     RefreshableActivity activity;
     String userId;
+    boolean useFriendlyIds;
+    String formattedUserId;
 
     public BlocklistAddDialogFragment(Dismissable dismissable, RefreshableActivity activity, String userId) {
         super();
         this.dismissable = dismissable;
         this.activity = activity;
         this.userId = userId;
+        useFriendlyIds = PreferenceManager.getDefaultSharedPreferences(activity.getBaseContext()).getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
+        formattedUserId = ChanPost.getUserId(userId, useFriendlyIds);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        String msg = String.format(activity.getBaseContext().getString(R.string.blocklist_add_id_confirm), userId);
+
+        String msg = String.format(activity.getBaseContext().getString(R.string.blocklist_add_id_confirm), formattedUserId);
         return (new AlertDialog.Builder(getActivity()))
                 .setMessage(msg)
                 .setPositiveButton(R.string.dialog_add,
