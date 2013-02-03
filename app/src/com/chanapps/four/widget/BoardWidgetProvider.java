@@ -26,7 +26,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
 
     public static final String TAG = BoardWidgetProvider.class.getSimpleName();
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static int[] getAppWidgetIds(Context context) {
         ComponentName widgetProvider = new ComponentName(context, BoardWidgetProvider.class);

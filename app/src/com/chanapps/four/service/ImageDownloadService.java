@@ -34,7 +34,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class ImageDownloadService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = ImageDownloadService.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static final int MIN_DOWNLOAD_PROGRESS_UPDATE = 300;
 	private static final int IMAGE_BUFFER_SIZE = 20480;

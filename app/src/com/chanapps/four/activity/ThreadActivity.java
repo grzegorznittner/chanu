@@ -1,7 +1,5 @@
 package com.chanapps.four.activity;
 
-import java.util.Arrays;
-
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -9,7 +7,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
@@ -26,9 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chanapps.four.adapter.ThreadCursorAdapter;
-import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.DispatcherHelper;
-import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.GoToBoardDialogFragment;
@@ -46,10 +41,12 @@ import com.nostra13.universalimageloader.core.ImageLoader;
  * Time: 12:26 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ThreadActivity extends BoardActivity implements ChanIdentifiedActivity {
+public class ThreadActivity extends BoardActivity implements ChanIdentifiedActivity, RefreshableActivity {
 
     protected static final String TAG = ThreadActivity.class.getSimpleName();
     public static final boolean DEBUG = false;
+
+    public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
 
     protected long threadNo;
     protected String text;
@@ -58,6 +55,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     protected int imageHeight;
     protected boolean hideAllText = false;
     protected boolean hidePostNumbers = true;
+    protected UserStatistics userStats = null;
+    protected boolean inWatchlist = false;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -68,20 +67,15 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         return cursorLoader;
     }
 
-    public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id) {
-        startActivity(from, adapterView, view, position, id, false);
-    }
-
     public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id, boolean fromParent) {
             Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final long threadTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
         if (DEBUG) Log.d(TAG, "threadTim: " + threadTim);
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         final String boardName = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
-        if (ChanFileStorage.loadBoardData(from.getBaseContext(), boardName).defData) {
-        	// def data are not clicable
+        ChanBoard board = ChanFileStorage.loadBoardData(from, boardName); // better way to do this? bad to run on UI thread
+        if (board != null && board.defData) // def data are not clicable
         	return;
-        }
         final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         final int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
@@ -223,6 +217,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        incrementCounterAndAddToWatchlistIfActive();
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         if (imageUrl == null || imageUrl.isEmpty()) {
@@ -234,12 +229,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     @Override
-    protected void setGoToThreadButton(final AdapterView<?> adapterView, final View view, final int position, final long id) {
-        goToThreadButton.setVisibility(View.GONE); // we are already at thread level
-    }
-
-    @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+        incrementCounterAndAddToWatchlistIfActive();
         return showPopupText(adapterView, view, position, id);
     }
 
@@ -265,14 +256,18 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             return true;
         } else if (view instanceof ImageView && view.getId() == R.id.grid_item_image) {
             String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+            int loading = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
             int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
             if (spoiler > 0) {
                 String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
                 smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
             }
-            else if (imageUrl != null && !imageUrl.isEmpty()) {
+            else if (imageUrl != null && !imageUrl.isEmpty() && loading == 0) {
                 smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
+            }
+            else if (loading > 0) {
+                setImageViewToLoading(iv);
             }
             else {
                 iv.setImageBitmap(null); // blank
@@ -316,9 +311,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, hideAllText);
         editor.commit();
-        invalidateOptionsMenu();
-        createGridView();
-        ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+        refreshActivity();
     }
 
     protected void toggleHidePostNumbers() {
@@ -339,7 +332,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         replyIntent.putExtra(ChanHelper.POST_NO, 0);
         replyIntent.putExtra(ChanHelper.TIM, tim);
         replyIntent.putExtra(ChanHelper.TEXT, "");
-        //replyIntent.putExtra(ChanHelper.QUOTE_TEXT, "");
         startActivity(replyIntent);
     }
 
@@ -377,8 +369,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 toggleHidePostNumbers();
                 return true;
             case R.id.watch_thread_menu:
-                int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
-                Toast.makeText(this, stringId, Toast.LENGTH_SHORT).show();
+                addToWatchlist();
                 return true;
             case R.id.download_all_images_menu:
             	ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
@@ -415,11 +406,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         inflater.inflate(R.menu.thread_menu, menu);
         return true;
     }
-    /*
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-    }
-    */
 
     @Override
     protected void setActionBarTitle() {
@@ -433,74 +419,39 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     @Override
-    protected void displayHighlightButton(final long postNo) { // board-level doesn't highlight, only thread-level does
-        if (postNo > 0) {
-            highlightButton.setVisibility(View.VISIBLE);
-            highlightButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    HighlighterTask task = new HighlighterTask(ThreadActivity.this, (ThreadCursorAdapter)adapter, boardCode, threadNo);
-                    task.execute(postNo);
-                    popupWindow.dismiss();
-                }
-            });
+    protected void initPopup() {
+        boardThreadPopup = new ThreadPostPopup(this,
+                this.getLayoutInflater(),
+                imageLoader,
+                displayImageOptions,
+                (ThreadCursorAdapter)adapter);
+    }
+
+    protected UserStatistics ensureUserStats() {
+        if (userStats == null) {
+            userStats = ChanFileStorage.loadUserStats(getBaseContext());
         }
-        else {
-            highlightButton.setVisibility(View.GONE);
+        return userStats;
+    }
+
+    protected void incrementCounterAndAddToWatchlistIfActive() {
+        ensureUserStats().threadUse(boardCode, threadNo);
+        ChanThreadStat stat = ensureUserStats().threadStats.get(threadNo);
+        if (stat != null && stat.usage >= WATCHLIST_ACTIVITY_THRESHOLD && !inWatchlist) {
+            int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
+            if (stringId == R.string.thread_added_to_watchlist)
+                Toast.makeText(this, R.string.thread_added_to_watchlist_activity_based, Toast.LENGTH_SHORT).show();
+            inWatchlist = true;
         }
     }
 
-    private class HighlighterTask extends AsyncTask<Long, Void, String> {
-        private Context context = null;
-        private ThreadCursorAdapter threadAdapter = null;
-        private String boardCode = null;
-        private long threadNo = 0;
-        public HighlighterTask(Context context, ThreadCursorAdapter adapter, String boardCode, long threadNo) {
-            this.context = context;
-            this.threadAdapter = adapter;
-            this.boardCode = boardCode;
-            this.threadNo = threadNo;
-        }
-        @Override
-        protected String doInBackground(Long... postNos) {
-            String result = null;
-            long postNo = postNos[0];
-            long[] prevPosts = null;
-            long[] nextPosts = null;
-            try {
-                ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
-                if (thread != null) {
-                    prevPosts = thread.getPrevPostsReferenced(postNo);
-                    nextPosts = thread.getNextPostsReferredTo(postNo);
-                }
-                else {
-                    result = context.getString(R.string.thread_couldnt_load);
-                    Log.e(TAG, "Coludn't load thread " + boardCode + "/" + threadNo);
-                }
-            }
-            catch (Exception e) {
-                result = context.getString(R.string.thread_couldnt_load);
-                Log.e(TAG, "Exception while getting thread post highlights", e);
-            }
-            threadAdapter.setHighlightPosts(postNo, prevPosts, nextPosts);
-            if ((prevPosts == null || prevPosts.length == 0) && (nextPosts == null || nextPosts.length == 0)) {
-                result = context.getString(R.string.thread_no_replies_found);
-            }
-            else {
-                String msg = context.getString(R.string.thread_replies_found);
-                result = String.format(msg, prevPosts == null ? 0 : prevPosts.length, nextPosts == null ? 0 : nextPosts.length);
-            }
-            Log.i(TAG, "Set highlight posts prev=" + Arrays.toString(prevPosts) + " next=" + Arrays.toString(nextPosts));
-            return result;
-        }
-        @Override
-        protected void onPostExecute(String result) {
-            Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-            threadAdapter.notifyDataSetChanged();
-        }
+    protected void addToWatchlist() {
+        int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
+        Toast.makeText(this, stringId, Toast.LENGTH_SHORT).show();
+        inWatchlist = true;
     }
 
-	public ChanActivityId getChanActivityId() {
+    public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo);
 	}
 

@@ -70,7 +70,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 	public static final int FINISHED_DOWNLOAD_MSG = 2;
 	public static final int DOWNLOAD_ERROR_MSG = 3;
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
 	private WebView webView = null;
 
@@ -96,7 +96,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
     private ChanPost prevPost = null;
     private ChanPost nextPost = null;
 
-    public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id) {
+    public static void startActivity(Context from, AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
         final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));

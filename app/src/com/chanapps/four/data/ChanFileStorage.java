@@ -300,6 +300,7 @@ public class ChanFileStorage {
 			}
 			ObjectMapper mapper = ChanHelper.getJsonMapper();
 			ChanThread thread = mapper.readValue(threadFile, ChanThread.class);
+            thread.loadedFromBoard = false;
 			if (DEBUG) Log.i(TAG, "Loaded thread '" + boardCode + FILE_SEP + threadNo + "' with " + thread.posts.length + " posts");
 			return thread;
 		} catch (Exception e) {
@@ -318,12 +319,16 @@ public class ChanFileStorage {
 					thread.no = threadNo;
 					thread.lastFetched = 0;
 					thread.posts = new ChanPost[]{post};
-					return thread;
+                    thread.closed = post.closed;
+                    thread.loadedFromBoard = true;
+                    return thread;
 				}
 			}
 		}
 		
-		return prepareDefaultThreadData(context, boardCode, threadNo);
+		ChanThread thread = prepareDefaultThreadData(context, boardCode, threadNo);
+        thread.loadedFromBoard = true;
+        return thread;
 	}
 	
 	private static ChanThread prepareDefaultThreadData(Context context, String boardCode, long threadNo) {

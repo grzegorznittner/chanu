@@ -82,6 +82,26 @@
                         android:visibility="gone"
                         />
 
+                <TextView
+                        android:id="@+id/popup_dead_thread_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone"
+                        android:clickable="false"
+                        android:textStyle="bold"
+                        android:text="@string/dead_thread_reply" />
+
+                <TextView
+                        android:id="@+id/popup_closed_thread_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone"
+                        android:clickable="false"
+                        android:textStyle="bold"
+                        android:text="@string/closed_thread_reply" />
+
             </LinearLayout>
 
         </ScrollView>
@@ -94,68 +114,68 @@
                 >
 
             <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/PaletteLighterGray"/>
-            <TextView
-                    android:id="@+id/popup_dead_thread_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="center"
-                    android:visibility="gone"
-                    android:clickable="false"
-                    android:textStyle="bold"
-                    android:text="@string/dead_thread_reply" />
-
-            <View style="@style/PopupFullTextHorizontalSeparator" />
+                    android:id="@+id/popup_spoiler_button_line"
+                    style="@style/PopupFullTextHorizontalSeparator" />
 
             <Button
                     android:id="@+id/popup_spoiler_button"
                     style="@style/PopupFullTextButtonStyle"
                     android:text="@string/spoiler" />
 
-            <View style="@style/PopupFullTextHorizontalSeparator" />
+            <View
+                    android:id="@+id/popup_exif_button_line"
+                    style="@style/PopupFullTextHorizontalSeparator" />
 
             <Button
                     android:id="@+id/popup_exif_button"
                     style="@style/PopupFullTextButtonStyle"
                     android:text="@string/exif" />
 
-            <View style="@style/PopupFullTextHorizontalSeparator" />
+            <View
+                    android:id="@+id/popup_go_to_thread_button_line"
+                    style="@style/PopupFullTextHorizontalSeparator" />
 
             <Button
                     android:id="@+id/popup_go_to_thread_button"
                     style="@style/PopupFullTextButtonStyle"
                     android:text="@string/popup_go_to_thread" />
 
-            <View style="@style/PopupFullTextHorizontalSeparator" />
+            <View
+                    android:id="@+id/popup_show_image_button_line"
+                    style="@style/PopupFullTextHorizontalSeparator" />
 
             <Button
                     android:id="@+id/popup_show_image_button"
                     style="@style/PopupFullTextButtonStyle"
                     android:text="@string/popup_show_image" />
 
-            <View style="@style/PopupFullTextHorizontalSeparator" />
+            <View
+                    android:id="@+id/popup_highlight_button_line"
+                    style="@style/PopupFullTextHorizontalSeparator" />
 
             <Button
                     android:id="@+id/popup_highlight_button"
                     style="@style/PopupFullTextButtonStyle"
                     android:text="@string/highlight_replies" />
 
-            <View style="@style/PopupFullTextHorizontalSeparator" />
+            <View
+                    android:id="@+id/popup_block_button_line"
+                    style="@style/PopupFullTextHorizontalSeparator" />
+
+            <Button
+                    android:id="@+id/popup_block_button"
+                    style="@style/PopupFullTextButtonStyle"
+                    android:text="@string/blocklist_button" />
+
+            <View
+                    android:id="@+id/popup_reply_button_line"
+                    style="@style/PopupFullTextHorizontalSeparator" />
 
             <Button
                     android:id="@+id/popup_reply_button"
                     style="@style/PopupFullTextButtonStyle"
                     android:text="@string/reply" />
-            <!--
-            <View style="@style/PopupFullTextHorizontalSeparator" />
 
-            <Button
-                    android:id="@+id/popup_dismiss_button"
-                    style="@style/PopupFullTextButtonStyle"
-                    android:text="@string/dismiss" />
-            -->
         </LinearLayout>
 
     </FrameLayout>

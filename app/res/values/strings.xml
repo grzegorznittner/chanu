@@ -14,6 +14,15 @@
     <string name="thread_post_image">Thread Image</string>
     <string name="thread_country_flag">Country Flag</string>
 
+    <!-- blocklist -->
+    <string name="blocklist_button">Block Posts from Id</string>
+    <string name="blocklist_title">Blocklist</string>
+    <string name="blocklist_title_remove">Click to remove from blocklist</string>
+    <string name="blocklist_message">Click to delete from blocklist</string>
+    <string name="blocklist_message_empty">Your blocklist is empty</string>
+    <string name="blocklist_removed_id">Removed %1$s from blocklist</string>
+    <string name="blocklist_add_id_confirm">Add %1$s to blocklist?</string>
+
     <!-- menus -->
     <string name="clean_watchlist_menu">Clean Watchlist</string>
     <string name="clear_watchlist_menu">Clear Watchlist</string>
@@ -54,18 +63,21 @@
     <!-- board activity -->
     <string name="board_activity_refresh">Refreshing...</string>
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
-    <string name="board_end_of_board">End of board</string>
+    <string name="board_end_of_board">End of Board</string>
     <string name="board_click_for_more">(click for more)</string>
     <string name="board_last_updated">Last updated %s</string>
 
     <!-- thread activity -->
+    <string name="thread_end_of_thread">End of Thread</string>
     <string name="thread_couldnt_load">Couldn\'t load thread</string>
     <string name="thread_no_replies_found">No replies found</string>
     <string name="thread_replies_found">Found %1$d previous and %2$d replies</string>
 
     <!-- watchlist -->
+    <string name="board_end_of_watchlist">End of Watchlist</string>
     <string name="thread_already_in_watchlist">Thread already in watchlist</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
+    <string name="thread_added_to_watchlist_activity_based">Frequent usage, thread added to watchlist</string>
     <string name="thread_watchlist_cleared">Cleared watchlist</string>
 
     <!-- board service -->
@@ -108,7 +120,8 @@
     <string name="reply">Post Reply</string>
     <string name="quote">Quote</string>
     <string name="dismiss">Close</string>
-    <string name="dead_thread_reply">DEAD THREAD NO REPLY</string>
+    <string name="dead_thread_reply">Dead Thread No Reply</string>
+    <string name="closed_thread_reply">Closed Thread No Reply</string>
     <string name="highlight_replies">Show Replies</string>
     <string name="popup_country_flag">Country Flag</string>
     <string name="popup_show_image">Show Image</string>
@@ -209,6 +222,8 @@
     <string name="pref_automatically_manage_watchlist">Auto-Manage Watchlist</string>
     <string name="pref_automatically_manage_watchlist_summ_on">Add and remove threads automatically</string>
     <string name="pref_automatically_manage_watchlist_summ_off">Manually add and remove threads</string>
+    <string name="pref_blocklist_button">Blocklist</string>
+    <string name="pref_blocklist_button_summ">Block all threads and posts from these Ids</string>
     <string name="pref_clear_cache">Clear Cache</string>
     <string name="pref_clear_cache_summ">Remove all cached data and images</string>
     <string name="pref_clear_cache_pre_execute">Clearing cache, you will be notified when complete</string>

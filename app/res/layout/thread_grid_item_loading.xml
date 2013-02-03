@@ -3,7 +3,9 @@
               android:id="@+id/grid_item"
               style="@style/GridLayout">
 
-    <TextView style="@style/GridEndOfBoardStyle"
+    <ImageView
+            android:id="@+id/grid_item_image"
+            style="@style/GridLoadingImageStyle"
             />
 
 </RelativeLayout>

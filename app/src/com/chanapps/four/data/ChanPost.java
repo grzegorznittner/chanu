@@ -265,17 +265,13 @@ public class ChanPost {
                 + (closed > 0 ? "\nClosed" : "")
                 + (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous") ? "\nName: " + name : "")
                 + (trip != null && !trip.isEmpty() ? "\nTripcode: " + trip : "")
-                + (id != null && !id.isEmpty() ? "\nId: " + getFormattedId() : "")
+                + (id != null && !id.isEmpty() ? "\nId: " + getUserId() : "")
                 + (email != null && !email.isEmpty() ? "\nEmail: " + email : "")
                 + (country_name != null && !country_name.isEmpty() ? "\nCountry: " + country_name : "")
                 + "\n" + (new Date(time)).toString();
     }
 
     public String getPostText() {
-    	if (defData) {
-            return "Loading images..."; // FIXME: should be loading graphic or localized text
-    	}
-
         int maxImageTextLen = fsize > 0 ? MAX_IMAGETEXT_LEN : MAX_TEXTONLY_LEN;
         int maxImageTextAbbrLen = fsize > 0 ? MAX_IMAGETEXT_ABBR_LEN : MAX_TEXTONLY_ABBR_LEN;
         String text = "";
@@ -285,7 +281,7 @@ public class ChanPost {
             if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Name: " + name + "</b>";
             if (id != null && !id.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getFormattedId() + "</b>";
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getUserId() + "</b>";
             String textLine = abbreviate(getFullText(), maxImageTextLen, maxImageTextAbbrLen);
             if (textLine != null && !textLine.isEmpty())
                 text += (text.isEmpty() ? "" : "<br/>\n") + textLine;
@@ -305,9 +301,6 @@ public class ChanPost {
     }
 
     public String getThreadText(int maxImageTextLen, int maxImageTextAbbrLen, boolean onBoard) {
-    	if (defData)
-    		return "Loading..."; // FIXME should be localized string
-
         String text = "";
         if (!hideAllText) {
             if (!hidePostNumbers)
@@ -315,7 +308,7 @@ public class ChanPost {
             if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Name: " + name + "</b>";
             if (id != null && !id.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getFormattedId() + "</b>";
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getUserId() + "</b>";
             String subText = abbreviate(sanitizeText(sub), maxImageTextLen, maxImageTextAbbrLen);
             String comText = abbreviate(sanitizeText(com), maxImageTextLen, maxImageTextAbbrLen);
             if (subText != null && !subText.isEmpty())
@@ -342,7 +335,9 @@ public class ChanPost {
             if (bumplimit == 1)
                 text += " (BL)";
             if (isDead)
-                text += (!text.isEmpty() ? "" : (onBoard ? "<br/>" : " ")) + "DEAD THREAD";
+                text += (text.isEmpty() ? "" : (onBoard ? "<br/>" : " ")) + "DEAD";
+            if (closed > 0)
+                text += (text.isEmpty() ? "" : (onBoard ? "<br/>" : " ")) + "CLOSED";
             if (fsize > 0 && !onBoard) {
                 int kbSize = (fsize / 1024) + 1;
                 text += " " + kbSize + "kB " + w + "x" + h; // + " " + ext;
@@ -373,6 +368,7 @@ public class ChanPost {
     }
 
     public void copyThreadStatusFields(ChanPost from) {
+        closed = from.closed;
         bumplimit = from.bumplimit;
         imagelimit = from.imagelimit;
         images = from.images;
@@ -460,9 +456,80 @@ public class ChanPost {
             "Slash"
 
     };
+    private static final String[] NAMES_2 = {
+            "Arctic",
+            "Brain",
+            "Chimp",
+            "Duck",
+            "Elf",
+            "Frog",
+            "Gimp",
+            "Hippy",
+            "Imp",
+            "Jumper",
+            "Kitchen",
+            "Lamp",
+            "Mittens",
+            "Night",
+            "Owl",
+            "Phantom",
+            "Quack",
+            "Rocket",
+            "Storm",
+            "Thunder",
+            "Urchin",
+            "Vampire",
+            "Whale",
+            "Xerxes",
+            "Yuppie",
+            "Zebra",
+
+            "Ape",
+            "Banana",
+            "Crown",
+            "Dread",
+            "Eel",
+            "Factor",
+            "General",
+            "Hound",
+            "Ink",
+            "Jack",
+            "Killer",
+            "Loader",
+            "Master",
+            "Nasty",
+            "Onion",
+            "Paste",
+            "Quitter",
+            "Rim",
+            "Stampede",
+            "Tent",
+            "Unicorn",
+            "Vox",
+            "War",
+            "Xtender",
+            "Yogi",
+            "Zoo",
+
+            "Ten",
+            "Twenty",
+            "Thirty",
+            "Fourty",
+            "Fifty",
+            "Sixty",
+            "Seventy",
+            "Eighty",
+            "Ninety",
+            "Hundred",
+
+            "Minus",
+            "Dot"
+
+    };
     private static final String BASE_64_CODE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             + "abcdefghijklmnopqrstuvwxyz" + "0123456789" + "+/";
     private static final Map<Character, String> nameMap = new HashMap<Character, String>();
+    private static final Map<Character, String> nameMap2 = new HashMap<Character, String>();
 
     private static void initNameMap() {
         for (int i = 0; i < NAMES.length; i++) {
@@ -471,14 +538,27 @@ public class ChanPost {
             if (DEBUG) Log.i(TAG, "Putting into map " + c + ", " + s);
             nameMap.put(c, s);
         }
+        for (int i = 0; i < NAMES_2.length; i++) {
+            String s = NAMES_2[i];
+            char c = BASE_64_CODE.charAt(i);
+            if (DEBUG) Log.i(TAG, "Putting into map2 " + c + ", " + s);
+            nameMap2.put(c, s);
+        }
     }
 
-    private String getFormattedId() {
+    public String getUserId() {
+        if (id == null)
+            return "";
+        else
+            return getUserId(id, useFriendlyIds);
+    }
+
+    public static String getUserId(String id, boolean useFriendlyIds) {
         if (!useFriendlyIds)
             return id;
         if (id.equalsIgnoreCase(SAGE_POST_ID))
             return id;
-        if (capcode != null && !capcode.isEmpty() && !capcode.equals("none"))
+        if (id.equalsIgnoreCase("Admin") || id.equalsIgnoreCase("Mod") || id.equalsIgnoreCase("Developer"))
             return id;
         if (DEBUG) Log.d(TAG, "Initial: " + id);
 
@@ -488,7 +568,7 @@ public class ChanPost {
             }
         }
 
-        String newId = nameMap.get(id.charAt(0)) + nameMap.get(id.charAt(1)) + "." + id.substring(2);
+        String newId = nameMap.get(id.charAt(0)) + nameMap2.get(id.charAt(1)) + "." + id.substring(2);
         if (DEBUG) Log.i(TAG, "Final: " + newId);
         return newId;
     }

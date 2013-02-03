@@ -27,7 +27,7 @@ public class ChanBoard {
 	}
 
 	private ChanBoard(Type type, String name, String link, int iconId,
-			boolean workSafe, boolean classic, boolean textOnly, boolean lastPage) {
+			boolean workSafe, boolean classic, boolean textOnly) {
 		this.type = type;
 		this.name = name;
 		this.link = link;
@@ -35,7 +35,6 @@ public class ChanBoard {
 		this.workSafe = workSafe;
 		this.classic = classic;
 		this.textOnly = textOnly;
-        this.lastPage = lastPage;
 	}
 	
 	public enum Type { WATCHLIST, JAPANESE_CULTURE, INTERESTS, CREATIVE, OTHER, ADULT, MISC };
@@ -54,8 +53,7 @@ public class ChanBoard {
 	public boolean workSafe;
 	public boolean classic;
 	public boolean textOnly;
-    public boolean lastPage;
-	
+
 	public ChanPost stickyPosts[] = new ChanPost[0];
 	public ChanPost threads[] = new ChanThread[0];
 	public long lastFetched;
@@ -64,7 +62,7 @@ public class ChanBoard {
 	
 	public ChanBoard copy() {
 		ChanBoard copy = new ChanBoard(this.type, this.name, this.link, this.iconId,
-				this.workSafe, this.classic, this.textOnly, this.lastPage);
+				this.workSafe, this.classic, this.textOnly);
 		return copy;
 	}
 
@@ -156,7 +154,7 @@ public class ChanBoard {
                 String boardName = boardCodesForType[i+1];
                 boolean workSafe = !(boardType == Type.ADULT || boardType == Type.MISC);
                 int iconId = getImageResourceId(boardCode);
-                ChanBoard b = new ChanBoard(boardType, boardName, boardCode, iconId, workSafe, true, false, false);
+                ChanBoard b = new ChanBoard(boardType, boardName, boardCode, iconId, workSafe, true, false);
                 boardsForType.add(b);
                 boards.add(b);
                 if (workSafe)

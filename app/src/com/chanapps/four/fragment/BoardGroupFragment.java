@@ -123,7 +123,8 @@ public class BoardGroupFragment
                     R.layout.board_grid_item,
                     this,
                     new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
-                    new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag}
+                    new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag},
+                    true
             );
         }
         else {

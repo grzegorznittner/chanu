@@ -6,6 +6,7 @@ import java.util.*;
 
 public class ChanThread extends ChanPost {
 	public long lastFetched = 0;
+    public boolean loadedFromBoard = false;
 
 	public ChanPost posts[] = new ChanPost[0];
 	
