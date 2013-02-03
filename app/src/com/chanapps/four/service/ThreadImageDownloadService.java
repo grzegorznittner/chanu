@@ -4,6 +4,7 @@
 package com.chanapps.four.service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,6 +14,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import org.apache.commons.io.IOUtils;
@@ -24,6 +27,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -46,22 +51,27 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	private static final String TAG = ThreadImageDownloadService.class.getSimpleName();
     private static final boolean DEBUG = true;
     
+    private static final String GALLERY_PREFIX = "4Channer_";
+    
     private static final String TARGET_TYPE = "ThreadImageDownloadService.targetType";
     private static final String START_POST_NO = "ThreadImageDownloadService.startPostNo";
     private static final String RESTART_COUNTER = "ThreadImageDownloadService.restartCounter";
+    private static final String TARGET_FOLDER = "ThreadImageDownloadService.folder";
     
-    private enum TargetType {TO_BOARD};
+    private enum TargetType {TO_BOARD, TO_GALLERY};
     
-    private static final int MIN_DOWNLOAD_PROGRESS_UPDATE = 300;
-	private static final int IMAGE_BUFFER_SIZE = 20480;
 	private static final int MAX_RESTARTS = 3;
 
     public static void startDownloadToBoardFolder(Context context, String board, long threadNo) {
-        startDownload(context, board, threadNo, TargetType.TO_BOARD, 0, 0);
+        startDownload(context, board, threadNo, TargetType.TO_BOARD, 0, 0, null);
+    }
+    
+    public static void startDownloadToGalleryFolder(Context context, String board, long threadNo, String galleryFolder) {
+        startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, galleryFolder);
     }
 
     private static void startDownload(Context context, String board, long threadNo, TargetType targetType,
-    		long startPostNo, int restartCounter) {
+    		long startPostNo, int restartCounter, String folder) {
         if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") 
         		+ " all image download service for thread " + board + "/" + threadNo
         		+ (startPostNo == 0 ? "" : " from post " + startPostNo));
@@ -71,6 +81,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
         intent.putExtra(TARGET_TYPE, targetType.toString());
         intent.putExtra(START_POST_NO, startPostNo);
         intent.putExtra(RESTART_COUNTER, restartCounter);
+        intent.putExtra(TARGET_FOLDER, folder);
         context.startService(intent);
     }
     /*
@@ -94,19 +105,27 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
     private String board = null;
     private long threadNo = 0;
     private long startPostNo = 0;
-    private boolean stopDownload = false;
     private int restartCounter = 0;
     private TargetType targetType = null;
+    private String targetFolder = null;
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		stopDownload = false;
 		board = intent.getStringExtra(ChanHelper.BOARD_CODE);
 		threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
 		startPostNo = intent.getLongExtra(START_POST_NO, 0);
 		restartCounter = intent.getIntExtra(RESTART_COUNTER, 0);
 		targetType = TargetType.valueOf(intent.getStringExtra(TARGET_TYPE));
+		targetFolder = intent.getStringExtra(TARGET_FOLDER);
+		
+		
 		ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), board, threadNo);
+		if (targetType == TargetType.TO_GALLERY && targetFolder == null) {
+			Format formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+			String now = formatter.format(Calendar.getInstance().getTime());
+			targetFolder = GALLERY_PREFIX + thread.board + "_" + now;				
+		}
+		
 		try {			
 			if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") 
 	        		+ " handling all image download service for thread " + board + "/" + threadNo
@@ -119,6 +138,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 					startPointFound = true;
 					if (post.tim != 0) {
 						downloadImage(post);
+						if (targetType == TargetType.TO_GALLERY) {
+							storeImageInGallery(post);
+						}
 					}
 					startPostNo = post.no;  // setting last fetched image no
 				}
@@ -130,7 +152,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
             	NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
             	notifyDownloadError(thread);
             } else {
-            	startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter + 1);
+            	startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter + 1, targetFolder);
             }
 		}
 	}
@@ -155,13 +177,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			
 			in = conn.getInputStream();
 			out = new FileOutputStream(targetFile);
-			byte[] buffer = new byte[IMAGE_BUFFER_SIZE];
-			int len = -1;
-			int fileLength = 0;
-			while ((len = in.read(buffer)) != -1) {
-			    out.write(buffer, 0, len);
-			    fileLength += len;
-			}
+			int fileLength = IOUtils.copy(in, out);
 			long endTime = Calendar.getInstance().getTimeInMillis();
 			NetworkProfileManager.instance().finishedImageDownload(this, (int)(endTime - startTime), fileLength);
 			if (DEBUG) Log.i(TAG, "Stored image " + post.getImageUrl() + " to file "
@@ -173,7 +189,37 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			closeConnection(conn);
 		}
 	}
+	
+	private void storeImageInGallery(ChanPost post) throws IOException {
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			String imageFile = ChanFileStorage.getLocalImageUrl(getBaseContext(), post);
+			in = new FileInputStream(new File(imageFile));
+			File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 
+			    targetFolder);
+			if (!galleryFolder.exists() || !galleryFolder.isDirectory()) {
+				galleryFolder.mkdirs();
+			}
+			File galleryFile = new File(galleryFolder, post.getImageName());
+			out = new FileOutputStream(galleryFile);
+			IOUtils.copy(in, out);
+			IOUtils.closeQuietly(out);
+			
+			addImageToGallery(galleryFile);
+		} finally {
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(out);
+		}
+	}
 
+	private void addImageToGallery(File image) {
+	    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+	    Uri contentUri = Uri.fromFile(image);
+	    mediaScanIntent.setData(contentUri);
+	    this.sendBroadcast(mediaScanIntent);
+	}
+	
 	private void notifyDownloadFinished(ChanThread thread) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);

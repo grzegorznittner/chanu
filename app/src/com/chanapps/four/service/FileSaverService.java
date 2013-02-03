@@ -6,15 +6,14 @@ package com.chanapps.four.service;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Calendar;
-import java.util.Map;
-
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.UserStatistics;
 
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.UserStatistics;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>

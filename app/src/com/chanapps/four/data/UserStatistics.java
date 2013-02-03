@@ -30,17 +30,33 @@ public class UserStatistics {
 	public static final int MAX_TOP_THREADS = 50;
 	private static final long MIN_STORE_DELAY = 15000;  // 15s
 	
-	/*
+	/**
 	 * board code -> number of visits (including threads and image view)
 	 */
 	public Map<String, ChanBoardStat> boardStats = new HashMap<String, ChanBoardStat>();
-	/*
+	/**
 	 * thread num -> number of visits (including image view)
+	 * @deprecated boardThreadStats should be used now
 	 */
 	public Map<Long, ChanThreadStat> threadStats = new HashMap<Long, ChanThreadStat>();
+	/*
+	 * board '/' thread num -> number of visits (including image view)
+	 */
+	public Map<String, ChanThreadStat> boardThreadStats = new HashMap<String, ChanThreadStat>();
 	
 	public long lastUpdate;
 	public long lastStored;
+	
+	public boolean convertThreadStats() {
+		if (threadStats.size() > 0) {
+			for (ChanThreadStat stat : threadStats.values()) {
+				boardThreadStats.put(stat.board + "/" + stat.no, stat);
+			}
+			threadStats.clear();
+			return true;
+		}
+		return false;
+	}
 	
 	public void registerActivity(ChanIdentifiedActivity activity) {
 		ChanActivityId activityId = activity.getChanActivityId();
@@ -76,13 +92,11 @@ public class UserStatistics {
 		if (boardCode == null || threadNo <= 0) {
 			return;
 		}
-		if (!threadStats.containsKey(threadNo)) {
-			threadStats.put(threadNo, new ChanThreadStat(boardCode, threadNo));
+		String threadKey = boardCode + "/" + threadNo;
+		if (!boardThreadStats.containsKey(threadKey)) {
+			boardThreadStats.put(threadKey, new ChanThreadStat(boardCode, threadNo));
 		}
-		ChanThreadStat stat = threadStats.get(threadNo);
-		if (stat.board == null) {
-			stat.board = boardCode;
-		}
+		ChanThreadStat stat = boardThreadStats.get(threadKey);
 		lastUpdate = stat.use();
 	}
 	
@@ -127,7 +141,7 @@ public class UserStatistics {
 	 * Returns short list of top used boards.
 	 */
 	public List<ChanThreadStat> topThreads() {
-		List<ChanThreadStat> topThreads = new ArrayList<ChanThreadStat>(threadStats.values());
+		List<ChanThreadStat> topThreads = new ArrayList<ChanThreadStat>(boardThreadStats.values());
 		int sumOfUsages = 0;
 		// sorting by usage desc
         Collections.sort(topThreads, new Comparator<ChanThreadStat>() {
@@ -159,10 +173,10 @@ public class UserStatistics {
 	
 	public void compactThreads() {
 		long weekAgo = Calendar.getInstance().getTimeInMillis() - 7 * 24 * 60 * 60 * 1000;
-		List<ChanThreadStat> topThreads = new ArrayList<ChanThreadStat>(threadStats.values());
+		List<ChanThreadStat> topThreads = new ArrayList<ChanThreadStat>(boardThreadStats.values());
 		for (ChanThreadStat threadStat : topThreads) {
 			if (threadStat.lastUsage < weekAgo) {
-				threadStats.remove(threadStat.no);
+				boardThreadStats.remove(threadStat.no);
 			}
 		}
 	}

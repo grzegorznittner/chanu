@@ -8,13 +8,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import com.chanapps.four.widget.BoardWidgetProvider;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -23,6 +22,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.chanapps.four.service.FileSaverService;
+import com.chanapps.four.service.FileSaverService.FileType;
+import com.chanapps.four.widget.BoardWidgetProvider;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanFileStorage {
@@ -387,6 +389,9 @@ public class ChanFileStorage {
                     return new UserStatistics();
                 } else {
 				    if (DEBUG) Log.i(TAG, "Loaded user statistics, last updated " + userPrefs.lastUpdate + ", last stored " + userPrefs.lastStored);
+				    if (userPrefs.convertThreadStats()) {
+				    	FileSaverService.startService(context, FileType.USER_STATISTICS);
+				    }
 					return userPrefs;
                 }
 			} else {
