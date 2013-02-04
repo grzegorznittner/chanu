@@ -57,6 +57,7 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
         rotation.setRepeatCount(Animation.INFINITE);
         recaptchaLoading.setVisibility(View.VISIBLE);
         recaptchaLoading.startAnimation(rotation);
+        recaptchaButton.setVisibility(View.GONE);
         recaptchaButton.setImageBitmap(null);
     }
 
@@ -131,6 +132,7 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
         if (recaptchaBitmap != null)
             recaptchaBitmap.recycle();
         recaptchaButton.setImageResource(R.drawable.captcha);
+        recaptchaButton.setVisibility(View.VISIBLE);
         Toast.makeText(context, R.string.post_reply_captcha_error, Toast.LENGTH_SHORT).show();
     }
 
@@ -140,11 +142,13 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
         recaptchaLoading.setVisibility(View.GONE);
         if (result == 0) {
             recaptchaButton.setImageBitmap(recaptchaBitmap);
+            recaptchaButton.setVisibility(View.VISIBLE);
         }
         else {
             if (recaptchaBitmap != null)
                 recaptchaBitmap.recycle();
             recaptchaButton.setImageResource(R.drawable.captcha);
+            recaptchaButton.setVisibility(View.VISIBLE);
             Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
         }
     }
