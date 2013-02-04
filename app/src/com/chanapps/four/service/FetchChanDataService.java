@@ -11,8 +11,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -228,7 +226,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 			
     		long startTime = Calendar.getInstance().getTimeInMillis();
             tc = (HttpURLConnection) chanApi.openConnection();
-            tc.setReadTimeout(NetworkProfileManager.instance().getFetchParams().readTimeout);
+            FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
+            tc.setReadTimeout(fetchParams.readTimeout);
+            tc.setConnectTimeout(fetchParams.connectTimeout);
+            
             if (board.lastFetched > 0) {
             	if (DEBUG) Log.i(TAG, "IfModifiedSince set as last fetch happened "
         				+ ((startTime - board.lastFetched) / 1000) + "s ago");

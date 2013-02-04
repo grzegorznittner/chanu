@@ -375,6 +375,10 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             	ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
                 Toast.makeText(this, "Download of all images scheduled", Toast.LENGTH_SHORT).show();
                 return true;
+            case R.id.download_all_images_to_gallery_menu:
+            	ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null);
+                Toast.makeText(this, "Download of all images to gallery scheduled", Toast.LENGTH_SHORT).show();
+                return true;
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);

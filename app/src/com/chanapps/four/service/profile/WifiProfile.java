@@ -11,13 +11,13 @@ public class WifiProfile extends MobileProfile {
 	
 	static {
 		/* Mapping between connection health and fetch params
-		 *               HEALTH  ----->   REFRESH_DELAY, FORCE_REFRESH_DELAY, READ_TIMEOUT
+		 *               HEALTH  ----->   REFRESH_DELAY, FORCE_REFRESH_DELAY, READ_TIMEOUT, CONNECT_TIMEOUT
 		 */
-		REFRESH_TIME.put(Health.BAD, new FetchParams(600000L, 240000L, 15000));  // 10 min
-		REFRESH_TIME.put(Health.VERY_SLOW, new FetchParams(300000L, 180000L, 15000));  // 5 min
-		REFRESH_TIME.put(Health.SLOW, new FetchParams(180000L, 90000L, 15000));  // 3 min
-		REFRESH_TIME.put(Health.GOOD, new FetchParams(120000L, 60000L, 10000));  // 2 min
-		REFRESH_TIME.put(Health.PERFECT, new FetchParams(60000L, 30000L, 6000));  // 1 min
+		REFRESH_TIME.put(Health.BAD,       new FetchParams(300L, 240L, 15, 10));
+		REFRESH_TIME.put(Health.VERY_SLOW, new FetchParams(600L, 180L, 15, 10));
+		REFRESH_TIME.put(Health.SLOW,      new FetchParams(480L,  90L, 15,  7));
+		REFRESH_TIME.put(Health.GOOD,      new FetchParams(300L,  60L, 10,  4));
+		REFRESH_TIME.put(Health.PERFECT,   new FetchParams(180L,  30L,  6,  3));
 	}
 	
 	@Override

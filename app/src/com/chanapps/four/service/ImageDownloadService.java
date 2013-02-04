@@ -95,8 +95,9 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 			
 			conn = (HttpURLConnection)new URL(imageUrl).openConnection();
 			FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
-			conn.setReadTimeout(fetchParams.readTimeout);
-			//conn.setConnectTimeout(fetchParams.connectTimeout);
+			// we need to double read timeout as file might be large
+			conn.setReadTimeout(fetchParams.readTimeout * 2);
+			conn.setConnectTimeout(fetchParams.connectTimeout);
 			
 			in = conn.getInputStream();
 			out = new FileOutputStream(targetFile);

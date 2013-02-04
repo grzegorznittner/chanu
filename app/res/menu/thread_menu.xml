@@ -31,6 +31,10 @@
           android:icon="@drawable/av_download"
           android:showAsAction="ifRoom"
             />
+    <item android:id="@+id/download_all_images_to_gallery_menu"
+          android:title="@string/download_all_images_to_gallery_menu"
+          android:icon="@drawable/av_download"
+            />
     <item android:id="@+id/board_rules_menu"
           android:title="@string/board_rules_menu"
           android:icon="@drawable/action_help"

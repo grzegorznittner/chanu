@@ -49,10 +49,12 @@ public class UserStatistics {
 	
 	public boolean convertThreadStats() {
 		if (threadStats.size() > 0) {
+			int threadsToConvert = threadStats.size();
 			for (ChanThreadStat stat : threadStats.values()) {
 				boardThreadStats.put(stat.board + "/" + stat.no, stat);
 			}
 			threadStats.clear();
+			if (DEBUG) Log.i(TAG, "" + threadsToConvert + " thread stats has been converted to new format.");
 			return true;
 		}
 		return false;
@@ -192,7 +194,7 @@ public class UserStatistics {
 	private String logThreadStats(List<ChanThreadStat> threads) {
 		StringBuffer buf = new StringBuffer();
 		for(ChanThreadStat thread : threads) {
-			buf.append(thread.no + ": " + thread.usage + ", ");
+			buf.append(thread.board + "/" + thread.no + ": " + thread.usage + ", ");
 		}
 		return buf.toString();
 	}

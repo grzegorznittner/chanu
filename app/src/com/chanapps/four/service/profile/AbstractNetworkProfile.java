@@ -35,7 +35,10 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	private Stack<DataTransfer> dataTransfers = new Stack<DataTransfer>();
 	
 	private Health currentHealth = null;
-	private static final FetchParams DEFAULT_FETCH_PARAMS = new FetchParams(1800000L, 1800000L, 3000);
+	/*
+	 *               HEALTH  ----->   REFRESH_DELAY, FORCE_REFRESH_DELAY, READ_TIMEOUT, CONNECT_TIMEOUT
+	 */
+	private static final FetchParams DEFAULT_FETCH_PARAMS = new FetchParams(1800L, 1800L, 3, 3);
 	
 	@Override
 	public FetchParams getFetchParams() {
