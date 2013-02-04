@@ -1,16 +1,12 @@
 package com.chanapps.four.fragment;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -32,7 +28,8 @@ import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
-import com.chanapps.four.adapter.BoardCursorAdapter;
+import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
+import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.BoardSelectorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.data.ChanBoard;
@@ -57,7 +54,7 @@ public class BoardGroupFragment
         AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,
-        BoardCursorAdapter.ViewBinder
+        AbstractBoardCursorAdapter.ViewBinder
 {
 
     private static final String TAG = BoardSelectorActivity.class.getSimpleName();
@@ -118,7 +115,7 @@ public class BoardGroupFragment
         context = container.getContext();
         columnWidth = cg.getColumnWidth();
         if (boardType == ChanBoard.Type.WATCHLIST) {
-            adapter = new BoardCursorAdapter(
+            adapter = new BoardGridCursorAdapter(
                     context,
                     R.layout.board_grid_item,
                     this,

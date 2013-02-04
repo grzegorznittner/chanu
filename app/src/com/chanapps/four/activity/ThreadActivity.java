@@ -17,12 +17,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
-import com.chanapps.four.adapter.ThreadCursorAdapter;
+import com.chanapps.four.adapter.AbstractThreadCursorAdapter;
+import com.chanapps.four.adapter.ThreadGridCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
@@ -62,7 +60,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         if (threadNo > 0) {
-        	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, gridView);
+        	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, absListView);
         }
         return cursorLoader;
     }
@@ -183,7 +181,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString(ChanHelper.BOARD_CODE, boardCode);
         editor.putLong(ChanHelper.THREAD_NO, threadNo);
-        editor.putInt(ChanHelper.LAST_THREAD_POSITION, gridView.getFirstVisiblePosition());
+        editor.putInt(ChanHelper.LAST_THREAD_POSITION, absListView.getFirstVisiblePosition());
         editor.putLong(ChanHelper.TIM, tim);
         editor.putString(ChanHelper.TEXT, text);
         editor.putString(ChanHelper.IMAGE_URL, imageUrl);
@@ -194,13 +192,13 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     @Override
-    protected void initGridAdapter() {
-        adapter = new ThreadCursorAdapter(this,
+    protected void initAdapter() {
+        adapter = new ThreadGridCursorAdapter(this,
                 R.layout.thread_grid_item,
                 this,
                 new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_COUNTRY_URL},
                 new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag});
-        gridView.setAdapter(adapter);
+        absListView.setAdapter(adapter);
     }
 
     @Override
@@ -211,7 +209,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     @Override
     protected void sizeGridToDisplay() {
         Display display = getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(gridView, display, ChanGridSizer.ServiceType.THREAD);
+        ChanGridSizer cg = new ChanGridSizer((GridView)absListView, display, ChanGridSizer.ServiceType.THREAD);
         cg.sizeGridToDisplay();
     }
 
@@ -338,7 +336,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         editor.putBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, hidePostNumbers);
         editor.commit();
         invalidateOptionsMenu();
-        createGridView();
+        createAbsListView();
         ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
     }
     private void postReply() {
@@ -440,7 +438,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 this.getLayoutInflater(),
                 imageLoader,
                 displayImageOptions,
-                (ThreadCursorAdapter)adapter);
+                (AbstractThreadCursorAdapter)adapter);
     }
 
     protected UserStatistics ensureUserStats() {

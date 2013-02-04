@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 
 /**
@@ -17,9 +16,9 @@ import com.chanapps.four.data.ChanHelper;
  * Time: 12:14 AM
  * To change this template use File | Settings | File Templates.
  */
-public class BoardSelectorAdapter extends BoardCursorAdapter {
+public class BoardSelectorAdapter extends AbstractBoardCursorAdapter {
 
-    private static final String TAG = BoardCursorAdapter.class.getSimpleName();
+    private static final String TAG = AbstractBoardCursorAdapter.class.getSimpleName();
     private static final boolean DEBUG = false;
 
     public BoardSelectorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
