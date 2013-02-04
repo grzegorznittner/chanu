@@ -1,16 +1,12 @@
 package com.chanapps.four.fragment;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -32,7 +28,8 @@ import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
-import com.chanapps.four.adapter.BoardCursorAdapter;
+import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
+import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.BoardSelectorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.data.ChanBoard;
@@ -57,7 +54,7 @@ public class BoardGroupFragment
         AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,
-        BoardCursorAdapter.ViewBinder
+        AbstractBoardCursorAdapter.ViewBinder
 {
 
     private static final String TAG = BoardSelectorActivity.class.getSimpleName();
@@ -118,7 +115,7 @@ public class BoardGroupFragment
         context = container.getContext();
         columnWidth = cg.getColumnWidth();
         if (boardType == ChanBoard.Type.WATCHLIST) {
-            adapter = new BoardCursorAdapter(
+            adapter = new BoardGridCursorAdapter(
                     context,
                     R.layout.board_grid_item,
                     this,
@@ -269,6 +266,12 @@ public class BoardGroupFragment
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (boardType == ChanBoard.Type.WATCHLIST) {
+            Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+            final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+            final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+            final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+            if (loadItem > 0 || lastItem > 0 || adItem > 0)
+                return;
             ThreadActivity.startActivity(getActivity(), parent, view, position, id, true);
         }
         else {
@@ -282,15 +285,18 @@ public class BoardGroupFragment
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if (boardType == ChanBoard.Type.WATCHLIST) {
             Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-            final long threadno = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+            final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+            if (loadPage > 0 || lastPage > 0)
+                return false;
             final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
-            WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, tim);
-            d.show(getFragmentManager(), d.TAG);
-            return true;
+            if (tim > 0) {
+                WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, tim);
+                d.show(getFragmentManager(), d.TAG);
+                return true;
+            }
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
     protected Handler ensureHandler() {

@@ -10,6 +10,7 @@ import android.database.MatrixCursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import android.widget.AbsListView;
 import android.widget.GridView;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
@@ -30,15 +31,21 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     private static final int DEFAULT_NUM_GRID_COLUMNS_PORTRAIT = 2;
     private static final int DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE = 3;
 
-    public ThreadCursorLoader(Context context, String boardName, long threadNo, GridView gridView) {
+    public ThreadCursorLoader(Context context, String boardName, long threadNo, AbsListView absListView) {
         this(context);
         this.context = context;
         this.boardName = boardName;
         this.threadNo = threadNo;
         ChanHelper.Orientation orientation = ChanHelper.getOrientation(context);
         int defaultNumColumns = (orientation == ChanHelper.Orientation.PORTRAIT) ? DEFAULT_NUM_GRID_COLUMNS_PORTRAIT : DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE;
-        int currentNumGridColumns = gridView.getNumColumns();
-        this.numGridColumns = (gridView == null || currentNumGridColumns <= 0) ? defaultNumColumns : currentNumGridColumns;
+        if (absListView instanceof GridView) {
+            GridView gridView = (GridView)absListView;
+            int currentNumGridColumns = gridView.getNumColumns();
+            this.numGridColumns = (gridView == null || currentNumGridColumns <= 0) ? defaultNumColumns : currentNumGridColumns;
+        }
+        else {
+            this.numGridColumns = 0;
+        }
         if (threadNo == 0) {
             throw new ExceptionInInitializerError("Can't have zero threadNo in a thread cursor loader");
         }
@@ -74,6 +81,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 addLoadingRow(matrixCursor);
             }
             else { // loaded at least one, show the posts
+                int adSpace = MINIMUM_AD_SPACING;
                 for (ChanPost post : thread.posts) {
                     if (ChanBlocklist.contains(context, post.id))
                         continue;
@@ -89,6 +97,14 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                         addTextOnlyRow(matrixCursor, post);
                     } else {
                         addImageRow(matrixCursor, post);
+                    }
+
+                    if (generator.nextDouble() < AD_PROBABILITY && !(adSpace > 0)) {
+                        addAdRow(matrixCursor);
+                        adSpace = MINIMUM_AD_SPACING;
+                    }
+                    else {
+                        adSpace--;
                     }
                 }
                 int remainingToLoad = thread.posts[0].replies - thread.posts.length;
@@ -117,7 +133,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                             "", post.getCountryFlagUrl(),
                             postText, post.getHeaderText(), post.getFullText(),
                             post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                            post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, post.closed, 0, 0};
+                            post.getSpoilerText(), post.getExifText(), post.id,
+                            post.isDead ? 1 : 0, post.closed, 0, 0, 0};
                     matrixCursor.addRow(currentRow);
                     if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
         } else {
@@ -127,16 +144,19 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                     post.getThumbnailUrl(), post.getCountryFlagUrl(),
                     postText, post.getHeaderText(), post.getFullText(),
                     post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                    post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, post.closed, 0, 0};
+                    post.getSpoilerText(), post.getExifText(), post.id,
+                    post.isDead ? 1 : 0, post.closed, 0, 0, 0};
             matrixCursor.addRow(currentRow);
             if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
         }
         // for initial thread, add extra null item to support full-width header
-        if (DEBUG) Log.v(TAG, "added extra null rows for grid columns=1.." + numGridColumns);
-        for (int i = 1; i < numGridColumns; i++) {
-            Object[] nullRow = currentRow.clone();
-            nullRow[0] = 0; // set postNo to zero to signal to rest of system that this is a null post
-            matrixCursor.addRow(nullRow);
+        if (numGridColumns > 0) {
+            if (DEBUG) Log.v(TAG, "added extra null rows for grid columns=1.." + numGridColumns);
+            for (int i = 1; i < numGridColumns; i++) {
+                Object[] nullRow = currentRow.clone();
+                nullRow[0] = 0; // set postNo to zero to signal to rest of system that this is a null post
+                matrixCursor.addRow(nullRow);
+            }
         }
     }
 
@@ -152,7 +172,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                         "", post.getCountryFlagUrl(),
                         postText, post.getHeaderText(), post.getFullText(),
                         post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                        post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, post.closed, 0, 0};
+                        post.getSpoilerText(), post.getExifText(), post.id,
+                        post.isDead ? 1 : 0, post.closed, 0, 0, 0};
                 matrixCursor.addRow(currentRow);
                 if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
         }
@@ -168,7 +189,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 post.getThumbnailUrl(), post.getCountryFlagUrl(),
                 postText, post.getHeaderText(), post.getFullText(),
                 post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                post.getSpoilerText(), post.getExifText(), post.id, post.isDead ? 1 : 0, post.closed, 0, 0};
+                post.getSpoilerText(), post.getExifText(), post.id,
+                post.isDead ? 1 : 0, post.closed, 0, 0, 0};
         matrixCursor.addRow(currentRow);
         if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
     }

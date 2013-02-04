@@ -7,10 +7,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
-import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.activity.FullScreenImageActivity;
+import com.chanapps.four.activity.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanBoardStat;
 import com.chanapps.four.data.ChanFileStorage;
@@ -174,12 +171,8 @@ public class MobileProfile extends AbstractNetworkProfile {
 	@Override
 	public void onBoardRefreshed(Context context, String board) {
 		super.onBoardRefreshed(context, board);
-		
-		if (FetchChanDataService.scheduleBoardFetchWithPriority(context, board)) {
-			makeToast("Refreshing board ...");
-		} else {
-			makeToast("Board is fresh");
-		}
+		if (FetchChanDataService.scheduleBoardFetchWithPriority(context, board))
+			makeToast(context.getString(R.string.board_activity_fresh));
 		if ("a".equals(board)) {
 			UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
 			int i = 1;
@@ -204,12 +197,8 @@ public class MobileProfile extends AbstractNetworkProfile {
 	@Override
 	public void onThreadRefreshed(Context context, String board, long threadId) {
 		super.onThreadRefreshed(context, board, threadId);
-		
-		if (FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId)) {
-			makeToast("Refreshing thread ...");
-		} else {
-			makeToast("Thread is fresh");
-		}
+		if (!FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId))
+            makeToast(context.getString(R.string.thread_activity_fresh));
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.chanapps.four.loader;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
+import java.util.Random;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
@@ -21,12 +22,24 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     private static final String TAG = BoardCursorLoader.class.getSimpleName();
     private static final boolean DEBUG = false;
 
+    protected static final double AD_PROBABILITY = 0.25;
+    protected static final double AD_ADULT_PROBABILITY_ON_ADULT_BOARD = 0.5;
+    protected static final int MINIMUM_AD_SPACING = 4;
+    protected static final String JLIST_AD_AFFILIATE_CODE = "4539";
+    protected static final int[] JLIST_AD_CODES = { 118, 113, 129, 21, 97, 68, 82, 83, 104, 121, 120 };
+    protected static final int[] JLIST_AD_ADULT_CODES = { 122, 70, 123 };
+    protected static final String JLIST_AD_ROOT_URL = "http://anime.jlist.com";
+    protected static final String JLIST_AD_IMAGE_ROOT_URL = JLIST_AD_ROOT_URL + "/media/" + JLIST_AD_AFFILIATE_CODE;
+    protected static final String JLIST_AD_CLICK_ROOT_URL = JLIST_AD_ROOT_URL + "/click/" + JLIST_AD_AFFILIATE_CODE;
+
     protected final ForceLoadContentObserver mObserver;
 
     protected Cursor mCursor;
     protected Context context;
 
     protected String boardName;
+
+    protected Random generator = new Random();
 
     protected BoardCursorLoader(Context context) {
         super(context);
@@ -59,17 +72,31 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         }
         else {
             if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
+            int adSpace = MINIMUM_AD_SPACING;
+
             for (ChanPost thread : board.threads) {
+
                 if (ChanBlocklist.contains(context, thread.id))
                     continue;
+
                 thread.hideAllText = hideAllText;
                 thread.hidePostNumbers = hidePostNumbers;
                 thread.useFriendlyIds = useFriendlyIds;
+
                 if (thread.tn_w <= 0 || thread.tim == 0)
                     addTextOnlyRow(matrixCursor, thread);
                 else
                     addImageRow(matrixCursor, thread);
+
+                if (generator.nextDouble() < AD_PROBABILITY && !(adSpace > 0)) {
+                    addAdRow(matrixCursor);
+                    adSpace = MINIMUM_AD_SPACING;
+                }
+                else {
+                    adSpace--;
+                }
             }
+
             // end of board marker
             addFinalRow(matrixCursor);
         }
@@ -84,7 +111,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 thread.getBoardThreadText(),
                 thread.getHeaderText(), thread.getFullText(),
                 thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
-                thread.getSpoilerText(), thread.getExifText(), thread.id, thread.isDead ? 1 : 0, thread.closed, 0, 0});
+                thread.getSpoilerText(), thread.getExifText(), thread.id,
+                thread.isDead ? 1 : 0, thread.closed, 0, 0, 0});
     }
 
     protected void addImageRow(MatrixCursor matrixCursor, ChanPost thread) {
@@ -94,7 +122,27 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 thread.getBoardThreadText(),
                 thread.getHeaderText(), thread.getFullText(),
                 thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
-                thread.getSpoilerText(), thread.getExifText(), thread.id, thread.isDead ? 1 : 0, thread.closed, 0, 0});
+                thread.getSpoilerText(), thread.getExifText(), thread.id,
+                thread.isDead ? 1 : 0, thread.closed, 0, 0, 0});
+    }
+
+    protected void addAdRow(MatrixCursor matrixCursor) {
+        ChanBoard board = ChanBoard.getBoardByCode(this.getContext(), boardName);
+        boolean adultBoard = board != null && !board.workSafe ? true : false;
+        int adCode =
+            (adultBoard && generator.nextDouble() > AD_ADULT_PROBABILITY_ON_ADULT_BOARD)
+            ? JLIST_AD_ADULT_CODES[generator.nextInt(JLIST_AD_ADULT_CODES.length)]
+            : JLIST_AD_CODES[generator.nextInt(JLIST_AD_CODES.length)];
+        String imageUrl = JLIST_AD_IMAGE_ROOT_URL + "/" + adCode;
+        String clickUrl = JLIST_AD_CLICK_ROOT_URL + "/" + adCode;
+        matrixCursor.addRow(new Object[] {
+                2, boardName, 0, imageUrl,
+                "",
+                "",
+                "", clickUrl,
+                -1, -1, -1, -1, 0, 0,
+                "", "", "",
+                0, 0, 0, 0, 1});
     }
 
     protected void addLoadingRow(MatrixCursor matrixCursor) {
@@ -103,7 +151,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 "", "",
                 "", "", "",
                 -1, -1, -1, -1, 0, 0,
-                "", "", "", 1, 0, 1, 0});
+                "", "", "", 1, 0, 1, 0, 0});
     }
 
     protected void addFinalRow(MatrixCursor matrixCursor) {
@@ -112,7 +160,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 "", "",
                 "", "", "",
                 -1, -1, -1, -1, 0, 0,
-                "", "", "", 1, 0, 0, 1});
+                "", "", "", 1, 0, 0, 1, 0});
     }
 
     /**

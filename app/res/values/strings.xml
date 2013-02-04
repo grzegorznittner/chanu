@@ -62,13 +62,16 @@
     <string name="misc">Misc.</string>
 
     <!-- board activity -->
-    <string name="board_activity_refresh">Refreshing...</string>
+    <string name="board_activity_refresh">Refreshing board...</string>
+    <string name="board_activity_fresh">Board is current</string>
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
     <string name="board_end_of_board">End of Board</string>
     <string name="board_click_for_more">(click for more)</string>
     <string name="board_last_updated">Last updated %s</string>
 
     <!-- thread activity -->
+    <string name="thread_activity_refresh">Refreshing thread...</string>
+    <string name="thread_activity_fresh">Thread is current</string>
     <string name="thread_end_of_thread">End of Thread</string>
     <string name="thread_couldnt_load">Couldn\'t load thread</string>
     <string name="thread_no_replies_found">No replies found</string>
@@ -153,7 +156,7 @@
     <string name="dialog_reset_preferences">Preferences reset to defaults</string>
 
     <!-- post reply activity -->
-    <string name="post_reply_title">Post Reply</string>
+    <string name="post_reply_title">New Post</string>
     <string name="post_reply_thread_title">New Thread</string>
     <string name="post_reply_text_hint">Comment (Optional)</string>
     <string name="post_reply_text_hint_required">Comment (Required)</string>
@@ -248,6 +251,9 @@
     <string name="camera_open_error">Couldn\'t open camera</string>
     <string name="camera_capture_error">Couldn\'t take picture</string>
     <string name="camera_folder_name">4Channer Camera</string>
+
+    <!-- ads -->
+    <string name="jlist_ad_message">J-List is a peaceful island of Japanese pop culture for you</string>
 
     <!-- board names -->
     <string name="board_type_japanese_culture">Japanese Culture</string>

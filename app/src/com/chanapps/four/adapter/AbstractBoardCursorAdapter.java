@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
 
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 
 /**
@@ -26,9 +25,9 @@ import com.chanapps.four.data.ChanHelper;
  * the appearance of these views.
  *
  */
-public class BoardCursorAdapter extends ResourceCursorAdapter {
-	private static final String TAG = BoardCursorAdapter.class.getSimpleName();
-	private static final boolean DEBUG = false;
+abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
+	protected static final String TAG = AbstractBoardCursorAdapter.class.getSimpleName();
+	protected static final boolean DEBUG = false;
 	
     /**
      * A list of columns containing the data to bind to the UI.
@@ -51,33 +50,32 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
 
     protected String[] mOriginalFrom;
 
-    
     /**
      * Standard constructor.
-     * 
+     *
      * @param context The context where the ListView associated with this
      *            SimpleListItemFactory is running
      * @param layout resource identifier of a layout file that defines the views
      *            for this list item. The layout file should include at least
      *            those named views defined in "to"
-     * @param from A list of column names representing the data to bind to the UI.  Can be null 
+     * @param from A list of column names representing the data to bind to the UI.  Can be null
      *            if the cursor is not available yet.
      * @param to The views that should display column in the "from" parameter.
      *            These should all be TextViews. The first N views in this list
      *            are given the values of the first N columns in the from
      *            parameter.  Can be null if the cursor is not available yet.
      */
-    public BoardCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
-        this(context, layout, viewBinder, from, to, false);
-    }
-
-    public BoardCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to, boolean isWatchlist) {
+    public AbstractBoardCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, null, 0);
         this.context = context;
         mTo = to;
         mOriginalFrom = from;
         mViewBinder = viewBinder;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public AbstractBoardCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to, boolean isWatchlist) {
+        this(context, layout, viewBinder, from, to);
         this.isWatchlist = isWatchlist;
     }
 
@@ -118,13 +116,17 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
         }
         String tag = null;
         String imageUrl = null;
-        int loading = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
-        int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
-    	if (loading > 0) {
+        int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+    	if (loadItem > 0) {
     		tag = ChanHelper.LOADING_ITEM;
     	}
-        else if (lastPage > 0) {
+        else if (lastItem > 0) {
             tag = ChanHelper.LAST_ITEM;
+        }
+        else if (adItem > 0) {
+            tag = ChanHelper.AD_ITEM;
         }
         else {
     		imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
@@ -139,7 +141,7 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
         if (convertView == null || !tag.equals(convertView.getTag())) {
             v = newView(context, parent, tag, position);
             v.setTag(tag);
-            if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
+            if (ChanHelper.POST_IMAGE_URL.equals(tag) || ChanHelper.AD_ITEM.equals(tag)) {
         		ImageView imageView = (ImageView)v.findViewById(R.id.grid_item_image);
         		imageView.setTag(imageUrl);
             }
@@ -151,23 +153,7 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
         return v;
     }
 
-    protected View newView(Context context, ViewGroup parent, String tag, int position) {
-        if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        if (ChanHelper.LOADING_ITEM.equals(tag)) {
-            return mInflater.inflate(R.layout.board_grid_item_loading, parent, false);
-        }
-        else if (ChanHelper.LAST_ITEM.equals(tag) && isWatchlist) {
-            return mInflater.inflate(R.layout.board_grid_item_final_watchlist, parent, false);
-        }
-        else if (ChanHelper.LAST_ITEM.equals(tag)) {
-            return mInflater.inflate(R.layout.board_grid_item_final, parent, false);
-        }
-        else if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
-    		return mInflater.inflate(R.layout.board_grid_item, parent, false);
-    	} else {
-    		return mInflater.inflate(R.layout.board_grid_item_no_image, parent, false);
-    	}
-    }
+    protected abstract View newView(Context context, ViewGroup parent, String tag, int position);
 
     /**
      * Create a map from an array of strings to an array of column-id integers in mCursor.

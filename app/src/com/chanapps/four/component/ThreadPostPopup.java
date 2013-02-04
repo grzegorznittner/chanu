@@ -9,7 +9,7 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.RefreshableActivity;
-import com.chanapps.four.adapter.ThreadCursorAdapter;
+import com.chanapps.four.adapter.AbstractThreadCursorAdapter;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanThread;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -29,13 +29,13 @@ public class ThreadPostPopup extends BoardThreadPopup {
     public static final String TAG = ThreadPostPopup.class.getSimpleName();
     protected static final boolean DEBUG = false;
 
-    protected ThreadCursorAdapter adapter;
+    protected AbstractThreadCursorAdapter adapter;
 
     public ThreadPostPopup(RefreshableActivity activity,
                            LayoutInflater layoutInflater,
                            ImageLoader imageLoader,
                            DisplayImageOptions displayImageOptions,
-                           ThreadCursorAdapter adapter)
+                           AbstractThreadCursorAdapter adapter)
     {
         super(activity, layoutInflater, imageLoader, displayImageOptions);
         this.adapter = adapter;
@@ -69,10 +69,10 @@ public class ThreadPostPopup extends BoardThreadPopup {
 
     private class HighlighterTask extends AsyncTask<Long, Void, String> {
         private Context context = null;
-        private ThreadCursorAdapter threadAdapter = null;
+        private AbstractThreadCursorAdapter threadAdapter = null;
         private String boardCode = null;
         private long threadNo = 0;
-        public HighlighterTask(Context context, ThreadCursorAdapter adapter, String boardCode, long threadNo) {
+        public HighlighterTask(Context context, AbstractThreadCursorAdapter adapter, String boardCode, long threadNo) {
             this.context = context;
             this.threadAdapter = adapter;
             this.boardCode = boardCode;

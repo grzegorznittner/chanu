@@ -25,12 +25,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 
-import com.chanapps.four.adapter.BoardCursorAdapter;
+import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
+import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
@@ -59,8 +57,9 @@ public class BoardActivity
 
     protected static final int IMAGE_URL_HASHCODE_KEY = R.id.grid_item_image;
 
-    protected BoardCursorAdapter adapter;
-    protected GridView gridView;
+    protected AbstractBoardCursorAdapter adapter;
+    protected AbsListView absListView;
+    protected Class absListViewClass = GridView.class;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
     protected int scrollOnNextLoaderFinished = 0;
@@ -101,7 +100,7 @@ public class BoardActivity
                 .cacheOnDisc()
                 .imageScaleType(ImageScaleType.EXACT)
                 .build();
-        createGridView();
+        createAbsListView();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
         if (DEBUG) Log.v(TAG, "onCreate init loader");
@@ -110,32 +109,37 @@ public class BoardActivity
 
     protected void sizeGridToDisplay() {
         Display display = getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(gridView, display, ChanGridSizer.ServiceType.BOARD);
+        ChanGridSizer cg = new ChanGridSizer((GridView)absListView, display, ChanGridSizer.ServiceType.BOARD);
         cg.sizeGridToDisplay();
     }
 
-    protected void initGridAdapter() {
-        adapter = new BoardCursorAdapter(this,
+    protected void initAdapter() {
+        adapter = new BoardGridCursorAdapter(this,
                 R.layout.board_grid_item,
                 this,
                 new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_COUNTRY_URL},
                 new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag});
-        gridView.setAdapter(adapter);
+        absListView.setAdapter(adapter);
     }
 
     protected int getLayoutId() {
         return R.layout.board_grid_layout;
     }
 
-    protected void createGridView() {
+    protected void createAbsListView() {
         setContentView(getLayoutId());
-        gridView = (GridView)findViewById(R.id.board_grid_view);
-        sizeGridToDisplay();
-        initGridAdapter();
-        gridView.setClickable(true);
-        gridView.setOnItemClickListener(this);
-        gridView.setLongClickable(true);
-        gridView.setOnItemLongClickListener(this);
+        if (GridView.class.equals(absListViewClass)) {
+            absListView = (GridView)findViewById(R.id.board_grid_view);
+            sizeGridToDisplay();
+        }
+        else {
+            absListView = (ListView)findViewById(R.id.board_list_view);
+        }
+        initAdapter();
+        absListView.setClickable(true);
+        absListView.setOnItemClickListener(this);
+        absListView.setLongClickable(true);
+        absListView.setOnItemLongClickListener(this);
     }
 
     protected synchronized Handler ensureHandler() {
@@ -164,7 +168,7 @@ public class BoardActivity
 	}
 
     public GridView getGridView() {
-        return gridView;
+        return (GridView)absListView;
     }
 
     protected String getLastPositionName() {
@@ -236,7 +240,7 @@ public class BoardActivity
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString(ChanHelper.BOARD_CODE, boardCode);
         editor.putLong(ChanHelper.THREAD_NO, 0);
-        editor.putInt(ChanHelper.LAST_BOARD_POSITION, gridView.getFirstVisiblePosition());
+        editor.putInt(ChanHelper.LAST_BOARD_POSITION, absListView.getFirstVisiblePosition());
         editor.commit();
         DispatcherHelper.saveActivityToPrefs(this);
     }
@@ -264,7 +268,7 @@ public class BoardActivity
 
     public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
                                        ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
-        if (view instanceof TextView) {
+        if (view instanceof TextView) { // only really works with hideAllText, otherwise it breaks views
             TextView tv = (TextView) view;
             String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
             if (shortText == null || shortText.isEmpty()) {
@@ -355,9 +359,9 @@ public class BoardActivity
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
-        if (gridView != null) {
+        if (absListView != null) {
             if (scrollOnNextLoaderFinished > 0) {
-                gridView.setSelection(scrollOnNextLoaderFinished);
+                absListView.setSelection(scrollOnNextLoaderFinished);
                 scrollOnNextLoaderFinished = 0;
             }
         }
@@ -372,14 +376,35 @@ public class BoardActivity
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
-        final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
-        if (loadPage == 0 && lastPage == 0) //
-            ThreadActivity.startActivity(this, adapterView, view, position, id, true);
+        final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (loadItem > 0 || lastItem > 0)
+            return;
+        if (adItem > 0) {
+            final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            launchAdLinkInBrowser(adUrl);
+            return;
+        }
+
+        ThreadActivity.startActivity(this, adapterView, view, position, id, true);
+    }
+
+    protected void launchAdLinkInBrowser(String url) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (loadItem > 0 || lastItem > 0 || adItem > 0)
+            return false;
+
         return showPopupText(adapterView, view, position, id);
     }
 
@@ -393,7 +418,8 @@ public class BoardActivity
                 NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.refresh_board_menu:
-            	NetworkProfileManager.instance().manualRefresh(this);
+                Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_LONG).show();
+                NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
@@ -449,7 +475,7 @@ public class BoardActivity
         ActionBar a = getActionBar();
         if (a == null) {
         }
-        String title = "/" + boardCode; // + " " + getString(R.string.board_activity);
+        String title = "/" + boardCode + "/"; // + " " + getString(R.string.board_activity);
         a.setTitle(title);
         a.setDisplayHomeAsUpEnabled(true);
     }
@@ -483,7 +509,7 @@ public class BoardActivity
     @Override
     public void refreshActivity() {
         invalidateOptionsMenu();
-        createGridView();
+        createAbsListView();
         ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
     }
 

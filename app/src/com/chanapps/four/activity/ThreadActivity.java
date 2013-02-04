@@ -17,12 +17,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
-import com.chanapps.four.adapter.ThreadCursorAdapter;
+import com.chanapps.four.adapter.AbstractThreadCursorAdapter;
+import com.chanapps.four.adapter.ThreadGridCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
@@ -62,7 +60,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         if (threadNo > 0) {
-        	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, gridView);
+        	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, absListView);
         }
         return cursorLoader;
     }
@@ -183,7 +181,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString(ChanHelper.BOARD_CODE, boardCode);
         editor.putLong(ChanHelper.THREAD_NO, threadNo);
-        editor.putInt(ChanHelper.LAST_THREAD_POSITION, gridView.getFirstVisiblePosition());
+        editor.putInt(ChanHelper.LAST_THREAD_POSITION, absListView.getFirstVisiblePosition());
         editor.putLong(ChanHelper.TIM, tim);
         editor.putString(ChanHelper.TEXT, text);
         editor.putString(ChanHelper.IMAGE_URL, imageUrl);
@@ -194,13 +192,13 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     @Override
-    protected void initGridAdapter() {
-        adapter = new ThreadCursorAdapter(this,
+    protected void initAdapter() {
+        adapter = new ThreadGridCursorAdapter(this,
                 R.layout.thread_grid_item,
                 this,
                 new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_COUNTRY_URL},
                 new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag});
-        gridView.setAdapter(adapter);
+        absListView.setAdapter(adapter);
     }
 
     @Override
@@ -211,25 +209,41 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     @Override
     protected void sizeGridToDisplay() {
         Display display = getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(gridView, display, ChanGridSizer.ServiceType.THREAD);
+        ChanGridSizer cg = new ChanGridSizer((GridView)absListView, display, ChanGridSizer.ServiceType.THREAD);
         cg.sizeGridToDisplay();
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        incrementCounterAndAddToWatchlistIfActive();
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (loadItem > 0 || lastItem > 0)
+            return;
+        if (adItem > 0) {
+            final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            launchAdLinkInBrowser(adUrl);
+            return;
+        }
+
+        incrementCounterAndAddToWatchlistIfActive();
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        if (imageUrl == null || imageUrl.isEmpty()) {
+        if (imageUrl == null || imageUrl.isEmpty())
             showPopupText(adapterView, view, position, id);
-        }
-        else {
+        else
             FullScreenImageActivity.startActivity(this, adapterView, view, position, id);
-        }
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (loadItem > 0 || lastItem > 0 || adItem > 0)
+            return false; // end-of-thread item
+
         incrementCounterAndAddToWatchlistIfActive();
         return showPopupText(adapterView, view, position, id);
     }
@@ -322,7 +336,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         editor.putBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, hidePostNumbers);
         editor.commit();
         invalidateOptionsMenu();
-        createGridView();
+        createAbsListView();
         ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
     }
     private void postReply() {
@@ -356,7 +370,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 //                }
                 return true;
             case R.id.refresh_thread_menu:
-                //Toast.makeText(this, R.string.refresh_thread_menu, Toast.LENGTH_LONG);
+                Toast.makeText(this, R.string.thread_activity_refresh, Toast.LENGTH_SHORT).show();
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.post_reply_menu:
@@ -417,7 +431,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (a == null) {
             return;
         }
-        String title = "/" + boardCode + " " + threadNo;
+        String title = "/" + boardCode + "/" + threadNo;
         a.setTitle(title);
         a.setDisplayHomeAsUpEnabled(true);
     }
@@ -428,7 +442,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 this.getLayoutInflater(),
                 imageLoader,
                 displayImageOptions,
-                (ThreadCursorAdapter)adapter);
+                (AbstractThreadCursorAdapter)adapter);
     }
 
     protected UserStatistics ensureUserStats() {

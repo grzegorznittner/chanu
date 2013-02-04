@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.widget.AdapterView;
 
 import android.widget.GridView;
-import com.chanapps.four.adapter.BoardCursorAdapter;
+import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,7 +18,7 @@ public interface ClickableLoaderActivity extends
         AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,
-        BoardCursorAdapter.ViewBinder {
+        AbstractBoardCursorAdapter.ViewBinder {
     public LoaderManager getLoaderManager();
     public GridView getGridView();
 }
