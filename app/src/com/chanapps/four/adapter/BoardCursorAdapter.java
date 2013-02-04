@@ -118,13 +118,17 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
         }
         String tag = null;
         String imageUrl = null;
-        int loading = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
-        int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
-    	if (loading > 0) {
+        int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+    	if (loadItem > 0) {
     		tag = ChanHelper.LOADING_ITEM;
     	}
-        else if (lastPage > 0) {
+        else if (lastItem > 0) {
             tag = ChanHelper.LAST_ITEM;
+        }
+        else if (adItem > 0) {
+            tag = ChanHelper.AD_ITEM;
         }
         else {
     		imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
@@ -139,7 +143,7 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
         if (convertView == null || !tag.equals(convertView.getTag())) {
             v = newView(context, parent, tag, position);
             v.setTag(tag);
-            if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
+            if (ChanHelper.POST_IMAGE_URL.equals(tag) || ChanHelper.AD_ITEM.equals(tag)) {
         		ImageView imageView = (ImageView)v.findViewById(R.id.grid_item_image);
         		imageView.setTag(imageUrl);
             }
@@ -161,6 +165,9 @@ public class BoardCursorAdapter extends ResourceCursorAdapter {
         }
         else if (ChanHelper.LAST_ITEM.equals(tag)) {
             return mInflater.inflate(R.layout.board_grid_item_final, parent, false);
+        }
+        else if (ChanHelper.AD_ITEM.equals(tag)) {
+            return mInflater.inflate(R.layout.board_grid_item_ad, parent, false);
         }
         else if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
     		return mInflater.inflate(R.layout.board_grid_item, parent, false);

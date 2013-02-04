@@ -60,15 +60,19 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
         }
         String tag = null;
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        int loading = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
-        int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+        int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         long postNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         if (DEBUG) Log.d(TAG, "getView called for position="+position + " postNo=" + postNo);
-        if (loading > 0) {
+        if (loadItem > 0) {
             tag = ChanHelper.LOADING_ITEM;
         }
-        else if (lastPage > 0) {
+        else if (lastItem > 0) {
             tag = ChanHelper.LAST_ITEM;
+        }
+        else if (adItem > 0) {
+            tag = ChanHelper.AD_ITEM;
         }
         else if (position == 0) { // thread header
             tag = ChanHelper.POST_RESTO;
@@ -113,7 +117,7 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
                 v.findViewById(R.id.grid_item_prev_highlight).setVisibility(View.INVISIBLE);
                 v.findViewById(R.id.grid_item_next_highlight).setVisibility(View.VISIBLE);
             }
-            else if (!tag.equals(ChanHelper.LAST_ITEM) && !tag.equals(ChanHelper.LOADING_ITEM)){
+            else if (!tag.equals(ChanHelper.LAST_ITEM) && !tag.equals(ChanHelper.LOADING_ITEM) && !tag.equals(ChanHelper.AD_ITEM)){
                 v.findViewById(R.id.grid_item_self_highlight).setVisibility(View.INVISIBLE);
                 v.findViewById(R.id.grid_item_prev_highlight).setVisibility(View.INVISIBLE);
                 v.findViewById(R.id.grid_item_next_highlight).setVisibility(View.INVISIBLE);
@@ -133,6 +137,9 @@ public class ThreadCursorAdapter extends BoardCursorAdapter {
         }
         else if (ChanHelper.LAST_ITEM.equals(tag)) {
             return mInflater.inflate(R.layout.thread_grid_item_final, parent, false);
+        }
+        else if (ChanHelper.AD_ITEM.equals(tag)) {
+            return mInflater.inflate(R.layout.board_grid_item_ad, parent, false);
         }
         else if (ChanHelper.POST_RESTO.equals(tag)) { // first item is the post which started the thread
             RelativeLayout view = (RelativeLayout)mInflater.inflate(R.layout.thread_grid_item_header, parent, false);

@@ -41,6 +41,7 @@
                 ads:testDevices="42f758079ab89f7f"
                 ads:loadAdOnCreate="true"/>
         -->
+        <!--
         <com.google.ads.AdView
                 android:id="@+id/adView"
                 android:layout_width="wrap_content"
@@ -49,7 +50,7 @@
                 ads:adSize="BANNER"
                 ads:testDevices="42f758079ab89f7f"
                 ads:loadAdOnCreate="true"/>
-        <!-- -->
+        -->
     </LinearLayout>
 
 </RelativeLayout>

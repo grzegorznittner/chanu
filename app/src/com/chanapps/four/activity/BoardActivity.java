@@ -25,10 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 
 import com.chanapps.four.adapter.BoardCursorAdapter;
 import com.chanapps.four.component.*;
@@ -264,7 +261,7 @@ public class BoardActivity
 
     public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
                                        ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
-        if (view instanceof TextView) {
+        if (view instanceof TextView) { // only really works with hideAllText, otherwise it breaks views
             TextView tv = (TextView) view;
             String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
             if (shortText == null || shortText.isEmpty()) {
@@ -372,14 +369,35 @@ public class BoardActivity
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
-        final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
-        if (loadPage == 0 && lastPage == 0) //
-            ThreadActivity.startActivity(this, adapterView, view, position, id, true);
+        final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (loadItem > 0 || lastItem > 0)
+            return;
+        if (adItem > 0) {
+            final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            launchAdLinkInBrowser(adUrl);
+            return;
+        }
+
+        ThreadActivity.startActivity(this, adapterView, view, position, id, true);
+    }
+
+    protected void launchAdLinkInBrowser(String url) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (loadItem > 0 || lastItem > 0 || adItem > 0)
+            return false;
+
         return showPopupText(adapterView, view, position, id);
     }
 

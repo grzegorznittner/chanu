@@ -217,19 +217,35 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        incrementCounterAndAddToWatchlistIfActive();
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (loadItem > 0 || lastItem > 0)
+            return;
+        if (adItem > 0) {
+            final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            launchAdLinkInBrowser(adUrl);
+            return;
+        }
+
+        incrementCounterAndAddToWatchlistIfActive();
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        if (imageUrl == null || imageUrl.isEmpty()) {
+        if (imageUrl == null || imageUrl.isEmpty())
             showPopupText(adapterView, view, position, id);
-        }
-        else {
+        else
             FullScreenImageActivity.startActivity(this, adapterView, view, position, id);
-        }
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (loadItem > 0 || lastItem > 0 || adItem > 0)
+            return false; // end-of-thread item
+
         incrementCounterAndAddToWatchlistIfActive();
         return showPopupText(adapterView, view, position, id);
     }

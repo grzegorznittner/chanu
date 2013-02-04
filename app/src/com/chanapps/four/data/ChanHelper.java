@@ -79,9 +79,10 @@ public class ChanHelper {
     public static final String POST_EXIF_TEXT = "exifText";
     public static final String POST_USER_ID = "id";
     public static final String POST_IS_DEAD = "isDead";
-
     public static final String LOADING_ITEM = "loadingItem";
     public static final String LAST_ITEM = "lastItem";
+    public static final String AD_ITEM = "adItem";
+
     public static final String LAST_BOARD_POSITION = "lastBoardPosition";
     public static final String LAST_THREAD_POSITION = "lastThreadPosition";
     public static final String LAST_ACTIVITY = "lastActivity";
@@ -115,7 +116,8 @@ public class ChanHelper {
             POST_IS_DEAD,
             POST_CLOSED,
             LOADING_ITEM,
-            LAST_ITEM
+            LAST_ITEM,
+            AD_ITEM
     };
 
     public static final String BOARD_ID = "_id";

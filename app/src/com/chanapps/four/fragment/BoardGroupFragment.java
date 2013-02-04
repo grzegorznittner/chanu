@@ -269,6 +269,12 @@ public class BoardGroupFragment
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if (boardType == ChanBoard.Type.WATCHLIST) {
+            Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+            final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+            final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+            final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+            if (loadItem > 0 || lastItem > 0 || adItem > 0)
+                return;
             ThreadActivity.startActivity(getActivity(), parent, view, position, id, true);
         }
         else {
@@ -282,15 +288,18 @@ public class BoardGroupFragment
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if (boardType == ChanBoard.Type.WATCHLIST) {
             Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-            final long threadno = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+            final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+            if (loadPage > 0 || lastPage > 0)
+                return false;
             final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
-            WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, tim);
-            d.show(getFragmentManager(), d.TAG);
-            return true;
+            if (tim > 0) {
+                WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, tim);
+                d.show(getFragmentManager(), d.TAG);
+                return true;
+            }
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
     protected Handler ensureHandler() {

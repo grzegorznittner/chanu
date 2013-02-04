@@ -248,6 +248,9 @@
     <string name="camera_capture_error">Couldn\'t take picture</string>
     <string name="camera_folder_name">4Channer Camera</string>
 
+    <!-- ads -->
+    <string name="jlist_ad_message">J-List is a peaceful island of Japanese pop culture for you</string>
+
     <!-- board names -->
     <string name="board_type_japanese_culture">Japanese Culture</string>
     <string name="board_a">Anime &amp; Manga</string>
