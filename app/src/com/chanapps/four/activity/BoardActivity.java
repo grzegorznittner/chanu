@@ -468,7 +468,7 @@ public class BoardActivity
         ActionBar a = getActionBar();
         if (a == null) {
         }
-        String title = "/" + boardCode; // + " " + getString(R.string.board_activity);
+        String title = "/" + boardCode + "/"; // + " " + getString(R.string.board_activity);
         a.setTitle(title);
         a.setDisplayHomeAsUpEnabled(true);
     }

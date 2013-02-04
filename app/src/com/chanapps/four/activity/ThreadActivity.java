@@ -429,7 +429,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (a == null) {
             return;
         }
-        String title = "/" + boardCode + " " + threadNo;
+        String title = "/" + boardCode + "/" + threadNo;
         a.setTitle(title);
         a.setDisplayHomeAsUpEnabled(true);
     }

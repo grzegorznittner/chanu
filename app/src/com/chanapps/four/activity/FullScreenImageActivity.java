@@ -727,7 +727,7 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
 
     private void setActionBarTitle() {
         if (getActionBar() != null) {
-            getActionBar().setTitle("/" + boardCode + " p" + postNo);
+            getActionBar().setTitle("/" + boardCode + "/" + threadNo + (threadNo == postNo ? "" : ":" + postNo));
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
