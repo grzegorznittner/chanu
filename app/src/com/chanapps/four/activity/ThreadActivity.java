@@ -372,7 +372,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 //                }
                 return true;
             case R.id.refresh_thread_menu:
-                //Toast.makeText(this, R.string.refresh_thread_menu, Toast.LENGTH_LONG);
+                Toast.makeText(this, R.string.thread_activity_refresh, Toast.LENGTH_SHORT).show();
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.post_reply_menu:

@@ -411,7 +411,8 @@ public class BoardActivity
                 NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.refresh_board_menu:
-            	NetworkProfileManager.instance().manualRefresh(this);
+                Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_LONG).show();
+                NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
