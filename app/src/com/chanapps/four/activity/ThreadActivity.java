@@ -507,7 +507,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     protected void incrementCounterAndAddToWatchlistIfActive() {
         ensureUserStats().threadUse(boardCode, threadNo);
-        ChanThreadStat stat = ensureUserStats().threadStats.get(threadNo);
+        String key = boardCode + "/" + threadNo;
+        ChanThreadStat stat = ensureUserStats().boardThreadStats.get(key);
         if (stat != null && stat.usage >= WATCHLIST_ACTIVITY_THRESHOLD && !inWatchlist) {
             int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
             if (stringId == R.string.thread_added_to_watchlist)

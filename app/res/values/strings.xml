@@ -44,7 +44,7 @@
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
     <string name="download_all_images_menu">Download All Images</string>
-    <string name="download_all_images_to_gallery_menu">Download All Images To Gallery</string>
+    <string name="download_all_images_to_gallery_menu">Download To Gallery</string>
     <string name="download_image_menu">Save to Gallery</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
     <string name="view_image_gallery_menu">View in Gallery</string>
@@ -218,11 +218,11 @@
     <string name="pref_hide_all_text_summ_on">Text-only posts and image text hidden</string>
     <string name="pref_hide_all_text_summ_off">Text-only posts and image text shown</string>
     <string name="pref_hide_all_text_on">Show All Text</string>
-    <string name="pref_hide_post_numbers">Hide Post Numbers</string>
+    <string name="pref_hide_post_numbers">Hide Post No.</string>
     <string name="pref_hide_post_numbers_summ_on">Post numbers are hidden</string>
     <string name="pref_hide_post_numbers_summ_off">Post numbers are shown</string>
-    <string name="pref_hide_post_numbers_turn_on">Hide Post Numbers</string>
-    <string name="pref_hide_post_numbers_turn_off">Show Post Numbers</string>
+    <string name="pref_hide_post_numbers_turn_on">Hide Post No.</string>
+    <string name="pref_hide_post_numbers_turn_off">Show Post No.</string>
     <string name="pref_use_friendly_ids">Use Friendly Ids</string>
     <string name="pref_use_friendly_ids_summ_on">Post Ids have readable names</string>
     <string name="pref_use_friendly_ids_summ_off">Post Ids are left unchanged</string>
