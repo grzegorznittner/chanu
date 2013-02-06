@@ -14,10 +14,12 @@
           android:title="@string/go_to_board_menu"
           android:icon="@drawable/navigation_forward"
             />
+    <!--
     <item android:id="@+id/hide_all_text"
           android:title="@string/toggle_image_only_menu"
           android:icon="@drawable/content_picture"
             />
+    -->
     <item android:id="@+id/hide_post_numbers"
           android:title="@string/toggle_hide_post_numbers_menu"
           android:icon="@drawable/action_about"

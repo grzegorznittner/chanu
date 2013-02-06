@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/grid_item"
-              style="@style/BoardGridLayout">
+    android:id="@+id/grid_item"
+    style="@style/BoardGridLayout">
 
     <ImageView
             android:id="@+id/grid_item_image"
-            style="@style/GridLoadingImageStyle"
+            style="@style/ThreadAdGridImageStyle"
+            android:contentDescription="@string/jlist_ad_message"
             />
 
 </RelativeLayout>

@@ -114,12 +114,13 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         if (!cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        String tag = null;
-        String imageUrl = null;
         int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
         int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-    	if (loadItem > 0) {
+        String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        String imageUrl = null;
+        String tag = null;
+        if (loadItem > 0) {
     		tag = ChanHelper.LOADING_ITEM;
     	}
         else if (lastItem > 0) {
@@ -129,21 +130,20 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
             tag = ChanHelper.AD_ITEM;
         }
         else {
+            tag = ChanHelper.POST_IMAGE_URL; // board-level always has an image for threads, even if we make default
     		imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-    		if (imageUrl != null && imageUrl.length() > 0) {
-    			tag = ChanHelper.POST_IMAGE_URL;
-    		} else {
-    			tag = ChanHelper.POST_SHORT_TEXT;
-    		}
-    	}
+        }
 
         View v;
         if (convertView == null || !tag.equals(convertView.getTag())) {
             v = newView(context, parent, tag, position);
             v.setTag(tag);
             if (ChanHelper.POST_IMAGE_URL.equals(tag) || ChanHelper.AD_ITEM.equals(tag)) {
-        		ImageView imageView = (ImageView)v.findViewById(R.id.grid_item_image);
-        		imageView.setTag(imageUrl);
+        		ImageView imageView = (ImageView)v.findViewById(getThumbnailImageId());
+                if (imageUrl == null || imageUrl.isEmpty())
+                    imageView.setTag(boardCode); // resource file
+                else
+                    imageView.setTag(imageUrl);
             }
         } else {
         	if (DEBUG) Log.d(TAG, "Reusing existing " + tag + " layout for " + position);
@@ -153,7 +153,9 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         return v;
     }
 
-    protected abstract View newView(Context context, ViewGroup parent, String tag, int position);
+    abstract protected int getThumbnailImageId();
+
+    abstract protected View newView(Context context, ViewGroup parent, String tag, int position);
 
     /**
      * Create a map from an array of strings to an array of column-id integers in mCursor.

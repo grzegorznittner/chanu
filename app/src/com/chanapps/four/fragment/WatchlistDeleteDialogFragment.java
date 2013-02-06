@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
+import android.view.View;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.handler.LoaderHandler;
@@ -21,14 +22,20 @@ import com.chanapps.four.data.ChanWatchlist;
 * To change this template use File | Settings | File Templates.
 */
 public class WatchlistDeleteDialogFragment extends DialogFragment {
+
     public static final String TAG = WatchlistDeleteDialogFragment.class.getSimpleName();
+
     private Handler handler;
     private long tim = 0;
-    public WatchlistDeleteDialogFragment(Handler handler, long tim) {
+    private View itemView = null;
+
+    public WatchlistDeleteDialogFragment(View itemView, Handler handler, long tim) {
         super();
+        this.itemView = itemView;
         this.handler = handler;
         this.tim = tim;
     }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return (new AlertDialog.Builder(getActivity()))
@@ -52,5 +59,20 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
                             }
                         })
                 .create();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialogInterface) {
+        resetItemMarking();
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialogInterface) {
+        resetItemMarking();
+    }
+
+    private void resetItemMarking() {
+        itemView.setPadding(0, 0, 0, 0);
+        itemView.setBackgroundColor(getResources().getColor(R.color.PaletteBlack));
     }
 }

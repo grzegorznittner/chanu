@@ -1,7 +1,6 @@
 package com.chanapps.four.component;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
@@ -32,9 +31,9 @@ public class BoardThreadPopup implements Dismissable {
 
     protected View popupView;
     protected ScrollView popupScrollView;
-    protected ImageView countryFlag;
-    protected TextView popupHeader;
-    protected TextView popupText;
+    //protected ImageView countryFlag;
+    //protected TextView popupHeader;
+    //protected TextView popupText;
     protected PopupWindow popupWindow;
     protected TextView deadThreadTextView;
     protected TextView closedThreadTextView;
@@ -49,12 +48,15 @@ public class BoardThreadPopup implements Dismissable {
     protected Button blockButton;
     protected View replyButtonLine;
     protected Button replyButton;
-    protected View highlightButtonLine;
-    protected Button highlightButton;
+    protected View highlightRepliesButtonLine;
+    protected Button highlightRepliesButton;
+    protected View highlightIdButtonLine;
+    protected Button highlightIdButton;
     protected View showImageButtonLine;
     protected Button showImageButton;
     protected View goToThreadButtonLine;
     protected Button goToThreadButton;
+    protected Button closeButton;
 
     public BoardThreadPopup(RefreshableActivity activity, LayoutInflater layoutInflater, ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
         this.activity = activity;
@@ -66,6 +68,7 @@ public class BoardThreadPopup implements Dismissable {
         popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         popupWindow.setBackgroundDrawable(new BitmapDrawable(activity.getBaseContext().getResources())); // magic so back button dismiss works
         popupWindow.setFocusable(true);
+/* blows up on galaxy note
         popupWindow.setOutsideTouchable(true); // magic so click outside window dismisses
         popupWindow.setTouchInterceptor(new View.OnTouchListener() {
             @Override
@@ -79,11 +82,11 @@ public class BoardThreadPopup implements Dismissable {
                 }
             }
         });
-
+*/
         popupScrollView = (ScrollView)popupView.findViewById(R.id.popup_full_text_scroll_view);
-        countryFlag = (ImageView)popupView.findViewById(R.id.popup_country_flag);
-        popupHeader = (TextView)popupView.findViewById(R.id.popup_header);
-        popupText = (TextView)popupView.findViewById(R.id.popup_full_text);
+        //countryFlag = (ImageView)popupView.findViewById(R.id.popup_country_flag);
+        //popupHeader = (TextView)popupView.findViewById(R.id.popup_header);
+        //popupText = (TextView)popupView.findViewById(R.id.popup_full_text);
         deadThreadTextView = (TextView)popupView.findViewById(R.id.popup_dead_thread_text_view);
         closedThreadTextView = (TextView)popupView.findViewById(R.id.popup_closed_thread_text_view);
 
@@ -115,15 +118,18 @@ public class BoardThreadPopup implements Dismissable {
         blockButton = (Button)popupView.findViewById(R.id.popup_block_button);
         replyButtonLine = (View)popupView.findViewById(R.id.popup_reply_button_line);
         replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
-        highlightButtonLine = (View)popupView.findViewById(R.id.popup_highlight_button_line);
-        highlightButton = (Button)popupView.findViewById(R.id.popup_highlight_button);
+        highlightRepliesButtonLine = (View)popupView.findViewById(R.id.popup_highlight_replies_button_line);
+        highlightRepliesButton = (Button)popupView.findViewById(R.id.popup_highlight_replies_button);
+        highlightIdButtonLine = (View)popupView.findViewById(R.id.popup_highlight_id_button_line);
+        highlightIdButton = (Button)popupView.findViewById(R.id.popup_highlight_id_button);
         showImageButtonLine = (View)popupView.findViewById(R.id.popup_show_image_button_line);
         showImageButton = (Button)popupView.findViewById(R.id.popup_show_image_button);
         goToThreadButtonLine = (View)popupView.findViewById(R.id.popup_go_to_thread_button_line);
         goToThreadButton = (Button)popupView.findViewById(R.id.popup_go_to_thread_button);
+        closeButton = (Button)popupView.findViewById(R.id.popup_close_button);
     }
 
-    public void showFromCursor(AdapterView<?> adapterView, View view, int position, long id) {
+    public void showFromCursor(AdapterView<?> adapterView, final View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final String countryFlagUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
         final String headerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_HEADER_TEXT));
@@ -143,19 +149,27 @@ public class BoardThreadPopup implements Dismissable {
         final long clickedThreadNo = resto == 0 ? postId : resto;
         final long clickedPostNo = resto == 0 || postId == resto ? 0 : postId;
         if (BoardActivity.DEBUG) Log.i(BoardActivity.TAG, "Calling popup with id=" + id + " isDead=" + isDead + " postNo=" + postId + " resto=" + resto + " text=" + text);
-        popupHeader.setText(headerText);
-        popupText.setText(text);
+        //popupHeader.setText(headerText);
+        //popupText.setText(text);
 
-        setCountryFlag(countryFlagUrl);
+        //setCountryFlag(countryFlagUrl);
         setSpoilerButton(spoilerText);
         setExifButton(exifText);
         setBlockButton(userId);
         setReplyButtons(isDead, isClosed, clickedBoardCode, clickedThreadNo, clickedPostNo, tim, text);
         setShowImageButton(adapterView, view, position, id);
         setGoToThreadButton(adapterView, view, position, id);
-        displayHighlightButton(clickedBoardCode, clickedThreadNo, clickedPostNo);
+        displayHighlightRepliesButton(clickedBoardCode, clickedThreadNo, clickedPostNo);
+        displayHighlightIdButton(clickedBoardCode, clickedThreadNo, clickedPostNo, userId);
+        setCloseButton();
         setScrollViewMargin();
 
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                view.setBackgroundColor(activity.getBaseContext().getResources().getColor(R.color.PaletteBlack));
+            }
+        });
         popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
     }
 
@@ -188,6 +202,7 @@ public class BoardThreadPopup implements Dismissable {
         });
     }
 
+    /*
     protected void setCountryFlag(String countryFlagUrl) {
         if (BoardActivity.DEBUG) Log.v(BoardActivity.TAG, "Country flag url=" + countryFlagUrl);
         if (countryFlagUrl != null && !countryFlagUrl.isEmpty()) {
@@ -207,6 +222,7 @@ public class BoardThreadPopup implements Dismissable {
             countryFlag.setImageBitmap(null);
         }
     }
+    */
 
     protected void setSpoilerButton(String spoilerText) {
         spoilerTextView.setVisibility(View.GONE);
@@ -294,9 +310,23 @@ public class BoardThreadPopup implements Dismissable {
         }
     }
 
-    protected void displayHighlightButton(final String boardCode, final long threadNo, final long postNo) { // board-level doesn't highlight, only thread-level does
-        highlightButtonLine.setVisibility(View.GONE);
-        highlightButton.setVisibility(View.GONE);
+    protected void displayHighlightRepliesButton(final String boardCode, final long threadNo, final long postNo) { // board-level doesn't highlight, only thread-level does
+        highlightRepliesButtonLine.setVisibility(View.GONE);
+        highlightRepliesButton.setVisibility(View.GONE);
+    }
+
+    protected void displayHighlightIdButton(final String boardCode, final long threadNo, final long postNo, String userId) { // board-level doesn't highlight, only thread-level does
+        highlightIdButtonLine.setVisibility(View.GONE);
+        highlightIdButton.setVisibility(View.GONE);
+    }
+
+    protected void setCloseButton() {
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+            }
+        });
     }
 
     protected void setScrollViewMargin() {
@@ -312,11 +342,15 @@ public class BoardThreadPopup implements Dismissable {
             numVisibleButtons++;
         if (replyButton.getVisibility() == View.VISIBLE)
             numVisibleButtons++;
-        if (highlightButton.getVisibility() == View.VISIBLE)
+        if (highlightRepliesButton.getVisibility() == View.VISIBLE)
+            numVisibleButtons++;
+        if (highlightIdButton.getVisibility() == View.VISIBLE)
             numVisibleButtons++;
         if (showImageButton.getVisibility() == View.VISIBLE)
             numVisibleButtons++;
         if (goToThreadButton.getVisibility() == View.VISIBLE)
+            numVisibleButtons++;
+        if (closeButton.getVisibility() == View.VISIBLE)
             numVisibleButtons++;
         int bottomMarginDp = numVisibleButtons * POPUP_BUTTON_HEIGHT_DP;
         int bottomMarginPx = ChanGridSizer.dpToPx(activity.getBaseContext().getResources().getDisplayMetrics(), bottomMarginDp);

@@ -12,7 +12,7 @@
 
     <GridView
             xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/board_grid_view"
+            android:id="@+id/thread_grid_view"
             style="@style/GridViewTemplate"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"

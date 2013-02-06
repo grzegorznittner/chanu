@@ -11,7 +11,6 @@ import android.util.Log;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
 
-import javax.security.auth.login.LoginException;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -106,7 +105,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
         String boardCode = threadPost.board;
         long threadNo = threadPost.no;
         long tim = threadPost.tim;
-        String shortText = threadPost.getBoardThreadText();
+        String shortText = threadPost.getBoardText();
         String headerText = threadPost.getHeaderText();
         String text = threadPost.getFullText();
         String imageUrl = threadPost.getThumbnailUrl();
@@ -153,8 +152,8 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
         String boardCode = threadComponents[1];
         long threadNo = Long.valueOf(threadComponents[2]);
         long tim = Long.valueOf(threadComponents[0]);
-        String shortText = (threadComponents[3].length() > ChanPost.MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN
-                ? threadComponents[3].substring(0, ChanPost.MAX_BOARDTHREAD_IMAGETEXT_LEN) + "..."
+        String shortText = (threadComponents[3].length() > ChanPost.MAX_SINGLELINE_TEXT_ABBR_LEN
+                ? threadComponents[3].substring(0, ChanPost.MAX_SINGLELINE_TEXT_LEN) + "..."
                 : threadComponents[3]);
         String headerText = null;
         String text = threadComponents[3];

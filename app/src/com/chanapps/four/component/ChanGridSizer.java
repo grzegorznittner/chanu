@@ -20,7 +20,7 @@ public class ChanGridSizer {
     private static final int[] MAX_COLUMN_WIDTHS = {
             ServiceType.SELECTOR.ordinal(), 200,
             ServiceType.BOARD.ordinal(), 200,
-            ServiceType.THREAD.ordinal(), 200,
+            ServiceType.THREAD.ordinal(), 80,
             ServiceType.WATCHLIST.ordinal(), 200
     };
 
@@ -28,6 +28,7 @@ public class ChanGridSizer {
     private Display d;
     private int numColumns = 0;
     private int columnWidth = 0;
+    private int columnHeight = 0;
     private int maxColumnWidth = 200;
 
     public ChanGridSizer(GridView g, Display d, ServiceType serviceType) {
@@ -37,6 +38,7 @@ public class ChanGridSizer {
             if (serviceType.ordinal() == MAX_COLUMN_WIDTHS[i]) {
                 int dp = MAX_COLUMN_WIDTHS[i + 1];
                 maxColumnWidth = dpToPx(d, dp);
+                return;
             }
         }
     }
@@ -59,6 +61,7 @@ public class ChanGridSizer {
         int height = size.y;
         numColumns = width / maxColumnWidth == 1 ? 2 : width / maxColumnWidth;
         columnWidth = (width - 15) / numColumns;
+        columnHeight = columnWidth;
         Log.i(TAG, "sizeGridToDisplay width: " + width + ", height: " + height + ", numCols: " + numColumns);
         g.setNumColumns(numColumns);
         g.setColumnWidth(columnWidth);

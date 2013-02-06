@@ -267,7 +267,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
 		notifBuilder.setAutoCancel(true);
 		notifBuilder.setContentTitle("Images downloaded for thread /" + board + " / " + threadNo);
-		notifBuilder.setContentText(thread.getBoardThreadText());
+		notifBuilder.setContentText(thread.getBoardText());
 		notifBuilder.setSmallIcon(R.drawable.four_leaf_clover_1);
 		
 		Intent threadActivityIntent = null;
@@ -338,7 +338,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
 		notifBuilder.setAutoCancel(true);
 		notifBuilder.setContentTitle("Error downloading images for thread /" + board + " / " + threadNo);
-		notifBuilder.setContentText(thread.getBoardThreadText());
+		notifBuilder.setContentText(thread.getBoardText());
 		notifBuilder.setSmallIcon(R.drawable.four_leaf_clover_1);
 		
 		Intent threadActivityIntent = ThreadActivity.createIntentForActivity(getApplicationContext(),

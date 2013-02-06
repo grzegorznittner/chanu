@@ -2,6 +2,7 @@ package com.chanapps.four.component;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +10,10 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.RefreshableActivity;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.adapter.AbstractThreadCursorAdapter;
 import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -48,31 +51,51 @@ public class ThreadPostPopup extends BoardThreadPopup {
     }
 
     @Override
-    protected void displayHighlightButton(final String boardCode, final long threadNo, final long postNo) { // board-level doesn't highlight, only thread-level does
+    protected void displayHighlightRepliesButton(final String boardCode, final long threadNo, final long postNo) { // board-level doesn't highlight, only thread-level does
         if (postNo > 0) {
-            highlightButtonLine.setVisibility(View.VISIBLE);
-            highlightButton.setVisibility(View.VISIBLE);
-            highlightButton.setOnClickListener(new View.OnClickListener() {
+            highlightRepliesButtonLine.setVisibility(View.VISIBLE);
+            highlightRepliesButton.setVisibility(View.VISIBLE);
+            highlightRepliesButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    HighlighterTask task = new HighlighterTask(activity.getBaseContext(), adapter, boardCode, threadNo);
+                    HighlightRepliesTask task = new HighlightRepliesTask(activity.getBaseContext(), adapter, boardCode, threadNo);
                     task.execute(postNo);
                     popupWindow.dismiss();
                 }
             });
         }
         else {
-            highlightButtonLine.setVisibility(View.GONE);
-            highlightButton.setVisibility(View.GONE);
+            highlightRepliesButtonLine.setVisibility(View.GONE);
+            highlightRepliesButton.setVisibility(View.GONE);
         }
     }
 
-    private class HighlighterTask extends AsyncTask<Long, Void, String> {
+    @Override
+    protected void displayHighlightIdButton(final String boardCode, final long threadNo, final long postNo, final String userId) { // board-level doesn't highlight, only thread-level does
+        if (userId != null && !userId.isEmpty()) {
+            highlightIdButtonLine.setVisibility(View.VISIBLE);
+            highlightIdButton.setVisibility(View.VISIBLE);
+            highlightIdButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    HighlightIdTask task = new HighlightIdTask(activity.getBaseContext(), adapter, boardCode, threadNo, userId);
+                    task.execute(postNo);
+                    popupWindow.dismiss();
+                }
+            });
+        }
+        else {
+            highlightIdButtonLine.setVisibility(View.GONE);
+            highlightIdButton.setVisibility(View.GONE);
+        }
+    }
+
+    private class HighlightRepliesTask extends AsyncTask<Long, Void, String> {
         private Context context = null;
         private AbstractThreadCursorAdapter threadAdapter = null;
         private String boardCode = null;
         private long threadNo = 0;
-        public HighlighterTask(Context context, AbstractThreadCursorAdapter adapter, String boardCode, long threadNo) {
+        public HighlightRepliesTask(Context context, AbstractThreadCursorAdapter adapter, String boardCode, long threadNo) {
             this.context = context;
             this.threadAdapter = adapter;
             this.boardCode = boardCode;
@@ -99,15 +122,67 @@ public class ThreadPostPopup extends BoardThreadPopup {
                 result = context.getString(R.string.thread_couldnt_load);
                 Log.e(TAG, "Exception while getting thread post highlights", e);
             }
-            threadAdapter.setHighlightPosts(postNo, prevPosts, nextPosts);
+            threadAdapter.setHighlightPostReplies(postNo, prevPosts, nextPosts);
             if ((prevPosts == null || prevPosts.length == 0) && (nextPosts == null || nextPosts.length == 0)) {
                 result = context.getString(R.string.thread_no_replies_found);
             }
             else {
                 String msg = context.getString(R.string.thread_replies_found);
-                result = String.format(msg, prevPosts == null ? 0 : prevPosts.length, nextPosts == null ? 0 : nextPosts.length);
+                int count = (prevPosts == null ? 0 : prevPosts.length) + (nextPosts == null ? 0 : nextPosts.length);
+                result = String.format(msg, count);
             }
             if (DEBUG) Log.i(TAG, "Set highlight posts prev=" + Arrays.toString(prevPosts) + " next=" + Arrays.toString(nextPosts));
+            return result;
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+            threadAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private class HighlightIdTask extends AsyncTask<Long, Void, String> {
+        private Context context = null;
+        private AbstractThreadCursorAdapter threadAdapter = null;
+        private String boardCode = null;
+        private long threadNo = 0;
+        private String userId = null;
+        public HighlightIdTask(Context context, AbstractThreadCursorAdapter adapter, String boardCode, long threadNo, String userId) {
+            this.context = context;
+            this.threadAdapter = adapter;
+            this.boardCode = boardCode;
+            this.threadNo = threadNo;
+            this.userId = userId;
+        }
+        @Override
+        protected String doInBackground(Long... postNos) {
+            String result = null;
+            long postNo = postNos[0];
+            long[] idPosts = null;
+            try {
+                ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
+                if (thread != null) {
+                    idPosts = thread.getIdPosts(postNo, userId);
+                }
+                else {
+                    result = context.getString(R.string.thread_couldnt_load);
+                    Log.e(TAG, "Coludn't load thread " + boardCode + "/" + threadNo);
+                }
+            }
+            catch (Exception e) {
+                result = context.getString(R.string.thread_couldnt_load);
+                Log.e(TAG, "Exception while getting thread post highlights", e);
+            }
+            threadAdapter.setHighlightPostsWithId(postNo, idPosts);
+            boolean useFriendlyIds = PreferenceManager.getDefaultSharedPreferences(activity.getBaseContext()).getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
+            String formattedUserId = ChanPost.getUserId(userId, useFriendlyIds);
+            if ((idPosts == null || idPosts.length == 0)) {
+                result = String.format(context.getString(R.string.thread_no_id_found), formattedUserId);
+            }
+            else {
+                result = String.format(context.getString(R.string.thread_id_found), idPosts.length, formattedUserId);
+            }
+            if (DEBUG) Log.i(TAG, "Set highlight posts for id=" + userId + " posts=" + Arrays.toString(idPosts));
             return result;
         }
         @Override

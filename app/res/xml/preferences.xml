@@ -16,14 +16,14 @@
             android:summaryOn="@string/pref_notifications_summ_on"
             android:summaryOff="@string/pref_notifications_summ_off"
             android:defaultValue="true" />
-
+<!-- replaced by grid view
     <CheckBoxPreference
             android:key="pref_hide_all_text"
             android:title="@string/pref_hide_all_text"
             android:summaryOn="@string/pref_hide_all_text_summ_on"
             android:summaryOff="@string/pref_hide_all_text_summ_off"
             android:defaultValue="false" />
-
+-->
     <CheckBoxPreference
             android:key="pref_hide_post_numbers"
             android:title="@string/pref_hide_post_numbers"

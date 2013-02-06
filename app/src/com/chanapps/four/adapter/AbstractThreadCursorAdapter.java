@@ -5,11 +5,8 @@ import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.data.ChanHelper;
 
 import java.util.HashSet;
@@ -30,21 +27,33 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
     protected long highlightPostNo = 0;
     protected Set<Long> highlightPrevPostNos = new HashSet<Long>();
     protected Set<Long> highlightNextPostNos = new HashSet<Long>();
+    protected Set<Long> highlightIdPostNos = new HashSet<Long>();
 
     public AbstractThreadCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
     }
 
-    public void setHighlightPosts(long highlightPostNo, long[] prevPostNos, long[] nextPostNos) {
+    public void setHighlightPostReplies(long highlightPostNo, long[] prevPostNos, long[] nextPostNos) {
         this.highlightPostNo = highlightPostNo;
         highlightPrevPostNos.clear();
         highlightNextPostNos.clear();
+        highlightIdPostNos.clear();
         if (prevPostNos != null)
             for (long postNo : prevPostNos)
                 highlightPrevPostNos.add(postNo);
         if (nextPostNos != null)
             for (long postNo : nextPostNos)
                 highlightNextPostNos.add(postNo);
+    }
+
+    public void setHighlightPostsWithId(long highlightPostNo, long[] idPostNos) {
+        this.highlightPostNo = highlightPostNo;
+        highlightPrevPostNos.clear();
+        highlightNextPostNos.clear();
+        highlightIdPostNos.clear();
+        if (idPostNos != null)
+            for (long postNo : idPostNos)
+                highlightIdPostNos.add(postNo);
     }
 
     @Override
@@ -89,7 +98,7 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
             v = newView(context, parent, tag, position);
             v.setTag(tag);
             if (imageUrl != null && imageUrl.length() > 0) {
-                ImageView imageView = (ImageView)v.findViewById(R.id.grid_item_image);
+                ImageView imageView = (ImageView)v.findViewById(getThumbnailImageId());
                 if (imageView != null)
                     imageView.setTag(imageUrl);
             }
@@ -104,8 +113,6 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
         bindView(v, context, cursor);
         return v;
     }
-
-    abstract protected View newView(Context context, ViewGroup parent, String tag, int position);
 
     abstract protected void setHighlightViews(View v, String tag, long postNo);
 

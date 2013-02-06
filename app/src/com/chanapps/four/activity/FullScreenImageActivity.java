@@ -543,7 +543,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
         return orientation;
     }
 
-    private void navigateToPost(ChanPost post) {
+    private void navigateToPost(ChanPost post, Direction direction) {
         if (post == null || post.no == 0)
             return;
         ImageDownloadService.cancelService(getBaseContext(), imageUrl);
@@ -556,6 +556,14 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, post.h);
         if (DEBUG) Log.i(TAG, "Starting navigate to prev/next image: " + boardCode + "/" + threadNo + ":" + postNo);
         startActivity(intent);
+        switch (direction) {
+            case PREV:
+                overridePendingTransition(R.animator.push_right_in, R.animator.push_right_out);
+                break;
+            case NEXT:
+                overridePendingTransition(R.animator.push_left_in, R.animator.push_left_out);
+                break;
+        }
     }
 
     @Override
@@ -612,6 +620,11 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
         }
     }
 
+    private enum Direction {
+        PREV,
+        NEXT
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -619,10 +632,10 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
                 navigateUp();
                 return true;
             case R.id.prev_image_menu:
-                navigateToPost(prevPost);
+                navigateToPost(prevPost, Direction.PREV);
                 return true;
             case R.id.next_image_menu:
-                navigateToPost(nextPost);
+                navigateToPost(nextPost, Direction.NEXT);
                 return true;
             case R.id.go_to_board_menu:
 /*                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);

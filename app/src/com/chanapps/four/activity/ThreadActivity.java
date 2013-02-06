@@ -21,6 +21,7 @@ import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractThreadCursorAdapter;
 import com.chanapps.four.adapter.ThreadGridCursorAdapter;
+import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
@@ -193,11 +194,18 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     protected void initAdapter() {
-        adapter = new ThreadGridCursorAdapter(this,
-                R.layout.thread_grid_item,
-                this,
-                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_COUNTRY_URL},
-                new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag});
+        if (GridView.class.equals(absListViewClass))
+            adapter = new ThreadGridCursorAdapter(this,
+                    R.layout.thread_grid_item,
+                    this,
+                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_COUNTRY_URL},
+                    new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag});
+        else
+            adapter = new ThreadListCursorAdapter(this,
+                    R.layout.thread_list_item,
+                    this,
+                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
+                    new int[] {R.id.list_item_image, R.id.list_item_header, R.id.list_item_text, R.id.list_item_country_flag});
         absListView.setAdapter(adapter);
     }
 
@@ -214,6 +222,17 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     @Override
+    protected void initAbsListView() {
+        if (GridView.class.equals(absListViewClass)) {
+            absListView = (GridView)findViewById(R.id.thread_grid_view);
+            sizeGridToDisplay();
+        }
+        else {
+            absListView = (ListView)findViewById(R.id.thread_list_view);
+        }
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
@@ -222,17 +241,21 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (loadItem > 0 || lastItem > 0)
             return;
         if (adItem > 0) {
+            ChanHelper.fadeout(this, view);
             final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
             launchAdLinkInBrowser(adUrl);
             return;
         }
-
         incrementCounterAndAddToWatchlistIfActive();
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        if (imageUrl == null || imageUrl.isEmpty())
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            view.setBackgroundColor(getResources().getColor(R.color.PaletteLightBlue));
             showPopupText(adapterView, view, position, id);
-        else
+        }
+        else {
+            ChanHelper.fadeout(this, view);
             FullScreenImageActivity.startActivity(this, adapterView, view, position, id);
+        }
     }
 
     @Override
@@ -244,6 +267,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (loadItem > 0 || lastItem > 0 || adItem > 0)
             return false; // end-of-thread item
 
+        view.setBackgroundColor(getResources().getColor(R.color.PaletteLightBlue));
         incrementCounterAndAddToWatchlistIfActive();
         return showPopupText(adapterView, view, position, id);
     }
@@ -256,20 +280,38 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
                                        ImageLoader imageLoader, DisplayImageOptions displayImageOptions,
                                        boolean hideAllText) {
-        if (view instanceof TextView) {
+        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        if (view instanceof TextView && view.getId() == R.id.list_item_header) {
             TextView tv = (TextView) view;
             long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
             String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
             if ((resto != 0 && hideAllText) || shortText == null || shortText.isEmpty()) {
                 tv.setText("");
-                tv.setVisibility(View.INVISIBLE);
+                if (imageUrl == null || imageUrl.isEmpty())
+                    tv.setVisibility(View.GONE);
+                else
+                    tv.setVisibility(View.INVISIBLE);
             }
             else {
                 tv.setText(Html.fromHtml(shortText));
+                tv.setVisibility(View.VISIBLE);
             }
             return true;
-        } else if (view instanceof ImageView && view.getId() == R.id.grid_item_image) {
-            String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        } else if (view instanceof TextView && view.getId() == R.id.list_item_text) {
+                TextView tv = (TextView) view;
+                long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+                String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+                if ((resto != 0 && hideAllText) || text == null || text.isEmpty()) {
+                    tv.setText("");
+                    tv.setVisibility(View.GONE);
+                }
+                else {
+                    tv.setText(Html.fromHtml(text));
+                    tv.setVisibility(View.VISIBLE);
+                }
+                return true;
+        } else if (view instanceof ImageView
+                && (view.getId() == R.id.grid_item_image || view.getId() == R.id.list_item_image)) {
             int loading = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
             int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
@@ -277,17 +319,18 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
                 smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
             }
-            else if (imageUrl != null && !imageUrl.isEmpty() && loading == 0) {
-                smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
-            }
             else if (loading > 0) {
                 setImageViewToLoading(iv);
+            }
+            else if (imageUrl != null && !imageUrl.isEmpty()) {
+                smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
             }
             else {
                 iv.setImageBitmap(null); // blank
             }
             return true;
-        } else if (view instanceof ImageView && view.getId() == R.id.grid_item_country_flag) {
+        } else if (view instanceof ImageView
+                && (view.getId() == R.id.grid_item_country_flag || view.getId() == R.id.list_item_country_flag)) {
             ImageView iv = (ImageView) view;
             String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
             if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty()) {
@@ -305,17 +348,28 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+/*
         hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         if (hideAllText)
             menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_hide_all_text_on);
         else
             menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_hide_all_text);
+*/
         hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
         if (hidePostNumbers)
             menu.findItem(R.id.hide_post_numbers).setTitle(R.string.pref_hide_post_numbers_turn_off);
         else
             menu.findItem(R.id.hide_post_numbers).setTitle(R.string.pref_hide_post_numbers_turn_on);
         return true;
+    }
+
+    @Override
+    protected void setAbsListViewClass() {
+        hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
+        if (hideAllText)
+            absListViewClass = GridView.class;
+        else
+            absListViewClass = ListView.class;
     }
 
     protected void toggleHideAllText() {
@@ -335,10 +389,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, hidePostNumbers);
         editor.commit();
-        invalidateOptionsMenu();
-        createAbsListView();
-        ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+        refreshActivity();
     }
+
     private void postReply() {
         Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
         replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
@@ -376,9 +429,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             case R.id.post_reply_menu:
                 postReply();
                 return true;
-            case R.id.hide_all_text:
-                toggleHideAllText();
-                return true;
+//            case R.id.hide_all_text:
+//                toggleHideAllText();
+//                return true;
             case R.id.hide_post_numbers:
                 toggleHidePostNumbers();
                 return true;
@@ -454,7 +507,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     protected void incrementCounterAndAddToWatchlistIfActive() {
         ensureUserStats().threadUse(boardCode, threadNo);
-        ChanThreadStat stat = ensureUserStats().threadStats.get(threadNo);
+        String key = boardCode + "/" + threadNo;
+        ChanThreadStat stat = ensureUserStats().boardThreadStats.get(key);
         if (stat != null && stat.usage >= WATCHLIST_ACTIVITY_THRESHOLD && !inWatchlist) {
             int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
             if (stringId == R.string.thread_added_to_watchlist)
@@ -473,8 +527,12 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 		return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo);
 	}
 
+    @Override
     protected int getLayoutId() {
-        return R.layout.thread_grid_layout;
+        if (GridView.class.equals(absListViewClass))
+            return R.layout.thread_list_layout;
+        else
+            return R.layout.thread_list_layout;
     }
 
 }

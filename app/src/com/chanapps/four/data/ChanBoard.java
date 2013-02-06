@@ -179,7 +179,11 @@ public class ChanBoard {
 
     }
 
-    private static int getImageResourceId(String boardCode) {
+    public int getImageResourceId() {
+        return getImageResourceId(link);
+    }
+
+    public static int getImageResourceId(String boardCode) {
         int imageId = 0;
         try {
             imageId = R.drawable.class.getField(boardCode).getInt(null);
@@ -192,7 +196,6 @@ public class ChanBoard {
         }
         return imageId;
     }
-
 
     private static String[][] initBoardCodes(Context ctx) {
         String[][] boardCodesByType = {

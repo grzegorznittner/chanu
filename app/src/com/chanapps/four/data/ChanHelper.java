@@ -3,6 +3,9 @@ package com.chanapps.four.data;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.DeserializationConfig.Feature;
@@ -157,21 +160,6 @@ public class ChanHelper {
         }
     }
 
-    public static int getImageResourceId(String boardCode) {
-        int imageId = 0;
-        try {
-            imageId = R.drawable.class.getField(boardCode).getInt(null);
-        } catch (Exception e) {
-            try {
-                imageId = R.drawable.class.getField("board_" + boardCode).getInt(null);
-            } catch (Exception e1) {
-                imageId = R.drawable.stub_image;
-            }
-        }
-        // if (DEBUG) Log.v(BoardSelectorActivity.TAG, "Found image for board " + boardCode + " image Id: " + imageId);
-        return imageId;
-    }
-
     public static ObjectMapper getJsonMapper() {
     	ObjectMapper mapper = new ObjectMapper();
     	mapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -189,4 +177,10 @@ public class ChanHelper {
 		jp.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 		jp.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
 	}
+
+    public static void fadeout(Context context, View view) {
+        Animation animation = AnimationUtils.loadAnimation(context, R.animator.fadeout);
+        view.startAnimation(animation);
+    }
+
 }

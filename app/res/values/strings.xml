@@ -15,7 +15,7 @@
     <string name="thread_country_flag">Country Flag</string>
 
     <!-- blocklist -->
-    <string name="blocklist_button">Block Posts from Id</string>
+    <string name="blocklist_button">Block Posts With Id</string>
     <string name="blocklist_title">Blocklist</string>
     <string name="blocklist_title_remove">Click to remove from blocklist</string>
     <string name="blocklist_message">Click to delete from blocklist</string>
@@ -44,7 +44,7 @@
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
     <string name="download_all_images_menu">Download All Images</string>
-    <string name="download_all_images_to_gallery_menu">Download All Images To Gallery</string>
+    <string name="download_all_images_to_gallery_menu">Download To Gallery</string>
     <string name="download_image_menu">Save to Gallery</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
     <string name="view_image_gallery_menu">View in Gallery</string>
@@ -75,7 +75,9 @@
     <string name="thread_end_of_thread">End of Thread</string>
     <string name="thread_couldnt_load">Couldn\'t load thread</string>
     <string name="thread_no_replies_found">No replies found</string>
-    <string name="thread_replies_found">Found %1$d previous and %2$d replies</string>
+    <string name="thread_replies_found">Found %1$d referenced posts</string>
+    <string name="thread_no_id_found">No other posts found for %1$s</string>
+    <string name="thread_id_found">Found %1$d posts for %2$s</string>
 
     <!-- watchlist -->
     <string name="board_end_of_watchlist">End of Watchlist</string>
@@ -126,7 +128,8 @@
     <string name="dismiss">Close</string>
     <string name="dead_thread_reply">Dead Thread No Reply</string>
     <string name="closed_thread_reply">Closed Thread No Reply</string>
-    <string name="highlight_replies">Show Replies</string>
+    <string name="highlight_replies">Show Referenced Posts</string>
+    <string name="highlight_id">Show Posts With Id</string>
     <string name="popup_country_flag">Country Flag</string>
     <string name="popup_show_image">Show Image</string>
     <string name="popup_go_to_thread">Go To Thread</string>
@@ -215,11 +218,11 @@
     <string name="pref_hide_all_text_summ_on">Text-only posts and image text hidden</string>
     <string name="pref_hide_all_text_summ_off">Text-only posts and image text shown</string>
     <string name="pref_hide_all_text_on">Show All Text</string>
-    <string name="pref_hide_post_numbers">Hide Post Numbers</string>
+    <string name="pref_hide_post_numbers">Hide Post No.</string>
     <string name="pref_hide_post_numbers_summ_on">Post numbers are hidden</string>
     <string name="pref_hide_post_numbers_summ_off">Post numbers are shown</string>
-    <string name="pref_hide_post_numbers_turn_on">Hide Post Numbers</string>
-    <string name="pref_hide_post_numbers_turn_off">Show Post Numbers</string>
+    <string name="pref_hide_post_numbers_turn_on">Hide Post No.</string>
+    <string name="pref_hide_post_numbers_turn_off">Show Post No.</string>
     <string name="pref_use_friendly_ids">Use Friendly Ids</string>
     <string name="pref_use_friendly_ids_summ_on">Post Ids have readable names</string>
     <string name="pref_use_friendly_ids_summ_off">Post Ids are left unchanged</string>
