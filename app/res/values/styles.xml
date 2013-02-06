@@ -19,12 +19,14 @@
         <item name="android:stretchMode">none</item>
     </style>
 
+<!-- SHARED GRID STYLES -->
+
     <style name="GridViewTemplate" parent="android:style/Theme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:padding">0dp</item>
-        <item name="android:verticalSpacing">0dp</item>
-        <item name="android:horizontalSpacing">0dp</item>
+        <item name="android:verticalSpacing">1dp</item>
+        <item name="android:horizontalSpacing">1dp</item>
         <item name="android:numColumns">2</item>
         <item name="android:stretchMode">none</item>
     </style>
@@ -32,13 +34,6 @@
     <style name="GridLayout" parent="android:style/Theme">
         <item name="android:orientation">vertical</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">200dp</item>
-<!--
-        <item name="android:paddingLeft">0dp</item>
-        <item name="android:paddingRight">0dp</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
--->
         <item name="android:layout_marginLeft">0dp</item>
         <item name="android:layout_marginRight">0dp</item>
         <item name="android:background">@color/PaletteOffWhite</item>
@@ -46,7 +41,6 @@
     </style>
 
     <style name="GridItemStyle" parent="android:style/Theme">
-        <item name="android:maxHeight">200dp</item>
     </style>
 
     <style name="GridTextImageOverlayStyle" parent="GridItemStyle">
@@ -62,19 +56,6 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="GridSelectorTextImageOverlayStyle" parent="GridItemStyle">
-        <item name="android:background">@color/PaletteBlackMostlyOpaque</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:gravity">bottom|center</item>
-        <item name="android:padding">8dp</item>
-        <item name="android:paddingBottom">5dp</item>
-        <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textSize">14sp</item>
-    </style>
 
     <style name="GridTextOnlyStyle" parent="GridTextImageOverlayStyle">
         <item name="android:background">@color/PaletteWhite</item>
@@ -99,7 +80,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerInParent">true</item>
         <item name="android:color">@color/PaletteBlackMostlyOpaque</item>
-        <item name="android:background">@color/PaletteTransparent</item> -->
+        <item name="android:background">@color/PaletteTransparent</item>
         <item name="android:paddingBottom">5dp</item>
         <item name="android:gravity">center</item>
         <item name="android:padding">16dp</item>
@@ -113,39 +94,15 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_centerInParent">true</item>
-        <item name="android:scaleType">fitCenter</item>
         <item name="android:src">@drawable/stub_image</item>
     </style>
 
-    <style name="SelectorGridImageStyle" parent="GridImageStyle">
-        <item name="android:scaleType">centerCrop</item>
-        <item name="android:padding">0dp</item>
-    </style>
-
-    <style name="AdGridImageStyle" parent="GridImageStyle">
-        <item name="android:padding">8dp</item>
-        <item name="android:scaleType">fitCenter</item>
-    </style>
-
-    <style name="BoardGridImageStyle" parent="GridImageStyle">
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingTop">24dp</item>
-        <item name="android:paddingRight">16dp</item>
-        <item name="android:paddingBottom">8dp</item>
-    </style>
-
-    <style name="ThreadHeaderGridImageStyle" parent="GridImageStyle">
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingTop">24dp</item>
-        <item name="android:paddingRight">16dp</item>
-        <item name="android:paddingBottom">8dp</item>
-    </style>
-
-    <style name="ThreadGridImageStyle" parent="GridImageStyle">
-        <item name="android:paddingLeft">32dp</item>
-        <item name="android:paddingTop">56dp</item>
-        <item name="android:paddingRight">32dp</item>
-        <item name="android:paddingBottom">8dp</item>
+    <style name="ListImageStyle">
+        <item name="android:background">@color/PaletteWhite</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:src">@drawable/stub_image</item>
     </style>
 
     <style name="GridCountryFlagStyle" parent="GridItemStyle">
@@ -159,6 +116,95 @@
         <item name="android:contentDescription">@string/popup_country_flag</item>
     </style>
 
+<!-- SELECTOR GRID STYLES -->
+
+    <style name="SelectorGridLayout" parent="GridLayout">
+        <item name="android:layout_height">182dp</item>
+    </style>
+
+    <style name="SelectorGridImageStyle" parent="GridImageStyle">
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_marginBottom">32dp</item>
+    </style>
+
+    <style name="SelectorGridTextImageOverlayStyle" parent="GridItemStyle">
+        <item name="android:background">@color/PaletteBlackMostlyOpaque</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:gravity">center_horizontal|center_vertical</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- BOARD GRID STYLES -->
+
+    <style name="BoardGridLayout" parent="GridLayout">
+        <item name="android:layout_height">214dp</item>
+    </style>
+
+    <style name="BoardGridImageStyle" parent="GridImageStyle">
+        <item name="android:maxHeight">214dp</item>
+        <item name="android:maxWidth">150dp</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_marginBottom">64dp</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
+    <style name="BoardAdGridImageStyle" parent="GridImageStyle">
+        <item name="android:maxHeight">214dp</item>
+        <item name="android:maxWidth">150dp</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="BoardGridTextImageOverlayStyle" parent="GridItemStyle">
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:background">@color/PaletteBlackMostlyOpaque</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+<!-- THREAD GRID STYLES -->
+
+    <style name="ThreadGridLayout" parent="GridLayout">
+        <item name="android:layout_height">80dp</item>
+    </style>
+
+    <style name="ThreadHeaderGridImageStyle" parent="GridImageStyle">
+        <item name="android:maxHeight">150dp</item>
+        <item name="android:maxWidth">150dp</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="ThreadGridImageStyle" parent="GridImageStyle">
+        <item name="android:maxHeight">80dp</item>
+        <item name="android:maxWidth">80dp</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="ThreadAdGridImageStyle" parent="GridImageStyle">
+        <item name="android:maxHeight">80dp</item>
+        <item name="android:maxWidth">80dp</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
     <style name="GridItemHighlightStyle" parent="GridItemStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -166,7 +212,7 @@
     </style>
 
     <style name="GridItemSelfHighlightStyle" parent="GridItemHighlightStyle">
-        <item name="android:background">@color/PaletteDarkGreenHalfOpacity</item>
+        <item name="android:background">@color/PaletteLightBlueHalfOpacity</item>
     </style>
 
     <style name="GridItemPrevHighlightStyle" parent="GridItemHighlightStyle">
@@ -174,8 +220,94 @@
     </style>
 
     <style name="GridItemNextHighlightStyle" parent="GridItemHighlightStyle">
-        <item name="android:background">@color/PaletteLightBlueHalfOpacity</item>
+        <item name="android:background">@color/PaletteDarkGreenHalfOpacity</item>
     </style>
+
+<!-- THREAD LIST STYLES -->
+
+    <style name="ThreadListLayout" parent="android:style/Theme">
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:background">@color/PaletteBlack</item>
+    </style>
+
+    <style name="ThreadAdListImageStyle">
+        <item name="android:layout_margin">4dp</item>
+    </style>
+
+    <style name="ThreadListItemImageStyle">
+        <item name="android:background">@color/PaletteBlack</item>
+    </style>
+
+    <style name="ListTextStyle">
+        <item name="android:textColor">@color/PaletteBlack</item>
+        <item name="android:background">@color/PaletteWhite</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="ListTextHeaderStyle" parent="android:style/Theme">
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:background">@color/PaletteBlackMostlyOpaque</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="ListFullTextHeaderStyle" parent="android:style/Theme">
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:background">@color/PaletteBlackMostlyOpaque</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">top</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="ListShortTextStyle" parent="android:style/Theme">
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:background">@color/PaletteBlack</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ListFullTextStyle" parent="android:style/Theme">
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:background">@color/PaletteBlack</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="ListCountryFlagStyle" parent="android:style/Theme">
+        <item name="android:layout_width">16dp</item>
+        <item name="android:layout_height">11dp</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:contentDescription">@string/popup_country_flag</item>
+    </style>
+
+<!-- POST REPLY STYLES -->
 
     <style name="PostReplyEditTextStyle" parent="android:style/Theme">
         <item name="android:layout_width">match_parent</item>
@@ -233,15 +365,20 @@
         <item name="android:scrollHorizontally">true</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:layout_gravity">top</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:visibility">gone</item>
     </style>
 
+    <color name="PaletteLightGreen">#58b75a</color>
     <color name="PaletteDarkGreen">#58675a</color>
     <color name="PaletteDarkGreenHalfOpacity">#8058675a</color>
     <color name="PaletteDarkPink">#ca707c</color>
     <color name="PaletteDarkPinkHalfOpacity">#80ca707c</color>
-    <color name="PaletteLightBlue">#79ccd4</color>
+    <color name="PaletteLightBlue">#397ce4</color>
     <color name="PaletteLightBlueHalfOpacity">#8079ccd4</color>
-    <color name="PaletteLightGreen">#77b496</color>
     <color name="PaletteLightGreenHalfOpacity">#8077b496</color>
     <color name="PaletteOffWhite">#ddd9d7</color>
     <color name="PaletteOffWhiteHalfOpacity">#80ddd9d7</color>

@@ -19,7 +19,7 @@ import com.chanapps.four.data.ChanHelper;
  */
 public class ThreadGridCursorAdapter extends AbstractThreadCursorAdapter {
 
-    protected static final int GRID_ITEM_HEIGHT_DP = 200;
+    protected static final int GRID_ITEM_HEIGHT_DP = 80;
 
     public ThreadGridCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
@@ -38,7 +38,7 @@ public class ThreadGridCursorAdapter extends AbstractThreadCursorAdapter {
             return mInflater.inflate(R.layout.board_grid_item_ad, parent, false);
         }
         else if (ChanHelper.POST_RESTO.equals(tag)) { // first item is the post which started the thread
-            RelativeLayout view = (RelativeLayout)mInflater.inflate(R.layout.thread_grid_item_header, parent, false);
+            RelativeLayout view = (RelativeLayout)mInflater.inflate(R.layout.thread_grid_item, parent, false);
             AbsListView.LayoutParams viewParams = (AbsListView.LayoutParams)view.getLayoutParams();
             if (viewParams == null) {
                 int viewHeightPx = ChanGridSizer.dpToPx(context.getResources().getDisplayMetrics(), GRID_ITEM_HEIGHT_DP);
@@ -59,8 +59,13 @@ public class ThreadGridCursorAdapter extends AbstractThreadCursorAdapter {
     }
 
     @Override
+    protected int getThumbnailImageId() {
+        return R.id.grid_item_image;
+    }
+
+    @Override
     protected void setHighlightViews(View v, String tag, long postNo) {
-        if (highlightPostNo == postNo) {
+        if (highlightPostNo == postNo || highlightIdPostNos.contains(postNo)) {
             v.findViewById(R.id.grid_item_self_highlight).setVisibility(View.VISIBLE);
             v.findViewById(R.id.grid_item_prev_highlight).setVisibility(View.INVISIBLE);
             v.findViewById(R.id.grid_item_next_highlight).setVisibility(View.INVISIBLE);

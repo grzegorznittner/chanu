@@ -46,7 +46,7 @@ public class BoardSelectorAdapter extends AbstractBoardCursorAdapter {
             v = newView(context, parent, tag, position);
             v.setTag(tag);
             if (ChanHelper.BOARD_IMAGE_RESOURCE_ID.equals(tag)) {
-                ImageView imageView = (ImageView)v.findViewById(R.id.grid_item_image);
+                ImageView imageView = (ImageView)v.findViewById(getThumbnailImageId());
                 imageView.setTag(imageId);
             }
         } else {
@@ -55,6 +55,11 @@ public class BoardSelectorAdapter extends AbstractBoardCursorAdapter {
         }
         bindView(v, context, cursor);
         return v;
+    }
+
+    @Override
+    protected int getThumbnailImageId() {
+        return R.id.grid_item_image;
     }
 
     @Override

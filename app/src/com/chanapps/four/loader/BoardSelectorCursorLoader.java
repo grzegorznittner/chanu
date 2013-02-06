@@ -49,7 +49,7 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
             MatrixCursor.RowBuilder row = cursor.newRow();
             row.add(board.link.hashCode());
             row.add(board.link);
-            row.add(ChanHelper.getImageResourceId(board.link));
+            row.add(board.getImageResourceId());
             row.add(board.name);
         }
 

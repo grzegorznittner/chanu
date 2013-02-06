@@ -38,11 +38,14 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
         else if (ChanHelper.AD_ITEM.equals(tag)) {
             return mInflater.inflate(R.layout.board_grid_item_ad, parent, false);
         }
-        else if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
+        else {
             return mInflater.inflate(R.layout.board_grid_item, parent, false);
-        } else {
-            return mInflater.inflate(R.layout.board_grid_item_no_image, parent, false);
         }
+    }
+
+    @Override
+    protected int getThumbnailImageId() {
+        return R.id.grid_item_image;
     }
 
 }

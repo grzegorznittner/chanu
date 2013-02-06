@@ -14,15 +14,16 @@ public class ChanPost {
 	public static final String TAG = ChanPost.class.getSimpleName();
     private static final boolean DEBUG = false;
     
-    public static final int MAX_BOARDTHREAD_IMAGETEXT_LEN = 75;
-    public static final int MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN = MAX_BOARDTHREAD_IMAGETEXT_LEN - 3;
-    public static final int MAX_THREAD_IMAGETEXT_LEN = (int)(MAX_BOARDTHREAD_IMAGETEXT_LEN * 1.5);
+    public static final int MAX_SINGLELINE_TEXT_LEN = 33;
+    public static final int MAX_SINGLELINE_TEXT_ABBR_LEN = MAX_SINGLELINE_TEXT_LEN - 3;
+
+    public static final int MAX_THREAD_IMAGETEXT_LEN = 110;
     public static final int MAX_THREAD_IMAGETEXT_ABBR_LEN = MAX_THREAD_IMAGETEXT_LEN - 3;
 
     /* TWO COL SIZES */
-    public static final int MAX_IMAGETEXT_LEN = MAX_BOARDTHREAD_IMAGETEXT_LEN;
-    public static final int MAX_IMAGETEXT_ABBR_LEN = MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN;
-    public static final int MAX_TEXTONLY_LEN = (int)(MAX_BOARDTHREAD_IMAGETEXT_LEN * 3.5);
+    public static final int MAX_IMAGETEXT_LEN = 75;
+    public static final int MAX_IMAGETEXT_ABBR_LEN = MAX_IMAGETEXT_LEN - 3;
+    public static final int MAX_TEXTONLY_LEN = (int)(MAX_THREAD_IMAGETEXT_LEN * 2.3);
     public static final int MAX_TEXTONLY_ABBR_LEN = MAX_TEXTONLY_LEN - 3;
     public static final int MAX_THREAD_TEXTONLY_LEN = (int)(MAX_TEXTONLY_LEN * 1.5);
     public static final int MAX_THREAD_TEXTONLY_ABBR_LEN = MAX_THREAD_TEXTONLY_LEN - 3;
@@ -104,10 +105,8 @@ public class ChanPost {
     public String getFullText() {
         if (hideAllText)
             return "";
-        String text = sub != null && sub.trim().length() > 0
-                  ? sub + (com != null && com.trim().length() > 0 ? "<br/>" + com : "")
-                  : com;
-        return sanitizeText(text);
+        else
+            return com != null && com.trim().length() > 0 ? sanitizeText(com) : "";
     }
 
     private String sanitizeText(String text) {
@@ -124,7 +123,7 @@ public class ChanPost {
         text = text
                 .replaceAll("<span[^>]*class=\"abbr\"[^>]*>.*</span>", "")    // exif reference
                 .replaceAll("<table[^>]*class=\"exif\"[^>]*>.*</table>", "")  // exif info
-                .replaceAll("<s>[^<]*</s>", "");                         // spoiler text
+                .replaceAll("<s>[^<]*</s>", "SPOILER");                       // spoiler text
         text = textViewFilter(text);
 
         long end = System.currentTimeMillis();
@@ -268,12 +267,11 @@ public class ChanPost {
                 + (id != null && !id.isEmpty() ? "\nId: " + getUserId() : "")
                 + (email != null && !email.isEmpty() ? "\nEmail: " + email : "")
                 + (country_name != null && !country_name.isEmpty() ? "\nCountry: " + country_name : "")
-                + "\n" + (new Date(time)).toString();
+                + "\n" + (new Date(time)).toString()
+                + (sub != null && !sub.isEmpty() ? "\nSubject: " + sanitizeText(sub) : "");
     }
 
     public String getPostText() {
-        int maxImageTextLen = fsize > 0 ? MAX_IMAGETEXT_LEN : MAX_TEXTONLY_LEN;
-        int maxImageTextAbbrLen = fsize > 0 ? MAX_IMAGETEXT_ABBR_LEN : MAX_TEXTONLY_ABBR_LEN;
         String text = "";
         if (!hideAllText) {
             if (!hidePostNumbers)
@@ -282,9 +280,16 @@ public class ChanPost {
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Name: " + name + "</b>";
             if (id != null && !id.isEmpty())
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getUserId() + "</b>";
-            String textLine = abbreviate(getFullText(), maxImageTextLen, maxImageTextAbbrLen);
-            if (textLine != null && !textLine.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + textLine;
+            if (trip != null && !trip.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Tripcode: " + trip + "</b>";
+            if (email != null && !email.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Email: " + email + "</b>";
+            if (country_name != null && !country_name.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Country: " + country_name + "</b>";
+            text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + (new Date(time)).toString() + "</b>";
+            String subText = sanitizeText(sub);
+            if (subText != null && !subText.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + subText + "</b>";
         }
         if (fsize > 0) {
 			int kbSize = (fsize / 1024) + 1;
@@ -294,13 +299,6 @@ public class ChanPost {
 	}
 
     public String getThreadText() {
-        if (fsize > 0) // has image
-            return getThreadText(MAX_THREAD_IMAGETEXT_LEN, MAX_THREAD_IMAGETEXT_ABBR_LEN, false);
-        else
-            return getThreadText(MAX_THREAD_TEXTONLY_LEN, MAX_THREAD_TEXTONLY_ABBR_LEN, false);
-    }
-
-    public String getThreadText(int maxImageTextLen, int maxImageTextAbbrLen, boolean onBoard) {
         String text = "";
         if (!hideAllText) {
             if (!hidePostNumbers)
@@ -309,20 +307,18 @@ public class ChanPost {
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Name: " + name + "</b>";
             if (id != null && !id.isEmpty())
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getUserId() + "</b>";
-            String subText = abbreviate(sanitizeText(sub), maxImageTextLen, maxImageTextAbbrLen);
-            String comText = abbreviate(sanitizeText(com), maxImageTextLen, maxImageTextAbbrLen);
+            if (trip != null && !trip.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Tripcode: " + trip + "</b>";
+            if (email != null && !email.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Email: " + email + "</b>";
+            if (country_name != null && !country_name.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Country: " + country_name + "</b>";
+            text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + (new Date(time)).toString() + "</b>";
+            String subText = sanitizeText(sub);
             if (subText != null && !subText.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + subText;
-            if (comText != null && !comText.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + comText;
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + subText + "</b>";
         }
-        if (resto != 0) { // just a post, don't add thread stuff
-            if (fsize > 0 && !onBoard) {
-                int kbSize = (fsize / 1024) + 1;
-                text += (text.isEmpty() ? "" : "<br/>\n") + kbSize + "kB " + w + "x" + h; // + " " + ext;
-            }
-        }
-        else {
+        if (resto == 0) { // thread stuff
             text += (text.isEmpty() ? "" : "<br/>\n")
                     + replies
                     + " post" + (replies == 1 ? "" : "s")
@@ -335,22 +331,56 @@ public class ChanPost {
             if (bumplimit == 1)
                 text += " (BL)";
             if (isDead)
-                text += (text.isEmpty() ? "" : (onBoard ? "<br/>" : " ")) + "DEAD";
+                text += (text.isEmpty() ? "" : " ") + "DEAD";
+            if (sticky > 0)
+                text += (text.isEmpty() ? "" : " ") + "STICKY";
             if (closed > 0)
-                text += (text.isEmpty() ? "" : (onBoard ? "<br/>" : " ")) + "CLOSED";
-            if (fsize > 0 && !onBoard) {
+                text += (text.isEmpty() ? "" : " ") + "CLOSED";
+            if (fsize > 0) {
                 int kbSize = (fsize / 1024) + 1;
-                text += " " + kbSize + "kB " + w + "x" + h; // + " " + ext;
+                text += "<br/>\n" + kbSize + "kB " + w + "x" + h; // + " " + ext;
+            }
+        }
+        else { // just a post, don't add thread stuff
+            if (fsize > 0) {
+                int kbSize = (fsize / 1024) + 1;
+                text += (text.isEmpty() ? "" : "<br/>\n") + kbSize + "kB " + w + "x" + h; // + " " + ext;
             }
         }
         return text;
 	}
 
-    public String getBoardThreadText() {
-        if (fsize > 0) // has image
-            return getThreadText(MAX_BOARDTHREAD_IMAGETEXT_LEN, MAX_BOARDTHREAD_IMAGETEXT_ABBR_LEN, true);
-        else // text-only
-            return getThreadText(MAX_TEXTONLY_LEN, MAX_TEXTONLY_ABBR_LEN, true);
+    public String getBoardText() {
+        if (resto != 0)
+            return ""; // just a post
+        String text = "";
+
+        String subText = abbreviate(sanitizeText(sub), MAX_SINGLELINE_TEXT_LEN, MAX_SINGLELINE_TEXT_ABBR_LEN);
+        if (subText != null && !subText.isEmpty()) {
+            text += "<b>" + subText + "</b>";
+        }
+        else {
+            String comText = abbreviate(sanitizeText(com), MAX_SINGLELINE_TEXT_LEN, MAX_SINGLELINE_TEXT_ABBR_LEN);
+            if (comText != null && !comText.isEmpty())
+                text += "<b>" + comText + "</b>";
+        }
+
+        text += (text.isEmpty() ? "" : "<br/>\n")
+                + replies
+                + " post" + (replies == 1 ? "" : "s")
+                + " "
+                + images
+                + " image"
+                + (images == 1 ? "" : "s");
+        if (imagelimit == 1)
+            text += " IL";
+        if (bumplimit == 1)
+            text += " BL";
+        if (closed > 0)
+            text += " C";
+        if (isDead)
+            text += " D";
+        return text;
     }
 
     public void mergeIntoThreadList(List<ChanPost> threads) {

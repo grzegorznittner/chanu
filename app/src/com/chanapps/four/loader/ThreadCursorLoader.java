@@ -2,6 +2,7 @@ package com.chanapps.four.loader;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
+import java.util.Random;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,6 +13,7 @@ import android.util.Log;
 
 import android.widget.AbsListView;
 import android.widget.GridView;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
 
@@ -19,23 +21,26 @@ public class ThreadCursorLoader extends BoardCursorLoader {
 
     private static final String TAG = ThreadCursorLoader.class.getSimpleName();
     private static final boolean DEBUG = false;
-    protected SharedPreferences prefs;
+    private static final int DEFAULT_NUM_GRID_COLUMNS_PORTRAIT = 2;
+    private static final int DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE = 3;
 
+    protected SharedPreferences prefs;
     protected long threadNo;
     protected int numGridColumns;
+    private boolean hideAllText;
+    private boolean hidePostNumbers;
+    private boolean useFriendlyIds;
 
     protected ThreadCursorLoader(Context context) {
         super(context);
     }
-
-    private static final int DEFAULT_NUM_GRID_COLUMNS_PORTRAIT = 2;
-    private static final int DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE = 3;
 
     public ThreadCursorLoader(Context context, String boardName, long threadNo, AbsListView absListView) {
         this(context);
         this.context = context;
         this.boardName = boardName;
         this.threadNo = threadNo;
+        initRandomGenerator();
         ChanHelper.Orientation orientation = ChanHelper.getOrientation(context);
         int defaultNumColumns = (orientation == ChanHelper.Orientation.PORTRAIT) ? DEFAULT_NUM_GRID_COLUMNS_PORTRAIT : DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE;
         if (absListView instanceof GridView) {
@@ -53,9 +58,11 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    private boolean hideAllText;
-    private boolean hidePostNumbers;
-    private boolean useFriendlyIds;
+    @Override
+    protected void initRandomGenerator() { // to allow repeatable positions for ads
+        generatorSeed = threadNo;
+        generator = new Random(generatorSeed);
+    }
 
     /* Runs on a worker thread */
     @Override
@@ -125,18 +132,18 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     protected void addThreadHeaderRows(MatrixCursor matrixCursor, ChanPost post) {
         Object[] currentRow;
         if (post.tn_w <= 0 || post.tim == 0) { // text-only thread header
-                String postText = hideAllText ? "" : post.getThreadText();
-                if (postText == null)
-                    postText = ""; // defensive coding
-                    currentRow = new Object[] {
-                            post.no, boardName, threadNo,
-                            "", post.getCountryFlagUrl(),
-                            postText, post.getHeaderText(), post.getFullText(),
-                            post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                            post.getSpoilerText(), post.getExifText(), post.id,
-                            post.isDead ? 1 : 0, post.closed, 0, 0, 0};
-                    matrixCursor.addRow(currentRow);
-                    if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
+            String postText = hideAllText ? "" : post.getThreadText();
+            if (postText == null)
+                postText = ""; // defensive coding
+            currentRow = new Object[] {
+                    post.no, boardName, threadNo,
+                    "", post.getCountryFlagUrl(),
+                    postText, post.getHeaderText(), post.getFullText(),
+                    post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
+                    post.getSpoilerText(), post.getExifText(), post.id,
+                    post.isDead ? 1 : 0, post.closed, 0, 0, 0};
+            matrixCursor.addRow(currentRow);
+            if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
         } else {
             String postText = post.getThreadText();
             currentRow = new Object[] { // image header
@@ -193,6 +200,25 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 post.isDead ? 1 : 0, post.closed, 0, 0, 0};
         matrixCursor.addRow(currentRow);
         if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
+    }
+
+    @Override
+    protected void addAdRow(MatrixCursor matrixCursor) {
+        ChanBoard board = ChanBoard.getBoardByCode(this.getContext(), boardName);
+        boolean adultBoard = board != null && !board.workSafe ? true : false;
+        int adCode =
+                (adultBoard && generator.nextDouble() < AD_ADULT_PROBABILITY_ON_ADULT_BOARD)
+                        ? JLIST_AD_ADULT_CODES[generator.nextInt(JLIST_AD_ADULT_CODES.length)]
+                        : JLIST_AD_SMALL_CODES[generator.nextInt(JLIST_AD_SMALL_CODES.length)];
+        String imageUrl = JLIST_AD_IMAGE_ROOT_URL + "/" + adCode;
+        String clickUrl = JLIST_AD_CLICK_ROOT_URL + "/" + adCode;
+        matrixCursor.addRow(new Object[] {
+                2, boardName, 0,
+                imageUrl, "",
+                getContext().getString(R.string.jlist_ad_message), "", clickUrl,
+                -1, -1, -1, -1, 0, 0,
+                "", "", "",
+                0, 0, 0, 0, 1});
     }
 
     @Override

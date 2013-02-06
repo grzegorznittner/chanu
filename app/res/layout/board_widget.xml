@@ -16,7 +16,7 @@
                android:layout_height="fill_parent"
                android:layout_width="0dp"
                android:contentDescription="Left Thumbnail Image"
-               android:scaleType="centerInside"
+               android:scaleType="centerCrop"
                android:layout_weight="1"
                android:padding="2dp"
             />
@@ -25,7 +25,7 @@
                android:layout_height="fill_parent"
                android:layout_width="0dp"
                android:contentDescription="Center Thumbnail Image"
-               android:scaleType="centerInside"
+               android:scaleType="centerCrop"
                android:layout_weight="1"
                android:padding="2dp"
             />
@@ -34,7 +34,7 @@
                android:layout_height="fill_parent"
                android:layout_width="0dp"
                android:contentDescription="Right Thumbnail Image"
-               android:scaleType="centerInside"
+               android:scaleType="centerCrop"
                android:layout_weight="1"
                android:padding="2dp"
             />

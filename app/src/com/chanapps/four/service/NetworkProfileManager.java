@@ -253,13 +253,13 @@ public class NetworkProfileManager {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (DEBUG) Log.i(TAG, "Connection change action: " + action);
-            
-            if (intent.getBooleanExtra("EXTRA_NO_CONNECTIVITY", false)) {
-            	if (DEBUG) Log.i(TAG, "Disconnected from any network");
-            	NetworkProfileManager.instance().changeNetworkProfile(NetworkProfile.Type.NO_CONNECTION);
-            } else {
+// can't do this because extra is unreliable, returns true even when mobile data is up
+//            if (intent.getBooleanExtra("EXTRA_NO_CONNECTIVITY", false)) {
+//            	if (DEBUG) Log.i(TAG, "Disconnected from any network");
+//            	NetworkProfileManager.instance().changeNetworkProfile(NetworkProfile.Type.NO_CONNECTION);
+//            } else {
             	checkNetwork(context);
-            }
+//            }
         }
         
         public static void checkNetwork(Context context) {

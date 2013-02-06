@@ -123,11 +123,17 @@ public class BoardActivity
     }
 
     protected int getLayoutId() {
-        return R.layout.board_grid_layout;
+        if (GridView.class.equals(absListViewClass))
+            return R.layout.board_grid_layout;
+        else
+            return R.layout.board_list_layout;
     }
 
-    protected void createAbsListView() {
-        setContentView(getLayoutId());
+    protected void setAbsListViewClass() { // override to change
+        absListViewClass = GridView.class; // always for board view
+    }
+
+    protected void initAbsListView() {
         if (GridView.class.equals(absListViewClass)) {
             absListView = (GridView)findViewById(R.id.board_grid_view);
             sizeGridToDisplay();
@@ -135,6 +141,12 @@ public class BoardActivity
         else {
             absListView = (ListView)findViewById(R.id.board_list_view);
         }
+    }
+
+    protected void createAbsListView() {
+        setAbsListViewClass();
+        setContentView(getLayoutId());
+        initAbsListView();
         initAdapter();
         absListView.setClickable(true);
         absListView.setOnItemClickListener(this);
@@ -278,26 +290,32 @@ public class BoardActivity
                 tv.setText(Html.fromHtml(shortText));
             }
             return true;
-        } else if (view instanceof ImageView && view.getId() == R.id.grid_item_image) {
+        } else if (view instanceof ImageView
+                && (view.getId() == R.id.grid_item_image || view.getId() == R.id.list_item_image)) {
+            String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
             String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
             int loading = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
             int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
             if (spoiler > 0) {
-                String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
                 smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
-            }
-            else if (imageUrl != null && !imageUrl.isEmpty() && loading == 0) {
-                smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
             }
             else if (loading > 0) {
                 setImageViewToLoading(iv);
             }
+            else if (imageUrl == null || imageUrl.isEmpty()) {
+                int imageResourceId = ChanBoard.getImageResourceId(boardCode);
+                if (imageResourceId > 0)
+                    smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions, imageResourceId);
+                else
+                    iv.setImageBitmap(null);
+            }
             else {
-                iv.setImageBitmap(null); // blank
+                smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
             }
             return true;
-        } else if (view instanceof ImageView && view.getId() == R.id.grid_item_country_flag) {
+        } else if (view instanceof ImageView
+                && (view.getId() == R.id.grid_item_country_flag || view.getId() == R.id.list_item_country_flag)) {
             ImageView iv = (ImageView) view;
             String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
             if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagImageUrl);
@@ -315,6 +333,15 @@ public class BoardActivity
 
     public static void smartSetImageView(ImageView iv, String imageUrl,
                                          ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
+        smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions, 0);
+    }
+
+    public static void smartSetImageView(ImageView iv,
+                                         String imageUrl,
+                                         ImageLoader imageLoader,
+                                         DisplayImageOptions displayImageOptions,
+                                         int imageResourceId)
+    {
         try {
             Integer viewHashCodeInt = (Integer)iv.getTag(IMAGE_URL_HASHCODE_KEY);
             int viewHashCode = viewHashCodeInt != null ? viewHashCodeInt : 0;
@@ -324,7 +351,10 @@ public class BoardActivity
                 if (DEBUG) Log.i(TAG, "calling imageloader for " + imageUrl);
                 iv.setImageBitmap(null);
                 iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
-                imageLoader.displayImage(imageUrl, iv, displayImageOptions);
+                if (imageResourceId > 0) // load from board
+                    iv.setImageResource(imageResourceId);
+                else
+                    imageLoader.displayImage(imageUrl, iv, displayImageOptions); // load from internet
             }
         } catch (NumberFormatException nfe) {
             try {
@@ -381,6 +411,7 @@ public class BoardActivity
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (loadItem > 0 || lastItem > 0)
             return;
+        ChanHelper.fadeout(this, view);
         if (adItem > 0) {
             final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
             launchAdLinkInBrowser(adUrl);
@@ -398,14 +429,16 @@ public class BoardActivity
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+        return false;
+        /*
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
         final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (loadItem > 0 || lastItem > 0 || adItem > 0)
             return false;
-
         return showPopupText(adapterView, view, position, id);
+        */
     }
 
     @Override

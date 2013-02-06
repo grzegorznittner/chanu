@@ -109,4 +109,17 @@ public class ChanThread extends ChanPost {
         return nextPostsArr;
     }
 
+    public long[] getIdPosts(long postNo, String userId) { // what other posts refer to this post
+        List<Long> idPosts = new ArrayList<Long>();
+        if (userId == null || userId.isEmpty())
+            return null;
+        for (ChanPost post : posts)
+            if (post.no != postNo && userId.equals(post.id))
+                idPosts.add(post.no);
+        long[] idPostsArr = new long[idPosts.size()];
+        for (int i = 0; i < idPostsArr.length; i++)
+            idPostsArr[i] = idPosts.get(i);
+        return idPostsArr;
+    }
+
 }

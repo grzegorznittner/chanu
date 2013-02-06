@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/grid_item"
-    style="@style/GridLayout">
+    style="@style/BoardGridLayout">
 
     <ImageView
             android:id="@+id/grid_item_image"
@@ -11,7 +11,7 @@
 
     <TextView
             android:id="@+id/grid_item_text"
-            style="@style/GridTextImageOverlayStyle"
+            style="@style/BoardGridTextImageOverlayStyle"
             />
 
     <ImageView

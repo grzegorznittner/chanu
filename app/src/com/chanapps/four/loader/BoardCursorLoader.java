@@ -15,19 +15,19 @@ import android.util.Log;
 
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
-import com.chanapps.four.service.FetchChanDataService;
 
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = BoardCursorLoader.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    protected static final double AD_PROBABILITY = 0.25;
-    protected static final double AD_ADULT_PROBABILITY_ON_ADULT_BOARD = 0.5;
+    protected static final double AD_PROBABILITY = 0.20;
+    protected static final double AD_ADULT_PROBABILITY_ON_ADULT_BOARD = 1.0;
     protected static final int MINIMUM_AD_SPACING = 4;
     protected static final String JLIST_AD_AFFILIATE_CODE = "4539";
-    protected static final int[] JLIST_AD_CODES = { 118, 113, 129, 21, 97, 68, 82, 83, 104, 121, 120 };
-    protected static final int[] JLIST_AD_ADULT_CODES = { 122, 70, 123 };
+    protected static final int[] JLIST_AD_CODES = { 118, 113, 68 };
+    protected static final int[] JLIST_AD_SMALL_CODES = { 21, 97, 104, 121, 120 };
+    protected static final int[] JLIST_AD_ADULT_CODES = { 122, 70 };
     protected static final String JLIST_AD_ROOT_URL = "http://anime.jlist.com";
     protected static final String JLIST_AD_IMAGE_ROOT_URL = JLIST_AD_ROOT_URL + "/media/" + JLIST_AD_AFFILIATE_CODE;
     protected static final String JLIST_AD_CLICK_ROOT_URL = JLIST_AD_ROOT_URL + "/click/" + JLIST_AD_AFFILIATE_CODE;
@@ -39,21 +39,24 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected String boardName;
 
-    protected Random generator = new Random();
+    protected long generatorSeed;
+    protected Random generator;
 
     protected BoardCursorLoader(Context context) {
         super(context);
         mObserver = new ForceLoadContentObserver();
     }
 
-    public BoardCursorLoader(Context context, String boardName, int pageNo) {
+    public BoardCursorLoader(Context context, String boardName) {
         this(context);
         this.context = context;
         this.boardName = boardName;
+        initRandomGenerator();
     }
 
-    public BoardCursorLoader(Context context, String boardName) {
-        this(context, boardName, 0);
+    protected void initRandomGenerator() { // to allow repeatable positions for ads
+        generatorSeed = boardName.hashCode();
+        generator = new Random(generatorSeed);
     }
 
     /* Runs on a worker thread */
@@ -106,9 +109,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected void addTextOnlyRow(MatrixCursor matrixCursor, ChanPost thread) {
         matrixCursor.addRow(new Object[] {
-                thread.no, boardName, 0, "",
+                thread.no, boardName, 0,
+                "",
                 thread.getCountryFlagUrl(),
-                thread.getBoardThreadText(),
+                thread.getBoardText(),
                 thread.getHeaderText(), thread.getFullText(),
                 thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
                 thread.getSpoilerText(), thread.getExifText(), thread.id,
@@ -119,7 +123,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         matrixCursor.addRow(new Object[] {
                 thread.no, boardName, 0,
                 thread.getThumbnailUrl(), thread.getCountryFlagUrl(),
-                thread.getBoardThreadText(),
+                thread.getBoardText(),
                 thread.getHeaderText(), thread.getFullText(),
                 thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
                 thread.getSpoilerText(), thread.getExifText(), thread.id,
@@ -130,7 +134,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         ChanBoard board = ChanBoard.getBoardByCode(this.getContext(), boardName);
         boolean adultBoard = board != null && !board.workSafe ? true : false;
         int adCode =
-            (adultBoard && generator.nextDouble() > AD_ADULT_PROBABILITY_ON_ADULT_BOARD)
+            (adultBoard && generator.nextDouble() < AD_ADULT_PROBABILITY_ON_ADULT_BOARD)
             ? JLIST_AD_ADULT_CODES[generator.nextInt(JLIST_AD_ADULT_CODES.length)]
             : JLIST_AD_CODES[generator.nextInt(JLIST_AD_CODES.length)];
         String imageUrl = JLIST_AD_IMAGE_ROOT_URL + "/" + adCode;
