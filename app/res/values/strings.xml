@@ -44,6 +44,7 @@
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
     <string name="download_all_images_menu">Download All Images</string>
+    <string name="download_all_images_to_gallery_menu">Download All Images To Gallery</string>
     <string name="download_image_menu">Save to Gallery</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
     <string name="view_image_gallery_menu">View in Gallery</string>
