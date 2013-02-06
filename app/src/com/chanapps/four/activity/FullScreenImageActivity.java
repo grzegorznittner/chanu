@@ -10,7 +10,6 @@ import java.net.URLEncoder;
 
 import org.apache.commons.io.IOUtils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,7 +23,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -34,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -44,6 +43,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.gallery3d.app.AbstractGalleryActivity;
+import com.android.gallery3d.app.PhotoPage;
+import com.android.gallery3d.data.Path;
+import com.android.gallery3d.ui.GLRootView;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.component.ToastRunnable;
@@ -52,8 +55,6 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.fragment.GoToBoardDialogFragment;
-import com.chanapps.four.fragment.SetWallpaperDialogFragment;
 import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile.Type;
@@ -62,7 +63,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class FullScreenImageActivity extends FragmentActivity implements ChanIdentifiedActivity {
+public class FullScreenImageActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
 
 	public static final String TAG = "FullScreenImageActivity";
 	public static final int PROGRESS_REFRESH_MSG = 0;
@@ -135,6 +136,9 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         ctx = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -411,18 +415,37 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
     private void showImage() {
     	localImageUri = checkLocalImage();
     	if (DEBUG) Log.i(TAG, "Displaying image " + localImageUri);
-    	webView = new WebView(this);
-        setContentView(webView);
-        registerForContextMenu(webView);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        webView.setScrollbarFadingEnabled(false);
-        webView.getSettings().setBuiltInZoomControls(true);
-        
-        setDefaultZoom();
-        
-        webView.loadUrl(localImageUri);
+//    	webView = new WebView(this);
+//        setContentView(webView);
+//        registerForContextMenu(webView);
+//        webView.getSettings().setLoadWithOverviewMode(true);
+//        webView.getSettings().setUseWideViewPort(true);
+//        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+//        webView.setScrollbarFadingEnabled(false);
+//        webView.getSettings().setBuiltInZoomControls(true);
+//        
+//        setDefaultZoom();
+//        
+//        webView.loadUrl(localImageUri);
+    	View contentView = inflater.inflate(R.layout.fullscreen_gallery, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
+    	setContentView(contentView);
+    	super.mGLRootView = (GLRootView) contentView.findViewById(R.id.gl_root_view);
+
+    	Path itemPath = Path.fromString("/uri/" + URLEncoder.encode(localImageUri));
+    	//boolean singleItemOnly = intent.getBooleanExtra("SingleItemOnly", false);
+//        if (!singleItemOnly && albumPath != null) {
+//            data.putString(PhotoPage.KEY_MEDIA_SET_PATH,
+//                    albumPath.toString());
+//        }
+    	Bundle data = new Bundle();
+        data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, itemPath.toString());
+        getStateManager().startState(PhotoPage.class, data);
+    }
+    
+    @Override
+    public void setContentView(int resId) {
+        super.setContentView(resId);
+        super.mGLRootView = (GLRootView) findViewById(R.id.gl_root_view);
     }
 
     private void loadImage() {
@@ -559,11 +582,12 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.set_as_wallpaper_menu:
-                if (checkLocalImage() != null)
+/*                if (checkLocalImage() != null)
                     (new SetWallpaperDialogFragment(localImageUri))
                             .show(getSupportFragmentManager(), SetWallpaperDialogFragment.TAG);
                 else
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
+*/                    
                 return true;
             case R.id.view_image_gallery_menu:
                 if (checkLocalImage() != null)
@@ -601,7 +625,8 @@ public class FullScreenImageActivity extends FragmentActivity implements ChanIde
                 navigateToPost(nextPost);
                 return true;
             case R.id.go_to_board_menu:
-                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
+/*                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
+ */
                 return true;
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");

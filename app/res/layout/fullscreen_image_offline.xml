@@ -58,4 +58,13 @@
             android:text="@string/full_screen_close_button">
 	    </Button>
 	</LinearLayout>
+	
+    <com.android.gallery3d.ui.GLRootView
+          android:id="@+id/gl_root_view"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_alignParentBottom="true"
+          android:layout_alignParentLeft="true"
+          android:layout_alignParentRight="true"
+          android:layout_alignParentTop="true"/>
 </LinearLayout>
