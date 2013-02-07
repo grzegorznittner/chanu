@@ -31,9 +31,5 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
 	<variableList>
-		<variable>
-			<name>GALLERY_RESOURCES</name>
-			<value>file:/E:/projects/Gallery2/res</value>
-		</variable>
 	</variableList>
 </projectDescription>

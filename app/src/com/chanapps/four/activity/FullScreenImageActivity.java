@@ -46,6 +46,7 @@ import android.widget.Toast;
 import com.android.gallery3d.app.AbstractGalleryActivity;
 import com.android.gallery3d.app.PhotoPage;
 import com.android.gallery3d.data.Path;
+import com.android.gallery3d.data.UriSource;
 import com.android.gallery3d.ui.GLRootView;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
@@ -152,6 +153,8 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
 			.cacheOnDisc()
 			.imageScaleType(ImageScaleType.EXACT)
 			.build();
+        
+        setContentView(R.layout.fullscreen_gallery);
     }
 
     private void viewImageGallery() {
@@ -431,14 +434,10 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     	setContentView(contentView);
     	super.mGLRootView = (GLRootView) contentView.findViewById(R.id.gl_root_view);
 
-    	Path itemPath = Path.fromString("/uri/" + URLEncoder.encode(localImageUri));
-    	//boolean singleItemOnly = intent.getBooleanExtra("SingleItemOnly", false);
-//        if (!singleItemOnly && albumPath != null) {
-//            data.putString(PhotoPage.KEY_MEDIA_SET_PATH,
-//                    albumPath.toString());
-//        }
     	Bundle data = new Bundle();
-        data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, itemPath.toString());
+    	Path itemPath = Path.fromString("/uri/" + URLEncoder.encode(localImageUri));
+		data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, itemPath.toString());
+        
         getStateManager().startState(PhotoPage.class, data);
     }
     
@@ -556,6 +555,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, post.h);
         if (DEBUG) Log.i(TAG, "Starting navigate to prev/next image: " + boardCode + "/" + threadNo + ":" + postNo);
         startActivity(intent);
+        /*
         switch (direction) {
             case PREV:
                 overridePendingTransition(R.animator.push_right_in, R.animator.push_right_out);
@@ -564,6 +564,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
                 overridePendingTransition(R.animator.push_left_in, R.animator.push_left_out);
                 break;
         }
+        */
     }
 
     @Override

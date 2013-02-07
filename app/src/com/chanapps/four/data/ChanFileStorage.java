@@ -86,7 +86,7 @@ public class ChanFileStorage {
         return StorageUtils.getOwnCacheDirectory(context, cacheDir);
     }
 
-    private static File getBoardCacheDirectory(Context context, String boardCode) {
+    public static File getBoardCacheDirectory(Context context, String boardCode) {
         String cacheDir = getRootCacheDirectory(context) + FILE_SEP + boardCode;
         File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
         return boardDir;
