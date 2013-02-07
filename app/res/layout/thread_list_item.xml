@@ -7,7 +7,8 @@
             android:id="@+id/list_item_header"
             style="@style/ListShortTextStyle"
             android:layout_width="0dp"
-            android:layout_height="96dp"
+            android:layout_height="wrap_content"
+            android:minHeight="96dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/list_item_image"
@@ -20,8 +21,10 @@
             android:contentDescription="@string/thread_post_image"
             android:layout_width="96dp"
             android:layout_height="96dp"
+            android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:scaleType="fitEnd"
+            android:gravity="top|left"
+            android:scaleType="fitStart"
             android:src="@drawable/board_3"
             />
 

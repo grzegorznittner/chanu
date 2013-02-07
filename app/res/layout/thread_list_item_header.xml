@@ -13,7 +13,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:textStyle="bold"
-            android:gravity="center"
+            android:gravity="left"
             android:text="FOO"
             />
 
@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:layout_below="@+id/list_item_text"
-            android:scaleType="fitCenter"
+            android:scaleType="fitStart"
             android:src="@drawable/board_3"
             />
 
