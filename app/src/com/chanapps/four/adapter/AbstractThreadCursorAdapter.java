@@ -56,6 +56,8 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
                 highlightIdPostNos.add(postNo);
     }
 
+    //protected static final double MIN_ASPECT_RATIO_ALLOWED = 1.0;
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Cursor cursor = getCursor();
@@ -83,6 +85,7 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
         else if (adItem > 0) {
             tag = ChanHelper.AD_ITEM;
         }
+        //else if (position == 0 && (((double)tnW / (double)tnH) < MIN_ASPECT_RATIO_ALLOWED)) { // narrow thread header
         else if (position == 0 && tnW < tnH) { // narrow thread header
             tag = ChanHelper.POST_RESTO_NARROW;
         }
