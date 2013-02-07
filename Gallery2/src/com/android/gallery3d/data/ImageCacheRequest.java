@@ -25,7 +25,7 @@ import com.android.gallery3d.util.ThreadPool.JobContext;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-abstract class ImageCacheRequest implements Job<Bitmap> {
+public abstract class ImageCacheRequest implements Job<Bitmap> {
     private static final String TAG = "ImageCacheRequest";
 
     protected GalleryApp mApplication;

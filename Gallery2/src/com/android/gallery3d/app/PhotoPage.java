@@ -413,52 +413,44 @@ public class PhotoPage extends ActivityState
 
         DataManager manager = mActivity.getDataManager();
         int action = item.getItemId();
-        switch (action) {
-            case R.id.action_slideshow: {
-                Bundle data = new Bundle();
-                data.putString(SlideshowPage.KEY_SET_PATH, mMediaSet.getPath().toString());
-                data.putInt(SlideshowPage.KEY_PHOTO_INDEX, currentIndex);
-                data.putBoolean(SlideshowPage.KEY_REPEAT, true);
-                mActivity.getStateManager().startStateForResult(
-                        SlideshowPage.class, REQUEST_SLIDESHOW, data);
-                return true;
+        if (action == R.id.action_slideshow) {
+            Bundle data = new Bundle();
+            data.putString(SlideshowPage.KEY_SET_PATH, mMediaSet.getPath().toString());
+            data.putInt(SlideshowPage.KEY_PHOTO_INDEX, currentIndex);
+            data.putBoolean(SlideshowPage.KEY_REPEAT, true);
+            mActivity.getStateManager().startStateForResult(
+                    SlideshowPage.class, REQUEST_SLIDESHOW, data);
+            return true;
+        } else if (action == R.id.action_crop) {
+            Activity activity = (Activity) mActivity;
+            Intent intent = new Intent(CropImage.CROP_ACTION);
+            intent.setClass(activity, CropImage.class);
+            intent.setData(manager.getContentUri(path));
+            activity.startActivityForResult(intent, PicasaSource.isPicasaImage(current)
+                    ? REQUEST_CROP_PICASA
+                    : REQUEST_CROP);
+            return true;
+        } else if (action == R.id.action_details) {
+            if (mShowDetails) {
+                hideDetails();
+            } else {
+                showDetails(currentIndex);
             }
-            case R.id.action_crop: {
-                Activity activity = (Activity) mActivity;
-                Intent intent = new Intent(CropImage.CROP_ACTION);
-                intent.setClass(activity, CropImage.class);
-                intent.setData(manager.getContentUri(path));
-                activity.startActivityForResult(intent, PicasaSource.isPicasaImage(current)
-                        ? REQUEST_CROP_PICASA
-                        : REQUEST_CROP);
-                return true;
-            }
-            case R.id.action_details: {
-                if (mShowDetails) {
-                    hideDetails();
-                } else {
-                    showDetails(currentIndex);
-                }
-                return true;
-            }
-            case R.id.action_setas:
-            case R.id.action_confirm_delete:
-            case R.id.action_rotate_ccw:
-            case R.id.action_rotate_cw:
-            case R.id.action_show_on_map:
-            case R.id.action_edit:
-                mSelectionManager.deSelectAll();
-                mSelectionManager.toggle(path);
-                mMenuExecutor.onMenuClicked(item, null);
-                return true;
-            case R.id.action_import:
-                mSelectionManager.deSelectAll();
-                mSelectionManager.toggle(path);
-                mMenuExecutor.onMenuClicked(item,
-                        new ImportCompleteListener(mActivity));
-                return true;
-            default :
-                return false;
+            return true;
+        } else if (action == R.id.action_setas || action == R.id.action_confirm_delete || action == R.id.action_rotate_ccw
+        		 || action == R.id.action_rotate_cw || action == R.id.action_show_on_map || action == R.id.action_edit) {
+            mSelectionManager.deSelectAll();
+            mSelectionManager.toggle(path);
+            mMenuExecutor.onMenuClicked(item, null);
+            return true;
+        } else if (action == R.id.action_import) {
+            mSelectionManager.deSelectAll();
+            mSelectionManager.toggle(path);
+            mMenuExecutor.onMenuClicked(item,
+                    new ImportCompleteListener(mActivity));
+            return true;
+		} else {
+            return false;
         }
     }
 

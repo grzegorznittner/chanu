@@ -158,6 +158,9 @@ public class BitmapUtils {
     // Resize the bitmap if each side is >= targetSize * 2
     public static Bitmap resizeDownIfTooBig(
             Bitmap bitmap, int targetSize, boolean recycle) {
+    	if (bitmap == null) {
+    		return null;
+    	}
         int srcWidth = bitmap.getWidth();
         int srcHeight = bitmap.getHeight();
         float scale = Math.max(

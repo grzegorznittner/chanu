@@ -422,53 +422,48 @@ public class AlbumSetPage extends ActivityState implements
     @Override
     protected boolean onItemSelected(MenuItem item) {
         Activity activity = (Activity) mActivity;
-        switch (item.getItemId()) {
-            case R.id.action_cancel:
-                activity.setResult(Activity.RESULT_CANCELED);
-                activity.finish();
-                return true;
-            case R.id.action_select:
+        if (item.getItemId() == R.id.action_cancel) {
+            activity.setResult(Activity.RESULT_CANCELED);
+            activity.finish();
+            return true;
+        } else if (item.getItemId() == R.id.action_select) {
                 mSelectionManager.setAutoLeaveSelectionMode(false);
                 mSelectionManager.enterSelectionMode();
                 return true;
-            case R.id.action_details:
-                if (mAlbumSetDataAdapter.size() != 0) {
-                    if (mShowDetails) {
-                        hideDetails();
-                    } else {
-                        showDetails();
-                    }
+        } else if (item.getItemId() == R.id.action_details) {
+            if (mAlbumSetDataAdapter.size() != 0) {
+                if (mShowDetails) {
+                    hideDetails();
                 } else {
-                    Toast.makeText(activity,
-                            activity.getText(R.string.no_albums_alert),
-                            Toast.LENGTH_SHORT).show();
+                    showDetails();
                 }
-                return true;
-            case R.id.action_camera: {
-                Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA)
-                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        | Intent.FLAG_ACTIVITY_NEW_TASK);
-                activity.startActivity(intent);
-                return true;
+            } else {
+                Toast.makeText(activity,
+                        activity.getText(R.string.no_albums_alert),
+                        Toast.LENGTH_SHORT).show();
             }
-            case R.id.action_manage_offline: {
-                Bundle data = new Bundle();
-                String mediaPath = mActivity.getDataManager().getTopSetPath(
-                    DataManager.INCLUDE_ALL);
-                data.putString(AlbumSetPage.KEY_MEDIA_PATH, mediaPath);
-                mActivity.getStateManager().startState(ManageCachePage.class, data);
-                return true;
-            }
-            case R.id.action_sync_picasa_albums: {
-                PicasaSource.requestSync(activity);
-                return true;
-            }
-            case R.id.action_settings: {
-                activity.startActivity(new Intent(activity, GallerySettings.class));
-                return true;
-            }
-            default:
-                return false;
+            return true;
+        } else if (item.getItemId() == R.id.action_camera) {
+            Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA)
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    | Intent.FLAG_ACTIVITY_NEW_TASK);
+            activity.startActivity(intent);
+            return true;
+        } else if (item.getItemId() == R.id.action_manage_offline) {
+            Bundle data = new Bundle();
+            String mediaPath = mActivity.getDataManager().getTopSetPath(
+                DataManager.INCLUDE_ALL);
+            data.putString(AlbumSetPage.KEY_MEDIA_PATH, mediaPath);
+            mActivity.getStateManager().startState(ManageCachePage.class, data);
+            return true;
+        } else if (item.getItemId() == R.id.action_sync_picasa_albums) {
+            PicasaSource.requestSync(activity);
+            return true;
+        } else if (item.getItemId() == R.id.action_settings) {
+            activity.startActivity(new Intent(activity, GallerySettings.class));
+            return true;
+        } else {
+        	return false;
         }
     }
 

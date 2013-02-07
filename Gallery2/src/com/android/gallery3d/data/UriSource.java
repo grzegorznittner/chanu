@@ -23,7 +23,7 @@ import android.net.Uri;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
-class UriSource extends MediaSource {
+public class UriSource extends MediaSource {
     @SuppressWarnings("unused")
     private static final String TAG = "UriSource";
 

@@ -178,55 +178,46 @@ public class MenuExecutor {
         int title;
         DataManager manager = mActivity.getDataManager();
         int action = menuItem.getItemId();
-        switch (action) {
-            case R.id.action_select_all:
-                if (mSelectionManager.inSelectAllMode()) {
-                    mSelectionManager.deSelectAll();
-                } else {
-                    mSelectionManager.selectAll();
-                }
-                return true;
-            case R.id.action_crop: {
-                Path path = getSingleSelectedPath();
-                String mimeType = getMimeType(manager.getMediaType(path));
-                Intent intent = new Intent(CropImage.ACTION_CROP)
-                        .setDataAndType(manager.getContentUri(path), mimeType);
-                ((Activity) mActivity).startActivity(intent);
-                return true;
+        if (action == R.id.action_select_all) {
+            if (mSelectionManager.inSelectAllMode()) {
+                mSelectionManager.deSelectAll();
+            } else {
+                mSelectionManager.selectAll();
             }
-            case R.id.action_setas: {
-                Path path = getSingleSelectedPath();
-                int type = manager.getMediaType(path);
-                Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-                String mimeType = getMimeType(type);
-                intent.setDataAndType(manager.getContentUri(path), mimeType);
-                intent.putExtra("mimeType", mimeType);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                Activity activity = (Activity) mActivity;
-                activity.startActivity(Intent.createChooser(
-                        intent, activity.getString(R.string.set_as)));
-                return true;
-            }
-            case R.id.action_confirm_delete:
-                title = R.string.delete;
-                break;
-            case R.id.action_rotate_cw:
-                title = R.string.rotate_right;
-                break;
-            case R.id.action_rotate_ccw:
-                title = R.string.rotate_left;
-                break;
-            case R.id.action_show_on_map:
-                title = R.string.show_on_map;
-                break;
-            case R.id.action_edit:
-                title = R.string.edit;
-                break;
-            case R.id.action_import:
-                title = R.string.Import;
-                break;
-            default:
-                return false;
+            return true;
+        } else if (action == R.id.action_crop) {
+            Path path = getSingleSelectedPath();
+            String mimeType = getMimeType(manager.getMediaType(path));
+            Intent intent = new Intent(CropImage.ACTION_CROP)
+                    .setDataAndType(manager.getContentUri(path), mimeType);
+            ((Activity) mActivity).startActivity(intent);
+            return true;
+        } else if (action == R.id.action_setas) {
+            Path path = getSingleSelectedPath();
+            int type = manager.getMediaType(path);
+            Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
+            String mimeType = getMimeType(type);
+            intent.setDataAndType(manager.getContentUri(path), mimeType);
+            intent.putExtra("mimeType", mimeType);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Activity activity = (Activity) mActivity;
+            activity.startActivity(Intent.createChooser(
+                    intent, activity.getString(R.string.set_as)));
+            return true;
+        } else if (action == R.id.action_confirm_delete) {
+            title = R.string.delete;
+        } else if (action == R.id.action_rotate_cw) {
+            title = R.string.rotate_right;
+        } else if (action == R.id.action_rotate_ccw) {
+            title = R.string.rotate_left;
+        } else if (action == R.id.action_show_on_map) {
+            title = R.string.show_on_map;
+        } else if (action == R.id.action_edit) {
+            title = R.string.edit;
+        } else if (action == R.id.action_import) {
+            title = R.string.Import;
+        } else {
+            return false;
         }
         startAction(action, title, listener);
         return true;
@@ -258,60 +249,48 @@ public class MenuExecutor {
         Log.v(TAG, "Execute cmd: " + cmd + " for " + path);
         long startTime = System.currentTimeMillis();
 
-        switch (cmd) {
-            case R.id.action_confirm_delete:
-                manager.delete(path);
-                break;
-            case R.id.action_rotate_cw:
-                manager.rotate(path, 90);
-                break;
-            case R.id.action_rotate_ccw:
-                manager.rotate(path, -90);
-                break;
-            case R.id.action_toggle_full_caching: {
-                MediaObject obj = manager.getMediaObject(path);
-                int cacheFlag = obj.getCacheFlag();
-                if (cacheFlag == MediaObject.CACHE_FLAG_FULL) {
-                    cacheFlag = MediaObject.CACHE_FLAG_SCREENNAIL;
-                } else {
-                    cacheFlag = MediaObject.CACHE_FLAG_FULL;
-                }
-                obj.cache(cacheFlag);
-                break;
+        if (cmd == R.id.action_confirm_delete) {
+            manager.delete(path);
+        } else if (cmd == R.id.action_rotate_cw) {
+            manager.rotate(path, 90);
+        } else if (cmd == R.id.action_rotate_ccw) {
+            manager.rotate(path, -90);
+    	} else if (cmd == R.id.action_toggle_full_caching) {
+            MediaObject obj = manager.getMediaObject(path);
+            int cacheFlag = obj.getCacheFlag();
+            if (cacheFlag == MediaObject.CACHE_FLAG_FULL) {
+                cacheFlag = MediaObject.CACHE_FLAG_SCREENNAIL;
+            } else {
+                cacheFlag = MediaObject.CACHE_FLAG_FULL;
             }
-            case R.id.action_show_on_map: {
-                MediaItem item = (MediaItem) manager.getMediaObject(path);
-                double latlng[] = new double[2];
-                item.getLatLong(latlng);
-                if (GalleryUtils.isValidLocation(latlng[0], latlng[1])) {
-                    GalleryUtils.showOnMap((Context) mActivity, latlng[0], latlng[1]);
-                }
-                break;
+            obj.cache(cacheFlag);
+    	} else if (cmd == R.id.action_show_on_map) {
+            MediaItem item = (MediaItem) manager.getMediaObject(path);
+            double latlng[] = new double[2];
+            item.getLatLong(latlng);
+            if (GalleryUtils.isValidLocation(latlng[0], latlng[1])) {
+                GalleryUtils.showOnMap((Context) mActivity, latlng[0], latlng[1]);
             }
-            case R.id.action_import: {
-                MediaObject obj = manager.getMediaObject(path);
-                result = obj.Import();
-                break;
+    	} else if (cmd == R.id.action_import) {
+            MediaObject obj = manager.getMediaObject(path);
+            result = obj.Import();
+    	} else if (cmd == R.id.action_edit) {
+            Activity activity = (Activity) mActivity;
+            MediaItem item = (MediaItem) manager.getMediaObject(path);
+            try {
+                activity.startActivity(Intent.createChooser(
+                        new Intent(Intent.ACTION_EDIT)
+                                .setDataAndType(item.getContentUri(), item.getMimeType())
+                                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
+                        null));
+            } catch (Throwable t) {
+                Log.w(TAG, "failed to start edit activity: ", t);
+                Toast.makeText(activity,
+                        activity.getString(R.string.activity_not_found),
+                        Toast.LENGTH_SHORT).show();
             }
-            case R.id.action_edit: {
-                Activity activity = (Activity) mActivity;
-                MediaItem item = (MediaItem) manager.getMediaObject(path);
-                try {
-                    activity.startActivity(Intent.createChooser(
-                            new Intent(Intent.ACTION_EDIT)
-                                    .setDataAndType(item.getContentUri(), item.getMimeType())
-                                    .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                            null));
-                } catch (Throwable t) {
-                    Log.w(TAG, "failed to start edit activity: ", t);
-                    Toast.makeText(activity,
-                            activity.getString(R.string.activity_not_found),
-                            Toast.LENGTH_SHORT).show();
-                }
-                break;
-            }
-            default:
-                throw new AssertionError();
+        } else {
+            throw new AssertionError();
         }
         Log.v(TAG, "It takes " + (System.currentTimeMillis() - startTime) +
                 " ms to execute cmd for " + path);

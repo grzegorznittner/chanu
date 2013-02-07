@@ -43,8 +43,8 @@ public class GalleryAppImpl extends Application implements GalleryApp {
     public void onCreate() {
         super.onCreate();
         GalleryUtils.initialize(this);
-        WidgetUtils.initialize(this);
-        PicasaSource.initialize(this);
+        //WidgetUtils.initialize(this);
+        //PicasaSource.initialize(this);
     }
 
     public Context getAndroidContext() {

@@ -214,20 +214,13 @@ public class CropImage extends AbstractGalleryActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                finish();
-                break;
-            }
-            case R.id.cancel: {
-                setResult(RESULT_CANCELED);
-                finish();
-                break;
-            }
-            case R.id.save: {
-                onSaveClicked();
-                break;
-            }
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        } else if (item.getItemId() == R.id.cancel) {
+            setResult(RESULT_CANCELED);
+            finish();
+        } else if (item.getItemId() == R.id.save) {
+            onSaveClicked();
         }
         return true;
     }

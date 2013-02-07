@@ -137,7 +137,7 @@ public class DataManager {
     }
 
     // open for debug
-    void addSource(MediaSource source) {
+    public void addSource(MediaSource source) {
         mSourceMap.put(source.getPrefix(), source);
     }
 
