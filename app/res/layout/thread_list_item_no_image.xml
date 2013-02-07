@@ -1,33 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/list_item"
-              style="@style/ThreadListLayout">
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/list_item"
+        style="@style/ThreadListLayout">
 
-    <TextView
-            android:id="@+id/list_item_header"
-            style="@style/ListShortTextStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:text="FOO"
-            />
+    <RelativeLayout
+            style="@style/ThreadListLayoutInner"
+            >
 
-    <TextView
-            android:id="@+id/list_item_text"
-            style="@style/ListFullTextStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/list_item_header"
-            android:paddingTop="8dp"
-            android:text="bar"
-            />
+        <TextView
+                android:id="@+id/list_item_header"
+                style="@style/ListShortTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:text="FOO"
+                />
 
-    <ImageView
-            android:id="@+id/list_item_country_flag"
-            style="@style/ListCountryFlagStyle"
-            android:contentDescription="@string/thread_country_flag"
-            />
+        <TextView
+                android:id="@+id/list_item_text"
+                style="@style/ListFullTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/list_item_header"
+                android:paddingTop="8dp"
+                android:text="bar"
+                />
+
+        <ImageView
+                android:id="@+id/list_item_country_flag"
+                style="@style/ListCountryFlagStyle"
+                android:contentDescription="@string/thread_country_flag"
+                />
+
+    </RelativeLayout>
 
 </RelativeLayout>

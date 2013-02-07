@@ -268,19 +268,11 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         //String quoteText = ChanPost.quoteText(intent.getStringExtra(ChanHelper.QUOTE_TEXT));
         setMessageText(text, "");
         adjustFieldVisibility();
+        loadUserPrefs();
 
-        String name = intent.getStringExtra(ChanHelper.NAME);
-        if (name != null && !name.isEmpty())
-            nameText.setText(name);
-        String email = intent.getStringExtra(ChanHelper.EMAIL);
-        if (email != null && !email.isEmpty())
-            emailText.setText(email);
         String subject = intent.getStringExtra(ChanHelper.SUBJECT);
         if (subject != null && !subject.isEmpty())
             subjectText.setText(subject);
-        String password = intent.getStringExtra(ChanHelper.PASSWORD);
-        if (password != null && !password.isEmpty())
-            passwordText.setText(password);
         boolean spoilerChecked = intent.getBooleanExtra(ChanHelper.SPOILER, false);
             spoilerCheckbox.setChecked(spoilerChecked);
 
@@ -311,19 +303,11 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         String text = prefs.getString(ChanHelper.TEXT, "");
         setMessageText(text, "");
         adjustFieldVisibility();
+        loadUserPrefs();
 
-        String name = prefs.getString(ChanHelper.NAME, "");
-        if (!name.isEmpty())
-            nameText.setText(name);
-        String email = prefs.getString(ChanHelper.EMAIL, "");
-        if (!email.isEmpty())
-            emailText.setText(email);
         String subject = prefs.getString(ChanHelper.SUBJECT, "");
         if (!subject.isEmpty())
             subjectText.setText(subject);
-        String password = prefs.getString(ChanHelper.PASSWORD, "");
-        if (!password.isEmpty())
-            passwordText.setText(password);
         boolean spoilerChecked = prefs.getBoolean(ChanHelper.SPOILER, false);
             spoilerCheckbox.setChecked(spoilerChecked);
 
@@ -333,8 +317,25 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (DEBUG) Log.i(TAG, "loaded from prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " text=" + text);
     }
 
-    protected void adjustFieldVisibility() {
 
+    protected void loadUserPrefs() {
+        ensurePrefs();
+        String name = prefs.getString(SettingsActivity.PREF_USER_NAME, "");
+        if (!name.isEmpty())
+            nameText.setText(name);
+        String email = prefs.getString(SettingsActivity.PREF_USER_EMAIL, "");
+        if (!email.isEmpty())
+            emailText.setText(email);
+        String password = prefs.getString(SettingsActivity.PREF_USER_PASSWORD, "");
+        if (!password.isEmpty()) {
+            passwordText.setText(password);
+        }
+        else {
+            passwordText.setText(generatePassword());
+        }
+    }
+
+    protected void adjustFieldVisibility() {
         if (threadNo == 0) // new thread
             sageButton.setVisibility(View.GONE);
 
@@ -386,20 +387,24 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         ed.putLong(ChanHelper.THREAD_NO, threadNo);
         ed.putLong(ChanHelper.POST_NO, postNo);
         ed.putString(ChanHelper.TEXT, messageText.getText().toString());
-        ed.putString(ChanHelper.NAME, nameText.getText().toString());
-        ed.putString(ChanHelper.EMAIL, emailText.getText().toString());
         ed.putString(ChanHelper.SUBJECT, subjectText.getText().toString());
-        ed.putString(ChanHelper.PASSWORD, passwordText.getText().toString());
         ed.putBoolean(ChanHelper.SPOILER, spoilerCheckbox.isChecked());
         ed.putLong(ChanHelper.TIM, tim);
         ed.putString(ChanHelper.POST_REPLY_IMAGE_URL, imageUri == null ? null : imageUri.toString());
         ed.putString(ChanHelper.IMAGE_PATH, imagePath);
         ed.putString(ChanHelper.CONTENT_TYPE, contentType);
         ed.putString(ChanHelper.ORIENTATION, orientation);
+        saveUserPrefs(ed);
         ed.commit();
         if (DEBUG) Log.i(TAG, "Saved to prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim
                 + " imageUrl=" + (imageUri == null ? "" : imageUri.toString()));
         DispatcherHelper.saveActivityToPrefs(this);
+    }
+
+    protected void saveUserPrefs(SharedPreferences.Editor ed) {
+        ed.putString(SettingsActivity.PREF_USER_NAME, nameText.getText().toString());
+        ed.putString(SettingsActivity.PREF_USER_EMAIL, emailText.getText().toString());
+        ed.putString(SettingsActivity.PREF_USER_PASSWORD, passwordText.getText().toString());
     }
 
     public void reloadCaptcha() {
@@ -682,10 +687,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     public String getPassword() {
         String s = passwordText.getText().toString();
-        if (s == null || s.isEmpty()) {
-            s = generatePassword();
-            passwordText.setText(s);
-        }
         return (s != null) ? s : "";
     }
 

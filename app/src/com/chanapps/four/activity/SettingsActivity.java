@@ -22,6 +22,9 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_HIDE_ALL_TEXT = "pref_hide_all_text";
     public static final String PREF_HIDE_POST_NUMBERS = "pref_hide_post_numbers";
     public static final String PREF_USE_FRIENDLY_IDS = "pref_use_friendly_ids";
+    public static final String PREF_USER_NAME = "pref_user_name";
+    public static final String PREF_USER_EMAIL = "pref_user_email";
+    public static final String PREF_USER_PASSWORD = "pref_user_password";
     public static final String PREF_AUTOMATICALLY_MANAGE_WATCHLIST = "pref_automatically_manage_watchlist";
     public static final String PREF_CACHE_SIZE = "pref_cache_size";
     public static final String PREF_CLEAR_CACHE = "pref_clear_cache";
