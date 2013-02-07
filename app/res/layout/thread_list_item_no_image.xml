@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/list_item_header"
+            android:paddingTop="8dp"
             android:text="bar"
             />
 

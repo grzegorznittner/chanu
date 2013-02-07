@@ -115,7 +115,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 thread.getBoardText(),
                 thread.getHeaderText(), thread.getFullText(),
                 thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
-                thread.getSpoilerText(), thread.getExifText(), thread.id,
+                thread.getSpoilerText(), thread.getExifText(), thread.id, thread.trip, thread.name,
                 thread.isDead ? 1 : 0, thread.closed, 0, 0, 0});
     }
 
@@ -126,7 +126,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 thread.getBoardText(),
                 thread.getHeaderText(), thread.getFullText(),
                 thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
-                thread.getSpoilerText(), thread.getExifText(), thread.id,
+                thread.getSpoilerText(), thread.getExifText(), thread.id, thread.trip, thread.name,
                 thread.isDead ? 1 : 0, thread.closed, 0, 0, 0});
     }
 
@@ -145,7 +145,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 "",
                 "", clickUrl,
                 -1, -1, -1, -1, 0, 0,
-                "", "", "",
+                "", "", "", "", "",
                 0, 0, 0, 0, 1});
     }
 
@@ -155,7 +155,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 "", "",
                 "", "", "",
                 -1, -1, -1, -1, 0, 0,
-                "", "", "", 1, 0, 1, 0, 0});
+                "", "", "", "", "",
+                1, 0, 1, 0, 0});
     }
 
     protected void addFinalRow(MatrixCursor matrixCursor) {
@@ -164,7 +165,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 "", "",
                 "", "", "",
                 -1, -1, -1, -1, 0, 0,
-                "", "", "", 1, 0, 0, 1, 0});
+                "", "", "", "", "",
+                1, 0, 0, 1, 0});
     }
 
     /**

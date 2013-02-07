@@ -143,6 +143,8 @@ public class BoardThreadPopup implements Dismissable {
         final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         final String userId = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_USER_ID));
+        final String tripcode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TRIPCODE));
+        final String name = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_NAME));
         final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
         final String spoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
         final String exifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
@@ -160,7 +162,7 @@ public class BoardThreadPopup implements Dismissable {
         setShowImageButton(adapterView, view, position, id);
         setGoToThreadButton(adapterView, view, position, id);
         displayHighlightRepliesButton(clickedBoardCode, clickedThreadNo, clickedPostNo);
-        displayHighlightIdButton(clickedBoardCode, clickedThreadNo, clickedPostNo, userId);
+        displayHighlightIdButton(clickedBoardCode, clickedThreadNo, clickedPostNo, userId, tripcode, name);
         setCloseButton();
         setScrollViewMargin();
 
@@ -315,7 +317,8 @@ public class BoardThreadPopup implements Dismissable {
         highlightRepliesButton.setVisibility(View.GONE);
     }
 
-    protected void displayHighlightIdButton(final String boardCode, final long threadNo, final long postNo, String userId) { // board-level doesn't highlight, only thread-level does
+    protected void displayHighlightIdButton(final String boardCode, final long threadNo, final long postNo,
+                                            final String userId, final String tripcode, final String name) { // board-level doesn't highlight, only thread-level does
         highlightIdButtonLine.setVisibility(View.GONE);
         highlightIdButton.setVisibility(View.GONE);
     }

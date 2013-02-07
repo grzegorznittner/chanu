@@ -3,30 +3,39 @@
               android:id="@+id/list_item"
               style="@style/ThreadListLayout">
 
-    <TextView
-            android:id="@+id/list_item_header"
-            style="@style/ListShortTextStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:minHeight="96dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/list_item_image"
-            android:text="FOO"
-            />
+    <RelativeLayout
+        android:id="@+id/list_item_header_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/PaletteBlack"
+        >
 
-    <ImageView
-            android:id="@+id/list_item_image"
-            style="@style/ThreadListItemImageStyle"
-            android:contentDescription="@string/thread_post_image"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:gravity="top|left"
-            android:scaleType="fitStart"
-            android:src="@drawable/board_3"
-            />
+        <TextView
+                android:id="@+id/list_item_header"
+                style="@style/ListShortTextStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/list_item_image"
+                android:gravity="top|left"
+                android:text="FOO"
+                />
+
+        <com.chanapps.four.component.StretchyImageView
+                android:id="@+id/list_item_image"
+                style="@style/ThreadListItemImageStyle"
+                android:contentDescription="@string/thread_post_image"
+                android:layout_width="96dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:gravity="top|right"
+                android:scaleType="fitEnd"
+                android:src="@drawable/board_3"
+                />
+
+    </RelativeLayout>
 
     <TextView
             android:id="@+id/list_item_text"
@@ -34,7 +43,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/list_item_header"
+            android:layout_below="@+id/list_item_header_wrapper"
+            android:paddingTop="8dp"
             android:text="bar"
             />
 

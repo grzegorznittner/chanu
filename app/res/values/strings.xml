@@ -129,7 +129,7 @@
     <string name="dead_thread_reply">Dead Thread No Reply</string>
     <string name="closed_thread_reply">Closed Thread No Reply</string>
     <string name="highlight_replies">Show Referenced Posts</string>
-    <string name="highlight_id">Show Posts With Id</string>
+    <string name="highlight_id">Show Posts from User</string>
     <string name="popup_country_flag">Country Flag</string>
     <string name="popup_show_image">Show Image</string>
     <string name="popup_go_to_thread">Go To Thread</string>

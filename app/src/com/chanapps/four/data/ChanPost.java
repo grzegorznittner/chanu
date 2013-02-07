@@ -175,7 +175,6 @@ public class ChanPost {
 
     private static final String textViewFilter(String s) {
         return s.replaceAll("<br */?>", "\n")
-                .replaceAll("\n\n\n+", "\n\n")
                 .replaceAll("<[^>]+>", "")
                 .replaceAll("&lt;", "<")
                 .replaceAll("&gt;", ">")
@@ -184,6 +183,9 @@ public class ChanPost {
                 .replaceAll("&#0*39;", "'")
                 .replaceAll("&#0*44;", ",")
                 .replaceAll("&#[0-9abcdef]*;", "")
+                .replaceFirst("^\n+", "")
+                .replaceFirst("\n+$", "")
+                .replaceAll("\n", "<br/>")
                 .trim();
     }
 
