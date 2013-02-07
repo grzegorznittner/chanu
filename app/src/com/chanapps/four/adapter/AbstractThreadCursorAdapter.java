@@ -70,6 +70,8 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
         int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
         int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        int tnW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
+        int tnH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
         long postNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         if (DEBUG) Log.d(TAG, "getView called for position="+position + " postNo=" + postNo);
         if (loadItem > 0) {
@@ -80,6 +82,9 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
         }
         else if (adItem > 0) {
             tag = ChanHelper.AD_ITEM;
+        }
+        else if (position == 0 && tnW < tnH) { // narrow thread header
+            tag = ChanHelper.POST_RESTO_NARROW;
         }
         else if (position == 0) { // thread header
             tag = ChanHelper.POST_RESTO;
@@ -94,7 +99,10 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
         }
 
         View v;
-        if (convertView == null || !tag.equals(convertView.getTag()) || ChanHelper.POST_RESTO.equals(tag)) {
+        if (convertView == null
+                || !tag.equals(convertView.getTag())
+                || ChanHelper.POST_RESTO.equals(tag)
+                || ChanHelper.POST_RESTO_NARROW.equals(tag)) {
             v = newView(context, parent, tag, position);
             v.setTag(tag);
             if (imageUrl != null && imageUrl.length() > 0) {

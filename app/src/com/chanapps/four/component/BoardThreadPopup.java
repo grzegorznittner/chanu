@@ -145,6 +145,7 @@ public class BoardThreadPopup implements Dismissable {
         final String userId = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_USER_ID));
         final String tripcode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TRIPCODE));
         final String name = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_NAME));
+        final String email = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EMAIL));
         final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
         final String spoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
         final String exifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
@@ -162,7 +163,7 @@ public class BoardThreadPopup implements Dismissable {
         setShowImageButton(adapterView, view, position, id);
         setGoToThreadButton(adapterView, view, position, id);
         displayHighlightRepliesButton(clickedBoardCode, clickedThreadNo, clickedPostNo);
-        displayHighlightIdButton(clickedBoardCode, clickedThreadNo, clickedPostNo, userId, tripcode, name);
+        displayHighlightIdButton(clickedBoardCode, clickedThreadNo, clickedPostNo, userId, tripcode, name, email);
         setCloseButton();
         setScrollViewMargin();
 
@@ -318,7 +319,8 @@ public class BoardThreadPopup implements Dismissable {
     }
 
     protected void displayHighlightIdButton(final String boardCode, final long threadNo, final long postNo,
-                                            final String userId, final String tripcode, final String name) { // board-level doesn't highlight, only thread-level does
+                                            final String userId, final String tripcode, final String name, final String email)
+    { // board-level doesn't highlight, only thread-level does
         highlightIdButtonLine.setVisibility(View.GONE);
         highlightIdButton.setVisibility(View.GONE);
     }

@@ -258,7 +258,13 @@ public class ChanPost {
     public String getHeaderText() {
         return getHeaderText(true);
     }
-
+    
+    public String getTimeString(long seconds) {
+        long milliseconds = 1000 * seconds;
+        Date d = new Date(milliseconds);
+        return d.toString();
+    }
+    
     public String getHeaderText(boolean useFriendlyIds) {
         return "No: " + no
                 + (resto > 0 ? "\nReply To: " + resto : "")
@@ -269,7 +275,7 @@ public class ChanPost {
                 + (id != null && !id.isEmpty() ? "\nId: " + getUserId() : "")
                 + (email != null && !email.isEmpty() ? "\nEmail: " + email : "")
                 + (country_name != null && !country_name.isEmpty() ? "\nCountry: " + country_name : "")
-                + "\n" + (new Date(time)).toString()
+                + "\n" + getTimeString(time)
                 + (sub != null && !sub.isEmpty() ? "\nSubject: " + sanitizeText(sub) : "");
     }
 
@@ -288,15 +294,17 @@ public class ChanPost {
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Email: " + email + "</b>";
             if (country_name != null && !country_name.isEmpty())
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Country: " + country_name + "</b>";
-            text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + (new Date(time)).toString() + "</b>";
+            text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + getTimeString(time) + "</b>";
+        }
+        if (!hideAllText) {
+            if (fsize > 0) {
+                int kbSize = (fsize / 1024) + 1;
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Image: " + kbSize + "kB " + w + "x" + h + "</b>"; // + " " + ext;
+            }
             String subText = sanitizeText(sub);
             if (subText != null && !subText.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + subText + "</b>";
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Subject: " + subText + "</b>";
         }
-        if (fsize > 0) {
-			int kbSize = (fsize / 1024) + 1;
-			text += (text.isEmpty() ? "" : "<br/>\n") + kbSize + "kB " + w + "x" + h; // + " " + ext;
-		}
         return text;
 	}
 
@@ -315,10 +323,13 @@ public class ChanPost {
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Email: " + email + "</b>";
             if (country_name != null && !country_name.isEmpty())
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Country: " + country_name + "</b>";
-            text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + (new Date(time)).toString() + "</b>";
-            String subText = sanitizeText(sub);
-            if (subText != null && !subText.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + subText + "</b>";
+            text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + getTimeString(time) + "</b>";
+        }
+        if (!hideAllText) {
+            if (fsize > 0) {
+                int kbSize = (fsize / 1024) + 1;
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Image: " + kbSize + "kB " + w + "x" + h + "</b>"; // + " " + ext;
+            }
         }
         if (resto == 0) { // thread stuff
             text += (text.isEmpty() ? "" : "<br/>\n")
@@ -338,19 +349,14 @@ public class ChanPost {
                 text += (text.isEmpty() ? "" : " ") + "STICKY";
             if (closed > 0)
                 text += (text.isEmpty() ? "" : " ") + "CLOSED";
-            if (fsize > 0) {
-                int kbSize = (fsize / 1024) + 1;
-                text += "<br/>\n" + kbSize + "kB " + w + "x" + h; // + " " + ext;
-            }
         }
-        else { // just a post, don't add thread stuff
-            if (fsize > 0) {
-                int kbSize = (fsize / 1024) + 1;
-                text += (text.isEmpty() ? "" : "<br/>\n") + kbSize + "kB " + w + "x" + h; // + " " + ext;
-            }
+        if (!hideAllText) {
+            String subText = sanitizeText(sub);
+            if (subText != null && !subText.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/><br/>\n") + "<b>Subject: " + subText + "</b>";
         }
         return text;
-	}
+    }
 
     public String getBoardText() {
         if (resto != 0)

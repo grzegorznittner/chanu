@@ -37,7 +37,7 @@ public class ThreadGridCursorAdapter extends AbstractThreadCursorAdapter {
         else if (ChanHelper.AD_ITEM.equals(tag)) {
             return mInflater.inflate(R.layout.board_grid_item_ad, parent, false);
         }
-        else if (ChanHelper.POST_RESTO.equals(tag)) { // first item is the post which started the thread
+        else if (ChanHelper.POST_RESTO.equals(tag) || ChanHelper.POST_RESTO_NARROW.equals(tag)) { // first item is the post which started the thread
             RelativeLayout view = (RelativeLayout)mInflater.inflate(R.layout.thread_grid_item, parent, false);
             AbsListView.LayoutParams viewParams = (AbsListView.LayoutParams)view.getLayoutParams();
             if (viewParams == null) {

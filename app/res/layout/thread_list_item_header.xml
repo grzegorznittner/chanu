@@ -17,8 +17,21 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:textStyle="bold"
+                android:textSize="18sp"
                 android:gravity="top|left"
                 android:text="FOO"
+                />
+
+        <TextView
+                android:id="@+id/list_item_text"
+                style="@style/ListFullTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:paddingTop="8dp"
+                android:layout_below="@+id/list_item_header"
+                android:textSize="18sp"
+                android:text="bar"
                 />
 
         <com.chanapps.four.component.StretchyImageView
@@ -31,16 +44,6 @@
                 android:paddingTop="8dp"
                 android:scaleType="fitStart"
                 android:src="@drawable/board_3"
-                />
-
-        <TextView
-                android:id="@+id/list_item_text"
-                style="@style/ListFullTextStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/list_item_header"
-                android:text="bar"
                 />
 
         <ImageView

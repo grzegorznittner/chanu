@@ -55,6 +55,7 @@ public class ChanHelper {
     public static final String POST_NOW = "now";
     public static final String POST_TIME = "time";
     public static final String POST_NAME = "name";
+    public static final String POST_EMAIL = "email";
     public static final String POST_SUB = "sub";
     public static final String POST_COM = "com";
     public static final String POST_COUNTRY = "country";
@@ -67,6 +68,7 @@ public class ChanHelper {
     public static final String POST_TN_H = "tn_h";
     public static final String POST_FSIZE = "fsize";
     public static final String POST_RESTO = "resto";
+    public static final String POST_RESTO_NARROW = "restoNarrow";
     public static final String POST_LAST_UPDATE = "last_update";
     public static final String POST_STICKY = "sticky";
     public static final String POST_CLOSED = "closed";
@@ -119,6 +121,7 @@ public class ChanHelper {
             POST_USER_ID,
             POST_TRIPCODE,
             POST_NAME,
+            POST_EMAIL,
             POST_IS_DEAD,
             POST_CLOSED,
             LOADING_ITEM,

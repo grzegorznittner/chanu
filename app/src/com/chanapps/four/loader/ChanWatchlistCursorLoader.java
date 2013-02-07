@@ -141,6 +141,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
         row.add(threadPost.id);
         row.add(threadPost.trip);
         row.add(threadPost.name);
+        row.add(threadPost.email);
         row.add(isDead);
         row.add(closed);
         row.add(0);
@@ -189,6 +190,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
         row.add("");
         row.add("");
         row.add("");
+        row.add("");
         row.add(isDead);
         row.add(0);
         row.add(0);
@@ -204,7 +206,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 "", "",
                 "", "", "",
                 -1, -1, -1, -1, 0, 0,
-                "", "", "", "", "",
+                "", "", "", "", "", "",
                 1, 0, 0, 1, 0});
     }
 

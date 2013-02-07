@@ -72,7 +72,8 @@ public class ThreadPostPopup extends BoardThreadPopup {
 
     @Override
     protected void displayHighlightIdButton(final String boardCode, final long threadNo, final long postNo,
-                                            final String userId, final String tripcode, final String name) { // board-level doesn't highlight, only thread-level does
+                                            final String userId, final String tripcode, final String name, final String email)
+    { // board-level doesn't highlight, only thread-level does
         if (userId != null && !userId.isEmpty()) {
             highlightIdButtonLine.setVisibility(View.VISIBLE);
             highlightIdButton.setVisibility(View.VISIBLE);
@@ -97,13 +98,25 @@ public class ThreadPostPopup extends BoardThreadPopup {
                 }
             });
         }
-        else if (name != null && !name.isEmpty()) {
+        else if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("Anonymous")) {
             highlightIdButtonLine.setVisibility(View.VISIBLE);
             highlightIdButton.setVisibility(View.VISIBLE);
             highlightIdButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     HighlightNameTask task = new HighlightNameTask(activity.getBaseContext(), adapter, boardCode, threadNo, name);
+                    task.execute(postNo);
+                    popupWindow.dismiss();
+                }
+            });
+        }
+        else if (email != null && !email.isEmpty() && !email.equalsIgnoreCase("sage")) {
+            highlightIdButtonLine.setVisibility(View.VISIBLE);
+            highlightIdButton.setVisibility(View.VISIBLE);
+            highlightIdButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    HighlightEmailTask task = new HighlightEmailTask(activity.getBaseContext(), adapter, boardCode, threadNo, email);
                     task.execute(postNo);
                     popupWindow.dismiss();
                 }
@@ -306,6 +319,55 @@ public class ThreadPostPopup extends BoardThreadPopup {
                 result = String.format(context.getString(R.string.thread_id_found), namePosts.length, name);
             }
             if (DEBUG) Log.i(TAG, "Set highlight posts for name=" + name + " posts=" + Arrays.toString(namePosts));
+            return result;
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+            threadAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private class HighlightEmailTask extends AsyncTask<Long, Void, String> {
+        private Context context = null;
+        private AbstractThreadCursorAdapter threadAdapter = null;
+        private String boardCode = null;
+        private long threadNo = 0;
+        private String email = null;
+        public HighlightEmailTask(Context context, AbstractThreadCursorAdapter adapter, String boardCode, long threadNo, String email) {
+            this.context = context;
+            this.threadAdapter = adapter;
+            this.boardCode = boardCode;
+            this.threadNo = threadNo;
+            this.email = email;
+        }
+        @Override
+        protected String doInBackground(Long... postNos) {
+            String result = null;
+            long postNo = postNos[0];
+            long[] emailPosts = null;
+            try {
+                ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
+                if (thread != null) {
+                    emailPosts = thread.getEmailPosts(postNo, email);
+                }
+                else {
+                    result = context.getString(R.string.thread_couldnt_load);
+                    Log.e(TAG, "Coludn't load thread " + boardCode + "/" + threadNo);
+                }
+            }
+            catch (Exception e) {
+                result = context.getString(R.string.thread_couldnt_load);
+                Log.e(TAG, "Exception while getting thread post highlights", e);
+            }
+            threadAdapter.setHighlightPostsWithId(postNo, emailPosts);
+            if ((emailPosts == null || emailPosts.length == 0)) {
+                result = String.format(context.getString(R.string.thread_no_id_found), email);
+            }
+            else {
+                result = String.format(context.getString(R.string.thread_id_found), emailPosts.length, email);
+            }
+            if (DEBUG) Log.i(TAG, "Set highlight posts for email=" + email + " posts=" + Arrays.toString(emailPosts));
             return result;
         }
         @Override

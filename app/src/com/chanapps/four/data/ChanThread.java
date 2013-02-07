@@ -148,4 +148,17 @@ public class ChanThread extends ChanPost {
         return namePostsArr;
     }
 
+    public long[] getEmailPosts(long postNo, String email) { // what other posts refer to this post
+        List<Long> emailPosts = new ArrayList<Long>();
+        if (email == null || email.isEmpty())
+            return null;
+        for (ChanPost post : posts)
+            if (post.no != postNo && email.equals(post.email))
+                emailPosts.add(post.no);
+        long[] emailPostsArr = new long[emailPosts.size()];
+        for (int i = 0; i < emailPostsArr.length; i++)
+            emailPostsArr[i] = emailPosts.get(i);
+        return emailPostsArr;
+    }
+
 }
