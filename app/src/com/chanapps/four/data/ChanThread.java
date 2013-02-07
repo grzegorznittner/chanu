@@ -122,4 +122,30 @@ public class ChanThread extends ChanPost {
         return idPostsArr;
     }
 
+    public long[] getTripcodePosts(long postNo, String tripcode) { // what other posts refer to this post
+        List<Long> tripcodePosts = new ArrayList<Long>();
+        if (tripcode == null || tripcode.isEmpty())
+            return null;
+        for (ChanPost post : posts)
+            if (post.no != postNo && tripcode.equals(post.trip))
+                tripcodePosts.add(post.no);
+        long[] tripcodePostsArr = new long[tripcodePosts.size()];
+        for (int i = 0; i < tripcodePostsArr.length; i++)
+            tripcodePostsArr[i] = tripcodePosts.get(i);
+        return tripcodePostsArr;
+    }
+
+    public long[] getNamePosts(long postNo, String name) { // what other posts refer to this post
+        List<Long> namePosts = new ArrayList<Long>();
+        if (name == null || name.isEmpty())
+            return null;
+        for (ChanPost post : posts)
+            if (post.no != postNo && name.equals(post.name))
+                namePosts.add(post.no);
+        long[] namePostsArr = new long[namePosts.size()];
+        for (int i = 0; i < namePostsArr.length; i++)
+            namePostsArr[i] = namePosts.get(i);
+        return namePostsArr;
+    }
+
 }

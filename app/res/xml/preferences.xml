@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    	xmlns:chanapps="http://chanapps.com">
-
-    <CheckBoxPreference
-            android:key="pref_show_nsfw_boards"
-            android:title="@string/pref_show_nsfw_boards"
-            android:summary="@string/pref_show_nsfw_boards_summ_detail"
-            android:summaryOn="@string/pref_show_nsfw_boards_summ_on"
-            android:summaryOff="@string/pref_show_nsfw_boards_summ_off"
-            android:defaultValue="false" />
+                  xmlns:chanapps="http://chanapps.com">
 
     <CheckBoxPreference
             android:key="pref_notifications"
@@ -16,14 +8,16 @@
             android:summaryOn="@string/pref_notifications_summ_on"
             android:summaryOff="@string/pref_notifications_summ_off"
             android:defaultValue="true" />
-<!-- replaced by grid view
-    <CheckBoxPreference
-            android:key="pref_hide_all_text"
-            android:title="@string/pref_hide_all_text"
-            android:summaryOn="@string/pref_hide_all_text_summ_on"
-            android:summaryOff="@string/pref_hide_all_text_summ_off"
-            android:defaultValue="false" />
--->
+
+    <!-- replaced by grid view
+        <CheckBoxPreference
+                android:key="pref_hide_all_text"
+                android:title="@string/pref_hide_all_text"
+                android:summaryOn="@string/pref_hide_all_text_summ_on"
+                android:summaryOff="@string/pref_hide_all_text_summ_off"
+                android:defaultValue="false" />
+    -->
+
     <CheckBoxPreference
             android:key="pref_hide_post_numbers"
             android:title="@string/pref_hide_post_numbers"
@@ -45,29 +39,64 @@
             android:summaryOff="@string/pref_use_friendly_ids_summ_off"
             android:defaultValue="true" />
 
+    <EditTextPreference
+            android:key="pref_user_name"
+            android:title="@string/pref_user_name"
+            android:hint="@string/post_reply_name_hint"
+            android:summary="@string/pref_user_name_summ"
+            android:inputType="textPersonName"
+            android:maxLength="100"
+            />
+
+    <EditTextPreference
+            android:key="pref_user_email"
+            android:title="@string/pref_user_email"
+            android:hint="@string/post_reply_email_hint"
+            android:summary="@string/pref_user_email_summ"
+            android:inputType="textEmailAddress"
+            android:maxLength="100"
+            />
+
+    <EditTextPreference
+            android:key="pref_user_password"
+            android:title="@string/pref_user_password"
+            android:hint="@string/post_reply_password_hint"
+            android:summary="@string/pref_user_password_summ"
+            android:inputType="textVisiblePassword|numberPassword"
+            android:maxLength="8"
+            />
+
     <Preference
             android:key="pref_blocklist_button"
             android:title="@string/pref_blocklist_button"
             android:summary="@string/pref_blocklist_button_summ" />
 
     <com.chanapps.four.component.CacheSizePreference
-        	android:key="pref_cache_size"
+            android:key="pref_cache_size"
             android:title="Cache size"
             android:summary="Adjust cache size"
             android:max="256"
             chanapps:min="32"
-        	chanapps:unitsLeft=""
+            chanapps:unitsLeft=""
             chanapps:unitsRight="MB"
-    />
-    
+            />
+
     <Preference
             android:key="pref_clear_cache"
             android:title="@string/pref_clear_cache"
             android:summary="@string/pref_clear_cache_summ" />
 
     <Preference
-        android:key="pref_reset_to_defaults"
-        android:title="@string/pref_reset_to_defaults"
-        android:summary="@string/pref_reset_to_defaults_summ" />
+            android:key="pref_reset_to_defaults"
+            android:title="@string/pref_reset_to_defaults"
+            android:summary="@string/pref_reset_to_defaults_summ" />
+
+    <CheckBoxPreference
+            android:key="pref_show_nsfw_boards"
+            android:title="@string/pref_show_nsfw_boards"
+            android:summary="@string/pref_show_nsfw_boards_summ_detail"
+            android:summaryOn="@string/pref_show_nsfw_boards_summ_on"
+            android:summaryOff="@string/pref_show_nsfw_boards_summ_off"
+            android:defaultValue="false" />
 
 </PreferenceScreen>

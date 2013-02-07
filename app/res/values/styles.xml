@@ -231,8 +231,17 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginLeft">0dp</item>
         <item name="android:layout_marginRight">0dp</item>
-        <item name="android:padding">4dp</item>
+        <item name="android:padding">2dp</item>
         <item name="android:background">@color/PaletteBlack</item>
+    </style>
+
+    <!-- we need this second inner layout so we have the outer for highlight rectangles -->
+    <style name="ThreadListLayoutInner" parent="ThreadListLayout">
+        <item name="android:padding">6dp</item>
+    </style>
+
+    <style name="ThreadListLayoutNoHighlight" parent="ThreadListLayout">
+        <item name="android:padding">8dp</item>
     </style>
 
     <style name="ThreadAdListImageStyle">
@@ -243,46 +252,13 @@
         <item name="android:background">@color/PaletteBlack</item>
     </style>
 
-    <style name="ListTextStyle">
-        <item name="android:textColor">@color/PaletteBlack</item>
-        <item name="android:background">@color/PaletteWhite</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:padding">8dp</item>
-        <item name="android:gravity">top|left</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="ListTextHeaderStyle" parent="android:style/Theme">
-        <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:background">@color/PaletteBlackMostlyOpaque</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:padding">8dp</item>
-        <item name="android:gravity">top|left</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="ListFullTextHeaderStyle" parent="android:style/Theme">
-        <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:background">@color/PaletteBlackMostlyOpaque</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">top</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:padding">8dp</item>
-        <item name="android:gravity">top|left</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
     <style name="ListShortTextStyle" parent="android:style/Theme">
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:background">@color/PaletteBlack</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">8dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
@@ -293,7 +269,7 @@
         <item name="android:background">@color/PaletteBlack</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">8dp</item>
+        <item name="android:paddingBottom">0dp</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">14sp</item>
     </style>

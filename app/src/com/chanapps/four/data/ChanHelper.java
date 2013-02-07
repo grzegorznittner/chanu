@@ -81,6 +81,7 @@ public class ChanHelper {
     public static final String POST_SPOILER_TEXT = "spoilerText";
     public static final String POST_EXIF_TEXT = "exifText";
     public static final String POST_USER_ID = "id";
+    public static final String POST_TRIPCODE = "trip";
     public static final String POST_IS_DEAD = "isDead";
     public static final String LOADING_ITEM = "loadingItem";
     public static final String LAST_ITEM = "lastItem";
@@ -116,6 +117,8 @@ public class ChanHelper {
             POST_SPOILER_TEXT,
             POST_EXIF_TEXT,
             POST_USER_ID,
+            POST_TRIPCODE,
+            POST_NAME,
             POST_IS_DEAD,
             POST_CLOSED,
             LOADING_ITEM,
