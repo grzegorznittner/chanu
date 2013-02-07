@@ -6,28 +6,33 @@
             android:id="@+id/widget_layout"
             android:orientation="horizontal"
             android:padding="0dp"
-            android:verticalSpacing="8dp"
-            android:horizontalSpacing="8dp"
             android:weightSum="3"
             android:background="@android:color/transparent"
         >
-
+<!--
+            android:divider="@android:color/transparent"
+            android:dividerPadding="2dp"
+            android:verticalSpacing="8dp"
+            android:horizontalSpacing="8dp"
+-->
     <ImageView android:id="@+id/image_left"
                android:layout_height="fill_parent"
                android:layout_width="0dp"
                android:contentDescription="Left Thumbnail Image"
                android:scaleType="centerCrop"
                android:layout_weight="1"
-               android:padding="2dp"
+               android:src="@drawable/a"
             />
 
     <ImageView android:id="@+id/image_center"
                android:layout_height="fill_parent"
                android:layout_width="0dp"
+               android:layout_marginLeft="2dp"
+               android:layout_marginRight="2dp"
                android:contentDescription="Center Thumbnail Image"
                android:scaleType="centerCrop"
                android:layout_weight="1"
-               android:padding="2dp"
+               android:src="@drawable/vg"
             />
 
     <ImageView android:id="@+id/image_right"
@@ -36,7 +41,7 @@
                android:contentDescription="Right Thumbnail Image"
                android:scaleType="centerCrop"
                android:layout_weight="1"
-               android:padding="2dp"
+               android:src="@drawable/q"
             />
 
     <!-- android:src="@drawable/board_3" -->
