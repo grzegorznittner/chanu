@@ -148,19 +148,19 @@
     <!-- BOARD GRID STYLES -->
 
     <style name="BoardGridLayout" parent="GridLayout">
-        <item name="android:layout_height">214dp</item>
+        <item name="android:layout_height">246dp</item>
     </style>
 
     <style name="BoardGridImageStyle" parent="GridImageStyle">
-        <item name="android:maxHeight">214dp</item>
+        <item name="android:maxHeight">246dp</item>
         <item name="android:maxWidth">150dp</item>
         <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_marginBottom">64dp</item>
+        <item name="android:layout_marginBottom">96dp</item>
         <item name="android:scaleType">centerCrop</item>
     </style>
 
     <style name="BoardAdGridImageStyle" parent="GridImageStyle">
-        <item name="android:maxHeight">214dp</item>
+        <item name="android:maxHeight">246dp</item>
         <item name="android:maxWidth">150dp</item>
         <item name="android:scaleType">fitCenter</item>
     </style>
@@ -169,7 +169,7 @@
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:background">@color/PaletteBlackMostlyOpaque</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_height">96dp</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:textStyle">normal</item>
