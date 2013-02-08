@@ -23,6 +23,22 @@
     <string name="blocklist_removed_id">Removed %1$s from blocklist</string>
     <string name="blocklist_add_id_confirm">Add %1$s to blocklist?</string>
 
+    <!-- delete post -->
+    <string name="delete_button">Delete Post</string>
+    <string name="delete_post_title">Delete Post</string>
+    <string name="delete_post_title_confirm">Password for Delete</string>
+    <string name="delete_post_password_hint">Password for Post</string>
+    <string name="delete_post_enter_password">Enter a password to delete</string>
+    <string name="delete_post_deleting">Deleting Post...</string>
+    <string name="delete_post_deleting_image">Deleting Post Image...</string>
+    <string name="delete_post_error">Couldn\'t delete post</string>
+    <string name="delete_post_no_response">Couldn\'t delete post, no response</string>
+    <string name="delete_post_cancelled">Cancelled delete post</string>
+    <string name="delete_post_successful">Deleted post</string>
+    <string name="delete_post_successful_image">Deleted post image</string>
+    <string name="delete_post_response_error">Couldn\'t delete post, unknown response</string>
+    <string name="delete_post_only_image">Delete Only Image?</string>
+
     <!-- menus -->
     <string name="clean_watchlist_menu">Clean Watchlist</string>
     <string name="clear_watchlist_menu">Clear Watchlist</string>
@@ -144,7 +160,8 @@
     <string name="dialog_reset_preferences_confirm">Reset all preferences?</string>
     <string name="dialog_close">Close</string>
     <string name="dialog_add">Add</string>
-    <string name="dialog_delete">Remove</string>
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_remove">Remove</string>
     <string name="dialog_clear">Clear</string>
     <string name="dialog_clean">Clean</string>
     <string name="dialog_set">Set</string>

@@ -6,12 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ToastRunnable;
-import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.data.ChanWatchlist;
 
 /**
@@ -40,7 +38,7 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return (new AlertDialog.Builder(getActivity()))
                 .setMessage(R.string.dialog_delete_watchlist_thread)
-                .setPositiveButton(R.string.dialog_delete,
+                .setPositiveButton(R.string.dialog_remove,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

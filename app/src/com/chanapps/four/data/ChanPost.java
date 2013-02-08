@@ -617,4 +617,15 @@ public class ChanPost {
         return newId;
     }
 
+    public void clearImageInfo() {
+        w = 0;
+        h = 0;
+        tn_w = 0;
+        tn_h = 0;
+        tim = 0;
+        fsize = -1;
+        filename = null;
+        ext = null;
+    }
+
 }
