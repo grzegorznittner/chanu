@@ -763,7 +763,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 getActionBar().setTitle("/" + boardCode + "/ " + getString(R.string.post_reply_thread_title));
             }
             else {
-                getActionBar().setTitle("/" + boardCode + "/ " + getString(R.string.post_reply_title));
+                getActionBar().setTitle("/" + boardCode + "/" + threadNo + " " + getString(R.string.post_reply_title));
             }
             getActionBar().setDisplayHomeAsUpEnabled(false);
         }

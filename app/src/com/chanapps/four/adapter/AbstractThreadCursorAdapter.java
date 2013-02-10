@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanHelper;
 
 import java.util.HashSet;
@@ -120,6 +121,8 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
 
         if (v != null && v instanceof RelativeLayout && postNo != 0)
             setHighlightViews(v, tag, postNo);
+        else
+            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteBlack));
 
         bindView(v, context, cursor);
         return v;

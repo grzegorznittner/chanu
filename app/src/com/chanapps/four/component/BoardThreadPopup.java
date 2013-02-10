@@ -173,12 +173,14 @@ public class BoardThreadPopup implements Dismissable {
         setCloseButton();
         setScrollViewMargin();
 
+        /* don't think we need this
         popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
                 view.setBackgroundColor(activity.getBaseContext().getResources().getColor(R.color.PaletteBlack));
             }
         });
+        */
         popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
     }
 

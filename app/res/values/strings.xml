@@ -176,7 +176,7 @@
     <string name="dialog_reset_preferences">Preferences reset to defaults</string>
 
     <!-- post reply activity -->
-    <string name="post_reply_title">New Post</string>
+    <string name="post_reply_title">Reply</string>
     <string name="post_reply_thread_title">New Thread</string>
     <string name="post_reply_text_hint">Comment (Optional)</string>
     <string name="post_reply_text_hint_required">Comment (Required)</string>
