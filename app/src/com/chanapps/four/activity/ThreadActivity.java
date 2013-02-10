@@ -249,7 +249,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         incrementCounterAndAddToWatchlistIfActive();
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         if (imageUrl == null || imageUrl.isEmpty()) {
-            view.setBackgroundColor(getResources().getColor(R.color.PaletteLightBlue));
             showPopupText(adapterView, view, position, id);
         }
         else {
@@ -267,7 +266,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (loadItem > 0 || lastItem > 0 || adItem > 0)
             return false; // end-of-thread item
 
-        view.setBackgroundColor(getResources().getColor(R.color.PaletteLightBlue));
         incrementCounterAndAddToWatchlistIfActive();
         return showPopupText(adapterView, view, position, id);
     }

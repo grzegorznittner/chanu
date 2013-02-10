@@ -5,7 +5,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.view.*;
 import android.view.inputmethod.EditorInfo;
@@ -13,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.task.PostReplyTask;
 
 /**
@@ -41,10 +44,22 @@ public class EditMessageTextDialogFragment extends DialogFragment {
                     EditMessageTextDialogFragment.this.dismiss();
                 }
             });
+
+        String message = savedInstanceState != null ? savedInstanceState.getString(ChanHelper.TEXT) : activity.getMessage();
         editMessageText = (EditText)view.findViewById(R.id.edit_message_text);
-        editMessageText.setText(activity.getMessage());
+        editMessageText.setText(message);
         editMessageText.requestFocus();
         return builder.create();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+        String message = editMessageText.getText().toString();
+        bundle.putString(ChanHelper.TEXT, message);
+        // also save for parent activity
+        activity.setMessage(message);
+        PreferenceManager.getDefaultSharedPreferences(activity).edit().putString(ChanHelper.TEXT, message).commit();
     }
 
     @Override

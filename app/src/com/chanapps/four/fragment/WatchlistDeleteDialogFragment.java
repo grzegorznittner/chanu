@@ -70,7 +70,8 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
     }
 
     private void resetItemMarking() {
-        itemView.setPadding(0, 0, 0, 0);
-        itemView.setBackgroundColor(getResources().getColor(R.color.PaletteBlack));
+        // no longer needed
+        //itemView.setPadding(0, 0, 0, 0);
+        //itemView.setBackgroundColor(getResources().getColor(R.color.PaletteBlack));
     }
 }

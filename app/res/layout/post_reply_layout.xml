@@ -19,6 +19,7 @@
                 style="@style/PostReplyEditTextStyle"
                 android:maxLength="100"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="0dp"
                 >
         </EditText>
 
@@ -27,6 +28,7 @@
                 style="@style/PostReplyEditTextStyle"
                 android:hint="@string/post_reply_text_hint"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:inputType="textMultiLine"
                 android:lines="6"
                 android:scrollbars="none"

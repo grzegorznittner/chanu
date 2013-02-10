@@ -285,8 +285,6 @@ public class BoardGroupFragment
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if (boardType == ChanBoard.Type.WATCHLIST) {
-            view.setPadding(3, 3, 3, 3);
-            view.setBackgroundColor(getResources().getColor(R.color.PaletteLightBlue));
             Cursor cursor = (Cursor) parent.getItemAtPosition(position);
             final int loadPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
             final int lastPage = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
