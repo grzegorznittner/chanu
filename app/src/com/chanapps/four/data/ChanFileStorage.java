@@ -505,4 +505,40 @@ public class ChanFileStorage {
         return new File(dir, name);
     }
 
+    public static int deletePost(Context context, String boardCode, long threadNo, long postNo, boolean imageOnly)
+    {
+        ChanThread thread = loadThreadData(context, boardCode, threadNo);
+        if (thread == null)
+            return 1;
+        ChanPost[] posts = thread.posts;
+        if (posts == null)
+            return 2;
+        int del = -1;
+        for (int i = 0; i < posts.length; i++) {
+            ChanPost post = posts[i];
+            if (post != null && post.no == postNo) {
+                del = i;
+                break;
+            }
+        }
+        if (del == -1)
+            return 3;
+        if (imageOnly)
+            posts[del].clearImageInfo();
+        else
+            removeElement(posts, del);
+
+        try {
+            storeThreadData(context, thread);
+        }
+        catch (IOException e) {
+            Log.e(TAG, "Couldn't store thread data after post delete", e);
+            return 4;
+        }
+        return 0;
+    }
+
+    public static void removeElement(Object[] a, int del) {
+        System.arraycopy(a,del+1,a,del,a.length-1-del);
+    }
 }

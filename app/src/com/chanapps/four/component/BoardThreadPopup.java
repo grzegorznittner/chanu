@@ -10,6 +10,7 @@ import android.widget.*;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.fragment.BlocklistAddDialogFragment;
+import com.chanapps.four.fragment.DeletePostDialogFragment;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -46,6 +47,8 @@ public class BoardThreadPopup implements Dismissable {
     protected Button exifButton;
     protected View blockButtonLine;
     protected Button blockButton;
+    protected View deleteButtonLine;
+    protected Button deleteButton;
     protected View replyButtonLine;
     protected Button replyButton;
     protected View highlightRepliesButtonLine;
@@ -116,6 +119,8 @@ public class BoardThreadPopup implements Dismissable {
 
         blockButtonLine = (View)popupView.findViewById(R.id.popup_block_button_line);
         blockButton = (Button)popupView.findViewById(R.id.popup_block_button);
+        deleteButtonLine = (View)popupView.findViewById(R.id.popup_delete_button_line);
+        deleteButton = (Button)popupView.findViewById(R.id.popup_delete_button);
         replyButtonLine = (View)popupView.findViewById(R.id.popup_reply_button_line);
         replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
         highlightRepliesButtonLine = (View)popupView.findViewById(R.id.popup_highlight_replies_button_line);
@@ -145,11 +150,12 @@ public class BoardThreadPopup implements Dismissable {
         final String userId = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_USER_ID));
         final String tripcode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TRIPCODE));
         final String name = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_NAME));
+        final String email = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EMAIL));
         final long tim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
         final String spoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
         final String exifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
         final long clickedThreadNo = resto == 0 ? postId : resto;
-        final long clickedPostNo = resto == 0 || postId == resto ? 0 : postId;
+        final long clickedPostNo = (resto == 0 || postId == resto) ? 0 : postId;
         if (BoardActivity.DEBUG) Log.i(BoardActivity.TAG, "Calling popup with id=" + id + " isDead=" + isDead + " postNo=" + postId + " resto=" + resto + " text=" + text);
         //popupHeader.setText(headerText);
         //popupText.setText(text);
@@ -158,11 +164,12 @@ public class BoardThreadPopup implements Dismissable {
         setSpoilerButton(spoilerText);
         setExifButton(exifText);
         setBlockButton(userId);
+        setDeleteButton(isDead, isClosed, clickedBoardCode, clickedThreadNo, postId);
         setReplyButtons(isDead, isClosed, clickedBoardCode, clickedThreadNo, clickedPostNo, tim, text);
         setShowImageButton(adapterView, view, position, id);
         setGoToThreadButton(adapterView, view, position, id);
         displayHighlightRepliesButton(clickedBoardCode, clickedThreadNo, clickedPostNo);
-        displayHighlightIdButton(clickedBoardCode, clickedThreadNo, clickedPostNo, userId, tripcode, name);
+        displayHighlightIdButton(clickedBoardCode, clickedThreadNo, clickedPostNo, userId, tripcode, name, email);
         setCloseButton();
         setScrollViewMargin();
 
@@ -271,6 +278,33 @@ public class BoardThreadPopup implements Dismissable {
         }
     }
 
+    protected void setDeleteButton(boolean isDead, boolean isClosed,
+                                   final String clickedBoardCode, final long clickedThreadNo,
+                                   final long clickedPostNo)
+    {
+        if (!isDead
+                && !isClosed
+                && (clickedBoardCode != null && !clickedBoardCode.isEmpty())
+                && clickedThreadNo != 0
+                && clickedPostNo != 0)
+        {
+            deleteButtonLine.setVisibility(View.VISIBLE);
+            deleteButton.setVisibility(View.VISIBLE);
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    (new DeletePostDialogFragment(BoardThreadPopup.this, activity,
+                            clickedBoardCode, clickedThreadNo, clickedPostNo))
+                            .show(activity.getSupportFragmentManager(), BoardActivity.TAG);
+                }
+            });
+        }
+        else {
+            deleteButtonLine.setVisibility(View.GONE);
+            deleteButton.setVisibility(View.GONE);
+        }
+    }
+
     public void dismiss() {
         popupWindow.dismiss();
     }
@@ -318,7 +352,8 @@ public class BoardThreadPopup implements Dismissable {
     }
 
     protected void displayHighlightIdButton(final String boardCode, final long threadNo, final long postNo,
-                                            final String userId, final String tripcode, final String name) { // board-level doesn't highlight, only thread-level does
+                                            final String userId, final String tripcode, final String name, final String email)
+    { // board-level doesn't highlight, only thread-level does
         highlightIdButtonLine.setVisibility(View.GONE);
         highlightIdButton.setVisibility(View.GONE);
     }
@@ -342,6 +377,8 @@ public class BoardThreadPopup implements Dismissable {
         if (exifButton.getVisibility() == View.VISIBLE)
             numVisibleButtons++;
         if (blockButton.getVisibility() == View.VISIBLE)
+            numVisibleButtons++;
+        if (deleteButton.getVisibility() == View.VISIBLE)
             numVisibleButtons++;
         if (replyButton.getVisibility() == View.VISIBLE)
             numVisibleButtons++;

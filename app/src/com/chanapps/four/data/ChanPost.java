@@ -14,19 +14,10 @@ public class ChanPost {
 	public static final String TAG = ChanPost.class.getSimpleName();
     private static final boolean DEBUG = false;
     
-    public static final int MAX_SINGLELINE_TEXT_LEN = 33;
+    public static final int MAX_SINGLELINE_TEXT_LEN = 20;
     public static final int MAX_SINGLELINE_TEXT_ABBR_LEN = MAX_SINGLELINE_TEXT_LEN - 3;
-
-    public static final int MAX_THREAD_IMAGETEXT_LEN = 110;
-    public static final int MAX_THREAD_IMAGETEXT_ABBR_LEN = MAX_THREAD_IMAGETEXT_LEN - 3;
-
-    /* TWO COL SIZES */
-    public static final int MAX_IMAGETEXT_LEN = 75;
-    public static final int MAX_IMAGETEXT_ABBR_LEN = MAX_IMAGETEXT_LEN - 3;
-    public static final int MAX_TEXTONLY_LEN = (int)(MAX_THREAD_IMAGETEXT_LEN * 2.3);
-    public static final int MAX_TEXTONLY_ABBR_LEN = MAX_TEXTONLY_LEN - 3;
-    public static final int MAX_THREAD_TEXTONLY_LEN = (int)(MAX_TEXTONLY_LEN * 1.5);
-    public static final int MAX_THREAD_TEXTONLY_ABBR_LEN = MAX_THREAD_TEXTONLY_LEN - 3;
+    public static final int MAX_QUADLINE_TEXT_LEN = 80;
+    public static final int MAX_QUADLINE_TEXT_ABBR_LEN = MAX_QUADLINE_TEXT_LEN - 3;
 
     private static final int MIN_LINE = 30;
     private static final int MAX_LINE = 40;
@@ -110,6 +101,10 @@ public class ChanPost {
     }
 
     private String sanitizeText(String text) {
+        return sanitizeText(text, false);
+    }
+
+    private String sanitizeText(String text, boolean collapseNewlines) {
         if (text == null || text.isEmpty())
             return "";
 
@@ -124,7 +119,7 @@ public class ChanPost {
                 .replaceAll("<span[^>]*class=\"abbr\"[^>]*>.*</span>", "")    // exif reference
                 .replaceAll("<table[^>]*class=\"exif\"[^>]*>.*</table>", "")  // exif info
                 .replaceAll("<s>[^<]*</s>", "SPOILER");                       // spoiler text
-        text = textViewFilter(text);
+        text = textViewFilter(text, collapseNewlines);
 
         long end = System.currentTimeMillis();
         Log.v(TAG, "Regexp: " + (end - start) + "ms");
@@ -174,7 +169,12 @@ public class ChanPost {
     }
 
     private static final String textViewFilter(String s) {
-        return s.replaceAll("<br */?>", "\n")
+        return textViewFilter(s, false);
+    }
+
+    private static final String textViewFilter(String s, boolean collapseNewlines) {
+        String t = s
+                .replaceAll("<br */?>", "\n")
                 .replaceAll("<[^>]+>", "")
                 .replaceAll("&lt;", "<")
                 .replaceAll("&gt;", ">")
@@ -184,9 +184,12 @@ public class ChanPost {
                 .replaceAll("&#0*44;", ",")
                 .replaceAll("&#[0-9abcdef]*;", "")
                 .replaceFirst("^\n+", "")
-                .replaceFirst("\n+$", "")
-                .replaceAll("\n", "<br/>")
-                .trim();
+                .replaceFirst("\n+$", "");
+        if (collapseNewlines)
+            t = t.replaceAll("\n+", " ");
+        else
+            t = t.replaceAll("\n", "<br/>");
+        return t.trim();
     }
 
     private static final String collapseNewlines(String s) {
@@ -209,7 +212,10 @@ public class ChanPost {
         return
             (s.length() <= maxLen)
             ? s
-            : s.substring(0, maxAbbrLen).replaceAll("\\s+", " ").replaceFirst("\\s+\\S+$", "")
+            : s.substring(0, maxAbbrLen)
+                    .replaceAll("\\s+", " ")
+                    .replaceFirst("\\s+\\S+$", "")
+                    .replaceFirst("\\s+$", "")
                     + "..."
                     + (longtext && clickForMore != null ? "\n" + clickForMore : "");
     }
@@ -258,7 +264,13 @@ public class ChanPost {
     public String getHeaderText() {
         return getHeaderText(true);
     }
-
+    
+    public String getTimeString(long seconds) {
+        long milliseconds = 1000 * seconds;
+        Date d = new Date(milliseconds);
+        return d.toString();
+    }
+    
     public String getHeaderText(boolean useFriendlyIds) {
         return "No: " + no
                 + (resto > 0 ? "\nReply To: " + resto : "")
@@ -269,7 +281,7 @@ public class ChanPost {
                 + (id != null && !id.isEmpty() ? "\nId: " + getUserId() : "")
                 + (email != null && !email.isEmpty() ? "\nEmail: " + email : "")
                 + (country_name != null && !country_name.isEmpty() ? "\nCountry: " + country_name : "")
-                + "\n" + (new Date(time)).toString()
+                + "\n" + getTimeString(time)
                 + (sub != null && !sub.isEmpty() ? "\nSubject: " + sanitizeText(sub) : "");
     }
 
@@ -288,15 +300,17 @@ public class ChanPost {
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Email: " + email + "</b>";
             if (country_name != null && !country_name.isEmpty())
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Country: " + country_name + "</b>";
-            text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + (new Date(time)).toString() + "</b>";
+            text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + getTimeString(time) + "</b>";
+        }
+        if (!hideAllText) {
+            if (fsize > 0) {
+                int kbSize = (fsize / 1024) + 1;
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Image: " + kbSize + "kB " + w + "x" + h + "</b>"; // + " " + ext;
+            }
             String subText = sanitizeText(sub);
             if (subText != null && !subText.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + subText + "</b>";
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Subject: " + subText + "</b>";
         }
-        if (fsize > 0) {
-			int kbSize = (fsize / 1024) + 1;
-			text += (text.isEmpty() ? "" : "<br/>\n") + kbSize + "kB " + w + "x" + h; // + " " + ext;
-		}
         return text;
 	}
 
@@ -315,10 +329,13 @@ public class ChanPost {
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Email: " + email + "</b>";
             if (country_name != null && !country_name.isEmpty())
                 text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Country: " + country_name + "</b>";
-            text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + (new Date(time)).toString() + "</b>";
-            String subText = sanitizeText(sub);
-            if (subText != null && !subText.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + subText + "</b>";
+            text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + getTimeString(time) + "</b>";
+        }
+        if (!hideAllText) {
+            if (fsize > 0) {
+                int kbSize = (fsize / 1024) + 1;
+                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Image: " + kbSize + "kB " + w + "x" + h + "</b>"; // + " " + ext;
+            }
         }
         if (resto == 0) { // thread stuff
             text += (text.isEmpty() ? "" : "<br/>\n")
@@ -326,7 +343,7 @@ public class ChanPost {
                     + " post" + (replies == 1 ? "" : "s")
                     + " "
                     + images
-                    + " image"
+                    + " img"
                     + (images == 1 ? "" : "s");
             if (imagelimit == 1)
                 text += " (IL)";
@@ -338,31 +355,26 @@ public class ChanPost {
                 text += (text.isEmpty() ? "" : " ") + "STICKY";
             if (closed > 0)
                 text += (text.isEmpty() ? "" : " ") + "CLOSED";
-            if (fsize > 0) {
-                int kbSize = (fsize / 1024) + 1;
-                text += "<br/>\n" + kbSize + "kB " + w + "x" + h; // + " " + ext;
-            }
         }
-        else { // just a post, don't add thread stuff
-            if (fsize > 0) {
-                int kbSize = (fsize / 1024) + 1;
-                text += (text.isEmpty() ? "" : "<br/>\n") + kbSize + "kB " + w + "x" + h; // + " " + ext;
-            }
+        if (!hideAllText) {
+            String subText = sanitizeText(sub);
+            if (subText != null && !subText.isEmpty())
+                text += (text.isEmpty() ? "" : "<br/><br/>\n") + "<b>Subject: " + subText + "</b>";
         }
         return text;
-	}
+    }
 
     public String getBoardText() {
         if (resto != 0)
             return ""; // just a post
         String text = "";
 
-        String subText = abbreviate(sanitizeText(sub), MAX_SINGLELINE_TEXT_LEN, MAX_SINGLELINE_TEXT_ABBR_LEN);
+        String subText = abbreviate(sanitizeText(sub, true), MAX_QUADLINE_TEXT_LEN, MAX_QUADLINE_TEXT_ABBR_LEN);
         if (subText != null && !subText.isEmpty()) {
             text += "<b>" + subText + "</b>";
         }
         else {
-            String comText = abbreviate(sanitizeText(com), MAX_SINGLELINE_TEXT_LEN, MAX_SINGLELINE_TEXT_ABBR_LEN);
+            String comText = abbreviate(sanitizeText(com, true), MAX_QUADLINE_TEXT_LEN, MAX_QUADLINE_TEXT_ABBR_LEN);
             if (comText != null && !comText.isEmpty())
                 text += "<b>" + comText + "</b>";
         }
@@ -372,7 +384,7 @@ public class ChanPost {
                 + " post" + (replies == 1 ? "" : "s")
                 + " "
                 + images
-                + " image"
+                + " img"
                 + (images == 1 ? "" : "s");
         if (imagelimit == 1)
             text += " IL";
@@ -603,6 +615,17 @@ public class ChanPost {
         String newId = nameMap.get(id.charAt(0)) + nameMap2.get(id.charAt(1)) + "." + id.substring(2);
         if (DEBUG) Log.i(TAG, "Final: " + newId);
         return newId;
+    }
+
+    public void clearImageInfo() {
+        w = 0;
+        h = 0;
+        tn_w = 0;
+        tn_h = 0;
+        tim = 0;
+        fsize = -1;
+        filename = null;
+        ext = null;
     }
 
 }
