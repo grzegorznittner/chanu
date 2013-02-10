@@ -156,6 +156,7 @@ public class SinglePhotoDataAdapter extends TileImageViewAdapter
         if (task.get() == null) {
             mTask = null;
         }
+        ((SinglePhotoDataAdapter) this).mRegionDecoder.recycle();
     }
 
     public ImageData getNextImage() {
