@@ -32,9 +32,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -44,9 +44,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.gallery3d.app.AbstractGalleryActivity;
-import com.android.gallery3d.app.PhotoPage;
-import com.android.gallery3d.data.Path;
-import com.android.gallery3d.data.UriSource;
 import com.android.gallery3d.ui.GLRootView;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
@@ -418,18 +415,19 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     private void showImage() {
     	localImageUri = checkLocalImage();
     	if (DEBUG) Log.i(TAG, "Displaying image " + localImageUri);
-//    	webView = new WebView(this);
-//        setContentView(webView);
-//        registerForContextMenu(webView);
-//        webView.getSettings().setLoadWithOverviewMode(true);
-//        webView.getSettings().setUseWideViewPort(true);
-//        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-//        webView.setScrollbarFadingEnabled(false);
-//        webView.getSettings().setBuiltInZoomControls(true);
-//        
-//        setDefaultZoom();
-//        
-//        webView.loadUrl(localImageUri);
+    	webView = new WebView(this);
+        setContentView(webView);
+        registerForContextMenu(webView);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        webView.setScrollbarFadingEnabled(false);
+        webView.getSettings().setBuiltInZoomControls(true);
+        
+        setDefaultZoom();
+        
+        webView.loadUrl(localImageUri);
+    	/* Disabled Gallery till I fix major issues
     	View contentView = inflater.inflate(R.layout.fullscreen_gallery, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
     	setContentView(contentView);
     	super.mGLRootView = (GLRootView) contentView.findViewById(R.id.gl_root_view);
@@ -439,6 +437,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
 		data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, itemPath.toString());
         
         getStateManager().startState(PhotoPage.class, data);
+        */
     }
     
     @Override
