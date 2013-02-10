@@ -44,6 +44,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.gallery3d.app.AbstractGalleryActivity;
+import com.android.gallery3d.app.PhotoPage;
+import com.android.gallery3d.data.Path;
+import com.android.gallery3d.ui.GLRoot;
 import com.android.gallery3d.ui.GLRootView;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
@@ -329,6 +332,15 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
 	protected void onDestroy () {
 		super.onDestroy();
 		if (DEBUG) Log.i(TAG, "onDestroy");
+        GLRoot root = getGLRoot();
+        if (root != null) {
+	        root.lockRenderThread();
+	        try {
+	            getStateManager().destroy();
+	        } finally {
+	            root.unlockRenderThread();
+	        }
+        }
 	}
 
     @Override
@@ -415,6 +427,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     private void showImage() {
     	localImageUri = checkLocalImage();
     	if (DEBUG) Log.i(TAG, "Displaying image " + localImageUri);
+    	/*
     	webView = new WebView(this);
         setContentView(webView);
         registerForContextMenu(webView);
@@ -427,7 +440,8 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
         setDefaultZoom();
         
         webView.loadUrl(localImageUri);
-    	/* Disabled Gallery till I fix major issues
+        */
+    	/* Disabled Gallery till I fix major issues */
     	View contentView = inflater.inflate(R.layout.fullscreen_gallery, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
     	setContentView(contentView);
     	super.mGLRootView = (GLRootView) contentView.findViewById(R.id.gl_root_view);
@@ -437,7 +451,18 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
 		data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, itemPath.toString());
         
         getStateManager().startState(PhotoPage.class, data);
-        */
+    }
+    
+    @Override
+    public void onBackPressed() {
+        // send the back event to the top sub-state
+        GLRoot root = getGLRoot();
+        root.lockRenderThread();
+        try {
+            getStateManager().onBackPressed();
+        } finally {
+            root.unlockRenderThread();
+        }
     }
     
     @Override
