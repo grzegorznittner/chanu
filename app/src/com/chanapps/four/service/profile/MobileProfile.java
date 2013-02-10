@@ -177,18 +177,18 @@ public class MobileProfile extends AbstractNetworkProfile {
 			UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
 			int i = 1;
 			for (ChanBoardStat stat : userStats.topBoards()) {
-				Log.i(TAG, "Top boards: " + i++  + ". " + stat);
+				if(DEBUG) Log.i(TAG, "Top boards: " + i++  + ". " + stat);
 			}
 			i = 1;
 			for (ChanThreadStat stat : userStats.topThreads()) {
-				Log.i(TAG, "Top threads: " + i++ + ". " + stat);
+				if(DEBUG) Log.i(TAG, "Top threads: " + i++ + ". " + stat);
 			}
 		}
 	}
 
 	@Override
 	public void onThreadSelected(Context context, String board, long threadId) {
-		Log.d(TAG, "onThreadSelected", new Exception("onThreadSelected called"));
+		if(DEBUG) Log.d(TAG, "onThreadSelected");
 		super.onThreadSelected(context, board, threadId);
 		
 		FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId);
@@ -257,7 +257,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 					&& currentActivityId.threadNo == data.threadNo;
 			makeToast("Loaded data for " + data.boardCode + "/" + data.threadNo);
 			ChanThread thread = ChanFileStorage.loadThreadData(service.getApplicationContext(), data.boardCode, data.threadNo);
-			Log.i(TAG, "Loaded thread " + thread.board + "/" + thread.no + " posts " + thread.posts.length);
+			if(DEBUG) Log.i(TAG, "Loaded thread " + thread.board + "/" + thread.no + " posts " + thread.posts.length);
 			if (thread.defData && threadActivity) {
 				// thread file is corrupted, and user stays on thread page (or loads image), we need to refetch thread
 				Log.w(TAG, "Thread " + data.boardCode + "/" + data.threadNo + " is corrupted, it is scheduled for reload");

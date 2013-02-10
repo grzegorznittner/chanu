@@ -56,6 +56,7 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.fragment.SetWallpaperDialogFragment;
 import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile.Type;
@@ -615,12 +616,11 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.set_as_wallpaper_menu:
-/*                if (checkLocalImage() != null)
+                if (checkLocalImage() != null)
                     (new SetWallpaperDialogFragment(localImageUri))
-                            .show(getSupportFragmentManager(), SetWallpaperDialogFragment.TAG);
+                            .show(getFragmentManager(), SetWallpaperDialogFragment.TAG);
                 else
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
-*/                    
                 return true;
             case R.id.view_image_gallery_menu:
                 if (checkLocalImage() != null)
@@ -663,8 +663,8 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
                 navigateToPost(nextPost, Direction.NEXT);
                 return true;
             case R.id.go_to_board_menu:
-/*                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
- */
+                /* new GoToBoardDialogFragment().show(getFragmentManager(), GoToBoardDialogFragment.TAG); */
+            	Toast.makeText(this, "Not implemented!", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
@@ -680,7 +680,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
                 aboutDialog.show();
                 return true;
             default:
-                return super.onOptionsItemSelected(item);
+                return onContextItemSelected(item);
         }
     }
 
@@ -762,6 +762,9 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
+        if (localImageUri != null) {
+        	inflater.inflate(R.menu.full_screen_image_context_menu, menu);
+        }
         inflater.inflate(R.menu.full_screen_image_menu, menu);
         return true;
     }
