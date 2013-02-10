@@ -1,12 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.chanapps.four.activity"
-          android:versionCode="1"
-          android:versionName="1.0"
-          android:installLocation="preferExternal">
+    android:versionCode="1"
+    android:versionName="1.0">
 
     <uses-sdk
         android:minSdkVersion="15"
-        android:targetSdkVersion="15" />
+        android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -19,17 +18,22 @@
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
+    <supports-screens android:smallScreens="false"
+            android:normalScreens="true" android:largeScreens="true"
+            android:anyDensity="true" />
+    
     <application
             android:name="com.chanapps.four.FourChannerApp"
             android:icon="@drawable/four_leaf_clover_1"
-            android:label="@string/app_name"
+            android:label="@string/application_name"
             android:theme="@style/AppTheme"
             android:debuggable="true">
 
         <activity
                 android:name=".PostReplyActivity"
                 android:label="@string/post_reply_activity"
-                android:configChanges="orientation">
+                android:configChanges="orientation"
+                android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>

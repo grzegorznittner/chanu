@@ -1,6 +1,6 @@
 <resources>
     <!-- titles -->
-    <string name="app_name">4channer</string>
+    <string name="application_name">4channer</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="title_item_list">Items</string>
     <string name="fragment_layout">2 Pane Layout</string>
