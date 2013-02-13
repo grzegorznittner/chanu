@@ -17,8 +17,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.ChanIdentifiedService;
+import android.widget.Toast;
+import com.chanapps.four.activity.*;
+import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
@@ -249,7 +250,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 ChanFileStorage.storeBoardData(getBaseContext(), board);
             }
             else if (contentType == null || !contentType.contains("json")) {
-                throw new IOException("Wrong content type returned '" + contentType + "' responseCode=" + tc.getResponseCode() + " content=" + tc.getContent().toString());
+                throw new IOException("Wrong content type returned board=" + board + " contentType='" + contentType + "' responseCode=" + tc.getResponseCode() + " content=" + tc.getContent().toString());
             }
             else {
             	long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, new InputStreamReader(tc.getInputStream()));
@@ -318,19 +319,32 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             }
 
             thread.lastFetched = now;
-            if (contentType == null || !contentType.contains("json")) {
-            	NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
-            	return;
-            } else if (tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+            if (tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 if (DEBUG) Log.i(TAG, "Got 404 on thread, thread no longer exists");
                 thread.isDead = true;
-        		ChanFileStorage.storeThreadData(getBaseContext(), thread);
-            } else {
-                long fileSize = ChanFileStorage.storeThreadFile(getBaseContext(), boardCode, threadNo, new InputStreamReader(tc.getInputStream()));
-            	int fetchTime = (int)(new Date().getTime() - startTime);
-            	
-            	NetworkProfileManager.instance().finishedFetchingData(this, fetchTime, (int)fileSize);
+                ChanFileStorage.storeThreadData(getBaseContext(), thread);
+                // now refresh if we marked the current thread as dead
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                if (activity == null)
+                    return;
+                ChanActivityId id = activity.getChanActivityId();
+                if (id == null)
+                    return;
+                if (boardCode.equals(id.boardCode) && threadNo == id.threadNo) {
+                    activity.getChanHandler().sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_SHORT_MS);
+                    NetworkProfileManager.instance().makeToast(getString(R.string.mark_dead_thread));
+                }
+                return;
+            } else if (contentType == null || !contentType.contains("json")) {
+                NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
+                return;
             }
+            else {
+                long fileSize = ChanFileStorage.storeThreadFile(getBaseContext(), boardCode, threadNo, new InputStreamReader(tc.getInputStream()));
+                int fetchTime = (int)(new Date().getTime() - startTime);
+                NetworkProfileManager.instance().finishedFetchingData(this, fetchTime, (int)fileSize);
+            }
+
         } catch (IOException e) {
             //toastUI(R.string.board_service_couldnt_read);
         	NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);

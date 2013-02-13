@@ -39,6 +39,24 @@
     <string name="delete_post_response_error">Couldn\'t delete post, unknown response</string>
     <string name="delete_post_only_image">Delete Only Image?</string>
 
+    <!-- report post -->
+    <string name="report_button">Report Post</string>
+    <string name="report_post_title">Report Post</string>
+    <string name="report_post_title_type">Reason for report</string>
+    <string name="report_post">Report</string>
+    <string name="report_post_select_type">Select a report type</string>
+    <string name="report_post_reporting">Reporting Post...</string>
+    <string-array name="report_post_types">
+        <item>Rule violation</item>
+        <item>Illegal content</item>
+        <item>Commercial spam/advertising</item>
+    </string-array>
+    <string name="report_post_successful">Reported post</string>
+    <string name="report_post_cancelled">Cancelled report post</string>
+    <string name="report_post_error">Couldn\'t report post</string>
+    <string name="report_post_no_response">Couldn\'t report post, no response</string>
+
+
     <!-- menus -->
     <string name="clean_watchlist_menu">Clean Watchlist</string>
     <string name="clear_watchlist_menu">Clear Watchlist</string>
@@ -139,6 +157,7 @@
     <!-- popup text -->
     <string name="spoiler">Show Spoiler</string>
     <string name="exif">Show EXIF Data</string>
+    <string name="report">Report Post</string>
     <string name="reply">Post Reply</string>
     <string name="quote">Quote</string>
     <string name="dismiss">Close</string>
@@ -280,6 +299,9 @@
 
     <!-- ads -->
     <string name="jlist_ad_message">J-List is a peaceful island of Japanese pop culture for you</string>
+
+    <!-- fetch and network services -->
+    <string name="mark_dead_thread">Thread marked as dead</string>
 
     <!-- board names -->
     <string name="board_type_japanese_culture">Japanese Culture</string>

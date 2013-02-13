@@ -9,8 +9,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
 import android.util.Log;
 
+import android.widget.Toast;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
@@ -174,7 +176,7 @@ public class NetworkProfileManager {
 		}
 		activeProfile.onImageDownloadSuccess(service.getApplicationContext(), time, size);
 	}
-	
+
 	public void finishedFetchingData(ChanIdentifiedService service, int time, int size) {
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(service.getApplicationContext());
@@ -282,4 +284,21 @@ public class NetworkProfileManager {
             }
         }
 	}
+
+    public void makeToast(final String text) {
+        final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        if (activity != null) {
+            Handler handler = activity.getChanHandler();
+            if (handler != null) {
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        Log.w(TAG, "Calling toast with '" + text + "'");
+                        Toast.makeText(activity.getBaseContext(), text, Toast.LENGTH_SHORT).show();
+                    }
+                }, 300);
+            } else {
+                Log.w(TAG, "Null handler for " + activity);
+            }
+        }
+    }
 }

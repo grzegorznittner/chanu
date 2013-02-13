@@ -11,6 +11,7 @@ import com.chanapps.four.activity.*;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.fragment.BlocklistAddDialogFragment;
 import com.chanapps.four.fragment.DeletePostDialogFragment;
+import com.chanapps.four.fragment.ReportPostDialogFragment;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -51,6 +52,8 @@ public class BoardThreadPopup implements Dismissable {
     protected Button deleteButton;
     protected View replyButtonLine;
     protected Button replyButton;
+    protected View reportButtonLine;
+    protected Button reportButton;
     protected View highlightRepliesButtonLine;
     protected Button highlightRepliesButton;
     protected View highlightIdButtonLine;
@@ -123,6 +126,8 @@ public class BoardThreadPopup implements Dismissable {
         deleteButton = (Button)popupView.findViewById(R.id.popup_delete_button);
         replyButtonLine = (View)popupView.findViewById(R.id.popup_reply_button_line);
         replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
+        reportButtonLine = (View)popupView.findViewById(R.id.popup_report_button_line);
+        reportButton = (Button)popupView.findViewById(R.id.popup_report_button);
         highlightRepliesButtonLine = (View)popupView.findViewById(R.id.popup_highlight_replies_button_line);
         highlightRepliesButton = (Button)popupView.findViewById(R.id.popup_highlight_replies_button);
         highlightIdButtonLine = (View)popupView.findViewById(R.id.popup_highlight_id_button_line);
@@ -165,6 +170,7 @@ public class BoardThreadPopup implements Dismissable {
         setExifButton(exifText);
         setBlockButton(userId);
         setDeleteButton(isDead, isClosed, clickedBoardCode, clickedThreadNo, postId);
+        setReportButton(isDead, isClosed, clickedBoardCode, clickedThreadNo, postId);
         setReplyButtons(isDead, isClosed, clickedBoardCode, clickedThreadNo, clickedPostNo, tim, text);
         setShowImageButton(adapterView, view, position, id);
         setGoToThreadButton(adapterView, view, position, id);
@@ -193,7 +199,9 @@ public class BoardThreadPopup implements Dismissable {
             showImageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FullScreenImageActivity.startActivity((Activity)activity, adapterView, view, position, id);                }
+                    FullScreenImageActivity.startActivity((Activity)activity, adapterView, view, position, id);
+                    dismiss();
+                }
             });
         }
         else {
@@ -209,6 +217,7 @@ public class BoardThreadPopup implements Dismissable {
             @Override
             public void onClick(View v) {
                 ThreadActivity.startActivity((Activity)activity, adapterView, view, position, id, true);
+                dismiss();
             }
         });
     }
@@ -271,6 +280,7 @@ public class BoardThreadPopup implements Dismissable {
                 @Override
                 public void onClick(View v) {
                     (new BlocklistAddDialogFragment(BoardThreadPopup.this, activity, userId)).show(activity.getSupportFragmentManager(), BoardActivity.TAG);
+                    dismiss();
                 }
             });
         }
@@ -298,12 +308,39 @@ public class BoardThreadPopup implements Dismissable {
                     (new DeletePostDialogFragment(BoardThreadPopup.this, activity,
                             clickedBoardCode, clickedThreadNo, clickedPostNo))
                             .show(activity.getSupportFragmentManager(), BoardActivity.TAG);
+                    dismiss();
                 }
             });
         }
         else {
             deleteButtonLine.setVisibility(View.GONE);
             deleteButton.setVisibility(View.GONE);
+        }
+    }
+
+    protected void setReportButton(boolean isDead, boolean isClosed,
+                                   final String clickedBoardCode, final long clickedThreadNo, final long postId) {
+        if (!isDead
+                && !isClosed
+                && (clickedBoardCode != null && !clickedBoardCode.isEmpty())
+                && clickedThreadNo != 0
+                && postId != 0)
+        {
+            reportButtonLine.setVisibility(View.VISIBLE);
+            reportButton.setVisibility(View.VISIBLE);
+            reportButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    (new ReportPostDialogFragment(BoardThreadPopup.this, activity,
+                            clickedBoardCode, clickedThreadNo, postId))
+                            .show(activity.getSupportFragmentManager(), BoardActivity.TAG);
+                    dismiss();
+                }
+            });
+        }
+        else {
+            reportButtonLine.setVisibility(View.GONE);
+            reportButton.setVisibility(View.GONE);
         }
     }
 
@@ -341,8 +378,8 @@ public class BoardThreadPopup implements Dismissable {
                     replyIntent.putExtra(ChanHelper.POST_NO, clickedPostNo);
                     replyIntent.putExtra(ChanHelper.TIM, tim);
                     replyIntent.putExtra(ChanHelper.TEXT, "");
-                    popupWindow.dismiss();
                     ((Activity)activity).startActivity(replyIntent);
+                    dismiss();
                 }
             });
         }
@@ -364,7 +401,7 @@ public class BoardThreadPopup implements Dismissable {
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                popupWindow.dismiss();
+                dismiss();
             }
         });
     }

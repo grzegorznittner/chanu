@@ -223,20 +223,6 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	}
 
 	protected void makeToast(final String text) {
-		final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		if (activity != null) {
-			Handler handler = activity.getChanHandler();
-			if (handler != null) {
-				handler.postDelayed(new Runnable() {
-		            public void run() {
-		            	Log.w(TAG, "Calling toast with '" + text + "'");
-		                Toast.makeText(activity.getBaseContext(), text, Toast.LENGTH_SHORT).show();
-		            }
-		        }, 300);
-			} else {
-				Log.w(TAG, "Null handler for " + activity);
-			}
-		}
-
+        NetworkProfileManager.instance().makeToast(text);
 	}
 }

@@ -172,6 +172,15 @@
                     android:text="@string/delete_button" />
 
             <View
+                    android:id="@+id/popup_report_button_line"
+                    style="@style/PopupFullTextHorizontalSeparator" />
+
+            <Button
+                    android:id="@+id/popup_report_button"
+                    style="@style/PopupFullTextButtonStyle"
+                    android:text="@string/report" />
+
+            <View
                     android:id="@+id/popup_reply_button_line"
                     style="@style/PopupFullTextHorizontalSeparator" />
 

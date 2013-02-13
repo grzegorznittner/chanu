@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <!--
+    <TextView
+            style="@style/PostReplyEditTextStyle"
+            android:background="#00000000"
+            android:padding="0dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp"
+            android:textSize="18dp"
+            android:text="@string/report_post_title_type"
+            >
+    </TextView>
+    -->
+
+    <Spinner
+            android:id="@+id/report_post_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            >
+    </Spinner>
+
+    <FrameLayout
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="96dp">
+        <ImageButton
+                android:id="@+id/report_post_recaptcha_imgview"
+                android:scaleType="fitCenter"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#ffffffff">
+        </ImageButton>
+        <ImageView
+                android:id="@+id/report_post_recaptcha_loading"
+                android:src="@drawable/navigation_refresh"
+                android:scaleType="centerCrop"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center">
+        </ImageView>
+    </FrameLayout>
+
+    <EditText
+            android:id="@+id/report_post_recaptcha_response"
+            style="@style/PostReplyEditTextStyle"
+            android:hint="@string/post_reply_recaptcha_hint"
+            android:inputType="textNoSuggestions"
+            android:imeOptions="actionSend"
+            android:imeActionLabel="@string/post_reply_send"
+            android:maxLength="100"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp"
+            >
+    </EditText>
+
+</LinearLayout>
