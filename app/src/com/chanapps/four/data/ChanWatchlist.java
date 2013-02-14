@@ -33,7 +33,7 @@ public class ChanWatchlist {
     
     public static final String DEFAULT_WATCHTEXT = "WatchingThread";
 
-    public static final long MAX_DEAD_THREAD_RETENTION_MS = 604800000; // 1 week
+    public static final long MAX_DEAD_THREAD_RETENTION_MS = 0; // clear immediately
 
     private static final String FIELD_SEPARATOR = "\t";
     private static final String FIELD_SEPARATOR_REGEX = "\\t";
@@ -85,7 +85,7 @@ public class ChanWatchlist {
             int imageWidth,
             int imageHeight) {
         if (isThreadWatched(ctx, boardCode, threadNo)) {
-            if (DEBUG) Log.i(TAG, "Thread " + boardCode + "/" + threadNo + " already in watchlist");
+            if (DEBUG) Log.v(TAG, "Thread " + boardCode + "/" + threadNo + " already in watchlist");
             return R.string.thread_already_in_watchlist;
         }
         else {
@@ -93,7 +93,7 @@ public class ChanWatchlist {
             Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
             savedWatchlist.add(threadPath);
             saveWatchlist(ctx, savedWatchlist);
-            if (DEBUG) Log.i(TAG, "Thread " + threadPath + " added to watchlist");
+            if (DEBUG) Log.v(TAG, "Thread " + threadPath + " added to watchlist");
             return R.string.thread_added_to_watchlist;
         }
     }
@@ -102,7 +102,7 @@ public class ChanWatchlist {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
         editor.putStringSet(ChanHelper.THREAD_WATCHLIST, savedWatchlist);
         editor.commit();
-        if (DEBUG) Log.d(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
+        if (DEBUG) Log.v(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
     }
 
     public static void updateThreadInfo(Context ctx, String boardCode, long threadNo, long tim,
@@ -134,7 +134,7 @@ public class ChanWatchlist {
                 String newThreadPath = ChanWatchlist.getThreadPath(matchingComponents);
                 savedWatchlist.add(newThreadPath);
                 saveWatchlist(ctx, savedWatchlist);
-                if (DEBUG) Log.i(TAG, "Thread " + newThreadPath + " added to watchlist");
+                if (DEBUG) Log.v(TAG, "Thread " + newThreadPath + " added to watchlist");
             }
         }
     }
@@ -211,15 +211,15 @@ public class ChanWatchlist {
     }
 
     public static void clearWatchlist(Context ctx) {
-        if (DEBUG) Log.i(TAG, "Clearing watchlist...");
+        if (DEBUG) Log.v(TAG, "Clearing watchlist...");
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
         editor.remove(ChanHelper.THREAD_WATCHLIST);
         editor.commit();
-        if (DEBUG) Log.i(TAG, "Watchlist cleared");
+        if (DEBUG) Log.v(TAG, "Watchlist cleared");
     }
 
     private static void cleanWatchlistSynchronous(Context ctx, boolean cleanAllDeadThreads) {
-        if (DEBUG) Log.i(TAG, "Cleaning watchlist...");
+        if (DEBUG) Log.v(TAG, "Cleaning watchlist...");
         List<Long> deadTims = getDeadTims(ctx, cleanAllDeadThreads);
         deleteThreadsFromWatchlist(ctx, deadTims);
         if (DEBUG) Log.i(TAG, "Watchlist cleaned");
@@ -247,7 +247,7 @@ public class ChanWatchlist {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
         editor.putStringSet(ChanHelper.THREAD_WATCHLIST, savedWatchlist);
         editor.commit();
-        if (DEBUG) Log.d(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
+        if (DEBUG) Log.v(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
     }
 
     public static List<String> getSortedWatchlistFromPrefs(Context ctx) {
@@ -284,27 +284,36 @@ public class ChanWatchlist {
     }
 
     public static Set<String> getWatchlistFromPrefs(Context ctx) {
-        if (DEBUG) Log.i(TAG, "Getting watchlist from prefs...");
+        if (DEBUG) Log.v(TAG, "Getting watchlist from prefs...");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         Set<String> savedWatchlist = prefs.getStringSet(ChanHelper.THREAD_WATCHLIST, new HashSet<String>());
-        if (DEBUG) Log.d(TAG, "Loaded watchlist from prefs:" + Arrays.toString(savedWatchlist.toArray()));
+        if (DEBUG) Log.v(TAG, "Loaded watchlist from prefs:" + Arrays.toString(savedWatchlist.toArray()));
         return savedWatchlist;
     }
 
     public static void fetchWatchlistThreads(Context context) {
+        if (DEBUG) Log.i(TAG, "fetchWatchlistThreads");
         Set<String> threadPaths = new HashSet<String>(); // copy so we don't get concurrent exception
         Set<String> origThreadPaths = ChanWatchlist.getWatchlistFromPrefs(context);
+        if (DEBUG) Log.i(TAG, "origThreadPaths: " + Arrays.toString(origThreadPaths.toArray()));
         synchronized (origThreadPaths) {
-            for (String path : threadPaths) {
+            for (String path : origThreadPaths) {
                 threadPaths.add(new String(path));
             }
         }
+        if (DEBUG) Log.i(TAG, "XXXXthreadPaths: " + Arrays.toString(threadPaths.toArray()));
         for (String threadPath : threadPaths) {
-            String boardCode = ChanWatchlist.getBoardCodeFromThreadPath(threadPath);
-            long threadNo = ChanWatchlist.getThreadNoFromThreadPath(threadPath);
-            // FIXME should say if !threadIsDead we should store this somewhere
-            Log.i(TAG, "Starting load service for watching thread " + boardCode + "/" + threadNo);
-            FetchChanDataService.scheduleThreadFetch(context, boardCode, threadNo);
+            if (DEBUG) Log.i(TAG, "getting thread info for path: " + threadPath);
+            try {
+                String boardCode = ChanWatchlist.getBoardCodeFromThreadPath(threadPath);
+                long threadNo = ChanWatchlist.getThreadNoFromThreadPath(threadPath);
+                // FIXME should say if !threadIsDead we should store this somewhere
+                if (DEBUG) Log.i(TAG, "Starting load service for watching thread " + boardCode + "/" + threadNo);
+                FetchChanDataService.scheduleThreadFetch(context, boardCode, threadNo);
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Exception parsing watchlist", e);
+            }
         }
     }
 

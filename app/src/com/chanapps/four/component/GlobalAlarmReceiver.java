@@ -65,27 +65,30 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
     }
 
     public static void updateAndScheduleRepeating(Context context) {
+        if (DEBUG) Log.i(TAG, "updateAndScheduleRepeating");
         update(context);
         scheduleGlobalAlarm(context);
     }
 
     private static void update(Context context) {
+        if (DEBUG) Log.i(TAG, "update");
         BoardWidgetProvider.updateAll(context);
     }
 
     private static void fetchAll(Context context) {
+        if (DEBUG) Log.i(TAG, "fetchAll");
         BoardWidgetProvider.fetchAllWidgets(context);
         ChanWatchlist.fetchWatchlistThreads(context);
         ChanBoard.preloadUncachedBoards(context);
     }
 
     private static void scheduleGlobalAlarm(Context context) {
+        if (DEBUG) Log.i(TAG, "scheduleGlobalAlarm interval ms=" + WIDGET_UPDATE_INTERVAL_MS);
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         long scheduleAt = SystemClock.elapsedRealtime();
         PendingIntent pendingIntent = getPendingIntentForGlobalAlarm(context);
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, scheduleAt, WIDGET_UPDATE_INTERVAL_MS, pendingIntent);
-        if (DEBUG)
-            Log.i(TAG, "Scheduled UpdateWidgetService at t=" + scheduleAt + " repeating every delta=" + WIDGET_UPDATE_INTERVAL_MS + "ms");
+        if (DEBUG) Log.i(TAG, "Scheduled UpdateWidgetService at t=" + scheduleAt + " repeating every delta=" + WIDGET_UPDATE_INTERVAL_MS + "ms");
     }
 
     private static PendingIntent getPendingIntentForGlobalAlarm(Context context) {
@@ -96,6 +99,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
     }
 
     public static void cancelGlobalAlarm(Context context) {
+        if (DEBUG) Log.i(TAG, "cancelGlobalAlarm");
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = getPendingIntentForGlobalAlarm(context);
         alarmManager.cancel(pendingIntent);
