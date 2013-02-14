@@ -402,8 +402,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     }
 
     protected void saveUserPrefs(SharedPreferences.Editor ed) {
+        String email = emailText.getText().toString();
+        if (!email.equalsIgnoreCase("sage")) // no sagebombing
+            ed.putString(SettingsActivity.PREF_USER_EMAIL, email);
         ed.putString(SettingsActivity.PREF_USER_NAME, nameText.getText().toString());
-        ed.putString(SettingsActivity.PREF_USER_EMAIL, emailText.getText().toString());
         ed.putString(SettingsActivity.PREF_USER_PASSWORD, passwordText.getText().toString());
     }
 

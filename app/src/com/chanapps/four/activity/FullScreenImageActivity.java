@@ -1,10 +1,6 @@
 package com.chanapps.four.activity;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URLEncoder;
 
@@ -448,7 +444,15 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     	super.mGLRootView = (GLRootView) contentView.findViewById(R.id.gl_root_view);
 
     	Bundle data = new Bundle();
-    	Path itemPath = Path.fromString("/uri/" + URLEncoder.encode(localImageUri));
+        String encodedUri = null;
+        try {
+            encodedUri = URLEncoder.encode(localImageUri, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "How in the hell is UTF-8 not supported?", e);
+            encodedUri = localImageUri;
+        }
+    	Path itemPath = Path.fromString("/uri/" + encodedUri);
 		data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, itemPath.toString());
         
         getStateManager().startState(PhotoPage.class, data);

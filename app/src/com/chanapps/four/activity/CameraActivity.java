@@ -53,31 +53,6 @@ public class CameraActivity extends Activity {
         setResult(RESULT_CANCELED); // only OK when we've taken a picture
 
         setContentView(R.layout.camera_layout);
-
-        // Create an instance of Camera
-        mCamera = getCameraInstance();
-        if (mCamera == null) {
-            Log.e(TAG, "Couldn't open camera");
-            Toast.makeText(this, R.string.camera_open_error, Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
-        // Create our Preview view and set it as the content of our activity.
-        mPreview = new CameraPreview(this, mCamera);
-        RelativeLayout preview = (RelativeLayout) findViewById(R.id.camera_preview);
-        preview.addView(mPreview, 0);
-
-        // Add a listener to the Capture button
-        ImageButton captureButton = (ImageButton) findViewById(R.id.button_capture);
-        captureButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // get an image from the camera
-                        mCamera.takePicture(mShutter, null, mPicture);
-                    }
-                }
-        );
     }
 
     /** A safe way to get an instance of the Camera object. */
@@ -297,6 +272,47 @@ public class CameraActivity extends Activity {
                 if (DEBUG) Log.i(TAG, "Error starting camera preview: " + e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initCamera();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mCamera != null)
+            mCamera.release();
+    }
+
+    private void initCamera() {
+        if (mCamera != null)
+            mCamera.release();
+        mCamera = getCameraInstance();
+        if (mCamera == null) {
+            Log.e(TAG, "Couldn't open camera");
+            Toast.makeText(this, R.string.camera_open_error, Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        // Create our Preview view and set it as the content of our activity.
+        mPreview = new CameraPreview(this, mCamera);
+        RelativeLayout preview = (RelativeLayout) findViewById(R.id.camera_preview);
+        preview.addView(mPreview, 0);
+
+        // Add a listener to the Capture button
+        ImageButton captureButton = (ImageButton) findViewById(R.id.button_capture);
+        captureButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // get an image from the camera
+                        mCamera.takePicture(mShutter, null, mPicture);
+                    }
+                }
+        );
     }
 
 }
