@@ -3,10 +3,12 @@ package com.chanapps.four.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,7 +41,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static final int PASSWORD_MAX = 100000000;
     private static final Random randomGenerator = new Random();
@@ -128,11 +130,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         recaptchaText = (EditText)findViewById(R.id.post_reply_recaptcha_response);
         recaptchaText.setOnEditorActionListener(fastSend);
 
-        cameraButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                startCamera();
-            }
-        });
+        setupCameraButton();
         pictureButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 startGallery();
@@ -161,6 +159,24 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         });
 
         recaptchaLoading = (ImageView) findViewById(R.id.post_reply_recaptcha_loading);
+    }
+
+    private void setupCameraButton() {
+        boolean hasCameraFeature = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+        int numCameras = Camera.getNumberOfCameras();
+        boolean hasCamera = hasCameraFeature && numCameras > 0;
+        if (DEBUG) Log.i(TAG, "has cameraFeature=" + hasCameraFeature + " numCameras=" + numCameras + " hasCamera=" + hasCamera);
+        if (hasCamera) {
+            cameraButton.setVisibility(View.VISIBLE);
+            cameraButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    startCamera();
+                }
+            });
+        }
+        else {
+            cameraButton.setVisibility(View.GONE);
+        }
     }
 
     public SharedPreferences ensurePrefs() {
@@ -408,6 +424,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         ed.putString(SettingsActivity.PREF_USER_NAME, nameText.getText().toString());
         ed.putString(SettingsActivity.PREF_USER_PASSWORD, passwordText.getText().toString());
     }
+
 
     public void reloadCaptcha() {
         recaptchaText.setText("");

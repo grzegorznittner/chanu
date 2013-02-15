@@ -3,6 +3,7 @@ package com.chanapps.four.data;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
+import android.content.Intent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -187,6 +188,13 @@ public class ChanHelper {
     public static void fadeout(Context context, View view) {
         Animation animation = AnimationUtils.loadAnimation(context, R.animator.fadeout);
         view.startAnimation(animation);
+    }
+
+    public static void exitApplication(Context context) {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 
 }

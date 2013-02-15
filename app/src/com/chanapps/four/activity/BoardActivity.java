@@ -477,6 +477,9 @@ public class BoardActivity
                 RawResourceDialog aboutDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.about_header, R.raw.about_detail);
                 aboutDialog.show();
                 return true;
+            case R.id.exit_menu:
+                ChanHelper.exitApplication(this);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
