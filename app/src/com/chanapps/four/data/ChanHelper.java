@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -188,6 +189,12 @@ public class ChanHelper {
     public static void fadeout(Context context, View view) {
         Animation animation = AnimationUtils.loadAnimation(context, R.animator.fadeout);
         view.startAnimation(animation);
+    }
+
+    public static void launchUrlInBrowser(Context context, String url) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        context.startActivity(i);
     }
 
     public static void exitApplication(Context context) {

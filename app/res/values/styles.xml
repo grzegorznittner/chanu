@@ -272,6 +272,11 @@
         <item name="android:paddingBottom">0dp</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">14sp</item>
+
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">true</item>
     </style>
 
     <style name="ListCountryFlagStyle" parent="android:style/Theme">
@@ -346,6 +351,15 @@
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="MessageTextStyle" parent="android:style/Theme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <color name="PaletteLightGreen">#58b75a</color>

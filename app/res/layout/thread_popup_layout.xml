@@ -29,41 +29,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-<!--
-                <FrameLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        >
-
-                    <TextView
-                            android:id="@+id/popup_header"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="14sp"
-                            android:textColor="#010101"
-                            android:textStyle="bold"
-                            android:paddingBottom="16dp"
-                            android:focusable="true"
-                            android:layout_gravity="top|left">
-                    </TextView>
-
-                    <ImageView
-                            android:id="@+id/popup_country_flag"
-                            android:layout_width="16dp"
-                            android:layout_height="11dp"
-                            android:layout_gravity="top|right"
-                            android:focusable="false"
-                            android:contentDescription="@string/popup_country_flag"
-                            >
-                    </ImageView>
-
-                </FrameLayout>
-
-                <TextView
-                        android:id="@+id/popup_full_text"
-                        style="@style/PopupFullTextViewStyle"
-                        />
--->
                 <TextView
                         android:id="@+id/popup_spoiler_text"
                         style="@style/PopupFullTextViewStyle"
@@ -118,22 +83,13 @@
                     android:text="@string/exif" />
 
             <View
-                    android:id="@+id/popup_go_to_thread_button_line"
+                    android:id="@+id/popup_translate_button_line"
                     style="@style/PopupFullTextHorizontalSeparator" />
 
             <Button
-                    android:id="@+id/popup_go_to_thread_button"
+                    android:id="@+id/popup_translate_button"
                     style="@style/PopupFullTextButtonStyle"
-                    android:text="@string/popup_go_to_thread" />
-
-            <View
-                    android:id="@+id/popup_show_image_button_line"
-                    style="@style/PopupFullTextHorizontalSeparator" />
-
-            <Button
-                    android:id="@+id/popup_show_image_button"
-                    style="@style/PopupFullTextButtonStyle"
-                    android:text="@string/popup_show_image" />
+                    android:text="@string/translate" />
 
             <View
                     android:id="@+id/popup_highlight_replies_button_line"

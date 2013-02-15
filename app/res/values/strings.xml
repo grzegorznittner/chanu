@@ -109,7 +109,9 @@
     <string name="thread_end_of_thread">End of Thread</string>
     <string name="thread_couldnt_load">Couldn\'t load thread</string>
     <string name="thread_no_replies_found">No replies found</string>
-    <string name="thread_replies_found">Found %1$d referenced posts</string>
+    <string name="thread_prev_replies_found">Found %1$d references</string>
+    <string name="thread_next_replies_found">Found %1$d replies</string>
+    <string name="thread_both_replies_found">Found %1$d references and %2$d replies</string>
     <string name="thread_no_id_found">No other posts found for %1$s</string>
     <string name="thread_id_found">Found %1$d posts for %2$s</string>
 
@@ -157,6 +159,7 @@
     <!-- popup text -->
     <string name="spoiler">Show Spoiler</string>
     <string name="exif">Show EXIF Data</string>
+    <string name="translate">Translate</string>
     <string name="report">Report Post</string>
     <string name="reply">Post Reply</string>
     <string name="quote">Quote</string>
@@ -167,6 +170,7 @@
     <string name="highlight_id">Show Posts from User</string>
     <string name="popup_country_flag">Country Flag</string>
     <string name="popup_show_image">Show Image</string>
+    <string name="popup_show_text">Show Text</string>
     <string name="popup_go_to_thread">Go To Thread</string>
 
     <!-- dialog text -->

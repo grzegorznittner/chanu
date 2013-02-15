@@ -102,13 +102,17 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         final int w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
         final int h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
+        startActivity(from, boardCode, threadNo, postId, w, h, adapterView.getFirstVisiblePosition());
+    }
+
+    public static void startActivity(Context from, String boardCode, long threadNo, long postId, int w, int h, int position) {
         Intent intent = new Intent(from, FullScreenImageActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
         intent.putExtra(ChanHelper.POST_NO, postId);
         intent.putExtra(ChanHelper.IMAGE_WIDTH, w);
         intent.putExtra(ChanHelper.IMAGE_HEIGHT, h);
-        intent.putExtra(ChanHelper.LAST_THREAD_POSITION, adapterView.getFirstVisiblePosition());
+        intent.putExtra(ChanHelper.LAST_THREAD_POSITION, position);
         if (DEBUG) Log.i(TAG, "Starting full screen image viewer for: " + boardCode + "/" + threadNo + "/" + postId);
         from.startActivity(intent);
     }

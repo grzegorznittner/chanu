@@ -66,7 +66,6 @@ public class BoardActivity
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
     protected SharedPreferences prefs;
-    protected BoardThreadPopup boardThreadPopup;
     protected long tim;
     protected String boardCode;
 
@@ -150,8 +149,7 @@ public class BoardActivity
         initAdapter();
         absListView.setClickable(true);
         absListView.setOnItemClickListener(this);
-        absListView.setLongClickable(true);
-        absListView.setOnItemLongClickListener(this);
+        absListView.setLongClickable(false);
     }
 
     protected synchronized Handler ensureHandler() {
@@ -414,31 +412,15 @@ public class BoardActivity
         ChanHelper.fadeout(this, view);
         if (adItem > 0) {
             final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-            launchAdLinkInBrowser(adUrl);
+            launchUrlInBrowser(adUrl);
             return;
         }
 
         ThreadActivity.startActivity(this, adapterView, view, position, id, true);
     }
 
-    protected void launchAdLinkInBrowser(String url) {
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(url));
-        startActivity(i);
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-        return false;
-        /*
-        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
-        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (loadItem > 0 || lastItem > 0 || adItem > 0)
-            return false;
-        return showPopupText(adapterView, view, position, id);
-        */
+    protected void launchUrlInBrowser(String url) {
+        ChanHelper.launchUrlInBrowser(this, url);
     }
 
     @Override
@@ -514,22 +496,6 @@ public class BoardActivity
         String title = "/" + boardCode + "/"; // + " " + getString(R.string.board_activity);
         a.setTitle(title);
         a.setDisplayHomeAsUpEnabled(true);
-    }
-
-    protected void initPopup() {
-        boardThreadPopup = new BoardThreadPopup(this, this.getLayoutInflater(), imageLoader, displayImageOptions);
-    }
-
-    protected BoardThreadPopup ensurePopup() {
-        if (boardThreadPopup == null) {
-            initPopup();
-        }
-        return boardThreadPopup;
-    }
-
-    public boolean showPopupText(AdapterView<?> adapterView, View view, int position, long id) {
-        ensurePopup().showFromCursor(adapterView, view, position, id);
-        return true;
     }
 
 	@Override

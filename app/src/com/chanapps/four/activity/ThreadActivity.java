@@ -30,8 +30,6 @@ import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * Created with IntelliJ IDEA.
@@ -56,6 +54,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     protected boolean hidePostNumbers = true;
     protected UserStatistics userStats = null;
     protected boolean inWatchlist = false;
+    protected ThreadPostPopup threadPostPopup;
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -233,113 +233,164 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
-        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (loadItem > 0 || lastItem > 0)
-            return;
-        if (adItem > 0) {
-            ChanHelper.fadeout(this, view);
-            final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-            launchAdLinkInBrowser(adUrl);
-            return;
-        }
-        incrementCounterAndAddToWatchlistIfActive();
-        final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        if (imageUrl == null || imageUrl.isEmpty()) {
-            showPopupText(adapterView, view, position, id);
+    protected void createAbsListView() {
+        setAbsListViewClass();
+        setContentView(getLayoutId());
+        initAbsListView();
+        initAdapter();
+        absListView.setClickable(false);
+        absListView.setLongClickable(false);
+    }
+
+    private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
+        long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
+        if ((resto != 0 && hideAllText) || shortText == null || shortText.isEmpty()) {
+            tv.setText("");
+            final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+            if (imageUrl == null || imageUrl.isEmpty())
+                tv.setVisibility(View.GONE);
+            else
+                tv.setVisibility(View.INVISIBLE);
         }
         else {
-            ChanHelper.fadeout(this, view);
-            FullScreenImageActivity.startActivity(this, adapterView, view, position, id);
+            final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+            final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
+            final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+            tv.setText(Html.fromHtml(shortText));
+            tv.setVisibility(View.VISIBLE);
+            if (loadItem > 0 || lastItem > 0) {
+                // ignore
+            }
+            else if (adItem > 0) {
+                final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+                tv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ChanHelper.fadeout(ThreadActivity.this, tv);
+                        launchUrlInBrowser(adUrl);
+                    }
+                });
+            }
+            else {
+                final int position = cursor.getPosition();
+                final long id = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+                tv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ensurePopup().showFromCursor(ThreadActivity.this.absListView, tv, position, id);
+                    }
+                });
+            }
         }
+        return true;
     }
 
-    @Override
-    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+    private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
+        long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+        String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        if ((resto != 0 && hideAllText) || text == null || text.isEmpty()) {
+            tv.setText("");
+            tv.setVisibility(View.GONE);
+        }
+        else {
+            tv.setText(Html.fromHtml(text));
+            tv.setVisibility(View.VISIBLE);
+            final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+            if (adItem > 0) {
+                final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+                tv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ChanHelper.fadeout(ThreadActivity.this, tv);
+                        launchUrlInBrowser(adUrl);
+                    }
+                });
+            }
+        }
+        return true;
+    }
+
+    private boolean setItemImage(final ImageView iv, final Cursor cursor) {
+        int loading = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
+        int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
+        final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        if (spoiler > 0) {
+            String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+            smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
+        }
+        else if (loading > 0) {
+            setImageViewToLoading(iv);
+        }
+        else if (imageUrl != null && !imageUrl.isEmpty()) {
+            smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
+        }
+        else {
+            iv.setImageBitmap(null); // blank
+        }
+
         final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
         final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (loadItem > 0 || lastItem > 0 || adItem > 0)
-            return false; // end-of-thread item
+        if (loadItem > 0 || lastItem > 0) {
+            // ignore
+        }
+        else if (adItem > 0) {
+            final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            iv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ChanHelper.fadeout(ThreadActivity.this, iv);
+                    launchUrlInBrowser(adUrl);
+                }
+            });
+        }
+        else {
+            final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+            final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            final int w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
+            final int h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
+            final int position = cursor.getPosition();
+            iv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ChanHelper.fadeout(ThreadActivity.this, iv);
+                    incrementCounterAndAddToWatchlistIfActive();
+                    FullScreenImageActivity.startActivity(
+                            ThreadActivity.this, boardCode, threadNo, postId, w, h, position);
+                }
+            });
+        }
+        return true;
+    }
 
-        incrementCounterAndAddToWatchlistIfActive();
-        return showPopupText(adapterView, view, position, id);
+    private boolean setItemCountryFlag(final ImageView iv, final Cursor cursor) {
+        String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
+        if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty()) {
+            smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions);
+        }
+        else {
+            iv.setImageBitmap(null); // blank
+        }
+        return true;
     }
 
     @Override
-    public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        return setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions, hideAllText);
-    }
-
-    public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
-                                       ImageLoader imageLoader, DisplayImageOptions displayImageOptions,
-                                       boolean hideAllText) {
-        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        if (view instanceof TextView && view.getId() == R.id.list_item_header) {
-            TextView tv = (TextView) view;
-            long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
-            String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-            if ((resto != 0 && hideAllText) || shortText == null || shortText.isEmpty()) {
-                tv.setText("");
-                if (imageUrl == null || imageUrl.isEmpty())
-                    tv.setVisibility(View.GONE);
-                else
-                    tv.setVisibility(View.INVISIBLE);
-            }
-            else {
-                tv.setText(Html.fromHtml(shortText));
-                tv.setVisibility(View.VISIBLE);
-            }
-            return true;
-        } else if (view instanceof TextView && view.getId() == R.id.list_item_text) {
-                TextView tv = (TextView) view;
-                long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
-                String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-                if ((resto != 0 && hideAllText) || text == null || text.isEmpty()) {
-                    tv.setText("");
-                    tv.setVisibility(View.GONE);
-                }
-                else {
-                    tv.setText(Html.fromHtml(text));
-                    tv.setVisibility(View.VISIBLE);
-                }
-                return true;
-        } else if (view instanceof ImageView
-                && (view.getId() == R.id.grid_item_image || view.getId() == R.id.list_item_image)) {
-            int loading = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
-            int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
-            ImageView iv = (ImageView) view;
-            if (spoiler > 0) {
-                String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
-                smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
-            }
-            else if (loading > 0) {
-                setImageViewToLoading(iv);
-            }
-            else if (imageUrl != null && !imageUrl.isEmpty()) {
-                smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
-            }
-            else {
-                iv.setImageBitmap(null); // blank
-            }
-            return true;
-        } else if (view instanceof ImageView
-                && (view.getId() == R.id.grid_item_country_flag || view.getId() == R.id.list_item_country_flag)) {
-            ImageView iv = (ImageView) view;
-            String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
-            if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty()) {
-                smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions);
-            }
-            else {
-                iv.setImageBitmap(null); // blank
-            }
-            return true;
-        } else {
-            return false;
+    public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
+        switch (view.getId()) {
+            case R.id.list_item_header:
+                return setItemHeaderValue((TextView)view, cursor);
+            case R.id.list_item_text:
+                return setItemMessageValue((TextView)view, cursor);
+            case R.id.grid_item_image:
+            case R.id.list_item_image:
+                return setItemImage((ImageView)view, cursor);
+            case R.id.grid_item_country_flag:
+            case R.id.list_item_country_flag:
+                return setItemCountryFlag((ImageView)view, cursor);
+            default:
+                return false;
         }
     }
 
@@ -490,9 +541,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         a.setDisplayHomeAsUpEnabled(true);
     }
 
-    @Override
     protected void initPopup() {
-        boardThreadPopup = new ThreadPostPopup(this,
+        threadPostPopup = new ThreadPostPopup(this,
                 this.getLayoutInflater(),
                 imageLoader,
                 displayImageOptions,
@@ -534,6 +584,13 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             return R.layout.thread_list_layout;
         else
             return R.layout.thread_list_layout;
+    }
+
+    protected ThreadPostPopup ensurePopup() {
+        if (threadPostPopup == null) {
+            initPopup();
+        }
+        return threadPostPopup;
     }
 
 }

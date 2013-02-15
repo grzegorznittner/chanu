@@ -16,9 +16,9 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
  */
 public interface ClickableLoaderActivity extends
         AdapterView.OnItemClickListener,
-        AdapterView.OnItemLongClickListener,
+//        AdapterView.OnItemLongClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,
         AbstractBoardCursorAdapter.ViewBinder {
     public LoaderManager getLoaderManager();
-    public GridView getGridView();
+//    public GridView getGridView();
 }
