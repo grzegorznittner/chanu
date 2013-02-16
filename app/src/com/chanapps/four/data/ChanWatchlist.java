@@ -31,7 +31,7 @@ public class ChanWatchlist {
     public static final String TAG = ChanWatchlist.class.getSimpleName();
     private static final boolean DEBUG = false;
     
-    public static final String DEFAULT_WATCHTEXT = "WatchingThread";
+    public static final String DEFAULT_WATCHTEXT = "new thread";
 
     public static final long MAX_DEAD_THREAD_RETENTION_MS = 0; // clear immediately
 

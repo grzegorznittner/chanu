@@ -278,12 +278,19 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
             }
         }
 
+        String threadText = activity.getSubject().trim();
+        if ("".equals(threadText))
+            threadText = activity.getMessage().trim();
+        if ("".equals(threadText))
+            threadText = ChanWatchlist.DEFAULT_WATCHTEXT;
+        if (threadText.length() > ChanPost.MAX_QUADLINE_TEXT_LEN)
+            threadText = threadText.substring(0, ChanPost.MAX_QUADLINE_TEXT_LEN);
         if (addThreadToWatchlist && threadNo > 0) {
             ChanWatchlist.watchThread(context,
                     tim,
                     activity.boardCode,
                     threadNo,
-                    ChanWatchlist.DEFAULT_WATCHTEXT,
+                    threadText,
                     activity.imageUri == null ? null : activity.imageUri.toString(),
                     250,
                     250);
