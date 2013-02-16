@@ -153,10 +153,10 @@ public class NetworkProfileManager {
 			}
 			break;
 		case BOARD_ACTIVITY:
-			activeProfile.onBoardRefreshed(newActivity.getBaseContext(), currentActivityId.boardCode);
+			activeProfile.onBoardRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
 			break;
 		case THREAD_ACTIVITY:
-			activeProfile.onThreadRefreshed(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo);
+			activeProfile.onThreadRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode, currentActivityId.threadNo);
 			break;
 		case FULL_SCREEN_IMAGE_ACTIVITY:
 			activeProfile.onFullImageLoading(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo, currentActivityId.postNo);

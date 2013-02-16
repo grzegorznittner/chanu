@@ -17,6 +17,7 @@ import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
+import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.service.CleanUpService;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -169,11 +170,11 @@ public class MobileProfile extends AbstractNetworkProfile {
 	}
 
 	@Override
-	public void onBoardRefreshed(Context context, String board) {
-		super.onBoardRefreshed(context, board);
-		if (FetchChanDataService.scheduleBoardFetchWithPriority(context, board))
-			makeToast(context.getString(R.string.board_activity_fresh));
-		if ("a".equals(board)) {
+	public void onBoardRefreshed(Context context, Handler handler, String board) {
+		super.onBoardRefreshed(context, handler, board);
+		if (!FetchChanDataService.scheduleBoardFetchWithPriority(context, board))
+            handler.sendEmptyMessage(LoaderHandler.SET_PROGRESS_FINISHED);
+        if ("a".equals(board)) {
 			UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
 			int i = 1;
 			for (ChanBoardStat stat : userStats.topBoards()) {
@@ -195,10 +196,10 @@ public class MobileProfile extends AbstractNetworkProfile {
 	}
 	
 	@Override
-	public void onThreadRefreshed(Context context, String board, long threadId) {
-		super.onThreadRefreshed(context, board, threadId);
+	public void onThreadRefreshed(Context context, Handler handler, String board, long threadId) {
+		super.onThreadRefreshed(context, handler, board, threadId);
 		if (!FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId))
-            makeToast(context.getString(R.string.thread_activity_fresh));
+            handler.sendEmptyMessage(LoaderHandler.SET_PROGRESS_FINISHED);
 	}
 
 	@Override
@@ -220,7 +221,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 			boolean boardActivity = currentActivityId != null
 					&& currentActivityId.boardCode != null
 					&& currentActivityId.boardCode.equals(data.boardCode);
-			makeToast("Loaded data for board " + data.boardCode);
+			//makeToast("Loaded data for board " + data.boardCode);
 			ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
 			if (board.defData) {
 				// board data corrupted, we need to reload it
@@ -255,7 +256,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 			boolean threadActivity = currentActivityId != null && currentActivityId.boardCode != null
 					&& currentActivityId.boardCode.equals(data.boardCode)
 					&& currentActivityId.threadNo == data.threadNo;
-			makeToast("Loaded data for " + data.boardCode + "/" + data.threadNo);
+			//makeToast("Loaded data for " + data.boardCode + "/" + data.threadNo);
 			ChanThread thread = ChanFileStorage.loadThreadData(service.getApplicationContext(), data.boardCode, data.threadNo);
 			if(DEBUG) Log.i(TAG, "Loaded thread " + thread.board + "/" + thread.no + " posts " + thread.posts.length);
 			if (thread.defData && threadActivity) {

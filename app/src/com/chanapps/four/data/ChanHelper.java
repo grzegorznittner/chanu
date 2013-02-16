@@ -87,7 +87,6 @@ public class ChanHelper {
     public static final String POST_USER_ID = "id";
     public static final String POST_TRIPCODE = "trip";
     public static final String POST_IS_DEAD = "isDead";
-    public static final String LOADING_ITEM = "loadingItem";
     public static final String LAST_ITEM = "lastItem";
     public static final String AD_ITEM = "adItem";
 
@@ -126,7 +125,6 @@ public class ChanHelper {
             POST_EMAIL,
             POST_IS_DEAD,
             POST_CLOSED,
-            LOADING_ITEM,
             LAST_ITEM,
             AD_ITEM
     };

@@ -69,11 +69,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
-        if (board.threads == null || board.threads.length == 0 || board.defData) { // show loading
-            if (DEBUG) Log.i(TAG, "No threads yet available");
-            addLoadingRow(matrixCursor);
-        }
-        else {
+        if (board.threads != null && board.threads.length > 0 && !board.defData) { // show loading
             if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
             int adSpace = MINIMUM_AD_SPACING;
 
@@ -116,7 +112,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 thread.getHeaderText(), thread.getFullText(),
                 thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
                 thread.getSpoilerText(), thread.getExifText(), thread.id, thread.trip, thread.name, thread.email,
-                thread.isDead ? 1 : 0, thread.closed, 0, 0, 0});
+                thread.isDead ? 1 : 0, thread.closed, 0, 0});
     }
 
     protected void addImageRow(MatrixCursor matrixCursor, ChanPost thread) {
@@ -127,7 +123,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 thread.getHeaderText(), thread.getFullText(),
                 thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
                 thread.getSpoilerText(), thread.getExifText(), thread.id, thread.trip, thread.name, thread.email,
-                thread.isDead ? 1 : 0, thread.closed, 0, 0, 0});
+                thread.isDead ? 1 : 0, thread.closed, 0, 0});
     }
 
     protected void addAdRow(MatrixCursor matrixCursor) {
@@ -146,17 +142,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 "", clickUrl,
                 -1, -1, -1, -1, 0, 0,
                 "", "", "", "", "", "",
-                0, 0, 0, 0, 1});
-    }
-
-    protected void addLoadingRow(MatrixCursor matrixCursor) {
-        matrixCursor.addRow(new Object[] {
-                2, boardName, 0,
-                "", "",
-                "", "", "",
-                -1, -1, -1, -1, 0, 0,
-                "", "", "", "", "", "",
-                1, 0, 1, 0, 0});
+                0, 0, 0, 1});
     }
 
     protected void addFinalRow(MatrixCursor matrixCursor) {
@@ -166,7 +152,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 "", "", "",
                 -1, -1, -1, -1, 0, 0,
                 "", "", "", "", "", "",
-                1, 0, 0, 1, 0});
+                1, 0, 1, 0});
     }
 
     /**

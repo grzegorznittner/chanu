@@ -65,6 +65,7 @@ public class BoardActivity
     protected int scrollOnNextLoaderFinished = 0;
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
+    protected ProgressBar progressBar;
     protected SharedPreferences prefs;
     protected long tim;
     protected String boardCode;
@@ -103,7 +104,9 @@ public class BoardActivity
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
         if (DEBUG) Log.v(TAG, "onCreate init loader");
+        progressBar = (ProgressBar)findViewById(R.id.board_progress_bar);
         getLoaderManager().initLoader(0, null, this);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     protected void sizeGridToDisplay() {
@@ -174,8 +177,13 @@ public class BoardActivity
 		Loader loader = getLoaderManager().getLoader(0);
 		if (loader == null) {
 			getLoaderManager().initLoader(0, null, this);
+            progressBar.setVisibility(View.VISIBLE);
 		}
 	}
+
+    public void setProgressFinished() {
+        progressBar.setVisibility(View.GONE);
+    }
 
     public GridView getGridView() {
         return (GridView)absListView;
@@ -292,14 +300,10 @@ public class BoardActivity
                 && (view.getId() == R.id.grid_item_image || view.getId() == R.id.list_item_image)) {
             String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
             String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-            int loading = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
             int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
             if (spoiler > 0) {
                 smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
-            }
-            else if (loading > 0) {
-                setImageViewToLoading(iv);
             }
             else if (imageUrl == null || imageUrl.isEmpty()) {
                 int imageResourceId = ChanBoard.getImageResourceId(boardCode);
@@ -369,16 +373,10 @@ public class BoardActivity
         }
     }
 
-    protected static void setImageViewToLoading(ImageView iv) {
-        iv.setImageResource(R.drawable.navigation_refresh_light);
-        Animation rotation = AnimationUtils.loadAnimation(iv.getContext(), R.animator.clockwise_refresh);
-        rotation.setRepeatCount(Animation.INFINITE);
-        iv.startAnimation(rotation);
-    }
-
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
+        progressBar.setVisibility(View.VISIBLE);
         cursorLoader = new BoardCursorLoader(this, boardCode);
         return cursorLoader;
 	}
@@ -387,6 +385,7 @@ public class BoardActivity
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
+        setProgressFinished();
         if (absListView != null) {
             if (scrollOnNextLoaderFinished > 0) {
                 absListView.setSelection(scrollOnNextLoaderFinished);
@@ -398,16 +397,16 @@ public class BoardActivity
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
+        progressBar.setVisibility(View.VISIBLE);
 		adapter.swapCursor(null);
 	}
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
         final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (loadItem > 0 || lastItem > 0)
+        if (lastItem > 0)
             return;
         ChanHelper.fadeout(this, view);
         if (adItem > 0) {
@@ -433,7 +432,7 @@ public class BoardActivity
                 NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.refresh_board_menu:
-                Toast.makeText(this, R.string.board_activity_refresh, Toast.LENGTH_LONG).show();
+                progressBar.setVisibility(View.VISIBLE);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.new_thread_menu:

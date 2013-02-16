@@ -84,10 +84,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             if (DEBUG) Log.i(TAG, "Thread closed status for " + boardName + "/" + threadNo + " is closed=" + thread.closed);
             MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
 
-            if (thread == null || thread.posts == null || thread.posts.length == 0) { // show loading for no thread data
-                addLoadingRow(matrixCursor);
-            }
-            else { // loaded at least one, show the posts
+            if (thread != null && thread.posts != null && thread.posts.length > 0) { // show loading for no thread data
                 int adSpace = MINIMUM_AD_SPACING;
                 for (ChanPost post : thread.posts) {
                     if (ChanBlocklist.contains(context, post.id))
@@ -116,9 +113,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 }
                 int remainingToLoad = thread.posts[0].replies - thread.posts.length;
                 if (DEBUG) Log.i(TAG, "Remaining to load:" + remainingToLoad);
-                if (thread.defData || remainingToLoad > 0)
-                    addLoadingRow(matrixCursor);
-                else
+                if (!thread.defData && remainingToLoad <= 0)
                     addFinalRow(matrixCursor);
             }
             registerContentObserver(matrixCursor, mObserver);
@@ -141,7 +136,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                     postText, post.getHeaderText(), post.getFullText(),
                     post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
                     post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email,
-                    post.isDead ? 1 : 0, post.closed, 0, 0, 0};
+                    post.isDead ? 1 : 0, post.closed, 0, 0};
             matrixCursor.addRow(currentRow);
             if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
         } else {
@@ -152,7 +147,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                     postText, post.getHeaderText(), post.getFullText(),
                     post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
                     post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email,
-                    post.isDead ? 1 : 0, post.closed, 0, 0, 0};
+                    post.isDead ? 1 : 0, post.closed, 0, 0};
             matrixCursor.addRow(currentRow);
             if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
         }
@@ -180,7 +175,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                         postText, post.getHeaderText(), post.getFullText(),
                         post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
                         post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email,
-                        post.isDead ? 1 : 0, post.closed, 0, 0, 0};
+                        post.isDead ? 1 : 0, post.closed, 0, 0};
                 matrixCursor.addRow(currentRow);
                 if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
         }
@@ -197,7 +192,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 postText, post.getHeaderText(), post.getFullText(),
                 post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
                 post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email,
-                post.isDead ? 1 : 0, post.closed, 0, 0, 0};
+                post.isDead ? 1 : 0, post.closed, 0, 0};
         matrixCursor.addRow(currentRow);
         if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
     }
@@ -218,7 +213,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 getContext().getString(R.string.jlist_ad_message), "", clickUrl,
                 -1, -1, -1, -1, 0, 0,
                 "", "", "", "", "", "",
-                0, 0, 0, 0, 1});
+                0, 0, 0, 1});
     }
 
     @Override

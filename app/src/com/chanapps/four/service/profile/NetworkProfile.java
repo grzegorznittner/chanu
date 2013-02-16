@@ -1,5 +1,6 @@
 package com.chanapps.four.service.profile;
 
+import android.os.Handler;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.FetchParams;
 
@@ -74,7 +75,7 @@ public interface NetworkProfile {
 	 * Called when user clicked refresh button on board page.
 	 * @param board Board name
 	 */
-	void onBoardRefreshed(Context context, String board);
+	void onBoardRefreshed(Context context, Handler handler, String board);
 	
 	/**
 	 * Called when user opened thread page.
@@ -88,7 +89,7 @@ public interface NetworkProfile {
 	 * @param board Board name
 	 * @param threadId Thread id
 	 */
-	void onThreadRefreshed(Context context, String board, long threadId);
+	void onThreadRefreshed(Context context, Handler handler, String board, long threadId);
 	
 	/**
 	 * Called when user wants to open full image view.

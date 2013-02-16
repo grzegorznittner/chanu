@@ -3,21 +3,27 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/thread_list_layout"
         android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="0dp"
         android:background="@color/PaletteBlack"
         >
 
-    <ListView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/thread_list_view"
-            style="@style/ListViewTemplate"
+    <ProgressBar
+            android:id="@+id/board_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:indeterminate="true"
+            android:indeterminateOnly="true"
+            />
+
+    <ListView
+            android:id="@+id/thread_list_view"
+            style="@style/ListViewTemplate"
+            android:layout_below="@id/board_progress_bar"
             android:gravity="top|left"
             android:background="@color/PaletteBlack"
             android:divider="@color/PaletteOffWhite"

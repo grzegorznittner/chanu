@@ -254,12 +254,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 tv.setVisibility(View.INVISIBLE);
         }
         else {
-            final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
             final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
             final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
             tv.setText(Html.fromHtml(shortText));
             tv.setVisibility(View.VISIBLE);
-            if (loadItem > 0 || lastItem > 0) {
+            if (lastItem > 0) {
                 // ignore
             }
             else if (adItem > 0) {
@@ -312,15 +311,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     private boolean setItemImage(final ImageView iv, final Cursor cursor) {
-        int loading = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
         int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         if (spoiler > 0) {
             String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
             smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
-        }
-        else if (loading > 0) {
-            setImageViewToLoading(iv);
         }
         else if (imageUrl != null && !imageUrl.isEmpty()) {
             smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
@@ -329,10 +324,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             iv.setImageBitmap(null); // blank
         }
 
-        final int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
         final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (loadItem > 0 || lastItem > 0) {
+        if (lastItem > 0) {
             // ignore
         }
         else if (adItem > 0) {
@@ -472,7 +466,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 //                }
                 return true;
             case R.id.refresh_thread_menu:
-                Toast.makeText(this, R.string.thread_activity_refresh, Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.VISIBLE);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.post_reply_menu:

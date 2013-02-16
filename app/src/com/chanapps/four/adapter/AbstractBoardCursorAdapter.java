@@ -114,16 +114,12 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         if (!cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        int loadItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LOADING_ITEM));
         int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         String imageUrl = null;
         String tag = null;
-        if (loadItem > 0) {
-    		tag = ChanHelper.LOADING_ITEM;
-    	}
-        else if (lastItem > 0) {
+        if (lastItem > 0) {
             tag = ChanHelper.LAST_ITEM;
         }
         else if (adItem > 0) {

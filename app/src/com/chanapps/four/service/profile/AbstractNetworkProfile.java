@@ -140,7 +140,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	}
 
 	@Override
-	public void onBoardRefreshed(Context context, String board) {
+	public void onBoardRefreshed(Context context, Handler handler, String board) {
 		if (DEBUG) Log.d(TAG, "onBoardRefreshed called with board: " + board);
 		usageCounter++;
 	}
@@ -152,7 +152,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	}
 
 	@Override
-	public void onThreadRefreshed(Context context, String board, long threadId) {
+	public void onThreadRefreshed(Context context, Handler handler, String board, long threadId) {
 		if (DEBUG) Log.d(TAG, "onThreadRefreshed called with board: " + board + " threadId: " + threadId);
 		usageCounter++;
 	}

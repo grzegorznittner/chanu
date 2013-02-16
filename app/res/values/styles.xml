@@ -29,6 +29,7 @@
         <item name="android:horizontalSpacing">1dp</item>
         <item name="android:numColumns">2</item>
         <item name="android:stretchMode">none</item>
+        <item name="android:background">@color/PaletteBlack</item>
     </style>
 
     <style name="GridLayout" parent="android:style/Theme">
@@ -36,7 +37,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_marginLeft">0dp</item>
         <item name="android:layout_marginRight">0dp</item>
-        <item name="android:background">@color/PaletteOffWhite</item>
+        <item name="android:background">@color/PaletteBlack</item>
         <item name="android:padding">0dp</item>
     </style>
 
@@ -73,20 +74,6 @@
         <item name="android:padding">16dp</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="GridLoadingImageStyle" parent="GridItemStyle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_centerInParent">true</item>
-        <item name="android:color">@color/PaletteBlackMostlyOpaque</item>
-        <item name="android:background">@color/PaletteTransparent</item>
-        <item name="android:paddingBottom">5dp</item>
-        <item name="android:gravity">center</item>
-        <item name="android:padding">16dp</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:contentDescription">@string/refresh_board_menu</item>
-        <item name="android:src">@drawable/navigation_refresh_light</item>
     </style>
 
     <style name="GridImageStyle" parent="GridItemStyle">
@@ -173,11 +160,11 @@
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingTop">4dp</item>
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingRight">8dp</item>
         <item name="android:paddingBottom">0dp</item>
-        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:gravity">center_horizontal|top</item>
         <item name="android:textSize">14sp</item>
     </style>
 

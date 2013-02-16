@@ -13,6 +13,9 @@ import com.chanapps.four.activity.ClickableLoaderActivity;
 * To change this template use File | Settings | File Templates.
 */
 public class LoaderHandler extends Handler {
+
+    public static final int SET_PROGRESS_FINISHED = 0x02;
+
     private ClickableLoaderActivity activity;
     private static final String TAG = LoaderHandler.class.getSimpleName();
     private static final boolean DEBUG = false;
@@ -26,8 +29,14 @@ public class LoaderHandler extends Handler {
     public void handleMessage(Message msg) {
         try {
             super.handleMessage(msg);
-            if (DEBUG) Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
-            activity.getLoaderManager().restartLoader(0, null, activity);
+            switch (msg.what) {
+                case SET_PROGRESS_FINISHED:
+                    activity.setProgressFinished();
+                    break;
+                default:
+                    if (DEBUG) Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
+                    activity.getLoaderManager().restartLoader(0, null, activity);
+            }
         }
         catch (Exception e) {
             Log.e(TAG, "Couldn't handle message " + msg, e);
