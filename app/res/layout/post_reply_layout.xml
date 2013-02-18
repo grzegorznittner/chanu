@@ -177,7 +177,7 @@
         <EditText
                 android:id="@+id/post_reply_password"
                 android:hint="@string/post_reply_password_hint"
-                android:inputType="textVisiblePassword|numberPassword"
+                android:inputType="text|textVisiblePassword|numberPassword"
                 style="@style/PostReplyEditTextStyle"
                 android:maxLength="8"
                 >

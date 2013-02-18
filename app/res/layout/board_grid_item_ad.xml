@@ -8,7 +8,6 @@
             android:id="@+id/grid_item_image"
             style="@style/BoardAdGridImageStyle"
             android:contentDescription="@string/jlist_ad_message"
-            android:background="@color/PaletteBlack"
             />
 
 </RelativeLayout>

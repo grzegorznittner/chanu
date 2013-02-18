@@ -30,6 +30,8 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_CLEAR_CACHE = "pref_clear_cache";
     public static final String PREF_RESET_TO_DEFAULTS = "pref_reset_to_defaults";
     public static final String PREF_BLOCKLIST_BUTTON = "pref_blocklist_button";
+    public static final String PREF_PASS_TOKEN = "pref_pass_token";
+    public static final String PREF_PASS_PIN = "pref_pass_pin";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

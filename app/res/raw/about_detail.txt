@@ -1,3 +1,4 @@
+<p>It's what Yotsuba uses</p>
 <p>Version 1.0 beta</p>
 <p>Copyright (c) 2012-3, John Burns, Greg Nittner, Mircea Pop</p>
 <p>All rights reserved.</p>

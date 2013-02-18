@@ -23,7 +23,6 @@
             style="@style/GridViewTemplate"
             android:layout_below="@id/board_progress_bar"
             android:gravity="top|left"
-            android:background="@color/PaletteBlack"
             />
 <!--
             android:divider="@color/PaletteOffWhite"

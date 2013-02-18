@@ -15,7 +15,7 @@
 
         <TextView
                 android:id="@+id/header_text"
-                android:text="About Product"
+                android:text="4channer"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:paddingTop="16dp"
@@ -23,13 +23,12 @@
                 android:paddingLeft="80dp"
                 android:gravity="center_vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="80dp"
-                android:textColor="#030303"/>
+                android:layout_height="80dp"/>
 
         <TextView
                 android:id="@+id/detail_html"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="80dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
@@ -38,9 +37,9 @@
                 android:paddingRight="16dp"
                 android:paddingBottom="16dp"
                 android:paddingTop="0dp"
-                android:text="About the product description goes here"
-                android:textColor="#030303"
+                android:text="It's what Yotsuba uses"
                 android:linksClickable="true"
-                android:autoLink="web"/>
+                android:autoLink="web"
+                android:scrollbars="vertical"/>
 
 </RelativeLayout>

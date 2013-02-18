@@ -243,6 +243,8 @@
     <string name="post_reply_send">Send</string>
 
     <!-- preferences -->
+    <string name="pref_custom_category">Advanced</string>
+    <string name="pref_custom_category_summ">Customize appearance and behavior</string>
     <string name="pref_show_nsfw_boards">NSFW Boards</string>
     <string name="pref_show_nsfw_boards_summ_on">Show boards not safe for work</string>
     <string name="pref_show_nsfw_boards_summ_off">Hide boards not safe for work (default)</string>
@@ -271,6 +273,8 @@
     <string name="pref_automatically_manage_watchlist_summ_off">Manually add and remove threads</string>
     <string name="pref_blocklist_button">Blocklist</string>
     <string name="pref_blocklist_button_summ">Block all threads and posts from these Ids</string>
+    <string name="pref_cache_category">Cache</string>
+    <string name="pref_cache_category_summ">Space to use for storing threads and images</string>
     <string name="pref_clear_cache">Clear Cache</string>
     <string name="pref_clear_cache_summ">Remove all cached data and images</string>
     <string name="pref_clear_cache_pre_execute">Clearing cache, you will be notified when complete</string>
@@ -281,12 +285,22 @@
     <string name="pref_clear_cache_notification_title">4Channer Cache Status</string>
     <string name="pref_reset_to_defaults">Clear Preferences</string>
     <string name="pref_reset_to_defaults_summ">Reset all settings to their factory default</string>
+    <string name="pref_user_category">User Info</string>
+    <string name="pref_user_category_summ">Name, email and password for posting</string>
     <string name="pref_user_name">Name</string>
     <string name="pref_user_name_summ">Use as name for posting</string>
     <string name="pref_user_email">Email</string>
     <string name="pref_user_email_summ">Use as email address for posting</string>
     <string name="pref_user_password">Password</string>
-    <string name="pref_user_password_summ">Use as password for posting and deleting</string>
+    <string name="pref_user_password_summ">Use as password for deleting</string>
+    <string name="pref_pass_category">4chan Pass</string>
+    <string name="pref_pass_category_summ">Token and PIN to bypass captcha</string>
+    <string name="pref_pass_token">Token</string>
+    <string name="pref_pass_token_hint">Enter Token</string>
+    <string name="pref_pass_token_summ">Your 10-character 4chan pass token</string>
+    <string name="pref_pass_title">PIN</string>
+    <string name="pref_pass_title_hint">Enter PIN</string>
+    <string name="pref_pass_title_summ">Your 6-character 4chan pass PIN</string>
 
     <!-- widgets -->
     <string name="widget_board">Pick Widget Board</string>

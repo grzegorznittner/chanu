@@ -6,7 +6,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="0dp"
-        android:background="@color/PaletteBlack"
         >
 
     <ProgressBar
@@ -25,9 +24,6 @@
             style="@style/ListViewTemplate"
             android:layout_below="@id/board_progress_bar"
             android:gravity="top|left"
-            android:background="@color/PaletteBlack"
-            android:divider="@color/PaletteOffWhite"
-            android:dividerHeight="1px"
             />
 
 </RelativeLayout>
