@@ -1,11 +1,13 @@
 package com.chanapps.four.fragment;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.widget.BaseAdapter;
+import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 
@@ -17,7 +19,10 @@ import com.chanapps.four.activity.SettingsActivity;
  * Time: 3:12 PM
  * To change this template use File | Settings | File Templates.
  */
-public class SettingsFragment extends PreferenceFragment {
+public class SettingsFragment
+        extends PreferenceFragment
+//        implements SharedPreferences.OnSharedPreferenceChangeListener
+{
 
     public static String TAG = SettingsFragment.class.getSimpleName();
 
@@ -58,8 +63,47 @@ public class SettingsFragment extends PreferenceFragment {
                 return true;
             }
         });
+
+//        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+/*
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        boolean passEnabled = prefs.getBoolean(SettingsActivity.PREF_PASS_ENABLED, false);
+        int stringId = validatePass(prefs);
+        boolean passInvalid = stringId > 0;
+        Toast.makeText(getActivity(), "key: " + key + " invalid:" + passInvalid, Toast.LENGTH_SHORT).show();
+        if (SettingsActivity.PREF_PASS_TOKEN.equals(key) && passEnabled && passInvalid) {
+            disablePass(prefs, stringId);
+        }
+        else if (SettingsActivity.PREF_PASS_PIN.equals(key) && passEnabled && passInvalid) {
+            disablePass(prefs, stringId);
+        }
+        else if (SettingsActivity.PREF_PASS_ENABLED.equals(key) && passEnabled && passInvalid) {
+            disablePass(prefs, stringId);
+        }
     }
 
+    private int validatePass(SharedPreferences prefs) {
+        String token = prefs.getString(SettingsActivity.PREF_PASS_TOKEN, null);
+        String pin = prefs.getString(SettingsActivity.PREF_PASS_PIN, null);
+        if ("".equals(token) || token.length() != 10) {
+            return R.string.pref_pass_token_invalid;
+        }
+        else if ("".equals(pin) || pin.length() != 6) {
+            return R.string.pref_pass_pin_invalid;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    private void disablePass(SharedPreferences prefs, int stringId) {
+        prefs.edit().putBoolean(SettingsActivity.PREF_PASS_ENABLED, false).commit();
+        if (getActivity() != null)
+            Toast.makeText(getActivity(), stringId, Toast.LENGTH_SHORT).show();
+        ensureHandler().sendEmptyMessageDelayed(0, 1000);
+    }
+*/
     public Handler ensureHandler() {
         if (handler == null)
             handler = new ReloadPrefsHandler(this);
@@ -77,4 +121,5 @@ public class SettingsFragment extends PreferenceFragment {
             ((BaseAdapter)fragment.getPreferenceScreen().getRootAdapter()).notifyDataSetInvalidated();
         }
     }
+
 }

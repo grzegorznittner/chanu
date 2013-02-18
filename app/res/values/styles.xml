@@ -329,7 +329,7 @@
     <style name="PopupFullTextHorizontalSeparator">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">@color/PaletteLighterGray</item>
+        <item name="android:background">@color/DimDivider</item>
     </style>
 
     <style name="PopupFullTextButtonStyle" parent="android:style/Theme">
@@ -366,6 +366,9 @@
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:textSize">14sp</item>
     </style>
+
+    <color name="HoloDimForegroundInverse">#323232</color>
+    <color name="DimDivider">#666</color>
 
     <color name="PaletteLightGreen">#58b75a</color>
     <color name="PaletteDarkGreen">#58675a</color>

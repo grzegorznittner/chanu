@@ -298,9 +298,14 @@
     <string name="pref_pass_token">Token</string>
     <string name="pref_pass_token_hint">Enter Token</string>
     <string name="pref_pass_token_summ">Your 10-character 4chan pass token</string>
-    <string name="pref_pass_title">PIN</string>
-    <string name="pref_pass_title_hint">Enter PIN</string>
-    <string name="pref_pass_title_summ">Your 6-character 4chan pass PIN</string>
+    <string name="pref_pass_token_invalid">Token invalid, disabled pass</string>
+    <string name="pref_pass_pin">PIN</string>
+    <string name="pref_pass_pin_hint">Enter PIN</string>
+    <string name="pref_pass_pin_summ">Your 6-character 4chan pass PIN</string>
+    <string name="pref_pass_pin_invalid">PIN invalid, disabled pass</string>
+    <string name="pref_pass_enabled">Enabled</string>
+    <string name="pref_pass_enabled_summ_on">Use pass to bypass captcha</string>
+    <string name="pref_pass_enabled_summ_off">Bypassing captcha disabled</string>
 
     <!-- widgets -->
     <string name="widget_board">Pick Widget Board</string>
