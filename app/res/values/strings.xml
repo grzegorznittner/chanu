@@ -210,6 +210,13 @@
     <string name="post_reply_rotate_right_hint">Rotate Right</string>
     <string name="post_reply_bump_hint">Bump</string>
     <string name="post_reply_sage_hint">Sage</string>
+    <string name="post_reply_pass_enabled_text">4chan Pass enabled, bypassing captcha</string>
+    <string name="post_reply_pass_enable_text">4chan Pass disabled, click to enable</string>
+    <string name="post_reply_pass_disabled_text">4chan Pass disabled</string>
+    <string name="post_reply_pass_mobile_text">4chan Pass unavailable on mobile</string>
+    <string name="post_reply_pass_no_connection_text">Connection down, unable to post, try later</string>
+    <string name="post_reply_pass_enable_hint">Enable 4chan Pass</string>
+    <string name="post_reply_pass_disable_hint">Disable 4chan Pass</string>
     <string name="post_reply_reload_captcha_hint">Reload Captcha</string>
     <string name="post_reply_recaptcha_hint">reCAPTCHA Challenge (Required)</string>
     <string name="post_reply_name_hint">Name (Optional)</string>
