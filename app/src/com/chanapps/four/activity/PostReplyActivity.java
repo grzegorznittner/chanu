@@ -1,6 +1,7 @@
 package com.chanapps.four.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -15,7 +16,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
@@ -27,8 +30,7 @@ import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.fragment.EditMessageTextDialogFragment;
-import com.chanapps.four.fragment.PostingReplyDialogFragment;
+import com.chanapps.four.fragment.*;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.task.LoadCaptchaTask;
@@ -50,6 +52,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     private static final int IMAGE_CAPTURE = 0x10;
     private static final int IMAGE_GALLERY = 0x11;
+
+    private LinearLayout wrapperLayout;
 
     private ImageButton cameraButton;
     private ImageButton pictureButton;
@@ -100,6 +104,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         ctx = getApplicationContext();
 
         setContentView(R.layout.post_reply_layout);
+
+        wrapperLayout = (LinearLayout)findViewById(R.id.post_reply_wrapper);
 
         imagePreview = (ImageView)findViewById(R.id.post_reply_image_preview);
 
@@ -162,10 +168,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         });
         passEnableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if (!isPassEnabled() && isPassAvailable()) {
-                    updatePassRecaptchaViews(togglePassEnabled());
-                    Toast.makeText(PostReplyActivity.this, R.string.post_reply_pass_enabled_text, Toast.LENGTH_SHORT).show();
-                }
+                if (!isPassEnabled() && isPassAvailable())
+                    showPassFragment();
             }
         });
         passDisableButton.setOnClickListener(new View.OnClickListener() {
@@ -178,10 +182,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         });
         passStatusText.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if (!isPassEnabled() && isPassAvailable()) {
-                    updatePassRecaptchaViews(togglePassEnabled());
-                    Toast.makeText(PostReplyActivity.this, R.string.post_reply_pass_enabled_text, Toast.LENGTH_SHORT).show();
-                }
+                if (!isPassEnabled() && isPassAvailable())
+                    showPassFragment();
             }
         });
 
@@ -194,6 +196,31 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         recaptchaLoading = (ImageView) findViewById(R.id.post_reply_recaptcha_loading);
 
         updatePassRecaptchaViews(isPassEnabled());
+    }
+
+
+    private void showPassFragment() {
+        showPassFragment(new DialogInterface.OnDismissListener() {
+            public void onDismiss(DialogInterface dialog) {
+                wrapperLayout.setVisibility(View.VISIBLE);
+                boolean passEnabled = isPassEnabled();
+                updatePassRecaptchaViews(passEnabled);
+                if (passEnabled)
+                    Toast.makeText(PostReplyActivity.this, R.string.post_reply_pass_enabled_text, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showPassFragment(DialogInterface.OnDismissListener dismissListener) {
+        closeKeyboard();
+        PassSettingsFragment fragment = new PassSettingsFragment();
+        fragment.setOnDismissListener(dismissListener);
+        android.app.FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.add(android.R.id.content, fragment);
+        ft.setTransition(android.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.addToBackStack(null);
+        ft.commit();
+        wrapperLayout.setVisibility(View.GONE);
     }
 
     private void setupCameraButton() {

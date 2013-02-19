@@ -14,7 +14,7 @@
 
 <!-- posting -->
 
-    <PreferenceScreen
+    <PreferenceCategory
             android:key="pref_user_category"
             android:title="@string/pref_user_category"
             android:summary="@string/pref_user_category_summ"
@@ -48,12 +48,11 @@
                 android:maxLength="8"
                 />
 
-    </PreferenceScreen>
-
+    </PreferenceCategory>
 
     <!-- pass -->
 
-    <PreferenceScreen
+    <PreferenceCategory
             android:key="pref_pass_category"
             android:title="@string/pref_pass_category"
             android:summary="@string/pref_pass_category_summ">
@@ -62,8 +61,8 @@
                 android:key="pref_pass_token"
                 android:title="@string/pref_pass_token"
                 android:hint="@string/pref_pass_token_hint"
-                android:summary="@string/pref_pass_token_summ"
                 android:inputType="text|textCapCharacters|textNoSuggestions"
+                android:summary="@string/pref_pass_token_summ"
                 android:maxLength="10"
                 />
 
@@ -83,18 +82,11 @@
                 android:summaryOff="@string/pref_pass_enabled_summ_off"
                 android:defaultValue="false" />
 
-    </PreferenceScreen>
-
-    <!-- blocklist -->
-
-    <Preference
-            android:key="pref_blocklist_button"
-            android:title="@string/pref_blocklist_button"
-            android:summary="@string/pref_blocklist_button_summ" />
+    </PreferenceCategory>
 
     <!-- cache -->
 
-    <PreferenceScreen
+    <PreferenceCategory
             android:key="pref_cache_category"
             android:title="@string/pref_cache_category"
             android:summary="@string/pref_cache_category_summ">
@@ -114,56 +106,67 @@
                 android:title="@string/pref_clear_cache"
                 android:summary="@string/pref_clear_cache_summ" />
 
-    </PreferenceScreen>
+    </PreferenceCategory>
 
     <!-- customize -->
 
-    <PreferenceScreen
-        android:key="pref_custom_category"
-        android:title="@string/pref_custom_category"
-        android:summary="@string/pref_custom_category_summ">
+    <PreferenceCategory
+            android:key="pref_advanced_category"
+            android:title="@string/pref_advanced_category">
 
-        <CheckBoxPreference
-                android:key="pref_notifications"
-                android:title="@string/pref_notifications"
-                android:summaryOn="@string/pref_notifications_summ_on"
-                android:summaryOff="@string/pref_notifications_summ_off"
-                android:defaultValue="true" />
+        <PreferenceScreen
+                android:key="pref_custom_category"
+                android:title="@string/pref_custom_category"
+                android:summary="@string/pref_custom_category_summ">
 
-        <CheckBoxPreference
-                android:key="pref_hide_post_numbers"
-                android:title="@string/pref_hide_post_numbers"
-                android:summaryOn="@string/pref_hide_post_numbers_summ_on"
-                android:summaryOff="@string/pref_hide_post_numbers_summ_off"
-                android:defaultValue="true" />
+            <CheckBoxPreference
+                    android:key="pref_notifications"
+                    android:title="@string/pref_notifications"
+                    android:summaryOn="@string/pref_notifications_summ_on"
+                    android:summaryOff="@string/pref_notifications_summ_off"
+                    android:defaultValue="true" />
 
-        <CheckBoxPreference
-                android:key="pref_automatically_manage_watchlist"
-                android:title="@string/pref_automatically_manage_watchlist"
-                android:summaryOn="@string/pref_automatically_manage_watchlist_summ_on"
-                android:summaryOff="@string/pref_automatically_manage_watchlist_summ_off"
-                android:defaultValue="true" />
+            <CheckBoxPreference
+                    android:key="pref_hide_post_numbers"
+                    android:title="@string/pref_hide_post_numbers"
+                    android:summaryOn="@string/pref_hide_post_numbers_summ_on"
+                    android:summaryOff="@string/pref_hide_post_numbers_summ_off"
+                    android:defaultValue="true" />
 
-        <CheckBoxPreference
-                android:key="pref_use_friendly_ids"
-                android:title="@string/pref_use_friendly_ids"
-                android:summaryOn="@string/pref_use_friendly_ids_summ_on"
-                android:summaryOff="@string/pref_use_friendly_ids_summ_off"
-                android:defaultValue="true" />
+            <CheckBoxPreference
+                    android:key="pref_automatically_manage_watchlist"
+                    android:title="@string/pref_automatically_manage_watchlist"
+                    android:summaryOn="@string/pref_automatically_manage_watchlist_summ_on"
+                    android:summaryOff="@string/pref_automatically_manage_watchlist_summ_off"
+                    android:defaultValue="true" />
 
-        <CheckBoxPreference
-                android:key="pref_show_nsfw_boards"
-                android:title="@string/pref_show_nsfw_boards"
-                android:summary="@string/pref_show_nsfw_boards_summ_detail"
-                android:summaryOn="@string/pref_show_nsfw_boards_summ_on"
-                android:summaryOff="@string/pref_show_nsfw_boards_summ_off"
-                android:defaultValue="false" />
+            <CheckBoxPreference
+                    android:key="pref_use_friendly_ids"
+                    android:title="@string/pref_use_friendly_ids"
+                    android:summaryOn="@string/pref_use_friendly_ids_summ_on"
+                    android:summaryOff="@string/pref_use_friendly_ids_summ_off"
+                    android:defaultValue="true" />
+
+            <CheckBoxPreference
+                    android:key="pref_show_nsfw_boards"
+                    android:title="@string/pref_show_nsfw_boards"
+                    android:summary="@string/pref_show_nsfw_boards_summ_detail"
+                    android:summaryOn="@string/pref_show_nsfw_boards_summ_on"
+                    android:summaryOff="@string/pref_show_nsfw_boards_summ_off"
+                    android:defaultValue="false" />
+
+        </PreferenceScreen>
+
+        <Preference
+                android:key="pref_blocklist_button"
+                android:title="@string/pref_blocklist_button"
+                android:summary="@string/pref_blocklist_button_summ" />
 
         <Preference
                 android:key="pref_reset_to_defaults"
                 android:title="@string/pref_reset_to_defaults"
                 android:summary="@string/pref_reset_to_defaults_summ" />
 
-    </PreferenceScreen>
+    </PreferenceCategory>
 
 </PreferenceScreen>
