@@ -32,8 +32,12 @@
                 android:defaultValue="false" />
 
         <Preference
+                android:key="pref_pass_auth_button"
+                android:title="@string/dialog_authorize"/>
+
+        <Preference
                 android:key="pref_pass_close_button"
-                android:title="@string/dialog_close"/>
+                android:title="@string/dialog_cancel"/>
 
     </PreferenceCategory>
 

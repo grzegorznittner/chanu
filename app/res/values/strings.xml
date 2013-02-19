@@ -181,6 +181,7 @@
     <string name="dialog_set_wallpaper">Set as wallpaper?</string>
     <string name="dialog_clear_cache_confirm">Clear all cached data?  This may take several minutes.</string>
     <string name="dialog_reset_preferences_confirm">Reset all preferences?</string>
+    <string name="dialog_authorize">Authorize</string>
     <string name="dialog_close">Close</string>
     <string name="dialog_add">Add</string>
     <string name="dialog_delete">Delete</string>
