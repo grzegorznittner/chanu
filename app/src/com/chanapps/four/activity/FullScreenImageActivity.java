@@ -40,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.gallery3d.app.AbstractGalleryActivity;
+import com.android.gallery3d.app.AlbumPage;
 import com.android.gallery3d.app.PhotoPage;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.ui.GLRoot;
@@ -428,35 +429,19 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     private void showImage() {
     	localImageUri = checkLocalImage();
     	if (DEBUG) Log.i(TAG, "Displaying image " + localImageUri);
-    	/*
-    	webView = new WebView(this);
-        setContentView(webView);
-        registerForContextMenu(webView);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        webView.setScrollbarFadingEnabled(false);
-        webView.getSettings().setBuiltInZoomControls(true);
-        
-        setDefaultZoom();
-        
-        webView.loadUrl(localImageUri);
-        */
+
     	/* Disabled Gallery till I fix major issues */
     	View contentView = inflater.inflate(R.layout.fullscreen_gallery, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
     	setContentView(contentView);
     	super.mGLRootView = (GLRootView) contentView.findViewById(R.id.gl_root_view);
 
     	Bundle data = new Bundle();
-        String encodedUri = null;
-        try {
-            encodedUri = URLEncoder.encode(localImageUri, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "How in the hell is UTF-8 not supported?", e);
-            encodedUri = localImageUri;
-        }
-    	Path itemPath = Path.fromString("/uri/" + encodedUri);
+
+    	Path setPath = Path.fromString("/chan/" + boardCode + "/" + threadNo);
+		data.putString(PhotoPage.KEY_MEDIA_SET_PATH, setPath.toString());
+		data.putString(AlbumPage.KEY_MEDIA_PATH, setPath.toString());
+    	
+		Path itemPath = Path.fromString("/chan/" + boardCode + "/" + threadNo + "/" + postNo);
 		data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, itemPath.toString());
         
         getStateManager().startState(PhotoPage.class, data);
