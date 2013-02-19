@@ -6,9 +6,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Calendar;
+
+import org.apache.commons.io.IOUtils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,7 +29,6 @@ import com.android.gallery3d.data.DownloadCache;
 import com.android.gallery3d.data.MediaDetails;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.Path;
-import com.android.gallery3d.util.ThreadPool.CancelListener;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
 import com.chanapps.four.data.ChanFileStorage;
@@ -41,6 +44,10 @@ import com.nostra13.universalimageloader.utils.FileUtils;
 
 public class ChanImage extends MediaItem {
     private static final String TAG = "ChanImage";
+    public static final boolean DEBUG  = true;
+    
+    private static final int MIN_DOWNLOAD_PROGRESS_UPDATE = 300;
+	private static final int IMAGE_BUFFER_SIZE = 20480;
 
     private static final int STATE_INIT = 0;
     private static final int STATE_DOWNLOADING = 1;
@@ -58,11 +65,13 @@ public class ChanImage extends MediaItem {
     private int mState = STATE_INIT;
     private int mWidth;
     private int mHeight;
+    private ChanPost post;
 
     private GalleryApp mApplication;
 
     public ChanImage(GalleryApp application, Path path, ChanPost post) {
         super(path, nextVersionNumber());
+        this.post = post;
         mApplication = application;
         url = post.getImageUrl();
         thumbUrl = post.getThumbnailUrl();
@@ -87,83 +96,15 @@ public class ChanImage extends MediaItem {
         return new RegionDecoderJob();
     }
 
-    private void openFileOrDownloadTempFile(JobContext jc) {
-        int state = openOrDownloadInner(jc);
-        synchronized (this) {
-            mState = state;
-            if (mState != STATE_DOWNLOADED) {
-                if (mFileDescriptor != null) {
-                    Utils.closeSilently(mFileDescriptor);
-                    mFileDescriptor = null;
-                }
-            }
-            notifyAll();
-        }
-    }
-
-    private int openOrDownloadInner(JobContext jc) {
-        try {
-            URL url = new URL(this.url);
-            mCacheEntry = mApplication.getDownloadCache().download(jc, url);
-            if (jc.isCancelled()) return STATE_INIT;
-            if (mCacheEntry == null) {
-                Log.w(TAG, "download failed " + url);
-                return STATE_ERROR;
-            }
-            mFileDescriptor = ParcelFileDescriptor.open(
-                    mCacheEntry.cacheFile, ParcelFileDescriptor.MODE_READ_ONLY);
-            return STATE_DOWNLOADED;
-        } catch (Throwable t) {
-            Log.w(TAG, "download error", t);
-            return STATE_ERROR;
-        }
-    }
-
-    private boolean prepareInputFile(JobContext jc) {
-        jc.setCancelListener(new CancelListener() {
-            public void onCancel() {
-                synchronized (this) {
-                    notifyAll();
-                }
-            }
-        });
-
-        while (true) {
-            synchronized (this) {
-                if (jc.isCancelled()) return false;
-                if (mState == STATE_INIT) {
-                    mState = STATE_DOWNLOADING;
-                    // Then leave the synchronized block and continue.
-                } else if (mState == STATE_ERROR) {
-                    return false;
-                } else if (mState == STATE_DOWNLOADED) {
-                    return true;
-                } else /* if (mState == STATE_DOWNLOADING) */ {
-                    try {
-                        wait();
-                    } catch (InterruptedException ex) {
-                        // ignored.
-                    }
-                    continue;
-                }
-            }
-            // This is only reached for STATE_INIT->STATE_DOWNLOADING
-            openFileOrDownloadTempFile(jc);
-        }
-    }
-
     private class RegionDecoderJob implements Job<BitmapRegionDecoder> {
         public BitmapRegionDecoder run(JobContext jc) {
-        	/*
-            if (!prepareInputFile(jc)) return null;
-            BitmapRegionDecoder decoder = DecodeUtils.requestCreateBitmapRegionDecoder(
-                    jc, mFileDescriptor.getFileDescriptor(), false);
-            mWidth = decoder.getWidth();
-            mHeight = decoder.getHeight();
-            */
+        	if (!new File(localImagePath).exists()) {
+        		downloadFullImage();
+        	}
+
         	if (new File(localImagePath).exists()) {
-        		Log.i(TAG, "Large image exists " + localImagePath);
-        		try {
+	        	Log.i(TAG, "Large image exists " + localImagePath);
+	    		try {
 					return BitmapRegionDecoder.newInstance(localImagePath, true);
 				} catch (IOException e) {
 					Log.e(TAG, "BitmapRegionDecoder error for " + localImagePath, e);
@@ -172,6 +113,64 @@ public class ChanImage extends MediaItem {
             return null;
         }
     }
+    
+	protected void downloadFullImage() {
+        long startTime = Calendar.getInstance().getTimeInMillis();
+        InputStream in = null;
+        OutputStream out = null;
+        HttpURLConnection conn = null;
+		try {
+			if (DEBUG) Log.i(TAG, "Handling image download service for " + url);
+			
+			File targetFile = new File(localImagePath);
+			
+			conn = (HttpURLConnection)new URL(url).openConnection();
+			FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
+			// we need to double read timeout as file might be large
+			conn.setReadTimeout(fetchParams.readTimeout * 2);
+			conn.setConnectTimeout(fetchParams.connectTimeout);
+			
+			in = conn.getInputStream();
+			out = new FileOutputStream(targetFile);
+			byte[] buffer = new byte[IMAGE_BUFFER_SIZE];
+			int len = -1;
+			int fileLength = 0;
+			long lastNotify = startTime;
+			while ((len = in.read(buffer)) != -1) {
+			    out.write(buffer, 0, len);
+			    fileLength += len;
+			    if (Calendar.getInstance().getTimeInMillis() - lastNotify > MIN_DOWNLOAD_PROGRESS_UPDATE) {
+			    	//notifyDownloadProgress(fileLength);
+			    	lastNotify = Calendar.getInstance().getTimeInMillis();
+			    }
+			}
+			
+			long endTime = Calendar.getInstance().getTimeInMillis();
+			//NetworkProfileManager.instance().finishedImageDownload(this, (int)(endTime - startTime), fileLength);
+            if (DEBUG) Log.i(TAG, "Stored image " + url + " to file "
+            		+ targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
+            
+		    //notifyDownloadFinished(fileLength);			    	
+		} catch (Exception e) {
+            Log.e(TAG, "Error in image download service", e);
+            //NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
+            //notifyDownloadError();
+		} finally {
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(out);
+			closeConnection(conn);
+		}
+	}
+
+	protected void closeConnection(HttpURLConnection tc) {
+		if (tc != null) {
+			try {
+		        tc.disconnect();
+			} catch (Exception e) {
+				Log.e(TAG, "Error closing connection", e);
+			}
+		}
+	}
 
     private class BitmapJob implements Job<Bitmap> {
         private int mType;

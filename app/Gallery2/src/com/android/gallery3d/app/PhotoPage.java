@@ -199,6 +199,7 @@ public class PhotoPage extends ActivityState
 
                 @Override
                 public void onPhotoChanged(int index, Path item) {
+                	Log.i(TAG, "Photo changed to " + index + ", path " + item);
                     if (mFilmStripView != null) mFilmStripView.setFocusIndex(index);
                     mCurrentIndex = index;
                     mResultIntent.putExtra(KEY_INDEX_HINT, index);
@@ -214,10 +215,12 @@ public class PhotoPage extends ActivityState
 
                 @Override
                 public void onLoadingFinished() {
+                	Log.i(TAG, "Loading finished ...");
                     GalleryUtils.setSpinnerVisibility((Activity) mActivity, false);
                     if (!mModel.isEmpty()) {
                         MediaItem photo = mModel.getCurrentMediaItem();
                         if (photo != null) updateCurrentPhoto(photo);
+                        Log.i(TAG, "    photo updated " + photo.getPath());
                     } else if (mIsActive) {
                         mActivity.getStateManager().finishState(PhotoPage.this);
                     }
@@ -225,11 +228,13 @@ public class PhotoPage extends ActivityState
 
                 @Override
                 public void onLoadingStarted() {
+                	Log.i(TAG, "Loading started ...");
                     GalleryUtils.setSpinnerVisibility((Activity) mActivity, true);
                 }
 
                 @Override
                 public void onPhotoAvailable(long version, boolean fullImage) {
+                	Log.i(TAG, "Photo available version: " + version + ", fullImage: " + fullImage);
                     if (mFilmStripView == null) initFilmStripView();
                 }
             });

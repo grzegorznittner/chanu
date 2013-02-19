@@ -352,6 +352,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     }
     
     private void loadOrShowImage() {
+    	/*
     	localImageUri = checkLocalImage();
     	
     	if (localImageUri != null) {
@@ -359,6 +360,8 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     	} else {
     		loadImage();
     	}
+    	*/
+    	showImage();
     }
 
 	private String checkLocalImage() {
@@ -427,11 +430,8 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     }
     
     private void showImage() {
-    	localImageUri = checkLocalImage();
-    	if (DEBUG) Log.i(TAG, "Displaying image " + localImageUri);
-
-    	/* Disabled Gallery till I fix major issues */
-    	View contentView = inflater.inflate(R.layout.fullscreen_gallery, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
+    	View contentView = inflater.inflate(R.layout.fullscreen_gallery, 
+    			(ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
     	setContentView(contentView);
     	super.mGLRootView = (GLRootView) contentView.findViewById(R.id.gl_root_view);
 
@@ -816,13 +816,13 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
 	    		progressBar.setProgress(localFileSize);
 	    		TextView textView = (TextView)activity.loadingView.findViewById(R.id.fullscreen_image_text);
 	    		textView.setText("" + downloadedSize + "kB / " + totalSize + "kB");
-            } else if (msg.what == START_DOWNLOAD_MSG) {
+            } /*else if (msg.what == START_DOWNLOAD_MSG) {
             	activity.loadImage();
             } else if (msg.what == FINISHED_DOWNLOAD_MSG) {
             	activity.showImage();
             } else if (msg.what == DOWNLOAD_ERROR_MSG) {
             	activity.finish();
-            }
+            } */
         }
     }
     
