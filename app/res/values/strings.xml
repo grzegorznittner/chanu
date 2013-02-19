@@ -181,6 +181,7 @@
     <string name="dialog_set_wallpaper">Set as wallpaper?</string>
     <string name="dialog_clear_cache_confirm">Clear all cached data?  This may take several minutes.</string>
     <string name="dialog_reset_preferences_confirm">Reset all preferences?</string>
+    <string name="dialog_authorize">Authorize</string>
     <string name="dialog_close">Close</string>
     <string name="dialog_add">Add</string>
     <string name="dialog_delete">Delete</string>
@@ -210,6 +211,13 @@
     <string name="post_reply_rotate_right_hint">Rotate Right</string>
     <string name="post_reply_bump_hint">Bump</string>
     <string name="post_reply_sage_hint">Sage</string>
+    <string name="post_reply_pass_enabled_text">Bypassing captcha with 4chan Pass</string>
+    <string name="post_reply_pass_enable_text">Click to enable 4chan Pass</string>
+    <string name="post_reply_pass_disabled_text">4chan Pass disabled</string>
+    <string name="post_reply_pass_mobile_text">4chan Pass unavailable on mobile</string>
+    <string name="post_reply_pass_no_connection_text">Cannot post while connection is down</string>
+    <string name="post_reply_pass_enable_hint">Enable 4chan Pass</string>
+    <string name="post_reply_pass_disable_hint">Disable 4chan Pass</string>
     <string name="post_reply_reload_captcha_hint">Reload Captcha</string>
     <string name="post_reply_recaptcha_hint">reCAPTCHA Challenge (Required)</string>
     <string name="post_reply_name_hint">Name (Optional)</string>
@@ -243,7 +251,8 @@
     <string name="post_reply_send">Send</string>
 
     <!-- preferences -->
-    <string name="pref_custom_category">Advanced</string>
+    <string name="pref_advanced_category">Advanced</string>
+    <string name="pref_custom_category">Customize</string>
     <string name="pref_custom_category_summ">Customize appearance and behavior</string>
     <string name="pref_show_nsfw_boards">NSFW Boards</string>
     <string name="pref_show_nsfw_boards_summ_on">Show boards not safe for work</string>

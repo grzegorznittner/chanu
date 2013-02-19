@@ -2,13 +2,14 @@
 <ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/post_reply_scroll_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:fillViewport="true"
         android:scrollbars="vertical">
 
     <LinearLayout
-            android:layout_width="fill_parent"
+            android:id="@+id/post_reply_wrapper"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
@@ -29,15 +30,14 @@
                 android:hint="@string/post_reply_text_hint"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:inputType="textMultiLine"
-                android:lines="4"
                 android:scrollbars="none"
                 >
         </TextView>
 
         <FrameLayout
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
+                android:id="@+id/post_reply_recaptcha_frame"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
                 android:layout_marginBottom="8dp"
                 android:gravity="center"
                 android:layout_width="match_parent"
@@ -71,72 +71,81 @@
                 >
         </EditText>
 
-        <FrameLayout
-                android:layout_width="fill_parent"
+        <TextView
+                android:id="@+id/post_reply_pass_status"
+                style="@style/PostReplyEditTextStyle"
+                android:textStyle="bold"
+            >
+        </TextView>
+
+        <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:orientation="horizontal"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:layout_marginBottom="8dp">
 
-            <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:layout_gravity="left"
-                    android:orientation="horizontal">
+            <ImageButton
+                    android:id="@+id/post_reply_picture_button"
+                    style="@style/PostReplyButtonStyle"
+                    android:contentDescription="@string/post_reply_picture_hint"
+                    android:hint="@string/post_reply_picture_hint"
+                    android:src="@drawable/content_picture">
+            </ImageButton>
 
-                <ImageButton
-                        android:id="@+id/post_reply_picture_button"
-                        style="@style/PostReplyButtonStyle"
-                        android:contentDescription="@string/post_reply_picture_hint"
-                        android:hint="@string/post_reply_picture_hint"
-                        android:src="@drawable/content_picture">
-                </ImageButton>
+            <ImageButton
+                    android:id="@+id/post_reply_camera_button"
+                    style="@style/PostReplyButtonStyle"
+                    android:contentDescription="@string/post_reply_camera_hint"
+                    android:hint="@string/post_reply_camera_hint"
+                    android:src="@drawable/device_access_camera">
+            </ImageButton>
 
-                <ImageButton
-                        android:id="@+id/post_reply_camera_button"
-                        style="@style/PostReplyButtonStyle"
-                        android:contentDescription="@string/post_reply_camera_hint"
-                        android:hint="@string/post_reply_camera_hint"
-                        android:src="@drawable/device_access_camera">
-                </ImageButton>
+            <ImageButton
+                    android:id="@+id/post_reply_delete_button"
+                    style="@style/PostReplyButtonStyle"
+                    android:visibility="gone"
+                    android:contentDescription="@string/post_reply_delete_hint"
+                    android:hint="@string/post_reply_delete_hint"
+                    android:src="@drawable/content_backspace">
+            </ImageButton>
 
-                <ImageButton
-                        android:id="@+id/post_reply_delete_button"
-                        style="@style/PostReplyButtonStyle"
-                        android:visibility="gone"
-                        android:contentDescription="@string/post_reply_delete_hint"
-                        android:hint="@string/post_reply_delete_hint"
-                        android:src="@drawable/content_backspace">
-                </ImageButton>
+            <ImageButton
+                    android:id="@+id/post_reply_bump_button"
+                    style="@style/PostReplyButtonStyle"
+                    android:contentDescription="@string/post_reply_bump_hint"
+                    android:hint="@string/post_reply_bump_hint"
+                    android:src="@drawable/rating_good">
+            </ImageButton>
 
-            </LinearLayout>
+            <ImageButton
+                    android:id="@+id/post_reply_sage_button"
+                    style="@style/PostReplyButtonStyle"
+                    android:contentDescription="@string/post_reply_sage_hint"
+                    android:hint="@string/post_reply_sage_hint"
+                    android:src="@drawable/rating_bad">
+            </ImageButton>
 
-            <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:layout_gravity="right"
-                    android:orientation="horizontal">
+            <ImageButton
+                    android:id="@+id/post_reply_pass_enable_button"
+                    style="@style/PostReplyButtonStyle"
+                    android:contentDescription="@string/post_reply_pass_enable_hint"
+                    android:hint="@string/post_reply_pass_enable_hint"
+                    android:src="@drawable/device_access_accounts_enable"
+                    android:visibility="gone">
+            </ImageButton>
 
-                <ImageButton
-                        android:id="@+id/post_reply_bump_button"
-                        style="@style/PostReplyButtonStyle"
-                        android:contentDescription="@string/post_reply_bump_hint"
-                        android:hint="@string/post_reply_bump_hint"
-                        android:src="@drawable/rating_good">
-                </ImageButton>
+            <ImageButton
+                    android:id="@+id/post_reply_pass_disable_button"
+                    style="@style/PostReplyButtonStyle"
+                    android:contentDescription="@string/post_reply_pass_disable_hint"
+                    android:hint="@string/post_reply_pass_disable_hint"
+                    android:src="@drawable/device_access_accounts_disable"
+                    android:visibility="gone">
+            </ImageButton>
 
-                <ImageButton
-                        android:id="@+id/post_reply_sage_button"
-                        style="@style/PostReplyButtonStyle"
-                        android:contentDescription="@string/post_reply_sage_hint"
-                        android:hint="@string/post_reply_sage_hint"
-                        android:src="@drawable/rating_bad">
-                </ImageButton>
-
-            </LinearLayout>
-
-        </FrameLayout>
+        </LinearLayout>
 
         <CheckBox
                 android:id="@+id/post_reply_spoiler_checkbox"
@@ -145,7 +154,7 @@
 
         <ImageView
                 android:id="@+id/post_reply_image_preview"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:visibility="gone"
