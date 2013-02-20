@@ -18,14 +18,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.data.DownloadCache;
 import com.android.gallery3d.data.MediaDetails;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.Path;
@@ -49,39 +47,29 @@ public class ChanImage extends MediaItem {
     private static final int MIN_DOWNLOAD_PROGRESS_UPDATE = 300;
 	private static final int IMAGE_BUFFER_SIZE = 20480;
 
-    private static final int STATE_INIT = 0;
-    private static final int STATE_DOWNLOADING = 1;
-    private static final int STATE_DOWNLOADED = 2;
-    private static final int STATE_ERROR = -1;
-
     private final String url;
     private final String thumbUrl;
     private final String localImagePath;
-    private final String mContentType;
+    private final String contentType;
     private final int tn_h, tn_w;
 
-    private DownloadCache.Entry mCacheEntry;
-    private ParcelFileDescriptor mFileDescriptor;
-    private int mState = STATE_INIT;
-    private int mWidth;
-    private int mHeight;
-    private ChanPost post;
+    private int width;
+    private int height;
 
     private GalleryApp mApplication;
 
     public ChanImage(GalleryApp application, Path path, ChanPost post) {
         super(path, nextVersionNumber());
-        this.post = post;
         mApplication = application;
         url = post.getImageUrl();
         thumbUrl = post.getThumbnailUrl();
         tn_h = post.tn_h;
         tn_w = post.tn_w;
-        mWidth = post.w;
-        mHeight = post.h;
+        width = post.w;
+        height = post.h;
         localImagePath = ChanFileStorage.getBoardCacheDirectory(mApplication.getAndroidContext(), post.board) + "/" + post.getImageName();
         mApplication = Utils.checkNotNull(application);
-        mContentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(post.ext);
+        contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(post.ext);
     }
 
     @Override
@@ -173,15 +161,42 @@ public class ChanImage extends MediaItem {
 	}
 
     private class BitmapJob implements Job<Bitmap> {
-        private int mType;
+        private int type;
 
         protected BitmapJob(int type) {
-            mType = type;
+            this.type = type;
         }
 
         public Bitmap run(JobContext jc) {
-            int targetSize = LocalImage.getTargetSize(mType);
-            File thumbFile = ImageLoader.getInstance().getDiscCache().get(thumbUrl);
+            if (type == TYPE_THUMBNAIL) {
+            	downloadFullImage();
+            	if (new File(localImagePath).exists()) {
+    	        	Log.i(TAG, "Large image exists " + localImagePath);
+    	    		try {
+    					return BitmapFactory.decodeFile(localImagePath);
+    				} catch (Throwable e) {
+    					Log.e(TAG, "Bitmap docode error for " + localImagePath, e);
+    					return downloadThumbnail();
+    				}
+            	}
+            	return null;
+            } else {
+            	return downloadThumbnail();
+            }
+
+            /*if (bitmap != null) {
+	            if (type == MediaItem.TYPE_MICROTHUMBNAIL) {
+	                bitmap = BitmapUtils.resizeDownAndCropCenter(bitmap,
+	                        targetSize, true);
+	            } else {
+	                bitmap = BitmapUtils.resizeDownBySideLength(bitmap,
+	                        targetSize, true);
+	            }
+            }*/
+        }
+
+		private Bitmap downloadThumbnail() {
+			File thumbFile = ImageLoader.getInstance().getDiscCache().get(thumbUrl);
             Bitmap bitmap = null;
             try {
 	            if (!thumbFile.exists()) {
@@ -192,19 +207,8 @@ public class ChanImage extends MediaItem {
         		Log.e(TAG, "Error loading/transforming thumbnail", e);
         		thumbFile.delete();
         	}
-
-            Log.i(TAG, "Bitmap for " + thumbUrl + " " + (bitmap != null ? (bitmap.getWidth() + "x" + bitmap.getHeight()) : "null"));
-            if (bitmap != null) {
-	            if (mType == MediaItem.TYPE_MICROTHUMBNAIL) {
-	                bitmap = BitmapUtils.resizeDownAndCropCenter(bitmap,
-	                        targetSize, true);
-	            } else {
-	                bitmap = BitmapUtils.resizeDownBySideLength(bitmap,
-	                        targetSize, true);
-	            }
-            }
-            return bitmap;
-        }
+			return bitmap;
+		}
         
     	private void saveImageOnDisc(File targetFile) throws URISyntaxException, IOException {
 			// Download, decode, compress and save image
@@ -241,7 +245,7 @@ public class ChanImage extends MediaItem {
     public int getSupportedOperations() {
         int supported = SUPPORT_EDIT | SUPPORT_SETAS | SUPPORT_FULL_IMAGE;
         if (isSharable()) supported |= SUPPORT_SHARE;
-        if (BitmapUtils.isSupportedByRegionDecoder(mContentType)) {
+        if (BitmapUtils.isSupportedByRegionDecoder(contentType)) {
             supported |= SUPPORT_FULL_IMAGE;
         }
         return supported;
@@ -264,25 +268,23 @@ public class ChanImage extends MediaItem {
     @Override
     public MediaDetails getDetails() {
         MediaDetails details = super.getDetails();
-        if (mWidth != 0 && mHeight != 0) {
-            details.addDetail(MediaDetails.INDEX_WIDTH, mWidth);
-            details.addDetail(MediaDetails.INDEX_HEIGHT, mHeight);
+        if (width != 0 && height != 0) {
+            details.addDetail(MediaDetails.INDEX_WIDTH, width);
+            details.addDetail(MediaDetails.INDEX_HEIGHT, height);
         }
-        details.addDetail(MediaDetails.INDEX_MIMETYPE, mContentType);
+        details.addDetail(MediaDetails.INDEX_MIMETYPE, contentType);
         return details;
     }
 
     @Override
     public String getMimeType() {
-        return mContentType;
+        return contentType;
     }
 
     @Override
     protected void finalize() throws Throwable {
         try {
-            if (mFileDescriptor != null) {
-                Utils.closeSilently(mFileDescriptor);
-            }
+        	mApplication = null;
         } finally {
             super.finalize();
         }
@@ -290,11 +292,11 @@ public class ChanImage extends MediaItem {
 
     @Override
     public int getWidth() {
-        return mWidth;
+        return width;
     }
 
     @Override
     public int getHeight() {
-        return mHeight;
+        return height;
     }
 }
