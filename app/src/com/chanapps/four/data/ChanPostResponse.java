@@ -27,8 +27,8 @@ public class ChanPostResponse {
 
     private static final Pattern SUCCESS_REG = Pattern.compile("(<title.*)(Post successful)");
     private static final Pattern POST_REG = Pattern.compile("thread:([0-9]*),no:([0-9]*)"); // <!-- thread:44593688,no:44595010 -->
-    private static final Pattern BAN_REG = Pattern.compile("<h2>([^<]*)<span class=\"banType\">([^<]*)</span>([^<]*)</h2>");
-    private static final Pattern ERROR_REG = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<]*)");
+    private static final Pattern BAN_REG = Pattern.compile("<h2>([^<]*)<span class=\"banType\">([^<]*)</span>([^<\\[]*)</h2>");
+    private static final Pattern ERROR_REG = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<\\[]*)");
 
     public ChanPostResponse(Context ctx, String response) {
         this.ctx = ctx;

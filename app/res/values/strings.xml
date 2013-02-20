@@ -59,6 +59,10 @@
     <string name="authorize_pass_cancelled">Cancelled authorization</string>
     <string name="authorize_pass_error">Couldn\'t authorize</string>
     <string name="authorize_pass_no_response">Couldn\'t authorize, no response</string>
+    <string name="logout_pass_successful">Pass logout successful</string>
+    <string name="logout_pass_cancelled">Cancelled pass logout</string>
+    <string name="logout_pass_error">Couldn\'t logout</string>
+    <string name="logout_pass_no_response">Couldn\'t logout, no response</string>
 
 
     <!-- menus -->
@@ -178,6 +182,7 @@
     <string name="popup_go_to_thread">Go To Thread</string>
 
     <!-- dialog text -->
+    <string name="dialog_logout_pass">Logging out Pass...</string>
     <string name="dialog_authorizing_pass">Authorizing Pass...</string>
     <string name="dialog_posting_reply">Posting Reply...</string>
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
@@ -216,13 +221,13 @@
     <string name="post_reply_rotate_right_hint">Rotate Right</string>
     <string name="post_reply_bump_hint">Bump</string>
     <string name="post_reply_sage_hint">Sage</string>
-    <string name="post_reply_pass_enabled_text">Bypassing captcha with 4chan Pass</string>
-    <string name="post_reply_pass_enable_text">Click to authorize 4chan Pass</string>
-    <string name="post_reply_pass_disabled_text">4chan Pass disabled</string>
+    <string name="post_reply_pass_enabled_text">Bypassing captcha with Pass</string>
+    <string name="post_reply_pass_enable_text">Click to bypass captcha</string>
+    <string name="post_reply_pass_disabled_text">4chan Pass logged out</string>
     <string name="post_reply_pass_mobile_text">4chan Pass unavailable on mobile</string>
     <string name="post_reply_pass_no_connection_text">Cannot post while connection is down</string>
     <string name="post_reply_pass_enable_hint">Authorize 4chan Pass</string>
-    <string name="post_reply_pass_disable_hint">Disable 4chan Pass</string>
+    <string name="post_reply_pass_disable_hint">Logout 4chan Pass</string>
     <string name="post_reply_reload_captcha_hint">Reload Captcha</string>
     <string name="post_reply_recaptcha_hint">reCAPTCHA Challenge (Required)</string>
     <string name="post_reply_name_hint">Name (Optional)</string>
@@ -312,14 +317,14 @@
     <string name="pref_pass_token">Token</string>
     <string name="pref_pass_token_hint">Enter Token</string>
     <string name="pref_pass_token_summ">Your 10-character 4chan pass token</string>
-    <string name="pref_pass_token_invalid">Token invalid, disabled pass</string>
+    <string name="pref_pass_token_invalid">Token invalid</string>
     <string name="pref_pass_pin">PIN</string>
     <string name="pref_pass_pin_hint">Enter PIN</string>
     <string name="pref_pass_pin_summ">Your 6-character 4chan pass PIN</string>
-    <string name="pref_pass_pin_invalid">PIN invalid, disabled pass</string>
+    <string name="pref_pass_pin_invalid">PIN invalid</string>
     <string name="pref_pass_enabled">Enabled</string>
     <string name="pref_pass_enabled_summ_on">Use pass to bypass captcha</string>
-    <string name="pref_pass_enabled_summ_off">Bypassing captcha disabled</string>
+    <string name="pref_pass_enabled_summ_off">Pass logged out</string>
     <string name="pref_pass_purchase">Purchase</string>
     <string name="pref_pass_purchase_hint">Don\'t have a pass? Get one.</string>
 

@@ -31,7 +31,9 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.*;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
+import com.chanapps.four.task.AuthorizePassTask;
 import com.chanapps.four.task.LoadCaptchaTask;
+import com.chanapps.four.task.LogoutPassTask;
 import com.chanapps.four.task.PostReplyTask;
 
 import java.io.*;
@@ -174,7 +176,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             public void onClick(View view) {
                 if (isPassEnabled()) {
                     disablePass();
-                    Toast.makeText(PostReplyActivity.this, R.string.post_reply_pass_disabled_text, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -261,10 +262,14 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     private void disablePass() {
         ensurePrefs().edit().putBoolean(SettingsActivity.PREF_PASS_ENABLED, false).commit();
-        if (NetworkProfileManager.instance().getCurrentProfile().getConnectionType()
-                    != NetworkProfile.Type.NO_CONNECTION)
-            reloadCaptcha();
-        updatePassRecaptchaViews(false);
+        String passToken = ensurePrefs().getString(SettingsActivity.PREF_PASS_TOKEN, "");
+        String passPIN = ensurePrefs().getString(SettingsActivity.PREF_PASS_PIN, "");
+        LogoutPassTask logoutPassTask = new LogoutPassTask(this, passToken, passPIN);
+        LogoutPassDialogFragment passDialogFragment = new LogoutPassDialogFragment(logoutPassTask);
+        passDialogFragment.show(getFragmentManager(), LogoutPassDialogFragment.TAG);
+        if (!logoutPassTask.isCancelled()) {
+            logoutPassTask.execute(passDialogFragment);
+        }
     }
 
     private void updatePassRecaptchaViews(boolean passEnabled) {

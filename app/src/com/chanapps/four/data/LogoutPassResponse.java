@@ -13,35 +13,17 @@ import java.util.regex.Pattern;
  * Time: 5:51 PM
  * To change this template use File | Settings | File Templates.
  */
-public class AuthorizePassResponse {
+public class LogoutPassResponse {
 
     private Context ctx = null;
     private String response = null;
-    private boolean isAuthorized = false;
+    private boolean isLoggedOut = false;
     private String error = null;
 
     /*
     RESPONSE GOOD:
 
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="pragma" content="no-cache">
-
-	<title>4chan Pass - Authorization Successful</title>
-
-	<link rel="stylesheet" style="text/css" href="//static.4chan.org/css/yotsubanew.361.css">
-</head>
-<body>
-<div class="boardBanner">
-	<div class="boardTitle">4chan Pass</div>
-</div>
-<hr style="width: 90%">
-<br>
-<div style="text-align: center;"><span style="font-size: 14pt; color: red; font-weight: bold;">Success! Your device is now authorized.<br><br>You can begin using your Pass immediately&mdash;just visit any board and start posting!<br><br>[<a href="http://www.4chan.org">Back to 4chan</a>]<br><br><div style="text-align: center;">[<a href="https://sys.4chan.org/auth">Return</a>]</div></span></div>
-</body>
-</html>
+<title>4chan Pass - Logged Out</title>
 
 RESPONSE ERROR:
 
@@ -52,15 +34,15 @@ RESPONSE ERROR:
     private static final Pattern BAN_REG = Pattern.compile("<h2>([^<]*)<span class=\"banType\">([^<]*)</span>([^<]*)</h2>");
     private static final Pattern ERROR_REG = Pattern.compile("(id=\"errmsg\"[^>]*>)([^<]*)");
     private static final Pattern GENERIC_ERROR_REG = Pattern.compile("<div[^>]*><span[^>]*>(<strong[^>]*>)?([^<]*)");
-    private static final Pattern SUCCESS_REG = Pattern.compile("(<title[^>]*>)?([^<]*Authorization\\s+Successful[^<]*|[^<]*-\\s+Authenticated[^<]*)");
+    private static final Pattern SUCCESS_REG = Pattern.compile("(<title[^>]*>)?([^<]*-\\s+Logged Out[^<]*)");
 
-    public AuthorizePassResponse(Context ctx, String response) {
+    public LogoutPassResponse(Context ctx, String response) {
         this.ctx = ctx;
         this.response = response;
     }
 
     public void processResponse() {
-        isAuthorized = false;
+        isLoggedOut = false;
         try {
             Matcher successMatch = SUCCESS_REG.matcher(response);
             Matcher banMatch = BAN_REG.matcher(response);
@@ -69,7 +51,7 @@ RESPONSE ERROR:
             if ("".equals(response))
                 error = ctx.getString(R.string.delete_post_response_error);
             else if (successMatch.find())
-                isAuthorized = true;
+                isLoggedOut = true;
             else if (banMatch.find())
                 error = banMatch.group(1) + " " + banMatch.group(2) + " " + banMatch.group(3);
             else if (errorMatch.find())
@@ -79,7 +61,7 @@ RESPONSE ERROR:
         }
         catch (Exception e) {
             error = e.getLocalizedMessage();
-            isAuthorized = false;
+            isLoggedOut = false;
         }
     }
 
@@ -87,8 +69,8 @@ RESPONSE ERROR:
         return response;
     }
 
-    public boolean isAuthorized() {
-        return isAuthorized;
+    public boolean isLoggedOut() {
+        return isLoggedOut;
     }
 
     public String getError(Context ctx) {
