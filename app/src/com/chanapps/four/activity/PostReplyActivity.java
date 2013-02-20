@@ -16,9 +16,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.*;
@@ -33,14 +31,16 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.*;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
+import com.chanapps.four.task.AuthorizePassTask;
 import com.chanapps.four.task.LoadCaptchaTask;
+import com.chanapps.four.task.LogoutPassTask;
 import com.chanapps.four.task.PostReplyTask;
 
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.Random;
 
-public class PostReplyActivity extends FragmentActivity implements ChanIdentifiedActivity {
+public class PostReplyActivity extends FragmentActivity implements ChanIdentifiedActivity, RefreshableActivity {
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
 
@@ -175,8 +175,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         passDisableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (isPassEnabled()) {
-                    updatePassRecaptchaViews(togglePassEnabled());
-                    Toast.makeText(PostReplyActivity.this, R.string.post_reply_pass_disabled_text, Toast.LENGTH_SHORT).show();
+                    disablePass();
                 }
             }
         });
@@ -215,6 +214,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         closeKeyboard();
         PassSettingsFragment fragment = new PassSettingsFragment();
         fragment.setOnDismissListener(dismissListener);
+        fragment.setRefreshableActivity(this);
         android.app.FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.add(android.R.id.content, fragment);
         ft.setTransition(android.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -256,14 +256,20 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         }
     }
 
-    private boolean togglePassEnabled() {
-        boolean newEnabled = !isPassEnabled();
-        ensurePrefs().edit().putBoolean(SettingsActivity.PREF_PASS_ENABLED, newEnabled).commit();
-        if (newEnabled == false
-                && NetworkProfileManager.instance().getCurrentProfile().getConnectionType()
-                    != NetworkProfile.Type.NO_CONNECTION)
-            reloadCaptcha();
-        return newEnabled;
+    public boolean usePass() {
+        return isPassAvailable() && isPassEnabled();
+    }
+
+    private void disablePass() {
+        ensurePrefs().edit().putBoolean(SettingsActivity.PREF_PASS_ENABLED, false).commit();
+        String passToken = ensurePrefs().getString(SettingsActivity.PREF_PASS_TOKEN, "");
+        String passPIN = ensurePrefs().getString(SettingsActivity.PREF_PASS_PIN, "");
+        LogoutPassTask logoutPassTask = new LogoutPassTask(this, passToken, passPIN);
+        LogoutPassDialogFragment passDialogFragment = new LogoutPassDialogFragment(logoutPassTask);
+        passDialogFragment.show(getFragmentManager(), LogoutPassDialogFragment.TAG);
+        if (!logoutPassTask.isCancelled()) {
+            logoutPassTask.execute(passDialogFragment);
+        }
     }
 
     private void updatePassRecaptchaViews(boolean passEnabled) {
@@ -368,14 +374,18 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             loadFromIntent(getIntent());
         else
             loadFromPrefs();
-        boolean passEnabled = isPassEnabled();
-        if (!passEnabled || !isPassAvailable())
-            reloadCaptcha();
-        updatePassRecaptchaViews(passEnabled);
+        refreshActivity();
     }
 
     private void restoreOnRestart() {
         loadFromPrefs();
+    }
+
+    public void refreshActivity() {
+        boolean passEnabled = isPassEnabled();
+        if (!passEnabled || !isPassAvailable())
+            reloadCaptcha();
+        updatePassRecaptchaViews(passEnabled);
     }
 
     protected void setMessageText(String text, String quoteText) {
@@ -899,13 +909,15 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (!hasImage && !hasMessage)
             return res.getString(R.string.post_reply_add_text_or_image);
 
-        String recaptchaChallenge = loadCaptchaTask.getRecaptchaChallenge();
-        if (recaptchaChallenge == null || recaptchaChallenge.trim().isEmpty()) {
-            return res.getString(R.string.post_reply_captcha_error);
-        }
-        String recaptcha = recaptchaText.getText().toString();
-        if (recaptcha == null || recaptcha.trim().isEmpty()) {
-            return res.getString(R.string.post_reply_enter_captcha);
+        if (!isPassEnabled() || !isPassAvailable()) {
+            String recaptchaChallenge = loadCaptchaTask.getRecaptchaChallenge();
+            if (recaptchaChallenge == null || recaptchaChallenge.trim().isEmpty()) {
+                return res.getString(R.string.post_reply_captcha_error);
+            }
+            String recaptcha = recaptchaText.getText().toString();
+            if (recaptcha == null || recaptcha.trim().isEmpty()) {
+                return res.getString(R.string.post_reply_enter_captcha);
+            }
         }
 
         return null;

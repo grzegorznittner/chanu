@@ -74,14 +74,14 @@
                 android:inputType="textVisiblePassword|numberPassword"
                 android:maxLength="6"
                 />
-
+        <!--
         <CheckBoxPreference
                 android:key="pref_pass_enabled"
                 android:title="@string/pref_pass_enabled"
                 android:summaryOn="@string/pref_pass_enabled_summ_on"
                 android:summaryOff="@string/pref_pass_enabled_summ_off"
                 android:defaultValue="false" />
-
+         -->
     </PreferenceCategory>
 
     <!-- cache -->
