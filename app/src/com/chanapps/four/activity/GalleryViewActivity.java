@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.URI;
 import java.net.URLEncoder;
 
+import com.chanapps.four.service.ThreadImageDownloadService;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -22,21 +23,16 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.gallery3d.app.AbstractGalleryActivity;
@@ -104,8 +100,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     private LayoutInflater inflater;
     private View loadingView;
     protected Handler handler;
-    private ChanPost prevPost = null;
-    private ChanPost nextPost = null;
 
     public static void startActivity(Context from, AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
@@ -247,7 +241,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 		super.onStart();
 		if (DEBUG) Log.i(TAG, "onStart");
         loadPrefs();
-        loadPrevNext();
     }
 
     private void loadPrefs() {
@@ -293,19 +286,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         }
         if (DEBUG) Log.i(TAG, "loaded image from prefs/intent url=" + imageUrl);
         setActionBarTitle();
-    }
-
-    private void loadPrevNext() {
-        ChanThread thread = ChanFileStorage.loadThreadData(this, boardCode, threadNo);
-        if (thread != null) {
-            ChanPost[] prevNext = thread.getPrevNextPosts(postNo);
-            prevPost = prevNext[0];
-            nextPost = prevNext[1];
-        }
-        else {
-            prevPost = null;
-            nextPost = null;
-        }
     }
 
     private void savePrefs() {
@@ -408,56 +388,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     	}
     	return null;
 	}
-	
-    private void setDefaultZoom() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        double screenWidth = getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT
-            ? displayMetrics.widthPixels
-            : displayMetrics.heightPixels;
-        double screenHeight  = getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT
-            ? displayMetrics.heightPixels
-            : displayMetrics.widthPixels;
-        double trialWidth = imageWidth;
-        double trialHeight = imageHeight;
-        if (DEBUG) Log.v(TAG, "screenWidth,screenHeight = " + screenWidth + ", " + screenHeight);
-        if (DEBUG) Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
-        if (trialWidth > screenWidth) { // need to scale width down
-            double scale = screenWidth / trialWidth;
-            trialWidth = screenWidth;
-            trialHeight = (int)(Math.floor(scale * trialHeight));
-        }
-        if (DEBUG) Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
-        if (trialHeight > screenHeight) { // need to scale height down
-            double scale = screenHeight / trialHeight;
-            trialWidth = (int)(Math.floor(scale * trialWidth));
-            trialHeight = screenHeight;
-        }
-        if (DEBUG) Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
-        if (trialWidth < screenWidth) { // try and scale up to width
-            double scale = screenWidth / trialWidth;
-            if (DEBUG) Log.v(TAG, "scale = " + scale);
-            int testHeight = (int)(Math.floor(scale * trialHeight));
-            if (DEBUG) Log.v(TAG, "testHeight = " + testHeight);
-            if (testHeight <= screenHeight) {
-                trialWidth = screenWidth;
-                trialHeight = testHeight;
-            }
-        }
-        if (DEBUG) Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
-        if (trialHeight < screenHeight) { // try and scale up to height
-            double scale = screenHeight / trialHeight;
-            int testWidth = (int)(Math.floor(scale * trialWidth));
-            if (testWidth <= screenWidth) {
-                trialWidth = testWidth;
-                trialHeight = screenHeight;
-            }
-        }
-        if (DEBUG) Log.v(TAG, "trialWidth,trialHeight = " + trialWidth + ", " + trialHeight);
-        int initialScalePct = (int)Math.floor(100 * screenWidth / imageWidth);
-        webView.setInitialScale(initialScalePct);
-        if (DEBUG) Log.v(TAG, "initial Scale = " + initialScalePct);
-    }
 
     private void showImage() {
     	handler = new ProgressHandler(this);
@@ -478,156 +408,26 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         Class viewClass = viewType == ViewType.ALBUM_VIEW ? AlbumPage.class : PhotoPage.class;
         getStateManager().startState(viewClass, data);
     }
-    
-    @Override
-    public void onBackPressed() {
-        // send the back event to the top sub-state
-        GLRoot root = getGLRoot();
-        root.lockRenderThread();
-//        try {
-//            getStateManager().onBackPressed();
-//        } finally {
-            root.unlockRenderThread();
-//        }
-    }
-    
+
     @Override
     public void setContentView(int resId) {
         super.setContentView(resId);
         super.mGLRootView = (GLRootView) findViewById(R.id.gl_root_view);
     }
 
-    private void loadImage() {
-    	if (NetworkProfileManager.instance().getCurrentProfile().getConnectionType() == Type.NO_CONNECTION) {
-    		if (DEBUG) Log.i(TAG, "Off-line mode, download not started");    		
-            showOfflineScreen();
-    	} else {
-	    	showDownloadScreen();
-    	}
-    }
-
-	private void showOfflineScreen() {
-		try {
-			loadingView = inflater.inflate(R.layout.fullscreen_image_offline, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
-			ImageView imageView = (ImageView)loadingView.findViewById(R.id.fullscreen_image_image);
-			imageLoader.displayImage(post.getThumbnailUrl(), imageView, options);
-			
-			final Button loginButton = (Button) loadingView.findViewById(R.id.fullscreen_image_close_button);
-				loginButton.setOnClickListener(new OnClickListener() {
-			        @Override
-			        public void onClick(final View v) {
-			            if (DEBUG) Log.w(TAG, "Download page closed");
-			            GalleryViewActivity.this.finish();
-			        }
-			});
-	
-			TextView fileSizeTextView = (TextView)loadingView.findViewById(R.id.fullscreen_image_sizetext);
-			fileSizeTextView.setText("" + post.w + "px x " + post.h + "px");
-	
-			setContentView(loadingView);
-	
-			handler = new ProgressHandler(this);
-		} catch (Exception e) {
-		    Log.e(TAG, "Couldn't open offline view for image with url=" + imageUrl, e);
-		    runOnUiThread(new ToastRunnable(this, R.string.full_screen_view_image_error));
-		}
-	}
-
-	private void showDownloadScreen() {
-		try {
-		    this.localImageUri = null;
-		    if (DEBUG) Log.i(TAG, "Loading image from URL: " + imageUrl);
-
-		    String imageFile = ChanFileStorage.getLocalImageUrl(getBaseContext(), post);
-		    ImageDownloadService.startService(getBaseContext(), boardCode, threadNo, postNo, imageUrl, imageFile);
-		    
-		    loadingView = inflater.inflate(R.layout.fullscreen_image_loading, (ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
-		    ImageView imageView = (ImageView)loadingView.findViewById(R.id.fullscreen_image_image);
-            imageLoader.displayImage(post.getThumbnailUrl(), imageView, options);
-		    
-		    final Button loginButton = (Button) loadingView.findViewById(R.id.fullscreen_image_cancel_button);
-		    	loginButton.setOnClickListener(new OnClickListener() {
-		            @Override
-		            public void onClick(final View v) {
-		            	ImageDownloadService.cancelService(getBaseContext(), imageUrl);
-		                if (DEBUG) Log.w(TAG, "Download cancelled for " + imageUrl);
-		                GalleryViewActivity.this.finish();
-		            }
-		    });
-
-		    TextView fileSizeTextView = (TextView)loadingView.findViewById(R.id.fullscreen_image_sizetext);
-		    fileSizeTextView.setText("" + post.w + "px x " + post.h + "px");
-		    TextView textView = (TextView)loadingView.findViewById(R.id.fullscreen_image_text);
-		    textView.setText("0kB / " + ((post.fsize / 1024) + 1));
-
-		    ProgressBar progressBar = (ProgressBar)loadingView.findViewById(R.id.fullscreen_image_progressbar);
-		    progressBar.setProgress(0);
-		    progressBar.setMax(post.fsize);
-
-		    setContentView(loadingView);
-
-		    handler = new ProgressHandler(this);
-		    handler.sendEmptyMessageDelayed(PROGRESS_REFRESH_MSG, 100);
-		} catch (Exception e) {
-		    Log.e(TAG, "Couldn't load image for full screen view with url=" + imageUrl, e);
-		    runOnUiThread(new ToastRunnable(this, R.string.full_screen_view_image_error));
-		}
-	}
-
-    public int getScreenOrientation() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int orientation;
-        if (displayMetrics.widthPixels == displayMetrics.heightPixels) {
-            orientation = Configuration.ORIENTATION_SQUARE;
-        }
-        else {
-            if(displayMetrics.widthPixels < displayMetrics.heightPixels) {
-                orientation = Configuration.ORIENTATION_PORTRAIT;
-            }
-            else {
-                 orientation = Configuration.ORIENTATION_LANDSCAPE;
-            }
-        }
-        return orientation;
-    }
-
-    private void navigateToPost(ChanPost post, Direction direction) {
-        if (post == null || post.no == 0)
-            return;
-        ImageDownloadService.cancelService(getBaseContext(), imageUrl);
-        
-        Intent intent = new Intent(this, GalleryViewActivity.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(ChanHelper.POST_NO, post.no);
-        intent.putExtra(ChanHelper.IMAGE_WIDTH, post.w);
-        intent.putExtra(ChanHelper.IMAGE_HEIGHT, post.h);
-        if (DEBUG) Log.i(TAG, "Starting navigate to prev/next image: " + boardCode + "/" + threadNo + ":" + postNo);
-        startActivity(intent);
-        /*
-        switch (direction) {
-            case PREV:
-                overridePendingTransition(R.animator.push_right_in, R.animator.push_right_out);
-                break;
-            case NEXT:
-                overridePendingTransition(R.animator.push_left_in, R.animator.push_left_out);
-                break;
-        }
-        */
-    }
-
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, view, menuInfo);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.full_screen_image_context_menu, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                navigateUp();
+                return true;
+            case R.id.download_all_images_to_gallery_menu:
+                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null);
+                Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.view_image_gallery_menu:
+                GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
+                return true;
             case R.id.download_image_menu:
                 if (checkLocalImage() != null)
                     (new CopyImageToGalleryTask(getApplicationContext())).execute();
@@ -647,12 +447,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 else
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.view_image_gallery_menu:
-                if (checkLocalImage() != null)
-                    viewImageGallery();
-                else
-                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
-                return true;
             case R.id.image_search_menu:
                 if (checkLocalImage() != null)
                     imageSearch();
@@ -664,32 +458,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                     animeImageSearch();
                 else
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
-
-    private enum Direction {
-        PREV,
-        NEXT
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                navigateUp();
-                return true;
-            case R.id.prev_image_menu:
-                navigateToPost(prevPost, Direction.PREV);
-                return true;
-            case R.id.next_image_menu:
-                navigateToPost(nextPost, Direction.NEXT);
-                return true;
-            case R.id.go_to_board_menu:
-                /* new GoToBoardDialogFragment().show(getFragmentManager(), GoToBoardDialogFragment.TAG); */
-            	Toast.makeText(this, "Not implemented!", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
@@ -790,31 +558,40 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        if (localImageUri != null) {
-        	inflater.inflate(R.menu.full_screen_image_context_menu, menu);
-        }
-        inflater.inflate(R.menu.full_screen_image_menu, menu);
+        inflater.inflate(R.menu.gallery_view_menu, menu);
         return true;
     }
 
+    private static final int[] HIDDEN_ALBUM_MENU_ITEMS = {
+            R.id.view_image_gallery_menu,
+            R.id.download_image_menu,
+            R.id.share_image_menu,
+            R.id.set_as_wallpaper_menu,
+            R.id.image_search_menu,
+            R.id.anime_image_search_menu
+    };
+
+    private static final int[] HIDDEN_PHOTO_MENU_ITEMS = {
+            R.id.download_all_images_to_gallery_menu
+    };
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (prevPost != null) {
-            menu.getItem(0).setVisible(true);
-            menu.getItem(0).setEnabled(true);
+        for (int id : HIDDEN_ALBUM_MENU_ITEMS) {
+            MenuItem item = menu.findItem(id);
+            if (item != null) {
+                boolean visible = (viewType != ViewType.ALBUM_VIEW);
+                item.setVisible(visible);
+                item.setEnabled(visible);
+            }
         }
-        else {
-            menu.getItem(0).setVisible(false);
-            menu.getItem(0).setEnabled(false);
-        }
-        if (nextPost != null) {
-            menu.getItem(1).setVisible(true);
-            menu.getItem(1).setEnabled(true);
-        }
-        else {
-            menu.getItem(1).setVisible(false);
-            menu.getItem(1).setEnabled(false);
+        for (int id : HIDDEN_PHOTO_MENU_ITEMS) {
+            MenuItem item = menu.findItem(id);
+            if (item != null) {
+                boolean visible = (viewType != ViewType.PHOTO_VIEW);
+                item.setVisible(visible);
+                item.setEnabled(visible);
+            }
         }
         return true;
     }

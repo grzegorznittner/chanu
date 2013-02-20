@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/view_image_gallery_menu"
+          android:title="@string/view_image_gallery_menu"
+          android:icon="@drawable/collections_view_as_grid"
+          android:showAsAction="ifRoom"
+            />
+    <item android:id="@+id/download_all_images_to_gallery_menu"
+          android:title="@string/download_all_images_to_gallery_menu"
+          android:icon="@drawable/av_download"
+          android:showAsAction="ifRoom"
+            />
+    <item android:id="@+id/download_image_menu"
+          android:title="@string/download_image_menu"
+          android:icon="@drawable/content_save"
+          android:showAsAction="ifRoom"
+            />
+    <item android:id="@+id/share_image_menu"
+          android:title="@string/share_image_menu"
+          android:icon="@drawable/social_share"
+          android:showAsAction="ifRoom"
+            />
+    <item android:id="@+id/set_as_wallpaper_menu"
+          android:title="@string/set_as_wallpaper_menu"
+          android:icon="@drawable/content_picture"
+            />
+    <item android:id="@+id/image_search_menu"
+          android:title="@string/image_search_menu"
+          android:icon="@drawable/action_search"
+            />
+    <item android:id="@+id/anime_image_search_menu"
+          android:title="@string/anime_image_search_menu"
+          android:icon="@drawable/action_search"
+            />
+    <item android:id="@+id/settings_menu"
+          android:title="@string/settings_menu"
+          android:icon="@drawable/action_settings"
+            />
+    <item android:id="@+id/help_menu"
+          android:title="@string/help_menu"
+          android:icon="@drawable/action_help"
+          />
+    <item android:id="@+id/about_menu"
+          android:title="@string/about_menu"
+          android:icon="@drawable/action_help"
+            />
+    <item android:id="@+id/exit_menu"
+          android:title="@string/exit_menu"
+          android:icon="@drawable/navigation_cancel"
+            />
+</menu>
