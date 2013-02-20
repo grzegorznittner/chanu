@@ -244,7 +244,6 @@ abstract class UploadedTexture extends BasicTexture {
                     int format = GLUtils.getInternalFormat(bitmap);
                     int type = GLUtils.getType(bitmap);
                     Config config = bitmap.getConfig();
-
                     gl.glTexImage2D(GL11.GL_TEXTURE_2D, 0, format,
                             texWidth, texHeight, 0, format, type, null);
                     GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0,
@@ -274,7 +273,7 @@ abstract class UploadedTexture extends BasicTexture {
                         Bitmap line = getBorderLine(false, config, texWidth);
                         GLUtils.texSubImage2D(GL11.GL_TEXTURE_2D, 0,
                                 0, mBorder + bHeight, line, format, type);
-                    }
+                    }                    
                 }
             } finally {
                 freeBitmap();

@@ -79,6 +79,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	public static final int START_DOWNLOAD_MSG = 1;
 	public static final int FINISHED_DOWNLOAD_MSG = 2;
 	public static final int DOWNLOAD_ERROR_MSG = 3;
+	public static final int UPDATE_POSTNO_MSG = 4;
 
     private static final boolean DEBUG = true;
 
@@ -459,6 +460,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     private void showImage() {
+    	handler = new ProgressHandler(this);
     	View contentView = inflater.inflate(R.layout.fullscreen_gallery, 
     			(ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
     	setContentView(contentView);
@@ -482,11 +484,11 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         // send the back event to the top sub-state
         GLRoot root = getGLRoot();
         root.lockRenderThread();
-        try {
-            getStateManager().onBackPressed();
-        } finally {
+//        try {
+//            getStateManager().onBackPressed();
+//        } finally {
             root.unlockRenderThread();
-        }
+//        }
     }
     
     @Override
@@ -836,23 +838,30 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             super.handleMessage(msg);
             
             if (msg.what == PROGRESS_REFRESH_MSG) {
-	            int localFileSize = msg.arg1;
+	            int localFileSize = msg.arg1 + 1;
+	            int totalFileSize = msg.arg2;
 	            if (DEBUG) Log.i(TAG, "handle message: updating progress bar " + localFileSize);
 	            
-	            int totalSize = (activity.post.fsize / 1024) + 1;
-	            int downloadedSize = (localFileSize / 1024);
+	            ProgressBar progressBar = (ProgressBar)activity.findViewById(R.id.full_screen_progress_bar);
+	            if (progressBar != null) {
+		            if (localFileSize != totalFileSize) {
+			            progressBar.setVisibility(ProgressBar.VISIBLE);
+			    		progressBar.setProgress(localFileSize);
+			    		progressBar.setMax(totalFileSize);
+		            } else {
+		            	progressBar.setVisibility(ProgressBar.INVISIBLE);
+		            }
+	            }
+            } else if (msg.what == UPDATE_POSTNO_MSG) {
+	            int selectedPostNo = msg.arg1;
+	            //String url = (String)msg.obj;
 	            
-	            ProgressBar progressBar = (ProgressBar)activity.loadingView.findViewById(R.id.fullscreen_image_progressbar);
-	    		progressBar.setProgress(localFileSize);
-	    		TextView textView = (TextView)activity.loadingView.findViewById(R.id.fullscreen_image_text);
-	    		textView.setText("" + downloadedSize + "kB / " + totalSize + "kB");
-            } /*else if (msg.what == START_DOWNLOAD_MSG) {
-            	activity.loadImage();
-            } else if (msg.what == FINISHED_DOWNLOAD_MSG) {
-            	activity.showImage();
-            } else if (msg.what == DOWNLOAD_ERROR_MSG) {
-            	activity.finish();
-            } */
+	            activity.postNo = selectedPostNo;
+	            //activity.imageUrl = url;
+	            activity.savePrefs();
+            	Log.i(TAG, "Updated last viewed image: " + activity.postNo);
+            }
+            
         }
     }
     

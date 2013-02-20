@@ -2,6 +2,8 @@ package com.chanapps.four.gallery;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +19,10 @@ import org.apache.commons.io.IOUtils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
+import android.graphics.Bitmap.Config;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
@@ -29,9 +34,12 @@ import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
+import com.chanapps.four.activity.FullScreenImageActivity;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.FetchParams;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.ImageDecoder;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -52,6 +60,8 @@ public class ChanImage extends MediaItem {
     private final String localImagePath;
     private final String contentType;
     private final int tn_h, tn_w;
+    private final int fsize;
+    private final String ext;
 
     private int width;
     private int height;
@@ -67,6 +77,8 @@ public class ChanImage extends MediaItem {
         tn_w = post.tn_w;
         width = post.w;
         height = post.h;
+        fsize = post.fsize;
+        ext = post.ext;
         localImagePath = ChanFileStorage.getBoardCacheDirectory(mApplication.getAndroidContext(), post.board) + "/" + post.getImageName();
         mApplication = Utils.checkNotNull(application);
         contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(post.ext);
@@ -128,7 +140,7 @@ public class ChanImage extends MediaItem {
 			    out.write(buffer, 0, len);
 			    fileLength += len;
 			    if (Calendar.getInstance().getTimeInMillis() - lastNotify > MIN_DOWNLOAD_PROGRESS_UPDATE) {
-			    	//notifyDownloadProgress(fileLength);
+			    	notifyDownloadProgress(fileLength);
 			    	lastNotify = Calendar.getInstance().getTimeInMillis();
 			    }
 			}
@@ -138,15 +150,27 @@ public class ChanImage extends MediaItem {
             if (DEBUG) Log.i(TAG, "Stored image " + url + " to file "
             		+ targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
             
-		    //notifyDownloadFinished(fileLength);			    	
+		    //notifyDownloadFinished(fileLength);
 		} catch (Exception e) {
             Log.e(TAG, "Error in image download service", e);
             //NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
             //notifyDownloadError();
 		} finally {
+			notifyDownloadProgress(fsize);
 			IOUtils.closeQuietly(in);
 			IOUtils.closeQuietly(out);
 			closeConnection(conn);
+		}
+	}
+	
+	private void notifyDownloadProgress(int fileLength) {
+		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
+			Handler handler = activity.getChanHandler();
+			if (handler != null) {
+				Message msg = handler.obtainMessage(FullScreenImageActivity.PROGRESS_REFRESH_MSG, fileLength, 0);
+				handler.sendMessage(msg);
+			}
 		}
 	}
 
@@ -168,32 +192,43 @@ public class ChanImage extends MediaItem {
         }
 
         public Bitmap run(JobContext jc) {
+        	Bitmap bitmap = null;
             if (type == TYPE_THUMBNAIL) {
             	downloadFullImage();
             	if (new File(localImagePath).exists()) {
-    	        	Log.i(TAG, "Large image exists " + localImagePath);
-    	    		try {
-    					return BitmapFactory.decodeFile(localImagePath);
-    				} catch (Throwable e) {
-    					Log.e(TAG, "Bitmap docode error for " + localImagePath, e);
-    					return downloadThumbnail();
-    				}
+    	        	Log.i(TAG, "Large image exists but used as thumbnail " + localImagePath);
+//    	        	if (".gif".equals(ext)) {
+//    	        		bitmap = decodeGif(localImagePath);
+//    	        	} else {
+	    	    		try {
+	    					bitmap = BitmapFactory.decodeFile(localImagePath);
+	    				} catch (Throwable e) {
+	    					Log.e(TAG, "Bitmap docode error for " + localImagePath, e);
+	    					bitmap = downloadThumbnail();
+	    				}
+//    	        	}
             	}
-            	return null;
             } else {
-            	return downloadThumbnail();
+            	bitmap = downloadThumbnail();
             }
-
-            /*if (bitmap != null) {
-	            if (type == MediaItem.TYPE_MICROTHUMBNAIL) {
-	                bitmap = BitmapUtils.resizeDownAndCropCenter(bitmap,
-	                        targetSize, true);
-	            } else {
-	                bitmap = BitmapUtils.resizeDownBySideLength(bitmap,
-	                        targetSize, true);
-	            }
-            }*/
+            return ensureGLCompatibleBitmap(bitmap);
         }
+
+		private Bitmap decodeGif(String filePath) {
+			GifDecoder gifDecoder = new GifDecoder();
+			int result;
+			try {
+				result = gifDecoder.read(new FileInputStream(filePath));
+				if (result == 0) {
+					return gifDecoder.getBitmap();
+				} else {
+					Log.w(TAG, "GifDecoder returned " + result);
+				}
+			} catch (FileNotFoundException e) {
+				Log.e(TAG, "Error loading GIF", e);
+			}
+			return null;
+		}
 
 		private Bitmap downloadThumbnail() {
 			File thumbFile = ImageLoader.getInstance().getDiscCache().get(thumbUrl);
@@ -202,13 +237,25 @@ public class ChanImage extends MediaItem {
 	            if (!thumbFile.exists()) {
 	            	saveImageOnDisc(thumbFile);
 	            }
-	            bitmap = BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), null);
+//	            if (".gif".equals(ext)) {
+//	        		bitmap = decodeGif(thumbFile.getAbsolutePath());
+//	        	} else {
+	        		bitmap = BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), null);
+//	        	}
             } catch (Exception e) {
         		Log.e(TAG, "Error loading/transforming thumbnail", e);
         		thumbFile.delete();
         	}
 			return bitmap;
 		}
+		
+		public Bitmap ensureGLCompatibleBitmap(Bitmap bitmap) {
+	        if (bitmap == null || bitmap.getConfig() != null)
+	        	return bitmap;
+	        Bitmap newBitmap = bitmap.copy(Config.ARGB_8888, false);
+	        bitmap.recycle();
+	        return newBitmap;
+	    }
         
     	private void saveImageOnDisc(File targetFile) throws URISyntaxException, IOException {
 			// Download, decode, compress and save image
@@ -243,10 +290,13 @@ public class ChanImage extends MediaItem {
 
     @Override
     public int getSupportedOperations() {
-        int supported = SUPPORT_EDIT | SUPPORT_SETAS | SUPPORT_FULL_IMAGE;
+        int supported = SUPPORT_EDIT | SUPPORT_SETAS;
         if (isSharable()) supported |= SUPPORT_SHARE;
-        if (BitmapUtils.isSupportedByRegionDecoder(contentType)) {
+        if (".jpg".equals(ext) || ".jpeg".equals(ext) || ".png".equals(ext)) {
             supported |= SUPPORT_FULL_IMAGE;
+        }
+        if (".gif".equals(ext)) {
+        	supported |= SUPPORT_PLAY;
         }
         return supported;
     }
@@ -257,10 +307,24 @@ public class ChanImage extends MediaItem {
 
     @Override
     public int getMediaType() {
-        return MEDIA_TYPE_IMAGE;
+    	if (".gif".equals(ext)) {
+    		return MEDIA_TYPE_VIDEO;
+    	} else {
+    		return MEDIA_TYPE_IMAGE;
+    	}
     }
-
+    
     @Override
+	public Uri getPlayUri() {
+    	File localFile = new File (localImagePath);
+    	if (localFile.exists()) {
+    		return Uri.fromFile(localFile);
+    	} else {
+    		return Uri.parse(url);
+    	}
+	}
+
+	@Override
     public Uri getContentUri() {
         return Uri.parse(this.url);
     }
