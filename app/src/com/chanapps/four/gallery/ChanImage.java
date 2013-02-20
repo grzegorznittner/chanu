@@ -35,7 +35,7 @@ import com.android.gallery3d.data.Path;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
-import com.chanapps.four.activity.FullScreenImageActivity;
+import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.FetchParams;
@@ -168,7 +168,7 @@ public class ChanImage extends MediaItem {
 		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
 			Handler handler = activity.getChanHandler();
 			if (handler != null) {
-				Message msg = handler.obtainMessage(FullScreenImageActivity.PROGRESS_REFRESH_MSG, fileLength, 0);
+				Message msg = handler.obtainMessage(GalleryViewActivity.PROGRESS_REFRESH_MSG, fileLength, 0);
 				handler.sendMessage(msg);
 			}
 		}

@@ -41,7 +41,7 @@ import com.android.gallery3d.ui.SynchronizedHandler;
 import com.android.gallery3d.ui.UserInteractionListener;
 import com.android.gallery3d.util.GalleryUtils;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
-import com.chanapps.four.activity.FullScreenImageActivity;
+import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.service.NetworkProfileManager;
 
@@ -223,7 +223,7 @@ public class PhotoPage extends ActivityState
             			if (handler != null && item != null) {
             				String[] pathParts = item.split();
             				if (pathParts.length == 4) {
-            					Message msg = handler.obtainMessage(FullScreenImageActivity.UPDATE_POSTNO_MSG, (int)Long.parseLong(pathParts[3]), 0);
+            					Message msg = handler.obtainMessage(GalleryViewActivity.UPDATE_POSTNO_MSG, (int)Long.parseLong(pathParts[3]), 0);
             					handler.sendMessage(msg);
             				}
             			}
