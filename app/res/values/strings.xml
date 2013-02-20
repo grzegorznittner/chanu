@@ -89,7 +89,7 @@
     <string name="download_all_images_to_gallery_menu">Download To Gallery</string>
     <string name="download_image_menu">Save to Gallery</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
-    <string name="view_image_gallery_menu">View in Gallery</string>
+    <string name="view_image_gallery_menu">View Image Gallery</string>
     <string name="image_search_menu">Reverse Image Search</string>
     <string name="anime_image_search_menu">IQDB Image Search</string>
     <string name="share_image_menu">Share Image</string>
@@ -163,7 +163,11 @@
     <string name="fullscreen_image_offline_upper">Off-line mode</string>
     <string name="full_screen_cancel_button">Cancel Download</string>
     <string name="full_screen_close_button">Close</string>
-    
+    <string name="download_all_images_notice">You will be notified when download finishes</string>
+    <string name="download_all_images_complete">Download complete</string>
+    <string name="download_all_images_complete_detail">Images downloaded to gallery for /%1$s/%2$d</string>
+    <string name="download_all_images_info">Download complete</string>
+
     <!-- popup text -->
     <string name="spoiler">Show Spoiler</string>
     <string name="exif">Show EXIF Data</string>

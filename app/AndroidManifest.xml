@@ -41,7 +41,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".FullScreenImageActivity" android:label="@string/full_screen_image_activity">
+        <activity android:name=".GalleryViewActivity" android:label="@string/full_screen_image_activity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>

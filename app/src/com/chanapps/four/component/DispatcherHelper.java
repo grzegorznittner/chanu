@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.nfc.Tag;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.chanapps.four.activity.*;
@@ -23,7 +21,7 @@ public class DispatcherHelper {
     public static void saveActivityToPrefs(Activity activity) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(activity).edit();
         ChanHelper.LastActivity lastActivity;
-        if (activity instanceof FullScreenImageActivity)
+        if (activity instanceof GalleryViewActivity)
             lastActivity = ChanHelper.LastActivity.FULL_SCREEN_IMAGE_ACTIVITY;
         else if (activity instanceof ThreadActivity)
             lastActivity = ChanHelper.LastActivity.THREAD_ACTIVITY;
@@ -50,7 +48,7 @@ public class DispatcherHelper {
         Class activityClass;
         switch (lastActivity) {
             case FULL_SCREEN_IMAGE_ACTIVITY:
-                activityClass = FullScreenImageActivity.class;
+                activityClass = GalleryViewActivity.class;
                 break;
             case BOARD_ACTIVITY:
                 activityClass = BoardActivity.class;

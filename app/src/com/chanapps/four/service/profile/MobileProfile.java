@@ -85,7 +85,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 					Handler handler = activity.getChanHandler();
 					if (handler != null) {
 						makeToast("Loading image ...");
-						handler.sendEmptyMessageDelayed(FullScreenImageActivity.START_DOWNLOAD_MSG, 100);
+						handler.sendEmptyMessageDelayed(GalleryViewActivity.START_DOWNLOAD_MSG, 100);
 					}
 				} else if (activityId.activity == ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY) {
 					if (health != Health.VERY_SLOW) {

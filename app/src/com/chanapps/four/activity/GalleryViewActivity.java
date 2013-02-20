@@ -62,15 +62,25 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class FullScreenImageActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
+public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
 
-	public static final String TAG = "FullScreenImageActivity";
-	public static final int PROGRESS_REFRESH_MSG = 0;
+    public static final String TAG = "GalleryViewActivity";
+
+    public static final String VIEW_TYPE = "viewType";
+
+    public enum ViewType {
+        PHOTO_VIEW,
+        ALBUM_VIEW
+    }
+
+    private ViewType viewType = ViewType.PHOTO_VIEW; // default single image view
+
+    public static final int PROGRESS_REFRESH_MSG = 0;
 	public static final int START_DOWNLOAD_MSG = 1;
 	public static final int FINISHED_DOWNLOAD_MSG = 2;
 	public static final int DOWNLOAD_ERROR_MSG = 3;
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
 	private WebView webView = null;
 
@@ -107,7 +117,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     }
 
     public static void startActivity(Context from, String boardCode, long threadNo, long postId, int w, int h, int position) {
-        Intent intent = new Intent(from, FullScreenImageActivity.class);
+        Intent intent = new Intent(from, GalleryViewActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
         intent.putExtra(ChanHelper.POST_NO, postId);
@@ -116,6 +126,19 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
         intent.putExtra(ChanHelper.LAST_THREAD_POSITION, position);
         if (DEBUG) Log.i(TAG, "Starting full screen image viewer for: " + boardCode + "/" + threadNo + "/" + postId);
         from.startActivity(intent);
+    }
+
+    public static void startAlbumViewActivity(Context from, String boardCode, long threadNo) {
+        if (DEBUG) Log.i(TAG, "Starting gallery folder viewer for: " + boardCode + "/" + threadNo);
+        from.startActivity(getAlbumViewIntent(from, boardCode, threadNo));
+    }
+
+    public static Intent getAlbumViewIntent(Context from, String boardCode, long threadNo) {
+        Intent intent = new Intent(from, GalleryViewActivity.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(VIEW_TYPE, ViewType.ALBUM_VIEW.toString());
+        return intent;
     }
 
     private boolean loadChanPostData() {
@@ -175,8 +198,11 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     private File ensureGalleryFolder() {
         File galleryFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File gallery4chanFolder = new File(galleryFolder, "4channer");
-        if (!gallery4chanFolder.exists())
-            gallery4chanFolder.mkdirs();
+        if (!gallery4chanFolder.exists()) {
+            if (!gallery4chanFolder.mkdirs()) {
+                return null;
+            }
+        }
         return gallery4chanFolder;
     }
 
@@ -200,7 +226,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
                         @Override
                         public void onScanCompleted(String path, Uri uri) {
                             if (DEBUG) Log.i(TAG, "Scanned file for gallery: " + path + " " + uri);
-                            runOnUiThread(new ToastRunnable(FullScreenImageActivity.this, R.string.full_screen_saved_to_gallery));
+                            runOnUiThread(new ToastRunnable(GalleryViewActivity.this, R.string.full_screen_saved_to_gallery));
                         }
                     });
         }
@@ -226,7 +252,9 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     private void loadPrefs() {
         if (intent == null || intent != getIntent()) {
             intent = getIntent();
-            if (intent.hasExtra(ChanHelper.POST_NO)) {
+            if (intent.hasExtra(ChanHelper.BOARD_CODE) && intent.hasExtra(ChanHelper.THREAD_NO)) {
+                if (intent.hasExtra(VIEW_TYPE))
+                    viewType = ViewType.valueOf(intent.getStringExtra(VIEW_TYPE));
                 boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
                 threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
                 postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
@@ -235,19 +263,20 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
                 imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
                 imageWidth = intent.getIntExtra(ChanHelper.IMAGE_WIDTH, 0);
                 imageHeight = intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0);
-                if (DEBUG) Log.i(TAG, "Loaded from intent, boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
+                if (DEBUG) Log.i(TAG, "Loaded from intent, viewType: " + viewType.toString() + " boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
             } else {
                 Log.e(TAG, "Intent received without postno");
             }
         }
         if (postNo == 0) {
+            viewType = ViewType.valueOf(prefs.getString(VIEW_TYPE, ViewType.PHOTO_VIEW.toString()));
             boardCode = prefs.getString(ChanHelper.BOARD_CODE, "");
             threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
             postNo = prefs.getLong(ChanHelper.POST_NO, 0);
             imageUrl = prefs.getString(ChanHelper.IMAGE_URL, "");
             imageWidth = prefs.getInt(ChanHelper.IMAGE_WIDTH, 0);
             imageHeight = prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
-            if (DEBUG) Log.i(TAG, "Post no " + postNo + " laoded from preferences");
+            if (DEBUG) Log.i(TAG, "Post no " + postNo + " laoded from preferences viewType=" + viewType);
         }
         if (!loadChanPostData()) { // fill in the best we can
             post = new ChanPost();
@@ -428,7 +457,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
         webView.setInitialScale(initialScalePct);
         if (DEBUG) Log.v(TAG, "initial Scale = " + initialScalePct);
     }
-    
+
     private void showImage() {
     	View contentView = inflater.inflate(R.layout.fullscreen_gallery, 
     			(ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
@@ -443,8 +472,9 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     	
 		Path itemPath = Path.fromString("/chan/" + boardCode + "/" + threadNo + "/" + postNo);
 		data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, itemPath.toString());
-        
-        getStateManager().startState(PhotoPage.class, data);
+
+        Class viewClass = viewType == ViewType.ALBUM_VIEW ? AlbumPage.class : PhotoPage.class;
+        getStateManager().startState(viewClass, data);
     }
     
     @Override
@@ -485,7 +515,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
 			        @Override
 			        public void onClick(final View v) {
 			            if (DEBUG) Log.w(TAG, "Download page closed");
-			            FullScreenImageActivity.this.finish();
+			            GalleryViewActivity.this.finish();
 			        }
 			});
 	
@@ -519,7 +549,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
 		            public void onClick(final View v) {
 		            	ImageDownloadService.cancelService(getBaseContext(), imageUrl);
 		                if (DEBUG) Log.w(TAG, "Download cancelled for " + imageUrl);
-		                FullScreenImageActivity.this.finish();
+		                GalleryViewActivity.this.finish();
 		            }
 		    });
 
@@ -565,7 +595,7 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
             return;
         ImageDownloadService.cancelService(getBaseContext(), imageUrl);
         
-        Intent intent = new Intent(this, FullScreenImageActivity.class);
+        Intent intent = new Intent(this, GalleryViewActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
         intent.putExtra(ChanHelper.POST_NO, post.no);
@@ -795,8 +825,8 @@ public class FullScreenImageActivity extends AbstractGalleryActivity implements 
     }
 
     private static class ProgressHandler extends Handler {
-    	FullScreenImageActivity activity;
-    	ProgressHandler(FullScreenImageActivity activity) {
+    	GalleryViewActivity activity;
+    	ProgressHandler(GalleryViewActivity activity) {
     		super();
     		this.activity = activity;
     	}

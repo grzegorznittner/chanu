@@ -18,6 +18,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import com.chanapps.four.activity.*;
 import org.apache.commons.io.IOUtils;
 
 import android.app.Notification;
@@ -34,11 +35,6 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
@@ -253,11 +249,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 				+ " " + thread.posts.length + " posts, file " + targetFile);
 		
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
         boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         if (thread != null) {
-            thread.hideAllText = hideAllText;
             thread.hidePostNumbers = hidePostNumbers;
             thread.useFriendlyIds = useFriendlyIds;
         }
@@ -266,8 +260,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		Builder notifBuilder = new Notification.Builder(context);
 		notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
 		notifBuilder.setAutoCancel(true);
-		notifBuilder.setContentTitle("Images downloaded for thread /" + board + " / " + threadNo);
-		notifBuilder.setContentText(thread.getBoardText());
+		notifBuilder.setContentTitle(context.getString(R.string.download_all_images_complete));
+		notifBuilder.setContentText
+                (String.format(context.getString(R.string.download_all_images_complete_detail), board, threadNo));
 		notifBuilder.setSmallIcon(R.drawable.four_leaf_clover_1);
 		
 		Intent threadActivityIntent = null;
@@ -282,7 +277,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
                 false, 0);
 			break;
 		case TO_GALLERY:
-			Uri firstImageUri = Uri.fromFile(new File(targetFile));
+            threadActivityIntent = GalleryViewActivity.getAlbumViewIntent(context, board, threadNo);
+			/*
+            Uri firstImageUri = Uri.fromFile(new File(targetFile));
 			Log.i(TAG, "Trying to open file in gallery: " + firstImageUri);
 			if (firstImageUri != null) {
 				threadActivityIntent = new Intent(Intent.ACTION_VIEW);
@@ -298,6 +295,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		                thread.tn_w, thread.tn_h, thread.tim,
 		                false, 0);
 			}
+			*/
 			break;
 		}
         

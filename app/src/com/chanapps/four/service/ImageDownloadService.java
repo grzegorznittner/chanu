@@ -23,7 +23,7 @@ import android.util.Log;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.activity.FullScreenImageActivity;
+import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.FetchParams;
@@ -140,7 +140,7 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
 			Handler handler = activity.getChanHandler();
 			if (handler != null) {
-				Message msg = handler.obtainMessage(FullScreenImageActivity.PROGRESS_REFRESH_MSG, fileLength, 0);
+				Message msg = handler.obtainMessage(GalleryViewActivity.PROGRESS_REFRESH_MSG, fileLength, 0);
 				handler.sendMessage(msg);
 			}
 		}
@@ -151,7 +151,7 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
 			Handler handler = activity.getChanHandler();
 			if (handler != null) {
-				Message msg = handler.obtainMessage(FullScreenImageActivity.FINISHED_DOWNLOAD_MSG, fileLength, 0);
+				Message msg = handler.obtainMessage(GalleryViewActivity.FINISHED_DOWNLOAD_MSG, fileLength, 0);
 				handler.sendMessage(msg);
 			}
 		}
@@ -162,7 +162,7 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
 			Handler handler = activity.getChanHandler();
 			if (handler != null) {
-				Message msg = handler.obtainMessage(FullScreenImageActivity.DOWNLOAD_ERROR_MSG);
+				Message msg = handler.obtainMessage(GalleryViewActivity.DOWNLOAD_ERROR_MSG);
 				handler.sendMessage(msg);
 			}
 		}
