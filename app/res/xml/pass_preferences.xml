@@ -23,17 +23,23 @@
                 android:inputType="textVisiblePassword|numberPassword"
                 android:maxLength="6"
                 />
-
+<!--
         <CheckBoxPreference
                 android:key="pref_pass_enabled"
                 android:title="@string/pref_pass_enabled"
                 android:summaryOn="@string/pref_pass_enabled_summ_on"
                 android:summaryOff="@string/pref_pass_enabled_summ_off"
                 android:defaultValue="false" />
-
+-->
         <Preference
                 android:key="pref_pass_auth_button"
                 android:title="@string/dialog_authorize"/>
+
+        <Preference
+                android:key="pref_pass_purchase_button"
+                android:title="@string/pref_pass_purchase"
+                android:hint="@string/pref_pass_purchase_hint"
+                />
 
         <Preference
                 android:key="pref_pass_close_button"

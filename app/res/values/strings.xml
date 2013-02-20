@@ -55,6 +55,10 @@
     <string name="report_post_cancelled">Cancelled report post</string>
     <string name="report_post_error">Couldn\'t report post</string>
     <string name="report_post_no_response">Couldn\'t report post, no response</string>
+    <string name="authorize_pass_successful">Authorized</string>
+    <string name="authorize_pass_cancelled">Cancelled authorization</string>
+    <string name="authorize_pass_error">Couldn\'t authorize</string>
+    <string name="authorize_pass_no_response">Couldn\'t authorize, no response</string>
 
 
     <!-- menus -->
@@ -174,6 +178,7 @@
     <string name="popup_go_to_thread">Go To Thread</string>
 
     <!-- dialog text -->
+    <string name="dialog_authorizing_pass">Authorizing Pass...</string>
     <string name="dialog_posting_reply">Posting Reply...</string>
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
     <string name="dialog_clear_watchlist">Clear watchlist?</string>
@@ -212,11 +217,11 @@
     <string name="post_reply_bump_hint">Bump</string>
     <string name="post_reply_sage_hint">Sage</string>
     <string name="post_reply_pass_enabled_text">Bypassing captcha with 4chan Pass</string>
-    <string name="post_reply_pass_enable_text">Click to enable 4chan Pass</string>
+    <string name="post_reply_pass_enable_text">Click to authorize 4chan Pass</string>
     <string name="post_reply_pass_disabled_text">4chan Pass disabled</string>
     <string name="post_reply_pass_mobile_text">4chan Pass unavailable on mobile</string>
     <string name="post_reply_pass_no_connection_text">Cannot post while connection is down</string>
-    <string name="post_reply_pass_enable_hint">Enable 4chan Pass</string>
+    <string name="post_reply_pass_enable_hint">Authorize 4chan Pass</string>
     <string name="post_reply_pass_disable_hint">Disable 4chan Pass</string>
     <string name="post_reply_reload_captcha_hint">Reload Captcha</string>
     <string name="post_reply_recaptcha_hint">reCAPTCHA Challenge (Required)</string>
@@ -315,6 +320,8 @@
     <string name="pref_pass_enabled">Enabled</string>
     <string name="pref_pass_enabled_summ_on">Use pass to bypass captcha</string>
     <string name="pref_pass_enabled_summ_off">Bypassing captcha disabled</string>
+    <string name="pref_pass_purchase">Purchase</string>
+    <string name="pref_pass_purchase_hint">Don\'t have a pass? Get one.</string>
 
     <!-- widgets -->
     <string name="widget_board">Pick Widget Board</string>

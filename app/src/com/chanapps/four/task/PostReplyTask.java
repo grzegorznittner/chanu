@@ -1,16 +1,11 @@
 package com.chanapps.four.task;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import com.chanapps.four.data.*;
 import com.chanapps.four.multipartmime.*;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 
@@ -32,6 +27,9 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.PostingReplyDialogFragment;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,9 +44,10 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
     public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final String MAX_FILE_SIZE = "3145728";
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private PostReplyActivity activity = null;
+    private boolean usePass = false;
     private String password = null;
     private Context context = null;
     private PostingReplyDialogFragment dialogFragment = null;
@@ -56,6 +55,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
     public PostReplyTask(PostReplyActivity activity) {
         this.activity = activity;
+        this.usePass = activity.usePass();
         this.context = activity.getApplicationContext();
         this.charset = ChanBoard.isAsciiOnlyBoard(activity.boardCode) ? PartBase.ASCII_CHARSET : PartBase.UTF8_CHARSET;
     }
@@ -102,8 +102,10 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
         partsList.add(new StringPart("sub", activity.getSubject(), charset));
         partsList.add(new StringPart("com", activity.getMessage(), charset));
         partsList.add(new StringPart("pwd", password, charset));
-        partsList.add(new StringPart("recaptcha_challenge_field", activity.getRecaptchaChallenge(), charset));
-        partsList.add(new StringPart("recaptcha_response_field", activity.getRecaptchaResponse(), charset));
+        if (!usePass) {
+            partsList.add(new StringPart("recaptcha_challenge_field", activity.getRecaptchaChallenge(), charset));
+            partsList.add(new StringPart("recaptcha_response_field", activity.getRecaptchaResponse(), charset));
+        }
         if (activity.hasSpoiler()) {
             partsList.add(new StringPart("spoiler", "on", charset));
         }
@@ -194,18 +196,37 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
         String url = POST_URL_ROOT + activity.boardCode + "/post";
         AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
         try {
+            // setup post
             HttpPost request = new HttpPost(url);
             entity.setContentEncoding(charset);
             request.setEntity(entity);
             if (DEBUG)
                 dumpRequestContent(request.getEntity().getContent());
             if (DEBUG) Log.i(TAG, "Calling URL: " + request.getURI());
-            HttpResponse httpResponse = client.execute(request);
+
+            // make call
+            HttpResponse httpResponse;
+            if (usePass) {
+                if (DEBUG) Log.i(TAG, "Using 4chan pass, attaching cookies to request");
+                PersistentCookieStore cookieStore = new PersistentCookieStore(context);
+                HttpContext localContext = new BasicHttpContext();
+                localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+                httpResponse = client.execute(request, localContext);
+                if (DEBUG) Log.i(TAG, "Cookies: " + cookieStore.dump());
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "Not using 4chan pass, executing with captcha");
+                httpResponse = client.execute(request);
+            }
             if (DEBUG) Log.i(TAG, "Response: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
+
+            // check if response
             if (httpResponse == null) {
                 Log.e(TAG, context.getString(R.string.post_reply_no_response));
                 return null;
             }
+
+            // process response
             BufferedReader r = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
             StringBuilder s = new StringBuilder();
             String line;
