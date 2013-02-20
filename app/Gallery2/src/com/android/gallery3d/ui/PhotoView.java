@@ -342,9 +342,13 @@ public class PhotoView extends GLView {
     protected void render(GLCanvas canvas) {
         PositionController p = mPositionController;
 
-        // Draw the current photo
-        if (mLoadingState == LOADING_COMPLETE) {
-            super.render(canvas);
+        try {
+	        // Draw the current photo
+	        if (mLoadingState == LOADING_COMPLETE) {
+	            super.render(canvas);
+	        }
+        } catch (Exception e) {
+        	Log.e(TAG, "Rendering error", e);
         }
 
         // Draw the previous and the next photo

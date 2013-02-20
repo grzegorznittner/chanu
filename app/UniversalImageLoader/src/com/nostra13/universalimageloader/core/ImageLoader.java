@@ -193,7 +193,7 @@ public class ImageLoader {
 		String memoryCacheKey = MemoryCacheKeyUtil.generateKey(uri, targetSize);
 		cacheKeyForImageView.put(imageView, memoryCacheKey);
 
-		Log.i(TAG, "Thumb cache key: " + memoryCacheKey);
+		if (configuration.loggingEnabled) Log.i(TAG, "Thumb cache key: " + memoryCacheKey);
 		Bitmap bmp = configuration.memoryCache.get(memoryCacheKey);
 		if (bmp != null && !bmp.isRecycled()) {
 			if (configuration.loggingEnabled) Log.i(TAG, String.format(LOG_LOAD_IMAGE_FROM_MEMORY_CACHE, memoryCacheKey));
