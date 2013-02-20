@@ -292,8 +292,11 @@ public class ChanImage extends MediaItem {
     public int getSupportedOperations() {
         int supported = SUPPORT_EDIT | SUPPORT_SETAS;
         if (isSharable()) supported |= SUPPORT_SHARE;
-        if (!".gif".equals(ext)) {
+        if (".jpg".equals(ext) || ".jpeg".equals(ext) || ".png".equals(ext)) {
             supported |= SUPPORT_FULL_IMAGE;
+        }
+        if (".gif".equals(ext)) {
+        	supported |= SUPPORT_PLAY;
         }
         return supported;
     }
@@ -304,10 +307,24 @@ public class ChanImage extends MediaItem {
 
     @Override
     public int getMediaType() {
-		return MEDIA_TYPE_IMAGE;
+    	if (".gif".equals(ext)) {
+    		return MEDIA_TYPE_VIDEO;
+    	} else {
+    		return MEDIA_TYPE_IMAGE;
+    	}
     }
-
+    
     @Override
+	public Uri getPlayUri() {
+    	File localFile = new File (localImagePath);
+    	if (localFile.exists()) {
+    		return Uri.fromFile(localFile);
+    	} else {
+    		return Uri.parse(url);
+    	}
+	}
+
+	@Override
     public Uri getContentUri() {
         return Uri.parse(this.url);
     }
