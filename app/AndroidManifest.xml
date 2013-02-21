@@ -41,6 +41,18 @@
             </intent-filter>
         </activity>
 
+        <activity
+                android:name=".PostReplyShareActivity"
+                android:label="@string/post_reply_share_activity"
+                android:configChanges="orientation"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="image/*"/>
+            </intent-filter>
+        </activity>
+
         <activity android:name=".GalleryViewActivity" android:label="@string/full_screen_image_activity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>

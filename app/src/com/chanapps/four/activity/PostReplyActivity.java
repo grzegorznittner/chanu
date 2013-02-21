@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
@@ -44,6 +45,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
 
+    public static final int POST_FINISHED = 0x01;
+
     private static final boolean DEBUG = true;
 
     public static final int PASSWORD_MAX = 100000000;
@@ -65,6 +68,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     private Context ctx;
     private Resources res;
+    private Handler handler;
 
     private FrameLayout recaptchaFrame;
     private ImageButton recaptchaButton;
@@ -331,6 +335,16 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         return prefs;
     }
 
+    public Handler getHandler() {
+        return ensureHandler();
+    }
+
+    protected synchronized Handler ensureHandler() {
+        if (handler == null)
+            handler = new PostReplyHandler();
+        return handler;
+    }
+
     private boolean restarted = false;
 
     public void onRestart() {
@@ -367,9 +381,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         super.onStop();
         if (DEBUG) Log.i(TAG, "onStop");
         saveInstanceState();
+        handler = null;
     }
 
-    private void restoreInstanceState() {
+    protected void restoreInstanceState() {
         if (getIntent().hasExtra(ChanHelper.BOARD_CODE))
             loadFromIntent(getIntent());
         else
@@ -423,7 +438,15 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     }
 
     protected void loadFromIntent(Intent intent) {
-        boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+        loadFromIntentWithBoardCode(
+                intent,
+                intent.getStringExtra(ChanHelper.BOARD_CODE),
+                intent.getStringExtra(ChanHelper.POST_REPLY_IMAGE_URL)
+        );
+    }
+
+    protected void loadFromIntentWithBoardCode(Intent intent, String boardCode, String imageUrl) {
+        this.boardCode = boardCode;
         threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
         postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
         tim = intent.getLongExtra(ChanHelper.TIM, 0);
@@ -445,7 +468,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         boolean spoilerChecked = intent.getBooleanExtra(ChanHelper.SPOILER, false);
             spoilerCheckbox.setChecked(spoilerChecked);
 
-        String imageUrl = intent.getStringExtra(ChanHelper.POST_REPLY_IMAGE_URL);
         if (imageUrl != null && !imageUrl.isEmpty()) {
             setImageUri(imageUrl);
             setImagePreview();
@@ -697,7 +719,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         angle = 0;
     }
 
-    private void setImagePreview() {
+    protected void setImagePreview() {
         try {
             if (imageUri == null) {
                 imagePreview.setVisibility(View.GONE);
@@ -970,5 +992,25 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 	public Handler getChanHandler() {
 		return null;
 	}
+
+    public class PostReplyHandler extends Handler {
+
+        public PostReplyHandler() {}
+
+        @Override
+        public void handleMessage(Message msg) {
+            try {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case POST_FINISHED:
+                    default:
+                        finish();
+                }
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't handle message " + msg, e);
+            }
+        }
+    }
 
 }

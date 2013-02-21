@@ -3,6 +3,7 @@ package com.chanapps.four.task;
 import java.io.*;
 import java.util.*;
 
+import android.os.Message;
 import com.chanapps.four.data.*;
 import com.chanapps.four.multipartmime.*;
 import org.apache.commons.io.FileUtils;
@@ -347,7 +348,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
             Toast.makeText(context, R.string.post_reply_posted_reply, Toast.LENGTH_SHORT).show();
         }
         dialogFragment.dismiss();
-        activity.finish();
+        Message.obtain(activity.getHandler(), PostReplyActivity.POST_FINISHED).sendToTarget();
         //activity.navigateUp(); // had trouble with this
     }
 

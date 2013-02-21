@@ -9,6 +9,7 @@
     <string name="title_photogrid_activity">PhotoGrid</string>
     <string name="full_screen_image_activity">View Image</string>
     <string name="post_reply_activity">New Post</string>
+    <string name="post_reply_share_activity">4channer</string>
     <string name="settings_activity">Settings</string>
     <string name="board_image">Board Image</string>
     <string name="thread_post_image">Thread Image</string>
@@ -263,6 +264,8 @@
     <string name="post_reply_posted_reply">Posted reply</string>
     <string name="post_reply_posted_thread">Posted new thread</string>
     <string name="post_reply_send">Send</string>
+    <string name="post_reply_share_error">Couldn\'t share image to 4chan</string>
+    <string name="post_reply_share_pick_board">Pick Board for New Thread</string>
 
     <!-- preferences -->
     <string name="pref_advanced_category">Advanced</string>
