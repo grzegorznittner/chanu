@@ -20,7 +20,6 @@ import android.view.View;
 import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractThreadCursorAdapter;
-import com.chanapps.four.adapter.ThreadGridCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
@@ -194,18 +193,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     protected void initAdapter() {
-        if (GridView.class.equals(absListViewClass))
-            adapter = new ThreadGridCursorAdapter(this,
-                    R.layout.thread_grid_item,
-                    this,
-                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_COUNTRY_URL},
-                    new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag});
-        else
-            adapter = new ThreadListCursorAdapter(this,
-                    R.layout.thread_list_item,
-                    this,
-                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
-                    new int[] {R.id.list_item_image, R.id.list_item_header, R.id.list_item_text, R.id.list_item_country_flag});
+        adapter = new ThreadListCursorAdapter(this,
+                R.layout.thread_list_item,
+                this,
+                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
+                new int[] {R.id.list_item_image, R.id.list_item_header, R.id.list_item_text, R.id.list_item_country_flag});
         absListView.setAdapter(adapter);
     }
 
@@ -223,13 +215,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     protected void initAbsListView() {
-        if (GridView.class.equals(absListViewClass)) {
-            absListView = (GridView)findViewById(R.id.thread_grid_view);
-            sizeGridToDisplay();
-        }
-        else {
-            absListView = (ListView)findViewById(R.id.thread_list_view);
-        }
+        absListView = (ListView)findViewById(R.id.thread_list_view);
     }
 
     @Override

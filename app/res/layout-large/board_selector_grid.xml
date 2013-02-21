@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <GridView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/board_selector_grid_view"
-    style="@style/SelectorGridViewLayout"
+    style="@style/SelectorGridViewLayoutLarge"
         />

@@ -30,14 +30,10 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             return mInflater.inflate(R.layout.thread_list_item_ad, parent, false);
         }
         else if (ChanHelper.POST_RESTO.equals(tag)) { // first item is the post which started the thread
-//            return mInflater.inflate(R.layout.thread_list_item_header, parent, false);
-            return mInflater.inflate(R.layout.thread_list_item_header_narrow, parent, false);
+            return mInflater.inflate(R.layout.thread_list_item_header, parent, false);
         }
         else if (ChanHelper.POST_RESTO_NARROW.equals(tag)) { // first item is the post which started the thread
-            return mInflater.inflate(R.layout.thread_list_item_header_narrow, parent, false);
-        }
-        else if (ChanHelper.POST_OMITTED_POSTS.equals(tag)) {
-            return mInflater.inflate(R.layout.thread_list_item_null, parent, false);
+            return mInflater.inflate(R.layout.thread_list_item_header, parent, false);
         }
         else if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
             return mInflater.inflate(R.layout.thread_list_item, parent, false);

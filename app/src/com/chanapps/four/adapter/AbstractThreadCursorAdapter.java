@@ -89,9 +89,6 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
         else if (position == 0) { // thread header
             tag = ChanHelper.POST_RESTO;
         }
-        else if (postNo == 0) { // null spacer to give room for thread header
-            tag = ChanHelper.POST_OMITTED_POSTS;
-        }
         else if (imageUrl != null && imageUrl.length() > 0) {
             tag = ChanHelper.POST_IMAGE_URL;
         } else {

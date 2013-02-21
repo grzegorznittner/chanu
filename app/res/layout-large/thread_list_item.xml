@@ -2,10 +2,10 @@
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/list_item"
-        style="@style/ThreadListLayout">
+        style="@style/ThreadListLayoutLarge">
 
     <RelativeLayout
-            style="@style/ThreadListLayoutInner">
+            style="@style/ThreadListLayoutLargeInner">
 
         <RelativeLayout
                 android:id="@+id/list_item_header_wrapper"
@@ -15,14 +15,13 @@
 
             <TextView
                     android:id="@+id/list_item_header"
-                    style="@style/ListShortTextStyle"
+                    style="@style/ListShortTextLargeStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
                     android:layout_toLeftOf="@+id/list_item_image"
                     android:gravity="top|left"
-                    android:textStyle="bold"
                     android:text="FOO"
                     />
 
@@ -30,11 +29,11 @@
                     android:id="@+id/list_item_image"
                     style="@style/ThreadListItemImageStyle"
                     android:contentDescription="@string/thread_post_image"
-                    android:layout_width="132dp"
+                    android:layout_width="192dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentRight="true"
+                    android:layout_marginLeft="8dp"
                     android:gravity="top|right"
                     android:scaleType="fitEnd"
                     android:src="@drawable/board_3"
@@ -44,13 +43,12 @@
 
         <TextView
                 android:id="@+id/list_item_text"
-                style="@style/ListFullTextStyle"
+                style="@style/ListFullTextLargeStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@+id/list_item_header_wrapper"
                 android:paddingTop="8dp"
-                android:textSize="18sp"
                 android:text="bar"
                 />
 

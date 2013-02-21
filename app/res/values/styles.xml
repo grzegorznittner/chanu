@@ -31,7 +31,6 @@
         <item name="android:horizontalSpacing">1dp</item>
         <item name="android:numColumns">2</item>
         <item name="android:stretchMode">none</item>
-<!--        <item name="android:background">@color/PaletteBlack</item> -->
     </style>
 
     <style name="GridLayout" parent="android:style/Theme">
@@ -39,7 +38,6 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_marginLeft">0dp</item>
         <item name="android:layout_marginRight">0dp</item>
-<!--        <item name="android:background">@color/PaletteBlack</item> -->
         <item name="android:padding">0dp</item>
     </style>
 
@@ -47,10 +45,6 @@
     </style>
 
     <style name="GridTextImageOverlayStyle" parent="GridItemStyle">
-<!--
-        <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:background">@color/PaletteBlackMostlyOpaque</item>
-        -->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentTop">true</item>
@@ -63,18 +57,10 @@
 
 
     <style name="GridTextOnlyStyle" parent="GridTextImageOverlayStyle">
-<!--
-        <item name="android:background">@color/PaletteWhite</item>
-        <item name="android:textColor">@color/PaletteBlack</item>
-        -->
         <item name="android:layout_height">match_parent</item>
     </style>
 
     <style name="GridFinalItemStyle" parent="GridTextOnlyStyle">
-<!--
-        <item name="android:background">@color/PaletteBlackMostlyOpaque</item>
-        <item name="android:textColor">@color/PaletteWhite</item>
-        -->
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerInParent">true</item>
@@ -84,10 +70,16 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="BoardGridFinalItemLargeStyle" parent="GridFinalItemStyle">
+        <item name="android:padding">32dp</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="GridFinalItemLargeStyle" parent="GridFinalItemStyle">
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <style name="GridImageStyle" parent="GridItemStyle">
-        <!--
-        <item name="android:background">@color/PaletteWhite</item>
-        -->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_centerInParent">true</item>
@@ -95,9 +87,6 @@
     </style>
 
     <style name="ListImageStyle">
-        <!--
-        <item name="android:background">@color/PaletteWhite</item>
-        -->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentLeft">true</item>
@@ -117,8 +106,30 @@
 
 <!-- SELECTOR GRID STYLES -->
 
+    <style name="SelectorGridViewLayout" parent="android:style/Theme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:verticalSpacing">1dp</item>
+        <item name="android:horizontalSpacing">1dp</item>
+        <item name="android:numColumns">2</item>
+        <item name="android:stretchMode">none</item>
+    </style>
+
+    <style name="SelectorGridViewLayoutLarge" parent="SelectorGridViewLayout">
+        <item name="android:padding">16dp</item>
+        <item name="android:verticalSpacing">2dp</item>
+        <item name="android:horizontalSpacing">2dp</item>
+        <item name="android:numColumns">2</item>
+        <item name="android:stretchMode">none</item>
+    </style>
+
     <style name="SelectorGridLayout" parent="GridLayout">
         <item name="android:layout_height">182dp</item>
+    </style>
+
+    <style name="SelectorGridLayoutLarge" parent="SelectorGridLayout">
+        <item name="android:layout_height">248dp</item>
     </style>
 
     <style name="SelectorGridImageStyle" parent="GridImageStyle">
@@ -128,9 +139,11 @@
         <item name="android:layout_marginBottom">32dp</item>
     </style>
 
+    <style name="SelectorGridImageLargeStyle" parent="SelectorGridImageStyle">
+        <item name="android:layout_marginBottom">48dp</item>
+    </style>
+
     <style name="SelectorGridTextImageOverlayStyle" parent="GridItemStyle">
-<!--        <item name="android:background">@color/PaletteBlackMostlyOpaque</item>
-            <item name="android:textColor">@color/PaletteWhite</item> -->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">32dp</item>
         <item name="android:layout_alignParentLeft">true</item>
@@ -144,10 +157,19 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="SelectorGridTextImageOverlayLargeStyle" parent="SelectorGridTextImageOverlayStyle">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <!-- BOARD GRID STYLES -->
 
     <style name="BoardGridLayout" parent="GridLayout">
         <item name="android:layout_height">246dp</item>
+    </style>
+
+    <style name="BoardGridLargeLayout" parent="BoardGridLayout">
+        <item name="android:layout_height">360dp</item>
     </style>
 
     <style name="BoardGridImageStyle" parent="GridImageStyle">
@@ -158,17 +180,24 @@
         <item name="android:scaleType">centerCrop</item>
     </style>
 
+    <style name="BoardGridImageLargeStyle" parent="BoardGridImageStyle">
+        <item name="android:maxHeight">360dp</item>
+        <item name="android:maxWidth">200dp</item>
+        <item name="android:layout_marginBottom">160dp</item>
+    </style>
+
     <style name="BoardAdGridImageStyle" parent="GridImageStyle">
         <item name="android:maxHeight">246dp</item>
         <item name="android:maxWidth">150dp</item>
-        <item name="android:scaleType">fitCenter</item>
+        <item name="android:scaleType">fitStart</item>
+    </style>
+
+    <style name="BoardAdGridImageLargeStyle" parent="BoardAdGridImageStyle">
+        <item name="android:maxHeight">360dp</item>
+        <item name="android:maxWidth">200dp</item>
     </style>
 
     <style name="BoardGridTextImageOverlayStyle" parent="GridItemStyle">
-<!--
-        <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:background">@color/PaletteBlackMostlyOpaque</item>
-        -->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">96dp</item>
         <item name="android:layout_alignParentBottom">true</item>
@@ -180,6 +209,15 @@
         <item name="android:paddingBottom">0dp</item>
         <item name="android:gravity">center_horizontal|top</item>
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="BoardGridTextImageOverlayLargeStyle" parent="BoardGridTextImageOverlayStyle">
+        <item name="android:layout_height">160dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
 <!-- THREAD GRID STYLES -->
@@ -233,7 +271,10 @@
         <item name="android:layout_marginLeft">0dp</item>
         <item name="android:layout_marginRight">0dp</item>
         <item name="android:padding">2dp</item>
-<!--        <item name="android:background">@color/PaletteBlack</item> -->
+    </style>
+
+    <style name="ThreadListLayoutLarge" parent="ThreadListLayout">
+        <item name="android:padding">4dp</item>
     </style>
 
     <!-- we need this second inner layout so we have the outer for highlight rectangles -->
@@ -241,23 +282,30 @@
         <item name="android:padding">6dp</item>
     </style>
 
+    <style name="ThreadListLayoutLargeInner" parent="ThreadListLayoutInner">
+        <item name="android:padding">12dp</item>
+    </style>
+
     <style name="ThreadListLayoutNoHighlight" parent="ThreadListLayout">
         <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="ThreadListLayoutLargeNoHighlight" parent="ThreadListLayoutNoHighlight">
+        <item name="android:padding">16dp</item>
     </style>
 
     <style name="ThreadAdListImageStyle">
         <item name="android:layout_margin">4dp</item>
     </style>
 
+    <style name="ThreadAdListImageLargeStyle">
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
     <style name="ThreadListItemImageStyle">
-<!--        <item name="android:background">@color/PaletteBlack</item> -->
     </style>
 
     <style name="ListShortTextStyle" parent="android:style/Theme">
-<!--
-        <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:background">@color/PaletteBlack</item>
-        -->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">0dp</item>
@@ -265,23 +313,28 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="ListShortTextLargeStyle" parent="ListShortTextStyle">
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="ListFullTextStyle" parent="android:style/Theme">
-<!--
-        <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:background">@color/PaletteBlack</item>
-        -->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingBottom">0dp</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">14sp</item>
-
         <item name="android:scrollHorizontally">true</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="ListFullTextLargeStyle" parent="ListShortTextStyle">
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="ListCountryFlagStyle" parent="android:style/Theme">
@@ -305,7 +358,6 @@
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:scrollbars">vertical</item>
         <item name="android:gravity">top|left</item>
-<!--        <item name="android:background">@drawable/border_background</item> -->
         <item name="android:imeOptions">actionSend</item>
         <item name="android:imeActionLabel">@string/post_reply_send</item>
     </style>
@@ -345,7 +397,6 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">18sp</item>
-<!--        <item name="android:textColor">#0d0907</item> -->
         <item name="android:linksClickable">true</item>
         <item name="android:autoLink">web|email</item>
         <item name="android:scrollHorizontally">true</item>

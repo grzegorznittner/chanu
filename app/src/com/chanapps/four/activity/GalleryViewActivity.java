@@ -21,7 +21,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -52,7 +51,6 @@ import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.fragment.SetWallpaperDialogFragment;
 import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
-import com.chanapps.four.service.profile.NetworkProfile.Type;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -174,7 +172,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 			.imageScaleType(ImageScaleType.EXACT)
 			.build();
         
-        setContentView(R.layout.fullscreen_gallery);
+        setContentView(R.layout.gallery_layout);
     }
 
     private void viewImageGallery() {
@@ -391,7 +389,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     private void showImage() {
     	handler = new ProgressHandler(this);
-    	View contentView = inflater.inflate(R.layout.fullscreen_gallery, 
+    	View contentView = inflater.inflate(R.layout.gallery_layout,
     			(ViewGroup)getWindow().getDecorView().findViewById(android.R.id.content), false);
     	setContentView(contentView);
     	super.mGLRootView = (GLRootView) contentView.findViewById(R.id.gl_root_view);
