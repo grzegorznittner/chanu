@@ -38,6 +38,7 @@ import android.widget.Toast;
 
 import com.android.gallery3d.app.AbstractGalleryActivity;
 import com.android.gallery3d.app.AlbumPage;
+import com.android.gallery3d.app.GalleryActionBar;
 import com.android.gallery3d.app.PhotoPage;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.ui.GLRoot;
@@ -95,6 +96,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     private ImageLoader imageLoader;
     private LayoutInflater inflater;
     protected Handler handler;
+    
+    private GalleryActionBar actionBar;
 
     public static void startActivity(Context from, AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
@@ -158,6 +161,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
         ctx = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        
+        actionBar = new GalleryActionBar(this);
 
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         
@@ -408,6 +413,9 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+    	GLRoot root = getGLRoot();
+        root.lockRenderThread();
+        try {
         switch (item.getItemId()) {
             case android.R.id.home:
                 navigateUp();
@@ -425,7 +433,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 else
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.share_image_menu:
+            /*case R.id.share_image_menu:
                 if (checkLocalImage() != null)
                     shareImage();
                 else
@@ -438,6 +446,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 else
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
                 return true;
+                */
             case R.id.image_search_menu:
                 if (checkLocalImage() != null)
                     imageSearch();
@@ -467,8 +476,11 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 ChanHelper.exitApplication(this);
                 return true;
             default:
-                return onContextItemSelected(item);
-        }
+            	return getStateManager().itemSelected(item);
+        }        
+	    } finally {
+	        root.unlockRenderThread();
+	    }
     }
 
     private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";
@@ -548,16 +560,18 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getStateManager().createOptionsMenu(menu);
+        
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.gallery_view_menu, menu);
+        inflater.inflate(R.menu.gallery_view_menu, menu);        
         return true;
     }
 
     private static final int[] HIDDEN_ALBUM_MENU_ITEMS = {
             R.id.view_image_gallery_menu,
             R.id.download_image_menu,
-            R.id.share_image_menu,
-            R.id.set_as_wallpaper_menu,
+            /*R.id.share_image_menu,
+            R.id.set_as_wallpaper_menu, */
             R.id.image_search_menu,
             R.id.anime_image_search_menu
     };
@@ -631,6 +645,11 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             }
             
         }
+    }
+    
+    @Override
+    public GalleryActionBar getGalleryActionBar() {
+        return actionBar;
     }
     
     @Override
