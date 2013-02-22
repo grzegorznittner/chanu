@@ -153,6 +153,8 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         updateIntent.putExtra(ChanHelper.FIRST_TIME_INIT, true);
         context.startService(updateIntent);
+        String boardCode = getBoardCodeForWidget(context, appWidgetId);
+        FetchChanDataService.scheduleBoardFetch(context, boardCode); // make it fresh
     }
 
     public static void updateAll(Context context) {
