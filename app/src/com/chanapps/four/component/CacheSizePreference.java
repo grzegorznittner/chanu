@@ -61,14 +61,14 @@ public class CacheSizePreference extends Preference implements OnSeekBarChangeLi
 	}
 
 	private void setValuesFromXml(AttributeSet attrs) {
-		maxValue = attrs.getAttributeIntValue(ANDROIDNS, "max", 100);
-		minValue = attrs.getAttributeIntValue(CHANAPPS, "min", 0);
+		maxValue = attrs.getAttributeIntValue(ANDROIDNS, "max", 1024);
+		minValue = attrs.getAttributeIntValue(CHANAPPS, "min", 128);
 		try {
 			File cacheFolder = ChanFileStorage.getCacheDirectory(getContext());
 			long totalSpace = cacheFolder.getTotalSpace() / (1024*1024);
 			maxValue = (int)totalSpace;
 			if (maxValue < minValue) {
-				minValue = maxValue / 2;
+				minValue = maxValue / 2 < 128 ? 128 : maxValue / 2;
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Error while getting cache size", e);
