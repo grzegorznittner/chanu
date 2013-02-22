@@ -58,7 +58,7 @@ public class ChanPost {
     public boolean defData = false;
 
     // settings from prefs
-    public boolean hideAllText = false;
+    public boolean hideAllText = false; // no longer used
     public boolean hidePostNumbers = true;
     public boolean useFriendlyIds = true;
 

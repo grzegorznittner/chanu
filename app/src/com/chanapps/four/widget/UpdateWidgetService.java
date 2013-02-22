@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -20,14 +18,19 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.*;
+import com.chanapps.four.service.NetworkProfileManager;
+import com.chanapps.four.service.profile.NetworkProfile;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import org.apache.commons.io.IOUtils;
 
-import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -109,12 +112,6 @@ public class UpdateWidgetService extends Service {
             }
         }
 
-        private boolean isConnected() {
-            ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-            return networkInfo != null && networkInfo.isConnected();
-        }
-
         private void loadBoard() {
             try {
                 ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
@@ -146,69 +143,127 @@ public class UpdateWidgetService extends Service {
         private void loadBitmaps() {
             bitmaps.clear();
             for (int i = 0; i < NUM_TOP_THREADS; i++) {
-                InputStream is = null;
-                Bitmap b = null;
-                String thumbnailUrl = null;
+                bitmaps.add(getWidgetBitmap(i));
+            }
+        }
+
+        private Bitmap getWidgetBitmap(int i) {
+            Bitmap b;
+            String thumbnailUrl = getThumbnailUrl(i);
+            if (thumbnailUrl != null && !thumbnailUrl.isEmpty()
+                    && (b = getWidgetBitmapFromBoardStorage(i, thumbnailUrl)) != null)
+            {
+                if (DEBUG) Log.i(TAG, "Loaded bitmap from board storage for i=" + i + " thumb=" + thumbnailUrl);
+                return b;
+            }
+
+            if (thumbnailUrl != null && !thumbnailUrl.isEmpty()
+                    && (b = downloadWidgetBitmap(i, thumbnailUrl)) != null)
+            {
+                if (DEBUG) Log.i(TAG, "Downloaded bitmap since empty storage for i=" + i + " thumb=" + thumbnailUrl);
+                return b;
+            }
+
+            if ((b = ChanFileStorage.getBoardWidgetBitmap(context, boardCode, i)) != null) {
+                if (DEBUG) Log.i(TAG, "Loaded cached bitmap since download failed for i=" + i);
+                return b;
+            }
+
+            if (DEBUG) Log.i(TAG, "Returned default bitmap since empty cache for i=" + i);
+            b = loadDefaultBoardBitmap(i);
+            return b;
+        }
+
+        private String getThumbnailUrl(int i) {
+            ChanPost thread;
+            if (threads == null) {
+                return null;
+            }
+            if ((thread = threads[i]) == null) {
+                return null;
+            }
+            if (thread.no < 1) {
+                return null;
+            }
+            return thread.getThumbnailUrl();
+        }
+
+        private Bitmap getWidgetBitmapFromBoardStorage(int i, String thumbnailUrl) {
+            Bitmap b = null;
+            File thumbFile = null;
+            if (thumbnailUrl != null
+                    && !thumbnailUrl.isEmpty()
+                    && ImageLoader.getInstance() != null
+                    && ImageLoader.getInstance().getDiscCache() != null)
+            {
+                thumbFile = ImageLoader.getInstance().getDiscCache().get(thumbnailUrl);
+            }
+            if (thumbFile != null && thumbFile.exists()) { // try to load from board
+                FileInputStream fis = null;
+                BufferedInputStream bis = null;
                 try {
-                    ChanPost thread = threads == null ? null : threads[i];
-                    if (thread == null) {
-                        if (DEBUG) Log.i(TAG, "no thread found for i=" + i + " skipping download");
-                    }
-                    else if (!isConnected()) {
-                        if (DEBUG) Log.i(TAG, "network down, can't load bitmap for i=" + i + " skipping download");
-                    }
-                    else if ((thumbnailUrl = thread.getThumbnailUrl()) == null) {
-                        if (DEBUG) Log.i(TAG, "no thumbnail url found for i=" + i + " skipping download");
-                    }
-                    else if (thumbnailUrl.isEmpty()) {
-                        if (DEBUG) Log.i(TAG, "empty thumbnail url found for i=" + i + " skipping download");
-                    }
-                    else {
-                        URLConnection conn = new URL(thumbnailUrl).openConnection();
-                        conn.connect();
-                        is = conn.getInputStream();
-                        BufferedInputStream bis = new BufferedInputStream(is, BITMAP_BUFFER_SIZE);
-                        ChanFileStorage.storeBoardWidgetBitmapFile(context, boardCode, i, bis);
-                        b = BitmapFactory.decodeStream(bis);
-                        if (b != null) {
-                            if (DEBUG) Log.i(TAG, "Successfully downloaded and cached bitmap from url=" + thumbnailUrl);
-                        }
-                        else {
-                            if (DEBUG) Log.i(TAG, "Null bitmap for url=" + thumbnailUrl);
-                        }
-                    }
+                    fis = new FileInputStream(thumbFile);
+                    bis = new BufferedInputStream(fis);
+                    b = BitmapFactory.decodeStream(bis);
+                    ChanFileStorage.storeBoardWidgetBitmap(context, boardCode, i, b);
                 }
                 catch (FileNotFoundException e) {
-                    if (DEBUG) Log.i(TAG, "FileNotFound for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
+                    if (DEBUG) Log.i(TAG, "FileNotFound on file load for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
                 }
-                catch (Exception e) {
-                    Log.e(TAG, "Exception downloading image for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
+                catch (IOException e) {
+                    if (DEBUG) Log.i(TAG, "IOException on file load for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
                 }
                 finally {
-                    try {
-                        if (is != null)
-                            is.close();
-                    }
-                    catch (Exception e) {
-                        Log.e(TAG, "Exception closing input stream for url download", e);
-                    }
-                    try {
-                        if (b == null) {
-                            b = ChanFileStorage.getBoardWidgetBitmap(context, boardCode, i);
-                            if (DEBUG) Log.i(TAG, "Null bitmap for i=" + i + " thus loading from cache");
-                        }
-                    }
-                    catch (Exception e) {
-                        Log.e(TAG, "Exception loading cached bitmap for i=" + i, e);
-                    }
-                    if (b == null) { // load as resource and kill the thread so it just goes to the board
-                        b = loadDefaultBoardBitmap(i);
-                        if (DEBUG) Log.i(TAG, "Null bitmap loaded for i=" + i + " thus loading from board default");
-                    }
-                    if (DEBUG)  Log.i(TAG, "Set bitmap for board=" + boardCode + " i=" + i + " b=" + b);
-                    bitmaps.add(b);
+                    IOUtils.closeQuietly(bis);
+                    IOUtils.closeQuietly(fis);
                 }
             }
+            return b;
+        }
+
+        private Bitmap downloadWidgetBitmap(int i, String thumbnailUrl) {
+            Bitmap b = null;
+
+            NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
+            if (!NetworkProfileManager.isConnected()
+                    || health == NetworkProfile.Health.NO_CONNECTION
+                    || health == NetworkProfile.Health.BAD)
+            {
+                if (DEBUG) Log.i(TAG, "network down, can't load bitmap for i=" + i + " skipping download");
+                return null;
+            }
+
+            InputStream is = null;
+            BufferedInputStream bis = null;
+            try {
+                URLConnection conn = new URL(thumbnailUrl).openConnection();
+                conn.connect();
+                is = conn.getInputStream();
+                bis = new BufferedInputStream(is, BITMAP_BUFFER_SIZE);
+                b = BitmapFactory.decodeStream(bis);
+                ChanFileStorage.storeBoardWidgetBitmap(context, boardCode, i, b);
+                if (b != null) {
+                    if (DEBUG) Log.i(TAG, "Successfully downloaded and cached bitmap from url=" + thumbnailUrl);
+                }
+                else {
+                    if (DEBUG) Log.i(TAG, "Null bitmap for url=" + thumbnailUrl);
+                }
+            }
+            catch (MalformedURLException e) {
+                if (DEBUG) Log.i(TAG, "MalformedURL for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
+            }
+            catch (FileNotFoundException e) {
+                if (DEBUG) Log.i(TAG, "FileNotFound on download for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
+            }
+            catch (IOException e) {
+                if (DEBUG) Log.i(TAG, "IOException on download for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl + " rechecking network", e);
+                NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
+            }
+            finally {
+                IOUtils.closeQuietly(bis);
+                IOUtils.closeQuietly(is);
+            }
+            return b;
         }
 
         private Bitmap loadDefaultBoardBitmap(int i) {
@@ -233,20 +288,16 @@ public class UpdateWidgetService extends Service {
 
         private void updateWidgetViews() {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
             boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
             boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.board_widget);
             int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
             for (int i = 0; i < imageIds.length; i++) {
                 int imageId = imageIds[i];
-
                 Bitmap b = bitmaps.get(i);
                 views.setImageViewBitmap(imageId, b);
-
                 ChanPost thread = threads[i];
                 if (thread != null) {
-                    thread.hideAllText = hideAllText;
                     thread.hidePostNumbers = hidePostNumbers;
                     thread.useFriendlyIds = useFriendlyIds;
                 }
@@ -259,7 +310,7 @@ public class UpdateWidgetService extends Service {
         }
 
         private PendingIntent makePendingIntent(ChanPost thread, int i) {
-            Intent intent = thread == null
+            Intent intent = (thread == null || thread.no < 1)
                 ? BoardActivity.createIntentForActivity(context, new String(boardCode))
                 : ThreadActivity.createIntentForThread(context, thread);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

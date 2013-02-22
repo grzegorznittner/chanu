@@ -47,7 +47,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     public static final int POST_FINISHED = 0x01;
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static final int PASSWORD_MAX = 100000000;
     private static final Random randomGenerator = new Random();

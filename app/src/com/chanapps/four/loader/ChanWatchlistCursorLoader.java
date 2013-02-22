@@ -32,7 +32,6 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
         mObserver = new ForceLoadContentObserver();
     }
 
-    private boolean hideAllText;
     private boolean hidePostNumbers;
     private boolean useFriendlyIds;
 
@@ -45,7 +44,6 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
 //        }
         if (DEBUG) Log.i(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
         useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         MatrixCursor cursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
@@ -78,7 +76,6 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 else if (threadPost != null) { // pull from cache, it will have the latest data
                     if (DEBUG) Log.i(TAG, "Found cached watchlist thread " + boardCode + "/" + threadNo + ", updating from cache");
                     threadPost.isDead = thread.isDead;
-                    threadPost.hideAllText = hideAllText;
                     threadPost.hidePostNumbers = hidePostNumbers;
                     threadPost.useFriendlyIds = useFriendlyIds;
                     addRowFromThreadData(cursor, threadPost);

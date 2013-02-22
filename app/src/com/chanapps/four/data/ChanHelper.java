@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Looper;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -200,6 +201,10 @@ public class ChanHelper {
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+    }
+
+    public static boolean onUIThread() {
+        return Looper.getMainLooper().equals(Looper.myLooper());
     }
 
 }

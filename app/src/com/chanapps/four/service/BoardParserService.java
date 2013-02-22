@@ -120,6 +120,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 	            }
             }
             // tell it to refresh widgets for board if any are configured
+            if (DEBUG) Log.i(TAG, "Calling widget provider update for boardCode=" + boardCode);
             BoardWidgetProvider.updateAll(context, boardCode);
 
             NetworkProfileManager.instance().finishedParsingData(this);

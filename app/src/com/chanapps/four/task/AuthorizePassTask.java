@@ -42,7 +42,7 @@ public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, 
     public static final String TAG = AuthorizePassTask.class.getSimpleName();
 
     public static final String POST_URL_ROOT = "https://sys.4chan.org/";
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private RefreshableActivity refreshableActivity;
     private Context context;

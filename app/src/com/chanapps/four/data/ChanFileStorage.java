@@ -1,13 +1,6 @@
 package com.chanapps.four.data;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -88,6 +81,16 @@ public class ChanFileStorage {
 
     public static File getBoardCacheDirectory(Context context, String boardCode) {
         String cacheDir = getRootCacheDirectory(context) + FILE_SEP + boardCode;
+        File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+        return boardDir;
+    }
+
+    public static File getBoardWidgetCacheDirectory(Context context, String boardCode) {
+        String cacheDir = getRootCacheDirectory(context)
+                + FILE_SEP
+                + BoardWidgetProvider.WIDGET_CACHE_DIR
+                + FILE_SEP
+                + boardCode;
         File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
         return boardDir;
     }
@@ -410,9 +413,9 @@ public class ChanFileStorage {
 	}
 
     public static String getBoardWidgetBitmapPath(Context context, String boardName, int index) {
-        File boardDir = getBoardCacheDirectory(context, boardName);
+        File boardDir = getBoardWidgetCacheDirectory(context, boardName);
         if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-            File boardFile = new File(boardDir, boardName + "_widgetbitmap_" + index + "." + BITMAP_CACHE_EXT);
+            File boardFile = new File(boardDir, boardName + "_widgetbitmap_" + index + BITMAP_CACHE_EXT);
             return boardFile.getAbsolutePath();
         } else {
             Log.w(TAG, "Board widget bitmap file could not be created: " + boardName);
@@ -423,10 +426,24 @@ public class ChanFileStorage {
     public static Bitmap getBoardWidgetBitmap(Context context, String boardName, int index) {
         String boardPath = getBoardWidgetBitmapPath(context, boardName, index);
         Bitmap b = BitmapFactory.decodeFile(boardPath);
+        Log.i(TAG, "For boardPath=" + boardPath + " found bitmap=" + b);
         return b;
     }
 
     public static final int BITMAP_BUFFER_SIZE = 512;
+
+    public static long storeBoardWidgetBitmap(Context context, String boardName, int index, Bitmap b)
+            throws IOException
+    {
+        if (b != null && b.getByteCount() > 0) { // cache for future calls
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            BufferedInputStream bis = new BufferedInputStream(bais);
+            return ChanFileStorage.storeBoardWidgetBitmapFile(context, boardName, index, bis);
+        }
+        return 0;
+    }
 
     public static long storeBoardWidgetBitmapFile(Context context, String boardName, int index, BufferedInputStream is)
             throws IOException

@@ -249,7 +249,12 @@ public class ImageLoader {
 
 	/** Returns disc cache */
 	public DiscCacheAware getDiscCache() {
-		return configuration.discCache;
+        if (configuration != null) {
+		    return configuration.discCache;
+        }
+        else {
+            return null;
+        }
 	}
 
 	/**

@@ -75,7 +75,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	public static final int DOWNLOAD_ERROR_MSG = 3;
 	public static final int UPDATE_POSTNO_MSG = 4;
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
 	private WebView webView = null;
 

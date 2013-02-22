@@ -64,7 +64,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     public Cursor loadInBackground() {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
         boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
@@ -78,7 +77,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 if (ChanBlocklist.contains(context, thread.id))
                     continue;
 
-                thread.hideAllText = hideAllText;
                 thread.hidePostNumbers = hidePostNumbers;
                 thread.useFriendlyIds = useFriendlyIds;
 

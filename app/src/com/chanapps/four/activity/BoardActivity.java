@@ -286,7 +286,7 @@ public class BoardActivity
 
     public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
                                        ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
-        if (view instanceof TextView) { // only really works with hideAllText, otherwise it breaks views
+        if (view instanceof TextView) {
             TextView tv = (TextView) view;
             String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
             if (shortText == null || shortText.isEmpty()) {
@@ -504,7 +504,10 @@ public class BoardActivity
 
 	@Override
 	public Handler getChanHandler() {
-		return ensureHandler();
+        if (ChanHelper.onUIThread())
+		    return ensureHandler();
+        else
+            return null;
 	}
 
     @Override

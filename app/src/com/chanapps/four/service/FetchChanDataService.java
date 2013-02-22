@@ -26,6 +26,7 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
+import com.chanapps.four.widget.BoardWidgetProvider;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -250,7 +251,8 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 ChanFileStorage.storeBoardData(getBaseContext(), board);
             }
             else if (contentType == null || !contentType.contains("json")) {
-                throw new IOException("Wrong content type returned board=" + board + " contentType='" + contentType + "' responseCode=" + tc.getResponseCode() + " content=" + tc.getContent().toString());
+                // happens if 4chan is temporarily down or when access requires authentication to wifi router
+                if (DEBUG) Log.i(TAG, "Wrong content type returned board=" + board + " contentType='" + contentType + "' responseCode=" + tc.getResponseCode() + " content=" + tc.getContent().toString());
             }
             else {
             	long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, new InputStreamReader(tc.getInputStream()));

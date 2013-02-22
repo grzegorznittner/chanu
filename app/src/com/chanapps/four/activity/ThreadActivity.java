@@ -49,7 +49,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     protected String imageUrl;
     protected int imageWidth;
     protected int imageHeight;
-    protected boolean hideAllText = false;
     protected boolean hidePostNumbers = true;
     protected UserStatistics userStats = null;
     protected boolean inWatchlist = false;
@@ -231,7 +230,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
         long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
         String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        if ((resto != 0 && hideAllText) || shortText == null || shortText.isEmpty()) {
+        if (shortText == null || shortText.isEmpty()) {
             tv.setText("");
             final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
             if (imageUrl == null || imageUrl.isEmpty())
@@ -274,7 +273,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
         long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        if ((resto != 0 && hideAllText) || text == null || text.isEmpty()) {
+        if (text == null || text.isEmpty()) {
             tv.setText("");
             tv.setVisibility(View.GONE);
         }
@@ -377,13 +376,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-/*
-        hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        if (hideAllText)
-            menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_hide_all_text_on);
-        else
-            menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_hide_all_text);
-*/
         hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
         if (hidePostNumbers)
             menu.findItem(R.id.hide_post_numbers).setTitle(R.string.pref_hide_post_numbers_turn_off);
@@ -394,21 +386,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     protected void setAbsListViewClass() {
-        hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        if (hideAllText)
-            absListViewClass = GridView.class;
-        else
-            absListViewClass = ListView.class;
-    }
-
-    protected void toggleHideAllText() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        hideAllText = !hideAllText; // invert
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, hideAllText);
-        editor.commit();
-        refreshActivity();
+        absListViewClass = ListView.class;
     }
 
     protected void toggleHidePostNumbers() {

@@ -301,4 +301,10 @@ public class NetworkProfileManager {
             }
         }
     }
+
+    public static boolean isConnected() {
+        NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
+        return profile.getConnectionType() != NetworkProfile.Type.NO_CONNECTION;
+    }
+
 }
