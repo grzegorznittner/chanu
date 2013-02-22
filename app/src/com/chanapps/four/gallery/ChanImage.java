@@ -17,9 +17,9 @@ import java.util.Calendar;
 import org.apache.commons.io.IOUtils;
 
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
-import android.graphics.Bitmap.Config;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
@@ -27,7 +27,6 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.android.gallery3d.app.GalleryApp;
-import com.android.gallery3d.common.BitmapUtils;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.MediaDetails;
 import com.android.gallery3d.data.MediaItem;
@@ -37,9 +36,9 @@ import com.android.gallery3d.util.ThreadPool.JobContext;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.FetchParams;
-import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.ImageDecoder;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -81,7 +80,8 @@ public class ChanImage extends MediaItem {
         ext = post.ext;
         localImagePath = ChanFileStorage.getBoardCacheDirectory(mApplication.getAndroidContext(), post.board) + "/" + post.getImageName();
         mApplication = Utils.checkNotNull(application);
-        contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(post.ext);
+        String extNoDot = post.ext != null && post.ext.startsWith(".") ? post.ext.substring(1) : post.ext;
+        contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extNoDot);
     }
 
     @Override
@@ -290,7 +290,7 @@ public class ChanImage extends MediaItem {
 
     @Override
     public int getSupportedOperations() {
-        int supported = SUPPORT_EDIT | SUPPORT_SETAS;
+        int supported = SUPPORT_SETAS;
         if (isSharable()) supported |= SUPPORT_SHARE;
         if (".jpg".equals(ext) || ".jpeg".equals(ext) || ".png".equals(ext)) {
             supported |= SUPPORT_FULL_IMAGE;
@@ -326,7 +326,7 @@ public class ChanImage extends MediaItem {
 
 	@Override
     public Uri getContentUri() {
-        return Uri.parse(this.url);
+        return getPlayUri();
     }
 
     @Override

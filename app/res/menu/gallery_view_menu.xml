@@ -15,7 +15,7 @@
           android:icon="@drawable/content_save"
           android:showAsAction="ifRoom"
             />
-    <item android:id="@+id/share_image_menu"
+<!--    <item android:id="@+id/share_image_menu"
           android:title="@string/share_image_menu"
           android:icon="@drawable/social_share"
           android:showAsAction="ifRoom"
@@ -24,6 +24,7 @@
           android:title="@string/set_as_wallpaper_menu"
           android:icon="@drawable/content_picture"
             />
+    -->
     <item android:id="@+id/image_search_menu"
           android:title="@string/image_search_menu"
           android:icon="@drawable/action_search"

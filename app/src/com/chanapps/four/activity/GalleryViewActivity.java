@@ -1,10 +1,13 @@
 package com.chanapps.four.activity;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URLEncoder;
 
-import com.chanapps.four.service.ThreadImageDownloadService;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -29,13 +32,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.gallery3d.app.AbstractGalleryActivity;
 import com.android.gallery3d.app.AlbumPage;
+import com.android.gallery3d.app.GalleryActionBar;
 import com.android.gallery3d.app.PhotoPage;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.ui.GLRoot;
@@ -51,10 +54,9 @@ import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.fragment.SetWallpaperDialogFragment;
 import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.chanapps.four.service.ThreadImageDownloadService;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
 
@@ -77,8 +79,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     private static final boolean DEBUG = false;
 
-	private WebView webView = null;
-
     private Context ctx;
 
 	private SharedPreferences prefs = null;
@@ -93,11 +93,11 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     private String localImageUri = null;
     private int imageWidth = 0;
     private int imageHeight = 0;
-    private DisplayImageOptions options;
     private ImageLoader imageLoader;
     private LayoutInflater inflater;
-    private View loadingView;
     protected Handler handler;
+    
+    private GalleryActionBar actionBar;
 
     public static void startActivity(Context from, AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
@@ -161,16 +161,14 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
         ctx = getApplicationContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        
+        actionBar = new GalleryActionBar(this);
 
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         
         //webView.setBackgroundColor(Color.BLACK);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(this));
-        options = new DisplayImageOptions.Builder()
-			.cacheOnDisc()
-			.imageScaleType(ImageScaleType.EXACT)
-			.build();
         
         setContentView(R.layout.gallery_layout);
     }
@@ -415,6 +413,9 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+    	GLRoot root = getGLRoot();
+        root.lockRenderThread();
+        try {
         switch (item.getItemId()) {
             case android.R.id.home:
                 navigateUp();
@@ -432,7 +433,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 else
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.share_image_menu:
+            /*case R.id.share_image_menu:
                 if (checkLocalImage() != null)
                     shareImage();
                 else
@@ -445,6 +446,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 else
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
                 return true;
+                */
             case R.id.image_search_menu:
                 if (checkLocalImage() != null)
                     imageSearch();
@@ -474,8 +476,11 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 ChanHelper.exitApplication(this);
                 return true;
             default:
-                return onContextItemSelected(item);
-        }
+            	return getStateManager().itemSelected(item);
+        }        
+	    } finally {
+	        root.unlockRenderThread();
+	    }
     }
 
     private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";
@@ -555,16 +560,18 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getStateManager().createOptionsMenu(menu);
+        
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.gallery_view_menu, menu);
+        inflater.inflate(R.menu.gallery_view_menu, menu);        
         return true;
     }
 
     private static final int[] HIDDEN_ALBUM_MENU_ITEMS = {
             R.id.view_image_gallery_menu,
             R.id.download_image_menu,
-            R.id.share_image_menu,
-            R.id.set_as_wallpaper_menu,
+            /*R.id.share_image_menu,
+            R.id.set_as_wallpaper_menu, */
             R.id.image_search_menu,
             R.id.anime_image_search_menu
     };
@@ -638,6 +645,11 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             }
             
         }
+    }
+    
+    @Override
+    public GalleryActionBar getGalleryActionBar() {
+        return actionBar;
     }
     
     @Override

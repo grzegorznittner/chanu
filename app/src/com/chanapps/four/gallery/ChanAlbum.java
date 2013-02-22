@@ -10,6 +10,7 @@ import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaSet;
 import com.android.gallery3d.data.Path;
+import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 
@@ -20,13 +21,15 @@ import com.chanapps.four.data.ChanThread;
 public class ChanAlbum extends MediaSet {
 	private GalleryApp application;
 	private String name;
+	private String board;
 	private long threadNo;
 	private List<ChanPost> posts = new ArrayList<ChanPost>();
 	
 	public ChanAlbum(Path path, GalleryApp application, ChanThread thread) {
 		super(path, nextVersionNumber());
 		this.application = application;
-		this.name = "Thread " + thread.no;
+		this.name = "/" + board + "/" + thread.no;
+		this.board = thread.board;
 		this.threadNo = thread.no;
 		for (ChanPost post : thread.posts) {
 			if (post.tim != 0) {
@@ -69,6 +72,18 @@ public class ChanAlbum extends MediaSet {
 
 	@Override
 	public long reload() {
-		return mDataVersion;
+		ChanThread thread = ChanFileStorage.loadThreadData(application.getAndroidContext(), board, threadNo);
+		int prevSize = posts.size();
+		posts.clear();
+		for (ChanPost post : thread.posts) {
+			if (post.tim != 0) {
+				posts.add(post);
+			}
+		}
+		if (prevSize != posts.size()) {
+			return nextVersionNumber();
+		} else {
+			return mDataVersion;
+		}
 	}
 }

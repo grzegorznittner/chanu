@@ -122,7 +122,7 @@ public class ChanPost {
         text = textViewFilter(text, collapseNewlines);
 
         long end = System.currentTimeMillis();
-        Log.v(TAG, "Regexp: " + (end - start) + "ms");
+        if (DEBUG) Log.v(TAG, "Regexp: " + (end - start) + "ms");
 
         return text;
     }
