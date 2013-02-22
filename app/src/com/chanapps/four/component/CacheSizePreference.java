@@ -28,15 +28,16 @@ import android.widget.TextView;
  */
 public class CacheSizePreference extends Preference implements OnSeekBarChangeListener {
 	private static final String TAG = "CacheSizePreference";
+	private static final boolean DEBUG = true;
 
 	private static final String ANDROIDNS = "http://schemas.android.com/apk/res/android";
 	private static final String CHANAPPS = "http://chanapps.com";
 	private static final int DEFAULT_VALUE = 128;
 
-	private int maxValue = 100;
-	private int minValue = 0;
+	private int maxValue = 1024;
+	private int minValue = DEFAULT_VALUE;
 	private int cacheSize = 1;
-	private int currentValue;
+	private int currentValue = DEFAULT_VALUE;
 	private String unitsLeft = "";
 	private String unitsRight = "";
 	private SeekBar seekBar;
@@ -62,13 +63,14 @@ public class CacheSizePreference extends Preference implements OnSeekBarChangeLi
 
 	private void setValuesFromXml(AttributeSet attrs) {
 		maxValue = attrs.getAttributeIntValue(ANDROIDNS, "max", 1024);
-		minValue = attrs.getAttributeIntValue(CHANAPPS, "min", 128);
+		minValue = attrs.getAttributeIntValue(CHANAPPS, "min", DEFAULT_VALUE);
+		if (DEBUG) Log.i(TAG, "Cache loaded from xml, min: " + minValue + " max: " + maxValue);
 		try {
 			File cacheFolder = ChanFileStorage.getCacheDirectory(getContext());
 			long totalSpace = cacheFolder.getTotalSpace() / (1024*1024);
 			maxValue = (int)totalSpace;
 			if (maxValue < minValue) {
-				minValue = maxValue / 2 < 128 ? 128 : maxValue / 2;
+				minValue = maxValue / 2 < DEFAULT_VALUE ? DEFAULT_VALUE : maxValue / 2;
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Error while getting cache size", e);
@@ -83,10 +85,14 @@ public class CacheSizePreference extends Preference implements OnSeekBarChangeLi
 			if (newInterval != null) {
 				cacheSize = Integer.parseInt(newInterval);
 			}
+			if (cacheSize <= minValue) {
+				cacheSize = DEFAULT_VALUE;
+			}
 		} catch (Exception e) {
 			Log.e(TAG, "Invalid cacheSize value", e);
 		}
 
+		if (DEBUG) Log.i(TAG, "Cache value set to " + cacheSize);
 	}
 
 	private String getAttributeStringValue(AttributeSet attrs, String namespace, String name, String defaultValue) {
@@ -179,8 +185,6 @@ public class CacheSizePreference extends Preference implements OnSeekBarChangeLi
 			newValue = maxValue;
 		else if (newValue < minValue)
 			newValue = minValue;
-		else if (cacheSize != 1 && newValue % cacheSize != 0)
-			newValue = Math.round(((float) newValue) / cacheSize) * cacheSize;
 
 		// change rejected, revert to the previous value
 		if (!callChangeListener(newValue)) {
@@ -215,13 +219,7 @@ public class CacheSizePreference extends Preference implements OnSeekBarChangeLi
 		if (restoreValue) {
 			currentValue = getPersistedInt(currentValue);
 		} else {
-			int temp = 0;
-			try {
-				temp = (Integer) defaultValue;
-			} catch (Exception ex) {
-				Log.e(TAG, "Invalid default value: " + defaultValue.toString());
-			}
-
+			int temp = DEFAULT_VALUE;
 			persistInt(temp);
 			currentValue = temp;
 		}

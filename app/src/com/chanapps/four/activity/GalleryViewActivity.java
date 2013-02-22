@@ -1,10 +1,13 @@
 package com.chanapps.four.activity;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URLEncoder;
 
-import com.chanapps.four.service.ThreadImageDownloadService;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -29,7 +32,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -51,10 +53,9 @@ import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.fragment.SetWallpaperDialogFragment;
 import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.chanapps.four.service.ThreadImageDownloadService;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
 
@@ -77,8 +78,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     private static final boolean DEBUG = true;
 
-	private WebView webView = null;
-
     private Context ctx;
 
 	private SharedPreferences prefs = null;
@@ -93,10 +92,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     private String localImageUri = null;
     private int imageWidth = 0;
     private int imageHeight = 0;
-    private DisplayImageOptions options;
     private ImageLoader imageLoader;
     private LayoutInflater inflater;
-    private View loadingView;
     protected Handler handler;
 
     public static void startActivity(Context from, AdapterView<?> adapterView, View view, int position, long id) {
@@ -167,10 +164,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         //webView.setBackgroundColor(Color.BLACK);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(this));
-        options = new DisplayImageOptions.Builder()
-			.cacheOnDisc()
-			.imageScaleType(ImageScaleType.EXACT)
-			.build();
         
         setContentView(R.layout.gallery_layout);
     }
