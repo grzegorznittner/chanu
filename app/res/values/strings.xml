@@ -350,6 +350,20 @@
 
     <!-- fetch and network services -->
     <string name="mark_dead_thread">Thread marked as dead</string>
+    <string name="network_profile_health_bad">Internet connection slow</string>
+    <string name="mobile_profile_loading_board">Loading board</string>
+    <string name="mobile_profile_loading_thread">Loading thread</string>
+    <string name="mobile_profile_loading_image">Loading image</string>
+    <string name="mobile_profile_preloading_defaults">Preloading boards /a/, /b/, /v/, /vg/ and /s/</string>
+    <string name="mobile_profile_health_status">Health %1$s skipping preloading</string>
+    <string name="mobile_profile_no_auto_refresh">Auto refresh disabled</string>
+    <string name="mobile_profile_loaded_board">Loaded /%1$s/</string>
+    <string name="mobile_profile_loaded_thread">Loaded /%1$s/%2$d</string>
+    <string name="mobile_profile_fetch_board_fail">Couldn\'t load /%1$s/</string>
+    <string name="mobile_profile_fetch_thread_fail">Couldn\'t load /%1$s/%2$d</string>
+    <string name="mobile_profile_parse_board_fail">Couldn\'t parse /%1$s/</string>
+    <string name="mobile_profile_parse_thread_fail">Couldn\'t parse /%1$s/%2$d</string>
+    <string name="no_connection_profile">Offline mode</string>
 
     <!-- board names -->
     <string name="board_type_japanese_culture">Japanese Culture</string>
@@ -415,6 +429,5 @@
     <string name="board_pol">Politically Incorrect</string>
     <string name="board_soc">Social</string>
     <string name="board_watch">Watchlist</string>
-
 
 </resources>

@@ -302,6 +302,23 @@ public class NetworkProfileManager {
         }
     }
 
+    public void makeToast(final int id) {
+        final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        if (activity != null) {
+            Handler handler = activity.getChanHandler();
+            if (handler != null) {
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        Log.w(TAG, "Calling toast with '" + id + "'");
+                        Toast.makeText(activity.getBaseContext(), id, Toast.LENGTH_SHORT).show();
+                    }
+                }, 300);
+            } else {
+                Log.w(TAG, "Null handler for " + activity);
+            }
+        }
+    }
+
     public static boolean isConnected() {
         NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
         return profile.getConnectionType() != NetworkProfile.Type.NO_CONNECTION;

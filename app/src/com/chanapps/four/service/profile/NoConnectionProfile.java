@@ -6,6 +6,7 @@ import android.os.Handler;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -28,7 +29,7 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
 		
 		FetchChanDataService.clearServiceQueue(context);
 		
-		makeToast("Data connection lost. Off-line mode");
+		makeToast(R.string.no_connection_profile);
 	}
 
 	@Override
@@ -39,16 +40,16 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
 	@Override
 	public void onBoardSelected(Context context, String board) {
 		super.onBoardSelected(context, board);
-		
-		makeToast("Off-line mode");
-	}
+
+        makeToast(R.string.no_connection_profile);
+    }
 
 	@Override
 	public void onThreadSelected(Context context, String board, long threadId) {
 		super.onThreadSelected(context, board, threadId);
 
-		makeToast("Off-line mode");
-	}
+        makeToast(R.string.no_connection_profile);
+    }
 
 	@Override
 	public void onDataParseSuccess(ChanIdentifiedService service) {
