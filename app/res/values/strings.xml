@@ -74,6 +74,8 @@
     <string name="global_rules_menu">Global Rules</string>
     <string name="go_to_board_menu">Board Jump</string>
     <string name="board_rules_menu">Board Rules</string>
+    <string name="go_to_top_position_menu">Scroll to Top</string>
+    <string name="go_to_end_position_menu">Scroll to End</string>
     <string name="refresh_board_menu">Refresh Board</string>
     <string name="refresh_thread_menu">Refresh Thread</string>
     <string name="new_thread_menu">New Thread</string>
