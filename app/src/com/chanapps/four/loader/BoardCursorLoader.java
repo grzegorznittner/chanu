@@ -64,7 +64,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     public Cursor loadInBackground() {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+        boolean hidePostNumbers = boardName.equals("b") ? false : prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
         boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);

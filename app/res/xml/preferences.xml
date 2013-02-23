@@ -85,7 +85,7 @@
                 android:key="pref_cache_size"
                 android:title="Cache size"
                 android:summary="Adjust cache size"
-                chanapps:min="32"
+                chanapps:min="128"
                 chanapps:unitsLeft=""
                 chanapps:unitsRight="MB"
                 />

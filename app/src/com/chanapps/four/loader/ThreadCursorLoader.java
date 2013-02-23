@@ -67,7 +67,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     @Override
     public Cursor loadInBackground() {
         try {
-            hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+            hidePostNumbers = boardName.equals("b") ? false : prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
             useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
             ChanThread thread = null;
             try {

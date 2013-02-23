@@ -377,12 +377,21 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
-        if (hidePostNumbers)
-            menu.findItem(R.id.hide_post_numbers).setTitle(R.string.pref_hide_post_numbers_turn_off);
-        else
-            menu.findItem(R.id.hide_post_numbers).setTitle(R.string.pref_hide_post_numbers_turn_on);
+        MenuItem item = menu.findItem(R.id.hide_post_numbers);
+        if (boardCode.equals("b")) {
+            item.setEnabled(false);
+            item.setVisible(false);
+        }
+        else {
+            item.setEnabled(true);
+            item.setVisible(true);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+            if (hidePostNumbers)
+                item.setTitle(R.string.pref_hide_post_numbers_turn_off);
+            else
+                item.setTitle(R.string.pref_hide_post_numbers_turn_on);
+        }
         return true;
     }
 
