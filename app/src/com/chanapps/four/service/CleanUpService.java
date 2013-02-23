@@ -202,16 +202,16 @@ public class CleanUpService extends BaseChanService {
 
 	private void logCacheFileInfo(String logMsg, long startTime, long endTime) {
 		if (DEBUG) {
-			Log.i(TAG, logMsg + " Cache folder contains " + totalFiles + " files of size " + (totalSize/1024)
+            if (DEBUG) Log.i(TAG, logMsg + " Cache folder contains " + totalFiles + " files of size " + (totalSize/1024)
 				+ " kB. Calculated in " + (endTime - startTime) + "ms.");
 			for (Map.Entry<String, Long> entry : sizeByBoard.entrySet()) {
 				if (filesByBoard.get(entry.getKey()).size() == 0) {
 					continue;
 				}
-				Log.i(TAG, "Board " + entry.getKey() + " size " + (entry.getValue() / 1024) + "kB "
+                if (DEBUG) Log.i(TAG, "Board " + entry.getKey() + " size " + (entry.getValue() / 1024) + "kB "
 						+ filesByBoard.get(entry.getKey()).size() + " files.");
 			}
-			Log.i(TAG, "Other files' size " + (otherSize / 1024) + "kB "
+            if (DEBUG) Log.i(TAG, "Other files' size " + (otherSize / 1024) + "kB "
 					+ otherFiles.size() + " files.");
 		}
 	}
@@ -307,7 +307,7 @@ public class CleanUpService extends BaseChanService {
 	
 	private long addFiles(File file, List<FileDesc> all) {
 		long totalSize = 0;
-		Log.i(TAG, "Checking folder " + file.getAbsolutePath());
+        if (DEBUG) Log.i(TAG, "Checking folder " + file.getAbsolutePath());
 	    File[] children = file.listFiles();
 	    if (children != null) {
 	        for (File child : children) {

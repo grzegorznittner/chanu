@@ -35,7 +35,8 @@ import com.chanapps.four.data.ChanHelper;
  */
 public abstract class BaseChanService extends Service {
 	private static final String TAG = BaseChanService.class.getSimpleName();
-	
+    private static final boolean DEBUG = false;
+
     protected static int NON_PRIORITY_MESSAGE = 99;
     protected static int PRIORITY_MESSAGE = 100;
     
@@ -120,21 +121,21 @@ public abstract class BaseChanService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
     	if (nonPriorityMessageCounter > MAX_NON_PRIORITY_MESSAGES) {
-    		Log.i(TAG, "Clearing chan fetch service message queue from non priority messages (" + nonPriorityMessageCounter + ")");
+    		if (DEBUG) Log.i(TAG, "Clearing chan fetch service message queue from non priority messages (" + nonPriorityMessageCounter + ")");
         	mServiceHandler.removeMessages(NON_PRIORITY_MESSAGE);
         	synchronized(this) {
         		nonPriorityMessageCounter = 0;
         	}
     	}
     	if (priorityMessageCounter > MAX_PRIORITY_MESSAGES) {
-    		Log.i(TAG, "Clearing chan fetch service message queue from priority messages (" + priorityMessageCounter + ")");
+    		if (DEBUG) Log.i(TAG, "Clearing chan fetch service message queue from priority messages (" + priorityMessageCounter + ")");
         	mServiceHandler.removeMessages(PRIORITY_MESSAGE);
         	synchronized(this) {
         		priorityMessageCounter = 0;
         	}
     	}
         if (intent != null && intent.getIntExtra(ChanHelper.CLEAR_FETCH_QUEUE, 0) == 1) {
-        	Log.i(TAG, "Clearing chan fetch service message queue");
+            if (DEBUG) Log.i(TAG, "Clearing chan fetch service message queue");
         	mServiceHandler.removeMessages(NON_PRIORITY_MESSAGE);
         	synchronized(this) {
         		nonPriorityMessageCounter = 0;

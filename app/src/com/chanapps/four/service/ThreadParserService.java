@@ -109,7 +109,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
 			
 			File threadFile = ChanFileStorage.getThreadFile(getBaseContext(), boardCode, threadNo);
 			if (threadFile == null || !threadFile.exists()) {
-				Log.i(TAG, "Thread file " + threadFile.getAbsolutePath() + " was deleted, probably already parsed.");
+                if (DEBUG) Log.i(TAG, "Thread file " + threadFile.getAbsolutePath() + " was deleted, probably already parsed.");
 				return;
 			}
 			parseThread(new BufferedReader(new FileReader(threadFile)));
@@ -120,7 +120,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
             threadFile.delete();
 
             if (previousPostNum > 0 && thread.posts.length == 0) {
-            	Log.w(TAG, "Thread " + boardCode + "/" + threadNo + " has 0 posts after parsing, won't be stored");
+                if (DEBUG) Log.w(TAG, "Thread " + boardCode + "/" + threadNo + " has 0 posts after parsing, won't be stored");
             } else {
             	ChanFileStorage.storeThreadData(getBaseContext(), thread);
                 if (DEBUG) Log.i(TAG, "Stored thread " + boardCode + "/" + threadNo

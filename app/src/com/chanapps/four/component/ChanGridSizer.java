@@ -17,6 +17,7 @@ import android.widget.GridView;
 public class ChanGridSizer {
 
     private static final String TAG = ChanGridSizer.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     private static final int[] MAX_COLUMN_WIDTHS = {
             ServiceType.SELECTOR.ordinal(), 200,
@@ -75,7 +76,7 @@ public class ChanGridSizer {
         numColumns = width / maxColumnWidth == 1 ? 2 : width / maxColumnWidth;
         columnWidth = (width - 15) / numColumns;
         columnHeight = columnWidth;
-        Log.i(TAG, "sizeGridToDisplay width: " + width + ", height: " + height + ", numCols: " + numColumns);
+        if (DEBUG) Log.i(TAG, "sizeGridToDisplay width: " + width + ", height: " + height + ", numCols: " + numColumns);
         g.setNumColumns(numColumns);
         g.setColumnWidth(columnWidth);
     }

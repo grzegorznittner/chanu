@@ -21,8 +21,9 @@ import com.chanapps.four.service.FetchChanDataService;
 
 public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();
-	
-	public ChanBoard() {
+    private static final boolean DEBUG = false;
+
+    public ChanBoard() {
 		// public default constructor for Jackson
 	}
 
@@ -279,7 +280,7 @@ public class ChanBoard {
         List<ChanBoard> boards = ChanBoard.getBoards(context);
         for (ChanBoard board : boards) {
             if (!ChanFileStorage.isBoardCachedOnDisk(context, board.link)) { // if user never visited board before
-                Log.i(TAG, "Starting load service for uncached board " + board.link);
+                if (DEBUG) Log.i(TAG, "Starting load service for uncached board " + board.link);
                 FetchChanDataService.scheduleBoardFetch(context, board.link);
                 break; // don't schedule more than one per call to avoid overloading
             }

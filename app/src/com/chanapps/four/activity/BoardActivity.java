@@ -157,7 +157,15 @@ public class BoardActivity
 
     protected synchronized Handler ensureHandler() {
         if (handler == null) {
-            handler = new LoaderHandler(this);
+            if (ChanHelper.onUIThread())
+                handler = new LoaderHandler(this);
+            else
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        handler = new LoaderHandler(BoardActivity.this);
+                    }
+                });
         }
         return handler;
     }
@@ -504,10 +512,7 @@ public class BoardActivity
 
 	@Override
 	public Handler getChanHandler() {
-        if (ChanHelper.onUIThread())
-		    return ensureHandler();
-        else
-            return null;
+        return ensureHandler();
 	}
 
     @Override

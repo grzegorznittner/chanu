@@ -59,9 +59,9 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         }
 
         if (DEBUG) {
-            Log.i(TAG, "Dumping active widget conf:");
+            if (DEBUG) Log.i(TAG, "Dumping active widget conf:");
             for (String widgetBoard : savedWidgetConf) {
-                Log.i(TAG, widgetBoard);
+                if (DEBUG) Log.i(TAG, widgetBoard);
             }
         }
 

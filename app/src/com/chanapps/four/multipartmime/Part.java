@@ -52,6 +52,7 @@ public abstract class Part {
 
     /** Log object for this class. */
     public static final String TAG = Part.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     /** 
      * The boundary 
@@ -200,7 +201,7 @@ public abstract class Part {
      * @throws IOException If an IO problem occurs.
      */
     protected void sendStart(OutputStream out) throws IOException {
-        Log.d(TAG, "enter sendStart(OutputStream out)");
+        if (DEBUG) Log.d(TAG, "enter sendStart(OutputStream out)");
         out.write(EXTRA_BYTES);
         out.write(getPartBoundary());
         out.write(CRLF_BYTES);
@@ -213,7 +214,7 @@ public abstract class Part {
      * @throws IOException If an IO problem occurs.
      */
     protected void sendDispositionHeader(OutputStream out) throws IOException {
-        Log.d(TAG, "enter sendDispositionHeader(OutputStream out)");
+        if (DEBUG) Log.d(TAG, "enter sendDispositionHeader(OutputStream out)");
         out.write(CONTENT_DISPOSITION_BYTES);
         out.write(QUOTE_BYTES);
         out.write(EncodingUtils.getAsciiBytes(getName()));
@@ -226,7 +227,7 @@ public abstract class Part {
      * @throws IOException If an IO problem occurs.
      */
      protected void sendContentTypeHeader(OutputStream out) throws IOException {
-        Log.d(TAG, "enter sendContentTypeHeader(OutputStream out)");
+        if (DEBUG) Log.d(TAG, "enter sendContentTypeHeader(OutputStream out)");
         String contentType = getContentType();
         if (contentType != null) {
             out.write(CRLF_BYTES);
@@ -248,7 +249,7 @@ public abstract class Part {
      * @throws IOException If an IO problem occurs.
      */
      protected void sendTransferEncodingHeader(OutputStream out) throws IOException {
-        Log.d(TAG, "enter sendTransferEncodingHeader(OutputStream out)");
+        if (DEBUG) Log.d(TAG, "enter sendTransferEncodingHeader(OutputStream out)");
         String transferEncoding = getTransferEncoding();
         if (transferEncoding != null) {
             out.write(CRLF_BYTES);
@@ -263,7 +264,7 @@ public abstract class Part {
      * @throws IOException If an IO problem occurs.
      */
     protected void sendEndOfHeader(OutputStream out) throws IOException {
-        Log.d(TAG, "enter sendEndOfHeader(OutputStream out)");
+        if (DEBUG) Log.d(TAG, "enter sendEndOfHeader(OutputStream out)");
         out.write(CRLF_BYTES);
         out.write(CRLF_BYTES);
     }
@@ -289,7 +290,7 @@ public abstract class Part {
      * @throws IOException If an IO problem occurs.
      */
     protected void sendEnd(OutputStream out) throws IOException {
-        Log.d(TAG, "enter sendEnd(OutputStream out)");
+        if (DEBUG) Log.d(TAG, "enter sendEnd(OutputStream out)");
         out.write(CRLF_BYTES);
     }
     
@@ -302,7 +303,7 @@ public abstract class Part {
      * @throws IOException If an IO problem occurs.
      */
     public void send(OutputStream out) throws IOException {
-        Log.d(TAG, "enter send(OutputStream out)");
+        if (DEBUG) Log.d(TAG, "enter send(OutputStream out)");
         sendStart(out);
         sendDispositionHeader(out);
         sendContentTypeHeader(out);
@@ -322,7 +323,7 @@ public abstract class Part {
      * @throws IOException If an IO problem occurs
      */
     public long length() throws IOException {
-        Log.d(TAG, "enter length()");
+        if (DEBUG) Log.d(TAG, "enter length()");
         if (lengthOfData() < 0) {
             return -1;
         }
@@ -415,7 +416,7 @@ public abstract class Part {
      * @since 3.0
      */
     public static long getLengthOfParts(Part[] parts, byte[] partBoundary) throws IOException {
-        Log.d(TAG, "getLengthOfParts(Parts[])");
+        if (DEBUG) Log.d(TAG, "getLengthOfParts(Parts[])");
         if (parts == null) {
             throw new IllegalArgumentException("Parts may not be null"); 
         }

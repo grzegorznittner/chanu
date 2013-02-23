@@ -116,9 +116,7 @@ public class UserStatistics {
             }
         });
 		if (topBoards.size() < MIN_TOP_BOARDS) {
-			if (DEBUG) {
-				Log.d(TAG, "Top boards: " + logBoardStats(topBoards));
-			}
+			if (DEBUG) Log.d(TAG, "Top boards: " + logBoardStats(topBoards));
 			return topBoards;
 		}
 		int averageUsage = sumOfUsages / topBoards.size();
@@ -133,9 +131,7 @@ public class UserStatistics {
         	numOfTopBoards = topBoards.size() < MIN_TOP_BOARDS ? topBoards.size() : MIN_TOP_BOARDS;
         }
         topBoards = topBoards.subList(0, numOfTopBoards);
-        if (DEBUG) {
-			Log.d(TAG, "Top boards: " + logBoardStats(topBoards));
-		}
+        if (DEBUG) Log.d(TAG, "Top boards: " + logBoardStats(topBoards));
 		return topBoards;
 	}
 	
@@ -153,9 +149,7 @@ public class UserStatistics {
             }
         });
 		if (topThreads.size() < MAX_TOP_THREADS) {
-			if (DEBUG) {
-				Log.d(TAG, "Top threads: " + logThreadStats(topThreads));
-			}
+			if (DEBUG) Log.d(TAG, "Top threads: " + logThreadStats(topThreads));
 			return topThreads;
 		}
 		int averageUsage = sumOfUsages / topThreads.size();
@@ -167,9 +161,7 @@ public class UserStatistics {
         	}
         }
         topThreads = topThreads.subList(0, numOfTopThreads);
-        if (DEBUG) {
-			Log.d(TAG, "Top threads: " + logThreadStats(topThreads));
-		}
+        if (DEBUG) Log.d(TAG, "Top threads: " + logThreadStats(topThreads));
 		return topThreads;
 	}
 	

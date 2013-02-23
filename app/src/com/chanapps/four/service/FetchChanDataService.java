@@ -126,7 +126,19 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         context.startService(intent);
         return true;
     }
-    
+
+    public static boolean scheduleThreadFetchAfterPost(Context context, String boardCode, long threadNo) {
+        // after successful post, we should always fetch fresh
+        if (DEBUG) Log.i(TAG, "Start chan after post fetch service for " + boardCode + "/" + threadNo );
+        Intent intent = new Intent(context, FetchChanDataService.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+        intent.putExtra(ChanHelper.FORCE_REFRESH, true);
+        context.startService(intent);
+        return true;
+    }
+
     public static void clearServiceQueue(Context context) {
         if (DEBUG) Log.i(TAG, "Clearing chan fetch service queue");
         Intent intent = new Intent(context, FetchChanDataService.class);
@@ -232,7 +244,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             tc.setReadTimeout(fetchParams.readTimeout);
             tc.setConnectTimeout(fetchParams.connectTimeout);
             
-            if (board.lastFetched > 0) {
+            if (board.lastFetched > 0 && !force) {
             	if (DEBUG) Log.i(TAG, "IfModifiedSince set as last fetch happened "
         				+ ((startTime - board.lastFetched) / 1000) + "s ago");
                 tc.setIfModifiedSince(board.lastFetched);
@@ -307,7 +319,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/res/" + threadNo + ".json");
             tc = (HttpURLConnection) chanApi.openConnection();
             tc.setReadTimeout(NetworkProfileManager.instance().getFetchParams().readTimeout);
-            if (thread.lastFetched > 0) {
+            if (thread.lastFetched > 0 && !force) {
             	if (DEBUG) Log.i(TAG, "IfModifiedSince set as last fetch happened "
         				+ ((startTime - thread.lastFetched) / 1000) + "s ago");
                 tc.setIfModifiedSince(thread.lastFetched);

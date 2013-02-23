@@ -103,8 +103,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = getPendingIntentForGlobalAlarm(context);
         alarmManager.cancel(pendingIntent);
-        if (DEBUG)
-            Log.i(TAG, "Canceled alarms for UpdateWidgetService");
+        if (DEBUG) Log.i(TAG, "Canceled alarms for UpdateWidgetService");
     }
 
 }

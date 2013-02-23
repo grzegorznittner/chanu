@@ -132,7 +132,7 @@ public class ChanFileStorage {
 				return new File(boardDir, boardName + "_catalog" + CACHE_EXT);
 			}
 		} else {
-			Log.w(TAG, "Board folder could not be created: " + boardName);
+			if (DEBUG) Log.w(TAG, "Board folder could not be created: " + boardName);
 			return null;
 		}
     }
@@ -158,7 +158,7 @@ public class ChanFileStorage {
 			File boardFile = new File(boardDir, "t_" + threadNo + "f" + CACHE_EXT);
 			return boardFile;
 		} else {
-			Log.w(TAG, "Board folder could not be created: " + boardName);
+			if (DEBUG) Log.w(TAG, "Board folder could not be created: " + boardName);
 			return null;
 		}
     }
@@ -281,13 +281,13 @@ public class ChanFileStorage {
 
 	public static ChanThread loadThreadData(Context context, String boardCode, long threadNo) {
 		if (boardCode == null || threadNo <= 0) {
-			Log.w(TAG, "Trying to load '" + boardCode + FILE_SEP + threadNo + "' thread! Check stack trace why has it happened.", new Exception());
+			if (DEBUG) Log.w(TAG, "Trying to load '" + boardCode + FILE_SEP + threadNo + "' thread! Check stack trace why has it happened.", new Exception());
 			return null;
 		}
 		if (threadCache.containsKey(threadNo)) {
 			ChanThread thread = threadCache.get(threadNo);
 			if (thread == null || thread.defData) {
-				Log.w(TAG, "Null thread " + boardCode + "/" + threadNo + " stored in cache, removing key");
+				if (DEBUG) Log.w(TAG, "Null thread " + boardCode + "/" + threadNo + " stored in cache, removing key");
 				threadCache.remove(threadNo);
 			} else {
 				if (DEBUG) Log.i(TAG, "Returning thread " + boardCode + FILE_SEP +  threadNo + " data from cache, posts: " + thread.posts.length);
@@ -307,7 +307,7 @@ public class ChanFileStorage {
 			if (DEBUG) Log.i(TAG, "Loaded thread '" + boardCode + FILE_SEP + threadNo + "' with " + thread.posts.length + " posts");
 			return thread;
 		} catch (Exception e) {
-			Log.w(TAG, "Error while loading thread '" + boardCode + FILE_SEP + threadNo + "' data. ", e);
+			if (DEBUG) Log.w(TAG, "Error while loading thread '" + boardCode + FILE_SEP + threadNo + "' data. ", e);
 			return getThreadFromBoard(context, boardCode, threadNo);
 		}
 	}
@@ -403,7 +403,7 @@ public class ChanFileStorage {
 					return userPrefs;
                 }
 			} else {
-				Log.w(TAG, "File for user statistics doesn't exist");
+				if (DEBUG) Log.w(TAG, "File for user statistics doesn't exist");
 				return new UserStatistics();
 			}
 		} catch (Exception e) {
@@ -418,7 +418,7 @@ public class ChanFileStorage {
             File boardFile = new File(boardDir, boardName + "_widgetbitmap_" + index + BITMAP_CACHE_EXT);
             return boardFile.getAbsolutePath();
         } else {
-            Log.w(TAG, "Board widget bitmap file could not be created: " + boardName);
+            if (DEBUG) Log.w(TAG, "Board widget bitmap file could not be created: " + boardName);
             return null;
         }
     }
@@ -426,7 +426,7 @@ public class ChanFileStorage {
     public static Bitmap getBoardWidgetBitmap(Context context, String boardName, int index) {
         String boardPath = getBoardWidgetBitmapPath(context, boardName, index);
         Bitmap b = BitmapFactory.decodeFile(boardPath);
-        Log.i(TAG, "For boardPath=" + boardPath + " found bitmap=" + b);
+        if (DEBUG) Log.i(TAG, "For boardPath=" + boardPath + " found bitmap=" + b);
         return b;
     }
 

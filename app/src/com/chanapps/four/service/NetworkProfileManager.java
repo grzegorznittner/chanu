@@ -292,12 +292,12 @@ public class NetworkProfileManager {
             if (handler != null) {
                 handler.postDelayed(new Runnable() {
                     public void run() {
-                        Log.w(TAG, "Calling toast with '" + text + "'");
+                        if (DEBUG) Log.w(TAG, "Calling toast with '" + text + "'");
                         Toast.makeText(activity.getBaseContext(), text, Toast.LENGTH_SHORT).show();
                     }
                 }, 300);
             } else {
-                Log.w(TAG, "Null handler for " + activity);
+                if (DEBUG) Log.w(TAG, "Null handler for " + activity);
             }
         }
     }
@@ -309,12 +309,12 @@ public class NetworkProfileManager {
             if (handler != null) {
                 handler.postDelayed(new Runnable() {
                     public void run() {
-                        Log.w(TAG, "Calling toast with '" + id + "'");
+                        if (DEBUG) Log.w(TAG, "Calling toast with '" + id + "'");
                         Toast.makeText(activity.getBaseContext(), id, Toast.LENGTH_SHORT).show();
                     }
                 }, 300);
             } else {
-                Log.w(TAG, "Null handler for " + activity);
+                if (DEBUG) Log.w(TAG, "Null handler for " + activity);
             }
         }
     }

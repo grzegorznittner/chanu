@@ -420,12 +420,12 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
                 if (DEBUG) Log.i(TAG, "Made up intent with board=" + boardCode);
 //                if (NavUtils.shouldUpRecreateTask(this, upIntent)) { // needed when calling from widget
-//                    Log.i(TAG, "Should recreate task");
+//                    if (DEBUG) Log.i(TAG, "Should recreate task");
                     TaskStackBuilder.create(this).addParentStack(this).startActivities();
                     this.finish();
 //                }
 //                else {
-//                    Log.i(TAG, "Navigating up...");
+//                    if (DEBUG) Log.i(TAG, "Navigating up...");
 //                    NavUtils.navigateUpTo(this, upIntent);
 //                }
                 return true;

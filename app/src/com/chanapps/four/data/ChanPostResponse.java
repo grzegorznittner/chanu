@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
  */
 public class ChanPostResponse {
 
+    private static final boolean DEBUG = false;
+
     private Context ctx = null;
     private String response = null;
     private boolean isPosted = false;
@@ -53,7 +55,7 @@ public class ChanPostResponse {
                             threadNo = postNo;
                             postNo = 0;
                         }
-                        Log.i(PostReplyTask.TAG, "Found threadNo:" + threadNo + " postNo:" + postNo);
+                        if (DEBUG) Log.i(PostReplyTask.TAG, "Found threadNo:" + threadNo + " postNo:" + postNo);
                     }
                 }
                 catch (Exception e) {

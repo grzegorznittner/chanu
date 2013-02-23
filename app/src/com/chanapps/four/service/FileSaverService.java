@@ -73,7 +73,7 @@ public class FileSaverService extends BaseChanService {
 			case USER_STATISTICS:
 				UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
 				if (userStats == null) {
-					Log.w(TAG, "User statistics object not loaded!");
+                    if (DEBUG) Log.w(TAG, "User statistics object not loaded!");
 					return;
 				}
 				ChanFileStorage.storeUserStats(getBaseContext(), userStats);
