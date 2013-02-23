@@ -14,9 +14,9 @@ public class ChanPost {
 	public static final String TAG = ChanPost.class.getSimpleName();
     private static final boolean DEBUG = false;
     
-    public static final int MAX_SINGLELINE_TEXT_LEN = 20;
+    public static final int MAX_SINGLELINE_TEXT_LEN = 15;
     public static final int MAX_SINGLELINE_TEXT_ABBR_LEN = MAX_SINGLELINE_TEXT_LEN - 3;
-    public static final int MAX_QUADLINE_TEXT_LEN = 80;
+    public static final int MAX_QUADLINE_TEXT_LEN = 60;
     public static final int MAX_QUADLINE_TEXT_ABBR_LEN = MAX_QUADLINE_TEXT_LEN - 3;
 
     private static final int MIN_LINE = 30;
@@ -338,23 +338,33 @@ public class ChanPost {
             }
         }
         if (resto == 0) { // thread stuff
-            text += (text.isEmpty() ? "" : "<br/>\n")
-                    + replies
-                    + " post" + (replies == 1 ? "" : "s")
-                    + " "
-                    + images
-                    + " img"
-                    + (images == 1 ? "" : "s");
-            if (imagelimit == 1)
-                text += " (IL)";
-            if (bumplimit == 1)
-                text += " (BL)";
-            if (isDead)
-                text += (text.isEmpty() ? "" : " ") + "DEAD";
-            if (sticky > 0)
-                text += (text.isEmpty() ? "" : " ") + "STICKY";
-            if (closed > 0)
-                text += (text.isEmpty() ? "" : " ") + "CLOSED";
+            if (sticky > 0 && replies == 0) {
+                text += (text.isEmpty() ? "" : "<br/>\n") + "STICKY";
+            }
+            else {
+                if (replies > 0) {
+                    text += (text.isEmpty() ? "" : "<br/>\n")
+                            + replies
+                            + " post" + (replies == 1 ? "" : "s")
+                            + " "
+                            + (images > 0 ? images : "no")
+                            + " img"
+                            + (images == 1 ? "" : "s");
+                }
+                else {
+                    text += (text.isEmpty() ? "" : "<br/>\n") + "no replies";
+                }
+                if (imagelimit == 1)
+                    text += " (IL)";
+                if (bumplimit == 1)
+                    text += " (BL)";
+                if (isDead)
+                    text += (text.isEmpty() ? "" : " ") + "DEAD";
+                if (sticky > 0)
+                    text += (text.isEmpty() ? "" : " ") + "STICKY";
+                if (closed > 0)
+                    text += (text.isEmpty() ? "" : " ") + "CLOSED";
+            }
         }
         if (!hideAllText) {
             String subText = sanitizeText(sub);
@@ -379,21 +389,33 @@ public class ChanPost {
                 text += "<b>" + comText + "</b>";
         }
 
-        text += (text.isEmpty() ? "" : "<br/>\n")
-                + replies
-                + " post" + (replies == 1 ? "" : "s")
-                + " "
-                + images
-                + " img"
-                + (images == 1 ? "" : "s");
-        if (imagelimit == 1)
-            text += " IL";
-        if (bumplimit == 1)
-            text += " BL";
-        if (closed > 0)
-            text += " C";
-        if (isDead)
-            text += " D";
+        if (sticky > 0 && replies == 0) { // special formatting
+            text += "<br/>\nSTICKY";
+        }
+        else {
+            if (replies > 0) {
+                text += (text.isEmpty() ? "" : "<br/>\n")
+                        + replies
+                        + " post" + (replies == 1 ? "" : "s")
+                        + " "
+                        + (images > 0 ? images : "no")
+                        + " img"
+                        + (images == 1 ? "" : "s");
+            }
+            else {
+                text += (text.isEmpty() ? "" : "<br/>\n") + "no replies";
+            }
+            if (imagelimit == 1)
+                text += " IL";
+            if (bumplimit == 1)
+                text += " BL";
+            if (sticky > 0)
+                text += " S";
+            if (closed > 0)
+                text += " C";
+            if (isDead)
+                text += " D";
+        }
         return text;
     }
 

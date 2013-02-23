@@ -298,19 +298,21 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     private boolean setItemImage(final ImageView iv, final Cursor cursor) {
         int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        final int tnW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
+        final int tnH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
         if (spoiler > 0) {
             String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
             smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
         }
-        else if (imageUrl != null && !imageUrl.isEmpty()) {
+        else if (imageUrl != null && !imageUrl.isEmpty() && ((tnW > 2 && tnH > 2) || adItem > 0)) {
             smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
         }
         else {
             iv.setImageBitmap(null); // blank
         }
 
-        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (lastItem > 0) {
             // ignore
         }

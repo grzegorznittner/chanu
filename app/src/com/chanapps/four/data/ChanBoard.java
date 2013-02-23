@@ -185,12 +185,18 @@ public class ChanBoard {
     }
 
     public static int getImageResourceId(String boardCode) {
+        return getImageResourceId(boardCode, 0);
+    }
+
+    public static int getImageResourceId(String boardCode, int cursorPosition) { // allows special-casing first (usually sticky) and multiple
         int imageId = 0;
+        String fileRoot = boardCode.equals("s") && cursorPosition > 0 ? boardCode + "_2" : boardCode; // handle double-sticky on /s/
         try {
-            imageId = R.drawable.class.getField(boardCode).getInt(null);
+            imageId = R.drawable.class.getField(fileRoot).getInt(null);
         } catch (Exception e) {
             try {
-                imageId = R.drawable.class.getField("board_" + boardCode).getInt(null);
+                fileRoot = "board_" + boardCode;
+                imageId = R.drawable.class.getField(fileRoot).getInt(null);
             } catch (Exception e1) {
                 imageId = R.drawable.stub_image;
             }
