@@ -17,6 +17,7 @@
 package com.android.gallery3d.ui;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Bitmap.Config;
 
@@ -39,6 +40,14 @@ abstract class CanvasTexture extends UploadedTexture {
         mCanvas = new Canvas(bitmap);
         onDraw(mCanvas, bitmap);
         return bitmap;
+    }
+
+    @Override
+    protected BitmapFactory.Options onGetBitmapBounds() {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.outWidth = mWidth;
+        options.outHeight = mHeight;
+        return options;
     }
 
     @Override

@@ -17,6 +17,7 @@
 package com.android.gallery3d.ui;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
@@ -619,6 +620,20 @@ public class TileImageView extends GLView {
             mDecodedTile = null;
             mTileState = STATE_ACTIVATED;
             return bitmap;
+        }
+
+        @Override
+        protected BitmapFactory.Options onGetBitmapBounds() {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            if (mDecodedTile != null) {
+                options.outWidth = mDecodedTile.getWidth();
+                options.outHeight = mDecodedTile.getHeight();
+            }
+            else {
+                options.outWidth = 0;
+                options.outHeight = 0;
+            }
+            return options;
         }
 
         public void update(int x, int y, int level) {

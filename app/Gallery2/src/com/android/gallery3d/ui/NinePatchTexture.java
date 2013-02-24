@@ -66,6 +66,23 @@ public class NinePatchTexture extends ResourceTexture {
         return bitmap;
     }
 
+    @Override
+    protected BitmapFactory.Options onGetBitmapBounds() {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        if (mBitmap != null) {
+            options.outWidth = mBitmap.getWidth();
+            options.outHeight = mBitmap.getHeight();
+        }
+        else {
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeResource(
+                mContext.getResources(), mResId, options);
+            setSize(options.outWidth, options.outHeight);
+        }
+        return options;
+    }
+
     public Rect getPaddings() {
         // get the paddings from nine patch
         if (mChunk == null) onGetBitmap();

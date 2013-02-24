@@ -16,6 +16,7 @@
 
 package com.android.gallery3d.ui;
 
+import android.graphics.BitmapFactory;
 import com.android.gallery3d.common.Utils;
 
 import android.graphics.Bitmap;
@@ -57,6 +58,7 @@ abstract class UploadedTexture extends BasicTexture {
     private static final int UPLOAD_LIMIT = 100;
 
     protected Bitmap mBitmap;
+    protected BitmapFactory.Options mBitmapOptions;
     private int mBorder;
 
     protected UploadedTexture() {
@@ -120,17 +122,42 @@ abstract class UploadedTexture extends BasicTexture {
         return bitmap;
     }
 
+    private void getBitmapBounds() {
+        if (mBitmapOptions == null) {
+            mBitmapOptions = onGetBitmapBounds();
+            if (mBitmapOptions == null) {
+                Log.e(TAG, "Couldn't get bitmap bounds");
+            }
+            else {
+                int w = mBitmapOptions.outWidth + mBorder * 2;
+                int h = mBitmapOptions.outHeight + mBorder * 2;
+                if (mWidth == UNSPECIFIED) {
+                    setSize(w, h);
+                } else if (mWidth != w || mHeight != h) {
+                    throw new IllegalStateException(String.format(
+                            "cannot change size: this = %s, orig = %sx%s, new = %sx%s",
+                            toString(), mWidth, mHeight, w, h));
+                }
+            }
+        }
+    }
+
     private Bitmap getBitmap() {
         if (mBitmap == null) {
             mBitmap = onGetBitmap();
-            int w = mBitmap.getWidth() + mBorder * 2;
-            int h = mBitmap.getHeight() + mBorder * 2;
-            if (mWidth == UNSPECIFIED) {
-                setSize(w, h);
-            } else if (mWidth != w || mHeight != h) {
-                throw new IllegalStateException(String.format(
-                        "cannot change size: this = %s, orig = %sx%s, new = %sx%s",
-                        toString(), mWidth, mHeight, w, h));
+            if (mBitmap == null) {
+                Log.e(TAG, "Couldn't get bitmap");
+            }
+            else {
+                int w = mBitmap.getWidth() + mBorder * 2;
+                int h = mBitmap.getHeight() + mBorder * 2;
+                if (mWidth == UNSPECIFIED) {
+                    setSize(w, h);
+                } else if (mWidth != w || mHeight != h) {
+                    throw new IllegalStateException(String.format(
+                            "cannot change size: this = %s, orig = %sx%s, new = %sx%s",
+                            toString(), mWidth, mHeight, w, h));
+                }
             }
         }
         return mBitmap;
@@ -144,17 +171,18 @@ abstract class UploadedTexture extends BasicTexture {
 
     @Override
     public int getWidth() {
-        if (mWidth == UNSPECIFIED) getBitmap();
+        if (mWidth == UNSPECIFIED) getBitmapBounds();
         return mWidth;
     }
 
     @Override
     public int getHeight() {
-        if (mWidth == UNSPECIFIED) getBitmap();
+        if (mWidth == UNSPECIFIED) getBitmapBounds();
         return mHeight;
     }
 
     protected abstract Bitmap onGetBitmap();
+    protected abstract BitmapFactory.Options onGetBitmapBounds();
 
     protected abstract void onFreeBitmap(Bitmap bitmap);
 
