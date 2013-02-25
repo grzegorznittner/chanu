@@ -29,7 +29,7 @@ import com.chanapps.four.service.FetchChanDataService;
 public class ChanWatchlist {
     
     public static final String TAG = ChanWatchlist.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     
     public static final String DEFAULT_WATCHTEXT = "new thread";
 

@@ -44,9 +44,8 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 Context ctx = getActivity();
                                 ChanWatchlist.deleteThreadFromWatchlist(ctx, tim);
-                                //Message m = Message.obtain(handler, LoaderHandler.RESTART_LOADER_MSG);
-                                //handler.sendMessageDelayed(m, 200);
                                 (new ToastRunnable(getActivity(), getString(R.string.dialog_deleted_from_watchlist))).run();
+                                itemView.invalidate();
                             }
                         })
                 .setNegativeButton(R.string.dialog_cancel,

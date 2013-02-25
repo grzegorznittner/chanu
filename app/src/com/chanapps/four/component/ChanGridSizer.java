@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.View;
 import android.widget.GridView;
 
 /**
@@ -39,8 +40,10 @@ public class ChanGridSizer {
     private int columnHeight = 0;
     private int maxColumnWidth = 200;
 
-    public ChanGridSizer(GridView g, Display d, ServiceType serviceType) {
-        this.g = g;
+    public ChanGridSizer(View g, Display d, ServiceType serviceType) {
+    	if (g instanceof GridView) {
+    		this.g = (GridView)g;
+    	}
         this.d = d;
         int[] columnWidthArray =
                 ((g.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK)
@@ -76,8 +79,10 @@ public class ChanGridSizer {
         columnWidth = (width - 15) / numColumns;
         columnHeight = columnWidth;
         Log.i(TAG, "sizeGridToDisplay width: " + width + ", height: " + height + ", numCols: " + numColumns);
-        g.setNumColumns(numColumns);
-        g.setColumnWidth(columnWidth);
+        if (g != null) {
+        	g.setNumColumns(numColumns);
+        	g.setColumnWidth(columnWidth);
+        }
     }
 
     public int getColumnWidth() {
