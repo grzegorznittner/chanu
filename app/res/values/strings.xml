@@ -74,6 +74,8 @@
     <string name="global_rules_menu">Global Rules</string>
     <string name="go_to_board_menu">Board Jump</string>
     <string name="board_rules_menu">Board Rules</string>
+    <string name="go_to_top_position_menu">Scroll to Top</string>
+    <string name="go_to_end_position_menu">Scroll to End</string>
     <string name="refresh_board_menu">Refresh Board</string>
     <string name="refresh_thread_menu">Refresh Thread</string>
     <string name="new_thread_menu">New Thread</string>
@@ -282,13 +284,9 @@
     <string name="pref_notifications">Notifications</string>
     <string name="pref_notifications_summ_on">On</string>
     <string name="pref_notifications_summ_off">Off</string>
-    <string name="pref_hide_all_text">Hide All Text</string>
-    <string name="pref_hide_all_text_summ_on">Text-only posts and image text hidden</string>
-    <string name="pref_hide_all_text_summ_off">Text-only posts and image text shown</string>
-    <string name="pref_hide_all_text_on">Show All Text</string>
     <string name="pref_hide_post_numbers">Hide Post No.</string>
-    <string name="pref_hide_post_numbers_summ_on">Post numbers are hidden</string>
-    <string name="pref_hide_post_numbers_summ_off">Post numbers are shown</string>
+    <string name="pref_hide_post_numbers_summ_on">Post numbers are hidden except on /b/</string>
+    <string name="pref_hide_post_numbers_summ_off">Post numbers are always shown</string>
     <string name="pref_hide_post_numbers_turn_on">Hide Post No.</string>
     <string name="pref_hide_post_numbers_turn_off">Show Post No.</string>
     <string name="pref_use_friendly_ids">Use Friendly Ids</string>
@@ -354,6 +352,20 @@
 
     <!-- fetch and network services -->
     <string name="mark_dead_thread">Thread marked as dead</string>
+    <string name="network_profile_health_bad">Internet connection slow</string>
+    <string name="mobile_profile_loading_board">Loading board</string>
+    <string name="mobile_profile_loading_thread">Loading thread</string>
+    <string name="mobile_profile_loading_image">Loading image</string>
+    <string name="mobile_profile_preloading_defaults">Preloading boards /a/, /b/, /v/, /vg/ and /s/</string>
+    <string name="mobile_profile_health_status">Health %1$s skipping preloading</string>
+    <string name="mobile_profile_no_auto_refresh">Auto refresh disabled</string>
+    <string name="mobile_profile_loaded_board">Loaded /%1$s/</string>
+    <string name="mobile_profile_loaded_thread">Loaded /%1$s/%2$d</string>
+    <string name="mobile_profile_fetch_board_fail">Couldn\'t load /%1$s/</string>
+    <string name="mobile_profile_fetch_thread_fail">Couldn\'t load /%1$s/%2$d</string>
+    <string name="mobile_profile_parse_board_fail">Couldn\'t parse /%1$s/</string>
+    <string name="mobile_profile_parse_thread_fail">Couldn\'t parse /%1$s/%2$d</string>
+    <string name="no_connection_profile">Offline mode</string>
 
     <!-- board names -->
     <string name="board_type_japanese_culture">Japanese Culture</string>
@@ -419,6 +431,5 @@
     <string name="board_pol">Politically Incorrect</string>
     <string name="board_soc">Social</string>
     <string name="board_watch">Watchlist</string>
-
 
 </resources>

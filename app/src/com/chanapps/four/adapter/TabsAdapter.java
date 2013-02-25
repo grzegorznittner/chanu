@@ -35,6 +35,9 @@ import java.util.ArrayList;
  */
 public class TabsAdapter extends FragmentPagerAdapter
         implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
+
+    private final static boolean DEBUG = false;
+
     private final BoardSelectorActivity mContext;
     private final ActionBar mActionBar;
     private final ViewPager mViewPager;
@@ -105,7 +108,7 @@ public class TabsAdapter extends FragmentPagerAdapter
     public Fragment getItem(int position) {
         TabInfo info = mTabs.get(position);
         String selectedType = info.args.getString(ChanHelper.BOARD_TYPE);
-        Log.d(BoardSelectorActivity.TAG, "TabsAdapter " + selectedType + " instantiating Fragment");
+        if (DEBUG) Log.d(BoardSelectorActivity.TAG, "TabsAdapter " + selectedType + " instantiating Fragment");
         return Fragment.instantiate(mContext, info.clss.getName(), info.args);
     }
 
@@ -132,7 +135,7 @@ public class TabsAdapter extends FragmentPagerAdapter
         Object tag = tab.getTag();
         for (int i=0; i<mTabs.size(); i++) {
             if (mTabs.get(i) == tag) {
-            	if (BoardSelectorActivity.DEBUG) Log.d(BoardSelectorActivity.TAG, "TabAdapter setting pager to " + i);
+            	if (DEBUG) Log.d(BoardSelectorActivity.TAG, "TabAdapter setting pager to " + i);
                 mViewPager.setCurrentItem(i);
                 Fragment fragment = getItem(i);
                 Menu menu = mContext.menu;

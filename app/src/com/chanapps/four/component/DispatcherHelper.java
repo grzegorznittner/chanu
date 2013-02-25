@@ -18,6 +18,8 @@ import com.chanapps.four.data.ChanHelper;
  */
 public class DispatcherHelper {
 
+    private static final boolean DEBUG = false;
+
     public static void saveActivityToPrefs(Activity activity) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(activity).edit();
         ChanHelper.LastActivity lastActivity;
@@ -67,13 +69,13 @@ public class DispatcherHelper {
                 activityClass = BoardSelectorActivity.class;
         }
         if (activity.getClass() != activityClass) {
-            Log.i(BoardSelectorActivity.TAG, "Dispatching to activity:" + lastActivity);
+            if (DEBUG) Log.i(BoardSelectorActivity.TAG, "Dispatching to activity:" + lastActivity);
             Intent intent = new Intent(activity, activityClass);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             activity.startActivity(intent);
         }
         else {
-            Log.i(BoardSelectorActivity.TAG, "Activity already active, not dispatching");
+            if (DEBUG) Log.i(BoardSelectorActivity.TAG, "Activity already active, not dispatching");
         }
     }
 

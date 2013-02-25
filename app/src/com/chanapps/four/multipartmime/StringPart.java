@@ -50,6 +50,7 @@ public class StringPart extends PartBase {
 
     /** Log object for this class. */
     public static final String TAG = StringPart.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     /** Default content encoding of string parameters. */
     public static final String DEFAULT_CONTENT_TYPE = "text/plain";
@@ -119,7 +120,7 @@ public class StringPart extends PartBase {
      */
     @Override
     protected void sendData(OutputStream out) throws IOException {
-        Log.d(TAG, "enter sendData(OutputStream)");
+        if (DEBUG) Log.d(TAG, "enter sendData(OutputStream)");
         out.write(getContent());
     }
     
@@ -130,7 +131,7 @@ public class StringPart extends PartBase {
      */
     @Override
     protected long lengthOfData() {
-        Log.d(TAG, "enter lengthOfData()");
+        if (DEBUG) Log.d(TAG, "enter lengthOfData()");
         return getContent().length;
     }
     

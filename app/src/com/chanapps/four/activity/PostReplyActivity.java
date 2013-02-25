@@ -30,6 +30,7 @@ import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.*;
+import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.task.AuthorizePassTask;
@@ -47,7 +48,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     public static final int POST_FINISHED = 0x01;
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static final int PASSWORD_MAX = 100000000;
     private static final Random randomGenerator = new Random();
@@ -126,7 +127,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         messageText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                (new EditMessageTextDialogFragment()).show(getSupportFragmentManager(), EditMessageTextDialogFragment.TAG);
+                showCommentDialog();
             }
         });
 
@@ -201,6 +202,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         updatePassRecaptchaViews(isPassEnabled());
     }
 
+    private void showCommentDialog() {
+        (new EditMessageTextDialogFragment()).show(getSupportFragmentManager(), EditMessageTextDialogFragment.TAG);
+    }
 
     private void showPassFragment() {
         showPassFragment(new DialogInterface.OnDismissListener() {
@@ -455,8 +459,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         orientation = null;
 
         String text = intent.getStringExtra(ChanHelper.TEXT);
-        Log.i(TAG, "Intent has text? " + intent.hasExtra(ChanHelper.TEXT));
-        Log.i(TAG, "Intent has text=" + text);
+        if (DEBUG) Log.i(TAG, "Intent has text? " + intent.hasExtra(ChanHelper.TEXT));
+        if (DEBUG) Log.i(TAG, "Intent has text=" + text);
         //String quoteText = ChanPost.quoteText(intent.getStringExtra(ChanHelper.QUOTE_TEXT));
         setMessageText(text, "");
         adjustFieldVisibility();
@@ -535,11 +539,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         else
             nameText.setVisibility(View.GONE);
 
-        if (ChanBoard.hasSubject(boardCode))
-            subjectText.setVisibility(View.VISIBLE);
-        else
-            subjectText.setVisibility(View.GONE);
-
         if (ChanBoard.hasSpoiler(boardCode))
             spoilerCheckbox.setVisibility(View.VISIBLE);
         else
@@ -554,6 +553,14 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             messageText.setHint(R.string.post_reply_text_hint);
             subjectText.setHint(R.string.post_reply_subject_hint);
         }
+
+        if (ChanBoard.hasSubject(boardCode)) {
+            subjectText.setVisibility(View.VISIBLE);
+        }
+        else {
+            subjectText.setVisibility(View.GONE);
+        }
+
     }
 
     public boolean hasSpoiler() {
@@ -1004,6 +1011,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 switch (msg.what) {
                     case POST_FINISHED:
                     default:
+                        FetchChanDataService.scheduleThreadFetchAfterPost(PostReplyActivity.this, boardCode, threadNo);
                         finish();
                 }
             }

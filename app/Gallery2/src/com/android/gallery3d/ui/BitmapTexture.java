@@ -16,6 +16,7 @@
 
 package com.android.gallery3d.ui;
 
+import android.graphics.BitmapFactory;
 import com.android.gallery3d.common.Utils;
 
 import android.graphics.Bitmap;
@@ -46,6 +47,20 @@ public class BitmapTexture extends UploadedTexture {
     @Override
     protected Bitmap onGetBitmap() {
         return mContentBitmap;
+    }
+
+    @Override
+    protected BitmapFactory.Options onGetBitmapBounds() {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        if (mContentBitmap != null) {
+            options.outWidth = mContentBitmap.getWidth();
+            options.outHeight = mContentBitmap.getHeight();
+        }
+        else {
+            options.outWidth = 0;
+            options.outHeight = 0;
+        }
+        return options;
     }
 
     public Bitmap getBitmap() {

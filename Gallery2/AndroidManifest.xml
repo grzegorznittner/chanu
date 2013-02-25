@@ -22,6 +22,9 @@
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="17" />
     <!-- 
     <supports-screens android:smallScreens="false"
             android:normalScreens="true" android:largeScreens="true"

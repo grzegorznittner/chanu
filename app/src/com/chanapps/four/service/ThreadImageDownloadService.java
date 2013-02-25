@@ -159,7 +159,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 					notifyDownloadFinished(getApplicationContext(), targetType, thread, board, threadNo, targetFolder);
 				}
 			} else {
-				Log.w(TAG, "No images to download for thread " + board + "/" + threadNo);
+                if (DEBUG) Log.w(TAG, "No images to download for thread " + board + "/" + threadNo);
 			}
 		} catch (Exception e) {
 			if (NetworkProfile.Type.NO_CONNECTION == NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
@@ -238,14 +238,14 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	private void addImageToGallery(File image) {
 	    Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
 	    Uri contentUri = Uri.fromFile(image);
-	    Log.i(TAG, "Adding to gallery: " + contentUri);
+        if (DEBUG) Log.i(TAG, "Adding to gallery: " + contentUri);
 	    mediaScanIntent.setData(contentUri);
 	    this.sendBroadcast(mediaScanIntent);
 	}
 	
 	private static void notifyDownloadFinished(Context context, TargetType targetType,
 			ChanThread thread, String board, long threadNo, String targetFile) {
-		Log.i(TAG, "notifyDownloadFinished " + targetType + " " + board + "/" + threadNo
+        if (DEBUG) Log.i(TAG, "notifyDownloadFinished " + targetType + " " + board + "/" + threadNo
 				+ " " + thread.posts.length + " posts, file " + targetFile);
 		
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -280,7 +280,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
             threadActivityIntent = GalleryViewActivity.getAlbumViewIntent(context, board, threadNo);
 			/*
             Uri firstImageUri = Uri.fromFile(new File(targetFile));
-			Log.i(TAG, "Trying to open file in gallery: " + firstImageUri);
+			if (DEBUG) Log.i(TAG, "Trying to open file in gallery: " + firstImageUri);
 			if (firstImageUri != null) {
 				threadActivityIntent = new Intent(Intent.ACTION_VIEW);
 				threadActivityIntent.setDataAndType(firstImageUri, "image/*");
@@ -322,11 +322,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	
 	private void notifyDownloadError(ChanThread thread) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        boolean hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
         boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         if (thread != null) {
-            thread.hideAllText = hideAllText;
             thread.hidePostNumbers = hidePostNumbers;
             thread.useFriendlyIds = useFriendlyIds;
         }
@@ -390,7 +388,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 					File image = new File(galleryFolder, post.getImageName());
 					if (image.exists()) {
 						scansScheduled++;
-						Log.i(TAG, "Schedulling scan: " + image.getAbsolutePath() + " counter=" + scansScheduled);
+                        if (DEBUG) Log.i(TAG, "Schedulling scan: " + image.getAbsolutePath() + " counter=" + scansScheduled);
 						scannerConn.scanFile(image.getAbsolutePath(), null);
 						if (firstImage == null) {
 							firstImage = image.getAbsolutePath();
@@ -403,7 +401,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		@Override
 		public void onScanCompleted(String path, Uri uri) {
 			scansScheduled--;
-			Log.i(TAG, "Finished scan: " + path + " counter=" + scansScheduled);
+            if (DEBUG) Log.i(TAG, "Finished scan: " + path + " counter=" + scansScheduled);
 			if (scansScheduled <= 0) {
 				File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 
 					    targetFolder);

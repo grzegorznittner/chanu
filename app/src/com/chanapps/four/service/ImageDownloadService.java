@@ -171,7 +171,7 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.getIntExtra(ChanHelper.CLEAR_FETCH_QUEUE, 0) == 1) {
-        	Log.i(TAG, "Clearing chan fetch service message queue");
+            if (DEBUG) Log.i(TAG, "Clearing chan fetch service message queue");
         	mServiceHandler.removeMessages(PRIORITY_MESSAGE);
         	synchronized(this) {
         		priorityMessageCounter = 0;

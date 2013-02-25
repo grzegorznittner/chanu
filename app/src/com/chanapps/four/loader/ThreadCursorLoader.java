@@ -27,7 +27,6 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     protected SharedPreferences prefs;
     protected long threadNo;
     protected int numGridColumns;
-    private boolean hideAllText;
     private boolean hidePostNumbers;
     private boolean useFriendlyIds;
 
@@ -68,8 +67,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     @Override
     public Cursor loadInBackground() {
         try {
-            hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-            hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+            hidePostNumbers = boardName.equals("b") ? false : prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
             useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
             ChanThread thread = null;
             try {
@@ -91,7 +89,6 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                         continue;
                     post.isDead = thread.isDead; // inherit from parent
                     post.closed = thread.closed; // inherit
-                    post.hideAllText = hideAllText;
                     post.hidePostNumbers = hidePostNumbers;
                     post.useFriendlyIds = useFriendlyIds;
                     if (post.resto == 0) {
@@ -127,7 +124,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     protected void addThreadHeaderRows(MatrixCursor matrixCursor, ChanPost post) {
         Object[] currentRow;
         if (post.tn_w <= 0 || post.tim == 0) { // text-only thread header
-            String postText = hideAllText ? "" : post.getThreadText();
+            String postText = post.getThreadText();
             if (postText == null)
                 postText = ""; // defensive coding
             currentRow = new Object[] {
@@ -165,20 +162,18 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     @Override
     protected void addTextOnlyRow(MatrixCursor matrixCursor, ChanPost post) {
         Object[] currentRow;
-        if (!hideAllText) {
-            String postText = post.getPostText();
-            if (postText == null) // defensive coding
-                postText = "";
-                currentRow = new Object[] {
-                        post.no, boardName, threadNo,
-                        "", post.getCountryFlagUrl(),
-                        postText, post.getHeaderText(), post.getFullText(),
-                        post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                        post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email,
-                        post.isDead ? 1 : 0, post.closed, 0, 0};
-                matrixCursor.addRow(currentRow);
-                if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
-        }
+        String postText = post.getPostText();
+        if (postText == null) // defensive coding
+            postText = "";
+        currentRow = new Object[] {
+                post.no, boardName, threadNo,
+                "", post.getCountryFlagUrl(),
+                postText, post.getHeaderText(), post.getFullText(),
+                post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
+                post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email,
+                post.isDead ? 1 : 0, post.closed, 0, 0};
+        matrixCursor.addRow(currentRow);
+        if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
     }
 
     @Override

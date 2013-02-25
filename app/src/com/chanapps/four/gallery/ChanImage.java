@@ -86,13 +86,13 @@ public class ChanImage extends MediaItem {
 
     @Override
     public Job<Bitmap> requestImage(int type) {
-    	Log.i(TAG, "requestImage " + thumbUrl + " " + (type == TYPE_THUMBNAIL ? "TYPE_THUMBNAIL" : "TYPE_MICROTHUMBNAIL"));
+    	if (DEBUG) Log.i(TAG, "requestImage " + thumbUrl + " " + (type == TYPE_THUMBNAIL ? "TYPE_THUMBNAIL" : "TYPE_MICROTHUMBNAIL"));
         return new BitmapJob(type);
     }
 
     @Override
     public Job<BitmapRegionDecoder> requestLargeImage() {
-    	Log.i(TAG, "requestLargeImage " + this.url);
+    	if (DEBUG) Log.i(TAG, "requestLargeImage " + this.url);
         return new RegionDecoderJob();
     }
 
@@ -103,7 +103,7 @@ public class ChanImage extends MediaItem {
         	}
 
         	if (new File(localImagePath).exists()) {
-	        	Log.i(TAG, "Large image exists " + localImagePath);
+	        	if (DEBUG) Log.i(TAG, "Large image exists " + localImagePath);
 	    		try {
 					return BitmapRegionDecoder.newInstance(localImagePath, true);
 				} catch (IOException e) {
@@ -196,7 +196,7 @@ public class ChanImage extends MediaItem {
             if (type == TYPE_THUMBNAIL) {
             	downloadFullImage();
             	if (new File(localImagePath).exists()) {
-    	        	Log.i(TAG, "Large image exists but used as thumbnail " + localImagePath);
+    	        	if (DEBUG) Log.i(TAG, "Large image exists but used as thumbnail " + localImagePath);
 //    	        	if (".gif".equals(ext)) {
 //    	        		bitmap = decodeGif(localImagePath);
 //    	        	} else {
@@ -222,7 +222,7 @@ public class ChanImage extends MediaItem {
 				if (result == 0) {
 					return gifDecoder.getBitmap();
 				} else {
-					Log.w(TAG, "GifDecoder returned " + result);
+					if (DEBUG) Log.w(TAG, "GifDecoder returned " + result);
 				}
 			} catch (FileNotFoundException e) {
 				Log.e(TAG, "Error loading GIF", e);

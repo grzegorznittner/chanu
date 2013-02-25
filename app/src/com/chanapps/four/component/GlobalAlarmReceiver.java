@@ -9,9 +9,11 @@ import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanWatchlist;
+import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.widget.BoardWidgetProvider;
 
 import java.util.HashSet;
@@ -27,6 +29,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
 
     public static final String TAG = GlobalAlarmReceiver.class.getSimpleName();
 
+    public static final String GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION = "com.chanapps.four.component.GlobalAlarmReceiver.schedule";
     public static final String GLOBAL_ALARM_RECEIVER_UPDATE_ACTION = "com.chanapps.four.component.GlobalAlarmReceiver.update";
 
     private static final long WIDGET_UPDATE_INTERVAL_MS = AlarmManager.INTERVAL_FIFTEEN_MINUTES; // FIXME should be configurable
@@ -37,7 +40,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) { // when first boot up, default and then schedule for refresh
         String action = intent.getAction();
 
-        if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
+        if (Intent.ACTION_BOOT_COMPLETED.equals(action) || GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION.equals(action)) {
             /* use this when you screw up widgets and need to reset
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
             editor.remove(ChanHelper.PREF_WIDGET_BOARDS);
@@ -46,15 +49,15 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    updateAndScheduleRepeating(context);
-                    fetchAll(context);
+                    scheduleGlobalAlarm(context);
                 }
             }).start();
         }
-        else if (action.equals(GLOBAL_ALARM_RECEIVER_UPDATE_ACTION)) {
+        else if (GLOBAL_ALARM_RECEIVER_UPDATE_ACTION.equals(action)) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    BoardWidgetProvider.updateAll(context); // update even if fetch fails
                     fetchAll(context);
                 }
             }).start();
@@ -64,22 +67,19 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
         }
     }
 
-    public static void updateAndScheduleRepeating(Context context) {
-        if (DEBUG) Log.i(TAG, "updateAndScheduleRepeating");
-        update(context);
-        scheduleGlobalAlarm(context);
-    }
-
-    private static void update(Context context) {
-        if (DEBUG) Log.i(TAG, "update");
-        BoardWidgetProvider.updateAll(context);
-    }
-
     private static void fetchAll(Context context) {
-        if (DEBUG) Log.i(TAG, "fetchAll");
-        BoardWidgetProvider.fetchAllWidgets(context);
-        ChanWatchlist.fetchWatchlistThreads(context);
-        ChanBoard.preloadUncachedBoards(context);
+        if (NetworkProfileManager.isConnected()) {
+            if (DEBUG) Log.i(TAG, "fetchAll fetching widgets, watchlists, and uncached boards");
+            BoardWidgetProvider.fetchAllWidgets(context);
+            if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
+                (new ChanWatchlist.CleanWatchlistTask(context, null, false)).execute();
+            ChanWatchlist.fetchWatchlistThreads(context);
+            ChanBoard.preloadUncachedBoards(context);
+        }
+        else {
+            BoardWidgetProvider.updateAll(context);
+            if (DEBUG) Log.i(TAG, "fetchAll no connection, skipping fetch");
+        }
     }
 
     private static void scheduleGlobalAlarm(Context context) {
@@ -103,8 +103,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = getPendingIntentForGlobalAlarm(context);
         alarmManager.cancel(pendingIntent);
-        if (DEBUG)
-            Log.i(TAG, "Canceled alarms for UpdateWidgetService");
+        if (DEBUG) Log.i(TAG, "Canceled alarms for UpdateWidgetService");
     }
 
 }

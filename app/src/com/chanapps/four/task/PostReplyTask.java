@@ -45,7 +45,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
     public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final String MAX_FILE_SIZE = "3145728";
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private PostReplyActivity activity = null;
     private boolean usePass = false;
@@ -129,7 +129,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
                 continue;
             StringPart s = (StringPart)p;
             String line = s.getName() + ": " + s.getValue() + ", ";
-            Log.i(TAG, line);
+            if (DEBUG) Log.i(TAG, line);
         }
     }
 
@@ -250,15 +250,15 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
     }
 
     protected void dumpRequestContent(InputStream is) {
-        Log.i(TAG, "Request Message Body:");
+        if (DEBUG) Log.i(TAG, "Request Message Body:");
         try {
             BufferedReader r = new BufferedReader(new InputStreamReader(is));
             String l;
             while ((l = r.readLine()) != null)
-                Log.i(TAG, l);
+                if (DEBUG) Log.i(TAG, l);
         }
         catch (IOException e) {
-            Log.i(TAG, "Exception reading message for logging", e);
+            if (DEBUG) Log.i(TAG, "Exception reading message for logging", e);
         }
     }
 

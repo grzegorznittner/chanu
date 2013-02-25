@@ -14,6 +14,7 @@ import java.util.List;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.MappingJsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -119,25 +120,33 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
             List<ChanPost> posts = new ArrayList<ChanPost>();
             boolean first = true;
             for (JsonNode postValue : threadValue.path("posts")) { // first object is the thread post
-                ChanPost post = mapper.readValue(postValue, ChanPost.class);
-                post.board = boardCode;
-            	if (first) {
-            		thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
-            		// if thread was not stored create a new object
-            		if (thread == null || thread.defData) {
-            			thread = new ChanThread();
-            			thread.board = boardCode;
-            			thread.lastFetched = 0;
-            			thread.no = post.no;
-                        // note we don't set the lastUpdated here because we didn't pull the full thread yet
-            		} else if (board.lastFetched < thread.lastFetched) {
-            			// do not update thread if was fetched later than board
-            			break;
-            		}
-                    post.mergeIntoThreadList(threads);
-            		first = false;
-            	}
-            	posts.add(post);
+                try {
+                    ChanPost post = mapper.readValue(postValue, ChanPost.class);
+                    if (post != null) {
+                        post.board = boardCode;
+                        if (first) {
+                            thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
+                            // if thread was not stored create a new object
+                            if (thread == null || thread.defData) {
+                                thread = new ChanThread();
+                                thread.board = boardCode;
+                                thread.lastFetched = 0;
+                                thread.no = post.no;
+                                // note we don't set the lastUpdated here because we didn't pull the full thread yet
+                            } else if (board != null && board.lastFetched < thread.lastFetched) {
+                                // do not update thread if was fetched later than board
+                                break;
+                            }
+                            post.mergeIntoThreadList(threads);
+                            first = false;
+                        }
+                        posts.add(post);
+                    }
+                }
+                catch (JsonMappingException e) { // if we have just one error, try and recover
+                    Log.e(TAG, "Couldn't parseBoard threadValue for board=" + boardCode, e);
+                }
+
             }
             if (thread != null) {
                 thread.mergePosts(posts);
@@ -158,21 +167,28 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
         		jp.nextToken(); // should be JsonToken.START_OBJECT
         		JsonNode pageNode = jp.readValueAsTree();
     	        for (JsonNode threadValue : pageNode.path("threads")) { // iterate over threads
-    	        	ChanPost post = mapper.readValue(threadValue, ChanPost.class);
-    	        	post.board = boardCode;
-	        		ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
-	        		if (thread == null || thread.defData) {
-	        			thread = new ChanThread();
-	        			thread.board = boardCode;
-            			thread.lastFetched = 0;
-            			thread.no = post.no;
-            			thread.posts = new ChanPost[]{post};
-	    	            if (thread != null) {
-	    	            	ChanFileStorage.storeThreadData(getBaseContext(), thread);
-	    	            	updatedThreads++;
-	    	            }
-	        		}
-    	        }
+                    try {
+                        ChanPost post = mapper.readValue(threadValue, ChanPost.class);
+                        if (post != null) {
+                            post.board = boardCode;
+                            ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
+                            if (thread == null || thread.defData) {
+                                thread = new ChanThread();
+                                if (thread != null) {
+                                    thread.board = boardCode;
+                                    thread.lastFetched = 0;
+                                    thread.no = post.no;
+                                    thread.posts = new ChanPost[]{post};
+                                    ChanFileStorage.storeThreadData(getBaseContext(), thread);
+                                    updatedThreads++;
+                                }
+                            }
+                        }
+                    }
+                    catch (JsonMappingException e) { // if we have just one error, try and recover
+                        Log.e(TAG, "Couldn't parseBoardCatalog threadValue for board=" + boardCode, e);
+                    }
+                }
 	    	}
 	    	jp.close();
 		} catch (Exception e) {

@@ -164,7 +164,7 @@ public class ThreadPostPopup implements Dismissable {
         final String messageText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         final long clickedThreadNo = resto == 0 ? postId : resto;
         final long clickedPostNo = (resto == 0 || postId == resto) ? 0 : postId;
-        if (BoardActivity.DEBUG) Log.i(BoardActivity.TAG, "Calling popup with id=" + id + " isDead=" + isDead + " postNo=" + postId + " resto=" + resto);
+        if (DEBUG) Log.i(BoardActivity.TAG, "Calling popup with id=" + id + " isDead=" + isDead + " postNo=" + postId + " resto=" + resto);
 
         setSpoilerButton(spoilerText);
         setExifButton(exifText);

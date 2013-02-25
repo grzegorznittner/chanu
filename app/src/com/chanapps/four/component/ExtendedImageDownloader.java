@@ -21,6 +21,8 @@ import com.nostra13.universalimageloader.core.download.URLConnectionImageDownloa
  */
 public class ExtendedImageDownloader extends URLConnectionImageDownloader {
 
+    private static final boolean DEBUG = false;
+
     public static final String PROTOCOL_ASSETS = "assets";
     public static final String PROTOCOL_DRAWABLE = "drawable";
 
@@ -55,7 +57,7 @@ public class ExtendedImageDownloader extends URLConnectionImageDownloader {
         int drawableId = Integer.parseInt(drawableIdString);
         BitmapDrawable drawable = (BitmapDrawable) context.getResources().getDrawable(drawableId);
         Bitmap bitmap = drawable.getBitmap();
-        Log.d(BoardSelectorActivity.TAG, "Getting drawable from stream: " + imageUri + " has value " + drawable);
+        if (DEBUG) Log.d(BoardSelectorActivity.TAG, "Getting drawable from stream: " + imageUri + " has value " + drawable);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         bitmap.compress(CompressFormat.PNG, 0, os);
         return new ByteArrayInputStream(os.toByteArray());

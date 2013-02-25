@@ -28,6 +28,7 @@ import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.data.FileDesc;
 import com.chanapps.four.data.UserStatistics;
+import com.chanapps.four.widget.BoardWidgetProvider;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -58,6 +59,8 @@ public class CleanUpService extends BaseChanService {
     private List<FileDesc> otherFiles = null;
     private Map<String, Long> sizeByBoard = null;
     private Map<String, List<FileDesc>> filesByBoard = null;
+    private long sizeOfWidget = 0;
+    private List<FileDesc> filesOfWidget = null;
 
     private long targetCacheSize = 0;
     private long totalSize = 0;
@@ -82,6 +85,8 @@ public class CleanUpService extends BaseChanService {
             otherFiles = new ArrayList<FileDesc>();
             sizeByBoard = new HashMap<String, Long>();
             filesByBoard = new HashMap<String, List<FileDesc>>();
+            sizeOfWidget = 0;
+            filesOfWidget = null;
             
             totalSize = 0;
             totalFiles = 0;
@@ -149,6 +154,16 @@ public class CleanUpService extends BaseChanService {
             		if (DEBUG && numDeletedFiles > 0) Log.i(TAG, "Deleted " + numDeletedFiles + " large files from board " + board);
             		totalDeletedFiles += numDeletedFiles;
             	}
+
+                // finally clean widgets if we absolutely have to
+                if (totalSize > targetCacheSize
+                    && sizeOfWidget > 0 && filesOfWidget != null && filesOfWidget.size() > 0)
+                {
+                    List<FileDesc> widgetFiles = filesOfWidget;
+                    numDeletedFiles = trimByDate(widgetFiles, 0);
+                    if (DEBUG && numDeletedFiles > 0) Log.i(TAG, "Deleted " + numDeletedFiles + " files from widgets");
+                    totalDeletedFiles += numDeletedFiles;
+                }
             }
             
             endTime = Calendar.getInstance().getTimeInMillis();
@@ -187,16 +202,16 @@ public class CleanUpService extends BaseChanService {
 
 	private void logCacheFileInfo(String logMsg, long startTime, long endTime) {
 		if (DEBUG) {
-			Log.i(TAG, logMsg + " Cache folder contains " + totalFiles + " files of size " + (totalSize/1024)
+            if (DEBUG) Log.i(TAG, logMsg + " Cache folder contains " + totalFiles + " files of size " + (totalSize/1024)
 				+ " kB. Calculated in " + (endTime - startTime) + "ms.");
 			for (Map.Entry<String, Long> entry : sizeByBoard.entrySet()) {
 				if (filesByBoard.get(entry.getKey()).size() == 0) {
 					continue;
 				}
-				Log.i(TAG, "Board " + entry.getKey() + " size " + (entry.getValue() / 1024) + "kB "
+                if (DEBUG) Log.i(TAG, "Board " + entry.getKey() + " size " + (entry.getValue() / 1024) + "kB "
 						+ filesByBoard.get(entry.getKey()).size() + " files.");
 			}
-			Log.i(TAG, "Other files' size " + (otherSize / 1024) + "kB "
+            if (DEBUG) Log.i(TAG, "Other files' size " + (otherSize / 1024) + "kB "
 					+ otherFiles.size() + " files.");
 		}
 	}
@@ -265,7 +280,16 @@ public class CleanUpService extends BaseChanService {
 		        		filesByBoard.put(child.getName(), boardData);
 		        		totalSize += boardSize;
 		        		totalFiles += boardData.size();
-		        	} else {
+		        	}
+                    else if (BoardWidgetProvider.WIDGET_CACHE_DIR.equals(child.getName())) {
+                        List<FileDesc> widgetData = new ArrayList<FileDesc>();
+                        long widgetSize = addFiles(child, widgetData);
+                        sizeOfWidget = widgetSize;
+                        filesOfWidget = widgetData;
+                        totalSize += widgetSize;
+                        totalFiles += widgetData.size();
+                    }
+                    else {
 		        		long folderSize = addFiles(child, otherFiles);
 		        		otherSize += folderSize;
 		        		totalSize += folderSize;
@@ -283,7 +307,7 @@ public class CleanUpService extends BaseChanService {
 	
 	private long addFiles(File file, List<FileDesc> all) {
 		long totalSize = 0;
-		Log.i(TAG, "Checking folder " + file.getAbsolutePath());
+        if (DEBUG) Log.i(TAG, "Checking folder " + file.getAbsolutePath());
 	    File[] children = file.listFiles();
 	    if (children != null) {
 	        for (File child : children) {

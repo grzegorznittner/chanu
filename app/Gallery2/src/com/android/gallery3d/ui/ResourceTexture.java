@@ -16,6 +16,7 @@
 
 package com.android.gallery3d.ui;
 
+import android.nfc.Tag;
 import com.android.gallery3d.common.Utils;
 
 import android.content.Context;
@@ -25,6 +26,8 @@ import android.graphics.BitmapFactory;
 // ResourceTexture is a texture whose Bitmap is decoded from a resource.
 // By default ResourceTexture is not opaque.
 public class ResourceTexture extends UploadedTexture {
+
+    private static final String TAG = ResourceTexture.class.getSimpleName();
 
     protected final Context mContext;
     protected final int mResId;
@@ -39,8 +42,30 @@ public class ResourceTexture extends UploadedTexture {
     protected Bitmap onGetBitmap() {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        return BitmapFactory.decodeResource(
+        Bitmap b = null;
+        try {
+            b = BitmapFactory.decodeResource(
                 mContext.getResources(), mResId, options);
+        }
+        catch (OutOfMemoryError e) {
+            Log.e(TAG, "Couldn't get memory allocated for bitmap resId=" + mResId, e);
+        }
+        return b;
+    }
+
+    @Override
+    protected BitmapFactory.Options onGetBitmapBounds() {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        try {
+            BitmapFactory.decodeResource(
+                    mContext.getResources(), mResId, options);
+        }
+        catch (OutOfMemoryError e) {
+            Log.e(TAG, "Couldn't get memory allocated for bitmap bounds resId=" + mResId, e);
+        }
+        return options;
     }
 
     @Override

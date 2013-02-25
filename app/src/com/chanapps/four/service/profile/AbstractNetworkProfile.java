@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.data.DataTransfer;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.BoardParserService;
@@ -97,7 +98,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 		if (failures > 2) {
 			if (DEBUG) Log.i(TAG, "More than 2 failures, switching to BAD from " + currentHealth);
 			if (currentHealth != Health.BAD) {
-				makeToast("Internet connection is not working!");
+				makeToast(R.string.network_profile_health_bad);
 			}
 			currentHealth = Health.BAD;
 			return currentHealth;
@@ -225,4 +226,9 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	protected void makeToast(final String text) {
         NetworkProfileManager.instance().makeToast(text);
 	}
+
+	protected void makeToast(final int id) {
+        NetworkProfileManager.instance().makeToast(id);
+	}
+
 }

@@ -8,15 +8,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.service.FetchChanDataService;
 
 /**
@@ -229,6 +232,9 @@ public class ChanWatchlist {
         List<Long> deleteTims = new ArrayList<Long>();
         deleteTims.add(tim);
         deleteThreadsFromWatchlist(ctx, deleteTims);
+
+        if (ctx instanceof Activity) // probably better way to do this
+            ((Activity) ctx).runOnUiThread(new ToastRunnable(ctx, ctx.getString(R.string.dialog_deleted_from_watchlist)));
     }
 
     public static void deleteThreadsFromWatchlist(Context ctx, List<Long> tims) {

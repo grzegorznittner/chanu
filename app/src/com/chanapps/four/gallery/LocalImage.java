@@ -47,6 +47,9 @@ import java.io.IOException;
 
 // LocalImage represents an image in the local storage.
 public class LocalImage extends LocalMediaItem {
+
+    private static final boolean DEBUG = false;
+
     private static final int THUMBNAIL_TARGET_SIZE = 640;
     private static final int MICROTHUMBNAIL_TARGET_SIZE = 200;
 
@@ -188,7 +191,7 @@ public class LocalImage extends LocalMediaItem {
                         thumbData = exif.getThumbnail();
                     }
                 } catch (Throwable t) {
-                    Log.w(TAG, "fail to get exif thumb", t);
+                    if (DEBUG) Log.w(TAG, "fail to get exif thumb", t);
                 }
                 if (thumbData != null) {
                     Bitmap bitmap = DecodeUtils.requestDecodeIfBigEnough(
@@ -288,7 +291,7 @@ public class LocalImage extends LocalMediaItem {
                         getExifOrientation(rotation));
                 exif.saveAttributes();
             } catch (IOException e) {
-                Log.w(TAG, "cannot set exif data: " + filePath);
+                if (DEBUG) Log.w(TAG, "cannot set exif data: " + filePath);
             }
 
             // We need to update the filesize as well

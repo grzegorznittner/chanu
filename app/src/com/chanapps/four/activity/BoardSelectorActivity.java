@@ -52,11 +52,9 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         NetworkProfileManager.instance().activityChange(this);
+        NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(this); // always check since state may have changed
         if (DEBUG) Log.v(TAG, "onCreate");
-        if (ensurePrefs().getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
-            (new ChanWatchlist.CleanWatchlistTask(this, null, false)).execute();
-
-        GlobalAlarmReceiver.updateAndScheduleRepeating(this);
+        scheduleGlobalAlarm();
 
         Intent intent = getIntent();
         if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
@@ -75,6 +73,11 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         setContentView(mViewPager);
     }
 
+    protected void scheduleGlobalAlarm() { // will reschedule if not already scheduled
+        Intent intent = new Intent(this, GlobalAlarmReceiver.class);
+        intent.setAction(GlobalAlarmReceiver.GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION);
+        startService(intent);
+    }
 
     @Override
     protected void onStart() {

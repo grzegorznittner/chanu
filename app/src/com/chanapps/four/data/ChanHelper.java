@@ -2,9 +2,11 @@ package com.chanapps.four.data;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Looper;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -17,6 +19,7 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 
 import com.chanapps.four.activity.R;
+import org.codehaus.jackson.map.deser.StdDeserializer;
 
 public class ChanHelper {
 	public static final int VERBOSE = 0;
@@ -167,7 +170,8 @@ public class ChanHelper {
     }
 
     public static ObjectMapper getJsonMapper() {
-    	ObjectMapper mapper = new ObjectMapper();
+        JacksonNonBlockingObjectMapperFactory factory = new JacksonNonBlockingObjectMapperFactory();
+        ObjectMapper mapper = factory.createObjectMapper();
     	mapper.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     	// "Jan 15, 2013 10:16:20 AM"
     	mapper.setDateFormat(new SimpleDateFormat("MMM d, yyyy h:mm:ss aaa"));
@@ -200,6 +204,10 @@ public class ChanHelper {
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+    }
+
+    public static boolean onUIThread() {
+        return Looper.getMainLooper().equals(Looper.myLooper());
     }
 
 }

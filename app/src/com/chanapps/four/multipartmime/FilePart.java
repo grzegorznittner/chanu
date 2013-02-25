@@ -56,6 +56,7 @@ import android.util.Log;
 public class FilePart extends PartBase {
 
     public static final String TAG = FilePart.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     /** Default content encoding of file attachments. */
     public static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
@@ -186,7 +187,7 @@ public class FilePart extends PartBase {
     @Override
     protected void sendDispositionHeader(OutputStream out) 
     throws IOException {
-        Log.d(TAG, "enter sendDispositionHeader(OutputStream out)");
+        if (DEBUG) Log.d(TAG, "enter sendDispositionHeader(OutputStream out)");
         super.sendDispositionHeader(out);
         String filename = this.source.getFileName();
         if (filename != null) {
@@ -205,13 +206,13 @@ public class FilePart extends PartBase {
      */
     @Override
     protected void sendData(OutputStream out) throws IOException {
-        Log.d(TAG, "enter sendData(OutputStream out)");
+        if (DEBUG) Log.d(TAG, "enter sendData(OutputStream out)");
         if (lengthOfData() == 0) {
             
             // this file contains no data, so there is nothing to send.
             // we don't want to create a zero length buffer as this will
             // cause an infinite loop when reading.
-            Log.d(TAG, "No data to send.");
+            if (DEBUG) Log.d(TAG, "No data to send.");
             return;
         }
         
@@ -234,7 +235,7 @@ public class FilePart extends PartBase {
      * @return The source.
      */
     protected PartSource getSource() {
-        Log.d(TAG, "enter getSource()");
+        if (DEBUG) Log.d(TAG, "enter getSource()");
         return this.source;
     }
 
@@ -245,7 +246,7 @@ public class FilePart extends PartBase {
      */    
     @Override
     protected long lengthOfData() {
-        Log.d(TAG, "enter lengthOfData()");
+        if (DEBUG) Log.d(TAG, "enter lengthOfData()");
         return source.getLength();
     }    
 

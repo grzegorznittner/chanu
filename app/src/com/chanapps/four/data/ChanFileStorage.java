@@ -1,13 +1,6 @@
 package com.chanapps.four.data;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -92,6 +85,16 @@ public class ChanFileStorage {
         return boardDir;
     }
 
+    public static File getBoardWidgetCacheDirectory(Context context, String boardCode) {
+        String cacheDir = getRootCacheDirectory(context)
+                + FILE_SEP
+                + BoardWidgetProvider.WIDGET_CACHE_DIR
+                + FILE_SEP
+                + boardCode;
+        File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+        return boardDir;
+    }
+
     private static File getUserStatsFile(Context context) {
         String cacheDir = getRootCacheDirectory(context);
         File cacheFolder = StorageUtils.getOwnCacheDirectory(context, cacheDir);
@@ -129,7 +132,7 @@ public class ChanFileStorage {
 				return new File(boardDir, boardName + "_catalog" + CACHE_EXT);
 			}
 		} else {
-			Log.w(TAG, "Board folder could not be created: " + boardName);
+			if (DEBUG) Log.w(TAG, "Board folder could not be created: " + boardName);
 			return null;
 		}
     }
@@ -155,7 +158,7 @@ public class ChanFileStorage {
 			File boardFile = new File(boardDir, "t_" + threadNo + "f" + CACHE_EXT);
 			return boardFile;
 		} else {
-			Log.w(TAG, "Board folder could not be created: " + boardName);
+			if (DEBUG) Log.w(TAG, "Board folder could not be created: " + boardName);
 			return null;
 		}
     }
@@ -278,13 +281,13 @@ public class ChanFileStorage {
 
 	public static ChanThread loadThreadData(Context context, String boardCode, long threadNo) {
 		if (boardCode == null || threadNo <= 0) {
-			Log.w(TAG, "Trying to load '" + boardCode + FILE_SEP + threadNo + "' thread! Check stack trace why has it happened.", new Exception());
+			if (DEBUG) Log.w(TAG, "Trying to load '" + boardCode + FILE_SEP + threadNo + "' thread! Check stack trace why has it happened.", new Exception());
 			return null;
 		}
 		if (threadCache.containsKey(threadNo)) {
 			ChanThread thread = threadCache.get(threadNo);
 			if (thread == null || thread.defData) {
-				Log.w(TAG, "Null thread " + boardCode + "/" + threadNo + " stored in cache, removing key");
+				if (DEBUG) Log.w(TAG, "Null thread " + boardCode + "/" + threadNo + " stored in cache, removing key");
 				threadCache.remove(threadNo);
 			} else {
 				if (DEBUG) Log.i(TAG, "Returning thread " + boardCode + FILE_SEP +  threadNo + " data from cache, posts: " + thread.posts.length);
@@ -304,14 +307,14 @@ public class ChanFileStorage {
 			if (DEBUG) Log.i(TAG, "Loaded thread '" + boardCode + FILE_SEP + threadNo + "' with " + thread.posts.length + " posts");
 			return thread;
 		} catch (Exception e) {
-			Log.w(TAG, "Error while loading thread '" + boardCode + FILE_SEP + threadNo + "' data. ", e);
+			if (DEBUG) Log.w(TAG, "Error while loading thread '" + boardCode + FILE_SEP + threadNo + "' data. ", e);
 			return getThreadFromBoard(context, boardCode, threadNo);
 		}
 	}
 	
 	private static ChanThread getThreadFromBoard(Context context, String boardCode, long threadNo) {
 		ChanBoard board = loadBoardData(context, boardCode);
-		if (!board.defData) {
+		if (board != null && !board.defData && board.threads != null) {
 			for (ChanPost post : board.threads) {
 				if (post.no == threadNo) {
 					ChanThread thread = new ChanThread();
@@ -400,7 +403,7 @@ public class ChanFileStorage {
 					return userPrefs;
                 }
 			} else {
-				Log.w(TAG, "File for user statistics doesn't exist");
+				if (DEBUG) Log.w(TAG, "File for user statistics doesn't exist");
 				return new UserStatistics();
 			}
 		} catch (Exception e) {
@@ -410,12 +413,12 @@ public class ChanFileStorage {
 	}
 
     public static String getBoardWidgetBitmapPath(Context context, String boardName, int index) {
-        File boardDir = getBoardCacheDirectory(context, boardName);
+        File boardDir = getBoardWidgetCacheDirectory(context, boardName);
         if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-            File boardFile = new File(boardDir, boardName + "_widgetbitmap_" + index + "." + BITMAP_CACHE_EXT);
+            File boardFile = new File(boardDir, boardName + "_widgetbitmap_" + index + BITMAP_CACHE_EXT);
             return boardFile.getAbsolutePath();
         } else {
-            Log.w(TAG, "Board widget bitmap file could not be created: " + boardName);
+            if (DEBUG) Log.w(TAG, "Board widget bitmap file could not be created: " + boardName);
             return null;
         }
     }
@@ -423,10 +426,24 @@ public class ChanFileStorage {
     public static Bitmap getBoardWidgetBitmap(Context context, String boardName, int index) {
         String boardPath = getBoardWidgetBitmapPath(context, boardName, index);
         Bitmap b = BitmapFactory.decodeFile(boardPath);
+        if (DEBUG) Log.i(TAG, "For boardPath=" + boardPath + " found bitmap=" + b);
         return b;
     }
 
     public static final int BITMAP_BUFFER_SIZE = 512;
+
+    public static long storeBoardWidgetBitmap(Context context, String boardName, int index, Bitmap b)
+            throws IOException
+    {
+        if (b != null && b.getByteCount() > 0) { // cache for future calls
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            BufferedInputStream bis = new BufferedInputStream(bais);
+            return ChanFileStorage.storeBoardWidgetBitmapFile(context, boardName, index, bis);
+        }
+        return 0;
+    }
 
     public static long storeBoardWidgetBitmapFile(Context context, String boardName, int index, BufferedInputStream is)
             throws IOException

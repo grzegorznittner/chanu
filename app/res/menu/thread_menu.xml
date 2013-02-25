@@ -38,9 +38,13 @@
           android:title="@string/download_all_images_to_gallery_menu"
           android:icon="@drawable/av_download"
             />
-    <item android:id="@+id/board_rules_menu"
-          android:title="@string/board_rules_menu"
-          android:icon="@drawable/action_help"
+    <item android:id="@+id/go_to_top_position_menu"
+          android:title="@string/go_to_top_position_menu"
+          android:icon="@drawable/av_rewind"
+            />
+    <item android:id="@+id/go_to_end_position_menu"
+          android:title="@string/go_to_end_position_menu"
+          android:icon="@drawable/av_fast_forward"
             />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"

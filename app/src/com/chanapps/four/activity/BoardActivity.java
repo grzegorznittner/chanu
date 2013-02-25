@@ -157,7 +157,15 @@ public class BoardActivity
 
     protected synchronized Handler ensureHandler() {
         if (handler == null) {
-            handler = new LoaderHandler(this);
+            if (ChanHelper.onUIThread())
+                handler = new LoaderHandler(this);
+            else
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        handler = new LoaderHandler(BoardActivity.this);
+                    }
+                });
         }
         return handler;
     }
@@ -286,7 +294,7 @@ public class BoardActivity
 
     public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
                                        ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
-        if (view instanceof TextView) { // only really works with hideAllText, otherwise it breaks views
+        if (view instanceof TextView) {
             TextView tv = (TextView) view;
             String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
             if (shortText == null || shortText.isEmpty()) {
@@ -300,20 +308,23 @@ public class BoardActivity
                 && (view.getId() == R.id.grid_item_image || view.getId() == R.id.list_item_image)) {
             String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
             String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+            final int tnW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
+            final int tnH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
+            final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
             int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
             if (spoiler > 0) {
                 smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
             }
-            else if (imageUrl == null || imageUrl.isEmpty()) {
-                int imageResourceId = ChanBoard.getImageResourceId(boardCode);
+            else if (imageUrl != null && !imageUrl.isEmpty() && ((tnW > 2 && tnH > 2) || adItem > 0)) {
+                smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
+            }
+            else {
+                int imageResourceId = ChanBoard.getImageResourceId(boardCode, cursor.getPosition());
                 if (imageResourceId > 0)
                     smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions, imageResourceId);
                 else
                     iv.setImageBitmap(null);
-            }
-            else {
-                smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
             }
             return true;
         } else if (view instanceof ImageView
@@ -347,7 +358,7 @@ public class BoardActivity
         try {
             Integer viewHashCodeInt = (Integer)iv.getTag(IMAGE_URL_HASHCODE_KEY);
             int viewHashCode = viewHashCodeInt != null ? viewHashCodeInt : 0;
-            int urlHashCode = imageUrl.hashCode();
+            int urlHashCode = imageUrl != null && !imageUrl.isEmpty() ? imageUrl.hashCode() : imageResourceId;
             if (DEBUG) Log.i(TAG, "iv urlhash=" + urlHashCode + " viewhash=" + viewHashCode);
             if (iv.getDrawable() == null || viewHashCode != urlHashCode) {
                 if (DEBUG) Log.i(TAG, "calling imageloader for " + imageUrl);
@@ -504,7 +515,7 @@ public class BoardActivity
 
 	@Override
 	public Handler getChanHandler() {
-		return ensureHandler();
+        return ensureHandler();
 	}
 
     @Override

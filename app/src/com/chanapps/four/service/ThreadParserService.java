@@ -109,7 +109,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
 			
 			File threadFile = ChanFileStorage.getThreadFile(getBaseContext(), boardCode, threadNo);
 			if (threadFile == null || !threadFile.exists()) {
-				Log.i(TAG, "Thread file " + threadFile.getAbsolutePath() + " was deleted, probably already parsed.");
+                if (DEBUG) Log.i(TAG, "Thread file " + threadFile.getAbsolutePath() + " was deleted, probably already parsed.");
 				return;
 			}
 			parseThread(new BufferedReader(new FileReader(threadFile)));
@@ -120,7 +120,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
             threadFile.delete();
 
             if (previousPostNum > 0 && thread.posts.length == 0) {
-            	Log.w(TAG, "Thread " + boardCode + "/" + threadNo + " has 0 posts after parsing, won't be stored");
+                if (DEBUG) Log.w(TAG, "Thread " + boardCode + "/" + threadNo + " has 0 posts after parsing, won't be stored");
             } else {
             	ChanFileStorage.storeThreadData(getBaseContext(), thread);
                 if (DEBUG) Log.i(TAG, "Stored thread " + boardCode + "/" + threadNo
@@ -143,11 +143,14 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
 
         for (JsonNode postValue : rootNode.path("posts")) { // first object is the thread post
             ChanPost post = mapper.readValue(postValue, ChanPost.class);
-            post.board = boardCode;
-            posts.add(post);
+            if (post != null) {
+                post.board = boardCode;
+                posts.add(post);
+            }
             //if (DEBUG) Log.v(TAG, "Added post " + post.no + " to thread " + boardCode + "/" + threadNo);
         }
-        thread.mergePosts(posts);
+        if (thread != null)
+            thread.mergePosts(posts);
 
         if (DEBUG) Log.i(TAG, "finished parsing thread " + boardCode + "/" + threadNo);
     }

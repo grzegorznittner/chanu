@@ -1,11 +1,17 @@
 package com.chanapps.four.data;
 
 import android.util.Log;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import java.util.*;
 
 public class ChanThread extends ChanPost {
-	public long lastFetched = 0;
+    private static final boolean DEBUG = false;
+
+    @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingLongDeserializer.class)
+    public long lastFetched = 0;
+
+    @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingBooleanDeserializer.class)
     public boolean loadedFromBoard = false;
 
 	public ChanPost posts[] = new ChanPost[0];
@@ -83,10 +89,10 @@ public class ChanThread extends ChanPost {
     }
 
     public long[] getPrevPostsReferenced(long sourcePostNo) { // what posts does this post refer to
-        Log.i(TAG, "getPrevPostsRef postNo=" + sourcePostNo);
+        if (DEBUG) Log.i(TAG, "getPrevPostsRef postNo=" + sourcePostNo);
         List<Long> prevPosts = new ArrayList<Long>();
         ChanPost sourcePost = getPost(sourcePostNo);
-        Log.i(TAG, "Source post=" + sourcePost + " for postNo=" + sourcePostNo);
+        if (DEBUG) Log.i(TAG, "Source post=" + sourcePost + " for postNo=" + sourcePostNo);
         if (sourcePost != null)
             for (ChanPost post : posts)
                 if (sourcePost.refersTo(post.no))
@@ -94,7 +100,7 @@ public class ChanThread extends ChanPost {
         long[] prevPostsArr = new long[prevPosts.size()];
         for (int i = 0; i < prevPostsArr.length; i++)
             prevPostsArr[i] = prevPosts.get(i);
-        Log.i(TAG, "postNo=" + sourcePostNo + " found prevPosts=" + Arrays.toString(prevPostsArr));
+        if (DEBUG) Log.i(TAG, "postNo=" + sourcePostNo + " found prevPosts=" + Arrays.toString(prevPostsArr));
         return prevPostsArr;
     }
 

@@ -23,7 +23,7 @@ import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 
 public class MobileProfile extends AbstractNetworkProfile {
-	private static final String TAG = "";
+	private static final String TAG = MobileProfile.class.getSimpleName();
 	private static final boolean DEBUG = false;
 	
 	private static final int MIN_THREADS_PER_BOARD = 20;
@@ -76,34 +76,44 @@ public class MobileProfile extends AbstractNetworkProfile {
 			ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
 			if (activityId != null) {
 				if (activityId.activity == LastActivity.THREAD_ACTIVITY) {
-					makeToast("Reloading thread ...");
+					makeToast(R.string.mobile_profile_loading_thread);
 					FetchChanDataService.scheduleThreadFetch(context, activityId.boardCode, activityId.threadNo);
 				} else if (activityId.activity == LastActivity.BOARD_ACTIVITY) {
-					makeToast("Reloading board ...");
+					makeToast(R.string.mobile_profile_loading_board);
 					FetchChanDataService.scheduleBoardFetch(context, activityId.boardCode);
 				} else if (activityId.activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
 					Handler handler = activity.getChanHandler();
 					if (handler != null) {
-						makeToast("Loading image ...");
+						makeToast(R.string.mobile_profile_loading_image);
 						handler.sendEmptyMessageDelayed(GalleryViewActivity.START_DOWNLOAD_MSG, 100);
 					}
 				} else if (activityId.activity == ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY) {
 					if (health != Health.VERY_SLOW) {
-						/*
-						makeToast("Preloading boards a, b and s");
-						FetchChanDataService.scheduleBoardFetch(context, "a");
-						FetchChanDataService.scheduleBoardFetch(context, "b");
-						FetchChanDataService.scheduleBoardFetch(context, "s");
-						*/
+                        prefetchDefaultBoards(context);
 					} else {
-						makeToast("No preloading " + health);
+                        makeHealthStatusToast(context, health);
 					}
 				}
 			}
 		} else {
-			makeToast("No auto refresh");
+			makeToast(R.string.mobile_profile_no_auto_refresh);
 		}
 	}
+
+    private void makeHealthStatusToast(Context context, Health health) {
+        makeToast(String.format(context.getString(R.string.mobile_profile_health_status), health.toString().toLowerCase().replaceAll("_", " ")));
+    }
+
+    private void prefetchDefaultBoards(Context context) {
+        /*
+            makeToast(R.string.mobile_profile_preloading_defaults);
+            FetchChanDataService.scheduleBoardFetch(context, "a");
+            FetchChanDataService.scheduleBoardFetch(context, "b");
+            FetchChanDataService.scheduleBoardFetch(context, "v");
+            FetchChanDataService.scheduleBoardFetch(context, "vg");
+            FetchChanDataService.scheduleBoardFetch(context, "s");
+        */
+    }
 
 	@Override
 	public void onProfileDeactivated(Context context) {
@@ -116,15 +126,10 @@ public class MobileProfile extends AbstractNetworkProfile {
 		
 		Health health = getConnectionHealth();
 		if (health != Health.BAD && health != Health.VERY_SLOW) {
-			/*
-			makeToast("Preloading boards a, b and s");
-			FetchChanDataService.scheduleBoardFetch(context, "a");
-			FetchChanDataService.scheduleBoardFetch(context, "b");
-			FetchChanDataService.scheduleBoardFetch(context, "s");
-			*/
-		} else {
-			makeToast("No preloading " + health);
-		}
+            prefetchDefaultBoards(context);
+        } else {
+            makeHealthStatusToast(context, health);
+        }
 	}
 
 	@Override
@@ -135,15 +140,10 @@ public class MobileProfile extends AbstractNetworkProfile {
 
 		Health health = getConnectionHealth();
 		if (health != Health.BAD && health != Health.VERY_SLOW) {
-			/*
-			makeToast("Preloading boards a, b and s");
-			FetchChanDataService.scheduleBoardFetch(context, "a");
-			FetchChanDataService.scheduleBoardFetch(context, "b");
-			FetchChanDataService.scheduleBoardFetch(context, "s");
-			*/
-		} else {
-			makeToast("No preloading " + health);
-		}
+            prefetchDefaultBoards(context);
+        } else {
+            makeHealthStatusToast(context, health);
+        }
 	}
 
 	@Override
@@ -221,11 +221,11 @@ public class MobileProfile extends AbstractNetworkProfile {
 			boolean boardActivity = currentActivityId != null
 					&& currentActivityId.boardCode != null
 					&& currentActivityId.boardCode.equals(data.boardCode);
-			//makeToast("Loaded data for board " + data.boardCode);
+            //makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_loaded_board), data.boardCode));
 			ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
-			if (board.defData) {
+			if (board == null || board.defData) {
 				// board data corrupted, we need to reload it
-				Log.w(TAG, "Board " + data.boardCode + " is corrupted, it is scheduled for reload");
+				if (DEBUG) Log.w(TAG, "Board " + data.boardCode + " is corrupted, it is scheduled for reload");
 				FetchChanDataService.scheduleBoardFetch(service.getApplicationContext(), data.boardCode);
 				return;
 			}
@@ -247,7 +247,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 				// user is on the board page, we need to be reloaded it
 				Handler handler = activity.getChanHandler();
 				if (handler != null) {
-					Log.w(TAG, "Reloading board");
+					if (DEBUG) Log.w(TAG, "Reloading board");
 					handler.sendEmptyMessage(0);
 				}
 			}
@@ -256,17 +256,22 @@ public class MobileProfile extends AbstractNetworkProfile {
 			boolean threadActivity = currentActivityId != null && currentActivityId.boardCode != null
 					&& currentActivityId.boardCode.equals(data.boardCode)
 					&& currentActivityId.threadNo == data.threadNo;
-			//makeToast("Loaded data for " + data.boardCode + "/" + data.threadNo);
+            //makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_loaded_thread), data.boardCode, data.threadNo));
 			ChanThread thread = ChanFileStorage.loadThreadData(service.getApplicationContext(), data.boardCode, data.threadNo);
-			if(DEBUG) Log.i(TAG, "Loaded thread " + thread.board + "/" + thread.no + " posts " + thread.posts.length);
+			if (DEBUG) Log.i(TAG, "Loaded thread " + thread.board + "/" + thread.no + " posts " + thread.posts.length);
 			if (thread.defData && threadActivity) {
 				// thread file is corrupted, and user stays on thread page (or loads image), we need to refetch thread
-				Log.w(TAG, "Thread " + data.boardCode + "/" + data.threadNo + " is corrupted, it is scheduled for reload");
+				if (DEBUG) Log.w(TAG, "Thread " + data.boardCode + "/" + data.threadNo + " is corrupted, it is scheduled for reload");
 				FetchChanDataService.scheduleThreadFetch(service.getApplicationContext(), data.boardCode, data.threadNo);
 				return;
 			}
-			
-			if (currentActivityId != null && threadActivity && currentActivityId.activity == ChanHelper.LastActivity.THREAD_ACTIVITY
+
+            if(DEBUG) Log.i(TAG, "Check reload thread " + thread.board + "/" + thread.no
+                    + " currentActivityId=" + currentActivityId
+                    + " threadActivity=" + threadActivity
+                    + " currentActivity.activity=" + (currentActivityId == null ? "null" : currentActivityId.activity)
+                    + " currentActivity.postNo=" + (currentActivityId == null ? "null" : currentActivityId.postNo));
+            if (currentActivityId != null && threadActivity && currentActivityId.activity == ChanHelper.LastActivity.THREAD_ACTIVITY
 					&& currentActivityId.postNo == 0) {
 				// user is on the thread page, we need to reload it
 				Handler handler = activity.getChanHandler();
@@ -286,10 +291,10 @@ public class MobileProfile extends AbstractNetworkProfile {
 		ChanActivityId data = service.getChanActivityId();
 		if (data.threadNo == 0) {
 			// board fetch failed
-			makeToast("Fetching " + data.boardCode + " failed");
+			makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_fetch_board_fail), data.boardCode));
 		} else if (data.postNo == 0) {
 			// thread fetch failed
-			makeToast("Fetching " + data.boardCode + "/" + data.threadNo + " failed");
+            makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_fetch_thread_fail), data.boardCode, data.threadNo));
 		} else {
 			// image fetch failed
 		}
@@ -300,10 +305,10 @@ public class MobileProfile extends AbstractNetworkProfile {
 		ChanActivityId data = service.getChanActivityId();
 		if (data.threadNo == 0) {
 			// board parse failed
-			makeToast("Parsing " + data.boardCode + " failed");
+            makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_parse_board_fail), data.boardCode));
 		} else if (data.postNo == 0) {
 			// thread parse failed
-			makeToast("Parsing " + data.boardCode + "/" + data.threadNo + " failed");
+            makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_parse_thread_fail), data.boardCode, data.threadNo));
 		}
 	}
 

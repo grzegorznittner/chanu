@@ -49,7 +49,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     protected String imageUrl;
     protected int imageWidth;
     protected int imageHeight;
-    protected boolean hideAllText = false;
     protected boolean hidePostNumbers = true;
     protected UserStatistics userStats = null;
     protected boolean inWatchlist = false;
@@ -249,7 +248,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
         long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
         String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        if ((resto != 0 && hideAllText) || shortText == null || shortText.isEmpty()) {
+        if (shortText == null || shortText.isEmpty()) {
             tv.setText("");
             final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
             if (imageUrl == null || imageUrl.isEmpty())
@@ -292,7 +291,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
         long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        if ((resto != 0 && hideAllText) || text == null || text.isEmpty()) {
+        if (text == null || text.isEmpty()) {
             tv.setText("");
             tv.setVisibility(View.GONE);
         }
@@ -317,19 +316,21 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     private boolean setItemImage(final ImageView iv, final Cursor cursor) {
         int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        final int tnW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
+        final int tnH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
         if (spoiler > 0) {
             String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
             smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
         }
-        else if (imageUrl != null && !imageUrl.isEmpty()) {
+        else if (imageUrl != null && !imageUrl.isEmpty() && ((tnW > 2 && tnH > 2) || adItem > 0)) {
             smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
         }
         else {
             iv.setImageBitmap(null); // blank
         }
 
-        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (lastItem > 0) {
             // ignore
         }
@@ -394,39 +395,27 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-/*
-        hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        if (hideAllText)
-            menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_hide_all_text_on);
-        else
-            menu.findItem(R.id.hide_all_text).setTitle(R.string.pref_hide_all_text);
-*/
-        hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
-        if (hidePostNumbers)
-            menu.findItem(R.id.hide_post_numbers).setTitle(R.string.pref_hide_post_numbers_turn_off);
-        else
-            menu.findItem(R.id.hide_post_numbers).setTitle(R.string.pref_hide_post_numbers_turn_on);
+        MenuItem item = menu.findItem(R.id.hide_post_numbers);
+        if (boardCode.equals("b")) {
+            item.setEnabled(false);
+            item.setVisible(false);
+        }
+        else {
+            item.setEnabled(true);
+            item.setVisible(true);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+            if (hidePostNumbers)
+                item.setTitle(R.string.pref_hide_post_numbers_turn_off);
+            else
+                item.setTitle(R.string.pref_hide_post_numbers_turn_on);
+        }
         return true;
     }
 
     @Override
     protected void setAbsListViewClass() {
-        hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        if (hideAllText)
-            absListViewClass = GridView.class;
-        else
-            absListViewClass = ListView.class;
-    }
-
-    protected void toggleHideAllText() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
-        hideAllText = !hideAllText; // invert
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, hideAllText);
-        editor.commit();
-        refreshActivity();
+        absListViewClass = ListView.class;
     }
 
     protected void toggleHidePostNumbers() {
@@ -460,12 +449,12 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
                 if (DEBUG) Log.i(TAG, "Made up intent with board=" + boardCode);
 //                if (NavUtils.shouldUpRecreateTask(this, upIntent)) { // needed when calling from widget
-//                    Log.i(TAG, "Should recreate task");
+//                    if (DEBUG) Log.i(TAG, "Should recreate task");
                     TaskStackBuilder.create(this).addParentStack(this).startActivities();
                     this.finish();
 //                }
 //                else {
-//                    Log.i(TAG, "Navigating up...");
+//                    if (DEBUG) Log.i(TAG, "Navigating up...");
 //                    NavUtils.navigateUpTo(this, upIntent);
 //                }
                 return true;
@@ -494,6 +483,14 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             case R.id.download_all_images_to_gallery_menu:
             	ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null);
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.go_to_top_position_menu:
+                if (absListView != null && absListView.getAdapter() != null && absListView.getAdapter().getCount() > 0)
+                    absListView.setSelection(0);
+                return true;
+            case R.id.go_to_end_position_menu:
+                if (absListView != null && absListView.getAdapter() != null && absListView.getAdapter().getCount() > 0)
+                    absListView.setSelection(absListView.getAdapter().getCount());
                 return true;
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
