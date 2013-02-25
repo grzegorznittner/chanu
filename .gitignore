@@ -16,6 +16,9 @@ bin/
 gen/
 out/
 target/
+project.properties
+.classpath
+.project
 
 # Local configuration file (sdk path, etc)
 local.properties
