@@ -180,12 +180,12 @@ public class PhotoPage extends ActivityState
         mRootPane.addComponent(mPhotoView);
         mApplication = (GalleryApp)((Activity) mActivity).getApplication();
 
-        String setPathString = data.getString(KEY_MEDIA_SET_PATH);
-        Path itemPath = Path.fromString(data.getString(KEY_MEDIA_ITEM_PATH));
+        final String setPathString = data.getString(KEY_MEDIA_SET_PATH);
+        final Path itemPath = Path.fromString(data.getString(KEY_MEDIA_ITEM_PATH));
 
         if (setPathString != null) {
             mMediaSet = mActivity.getDataManager().getMediaSet(setPathString);
-            mCurrentIndex = data.getInt(KEY_INDEX_HINT, 0);
+            mCurrentIndex = mMediaSet.getIndexOfItem(itemPath, 0);
             mMediaSet = (MediaSet)
                     mActivity.getDataManager().getMediaObject(setPathString);
             if (mMediaSet == null) {
@@ -276,7 +276,7 @@ public class PhotoPage extends ActivityState
                 }
             }
         };
-
+        
         // start the opening animation
         mPhotoView.setOpenedItem(itemPath);
     }

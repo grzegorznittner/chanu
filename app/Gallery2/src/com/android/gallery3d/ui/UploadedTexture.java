@@ -153,11 +153,12 @@ abstract class UploadedTexture extends BasicTexture {
                 int h = mBitmap.getHeight() + mBorder * 2;
                 if (mWidth == UNSPECIFIED) {
                     setSize(w, h);
-                } else if (mWidth != w || mHeight != h) {
-                    throw new IllegalStateException(String.format(
-                            "cannot change size: this = %s, orig = %sx%s, new = %sx%s",
-                            toString(), mWidth, mHeight, w, h));
                 }
+//                else if (mWidth != w || mHeight != h) {
+//                    throw new IllegalStateException(String.format(
+//                            "cannot change size: this = %s, orig = %sx%s, new = %sx%s",
+//                            toString(), mWidth, mHeight, w, h));
+//                }
             }
         }
         return mBitmap;
