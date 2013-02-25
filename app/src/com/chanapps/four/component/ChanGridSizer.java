@@ -46,9 +46,9 @@ public class ChanGridSizer {
     		this.g = (GridView)g;
     	}
         this.d = d;
+        int layoutMask = g.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
         int[] columnWidthArray =
-                ((g.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK)
-                        == Configuration.SCREENLAYOUT_SIZE_LARGE)
+                ((layoutMask == Configuration.SCREENLAYOUT_SIZE_LARGE) || (layoutMask == Configuration.SCREENLAYOUT_SIZE_XLARGE))
                 ? MAX_COLUMN_WIDTHS_LARGE
                 : MAX_COLUMN_WIDTHS;
         for (int i = 0; i < MAX_COLUMN_WIDTHS.length; i += 2) {

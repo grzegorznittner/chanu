@@ -252,6 +252,10 @@ public class ChanPost {
         clickForMore = c.getString(R.string.board_click_for_more);
     }
 
+    public static String abbreviate(String s, int maxLen) {
+        return abbreviate(s, maxLen, maxLen - 3, false);
+    }
+
     private static String abbreviate(String s, int maxLen, int maxAbbrLen) {
         return abbreviate(s, maxLen, maxAbbrLen, false);
     }

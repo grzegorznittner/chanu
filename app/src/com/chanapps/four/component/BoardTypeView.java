@@ -9,16 +9,11 @@ import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
+import android.content.res.Configuration;
+import android.graphics.*;
 import android.os.Handler;
-import android.text.Html;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,6 +21,7 @@ import android.view.View;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanBoard.Type;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.loader.ChanWatchlistDataLoader;
@@ -38,9 +34,13 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public class BoardTypeView extends View implements View.OnTouchListener {
 	private static final String TAG = BoardTypeView.class.getSimpleName();
     private static final boolean DEBUG = true;
-    
-    private static final int BOX_HEIGHT = 40;
-    private static final int INIT_FONT_SIZE = 35;
+
+    private static final int BOARD_FONT_SP = 14;
+    private static final int BOARD_FONT_SP_LARGE = 18;
+
+    private static final int BOX_HEIGHT_DP = 32;
+    private static final int BOX_HEIGHT_DP_LARGE = 48;
+
     private static final int LONG_CLICK_DELAY = 500;
     
 	private Type boardType;
@@ -173,18 +173,19 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 				if (boardImage != null) {
 					canvas.drawBitmap(boardImage, null, destRect, paint);
 				}
-				RectF textRect = new RectF(posX, posY + columnWidth - BOX_HEIGHT,
+                calculateBoxHeight();
+				RectF textRect = new RectF(posX, posY + columnWidth - boxHeight,
 						posX + columnWidth, posY + columnWidth);
 				paint.setColor(0xaa000000);
-				canvas.drawRect(textRect, paint);
-				
+                canvas.drawRect(textRect, paint);
+
 				paint.setColor(0xaaffffff);
-				if (fontSize == -1) {
-					calculateFontSizeForBoards();
-				}
-				canvas.drawText(board.name, posX + getPaddingLeft(),
-						posY + columnWidth - BOX_HEIGHT + getPaddingBottom() + fontSize, paint);
-				image++;
+                calculateFontMetrics();
+                float textX = textRect.centerX();
+                float textY = textRect.centerY() - ((paint.descent() + paint.ascent()) / 2);
+                canvas.drawText(board.name, textX, textY, paint);
+
+                image++;
 			}
 		}
 	}
@@ -223,18 +224,21 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 				if (threadImage != null) {
 					canvas.drawBitmap(threadImage, null, destRect, paint);
 				}
-				RectF textRect = new RectF(posX, posY + columnWidth - BOX_HEIGHT,
+                calculateBoxHeight();
+				RectF textRect = new RectF(posX, posY + columnWidth - boxHeight,
 						posX + columnWidth, posY + columnWidth);
 				paint.setColor(0xaa000000);
 				canvas.drawRect(textRect, paint);
 				
 				paint.setColor(0xaaffffff);
-				if (fontSize == -1) {
-					calculateFontSizeForThreads();
-				}
-				canvas.drawText(thread.shortText, posX + getPaddingLeft(),
-						posY + columnWidth - BOX_HEIGHT + getPaddingBottom() + fontSize, paint);
+			    calculateFontMetrics();
+                String abbrevText = ChanPost.abbreviate(thread.shortText, 22);
+                float textX = textRect.centerX();
+                float textY = textRect.centerY() - ((paint.descent() + paint.ascent()) / 2);
+                canvas.drawText(abbrevText, textX, textY, paint);
+
 				image++;
+
 			}
 		}
 		handler.postDelayed(new Runnable () {
@@ -244,42 +248,64 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 		}, 500);
 	}
 
-	private void calculateFontSizeForBoards() {
-		Rect bounds = new Rect();
-		fontSize = INIT_FONT_SIZE;
-		for (ChanBoard board : boards) {
-			while (true) {
-				paint.setTextSize(fontSize);
-				paint.getTextBounds(board.name, 0, board.name.length(), bounds);
-				if (bounds.width() < columnWidth - 2 * getPaddingLeft()
-						&& bounds.height() < BOX_HEIGHT - 2 * getPaddingBottom()) {
-					break;
-				}
-				fontSize -= 1;
-			}
-		}
+    private enum LayoutSize {
+        NORMAL,
+        LARGE
+    }
+
+    private boolean isLayoutSet = false;
+    private LayoutSize layoutSize;
+    private LayoutSize getLayoutSize() {
+        if (!isLayoutSet) {
+            int sizeMask = getContext().getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
+            switch (sizeMask) {
+                case Configuration.SCREENLAYOUT_SIZE_LARGE:
+                case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+                    layoutSize = LayoutSize.LARGE;
+                    break;
+                default:
+                    layoutSize = LayoutSize.NORMAL;
+            }
+            isLayoutSet = true;
+        }
+        return layoutSize;
+    }
+
+    private boolean isDisplayMetricsSet;
+    private DisplayMetrics displayMetrics;
+    private DisplayMetrics getDisplayMetrics() {
+        if (!isDisplayMetricsSet) {
+            displayMetrics = getContext().getResources().getDisplayMetrics();
+            isDisplayMetricsSet = true;
+        }
+        return displayMetrics;
+    }
+
+    private boolean isFontSet = false;
+    private void calculateFontMetrics() {
+        if (!isFontSet) {
+            float fontSizeSp = getLayoutSize() == LayoutSize.LARGE ? BOARD_FONT_SP_LARGE : BOARD_FONT_SP;
+            float pixelSize = fontSizeSp * getDisplayMetrics().scaledDensity;
+            fontSize = Math.round(pixelSize);
+            paint.setTextSize(fontSize);
+            paint.setTypeface(Typeface.DEFAULT_BOLD);
+            paint.setTextAlign(Paint.Align.CENTER);
+            isFontSet = true;
+        }
 	}
 
-	private void calculateFontSizeForThreads() {
-		Rect bounds = new Rect();
-		fontSize = INIT_FONT_SIZE;
-		for (ChanThreadData thread : watchedThreads) {
-			if (thread.shortText == null) {
-				continue;
-			}
-			while (true) {
-				paint.setTextSize(fontSize);
-				paint.getTextBounds(thread.shortText, 0, thread.shortText.length(), bounds);
-				if (bounds.width() < columnWidth - 2 * getPaddingLeft()
-						&& bounds.height() < BOX_HEIGHT - 2 * getPaddingBottom()) {
-					break;
-				}
-				fontSize -= 1;
-			}
-		}
-	}
+    private boolean isBoxHeightSet = false;
+    private int boxHeight;
+    private void calculateBoxHeight() {
+        if (!isBoxHeightSet) {
+            float boxHeightDp = getLayoutSize() == LayoutSize.LARGE ? BOX_HEIGHT_DP_LARGE : BOX_HEIGHT_DP;
+            float boxHeightPx = boxHeightDp * getDisplayMetrics().density;
+            boxHeight = Math.round(boxHeightPx);
+            isBoxHeightSet = true;
+        }
+    }
 
-	@Override
+    @Override
 	public boolean onTouch(View v, MotionEvent ev) {
 		switch (ev.getAction()) {
 		case MotionEvent.ACTION_DOWN:

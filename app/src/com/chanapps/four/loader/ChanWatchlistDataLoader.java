@@ -43,7 +43,6 @@ public class ChanWatchlistDataLoader {
 //        }
         if (DEBUG) Log.i(TAG, "Parsing watchlist: " + Arrays.toString(savedWatchlist.toArray()));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        hideAllText = prefs.getBoolean(SettingsActivity.PREF_HIDE_ALL_TEXT, false);
         hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
         useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         for (String threadPath : savedWatchlist) {

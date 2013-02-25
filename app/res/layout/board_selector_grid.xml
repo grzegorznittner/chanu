@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#000000"
-    >
+    style="@style/SelectorScrollViewStyle"
+        >
     <com.chanapps.four.component.BoardTypeView
         android:id="@+id/board_selector_type_view"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:isScrollContainer="true"
-        android:adjustViewBounds="true"
-        android:paddingLeft="2dp"
-        android:paddingBottom="2dp"
+        style="@style/SelectorBoardTypeStyle"
         />
 </ScrollView>
 <!--
