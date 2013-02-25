@@ -295,9 +295,9 @@ public class ChanImage extends MediaItem {
         if (".jpg".equals(ext) || ".jpeg".equals(ext) || ".png".equals(ext)) {
             supported |= SUPPORT_FULL_IMAGE;
         }
-        if (".gif".equals(ext)) {
-        	supported |= SUPPORT_PLAY;
-        }
+//        if (".gif".equals(ext)) {
+//        	supported |= SUPPORT_PLAY;
+//        }
         return supported;
     }
 
