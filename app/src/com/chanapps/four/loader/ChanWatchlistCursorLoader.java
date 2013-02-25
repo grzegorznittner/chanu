@@ -59,7 +59,7 @@ public class ChanWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
                 try {
                     if (DEBUG) Log.i(TAG, "trying to load thread " + boardCode + "/" + threadNo + " from storage");
                     thread = ChanFileStorage.loadThreadData(getContext(), boardCode, threadNo);
-                    if (thread != null) {
+                    if (thread != null && thread.posts != null && thread.posts.length > 0) {
                         threadPost = thread.posts[0];
                     }
                 }

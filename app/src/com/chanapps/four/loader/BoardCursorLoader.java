@@ -68,7 +68,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
-        if (board.threads != null && board.threads.length > 0 && !board.defData) { // show loading
+        if (board != null && board.threads != null && board.threads.length > 0 && !board.defData) { // show loading
             if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
             int adSpace = MINIMUM_AD_SPACING;
 

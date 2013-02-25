@@ -1,13 +1,17 @@
 package com.chanapps.four.data;
 
 import android.util.Log;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import java.util.*;
 
 public class ChanThread extends ChanPost {
     private static final boolean DEBUG = false;
 
+    @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingLongDeserializer.class)
     public long lastFetched = 0;
+
+    @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingBooleanDeserializer.class)
     public boolean loadedFromBoard = false;
 
 	public ChanPost posts[] = new ChanPost[0];

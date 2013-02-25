@@ -225,7 +225,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         HttpURLConnection tc = null;
 		try {
 			board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
-			if (board.defData) {
+			if (board != null && board.defData) {
 				board = ChanBoard.getBoardByCode(getBaseContext(), boardCode);
 				board.lastFetched = 0;
 			}
@@ -244,7 +244,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             tc.setReadTimeout(fetchParams.readTimeout);
             tc.setConnectTimeout(fetchParams.connectTimeout);
             
-            if (board.lastFetched > 0 && !force) {
+            if (board != null && board.lastFetched > 0 && !force) {
             	if (DEBUG) Log.i(TAG, "IfModifiedSince set as last fetch happened "
         				+ ((startTime - board.lastFetched) / 1000) + "s ago");
                 tc.setIfModifiedSince(board.lastFetched);

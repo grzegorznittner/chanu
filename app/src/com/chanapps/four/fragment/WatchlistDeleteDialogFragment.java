@@ -46,32 +46,17 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
                                 ChanWatchlist.deleteThreadFromWatchlist(ctx, tim);
                                 //Message m = Message.obtain(handler, LoaderHandler.RESTART_LOADER_MSG);
                                 //handler.sendMessageDelayed(m, 200);
-                                (new ToastRunnable(getActivity(), getString(R.string.dialog_deleted_from_watchlist))).run();
+                                dismiss();
                             }
                         })
                 .setNegativeButton(R.string.dialog_cancel,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // ignore
+                                dismiss();
                             }
                         })
                 .create();
     }
 
-    @Override
-    public void onDismiss(DialogInterface dialogInterface) {
-        resetItemMarking();
-    }
-
-    @Override
-    public void onCancel(DialogInterface dialogInterface) {
-        resetItemMarking();
-    }
-
-    private void resetItemMarking() {
-        // no longer needed
-        //itemView.setPadding(0, 0, 0, 0);
-        //itemView.setBackgroundColor(getResources().getColor(R.color.PaletteBlack));
-    }
 }

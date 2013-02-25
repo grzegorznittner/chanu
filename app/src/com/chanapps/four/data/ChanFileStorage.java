@@ -314,7 +314,7 @@ public class ChanFileStorage {
 	
 	private static ChanThread getThreadFromBoard(Context context, String boardCode, long threadNo) {
 		ChanBoard board = loadBoardData(context, boardCode);
-		if (!board.defData) {
+		if (board != null && !board.defData && board.threads != null) {
 			for (ChanPost post : board.threads) {
 				if (post.no == threadNo) {
 					ChanThread thread = new ChanThread();

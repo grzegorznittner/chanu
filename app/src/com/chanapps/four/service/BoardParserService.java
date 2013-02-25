@@ -16,6 +16,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.MappingJsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -101,13 +102,15 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
             } else {
             	parseBoard(new BufferedReader(new FileReader(boardFile)));
             }
-            board.lastFetched = Calendar.getInstance().getTimeInMillis();
+            if (board != null)
+                board.lastFetched = Calendar.getInstance().getTimeInMillis();
 
             if (DEBUG) Log.i(TAG, "Parsed board " + boardCode + (pageNo == -1 ? " catalog" : " page " + pageNo)
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             startTime = Calendar.getInstance().getTimeInMillis();
 
-            ChanFileStorage.storeBoardData(context, board);
+            if (board != null)
+                ChanFileStorage.storeBoardData(context, board);
             if (DEBUG) Log.i(TAG, "Stored board " + boardCode + (pageNo == -1 ? " catalog" : " page " + pageNo)
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
 
@@ -163,9 +166,16 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         JsonNode rootNode = mapper.readValue(in, JsonNode.class);
         for (JsonNode threadValue : rootNode.path("threads")) { // iterate over threads
             JsonNode postValue = threadValue.path("posts").get(0); // first object is the thread post
-            ChanPost post = mapper.readValue(postValue, ChanPost.class);
-            post.board = boardCode;
-            post.mergeIntoThreadList(threads);
+            try {
+                ChanPost post = mapper.readValue(postValue, ChanPost.class);
+                if (post != null) {
+                    post.board = boardCode;
+                    post.mergeIntoThreadList(threads);
+                }
+            }
+            catch (JsonMappingException e) { // if we have just one error, try and recover
+                Log.e(TAG, "Couldn't parseBoard deserialize postValue for board=" + boardCode, e);
+            }
         }
 
         board.threads = threads.toArray(new ChanPost[0]);
@@ -175,7 +185,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     private void parseBoardCatalog(BufferedReader in) throws IOException {
     	List<ChanPost> threads = new ArrayList<ChanPost>();
     	board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
-    	if (board.defData) {
+    	if (board != null && board.defData) {
     		// default board we should not use it
     		board = ChanBoard.getBoardByCode(getBaseContext(), boardCode);
     	}
@@ -189,9 +199,16 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         		current = jp.nextToken(); // should be JsonToken.START_OBJECT
         		JsonNode pageNode = jp.readValueAsTree();
     	        for (JsonNode threadValue : pageNode.path("threads")) { // iterate over threads
-    	            ChanPost post = mapper.readValue(threadValue, ChanPost.class);
-    	            post.board = boardCode;
-    	            threads.add(post);
+    	            try {
+                        ChanPost post = mapper.readValue(threadValue, ChanPost.class);
+                        if (post != null) {
+                            post.board = boardCode;
+                            threads.add(post);
+                        }
+                    }
+                    catch (JsonMappingException e) { // if we have just one error, try and recover
+                        Log.e(TAG, "Couldn't parseBoardCatalog deserialize threadValue for board=" + boardCode);
+                    }
     	        }
 	    	}
 	    	jp.close();
@@ -201,7 +218,8 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 			}
 		}
 
-        board.threads = threads.toArray(new ChanPost[0]);
+        if (board != null)
+            board.threads = threads.toArray(new ChanPost[0]);
         if (DEBUG) Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
 

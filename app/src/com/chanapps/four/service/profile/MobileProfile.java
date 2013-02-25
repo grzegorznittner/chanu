@@ -223,7 +223,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 					&& currentActivityId.boardCode.equals(data.boardCode);
             //makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_loaded_board), data.boardCode));
 			ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
-			if (board.defData) {
+			if (board == null || board.defData) {
 				// board data corrupted, we need to reload it
 				if (DEBUG) Log.w(TAG, "Board " + data.boardCode + " is corrupted, it is scheduled for reload");
 				FetchChanDataService.scheduleBoardFetch(service.getApplicationContext(), data.boardCode);
