@@ -49,7 +49,7 @@ import com.nostra13.universalimageloader.utils.FileUtils;
 
 public class ChanImage extends MediaItem {
     private static final String TAG = "ChanImage";
-    public static final boolean DEBUG  = true;
+    public static final boolean DEBUG  = false;
     
     private static final int MIN_DOWNLOAD_PROGRESS_UPDATE = 300;
 	private static final int IMAGE_BUFFER_SIZE = 20480;
