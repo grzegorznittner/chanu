@@ -136,10 +136,15 @@ public class BoardGroupFragment extends Fragment
 
     public void onItemClick(View view, String boardCode, long threadNo) {
         //ChanHelper.fadeout(getActivity(), view);
-        if (boardType == ChanBoard.Type.WATCHLIST && threadNo >= 0) {
+        if (threadNo > 0) {
         	ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
-            ThreadActivity.startActivity(getActivity(), thread, view, threadNo, true);
-        } else if (boardType != ChanBoard.Type.WATCHLIST) {
+            if (thread != null) {
+                ThreadActivity.startActivity(getActivity(), thread, view, threadNo, true);
+            }
+            else {
+                ThreadActivity.startActivity(getActivity(), boardCode, threadNo);
+            }
+        } else {
             BoardActivity.startActivity(getActivity(), boardCode);
         }
     }

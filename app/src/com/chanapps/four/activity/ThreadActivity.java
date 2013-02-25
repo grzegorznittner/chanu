@@ -88,9 +88,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 	    if (DEBUG) Log.d(TAG, "threadTim: " + threadTim);
 	    final long postId = thread.no;
 	    final String boardName = thread.board;
+        /* still needed?
 	    ChanBoard board = ChanFileStorage.loadBoardData(from, boardName); // better way to do this? bad to run on UI thread
 	    if (board != null && board.defData) // def data are not clicable
 	    	return;
+	    */
 	    final String text = thread.getBoardText();
 	    final String imageUrl = thread.getImageUrl();
 	    final int tn_w = thread.tn_w;
@@ -98,6 +100,21 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 	    final int pos = 0;
 	    Intent intent = createIntentForActivity(from, boardName, postId, text, imageUrl, tn_w, tn_h, threadTim, fromParent, pos);
 	    if (DEBUG) Log.i(TAG, "Calling thread activity with id=" + id);
+	    from.startActivity(intent);
+    }
+
+    public static void startActivity(Activity from, String boardCode, long threadNo) {
+        if (threadNo <= 0) {
+            startActivity(from, boardCode);
+            return;
+        }
+        final long threadTim = 0;
+	    final String text = "";
+	    final String imageUrl = "";
+	    final int tn_w = 0;
+	    final int tn_h = 0;
+	    final int pos = 0;
+	    Intent intent = createIntentForActivity(from, boardCode, threadNo, text, imageUrl, tn_w, tn_h, threadTim, false, pos);
 	    from.startActivity(intent);
     }
 
