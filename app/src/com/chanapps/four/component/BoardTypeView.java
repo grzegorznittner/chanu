@@ -307,58 +307,76 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 
     @Override
 	public boolean onTouch(View v, MotionEvent ev) {
-		switch (ev.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			downX = ev.getX();
-			downY = ev.getY();
-			lastClickDown = new Date().getTime();
-			if (DEBUG) Log.i(TAG, "Touch down " + (int)(downX / columnWidth) + "-" + (int)(downY / columnWidth));
-			break;
-		case MotionEvent.ACTION_UP:
-			int positionX = (int)(downX / columnWidth);
-			int positionY = (int)(downY / columnWidth);
-			boolean longPress = new Date().getTime() - lastClickDown > LONG_CLICK_DELAY;
-			if (DEBUG) Log.i(TAG, (longPress ? "Long pressed " : "Pressed ") + positionX + "-" + positionY);
-			
-			long threadId = -1;
-			String board = null;
-			if (boardType == Type.WATCHLIST) {
-				if (DEBUG) Log.i(TAG, "Clicked on " + (positionY * numCols + positionX)
-						+ " out of " + watchedThreads.size() + " watched threads");
-				if (watchedThreads.size() > positionY * numCols + positionX) {
-					threadId = watchedThreads.get(positionY * numCols + positionX).no;
-					board = watchedThreads.get(positionY * numCols + positionX).board;
-				} else {
-					break;
-				}
-			}
-			if (boardType != Type.WATCHLIST) {
-				if (DEBUG) Log.i(TAG, "Clicked on " + (positionY * numCols + positionX)
-						+ " out of " + boards.size() + " boards");
-				if (boards.size() > positionY * numCols + positionX) {
-					board = boards.get(positionY * numCols + positionX).board;
-				} else {
-					break;
-				}
-			}
-			
-			if (clickListener != null) {
-				if (longPress) {
-					clickListener.onItemLongClick(this, boardType, board, threadId);
-				} else {
-					clickListener.onItemClick(this, board, threadId);
-				}
-			}
-			break;
-		}
-		return true;
-	}
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                downX = ev.getX();
+                downY = ev.getY();
+                lastClickDown = new Date().getTime();
+                if (DEBUG) Log.i(TAG, "Touch down " + (int)(downX / columnWidth) + "-" + (int)(downY / columnWidth));
+                return true;
+            case MotionEvent.ACTION_UP:
+                return handleTouchUp();
+            default:
+                return false;
+        }
+    }
 
-	private static class ChanThreadData {
-		String board;
-		long no;
-		String thumbUrl;
-		String shortText;
+    private boolean handleTouchUp() {
+        int positionX = (int)(downX / columnWidth);
+        int positionY = (int)(downY / columnWidth);
+        boolean longPress = new Date().getTime() - lastClickDown > LONG_CLICK_DELAY;
+        if (DEBUG) Log.i(TAG, (longPress ? "Long pressed " : "Pressed ") + positionX + "-" + positionY);
+
+        switch (boardType) {
+            case WATCHLIST:
+                return handleWatchlistTouchUp(positionX, positionY, longPress);
+            default:
+                return handleBoardTouchUp(positionX, positionY);
+        }
+    }
+
+    private boolean handleWatchlistTouchUp(int positionX, int positionY, boolean longPress) {
+        if (DEBUG) Log.i(TAG, "Clicked on " + (positionY * numCols + positionX)
+                + " out of " + watchedThreads.size() + " watched threads");
+        if (watchedThreads.size() > positionY * numCols + positionX) {
+            long threadId = -1;
+            String boardCode = ChanBoard.DEFAULT_BOARD_CODE;
+            ChanThreadData thread = watchedThreads.get(positionY * numCols + positionX);
+            if (thread != null) {
+                boardCode = thread.board;
+                threadId = thread.no;
+            }
+            if (clickListener != null) {
+                if (longPress && threadId > -1) {
+                    clickListener.onItemLongClick(this, boardType, boardCode, threadId);
+                } else {
+                    clickListener.onItemClick(this, boardCode, threadId);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean handleBoardTouchUp(int positionX, int positionY) {
+        if (DEBUG) Log.i(TAG, "Clicked on " + (positionY * numCols + positionX)
+                + " out of " + boards.size() + " boards");
+        if (boards.size() > positionY * numCols + positionX) {
+            ChanBoard board = boards.get(positionY * numCols + positionX);
+            String boardCode = board != null ? board.link : ChanBoard.DEFAULT_BOARD_CODE;
+            if (clickListener != null) {
+                clickListener.onItemClick(this, boardCode, -1);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private static class ChanThreadData {
+        String board;
+        long no;
+        String thumbUrl;
+        String shortText;
 		
 		@Override
 		public boolean equals(Object o) {
