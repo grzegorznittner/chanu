@@ -16,13 +16,12 @@ import java.util.Calendar;
 
 import org.apache.commons.io.IOUtils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
@@ -33,13 +32,13 @@ import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.util.ThreadPool.Job;
 import com.android.gallery3d.util.ThreadPool.JobContext;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
-import com.chanapps.four.activity.GalleryViewActivity;
+import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.NetworkProfileManager;
+import com.chanapps.four.service.profile.NetworkProfile;
 import com.nostra13.universalimageloader.core.ImageDecoder;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -47,13 +46,15 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader;
 import com.nostra13.universalimageloader.utils.FileUtils;
 
-public class ChanImage extends MediaItem {
+public class ChanImage extends MediaItem implements ChanIdentifiedService {
     private static final String TAG = "ChanImage";
     public static final boolean DEBUG  = false;
     
     private static final int MIN_DOWNLOAD_PROGRESS_UPDATE = 300;
 	private static final int IMAGE_BUFFER_SIZE = 20480;
 
+	private final ChanActivityId activityId;
+	private final String name;
     private final String url;
     private final String thumbUrl;
     private final String localImagePath;
@@ -70,6 +71,7 @@ public class ChanImage extends MediaItem {
     public ChanImage(GalleryApp application, Path path, ChanPost post) {
         super(path, nextVersionNumber());
         mApplication = application;
+        activityId = new ChanActivityId(post.board, post.resto != 0 ? post.resto : post.no, false);
         url = post.getImageUrl();
         thumbUrl = post.getThumbnailUrl();
         tn_h = post.tn_h;
@@ -78,6 +80,7 @@ public class ChanImage extends MediaItem {
         height = post.h;
         fsize = post.fsize;
         ext = post.ext;
+        name = "/" + post.board + "/" + (post.resto != 0 ? post.resto : post.no);
         localImagePath = ChanFileStorage.getBoardCacheDirectory(mApplication.getAndroidContext(), post.board) + "/" + post.getImageName();
         mApplication = Utils.checkNotNull(application);
         String extNoDot = post.ext != null && post.ext.startsWith(".") ? post.ext.substring(1) : post.ext;
@@ -146,14 +149,14 @@ public class ChanImage extends MediaItem {
 			}
 			
 			long endTime = Calendar.getInstance().getTimeInMillis();
-			//NetworkProfileManager.instance().finishedImageDownload(this, (int)(endTime - startTime), fileLength);
+			NetworkProfileManager.instance().finishedImageDownload(this, (int)(endTime - startTime), fileLength);
             if (DEBUG) Log.i(TAG, "Stored image " + url + " to file "
             		+ targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
             
 		    //notifyDownloadFinished(fileLength);
 		} catch (Exception e) {
             Log.e(TAG, "Error in image download service", e);
-            //NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
+            NetworkProfileManager.instance().failedFetchingData(this, NetworkProfile.Failure.NETWORK);
             //notifyDownloadError();
 		} finally {
 			notifyDownloadProgress(fsize);
@@ -164,6 +167,7 @@ public class ChanImage extends MediaItem {
 	}
 	
 	private void notifyDownloadProgress(int fileLength) {
+		/*
 		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
 		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
 			Handler handler = activity.getChanHandler();
@@ -172,6 +176,7 @@ public class ChanImage extends MediaItem {
 				handler.sendMessage(msg);
 			}
 		}
+		*/
 	}
 
 	protected void closeConnection(HttpURLConnection tc) {
@@ -363,4 +368,19 @@ public class ChanImage extends MediaItem {
     public int getHeight() {
         return height;
     }
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public ChanActivityId getChanActivityId() {
+		return activityId;
+	}
+
+	@Override
+	public Context getApplicationContext() {
+		return mApplication != null ? mApplication.getAndroidContext() : null;
+	}
 }

@@ -208,6 +208,11 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
     public void setTitle(String title) {
         if (mActionBar != null) mActionBar.setTitle(title);
     }
+    
+    public String getTitle() {
+    	if (mActionBar != null) return mActionBar.getTitle().toString();
+    	return null;
+    }
 
     public void setTitle(int titleId) {
         if (mActionBar != null) mActionBar.setTitle(titleId);
@@ -248,5 +253,11 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
             }
         }
         return false;
+    }
+    
+    public void setDisplayHomeAsUpEnabled(boolean enabled) {
+    	if (mActionBar != null) {
+    		mActionBar.setDisplayHomeAsUpEnabled(enabled);
+    	}
     }
 }

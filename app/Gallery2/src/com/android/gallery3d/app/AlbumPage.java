@@ -454,10 +454,14 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
             int typeBits = mData.getInt(Gallery.KEY_TYPE_BITS,
                     DataManager.INCLUDE_IMAGE);
 
-            actionBar.setTitle(GalleryUtils.getSelectionModePrompt(typeBits));
+            if (actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {
+            	actionBar.setTitle(GalleryUtils.getSelectionModePrompt(typeBits));
+            }
         } else {
             inflater.inflate(R.menu.album, menu);
-            actionBar.setTitle(mMediaSet.getName());
+            if (actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {
+            	actionBar.setTitle(mMediaSet.getName());
+            }
             if (mMediaSet instanceof MtpDevice) {
                 menu.findItem(R.id.action_slideshow).setVisible(false);
             } else {
@@ -470,10 +474,13 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
             if (groupBy != null) {
                 groupBy.setVisible(mShowClusterMenu);
             }
-
-            actionBar.setTitle(mMediaSet.getName());
+            
+            if (actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {	
+	            actionBar.setTitle(mMediaSet.getName());
+            }
         }
         actionBar.setSubtitle(null);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         return true;
     }

@@ -51,7 +51,6 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.fragment.SetWallpaperDialogFragment;
 import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
@@ -59,8 +58,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
-
     public static final String TAG = "GalleryViewActivity";
+    private static final boolean DEBUG = true;
 
     public static final String VIEW_TYPE = "viewType";
 
@@ -76,8 +75,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	public static final int FINISHED_DOWNLOAD_MSG = 2;
 	public static final int DOWNLOAD_ERROR_MSG = 3;
 	public static final int UPDATE_POSTNO_MSG = 4;
-
-    private static final boolean DEBUG = false;
 
     private Context ctx;
 
@@ -281,6 +278,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             imageUrl = prefs.getString(ChanHelper.IMAGE_URL, "");
         }
         if (DEBUG) Log.i(TAG, "loaded image from prefs/intent url=" + imageUrl);
+        if (DEBUG) Log.i(TAG, "After all loads , viewType: " + viewType.toString() + " boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
         setActionBarTitle();
     }
 
@@ -604,6 +602,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     private void setActionBarTitle() {
         if (getActionBar() != null) {
             getActionBar().setTitle("/" + boardCode + "/" + threadNo + (threadNo == postNo ? "" : ":" + postNo));
+            Log.w(TAG, "Title set: " + getActionBar().getTitle());
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }

@@ -297,13 +297,18 @@ public class PhotoPage extends ActivityState
     }
 
     private void setTitle(String title) {
+    	/*
         if (title == null) return;
         boolean showTitle = mActivity.getAndroidContext().getResources().getBoolean(
                 R.bool.show_action_bar_title);
-        if (showTitle)
+        if (showTitle) {
             mActionBar.setTitle(title);
-        else
+            mActionBar.setDisplayHomeAsUpEnabled(true);
+        } else {
+        	mActionBar.setDisplayHomeAsUpEnabled(true);
             mActionBar.setTitle("");
+        }
+        */
     }
 
     private void updateCurrentPhoto(MediaItem photo) {

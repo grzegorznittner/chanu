@@ -28,8 +28,8 @@ public class ChanAlbum extends MediaSet {
 	public ChanAlbum(Path path, GalleryApp application, ChanThread thread) {
 		super(path, nextVersionNumber());
 		this.application = application;
-		this.name = "/" + board + "/" + thread.no;
 		this.board = thread.board;
+		this.name = "/" + board + "/" + thread.no;
 		this.threadNo = thread.no;
 		for (ChanPost post : thread.posts) {
 			if (post.tim != 0) {
