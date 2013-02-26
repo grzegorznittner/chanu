@@ -5,13 +5,13 @@
 
     <ImageView
             android:id="@+id/grid_item_image"
-            style="@style/BoardGridImageNormalStyle"
+            style="@style/BoardGridImageStyle"
             android:contentDescription="@string/thread_post_image"
             />
 
     <TextView
             android:id="@+id/grid_item_text"
-            style="@style/BoardGridTextImageOverlayNormalStyle"
+            style="@style/BoardGridTextImageOverlayStyle"
             />
 
     <ImageView

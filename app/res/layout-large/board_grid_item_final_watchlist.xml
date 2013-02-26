@@ -4,7 +4,7 @@
                 style="@style/BoardGridLayout"
                 android:gravity="center">
 
-    <TextView style="@style/GridFinalItemNormalStyle"
+    <TextView style="@style/GridFinalItemStyle"
         android:text="@string/board_end_of_watchlist"
     />
 

@@ -316,7 +316,9 @@ public class BoardActivity
             if (spoiler > 0) {
                 smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
             }
-            else if (imageUrl != null && !imageUrl.isEmpty() && ((tnW > 2 && tnH > 2) || adItem > 0)) {
+            else if (imageUrl != null && !imageUrl.isEmpty() && ((tnW > 2 && tnH > 2) || adItem > 0)
+                    && !(boardCode.equals("s") && cursor.getPosition() == 1))
+            {
                 smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
             }
             else {

@@ -6,7 +6,7 @@
 
     <ImageView
             android:id="@+id/grid_item_image"
-            style="@style/BoardAdGridImageNormalStyle"
+            style="@style/BoardAdGridImageStyle"
             android:contentDescription="@string/jlist_ad_message"
             />
 
