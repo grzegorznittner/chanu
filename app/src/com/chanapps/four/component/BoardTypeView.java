@@ -181,10 +181,10 @@ public class BoardTypeView extends View implements View.OnTouchListener {
             }
             RectF textRect = new RectF(posX, posY + columnHeight - boxHeight - internalPadding,
                     posX + columnWidth - internalPadding, posY + columnHeight - internalPadding);
-            paint.setColor(0xaa000000);
+            paint.setColor(0xff000000);
             canvas.drawRect(textRect, paint);
 
-            paint.setColor(0xaaffffff);
+            paint.setColor(0xffffffff);
             float textX = textRect.centerX();
             float textY = textRect.centerY() - ((paint.descent() + paint.ascent()) / 2);
             canvas.drawText(board.name, textX, textY, paint);
@@ -238,10 +238,10 @@ public class BoardTypeView extends View implements View.OnTouchListener {
             }
             RectF textRect = new RectF(posX, posY + columnHeight - boxHeight - internalPadding,
                     posX + columnWidth - internalPadding, posY + columnHeight - internalPadding);
-            paint.setColor(0xaa000000);
+            paint.setColor(0xff000000);
             canvas.drawRect(textRect, paint);
 
-            paint.setColor(0xaaffffff);
+            paint.setColor(0xffffffff);
             String abbrevText = ChanPost.abbreviate(thread.shortText, 22);
             float textX = textRect.centerX();
             float textY = textRect.centerY() - ((paint.descent() + paint.ascent()) / 2);
