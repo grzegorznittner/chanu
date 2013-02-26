@@ -157,6 +157,15 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
+        
+        <activity android:name=".VideoViewActivity"
+                android:configChanges="orientation|keyboardHidden|screenSize"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+             </intent-filter>
+        </activity>
+        
 
         <!-- Gallery activities -->
         
@@ -219,8 +228,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.DREAM" />
             </intent-filter>
-        </activity>
-        
+        </activity>        
     </application>
 
 </manifest>
