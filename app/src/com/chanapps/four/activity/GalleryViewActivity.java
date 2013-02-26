@@ -163,7 +163,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         
-        //webView.setBackgroundColor(Color.BLACK);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(this));
         

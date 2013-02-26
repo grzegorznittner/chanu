@@ -42,6 +42,8 @@ import com.android.gallery3d.ui.UserInteractionListener;
 import com.android.gallery3d.util.GalleryUtils;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
+import com.chanapps.four.activity.VideoViewActivity;
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.service.NetworkProfileManager;
 
@@ -55,6 +57,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.GetChars;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -530,21 +533,27 @@ public class PhotoPage extends ActivityState
         }
 
         if (playVideo) {
-            playVideo((Activity) mActivity, item.getPlayUri(), item.getName());
+            playVideo((Activity) mActivity, item.getPlayUri(), item.getPath());
         } else {
             onUserInteractionTap();
         }
     }
 
-    public static void playVideo(Activity activity, Uri uri, String title) {
+    public static void playVideo(Activity activity, Uri uri, Path path) {
         try {
-            Intent intent = new Intent(Intent.ACTION_VIEW)
-                    .setDataAndType(uri, "video/*");
+        	String title = null;
+        	String[] parts = path.split();
+        	if (parts.length == 3) {
+        		title = "/" + parts[1] + "/" + parts[2]; 
+        	} else if (parts.length == 4) {
+        		title = "/" + parts[1] + "/" + parts[2] + ":" + parts[3];
+        	}
+            Intent intent = new Intent(activity.getBaseContext(), VideoViewActivity.class);
+            intent.putExtra(ChanHelper.IMAGE_URL, uri.toString());
             intent.putExtra(Intent.EXTRA_TITLE, title);
             activity.startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(activity, activity.getString(R.string.video_err),
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, activity.getString(R.string.video_err), Toast.LENGTH_SHORT).show();
         }
     }
 
