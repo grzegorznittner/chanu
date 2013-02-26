@@ -59,7 +59,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
     public static final String TAG = "GalleryViewActivity";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static final String VIEW_TYPE = "viewType";
 
@@ -245,8 +245,9 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
                 threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
                 postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
-                if (postNo == 0)
+                if (postNo == 0) {
                     postNo = threadNo; // for calls from null thread grid items used in header
+                }
                 imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
                 imageWidth = intent.getIntExtra(ChanHelper.IMAGE_WIDTH, 0);
                 imageHeight = intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0);
@@ -602,7 +603,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     private void setActionBarTitle() {
         if (getActionBar() != null) {
             getActionBar().setTitle("/" + boardCode + "/" + threadNo + (threadNo == postNo ? "" : ":" + postNo));
-            Log.w(TAG, "Title set: " + getActionBar().getTitle());
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
@@ -634,13 +634,10 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 		            }
 	            }
             } else if (msg.what == UPDATE_POSTNO_MSG) {
-	            int selectedPostNo = msg.arg1;
-	            //String url = (String)msg.obj;
-	            
-	            activity.postNo = selectedPostNo;
-	            //activity.imageUrl = url;
+	            String postNo = (String)msg.obj;
+	            activity.postNo = Long.parseLong(postNo);
 	            activity.savePrefs();
-            	Log.i(TAG, "Updated last viewed image: " + activity.postNo);
+            	if (DEBUG) Log.w(TAG, "Updated last viewed image: " + activity.postNo);
             }
             
         }

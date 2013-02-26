@@ -36,7 +36,7 @@ public class Path {
         mSegment = segment;
     }
 
-    public Path getChild(String segment) {
+	public Path getChild(String segment) {
         synchronized (Path.class) {
             if (mChildren == null) {
                 mChildren = new IdentityCache<String, Path>();
@@ -234,4 +234,18 @@ public class Path {
             }
         }
     }
+
+    @Override
+	public boolean equals(Object o) {
+    	if (o != null && o instanceof Path) {
+    		Path op = (Path)o;
+    		if (mParent != null) {
+    			return mSegment.equals(op.mSegment) && mParent.equals(op.mParent);
+    		} else {
+    			return mSegment.equals(op.mSegment);
+    		}
+    	} else {
+    		return false;
+    	}
+	}
 }

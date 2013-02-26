@@ -68,6 +68,7 @@ public class PhotoPage extends ActivityState
         implements PhotoView.PhotoTapListener, FilmStripView.Listener,
         UserInteractionListener {
     private static final String TAG = "PhotoPage";
+    private static boolean DEBUG = false;
 
     private static final int MSG_HIDE_BARS = 1;
 
@@ -185,14 +186,17 @@ public class PhotoPage extends ActivityState
 
         if (setPathString != null) {
             mMediaSet = mActivity.getDataManager().getMediaSet(setPathString);
-            mCurrentIndex = mMediaSet.getIndexOfItem(itemPath, 0);
             mMediaSet = (MediaSet)
                     mActivity.getDataManager().getMediaObject(setPathString);
             if (mMediaSet == null) {
                 Log.w(TAG, "failed to restore " + setPathString);
             }
-            PhotoDataAdapter pda = new PhotoDataAdapter(
-                    mActivity, mPhotoView, mMediaSet, itemPath, mCurrentIndex);
+            mCurrentIndex = mMediaSet.getIndexOfItem(itemPath, 0);
+            if (DEBUG) Log.i(TAG, "Current index from getIndexOfItem: " + mCurrentIndex + " total count: " + mMediaSet.getTotalMediaItemCount());
+            if (mCurrentIndex < 0 || mCurrentIndex > mMediaSet.getTotalMediaItemCount()) {
+            	mCurrentIndex = 0;
+            }
+            PhotoDataAdapter pda = new PhotoDataAdapter(mActivity, mPhotoView, mMediaSet, itemPath, mCurrentIndex);
             mModel = pda;
             mPhotoView.setModel(mModel);
 
@@ -203,7 +207,7 @@ public class PhotoPage extends ActivityState
 
                 @Override
                 public void onPhotoChanged(int index, Path item) {
-                	Log.i(TAG, "Photo changed to " + index + ", path " + item);
+                	if (DEBUG) Log.i(TAG, "Photo changed to " + index + ", path " + item);
                     if (mFilmStripView != null) mFilmStripView.setFocusIndex(index);
                     mCurrentIndex = index;
                     mResultIntent.putExtra(KEY_INDEX_HINT, index);
@@ -216,28 +220,33 @@ public class PhotoPage extends ActivityState
                     }
                     setStateResult(Activity.RESULT_OK, mResultIntent);
                     
-                    ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    Log.i(TAG, "Current activity: " + activity.getChanActivityId());
+                    notifyPhotoChanged(item);
+                }
+
+				private void notifyPhotoChanged(Path item) {
+					ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                    if (DEBUG) Log.i(TAG, "Current activity: " + activity.getChanActivityId());
             		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
             			Handler handler = activity.getChanHandler();
             			if (handler != null && item != null) {
             				String[] pathParts = item.split();
             				if (pathParts.length == 4) {
-            					Message msg = handler.obtainMessage(GalleryViewActivity.UPDATE_POSTNO_MSG, (int)Long.parseLong(pathParts[3]), 0);
+            					Message msg = handler.obtainMessage(GalleryViewActivity.UPDATE_POSTNO_MSG, 0, 0);
+            					msg.obj = pathParts[3];
             					handler.sendMessage(msg);
             				}
             			}
             		}
-                }
+				}
 
                 @Override
                 public void onLoadingFinished() {
-                	Log.i(TAG, "Loading finished ...");
+                	if (DEBUG) Log.i(TAG, "Loading finished ...");
                     GalleryUtils.setSpinnerVisibility((Activity) mActivity, false);
                     if (!mModel.isEmpty()) {
                         MediaItem photo = mModel.getCurrentMediaItem();
                         if (photo != null) updateCurrentPhoto(photo);
-                        Log.i(TAG, "    photo updated " + photo.getPath());
+                        if (DEBUG) Log.i(TAG, "    photo updated " + photo.getPath());
                     } else if (mIsActive) {
                         mActivity.getStateManager().finishState(PhotoPage.this);
                     }
@@ -245,13 +254,13 @@ public class PhotoPage extends ActivityState
 
                 @Override
                 public void onLoadingStarted() {
-                	Log.i(TAG, "Loading started ...");
+                	if (DEBUG) Log.i(TAG, "Loading started ...");
                     GalleryUtils.setSpinnerVisibility((Activity) mActivity, true);
                 }
 
                 @Override
                 public void onPhotoAvailable(long version, boolean fullImage) {
-                	Log.i(TAG, "Photo available version: " + version + ", fullImage: " + fullImage);
+                	if (DEBUG) Log.i(TAG, "Photo available version: " + version + ", fullImage: " + fullImage);
                     if (mFilmStripView == null) initFilmStripView();
                 }
             });
@@ -339,6 +348,7 @@ public class PhotoPage extends ActivityState
         if (mShowBars) return;
         mShowBars = true;
         mActionBar.show();
+        mActionBar.setDisplayHomeAsUpEnabled(true);
         WindowManager.LayoutParams params = ((Activity) mActivity).getWindow().getAttributes();
         params.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
         ((Activity) mActivity).getWindow().setAttributes(params);

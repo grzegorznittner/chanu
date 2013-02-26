@@ -116,7 +116,7 @@ public abstract class MediaSet extends MediaObject {
 
     protected int getIndexOf(Path path, ArrayList<MediaItem> list) {
         for (int i = 0, n = list.size(); i < n; ++i) {
-            if (list.get(i).mPath == path) return i;
+            if (list.get(i).mPath.equals(path)) return i;
         }
         return INDEX_NOT_FOUND;
     }

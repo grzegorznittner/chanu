@@ -312,11 +312,11 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
     @Override
     public int getMediaType() {
-    	if (".gif".equals(ext)) {
-    		return MEDIA_TYPE_VIDEO;
-    	} else {
+//    	if (".gif".equals(ext)) {
+//    		return MEDIA_TYPE_VIDEO;
+//    	} else {
     		return MEDIA_TYPE_IMAGE;
-    	}
+//    	}
     }
     
     @Override
