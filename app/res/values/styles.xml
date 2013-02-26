@@ -63,6 +63,16 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
+    <style name="GridFinalItemNormalStyle" parent="GridTextOnlyStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="GridFinalItemStyle" parent="GridTextOnlyStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -203,6 +213,14 @@
         <item name="android:padding">4dp</item>
     </style>
 
+    <style name="BoardGridImageNormalStyle" parent="GridImageStyle">
+        <item name="android:maxHeight">246dp</item>
+        <item name="android:maxWidth">110dp</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_marginBottom">96dp</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
     <style name="BoardGridImageStyle" parent="GridImageStyle">
         <item name="android:maxHeight">246dp</item>
         <item name="android:maxWidth">150dp</item>
@@ -217,6 +235,12 @@
         <item name="android:layout_marginBottom">160dp</item>
     </style>
 
+    <style name="BoardAdGridImageNormalStyle" parent="GridImageStyle">
+        <item name="android:maxHeight">246dp</item>
+        <item name="android:maxWidth">110dp</item>
+        <item name="android:scaleType">fitStart</item>
+    </style>
+
     <style name="BoardAdGridImageStyle" parent="GridImageStyle">
         <item name="android:maxHeight">246dp</item>
         <item name="android:maxWidth">150dp</item>
@@ -226,6 +250,20 @@
     <style name="BoardAdGridImageLargeStyle" parent="BoardAdGridImageStyle">
         <item name="android:maxHeight">360dp</item>
         <item name="android:maxWidth">200dp</item>
+    </style>
+
+    <style name="BoardGridTextImageOverlayNormalStyle" parent="GridItemStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">96dp</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:gravity">center_horizontal|top</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="BoardGridTextImageOverlayStyle" parent="GridItemStyle">

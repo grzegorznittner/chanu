@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/list_item"
+              style="@style/ThreadListLayoutNoHighlight"
+              android:gravity="center">
+
+        <TextView style="@style/GridFinalItemStyle"
+                  android:text="@string/thread_end_of_thread"
+                />
+
+</RelativeLayout>
