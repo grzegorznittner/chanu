@@ -20,7 +20,7 @@ public class ChanGridSizer {
     private static final String TAG = ChanGridSizer.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    private static final int MAX_COLUMN_WIDTH = 140;
+    private static final int MAX_COLUMN_WIDTH = 110;
     private static final int[] MAX_COLUMN_WIDTHS = {
             ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH,
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH,
@@ -34,6 +34,14 @@ public class ChanGridSizer {
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
             ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
             ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_LARGE
+    };
+
+    private static final int MAX_COLUMN_WIDTH_XLARGE = 300;
+    private static final int[] MAX_COLUMN_WIDTHS_XLARGE = {
+            ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
+            ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
+            ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
+            ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_XLARGE
     };
 
     private GridView g;
@@ -59,10 +67,17 @@ public class ChanGridSizer {
         }
         this.d = d;
         int layoutMask = g.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
-        int[] columnWidthArray =
-                (layoutMask == Configuration.SCREENLAYOUT_SIZE_XLARGE)
-                ? MAX_COLUMN_WIDTHS_LARGE
-                : MAX_COLUMN_WIDTHS;
+        int[] columnWidthArray;
+        switch (layoutMask) {
+            case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+                columnWidthArray = MAX_COLUMN_WIDTHS_XLARGE;
+                break;
+            case Configuration.SCREENLAYOUT_SIZE_LARGE:
+                columnWidthArray = MAX_COLUMN_WIDTHS_LARGE;
+                break;
+            default:
+                columnWidthArray = MAX_COLUMN_WIDTHS;
+        }
         for (int i = 0; i < columnWidthArray.length; i += 2) {
             if (serviceType.ordinal() == columnWidthArray[i]) {
                 int dp = columnWidthArray[i + 1];

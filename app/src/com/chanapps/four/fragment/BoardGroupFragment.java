@@ -189,7 +189,7 @@ public class BoardGroupFragment extends Fragment
         if (menuContext == null)
             return;
         menu.removeItem(R.id.clear_watchlist_menu);
-        menu.removeItem(R.id.clean_watchlist_menu);
+        //menu.removeItem(R.id.clean_watchlist_menu);
         MenuInflater inflater = new MenuInflater(menuContext);
         if (selectedBoardType == ChanBoard.Type.WATCHLIST) {
             inflater.inflate(R.menu.watchlist_menu, menu);

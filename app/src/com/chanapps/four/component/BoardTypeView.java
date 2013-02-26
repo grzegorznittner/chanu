@@ -35,12 +35,15 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 	private static final String TAG = BoardTypeView.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    private static final int BOARD_FONT_SP = 14;
-    private static final int BOARD_FONT_SP_LARGE = 18;
-    private static final int BOX_HEIGHT_DP = 32;
-    private static final int BOX_HEIGHT_DP_LARGE = 48;
-    private static final int INTERNAL_PADDING_DP = 2;
-    private static final int INTERNAL_PADDING_DP_LARGE = 4;
+    private static final int BOARD_FONT_SP = 12;
+    private static final int BOARD_FONT_SP_LARGE = 14;
+    private static final int BOARD_FONT_SP_XLARGE = 18;
+    private static final int BOX_HEIGHT_DP = 24;
+    private static final int BOX_HEIGHT_DP_LARGE = 32;
+    private static final int BOX_HEIGHT_DP_XLARGE = 48;
+    private static final int INTERNAL_PADDING_DP = 1;
+    private static final int INTERNAL_PADDING_DP_LARGE = 2;
+    private static final int INTERNAL_PADDING_DP_XLARGE = 4;
 
     private static final int LONG_CLICK_DELAY = 500;
     
@@ -296,7 +299,8 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 
     private enum LayoutSize {
         NORMAL,
-        LARGE
+        LARGE,
+        XLARGE
     }
 
     private boolean isLayoutSet = false;
@@ -306,9 +310,11 @@ public class BoardTypeView extends View implements View.OnTouchListener {
             int sizeMask = getContext().getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
             switch (sizeMask) {
                 case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-                    layoutSize = LayoutSize.LARGE;
+                    layoutSize = LayoutSize.XLARGE;
                     break;
                 case Configuration.SCREENLAYOUT_SIZE_LARGE:
+                    layoutSize = LayoutSize.LARGE;
+                    break;
                 default:
                     layoutSize = LayoutSize.NORMAL;
             }
@@ -330,7 +336,17 @@ public class BoardTypeView extends View implements View.OnTouchListener {
     private boolean isFontSet = false;
     private void calculateFontMetrics() {
         if (!isFontSet) {
-            float fontSizeSp = getLayoutSize() == LayoutSize.LARGE ? BOARD_FONT_SP_LARGE : BOARD_FONT_SP;
+            float fontSizeSp;
+            switch (getLayoutSize()) {
+                case XLARGE:
+                    fontSizeSp = BOARD_FONT_SP_XLARGE;
+                    break;
+                case LARGE:
+                    fontSizeSp = BOARD_FONT_SP_LARGE;
+                    break;
+                default:
+                    fontSizeSp = BOARD_FONT_SP;
+            }
             float pixelSize = fontSizeSp * getDisplayMetrics().scaledDensity;
             fontSize = Math.round(pixelSize);
             paint.setTextSize(fontSize);
@@ -344,7 +360,17 @@ public class BoardTypeView extends View implements View.OnTouchListener {
     private int boxHeight;
     private void calculateBoxHeight() {
         if (!isBoxHeightSet) {
-            float boxHeightDp = getLayoutSize() == LayoutSize.LARGE ? BOX_HEIGHT_DP_LARGE : BOX_HEIGHT_DP;
+            float boxHeightDp;
+            switch (getLayoutSize()) {
+                case XLARGE:
+                    boxHeightDp = BOX_HEIGHT_DP_XLARGE;
+                    break;
+                case LARGE:
+                    boxHeightDp = BOX_HEIGHT_DP_LARGE;
+                    break;
+                default:
+                    boxHeightDp = BOX_HEIGHT_DP;
+            }
             float boxHeightPx = boxHeightDp * getDisplayMetrics().density;
             boxHeight = Math.round(boxHeightPx);
             columnHeight = columnWidth + boxHeight;
@@ -357,7 +383,17 @@ public class BoardTypeView extends View implements View.OnTouchListener {
     private int internalPadding;
     private void calculateInternalPadding() {
         if (!isInternalPaddingSet) {
-            float internalPaddingDp = getLayoutSize() == LayoutSize.LARGE ? INTERNAL_PADDING_DP_LARGE : INTERNAL_PADDING_DP;
+            float internalPaddingDp;
+            switch (getLayoutSize()) {
+                case XLARGE:
+                    internalPaddingDp = INTERNAL_PADDING_DP_XLARGE;
+                    break;
+                case LARGE:
+                    internalPaddingDp = INTERNAL_PADDING_DP_LARGE;
+                    break;
+                default:
+                    internalPaddingDp = INTERNAL_PADDING_DP;
+            }
             float internalPaddingPx = internalPaddingDp * getDisplayMetrics().density;
             internalPadding = Math.round(internalPaddingPx);
             isInternalPaddingSet = true;
