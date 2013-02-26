@@ -31,7 +31,7 @@ import com.chanapps.four.service.NetworkProfileManager;
 
 public class BoardSelectorActivity extends FragmentActivity implements ChanIdentifiedActivity {
     public static final String TAG = "BoardSelectorActivity";
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;

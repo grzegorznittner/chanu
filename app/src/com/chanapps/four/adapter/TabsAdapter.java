@@ -14,12 +14,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.fragment.BoardGroupFragment;
 
 import javax.security.auth.login.LoginException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 /**
@@ -115,19 +119,30 @@ public class TabsAdapter extends FragmentPagerAdapter
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 //        mContext.invalidateOptionsMenu();
+        if (DEBUG) Log.d(BoardSelectorActivity.TAG, "on page scrolled pos=" + position);
     }
 
     @Override
     public void onPageSelected(int position) {
+        mActionBar.setSelectedNavigationItem(position);
+        selectInSpinnerIfPresent(position, true);
+        // following jazz is for watchlist clean/clear menus
+        Fragment fragment = getItem(position);
+        Menu menu = mContext.menu;
         mContext.selectedBoardType = mContext.activeBoardTypes.get(position);
-        //mContext.invalidateOptionsMenu();
-        if (mActionBar != null) {
-            mActionBar.setSelectedNavigationItem(position);
+        if (DEBUG) Log.d(BoardSelectorActivity.TAG, "TabsAdapter pager set to " + position
+                + " with fragment=" + (fragment != null ? fragment.getTag() : null)
+                + " menu=" + menu
+                + " selectedBoardType=" + mContext.selectedBoardType);
+        if (fragment != null && menu != null) {
+            mContext.invalidateOptionsMenu();
+            ((BoardGroupFragment)fragment).onPrepareOptionsMenu(menu, mContext, mContext.selectedBoardType);
         }
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
+        if (DEBUG) Log.d(BoardSelectorActivity.TAG, "page scroll state changed state=" + state);
     }
 
     @Override
@@ -137,21 +152,88 @@ public class TabsAdapter extends FragmentPagerAdapter
             if (mTabs.get(i) == tag) {
             	if (DEBUG) Log.d(BoardSelectorActivity.TAG, "TabAdapter setting pager to " + i);
                 mViewPager.setCurrentItem(i);
+                return;
+            }
+            /*
                 Fragment fragment = getItem(i);
                 Menu menu = mContext.menu;
+                ChanBoard.Type selectedBoardType = mContext.activeBoardTypes.get(i);
+                mContext.selectedBoardType = selectedBoardType;
+                mContext.invalidateOptionsMenu();
+                if (DEBUG) Log.d(BoardSelectorActivity.TAG, "TabsAdapter pager set to " + i
+                        + " with fragment=" + (fragment != null ? fragment.getTag() : null)
+                        + " menu=" + menu
+                        + " selectedBoardType=" + selectedBoardType);
                 if (fragment != null && menu != null) {
-                    ((BoardGroupFragment)fragment).onPrepareOptionsMenu(menu, mContext, mContext.selectedBoardType);
+                    ((BoardGroupFragment)fragment).onPrepareOptionsMenu(menu, mContext, selectedBoardType);
                 }
-            }
+                //if (mActionBar != null) {
+                //    mActionBar.setSelectedNavigationItem(i);
+                //}
+                //tab.setText(mContext.selectedBoardType.toString());
+                if (mActionBar != null) {
+                    //mActionBar.selectTab(tab);
+                    //mContext.setTabToSelectedType(true);
+                }
+                tab.setText(selectedBoardType.toString());
+                notifyDataSetChanged();
+                //tab.select();
+                return;
+                */
         }
     }
 
     @Override
     public void onTabUnselected(ActionBar.Tab tab, android.app.FragmentTransaction transaction) {
+        if (DEBUG) Log.d(BoardSelectorActivity.TAG, "Unselected tab=" + tab.getText());
     }
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, android.app.FragmentTransaction transaction) {
+        if (DEBUG) Log.d(BoardSelectorActivity.TAG, "Reselected tab=" + tab.getText());
     }
 
+    private void selectInSpinnerIfPresent(int position, boolean animate) {
+        try {
+            //View actionBarView = mContext.findViewById(R.id.abs__action_bar);
+            View actionBarView = null;
+            if (actionBarView == null) {
+                int id = mContext.getResources().getIdentifier("action_bar", "id", "android");
+                actionBarView = mContext.findViewById(id);
+            }
+
+            Class<?> actionBarViewClass = actionBarView.getClass();
+            Field mTabScrollViewField = actionBarViewClass.getDeclaredField("mTabScrollView");
+            mTabScrollViewField.setAccessible(true);
+
+            Object mTabScrollView = mTabScrollViewField.get(actionBarView);
+            if (mTabScrollView == null) {
+                return;
+            }
+
+            Field mTabSpinnerField = mTabScrollView.getClass().getDeclaredField("mTabSpinner");
+            mTabSpinnerField.setAccessible(true);
+
+            Object mTabSpinner = mTabSpinnerField.get(mTabScrollView);
+            if (mTabSpinner == null) {
+                return;
+            }
+
+            Method setSelectionMethod = mTabSpinner.getClass().getSuperclass().getDeclaredMethod("setSelection", Integer.TYPE, Boolean.TYPE);
+            setSelectionMethod.invoke(mTabSpinner, position, animate);
+
+            Method requestLayoutMethod = mTabSpinner.getClass().getSuperclass().getDeclaredMethod("requestLayout");
+            requestLayoutMethod.invoke(mTabSpinner);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
 }
