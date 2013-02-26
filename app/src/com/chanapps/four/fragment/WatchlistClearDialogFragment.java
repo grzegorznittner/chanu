@@ -35,17 +35,16 @@ public class WatchlistClearDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 Context ctx = getActivity();
                                 ChanWatchlist.clearWatchlist(ctx);
-                                BaseAdapter adapter = fragment.getAdapter();
-                                if (adapter != null)
-                                    adapter.notifyDataSetChanged();
                                 (new ToastRunnable(getActivity(), getString(R.string.dialog_cleared_watchlist))).run();
+                                fragment.invalidate();
+                                dismiss();
                             }
                         })
                 .setNegativeButton(R.string.dialog_cancel,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // ignore
+                                dismiss();
                             }
                         })
                 .create();

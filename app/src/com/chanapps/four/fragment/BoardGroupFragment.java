@@ -168,6 +168,19 @@ public class BoardGroupFragment extends Fragment
         }
         return handler;
     }
+    
+    public void invalidate() {
+    	if (scrollView != null) {
+    		handler.postDelayed(new Runnable () {
+                public void run() {
+            		BoardTypeView boardTypeView = (BoardTypeView)scrollView.findViewById(R.id.board_selector_type_view);
+            		boardTypeView.postInvalidate();
+            		boardTypeView.refreshDrawableState();
+            		scrollView.postInvalidate();
+                }
+            }, 300);
+    	}
+    }
 
 
     public void onPrepareOptionsMenu(Menu menu, Context menuContext, ChanBoard.Type selectedBoardType) {

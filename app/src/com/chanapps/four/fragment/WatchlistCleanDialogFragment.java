@@ -34,13 +34,15 @@ public class WatchlistCleanDialogFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 (new ChanWatchlist.CleanWatchlistTask(getActivity(), fragment.getAdapter(), true)).execute();
+                                fragment.invalidate();
+                                dismiss();
                             }
                         })
                 .setNegativeButton(R.string.dialog_cancel,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // ignore
+                            	dismiss();
                             }
                         })
                 .create();
