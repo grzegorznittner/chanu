@@ -37,14 +37,15 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 
     private static final int BOARD_FONT_SP = 14;
     private static final int BOARD_FONT_SP_LARGE = 18;
-
     private static final int BOX_HEIGHT_DP = 32;
     private static final int BOX_HEIGHT_DP_LARGE = 48;
+    private static final int INTERNAL_PADDING_DP = 2;
+    private static final int INTERNAL_PADDING_DP_LARGE = 4;
 
     private static final int LONG_CLICK_DELAY = 500;
     
 	private Type boardType;
-	private int numCols, columnWidth;
+	private int numCols, columnWidth; // NOTE: columnWidth is an "outer" width, INCLUDING padding
 	private float downX, downY;
 	private long lastClickDown;
 	private List<ChanBoard> boards = null;
@@ -112,27 +113,27 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 			}
 		}
 	}
-	
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-	   int width = numCols * columnWidth + (numCols - 1) * getPaddingLeft();
-	   int height = columnWidth;
-	   if (boardType == Type.WATCHLIST) {
-		   int numRows = watchedThreads.size() / numCols;
-		   if (numRows * numCols < watchedThreads.size()) {
-			   numRows++;
-		   }
-		   height = numRows * columnWidth + (numRows - 1) * getPaddingBottom();
-	   } else {
-		   int numRows = boards.size() / numCols;
-		   if (numRows * numCols < boards.size()) {
-			   numRows++;
-		   }
-		   height = numRows * columnWidth + (numRows - 1) * getPaddingBottom();
-	   }
-	   if (DEBUG) Log.i(TAG, "onMeasure w: " + width + ", h: " + height);
-	   setMeasuredDimension(width, height);
-	}
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int width = numCols * columnWidth + getPaddingLeft() + getPaddingRight(); // does padding go here?
+        int height = columnWidth;
+        int numRows;
+        if (boardType == Type.WATCHLIST) {
+            numRows = watchedThreads.size() / numCols;
+            if (numRows * numCols < watchedThreads.size()) {
+                numRows++;
+            }
+        } else {
+            numRows = boards.size() / numCols;
+            if (numRows * numCols < boards.size()) {
+                numRows++;
+            }
+        }
+        height = numRows * columnWidth + getPaddingTop() + getPaddingBottom(); // padding should be here?
+        if (DEBUG) Log.i(TAG, "onMeasure w: " + width + ", h: " + height);
+        setMeasuredDimension(width, height);
+    }
 
 	@Override
 	protected void onDraw(Canvas canvas) {
@@ -147,109 +148,117 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 	}
 
 	private void drawBoards(Canvas canvas) {
-		int row = 0;
-		int col = 0;
-		int image = 0;
-		if (boards != null) {
-			for (ChanBoard board : boards) {
-				row = image / numCols;
-				col = image % numCols;
+        if (boards == null)
+            return;
+        calculateBoxHeight();
+        calculateFontMetrics();
+        calculateInternalPadding();
+        int row = 0;
+        int col = 0;
+        int image = 0;
+        for (ChanBoard board : boards) {
+            row = image / numCols;
+            col = image % numCols;
 
-				Bitmap boardImage = null;
-				try {
-					boardImage = BitmapFactory.decodeResource(getResources(),
-						board.getImageResourceId(), options);
-				} catch (OutOfMemoryError ome) {
-					Log.w(TAG, "Out of memory error thrown, trying to recover...");
-					handler.postDelayed(new Runnable () {
-						public void run() {
-							invalidate();
-						}
-					}, 500);
-				}
-				int posX = col * columnWidth + (col - 1) * getPaddingLeft();
-				int posY = row * columnWidth + (row - 1) * getPaddingBottom();
-				RectF destRect = new RectF(posX, posY, posX + columnWidth, posY + columnWidth);
-				if (boardImage != null) {
-					canvas.drawBitmap(boardImage, null, destRect, paint);
-				}
-                calculateBoxHeight();
-				RectF textRect = new RectF(posX, posY + columnWidth - boxHeight,
-						posX + columnWidth, posY + columnWidth);
-				paint.setColor(0xaa000000);
-                canvas.drawRect(textRect, paint);
+            Bitmap boardImage = null;
+            try {
+                boardImage = BitmapFactory.decodeResource(getResources(),
+                        board.getImageResourceId(), options);
+            } catch (OutOfMemoryError ome) {
+                Log.w(TAG, "Out of memory error thrown, trying to recover...");
+                handler.postDelayed(new Runnable () {
+                    public void run() {
+                        invalidate();
+                    }
+                }, 500);
+            }
+            int posX = col * columnWidth;
+            int posY = row * columnWidth;
+            RectF destRect = new RectF(posX, posY, posX + columnWidth - internalPadding, posY + columnWidth - internalPadding); // padding on right and bottom
+            if (boardImage != null) {
+                canvas.drawBitmap(boardImage, null, destRect, paint);
+            }
+            RectF textRect = new RectF(posX, posY + columnWidth - boxHeight - internalPadding,
+                    posX + columnWidth - internalPadding, posY + columnWidth - internalPadding);
+            paint.setColor(0xaa000000);
+            canvas.drawRect(textRect, paint);
 
-				paint.setColor(0xaaffffff);
-                calculateFontMetrics();
-                float textX = textRect.centerX();
-                float textY = textRect.centerY() - ((paint.descent() + paint.ascent()) / 2);
-                canvas.drawText(board.name, textX, textY, paint);
+            paint.setColor(0xaaffffff);
+            float textX = textRect.centerX();
+            float textY = textRect.centerY() - ((paint.descent() + paint.ascent()) / 2);
+            canvas.drawText(board.name, textX, textY, paint);
 
-                image++;
-			}
-		}
-	}
+            image++;
+        }
+    }
 
 	private void drawWatchedThreads(Canvas canvas) {
+        if (watchedThreads == null) {
+            postUpdateWatchList();
+            return;
+        }
+
 		int row = 0;
-		int col = 0;
-		int image = 0;
-		
-		if (watchedThreads != null) {
-			for (ChanThreadData thread : watchedThreads) {
-				row = image / numCols;
-				col = image % numCols;
+        int col = 0;
+        int image = 0;
+        calculateBoxHeight();
+        calculateFontMetrics();
+        calculateInternalPadding();
+        for (ChanThreadData thread : watchedThreads) {
+            row = image / numCols;
+            col = image % numCols;
 
-				Bitmap threadImage = null;
-                try {
-					File thumbFile = thread.thumbUrl != null ? ImageLoader.getInstance().getDiscCache().get(thread.thumbUrl) : null;
-					Bitmap sourceImage = null;
-                    if (thread.thumbUrl != null && thumbFile.exists()) {
-						sourceImage = BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), options);
-					} else {
-						sourceImage = BitmapFactory.decodeResource(getResources(),
-								R.drawable.stub_image, options);
-					}
-                    if (sourceImage != null)
-                        threadImage = scaleCenterCrop(sourceImage, columnWidth, columnWidth);
-				} catch (OutOfMemoryError ome) {
-					Log.w(TAG, "Out of memory error thrown, trying to recover...");
-					handler.postDelayed(new Runnable () {
-						public void run() {
-							invalidate();
-						}
-					}, 500);
-				}
-				int posX = col * columnWidth + (col - 1) * getPaddingLeft();
-				int posY = row * columnWidth + (row - 1) * getPaddingBottom();
-				RectF destRect = new RectF(posX, posY, posX + columnWidth, posY + columnWidth);
-				Log.i(TAG, "Paint watched thread " + col + " " + row);
-				if (threadImage != null) {
-					canvas.drawBitmap(threadImage, null, destRect, paint);
-				}
-                calculateBoxHeight();
-				RectF textRect = new RectF(posX, posY + columnWidth - boxHeight,
-						posX + columnWidth, posY + columnWidth);
-				paint.setColor(0xaa000000);
-				canvas.drawRect(textRect, paint);
-				
-				paint.setColor(0xaaffffff);
-			    calculateFontMetrics();
-                String abbrevText = ChanPost.abbreviate(thread.shortText, 22);
-                float textX = textRect.centerX();
-                float textY = textRect.centerY() - ((paint.descent() + paint.ascent()) / 2);
-                canvas.drawText(abbrevText, textX, textY, paint);
+            Bitmap threadImage = null;
+            try {
+                File thumbFile = thread.thumbUrl != null ? ImageLoader.getInstance().getDiscCache().get(thread.thumbUrl) : null;
+                Bitmap sourceImage = null;
+                if (thread.thumbUrl != null && thumbFile.exists()) {
+                    sourceImage = BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), options);
+                } else {
+                    sourceImage = BitmapFactory.decodeResource(getResources(),
+                            R.drawable.stub_image, options);
+                }
+                if (sourceImage != null)
+                    threadImage = scaleCenterCrop(sourceImage, columnWidth, columnWidth);
+            } catch (OutOfMemoryError ome) {
+                Log.w(TAG, "Out of memory error thrown, trying to recover...");
+                handler.postDelayed(new Runnable () {
+                    public void run() {
+                        invalidate();
+                    }
+                }, 500);
+            }
+            int posX = col * columnWidth;
+            int posY = row * columnWidth;
+            RectF destRect = new RectF(posX, posY, posX + columnWidth - internalPadding, posY + columnWidth - internalPadding);
+            Log.i(TAG, "Paint watched thread " + col + " " + row);
+            if (threadImage != null) {
+                canvas.drawBitmap(threadImage, null, destRect, paint);
+            }
+            RectF textRect = new RectF(posX, posY + columnWidth - boxHeight - internalPadding,
+                    posX + columnWidth - internalPadding, posY + columnWidth - internalPadding);
+            paint.setColor(0xaa000000);
+            canvas.drawRect(textRect, paint);
 
-				image++;
+            paint.setColor(0xaaffffff);
+            String abbrevText = ChanPost.abbreviate(thread.shortText, 22);
+            float textX = textRect.centerX();
+            float textY = textRect.centerY() - ((paint.descent() + paint.ascent()) / 2);
+            canvas.drawText(abbrevText, textX, textY, paint);
 
-			}
-		}
-		handler.postDelayed(new Runnable () {
-			public void run() {
-				updateWatchList(getContext(), true);
-			}
-		}, 500);
-	}
+            image++;
+
+        }
+        postUpdateWatchList();
+    }
+
+    private void postUpdateWatchList() {
+        handler.postDelayed(new Runnable () {
+            public void run() {
+                updateWatchList(getContext(), true);
+            }
+        }, 500);
+    }
 
     private Bitmap scaleCenterCrop(Bitmap source, int newHeight, int newWidth) {
         int sourceWidth = source.getWidth();
@@ -338,6 +347,17 @@ public class BoardTypeView extends View implements View.OnTouchListener {
             float boxHeightPx = boxHeightDp * getDisplayMetrics().density;
             boxHeight = Math.round(boxHeightPx);
             isBoxHeightSet = true;
+        }
+    }
+
+    private boolean isInternalPaddingSet = false;
+    private int internalPadding;
+    private void calculateInternalPadding() {
+        if (!isInternalPaddingSet) {
+            float internalPaddingDp = getLayoutSize() == LayoutSize.LARGE ? INTERNAL_PADDING_DP_LARGE : INTERNAL_PADDING_DP;
+            float internalPaddingPx = internalPaddingDp * getDisplayMetrics().density;
+            internalPadding = Math.round(internalPaddingPx);
+            isInternalPaddingSet = true;
         }
     }
 
