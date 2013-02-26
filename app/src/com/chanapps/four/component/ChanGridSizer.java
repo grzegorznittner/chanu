@@ -20,18 +20,20 @@ public class ChanGridSizer {
     private static final String TAG = ChanGridSizer.class.getSimpleName();
     private static final boolean DEBUG = false;
 
+    private static final int MAX_COLUMN_WIDTH = 140;
     private static final int[] MAX_COLUMN_WIDTHS = {
-            ServiceType.SELECTOR.ordinal(), 170,
-            ServiceType.BOARD.ordinal(), 170,
-            ServiceType.THREAD.ordinal(), 80,
-            ServiceType.WATCHLIST.ordinal(), 170
+            ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH,
+            ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH,
+            ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH,
+            ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH
     };
 
+    private static final int MAX_COLUMN_WIDTH_LARGE = 140;
     private static final int[] MAX_COLUMN_WIDTHS_LARGE = {
-            ServiceType.SELECTOR.ordinal(), 300,
-            ServiceType.BOARD.ordinal(), 300,
-            ServiceType.THREAD.ordinal(), 80,
-            ServiceType.WATCHLIST.ordinal(), 300
+            ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH_LARGE,
+            ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
+            ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
+            ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_LARGE
     };
 
     private GridView g;
@@ -58,12 +60,12 @@ public class ChanGridSizer {
         this.d = d;
         int layoutMask = g.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
         int[] columnWidthArray =
-                ((layoutMask == Configuration.SCREENLAYOUT_SIZE_LARGE) || (layoutMask == Configuration.SCREENLAYOUT_SIZE_XLARGE))
+                (layoutMask == Configuration.SCREENLAYOUT_SIZE_XLARGE)
                 ? MAX_COLUMN_WIDTHS_LARGE
                 : MAX_COLUMN_WIDTHS;
-        for (int i = 0; i < MAX_COLUMN_WIDTHS.length; i += 2) {
-            if (serviceType.ordinal() == MAX_COLUMN_WIDTHS[i]) {
-                int dp = MAX_COLUMN_WIDTHS[i + 1];
+        for (int i = 0; i < columnWidthArray.length; i += 2) {
+            if (serviceType.ordinal() == columnWidthArray[i]) {
+                int dp = columnWidthArray[i + 1];
                 maxColumnWidth = dpToPx(d, dp);
                 return;
             }

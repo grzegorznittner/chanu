@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/list_item"
+                style="@style/ThreadListLayoutLargeNoHighlight">
+
+    <TextView
+            android:id="@+id/list_item_header"
+            style="@style/ListShortTextLargeStyle"
+            android:layout_width="0dp"
+            android:layout_height="192dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/list_item_image"
+            android:text="@string/jlist_ad_message"
+            />
+
+    <com.chanapps.four.component.StretchyImageView
+            android:id="@+id/list_item_image"
+            style="@style/ThreadListItemImageStyle"
+            android:contentDescription="@string/thread_post_image"
+            android:layout_width="192dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:scaleType="fitEnd"
+            android:layout_marginLeft="8dp"
+            android:src="@drawable/board_3"
+            />
+
+</RelativeLayout>

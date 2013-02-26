@@ -305,10 +305,10 @@ public class BoardTypeView extends View implements View.OnTouchListener {
         if (!isLayoutSet) {
             int sizeMask = getContext().getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
             switch (sizeMask) {
-                case Configuration.SCREENLAYOUT_SIZE_LARGE:
                 case Configuration.SCREENLAYOUT_SIZE_XLARGE:
                     layoutSize = LayoutSize.LARGE;
                     break;
+                case Configuration.SCREENLAYOUT_SIZE_LARGE:
                 default:
                     layoutSize = LayoutSize.NORMAL;
             }

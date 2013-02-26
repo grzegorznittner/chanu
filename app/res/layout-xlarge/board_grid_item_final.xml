@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/grid_item"
+                style="@style/BoardGridLargeLayout"
+                android:gravity="center">
+
+    <TextView style="@style/BoardGridFinalItemLargeStyle"
+        android:text="@string/board_end_of_board"
+    />
+
+</RelativeLayout>
