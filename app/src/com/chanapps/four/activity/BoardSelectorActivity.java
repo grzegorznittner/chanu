@@ -265,10 +265,12 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            /*
             case R.id.clean_watchlist_menu:
                 WatchlistCleanDialogFragment cleanWatchlistFragment = new WatchlistCleanDialogFragment(getWatchlistFragment());
                 cleanWatchlistFragment.show(getSupportFragmentManager(), cleanWatchlistFragment.TAG);
                 return true;
+             */
             case R.id.clear_watchlist_menu:
                 WatchlistClearDialogFragment clearWatchlistFragment = new WatchlistClearDialogFragment(getWatchlistFragment());
                 clearWatchlistFragment.show(getSupportFragmentManager(), clearWatchlistFragment.TAG);
