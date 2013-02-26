@@ -300,9 +300,9 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         if (".jpg".equals(ext) || ".jpeg".equals(ext) || ".png".equals(ext)) {
             supported |= SUPPORT_FULL_IMAGE;
         }
-//        if (".gif".equals(ext)) {
-//        	supported |= SUPPORT_PLAY;
-//        }
+        if (".gif".equals(ext)) {
+        	supported |= SUPPORT_PLAY;
+        }
         return supported;
     }
 
@@ -312,11 +312,11 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
     @Override
     public int getMediaType() {
-//    	if (".gif".equals(ext)) {
-//    		return MEDIA_TYPE_VIDEO;
-//    	} else {
+    	if (".gif".equals(ext)) {
+    		return MEDIA_TYPE_VIDEO;
+    	} else {
     		return MEDIA_TYPE_IMAGE;
-//    	}
+    	}
     }
     
     @Override
