@@ -48,7 +48,7 @@ public class BoardTypeView extends View implements View.OnTouchListener {
     private static final int LONG_CLICK_DELAY = 500;
     
 	private Type boardType;
-	private int numCols, columnWidth, columnHeight; // NOTE: columnWidth is an "outer" width, INCLUDING padding
+	private int numCols, columnWidth, rowHeight; // NOTE: columnWidth is an "outer" width, INCLUDING padding
 	private float downX, downY;
 	private long lastClickDown;
 	private List<ChanBoard> boards = null;
@@ -134,7 +134,7 @@ public class BoardTypeView extends View implements View.OnTouchListener {
             }
         }
         calculateBoxHeight();
-        int height = numRows * columnHeight + getPaddingTop() + getPaddingBottom(); // padding should be here?
+        int height = numRows * rowHeight + getPaddingTop() + getPaddingBottom(); // padding should be here?
         if (DEBUG) Log.i(TAG, "onMeasure w: " + width + ", h: " + height);
         setMeasuredDimension(width, height);
     }
@@ -177,13 +177,13 @@ public class BoardTypeView extends View implements View.OnTouchListener {
                 }, 500);
             }
             int posX = col * columnWidth;
-            int posY = row * columnHeight;
-            RectF destRect = new RectF(posX, posY, posX + columnWidth - internalPadding, posY + columnHeight - boxHeight - internalPadding); // padding on right and bottom
+            int posY = row * rowHeight;
+            RectF destRect = new RectF(posX, posY, posX + columnWidth - internalPadding, posY + rowHeight - boxHeight - internalPadding); // padding on right and bottom
             if (boardImage != null) {
                 canvas.drawBitmap(boardImage, null, destRect, paint);
             }
-            RectF textRect = new RectF(posX, posY + columnHeight - boxHeight - internalPadding,
-                    posX + columnWidth - internalPadding, posY + columnHeight - internalPadding);
+            RectF textRect = new RectF(posX, posY + rowHeight - boxHeight - internalPadding,
+                    posX + columnWidth - internalPadding, posY + rowHeight - internalPadding);
             paint.setColor(0xff000000);
             canvas.drawRect(textRect, paint);
 
@@ -223,7 +223,7 @@ public class BoardTypeView extends View implements View.OnTouchListener {
                             R.drawable.stub_image, options);
                 }
                 if (sourceImage != null)
-                    threadImage = scaleCenterCrop(sourceImage, columnWidth, columnHeight - boxHeight);
+                    threadImage = scaleCenterCrop(sourceImage, columnWidth, rowHeight - boxHeight);
             } catch (OutOfMemoryError ome) {
                 Log.w(TAG, "Out of memory error thrown, trying to recover...");
                 handler.postDelayed(new Runnable () {
@@ -233,14 +233,14 @@ public class BoardTypeView extends View implements View.OnTouchListener {
                 }, 500);
             }
             int posX = col * columnWidth;
-            int posY = row * columnHeight;
-            RectF destRect = new RectF(posX, posY, posX + columnWidth - internalPadding, posY + columnHeight - boxHeight - internalPadding);
+            int posY = row * rowHeight;
+            RectF destRect = new RectF(posX, posY, posX + columnWidth - internalPadding, posY + rowHeight - boxHeight - internalPadding);
             Log.i(TAG, "Paint watched thread " + col + " " + row);
             if (threadImage != null) {
                 canvas.drawBitmap(threadImage, null, destRect, paint);
             }
-            RectF textRect = new RectF(posX, posY + columnHeight - boxHeight - internalPadding,
-                    posX + columnWidth - internalPadding, posY + columnHeight - internalPadding);
+            RectF textRect = new RectF(posX, posY + rowHeight - boxHeight - internalPadding,
+                    posX + columnWidth - internalPadding, posY + rowHeight - internalPadding);
             paint.setColor(0xff000000);
             canvas.drawRect(textRect, paint);
 
@@ -373,8 +373,8 @@ public class BoardTypeView extends View implements View.OnTouchListener {
             }
             float boxHeightPx = boxHeightDp * getDisplayMetrics().density;
             boxHeight = Math.round(boxHeightPx);
-            columnHeight = columnWidth + boxHeight;
-            if (DEBUG) Log.i(TAG, "colw=" + columnWidth + " colh=" + columnHeight + " boxH=" + boxHeight);
+            rowHeight = columnWidth + boxHeight;
+            if (DEBUG) Log.i(TAG, "colw=" + columnWidth + " colh=" + rowHeight + " boxH=" + boxHeight);
             isBoxHeightSet = true;
         }
     }
@@ -419,7 +419,7 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 
     private boolean handleTouchUp() {
         int positionX = (int)(downX / columnWidth);
-        int positionY = (int)(downY / columnWidth);
+        int positionY = (int)(downY / rowHeight);
         boolean longPress = new Date().getTime() - lastClickDown > LONG_CLICK_DELAY;
         if (DEBUG) Log.i(TAG, (longPress ? "Long pressed " : "Pressed ") + positionX + "-" + positionY);
 
