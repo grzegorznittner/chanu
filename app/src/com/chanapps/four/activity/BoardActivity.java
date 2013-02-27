@@ -294,7 +294,8 @@ public class BoardActivity
 
     public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
                                        ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
-        if (view instanceof TextView) {
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (view instanceof TextView && adItem == 0) {
             TextView tv = (TextView) view;
             String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
             if (shortText == null || shortText.isEmpty()) {
@@ -311,7 +312,6 @@ public class BoardActivity
             String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
             final int tnW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
             final int tnH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
-            final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
             int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
             if (ChanBoard.isImagelessSticky(boardCode, postNo)) {

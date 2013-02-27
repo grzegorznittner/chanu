@@ -348,7 +348,8 @@
     <string name="camera_folder_name">4Channer Camera</string>
 
     <!-- ads -->
-    <string name="jlist_ad_message">J-List is a peaceful island of Japanese pop culture for you</string>
+    <string name="jlist_ad_message">Advert\nJ-List is a peaceful island of Japanese pop culture for you</string>
+    <string name="jlist_ad_message_compact">Advert</string>
 
     <!-- fetch and network services -->
     <string name="mark_dead_thread">Thread marked as dead</string>

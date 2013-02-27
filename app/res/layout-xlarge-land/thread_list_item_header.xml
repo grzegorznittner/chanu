@@ -22,8 +22,6 @@
                     android:layout_alignParentLeft="true"
                     android:gravity="top|left"
                     android:text="FOO"
-                    android:textStyle="bold"
-                    android:textSize="22sp"
                     />
 
             <com.chanapps.four.component.StretchyImageView
@@ -49,7 +47,6 @@
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="600dp"
                     android:text="bar"
-                    android:textSize="22sp"
                     />
     
             <ImageView

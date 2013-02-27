@@ -22,7 +22,6 @@
                     android:layout_alignParentLeft="true"
                     android:layout_toLeftOf="@+id/list_item_image"
                     android:gravity="top|left"
-                    android:textStyle="bold"
                     android:text="FOO"
                     />
 
@@ -50,7 +49,6 @@
                 android:layout_alignParentLeft="true"
                 android:layout_below="@+id/list_item_header_wrapper"
                 android:paddingTop="8dp"
-                android:textSize="18sp"
                 android:text="bar"
                 />
 

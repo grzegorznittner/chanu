@@ -21,7 +21,6 @@
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
                     android:gravity="top|left"
-                    android:textStyle="bold"
                     android:text="FOO"
                     />
 
@@ -47,7 +46,6 @@
                     android:layout_marginLeft="350dp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
-                    android:textSize="18sp"
                     android:text="bar"
                     />
     

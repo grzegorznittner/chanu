@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppTheme" parent="android:Theme.Holo" />
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar" />
 
     <style name="tabTheme" parent="android:style/Theme">
         <item name="android:tabWidgetStyle">@style/Widget.TabWidget</item>
@@ -205,130 +205,77 @@
     <!-- BOARD GRID STYLES -->
 
     <style name="BoardGridLayout" parent="GridLayout">
-        <item name="android:layout_height">246dp</item>
+        <item name="android:layout_height">140dp</item>
     </style>
 
     <style name="BoardGridLargeLayout" parent="BoardGridLayout">
-        <item name="android:layout_height">360dp</item>
+        <item name="android:layout_height">200dp</item>
         <item name="android:padding">4dp</item>
     </style>
 
     <style name="BoardGridImageNormalStyle" parent="GridImageStyle">
-        <item name="android:maxHeight">246dp</item>
+        <item name="android:maxHeight">140dp</item>
         <item name="android:maxWidth">110dp</item>
         <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_marginBottom">96dp</item>
         <item name="android:scaleType">centerCrop</item>
     </style>
 
     <style name="BoardGridImageStyle" parent="GridImageStyle">
-        <item name="android:maxHeight">246dp</item>
-        <item name="android:maxWidth">150dp</item>
+        <item name="android:maxHeight">180dp</item>
+        <item name="android:maxWidth">140dp</item>
         <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_marginBottom">96dp</item>
         <item name="android:scaleType">centerCrop</item>
     </style>
 
     <style name="BoardGridImageLargeStyle" parent="BoardGridImageStyle">
-        <item name="android:maxHeight">360dp</item>
-        <item name="android:maxWidth">200dp</item>
-        <item name="android:layout_marginBottom">160dp</item>
+        <item name="android:maxHeight">280dp</item>
+        <item name="android:maxWidth">220dp</item>
+        <item name="android:scaleType">centerCrop</item>
     </style>
 
-    <style name="BoardAdGridImageNormalStyle" parent="GridImageStyle">
-        <item name="android:maxHeight">246dp</item>
-        <item name="android:maxWidth">110dp</item>
-        <item name="android:scaleType">fitStart</item>
+    <style name="BoardAdGridImageNormalStyle" parent="BoardGridImageNormalStyle">
+        <item name="android:scaleType">fitCenter</item>
     </style>
 
-    <style name="BoardAdGridImageStyle" parent="GridImageStyle">
-        <item name="android:maxHeight">246dp</item>
-        <item name="android:maxWidth">150dp</item>
-        <item name="android:scaleType">fitStart</item>
+    <style name="BoardAdGridImageStyle" parent="BoardGridImageStyle">
+        <item name="android:scaleType">fitCenter</item>
     </style>
 
-    <style name="BoardAdGridImageLargeStyle" parent="BoardAdGridImageStyle">
-        <item name="android:maxHeight">360dp</item>
-        <item name="android:maxWidth">200dp</item>
+    <style name="BoardAdGridImageLargeStyle" parent="BoardGridImageLargeStyle">
+        <item name="android:scaleType">fitCenter</item>
     </style>
 
-    <style name="BoardGridTextImageOverlayNormalStyle" parent="GridItemStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">96dp</item>
-        <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingLeft">8dp</item>
-        <item name="android:paddingRight">8dp</item>
-        <item name="android:paddingBottom">0dp</item>
-        <item name="android:gravity">center_horizontal|top</item>
+    <style name="BoardGridTextImageOverlayNormalStyle" parent="BoardGridTextImageOverlayStyle">
+        <item name="android:layout_height">48dp</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingLeft">2dp</item>
+        <item name="android:paddingRight">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
     </style>
 
     <style name="BoardGridTextImageOverlayStyle" parent="GridItemStyle">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">96dp</item>
+        <item name="android:layout_height">64dp</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:textStyle">normal</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingLeft">8dp</item>
-        <item name="android:paddingRight">8dp</item>
-        <item name="android:paddingBottom">0dp</item>
-        <item name="android:gravity">center_horizontal|top</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:gravity">center_horizontal|bottom</item>
+        <item name="android:background">@color/PaletteBlackHalfOpacity</item>
         <item name="android:textSize">14sp</item>
     </style>
 
     <style name="BoardGridTextImageOverlayLargeStyle" parent="BoardGridTextImageOverlayStyle">
-        <item name="android:layout_height">160dp</item>
+        <item name="android:layout_height">96dp</item>
         <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingLeft">16dp</item>
-        <item name="android:paddingRight">16dp</item>
-        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
         <item name="android:textSize">18sp</item>
-    </style>
-
-<!-- THREAD GRID STYLES -->
-
-    <style name="ThreadGridLayout" parent="GridLayout">
-        <item name="android:layout_height">80dp</item>
-    </style>
-
-    <style name="ThreadHeaderGridImageStyle" parent="GridImageStyle">
-        <item name="android:maxHeight">150dp</item>
-        <item name="android:maxWidth">150dp</item>
-        <item name="android:scaleType">fitCenter</item>
-    </style>
-
-    <style name="ThreadGridImageStyle" parent="GridImageStyle">
-        <item name="android:maxHeight">80dp</item>
-        <item name="android:maxWidth">80dp</item>
-        <item name="android:scaleType">fitCenter</item>
-    </style>
-
-    <style name="ThreadAdGridImageStyle" parent="GridImageStyle">
-        <item name="android:maxHeight">80dp</item>
-        <item name="android:maxWidth">80dp</item>
-        <item name="android:scaleType">fitCenter</item>
-    </style>
-
-    <style name="GridItemHighlightStyle" parent="GridItemStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:visibility">gone</item>
-    </style>
-
-    <style name="GridItemSelfHighlightStyle" parent="GridItemHighlightStyle">
-        <item name="android:background">@color/PaletteLightBlueHalfOpacity</item>
-    </style>
-
-    <style name="GridItemPrevHighlightStyle" parent="GridItemHighlightStyle">
-        <item name="android:background">@color/PaletteDarkPinkHalfOpacity</item>
-    </style>
-
-    <style name="GridItemNextHighlightStyle" parent="GridItemHighlightStyle">
-        <item name="android:background">@color/PaletteDarkGreenHalfOpacity</item>
     </style>
 
 <!-- THREAD LIST STYLES -->
@@ -381,7 +328,7 @@
         <item name="android:paddingBottom">0dp</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteOffWhiteHalfOpacity</item>
         <item name="android:minHeight">48dp</item>
     </style>
 

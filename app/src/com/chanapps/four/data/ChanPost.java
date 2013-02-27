@@ -15,11 +15,8 @@ public class ChanPost {
 	public static final String TAG = ChanPost.class.getSimpleName();
     private static final boolean DEBUG = false;
     
-    public static final int MAX_SINGLELINE_TEXT_LEN = 15;
-    public static final int MAX_SINGLELINE_TEXT_ABBR_LEN = MAX_SINGLELINE_TEXT_LEN - 3;
-    public static final int MAX_QUADLINE_TEXT_LEN = 60;
-    public static final int MAX_QUADLINE_TEXT_ABBR_LEN = MAX_QUADLINE_TEXT_LEN - 3;
-
+    public static final int MAX_SINGLELINE_TEXT_LEN = 20;
+    public static final int MAX_DOUBLELINE_TEXT_LEN = 40;
     private static final int MIN_LINE = 30;
     private static final int MAX_LINE = 40;
 
@@ -266,12 +263,19 @@ public class ChanPost {
         return
             (s.length() <= maxLen)
             ? s
+            : s.substring(0, maxLen)
+                    .replaceAll("\\s+", " ")
+                    .replaceFirst("\\s+\\S+$", "")
+                    .replaceFirst("\\s+$", "")
+                    + (longtext && clickForMore != null ? "\n" + clickForMore : "");
+/*
             : s.substring(0, maxAbbrLen)
                     .replaceAll("\\s+", " ")
                     .replaceFirst("\\s+\\S+$", "")
                     .replaceFirst("\\s+$", "")
                     + "..."
                     + (longtext && clickForMore != null ? "\n" + clickForMore : "");
+*/
     }
 
     public String toString() {
@@ -433,12 +437,12 @@ public class ChanPost {
             return ""; // just a post
         String text = "";
 
-        String subText = abbreviate(sanitizeText(sub, true), MAX_QUADLINE_TEXT_LEN, MAX_QUADLINE_TEXT_ABBR_LEN);
+        String subText = abbreviate(sanitizeText(sub, true), MAX_DOUBLELINE_TEXT_LEN);
         if (subText != null && !subText.isEmpty()) {
             text += "<b>" + subText + "</b>";
         }
         else {
-            String comText = abbreviate(sanitizeText(com, true), MAX_QUADLINE_TEXT_LEN, MAX_QUADLINE_TEXT_ABBR_LEN);
+            String comText = abbreviate(sanitizeText(com, true), MAX_DOUBLELINE_TEXT_LEN);
             if (comText != null && !comText.isEmpty())
                 text += "<b>" + comText + "</b>";
         }
@@ -453,8 +457,8 @@ public class ChanPost {
                         + " post" + (replies == 1 ? "" : "s")
                         + " "
                         + (images > 0 ? images : "no")
-                        + " img"
-                        + (images == 1 ? "" : "s");
+                        + "i";
+                        //+ (images == 1 ? "" : "s");
             }
             else {
                 text += (text.isEmpty() ? "" : "<br/>\n") + "no replies";

@@ -44,6 +44,8 @@ public class BoardTypeView extends View implements View.OnTouchListener {
     private static final int INTERNAL_PADDING_DP = 1;
     private static final int INTERNAL_PADDING_DP_LARGE = 2;
     private static final int INTERNAL_PADDING_DP_XLARGE = 4;
+    private static final int TEXT_OVERLAY_BG = 0x80000000;
+    private static final int TEXT_OVERLAY_FG = 0xffffffff;
 
     private static final int LONG_CLICK_DELAY = 500;
     
@@ -166,8 +168,10 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 
             Bitmap boardImage = null;
             try {
-                boardImage = BitmapFactory.decodeResource(getResources(),
+                Bitmap sourceImage = BitmapFactory.decodeResource(getResources(),
                         board.getImageResourceId(), options);
+                if (sourceImage != null)
+                    boardImage = scaleCenterCrop(sourceImage, columnWidth, rowHeight);
             } catch (OutOfMemoryError ome) {
                 Log.w(TAG, "Out of memory error thrown, trying to recover...");
                 handler.postDelayed(new Runnable () {
@@ -178,16 +182,15 @@ public class BoardTypeView extends View implements View.OnTouchListener {
             }
             int posX = col * columnWidth;
             int posY = row * rowHeight;
-            RectF destRect = new RectF(posX, posY, posX + columnWidth - internalPadding, posY + rowHeight - boxHeight - internalPadding); // padding on right and bottom
+            RectF destRect = new RectF(posX, posY, posX + columnWidth - internalPadding, posY + rowHeight - internalPadding); // padding on right and bottom
             if (boardImage != null) {
                 canvas.drawBitmap(boardImage, null, destRect, paint);
             }
             RectF textRect = new RectF(posX, posY + rowHeight - boxHeight - internalPadding,
                     posX + columnWidth - internalPadding, posY + rowHeight - internalPadding);
-            paint.setColor(0xff000000);
+            paint.setColor(TEXT_OVERLAY_BG);
             canvas.drawRect(textRect, paint);
-
-            paint.setColor(0xffffffff);
+            paint.setColor(TEXT_OVERLAY_FG);
             float textX = textRect.centerX();
             float textY = textRect.centerY() - ((paint.descent() + paint.ascent()) / 2);
             canvas.drawText(board.name, textX, textY, paint);
@@ -223,7 +226,7 @@ public class BoardTypeView extends View implements View.OnTouchListener {
                             R.drawable.stub_image, options);
                 }
                 if (sourceImage != null)
-                    threadImage = scaleCenterCrop(sourceImage, columnWidth, rowHeight - boxHeight);
+                    threadImage = scaleCenterCrop(sourceImage, columnWidth, rowHeight);
             } catch (OutOfMemoryError ome) {
                 Log.w(TAG, "Out of memory error thrown, trying to recover...");
                 handler.postDelayed(new Runnable () {
@@ -234,17 +237,17 @@ public class BoardTypeView extends View implements View.OnTouchListener {
             }
             int posX = col * columnWidth;
             int posY = row * rowHeight;
-            RectF destRect = new RectF(posX, posY, posX + columnWidth - internalPadding, posY + rowHeight - boxHeight - internalPadding);
+            RectF destRect = new RectF(posX, posY, posX + columnWidth - internalPadding, posY + rowHeight - internalPadding);
             Log.i(TAG, "Paint watched thread " + col + " " + row);
             if (threadImage != null) {
                 canvas.drawBitmap(threadImage, null, destRect, paint);
             }
             RectF textRect = new RectF(posX, posY + rowHeight - boxHeight - internalPadding,
                     posX + columnWidth - internalPadding, posY + rowHeight - internalPadding);
-            paint.setColor(0xff000000);
+            paint.setColor(TEXT_OVERLAY_BG);
             canvas.drawRect(textRect, paint);
 
-            paint.setColor(0xffffffff);
+            paint.setColor(TEXT_OVERLAY_FG);
             String abbrevText = ChanPost.abbreviate(thread.shortText, 22);
             float textX = textRect.centerX();
             float textY = textRect.centerY() - ((paint.descent() + paint.ascent()) / 2);
@@ -264,7 +267,7 @@ public class BoardTypeView extends View implements View.OnTouchListener {
         }, 500);
     }
 
-    private Bitmap scaleCenterCrop(Bitmap source, int newHeight, int newWidth) {
+    private Bitmap scaleCenterCrop(Bitmap source, int newWidth, int newHeight) {
         int sourceWidth = source.getWidth();
         int sourceHeight = source.getHeight();
 

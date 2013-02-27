@@ -10,4 +10,10 @@
             android:contentDescription="@string/jlist_ad_message"
             />
 
+    <TextView
+            android:id="@+id/grid_item_text"
+            style="@style/BoardGridTextImageOverlayNormalStyle"
+            android:text="@string/jlist_ad_message_compact"
+            />
+
 </RelativeLayout>
