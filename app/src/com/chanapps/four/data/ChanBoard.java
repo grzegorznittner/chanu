@@ -180,6 +180,14 @@ public class ChanBoard {
 
     }
 
+    public static boolean isImagelessSticky(String boardCode, long postNo) {
+        if (boardCode.equals("s") && postNo == 9112225)
+            return true;
+        if (boardCode.equals("gif") && (postNo == 5405329 || postNo == 5412288))
+            return true;
+        return false;
+    }
+
     public int getImageResourceId() {
         return getImageResourceId(link);
     }
@@ -188,9 +196,13 @@ public class ChanBoard {
         return getImageResourceId(boardCode, 0);
     }
 
-    public static int getImageResourceId(String boardCode, int cursorPosition) { // allows special-casing first (usually sticky) and multiple
+    public static int getImageResourceId(String boardCode, long postNo) { // allows special-casing first (usually sticky) and multiple
         int imageId = 0;
-        String fileRoot = boardCode.equals("s") && cursorPosition > 0 ? boardCode + "_2" : boardCode; // handle double-sticky on /s/
+        String fileRoot;
+        if (isImagelessSticky(boardCode, postNo))
+            fileRoot = boardCode + "_" + postNo;
+        else
+            fileRoot = boardCode;
         try {
             imageId = R.drawable.class.getField(fileRoot).getInt(null);
         } catch (Exception e) {

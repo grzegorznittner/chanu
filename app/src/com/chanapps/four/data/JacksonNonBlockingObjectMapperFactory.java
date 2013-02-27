@@ -38,14 +38,20 @@ public class JacksonNonBlockingObjectMapperFactory {
         public Integer deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             Object o = null;
             try {
-                //JsonToken t = jp.hasCurrentToken() ? jp.getCurrentToken() : null;
-                //if (t != null)
-                    //Log.e("FOO", "FooException: token=" + t + " text=" + jp.getText() + " delegate=" + delegate);
                 if (delegate != null)
                     o = delegate.deserialize(jp, ctxt);
             }
+            catch (JsonMappingException e) {
+                try {
+                    boolean b = jp.getBooleanValue();
+                    o = b ? 1 : 0;
+                }
+                catch (Exception e2) {
+                    if (delegate != null)
+                        o = delegate.getNullValue();
+                }
+            }
             catch (Exception e) {
-                // If a JSON Mapping occurs, simply returning null instead of blocking things
                 if (delegate != null)
                     o = delegate.getNullValue();
             }

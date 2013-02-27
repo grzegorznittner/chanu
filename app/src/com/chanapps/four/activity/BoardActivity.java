@@ -306,6 +306,7 @@ public class BoardActivity
             return true;
         } else if (view instanceof ImageView
                 && (view.getId() == R.id.grid_item_image || view.getId() == R.id.list_item_image)) {
+            final long postNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
             String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
             String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
             final int tnW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
@@ -313,16 +314,21 @@ public class BoardActivity
             final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
             int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
             ImageView iv = (ImageView) view;
-            if (spoiler > 0) {
+            if (ChanBoard.isImagelessSticky(boardCode, postNo)) {
+                int imageResourceId = ChanBoard.getImageResourceId(boardCode, postNo);
+                if (imageResourceId > 0)
+                    smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions, imageResourceId);
+                else
+                    iv.setImageBitmap(null);
+            }
+            else if (spoiler > 0) {
                 smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
             }
-            else if (imageUrl != null && !imageUrl.isEmpty() && ((tnW > 2 && tnH > 2) || adItem > 0)
-                    && !(boardCode.equals("s") && cursor.getPosition() == 1))
-            {
+            else if (imageUrl != null && !imageUrl.isEmpty() && ((tnW > 2 && tnH > 2) || adItem > 0)) {
                 smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
             }
             else {
-                int imageResourceId = ChanBoard.getImageResourceId(boardCode, cursor.getPosition());
+                int imageResourceId = ChanBoard.getImageResourceId(boardCode, postNo);
                 if (imageResourceId > 0)
                     smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions, imageResourceId);
                 else
