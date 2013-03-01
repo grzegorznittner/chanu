@@ -2,7 +2,6 @@ package com.chanapps.four.data;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -19,7 +18,6 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 
 import com.chanapps.four.activity.R;
-import org.codehaus.jackson.map.deser.StdDeserializer;
 
 public class ChanHelper {
 	public static final int VERBOSE = 0;
@@ -73,13 +71,12 @@ public class ChanHelper {
     public static final String POST_TN_H = "tn_h";
     public static final String POST_FSIZE = "fsize";
     public static final String POST_RESTO = "resto";
-    public static final String POST_RESTO_NARROW = "restoNarrow";
     public static final String POST_LAST_UPDATE = "last_update";
     public static final String POST_STICKY = "sticky";
     public static final String POST_CLOSED = "closed";
     public static final String POST_OMITTED_POSTS = "omitted_posts";
     public static final String POST_OMITTED_IMAGES = "omitted_images";
-    public static final String POST_HEADER_TEXT = "headerText"; // we construct and filter this
+    public static final String POST_DATE_TEXT = "headerText"; // we construct and filter this // NOT USED
     public static final String POST_SHORT_TEXT = "shortText"; // we construct and filter this
     public static final String POST_TEXT = "text"; // we construct and filter this
     public static final String POST_IMAGE_URL = "image_url"; // we construct this from board and tim
@@ -90,7 +87,8 @@ public class ChanHelper {
     public static final String POST_USER_ID = "id";
     public static final String POST_TRIPCODE = "trip";
     public static final String POST_IS_DEAD = "isDead";
-    public static final String LAST_ITEM = "lastItem";
+    public static final String POST_IMAGE_DIMENSIONS = "imageDim";
+    public static final String POST_EXPAND_BUTTON = "expandButton";
     public static final String AD_ITEM = "adItem";
 
     public static final String LAST_BOARD_POSITION = "lastBoardPosition";
@@ -112,7 +110,7 @@ public class ChanHelper {
             POST_IMAGE_URL,
             POST_COUNTRY_URL,
             POST_SHORT_TEXT,
-            POST_HEADER_TEXT,
+            POST_DATE_TEXT,
             POST_TEXT,
             POST_TN_W,
             POST_TN_H,
@@ -126,9 +124,10 @@ public class ChanHelper {
             POST_TRIPCODE,
             POST_NAME,
             POST_EMAIL,
+            POST_IMAGE_DIMENSIONS,
             POST_IS_DEAD,
             POST_CLOSED,
-            LAST_ITEM,
+            POST_EXPAND_BUTTON,
             AD_ITEM
     };
 

@@ -429,13 +429,15 @@ public class PhotoPage extends ActivityState
     protected boolean onCreateActionBar(Menu menu) {
         MenuInflater inflater = ((Activity) mActivity).getMenuInflater();
         inflater.inflate(R.menu.photo, menu);
-        menu.findItem(R.id.action_slideshow).setVisible(
-                mMediaSet != null && !(mMediaSet instanceof MtpDevice));
-        mShareActionProvider = GalleryActionBar.initializeShareActionProvider(menu);
-        if (mPendingSharePath != null) updateShareURI(mPendingSharePath);
-        mMenu = menu;
-        mShowBars = true;
-        updateMenuOperations();
+        if (menu != null) {
+            MenuItem item = menu.findItem(R.id.action_slideshow);
+            if (item != null) item.setVisible(mMediaSet != null && !(mMediaSet instanceof MtpDevice));
+            mShareActionProvider = GalleryActionBar.initializeShareActionProvider(menu);
+            if (mPendingSharePath != null) updateShareURI(mPendingSharePath);
+            mMenu = menu;
+            mShowBars = true;
+            updateMenuOperations();
+        }
         return true;
     }
 

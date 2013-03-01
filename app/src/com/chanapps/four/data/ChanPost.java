@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.chanapps.four.activity.R;
@@ -141,10 +142,14 @@ public class ChanPost {
     }
 
     public String getFullText() {
-        if (hideAllText)
-            return "";
-        else
-            return com != null && com.trim().length() > 0 ? sanitizeText(com) : "";
+        String text = "";
+        String subText = sanitizeText(sub);
+        if (subText != null && !subText.isEmpty())
+            text += "<b>Subject: " + subText + "</b>";
+        String comText = com != null && com.trim().length() > 0 ? sanitizeText(com) : "";
+        if (comText != null && !comText.isEmpty())
+            text += (text.isEmpty() ? "" : "<br/>\n") + comText;
+        return text;
     }
 
     private String sanitizeText(String text) {
@@ -319,115 +324,77 @@ public class ChanPost {
                 + ".gif";
     }
 
-    public String getHeaderText() {
-        return getHeaderText(true);
-    }
-    
     public String getTimeString(long seconds) {
         long milliseconds = 1000 * seconds;
         Date d = new Date(milliseconds);
         return d.toString();
     }
-    
-    public String getHeaderText(boolean useFriendlyIds) {
-        return "No: " + no
-                + (resto > 0 ? "\nReply To: " + resto : "")
-                + (sticky > 0 ? "\nSticky" : "")
-                + (closed > 0 ? "\nClosed" : "")
-                + (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous") ? "\nName: " + name : "")
-                + (trip != null && !trip.isEmpty() ? "\nTripcode: " + trip : "")
-                + (id != null && !id.isEmpty() ? "\nId: " + getUserId() : "")
-                + (email != null && !email.isEmpty() ? "\nEmail: " + email : "")
-                + (country_name != null && !country_name.isEmpty() ? "\nCountry: " + country_name : "")
-                + "\n" + getTimeString(time)
-                + (sub != null && !sub.isEmpty() ? "\nSubject: " + sanitizeText(sub) : "");
+
+    public String getDateText() {
+        long milliseconds = 1000 * time; // time in seconds, convert
+        return (time > 0)
+            ? DateUtils.getRelativeTimeSpanString(milliseconds, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString()
+            : "";
     }
 
-    public String getPostText() {
+    public String getImageDimensions() {
+        if (fsize > 0) {
+            int kbSize = (fsize / 1024) + 1;
+            String size = (kbSize > 1000) ? (kbSize / 1000) + "MB" : kbSize + "KB";
+            return w + "x" + h + " " + size;
+        }
+        return "";
+    }
+
+    public String getUserHeaderText() {
         String text = "";
-        if (!hideAllText) {
-            if (!hidePostNumbers)
-                text += "<b>No: " + no + "</b>";
-            if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Name: " + name + "</b>";
-            if (id != null && !id.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getUserId() + "</b>";
-            if (trip != null && !trip.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Tripcode: " + trip + "</b>";
-            if (email != null && !email.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Email: " + email + "</b>";
-            if (country_name != null && !country_name.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Country: " + country_name + "</b>";
-            text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + getTimeString(time) + "</b>";
+        if (!hidePostNumbers)
+            text += "No: " + no + "";
+        if (id != null && !id.isEmpty()) {
+            text += (text.isEmpty() ? "" : "\n") + "Id: " + getUserId() + "";
+            if (id.equalsIgnoreCase("admin") && name != null && !name.isEmpty())
+                text += " - " + name;
         }
-        if (!hideAllText) {
-            if (fsize > 0) {
-                int kbSize = (fsize / 1024) + 1;
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Image: " + kbSize + "kB " + w + "x" + h + "</b>"; // + " " + ext;
-            }
-            String subText = sanitizeText(sub);
-            if (subText != null && !subText.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Subject: " + subText + "</b>";
-        }
+        if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
+            text += (text.isEmpty() ? "" : "\n") + "Name: " + name + "";
+        if (trip != null && !trip.isEmpty())
+            text += (text.isEmpty() ? "" : "\n") + "Tripcode: " + trip + "";
+        if (email != null && !email.isEmpty())
+            text += (text.isEmpty() ? "" : "\n") + "Email: " + email + "";
+        if (country_name != null && !country_name.isEmpty())
+            text += (text.isEmpty() ? "" : "\n") + "Country: " + country_name + "";
         return text;
 	}
 
-    public String getThreadText() {
+    public String getThreadNotificationText() {
         String text = "";
-        if (!hideAllText) {
-            if (!hidePostNumbers)
-                text += "<b>No: " + no + "</b>";
-            if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Name: " + name + "</b>";
-            if (id != null && !id.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Id: " + getUserId() + "</b>";
-            if (trip != null && !trip.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Tripcode: " + trip + "</b>";
-            if (email != null && !email.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Email: " + email + "</b>";
-            if (country_name != null && !country_name.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Country: " + country_name + "</b>";
-            text += (text.isEmpty() ? "" : "<br/>\n") + "<b>" + getTimeString(time) + "</b>";
+        text += getUserHeaderText();
+        if (sticky > 0 && replies == 0) {
+            text += (text.isEmpty() ? "" : "<br/>\n") + "STICKY";
         }
-        if (!hideAllText) {
-            if (fsize > 0) {
-                int kbSize = (fsize / 1024) + 1;
-                text += (text.isEmpty() ? "" : "<br/>\n") + "<b>Image: " + kbSize + "kB " + w + "x" + h + "</b>"; // + " " + ext;
-            }
-        }
-        if (resto == 0) { // thread stuff
-            if (sticky > 0 && replies == 0) {
-                text += (text.isEmpty() ? "" : "<br/>\n") + "STICKY";
+        else {
+            if (replies > 0) {
+                text += (text.isEmpty() ? "" : "<br/>\n")
+                        + replies
+                        + " post" + (replies == 1 ? "" : "s")
+                        + " "
+                        + (images > 0 ? images : "no")
+                        + " img"
+                        + (images == 1 ? "" : "s");
             }
             else {
-                if (replies > 0) {
-                    text += (text.isEmpty() ? "" : "<br/>\n")
-                            + replies
-                            + " post" + (replies == 1 ? "" : "s")
-                            + " "
-                            + (images > 0 ? images : "no")
-                            + " img"
-                            + (images == 1 ? "" : "s");
-                }
-                else {
-                    text += (text.isEmpty() ? "" : "<br/>\n") + "no replies";
-                }
-                if (imagelimit == 1)
-                    text += " (IL)";
-                if (bumplimit == 1)
-                    text += " (BL)";
-                if (isDead)
-                    text += (text.isEmpty() ? "" : " ") + "DEAD";
-                if (sticky > 0)
-                    text += (text.isEmpty() ? "" : " ") + "STICKY";
-                if (closed > 0)
-                    text += (text.isEmpty() ? "" : " ") + "CLOSED";
+                text += (text.isEmpty() ? "" : "<br/>\n") + "no replies";
             }
-        }
-        if (!hideAllText) {
-            String subText = sanitizeText(sub);
-            if (subText != null && !subText.isEmpty())
-                text += (text.isEmpty() ? "" : "<br/><br/>\n") + "<b>Subject: " + subText + "</b>";
+            if (imagelimit == 1)
+                text += " (IL)";
+            if (bumplimit == 1)
+                text += " (BL)";
+            if (isDead)
+                text += (text.isEmpty() ? "" : " ") + "DEAD";
+            if (sticky > 0)
+                text += (text.isEmpty() ? "" : " ") + "STICKY";
+            if (closed > 0)
+                text += (text.isEmpty() ? "" : " ") + "CLOSED";
         }
         return text;
     }
@@ -456,7 +423,7 @@ public class ChanPost {
                         + replies
                         + " post" + (replies == 1 ? "" : "s")
                         + " "
-                        + (images > 0 ? images : "no")
+                        + (images > 0 ? images : "0")
                         + "i";
                         //+ (images == 1 ? "" : "s");
             }

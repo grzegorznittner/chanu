@@ -19,7 +19,7 @@ import com.chanapps.four.data.*;
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = BoardCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     protected static final double AD_PROBABILITY = 0.20;
     protected static final double AD_ADULT_PROBABILITY_ON_ADULT_BOARD = 1.0;
@@ -93,9 +93,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                     adSpace--;
                 }
             }
-
-            // end of board marker
-            addFinalRow(matrixCursor);
         }
         registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;
@@ -107,9 +104,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 "",
                 thread.getCountryFlagUrl(),
                 thread.getBoardText(),
-                thread.getHeaderText(), thread.getFullText(),
+                thread.getDateText(),
+                thread.getFullText(),
                 thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
-                thread.getSpoilerText(), thread.getExifText(), thread.id, thread.trip, thread.name, thread.email,
+                thread.getSpoilerText(), thread.getExifText(), thread.id, thread.trip, thread.name, thread.email, thread.getImageDimensions(),
                 thread.isDead ? 1 : 0, thread.closed, 0, 0});
     }
 
@@ -118,9 +116,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 thread.no, boardName, 0,
                 thread.getThumbnailUrl(), thread.getCountryFlagUrl(),
                 thread.getBoardText(),
-                thread.getHeaderText(), thread.getFullText(),
+                thread.getDateText(),
+                thread.getFullText(),
                 thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
-                thread.getSpoilerText(), thread.getExifText(), thread.id, thread.trip, thread.name, thread.email,
+                thread.getSpoilerText(), thread.getExifText(), thread.id, thread.trip, thread.name, thread.email, thread.getImageDimensions(),
                 thread.isDead ? 1 : 0, thread.closed, 0, 0});
     }
 
@@ -139,18 +138,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 "",
                 "", clickUrl,
                 -1, -1, -1, -1, 0, 0,
-                "", "", "", "", "", "",
+                "", "", "", "", "", "", "",
                 0, 0, 0, 1});
-    }
-
-    protected void addFinalRow(MatrixCursor matrixCursor) {
-        matrixCursor.addRow(new Object[] {
-                2, boardName, 0,
-                "", "",
-                "", "", "",
-                -1, -1, -1, -1, 0, 0,
-                "", "", "", "", "", "",
-                1, 0, 1, 0});
     }
 
     /**

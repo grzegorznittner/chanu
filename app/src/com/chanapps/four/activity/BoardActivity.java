@@ -423,10 +423,7 @@ public class BoardActivity
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (lastItem > 0)
-            return;
         ChanHelper.fadeout(this, view);
         if (adItem > 0) {
             final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));

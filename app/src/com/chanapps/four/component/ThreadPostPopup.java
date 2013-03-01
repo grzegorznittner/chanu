@@ -145,6 +145,10 @@ public class ThreadPostPopup implements Dismissable {
         closeButton = (Button)popupView.findViewById(R.id.popup_close_button);
     }
 
+    public void showFromCursor(AdapterView<?> adapterView, int position) {
+        showFromCursor(adapterView, null, position, 0);
+    }
+
     public void showFromCursor(AdapterView<?> adapterView, final View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final int isDeadInt = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_IS_DEAD));
@@ -164,7 +168,7 @@ public class ThreadPostPopup implements Dismissable {
         final String messageText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         final long clickedThreadNo = resto == 0 ? postId : resto;
         final long clickedPostNo = (resto == 0 || postId == resto) ? 0 : postId;
-        if (DEBUG) Log.i(BoardActivity.TAG, "Calling popup with id=" + id + " isDead=" + isDead + " postNo=" + postId + " resto=" + resto);
+        if (DEBUG) Log.i(BoardActivity.TAG, "Calling popup with postId=" + postId + " isDead=" + isDead + " postNo=" + postId + " resto=" + resto);
 
         setSpoilerButton(spoilerText);
         setExifButton(exifText);

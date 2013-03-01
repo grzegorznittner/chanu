@@ -271,7 +271,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		case TO_ZIP:
 			threadActivityIntent = ThreadActivity.createIntentForActivity(context,
 				board, threadNo,
-                thread.getThreadText(),
+                thread.getThreadNotificationText(),
                 thread.getThumbnailUrl(),
                 thread.tn_w, thread.tn_h, thread.tim,
                 false, 0);
@@ -290,7 +290,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			} else {
 				threadActivityIntent = ThreadActivity.createIntentForActivity(context,
 						board, threadNo,
-		                thread.getThreadText(),
+		                thread.getThreadNotificationText(),
 		                thread.getThumbnailUrl(),
 		                thread.tn_w, thread.tn_h, thread.tim,
 		                false, 0);
@@ -339,7 +339,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		
 		Intent threadActivityIntent = ThreadActivity.createIntentForActivity(getApplicationContext(),
 				board, threadNo,
-                thread.getThreadText(),
+                thread.getThreadNotificationText(),
                 thread.getThumbnailUrl(),
                 thread.tn_w, thread.tn_h, thread.tim,
                 false, 0);

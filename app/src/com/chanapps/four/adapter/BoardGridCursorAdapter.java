@@ -26,13 +26,7 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
 
     protected View newView(Context context, ViewGroup parent, String tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        if (ChanHelper.LAST_ITEM.equals(tag) && isWatchlist) {
-            return mInflater.inflate(R.layout.board_grid_item_final_watchlist, parent, false);
-        }
-        else if (ChanHelper.LAST_ITEM.equals(tag)) {
-            return mInflater.inflate(R.layout.board_grid_item_final, parent, false);
-        }
-        else if (ChanHelper.AD_ITEM.equals(tag)) {
+        if (ChanHelper.AD_ITEM.equals(tag)) {
             return mInflater.inflate(R.layout.board_grid_item_ad, parent, false);
         }
         else {

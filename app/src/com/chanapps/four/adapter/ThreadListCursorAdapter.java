@@ -23,16 +23,10 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     @Override
     protected View newView(Context context, ViewGroup parent, String tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        if (ChanHelper.LAST_ITEM.equals(tag)) {
-            return mInflater.inflate(R.layout.thread_list_item_final, parent, false);
-        }
-        else if (ChanHelper.AD_ITEM.equals(tag)) {
+        if (ChanHelper.AD_ITEM.equals(tag)) {
             return mInflater.inflate(R.layout.thread_list_item_ad, parent, false);
         }
         else if (ChanHelper.POST_RESTO.equals(tag)) { // first item is the post which started the thread
-            return mInflater.inflate(R.layout.thread_list_item_header, parent, false);
-        }
-        else if (ChanHelper.POST_RESTO_NARROW.equals(tag)) { // first item is the post which started the thread
             return mInflater.inflate(R.layout.thread_list_item_header, parent, false);
         }
         else if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
@@ -58,8 +52,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
         else if (highlightNextPostNos.contains(postNo)) {
             v.setBackgroundColor(context.getResources().getColor(R.color.PaletteLightBlue));
         }
-        else if (!tag.equals(ChanHelper.LAST_ITEM) && !tag.equals(ChanHelper.AD_ITEM)){
-            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteBlack));
+        else if (!tag.equals(ChanHelper.AD_ITEM)){
+            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteTransparent));
         }
     }
 

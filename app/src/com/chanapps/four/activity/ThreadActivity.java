@@ -53,7 +53,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     protected UserStatistics userStats = null;
     protected boolean inWatchlist = false;
     protected ThreadPostPopup threadPostPopup;
-
+    protected ChanThread thread = null;
+    private int threadPos = 0;
+    private TextView fullText = null; // placeholder for doing expansion
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -62,6 +64,10 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, absListView);
         }
         return cursorLoader;
+    }
+
+    public static void startActivity(Activity from, AdapterView<?> adapterView, int position) {
+        startActivity(from, adapterView, null, position, 0, false);
     }
 
     public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id, boolean fromParent) {
@@ -79,7 +85,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         final int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
         final int pos = adapterView.getFirstVisiblePosition();
         Intent intent = createIntentForActivity(from, boardName, postId, text, imageUrl, tn_w, tn_h, threadTim, fromParent, pos);
-        if (DEBUG) Log.i(TAG, "Calling thread activity with id=" + id);
+        if (DEBUG) Log.i(TAG, "Calling thread activity with postId=" + postId);
         from.startActivity(intent);
     }
     
@@ -99,7 +105,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 	    final int tn_h = thread.tn_h;
 	    final int pos = 0;
 	    Intent intent = createIntentForActivity(from, boardName, postId, text, imageUrl, tn_w, tn_h, threadTim, fromParent, pos);
-	    if (DEBUG) Log.i(TAG, "Calling thread activity with id=" + id);
+	    if (DEBUG) Log.i(TAG, "Calling thread activity with postId=" + postId);
 	    from.startActivity(intent);
     }
 
@@ -123,7 +129,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 context,
                 thread.board,
                 thread.no,
-                thread.getThreadText(),
+                thread.getThreadNotificationText(),
                 thread.getThumbnailUrl(),
                 thread.tn_w,
                 thread.tn_h,
@@ -230,8 +236,26 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         adapter = new ThreadListCursorAdapter(this,
                 R.layout.thread_list_item,
                 this,
-                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
-                new int[] {R.id.list_item_image, R.id.list_item_header, R.id.list_item_text, R.id.list_item_country_flag});
+                new String[] {
+                        ChanHelper.POST_IMAGE_URL,
+                        ChanHelper.POST_SHORT_TEXT,
+                        ChanHelper.POST_TEXT,
+                        ChanHelper.POST_COUNTRY_URL,
+                        ChanHelper.POST_DATE_TEXT,
+                        ChanHelper.POST_IMAGE_DIMENSIONS,
+                        ChanHelper.POST_EXPAND_BUTTON,
+                        ChanHelper.POST_EXPAND_BUTTON
+                },
+                new int[] {
+                        R.id.list_item_image,
+                        R.id.list_item_header,
+                        R.id.list_item_text,
+                        R.id.list_item_country_flag,
+                        R.id.list_item_date,
+                        R.id.list_item_image_overlay,
+                        R.id.list_item_expand_target,
+                        R.id.list_item_reply_target,
+                });
         absListView.setAdapter(adapter);
     }
 
@@ -263,58 +287,21 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
-        long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
         String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        if (shortText == null || shortText.isEmpty()) {
+        if (shortText == null || shortText.isEmpty())
             tv.setText("");
-            final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-            if (imageUrl == null || imageUrl.isEmpty())
-                tv.setVisibility(View.GONE);
-            else
-                tv.setVisibility(View.INVISIBLE);
-        }
-        else {
-            final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
-            final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-            tv.setText(Html.fromHtml(shortText));
-            tv.setVisibility(View.VISIBLE);
-            if (lastItem > 0) {
-                // ignore
-            }
-            else if (adItem > 0) {
-                final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-                tv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ChanHelper.fadeout(ThreadActivity.this, tv);
-                        launchUrlInBrowser(adUrl);
-                    }
-                });
-            }
-            else {
-                final int position = cursor.getPosition();
-                final long id = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-                tv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ensurePopup().showFromCursor(ThreadActivity.this.absListView, tv, position, id);
-                    }
-                });
-            }
-        }
+        else
+            tv.setText(shortText);
         return true;
     }
 
     private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
-        long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         if (text == null || text.isEmpty()) {
             tv.setText("");
-            tv.setVisibility(View.GONE);
         }
         else {
             tv.setText(Html.fromHtml(text));
-            tv.setVisibility(View.VISIBLE);
             final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
             if (adItem > 0) {
                 final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
@@ -325,8 +312,73 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                         launchUrlInBrowser(adUrl);
                     }
                 });
+                fullText = null;
+            }
+            else {
+                fullText = tv;
             }
         }
+        return true;
+    }
+
+    private boolean setItemDateValue(final TextView tv, final Cursor cursor) {
+        String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_DATE_TEXT));
+        if (text == null || text.isEmpty())
+            tv.setText("");
+        else
+            tv.setText(text);
+        return true;
+    }
+
+    private boolean setItemImageOverlayValue(final TextView tv, final Cursor cursor) {
+        String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_DIMENSIONS));
+        if (text == null || text.isEmpty()) {
+            tv.setText("");
+            tv.setVisibility(View.GONE);
+        }
+        else {
+            tv.setText(text);
+            tv.setVisibility(View.VISIBLE);
+        }
+        return true;
+    }
+
+    private boolean setItemExpandButton(final ImageView iv) {
+        if (iv == null || fullText == null) {
+            iv.setVisibility(View.GONE);
+            iv.setOnClickListener(null);
+            return false;
+        }
+        final TextView fullTextRef = fullText;
+        final ImageView buttonRef = iv;
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (fullTextRef != null) {
+                    fullTextRef.setMaxLines(Integer.MAX_VALUE);
+                    buttonRef.setVisibility(View.GONE);
+                }
+            }
+        });
+        iv.setVisibility(View.VISIBLE);
+        return true;
+    }
+
+    private boolean setItemReplyButton(final ImageView iv, final Cursor cursor) {
+        final int position = cursor.getPosition();
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (iv == null || adItem > 0 || position < 0) {
+            iv.setVisibility(View.GONE);
+            iv.setOnClickListener(null);
+            return false;
+        }
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ensurePopup().showFromCursor(ThreadActivity.this.absListView, position);
+            }
+        });
+        iv.setVisibility(View.VISIBLE);
         return true;
     }
 
@@ -336,7 +388,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         final int tnW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
         final int tnH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        final int lastItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.LAST_ITEM));
         if (spoiler > 0) {
             String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
             smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
@@ -348,10 +399,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             iv.setImageBitmap(null); // blank
         }
 
-        if (lastItem > 0) {
-            // ignore
-        }
-        else if (adItem > 0) {
+        if (adItem > 0) {
             final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
             iv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -392,19 +440,54 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         return true;
     }
 
+
+    private boolean ensureThreadCache() {
+        if (thread == null)
+            thread = ChanFileStorage.loadThreadData(this, boardCode, threadNo);
+        if (thread == null || thread.posts == null || thread.posts.length == 0)
+            return false; // couldn't get thread
+        return true;
+    }
+
+    private ChanPost getPost(final Cursor cursor) {
+        int pos = cursor.getPosition();
+        if (pos == 0) { // the thread
+            threadPos = 0; // index for tracking current post
+        }
+        long postNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+        while (threadPos < thread.posts.length && thread.posts[threadPos].no != postNo) // spin past removed posts
+            threadPos++;
+        if (threadPos >= thread.posts.length)
+            return null; // couldn't find post
+        return thread.posts[threadPos];
+    }
+
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
+        //if (!ensureThreadCache()) {
+        //    view.setVisibility(View.GONE);
+        //    return false;
+        //}
+        //ChanPost post = getPost(cursor);
+        //if (post == null)
+        //    return false;
         switch (view.getId()) {
+            case R.id.list_item_image:
+                return setItemImage((ImageView)view, cursor);
+            case R.id.list_item_country_flag:
+                return setItemCountryFlag((ImageView)view, cursor);
             case R.id.list_item_header:
                 return setItemHeaderValue((TextView)view, cursor);
             case R.id.list_item_text:
                 return setItemMessageValue((TextView)view, cursor);
-            case R.id.grid_item_image:
-            case R.id.list_item_image:
-                return setItemImage((ImageView)view, cursor);
-            case R.id.grid_item_country_flag:
-            case R.id.list_item_country_flag:
-                return setItemCountryFlag((ImageView)view, cursor);
+            case R.id.list_item_date:
+                return setItemDateValue((TextView)view, cursor);
+            case R.id.list_item_image_overlay:
+                return setItemImageOverlayValue((TextView)view, cursor);
+            case R.id.list_item_expand_target:
+                return setItemExpandButton((ImageView)view);
+            case R.id.list_item_reply_target:
+                return setItemReplyButton((ImageView)view, cursor);
             default:
                 return false;
         }

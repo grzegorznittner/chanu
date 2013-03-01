@@ -110,8 +110,6 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 }
                 int remainingToLoad = thread.posts[0].replies - thread.posts.length;
                 if (DEBUG) Log.i(TAG, "Remaining to load:" + remainingToLoad);
-                if (!thread.defData && remainingToLoad <= 0)
-                    addFinalRow(matrixCursor);
             }
             registerContentObserver(matrixCursor, mObserver);
             return matrixCursor;
@@ -124,29 +122,25 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     protected void addThreadHeaderRows(MatrixCursor matrixCursor, ChanPost post) {
         Object[] currentRow;
         if (post.tn_w <= 0 || post.tim == 0) { // text-only thread header
-            String postText = post.getThreadText();
-            if (postText == null)
-                postText = ""; // defensive coding
             currentRow = new Object[] {
                     post.no, boardName, threadNo,
                     "", post.getCountryFlagUrl(),
-                    postText, post.getHeaderText(), post.getFullText(),
+                    post.getUserHeaderText(), post.getDateText(), post.getFullText(),
                     post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                    post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email,
+                    post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email, post.getImageDimensions(),
                     post.isDead ? 1 : 0, post.closed, 0, 0};
             matrixCursor.addRow(currentRow);
-            if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
+            if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + post.com);
         } else {
-            String postText = post.getThreadText();
             currentRow = new Object[] { // image header
                     post.no, boardName, threadNo,
                     post.getThumbnailUrl(), post.getCountryFlagUrl(),
-                    postText, post.getHeaderText(), post.getFullText(),
+                    post.getUserHeaderText(), post.getDateText(), post.getFullText(),
                     post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                    post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email,
+                    post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email, post.getImageDimensions(),
                     post.isDead ? 1 : 0, post.closed, 0, 0};
             matrixCursor.addRow(currentRow);
-            if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
+            if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + post.com);
         }
         // for initial thread, add extra null item to support full-width header
         if (numGridColumns > 0) {
@@ -162,34 +156,28 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     @Override
     protected void addTextOnlyRow(MatrixCursor matrixCursor, ChanPost post) {
         Object[] currentRow;
-        String postText = post.getPostText();
-        if (postText == null) // defensive coding
-            postText = "";
         currentRow = new Object[] {
                 post.no, boardName, threadNo,
                 "", post.getCountryFlagUrl(),
-                postText, post.getHeaderText(), post.getFullText(),
+                post.getUserHeaderText(), post.getDateText(), post.getFullText(),
                 post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email,
+                post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email, post.getImageDimensions(),
                 post.isDead ? 1 : 0, post.closed, 0, 0};
         matrixCursor.addRow(currentRow);
-        if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + postText);
+        if (DEBUG) Log.v(TAG, "added cursor row text-only no=" + post.no + " text=" + post.com);
     }
 
     @Override
     protected void addImageRow(MatrixCursor matrixCursor, ChanPost post) {
-        String postText = post.getPostText();
-        if (postText == null)
-            postText = ""; // defensive coding
         Object[] currentRow = new Object[] {
                 post.no, boardName, threadNo,
                 post.getThumbnailUrl(), post.getCountryFlagUrl(),
-                postText, post.getHeaderText(), post.getFullText(),
+                post.getUserHeaderText(), post.getDateText(), post.getFullText(),
                 post.tn_w, post.tn_h, post.w, post.h, post.tim, post.spoiler,
-                post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email,
+                post.getSpoilerText(), post.getExifText(), post.id, post.trip, post.name, post.email, post.getImageDimensions(),
                 post.isDead ? 1 : 0, post.closed, 0, 0};
         matrixCursor.addRow(currentRow);
-        if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + postText);
+        if (DEBUG) Log.v(TAG, "added cursor row image+text no=" + post.no + " spoiler=" + post.spoiler + " text=" + post.com);
     }
 
     @Override
@@ -207,7 +195,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 imageUrl, "",
                 getContext().getString(R.string.jlist_ad_message), "", clickUrl,
                 -1, -1, -1, -1, 0, 0,
-                "", "", "", "", "", "",
+                "", "", "", "", "", "", "",
                 0, 0, 0, 1});
     }
 

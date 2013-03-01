@@ -1,29 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/list_item"
-                style="@style/ThreadListLayoutNoHighlight">
-
-    <TextView
-            android:id="@+id/list_item_header"
-            style="@style/ListShortTextStyle"
-            android:layout_width="0dp"
-            android:layout_height="96dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/list_item_image"
-            android:text="@string/jlist_ad_message"
-            />
-
-    <com.chanapps.four.component.StretchyImageView
-            android:id="@+id/list_item_image"
-            style="@style/ThreadListItemImageStyle"
-            android:contentDescription="@string/thread_post_image"
-            android:layout_width="96dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:scaleType="fitEnd"
-            android:layout_marginLeft="8dp"
-            android:src="@drawable/board_3"
-            />
-
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" style="@style/ThreadListLayout" android:id="@+id/list_item">
+    <com.chanapps.four.component.StretchyImageView style="@style/ThreadListItemImageNormalStyle" android:id="@+id/list_item_image"/>
+    <TextView style="@style/ThreadListItemHeadTextAdNormalStyle" android:id="@+id/list_item_ad_header"/>
+    <TextView style="@style/ThreadListItemShortTextAdNormalStyle"/>
 </RelativeLayout>

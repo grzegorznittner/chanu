@@ -13,6 +13,8 @@
     <string name="settings_activity">Settings</string>
     <string name="board_image">Board Image</string>
     <string name="thread_post_image">Thread Image</string>
+    <string name="thread_post_reply_button">Reply</string>
+    <string name="thread_post_expand_button">Expand</string>
     <string name="thread_country_flag">Country Flag</string>
 
     <!-- blocklist -->
@@ -348,7 +350,8 @@
     <string name="camera_folder_name">4Channer Camera</string>
 
     <!-- ads -->
-    <string name="jlist_ad_message">Advert\nJ-List is a peaceful island of Japanese pop culture for you</string>
+    <string name="advert_header">Advert</string>
+    <string name="jlist_ad_message">J-List is a peaceful island of Japanese pop culture for you</string>
     <string name="jlist_ad_message_compact">Advert</string>
 
     <!-- fetch and network services -->
