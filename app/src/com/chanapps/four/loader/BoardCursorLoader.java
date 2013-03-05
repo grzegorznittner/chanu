@@ -2,6 +2,7 @@ package com.chanapps.four.loader;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Random;
 
 import android.content.AsyncTaskLoader;
@@ -22,15 +23,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     private static final boolean DEBUG = true;
 
     protected static final double AD_PROBABILITY = 0.20;
-    protected static final double AD_ADULT_PROBABILITY_ON_ADULT_BOARD = 1.0;
     protected static final int MINIMUM_AD_SPACING = 4;
-    protected static final String JLIST_AD_AFFILIATE_CODE = "4539";
-    protected static final int[] JLIST_AD_CODES = { 118, 113, 68 };
-    protected static final int[] JLIST_AD_SMALL_CODES = { 21, 97, 104, 121, 120 };
-    protected static final int[] JLIST_AD_ADULT_CODES = { 122, 70 };
-    protected static final String JLIST_AD_ROOT_URL = "http://anime.jlist.com";
-    protected static final String JLIST_AD_IMAGE_ROOT_URL = JLIST_AD_ROOT_URL + "/media/" + JLIST_AD_AFFILIATE_CODE;
-    protected static final String JLIST_AD_CLICK_ROOT_URL = JLIST_AD_ROOT_URL + "/click/" + JLIST_AD_AFFILIATE_CODE;
 
     protected final ForceLoadContentObserver mObserver;
 
@@ -67,79 +60,35 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         boolean hidePostNumbers = boardName.equals("b") ? false : prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
         boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
-        MatrixCursor matrixCursor = new MatrixCursor(ChanHelper.POST_COLUMNS);
+        MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
         if (board != null && board.threads != null && board.threads.length > 0 && !board.defData) { // show loading
             if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
             int adSpace = MINIMUM_AD_SPACING;
-
+            int i = 0;
             for (ChanPost thread : board.threads) {
-
-                if (ChanBlocklist.contains(context, thread.id))
+                if (DEBUG) Log.i(TAG, "Loading thread:" + thread.no);
+                if (ChanBlocklist.contains(context, thread.id)) {
+                    if (DEBUG) Log.i(TAG, "Skipped thread: " + thread.no);
                     continue;
-
+                }
                 thread.hidePostNumbers = hidePostNumbers;
                 thread.useFriendlyIds = useFriendlyIds;
-
-                if (thread.tn_w <= 0 || thread.tim == 0)
-                    addTextOnlyRow(matrixCursor, thread);
-                else
-                    addImageRow(matrixCursor, thread);
-
+                Object[] row = thread.makeRow();
+                matrixCursor.addRow(row);
+                i++;
+                if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
                 if (generator.nextDouble() < AD_PROBABILITY && !(adSpace > 0)) {
-                    addAdRow(matrixCursor);
+                    matrixCursor.addRow(board.makeAdRow());
                     adSpace = MINIMUM_AD_SPACING;
                 }
                 else {
                     adSpace--;
                 }
             }
+            Log.i(TAG, "Loaded " + i + " threads");
         }
         registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;
-    }
-
-    protected void addTextOnlyRow(MatrixCursor matrixCursor, ChanPost thread) {
-        matrixCursor.addRow(new Object[] {
-                thread.no, boardName, 0,
-                "",
-                thread.getCountryFlagUrl(),
-                thread.getBoardText(),
-                thread.getDateText(),
-                thread.getFullText(),
-                thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
-                thread.getSpoilerText(), thread.getExifText(), thread.id, thread.trip, thread.name, thread.email, thread.getImageDimensions(),
-                thread.isDead ? 1 : 0, thread.closed, 0, 0});
-    }
-
-    protected void addImageRow(MatrixCursor matrixCursor, ChanPost thread) {
-        matrixCursor.addRow(new Object[] {
-                thread.no, boardName, 0,
-                thread.getThumbnailUrl(), thread.getCountryFlagUrl(),
-                thread.getBoardText(),
-                thread.getDateText(),
-                thread.getFullText(),
-                thread.tn_w, thread.tn_h, thread.w, thread.h, thread.tim, thread.spoiler,
-                thread.getSpoilerText(), thread.getExifText(), thread.id, thread.trip, thread.name, thread.email, thread.getImageDimensions(),
-                thread.isDead ? 1 : 0, thread.closed, 0, 0});
-    }
-
-    protected void addAdRow(MatrixCursor matrixCursor) {
-        ChanBoard board = ChanBoard.getBoardByCode(this.getContext(), boardName);
-        boolean adultBoard = board != null && !board.workSafe ? true : false;
-        int adCode =
-            (adultBoard && generator.nextDouble() < AD_ADULT_PROBABILITY_ON_ADULT_BOARD)
-            ? JLIST_AD_ADULT_CODES[generator.nextInt(JLIST_AD_ADULT_CODES.length)]
-            : JLIST_AD_CODES[generator.nextInt(JLIST_AD_CODES.length)];
-        String imageUrl = JLIST_AD_IMAGE_ROOT_URL + "/" + adCode;
-        String clickUrl = JLIST_AD_CLICK_ROOT_URL + "/" + adCode;
-        matrixCursor.addRow(new Object[] {
-                2, boardName, 0, imageUrl,
-                "",
-                "",
-                "", clickUrl,
-                -1, -1, -1, -1, 0, 0,
-                "", "", "", "", "", "", "",
-                0, 0, 0, 1});
     }
 
     /**

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" style="@style/ThreadListLayout" android:id="@+id/list_item">
-    <TextView style="@style/ThreadListItemNoImageHeadTextNormalStyle" android:id="@+id/list_item_header"/>
-    <TextView style="@style/ThreadListItemNoImageShortTextNormalStyle" android:id="@+id/list_item_text"/>
-    <TextView style="@style/ThreadListItemDateTextNormalStyle" android:id="@+id/list_item_date"/>
+    <TextView style="@style/ThreadListItemNoImageHeadText" android:id="@+id/list_item_header"/>
+    <TextView style="@style/ThreadListItemNoImageShortText" android:id="@+id/list_item_text"/>
+    <TextView style="@style/ThreadListItemDateText" android:id="@+id/list_item_date"/>
     <ImageView style="@style/ThreadListItemReplyTarget" android:id="@+id/list_item_reply_target"/>
     <ImageView style="@style/ThreadListItemExpandTarget" android:id="@+id/list_item_expand_target"/>
-    <ImageView style="@style/ThreadListItemCountryFlagStyle" android:id="@+id/list_item_country_flag"/>
+    <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
 </RelativeLayout>

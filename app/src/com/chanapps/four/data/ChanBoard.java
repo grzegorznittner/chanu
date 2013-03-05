@@ -12,16 +12,31 @@ import java.util.Set;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.MatrixCursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import android.widget.ArrayAdapter;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.service.FetchChanDataService;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 public class ChanBoard {
+
 	public static final String TAG = ChanBoard.class.getSimpleName();
+
     private static final boolean DEBUG = false;
+
+    // AD STUFF
+    private static final String JLIST_AD_AFFILIATE_CODE = "4539";
+    private static final double AD_ADULT_PROBABILITY_ON_ADULT_BOARD = 1.0;
+    private static final int[] JLIST_AD_CODES = { 118, 113, 68 };
+    private static final int[] JLIST_AD_SMALL_CODES = { 21, 97, 104, 121, 120 };
+    private static final int[] JLIST_AD_ADULT_CODES = { 122, 70 };
+    private static final String JLIST_AD_ROOT_URL = "http://anime.jlist.com";
+    private static final String JLIST_AD_IMAGE_ROOT_URL = JLIST_AD_ROOT_URL + "/media/" + JLIST_AD_AFFILIATE_CODE;
+    private static final String JLIST_AD_CLICK_ROOT_URL = JLIST_AD_ROOT_URL + "/click/" + JLIST_AD_AFFILIATE_CODE;
 
     public ChanBoard() {
 		// public default constructor for Jackson
@@ -44,22 +59,21 @@ public class ChanBoard {
 
     public static final String DEFAULT_BOARD_CODE = "a";
 
-	public String board;
-	public String name;
+    public String board;
+    public String name;
     public String link;
     public int iconId;
-	public int no;
-
+    public int no;
 	public Type type;
-	public boolean workSafe;
-	public boolean classic;
-	public boolean textOnly;
-
+    public boolean workSafe;
+    public boolean classic;
+    public boolean textOnly;
 	public ChanPost stickyPosts[] = new ChanPost[0];
 	public ChanPost threads[] = new ChanThread[0];
-	public long lastFetched;
-	
-	public boolean defData = false;
+    public long lastFetched;
+    public boolean defData = false;
+
+    private Random generator = new Random();
 	
 	public ChanBoard copy() {
 		ChanBoard copy = new ChanBoard(this.type, this.name, this.link, this.iconId,
@@ -110,18 +124,14 @@ public class ChanBoard {
         if (boards == null) {
             initBoards(context);
         }
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean showNSFW = prefs.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
-        return showNSFW ? boards : safeBoards;
+        return showNSFW(context) ? boards : safeBoards;
     }
 
-    public static boolean isValidBoardCode(Context context, String boardCode) {
-        if (boards == null) {
-   			initBoards(context);
-   		}
-        return boardByCode.containsKey(boardCode);
-	}
-	
+    public static boolean showNSFW(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
+    }
+
 	public static List<ChanBoard> getBoardsByType(Context context, Type type) {
 		if (boards == null) {
 			initBoards(context);
@@ -383,4 +393,15 @@ public class ChanBoard {
         else
             return false;
     }
+
+    public Object[] makeAdRow() {
+        int adCode =
+                (!workSafe && generator.nextDouble() < AD_ADULT_PROBABILITY_ON_ADULT_BOARD)
+                        ? JLIST_AD_ADULT_CODES[generator.nextInt(JLIST_AD_ADULT_CODES.length)]
+                        : JLIST_AD_CODES[generator.nextInt(JLIST_AD_CODES.length)];
+        String imageUrl = JLIST_AD_IMAGE_ROOT_URL + "/" + adCode;
+        String clickUrl = JLIST_AD_CLICK_ROOT_URL + "/" + adCode;
+        return ChanPost.makeAdRow(link, imageUrl, clickUrl);
+    }
+
 }

@@ -7,7 +7,7 @@
 
     <EditText
             android:id="@+id/edit_message_text"
-            style="@style/PostReplyEditTextStyle"
+            style="@style/PostReplyEditText"
             android:hint="@string/post_reply_text_hint"
             android:layout_height="match_parent"
             android:inputType="textMultiLine"

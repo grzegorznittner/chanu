@@ -99,7 +99,7 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 		for (ChanThread thread : threads) {
 			if (thread.posts.length > 0) {
 				ChanThreadData watchedThread = new ChanThreadData();
-				watchedThread.shortText = thread.posts[0].getBoardText();
+				watchedThread.shortText = thread.posts[0].getFullText();
 				watchedThread.shortText = watchedThread.shortText.replaceAll("</?b>", "").replaceAll("<[^>]*>.*","");
 				watchedThread.thumbUrl = thread.posts[0].getThumbnailUrl();
 				watchedThread.no = thread.no;
@@ -144,8 +144,7 @@ public class BoardTypeView extends View implements View.OnTouchListener {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		canvas.drawColor(Color.BLACK);
-
+		//canvas.drawColor(Color.BLACK);
 		if (boardType == Type.WATCHLIST) {
 			drawWatchedThreads(canvas);
 		} else {

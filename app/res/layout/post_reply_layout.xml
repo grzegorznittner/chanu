@@ -19,7 +19,7 @@
                 android:id="@+id/post_reply_subject"
                 android:hint="@string/post_reply_subject_hint"
                 android:inputType="textEmailSubject"
-                style="@style/PostReplyEditTextStyle"
+                style="@style/PostReplyEditText"
                 android:maxLength="100"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="0dp"
@@ -28,7 +28,7 @@
 
         <TextView
                 android:id="@+id/post_reply_text"
-                style="@style/PostReplyEditTextStyle"
+                style="@style/PostReplyEditText"
                 android:hint="@string/post_reply_text_hint"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -64,7 +64,7 @@
 
         <EditText
                 android:id="@+id/post_reply_recaptcha_response"
-                style="@style/PostReplyEditTextStyle"
+                style="@style/PostReplyEditText"
                 android:hint="@string/post_reply_recaptcha_hint"
                 android:inputType="textNoSuggestions"
                 android:imeOptions="actionSend"
@@ -75,7 +75,7 @@
 
         <TextView
                 android:id="@+id/post_reply_pass_status"
-                style="@style/PostReplyEditTextStyle"
+                style="@style/PostReplyEditText"
                 android:textStyle="bold"
             >
         </TextView>
@@ -90,7 +90,7 @@
 
             <ImageButton
                     android:id="@+id/post_reply_picture_button"
-                    style="@style/PostReplyButtonStyle"
+                    style="@style/PostReplyButton"
                     android:contentDescription="@string/post_reply_picture_hint"
                     android:hint="@string/post_reply_picture_hint"
                     android:src="@drawable/content_picture">
@@ -98,7 +98,7 @@
 
             <ImageButton
                     android:id="@+id/post_reply_camera_button"
-                    style="@style/PostReplyButtonStyle"
+                    style="@style/PostReplyButton"
                     android:contentDescription="@string/post_reply_camera_hint"
                     android:hint="@string/post_reply_camera_hint"
                     android:src="@drawable/device_access_camera">
@@ -106,7 +106,7 @@
 
             <ImageButton
                     android:id="@+id/post_reply_delete_button"
-                    style="@style/PostReplyButtonStyle"
+                    style="@style/PostReplyButton"
                     android:visibility="gone"
                     android:contentDescription="@string/post_reply_delete_hint"
                     android:hint="@string/post_reply_delete_hint"
@@ -115,7 +115,7 @@
 
             <ImageButton
                     android:id="@+id/post_reply_bump_button"
-                    style="@style/PostReplyButtonStyle"
+                    style="@style/PostReplyButton"
                     android:contentDescription="@string/post_reply_bump_hint"
                     android:hint="@string/post_reply_bump_hint"
                     android:src="@drawable/rating_good">
@@ -123,7 +123,7 @@
 
             <ImageButton
                     android:id="@+id/post_reply_sage_button"
-                    style="@style/PostReplyButtonStyle"
+                    style="@style/PostReplyButton"
                     android:contentDescription="@string/post_reply_sage_hint"
                     android:hint="@string/post_reply_sage_hint"
                     android:src="@drawable/rating_bad">
@@ -131,7 +131,7 @@
 
             <ImageButton
                     android:id="@+id/post_reply_pass_enable_button"
-                    style="@style/PostReplyButtonStyle"
+                    style="@style/PostReplyButton"
                     android:contentDescription="@string/post_reply_pass_enable_hint"
                     android:hint="@string/post_reply_pass_enable_hint"
                     android:src="@drawable/device_access_accounts_enable"
@@ -140,7 +140,7 @@
 
             <ImageButton
                     android:id="@+id/post_reply_pass_disable_button"
-                    style="@style/PostReplyButtonStyle"
+                    style="@style/PostReplyButton"
                     android:contentDescription="@string/post_reply_pass_disable_hint"
                     android:hint="@string/post_reply_pass_disable_hint"
                     android:src="@drawable/device_access_accounts_disable"
@@ -151,7 +151,7 @@
 
         <CheckBox
                 android:id="@+id/post_reply_spoiler_checkbox"
-                style="@style/PostReplyCheckboxStyle"
+                style="@style/PostReplyCheckbox"
                 android:text="@string/post_reply_spoiler" />
 
         <ImageView
@@ -171,7 +171,7 @@
                 android:id="@+id/post_reply_name"
                 android:hint="@string/post_reply_name_hint"
                 android:inputType="textPersonName"
-                style="@style/PostReplyEditTextStyle"
+                style="@style/PostReplyEditText"
                 android:maxLength="100"
                 >
         </EditText>
@@ -180,7 +180,7 @@
                 android:id="@+id/post_reply_email"
                 android:hint="@string/post_reply_email_hint"
                 android:inputType="textEmailAddress"
-                style="@style/PostReplyEditTextStyle"
+                style="@style/PostReplyEditText"
                 android:maxLength="100"
                 >
         </EditText>
@@ -189,7 +189,7 @@
                 android:id="@+id/post_reply_password"
                 android:hint="@string/post_reply_password_hint"
                 android:inputType="text|textVisiblePassword|numberPassword"
-                style="@style/PostReplyEditTextStyle"
+                style="@style/PostReplyEditText"
                 android:maxLength="8"
                 >
         </EditText>

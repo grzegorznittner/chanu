@@ -1,6 +1,8 @@
 package com.chanapps.four.activity;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -23,8 +25,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
@@ -47,7 +47,7 @@ public class BoardActivity
         implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
     private static final String DEFAULT_BOARD_CODE = "a";
 
@@ -119,8 +119,8 @@ public class BoardActivity
         adapter = new BoardGridCursorAdapter(this,
                 R.layout.board_grid_item,
                 this,
-                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_COUNTRY_URL},
-                new int[] {R.id.grid_item_image, R.id.grid_item_text, R.id.grid_item_country_flag});
+                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
+                new int[] {R.id.grid_item_image, R.id.grid_item_text_top, R.id.grid_item_text, R.id.grid_item_country_flag});
         absListView.setAdapter(adapter);
     }
 
@@ -289,67 +289,55 @@ public class BoardActivity
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        return setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions);
+        switch (view.getId()) {
+            case R.id.grid_item_text_top:
+                return setHeaderViewValue((TextView) view, cursor);
+            case R.id.grid_item_text:
+                return setTextViewValue((TextView) view, cursor);
+            case R.id.grid_item_image:
+                return setImageViewValue((ImageView) view, cursor);
+            case R.id.grid_item_country_flag:
+                return setCountryFlagValue((ImageView) view, cursor);
+        }
+        return false;
     }
 
-    public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
-                                       ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (view instanceof TextView && adItem == 0) {
-            TextView tv = (TextView) view;
-            String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-            if (shortText == null || shortText.isEmpty()) {
-                tv.setVisibility(View.INVISIBLE);
-            }
-            else {
-                tv.setText(Html.fromHtml(shortText));
-            }
-            return true;
-        } else if (view instanceof ImageView
-                && (view.getId() == R.id.grid_item_image || view.getId() == R.id.list_item_image)) {
-            final long postNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-            String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
-            String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-            final int tnW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
-            final int tnH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
-            int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
-            ImageView iv = (ImageView) view;
-            if (ChanBoard.isImagelessSticky(boardCode, postNo)) {
-                int imageResourceId = ChanBoard.getImageResourceId(boardCode, postNo);
-                if (imageResourceId > 0)
-                    smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions, imageResourceId);
-                else
-                    iv.setImageBitmap(null);
-            }
-            else if (spoiler > 0) {
-                smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
-            }
-            else if (imageUrl != null && !imageUrl.isEmpty() && ((tnW > 2 && tnH > 2) || adItem > 0)) {
-                smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
-            }
-            else {
-                int imageResourceId = ChanBoard.getImageResourceId(boardCode, postNo);
-                if (imageResourceId > 0)
-                    smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions, imageResourceId);
-                else
-                    iv.setImageBitmap(null);
-            }
-            return true;
-        } else if (view instanceof ImageView
-                && (view.getId() == R.id.grid_item_country_flag || view.getId() == R.id.list_item_country_flag)) {
-            ImageView iv = (ImageView) view;
-            String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
-            if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagImageUrl);
-            if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty()) {
-                smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions);
-            }
-            else {
-                iv.setImageBitmap(null); // blank
-            }
-            return true;
-        } else {
-            return false;
-        }
+    protected boolean setHeaderViewValue(TextView tv, Cursor cursor) {
+        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        tv.setText(Html.fromHtml(shortText));
+        return true;
+    }
+
+    protected boolean setTextViewValue(TextView tv, Cursor cursor) {
+        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
+        int idx = shortText.lastIndexOf('\n');
+        if (idx < 0)
+            idx = 0;
+        String threadInfo = shortText.substring(idx);
+        tv.setText(Html.fromHtml(threadInfo));
+        return true;
+    }
+
+    protected boolean setImageViewValue(ImageView iv, Cursor cursor) {
+        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        int imageResourceId = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_THUMBNAIL_ID));
+        if (imageResourceId > 0)
+            smartSetImageView(iv, "", imageLoader, displayImageOptions, imageResourceId);
+        else if (!imageUrl.isEmpty())
+            smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
+        else
+            iv.setImageBitmap(null);
+        return true;
+    }
+
+    protected boolean setCountryFlagValue(ImageView iv, Cursor cursor) {
+        String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
+        if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagImageUrl);
+        if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
+            smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions);
+        else
+            iv.setImageBitmap(null); // blank
+        return true;
     }
 
     public static void smartSetImageView(ImageView iv, String imageUrl,
@@ -497,8 +485,78 @@ public class BoardActivity
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.e(TAG, "Exception: onPrepareOptionsMenu");
+        setupActionBarBoardSpinner(menu);
+        return true;
+    }
+
+    private void setupActionBarBoardSpinner(Menu menu) {
+        boolean showNSFW = ChanBoard.showNSFW(this);
+        MenuItem item = menu.findItem(R.id.board_jump_spinner_menu);
+        MenuItem itemNSFW = menu.findItem(R.id.board_jump_spinner_nsfw_menu);
+        Spinner spinner;
+        if (showNSFW) {
+            item.setVisible(false);
+            itemNSFW.setVisible(true);
+            spinner = (Spinner)itemNSFW.getActionView();
+        }
+        else {
+            item.setVisible(true);
+            itemNSFW.setVisible(false);
+            spinner = (Spinner)item.getActionView();
+        }
+        spinner.setOnItemSelectedListener(null);
+        int arrayId = showNSFW ? R.array.board_array : R.array.board_array_worksafe;
+        String[] boards = getResources().getStringArray(arrayId);
+        int position = -1;
+        for (int i = 0; i < boards.length; i++) {
+            if (boards[i].matches("/" + boardCode + "/.*")) {
+                position = i;
+                break;
+            }
+        }
+        Log.e(TAG, "Exception matching boardCode=" + boardCode + " found pos=" + position);
+        if (position >= 0)
+            spinner.setSelection(position, false);
+        else
+            spinner.setSelected(false);
+        spinner.setOnItemSelectedListener(actionBarSpinnerHandler);
+    }
+
+    private ActionBarSpinnerHandler actionBarSpinnerHandler = new ActionBarSpinnerHandler();
+
+    private class ActionBarSpinnerHandler implements AdapterView.OnItemSelectedListener {
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) { // for action bar spinner
+            String boardAsMenu = (String) parent.getItemAtPosition(position);
+            if (boardAsMenu == null || boardAsMenu.isEmpty() || position == -1)
+                return;
+            if (boardAsMenu.equals(getString(R.string.board_watch))) {
+                BoardSelectorActivity.startActivity(BoardActivity.this, ChanBoard.Type.WATCHLIST);
+                return;
+            }
+            Pattern p = Pattern.compile("/([^/]*)/.*");
+            Matcher m = p.matcher(boardAsMenu);
+            if (!m.matches())
+                return;
+            String boardCodeForJump = m.group(1);
+            if (boardCodeForJump == null || boardCodeForJump.isEmpty() || boardCodeForJump.equals(boardCode))
+                return;
+            Log.e(TAG, "Exception boardCodeForJump=" + boardCodeForJump);
+            BoardActivity.startActivity(BoardActivity.this, boardCodeForJump);
+            //finish();
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) { // for action bar spinner
+        }
+
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (DEBUG) Log.v(TAG, "onCreateOptionsMenu called");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_menu, menu);
         return true;
@@ -506,10 +564,10 @@ public class BoardActivity
 
     protected void setActionBarTitle() {
         ActionBar a = getActionBar();
-        if (a == null) {
-        }
-        String title = "/" + boardCode + "/"; // + " " + getString(R.string.board_activity);
-        a.setTitle(title);
+        if (a == null)
+            return;
+        invalidateOptionsMenu(); // because onPrepare isn't called when it should be
+        a.setDisplayShowTitleEnabled(false);
         a.setDisplayHomeAsUpEnabled(true);
     }
 

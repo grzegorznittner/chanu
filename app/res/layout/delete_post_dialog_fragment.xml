@@ -7,7 +7,7 @@
         android:orientation="vertical">
 
     <TextView
-            style="@style/PostReplyEditTextStyle"
+            style="@style/PostReplyEditText"
             android:padding="0dp"
             android:layout_marginTop="16dp"
             android:textSize="18dp"
@@ -19,7 +19,7 @@
             android:id="@+id/delete_post_password"
             android:hint="@string/delete_post_password_hint"
             android:inputType="textVisiblePassword|numberPassword"
-            style="@style/PostReplyEditTextStyle"
+            style="@style/PostReplyEditText"
             android:imeOptions="actionNone"
             android:maxLength="8"
             android:layout_marginTop="8dp"
@@ -31,7 +31,7 @@
 
     <CheckBox
             android:id="@+id/delete_post_only_image_checkbox"
-            style="@style/PostReplyCheckboxStyle"
+            style="@style/PostReplyCheckbox"
             android:text="@string/delete_post_only_image" />
 
 </LinearLayout>

@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.database.MatrixCursor;
 import android.text.format.DateUtils;
 import android.util.Log;
 
@@ -96,6 +97,8 @@ public class ChanPost {
     public int imagelimit = 0;
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingIntegerDeserializer.class)
     public int spoiler = 0;
+    @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingIntegerDeserializer.class)
+    public int filedeleted = 0;
 
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingBooleanDeserializer.class)
     public boolean isDead = false;
@@ -145,7 +148,7 @@ public class ChanPost {
         String text = "";
         String subText = sanitizeText(sub);
         if (subText != null && !subText.isEmpty())
-            text += "<b>Subject: " + subText + "</b>";
+            text += "Subject: " + subText + "</b>";
         String comText = com != null && com.trim().length() > 0 ? sanitizeText(com) : "";
         if (comText != null && !comText.isEmpty())
             text += (text.isEmpty() ? "" : "<br/>\n") + comText;
@@ -288,18 +291,33 @@ public class ChanPost {
 	}
 
 
-   	public String getThumbnailUrl() {
-   		if (tim > 0) {
-   			return "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg";
-   		} else if (tim == 0) {
-   			return null;
-   		} else {
-   			// default board image should be returned
-   			return null;
-   		}
+    public String getThumbnailUrl() { // thumbnail with fallback
+        if (ChanBoard.isImagelessSticky(board, no))
+            return "";
+        else if (spoiler > 0)
+            return ChanBoard.spoilerThumbnailUrl(board);
+        else if (tim > 0 && filedeleted == 0 && tn_w > 2 && tn_h > 2)
+            return "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg";
+        else if (resto == 0) // thread default
+            return "";
+        else
+            return "";
     }
 
-   	public String getImageUrl() {
+    public int getThumbnailId() { // for resource types
+        if (ChanBoard.isImagelessSticky(board, no))
+            return ChanBoard.getImageResourceId(board, no);
+        else if (spoiler > 0)
+            return 0;
+        else if (tim > 0 && filedeleted == 0 && tn_w > 2 && tn_h > 2)
+            return 0;
+        else if (resto == 0) // thread default
+            return ChanBoard.getImageResourceId(board, no);
+        else
+            return 0;
+    }
+
+    public String getImageUrl() {
    		if (tim != 0) {
    			return "http://images.4chan.org/" + board + "/src/" + tim + ext;
    		}
@@ -324,12 +342,6 @@ public class ChanPost {
                 + ".gif";
     }
 
-    public String getTimeString(long seconds) {
-        long milliseconds = 1000 * seconds;
-        Date d = new Date(milliseconds);
-        return d.toString();
-    }
-
     public String getDateText() {
         long milliseconds = 1000 * time; // time in seconds, convert
         return (time > 0)
@@ -346,36 +358,54 @@ public class ChanPost {
         return "";
     }
 
-    public String getUserHeaderText() {
-        String text = "";
+    public String getHeaderText() {
+        List<String> lines = new ArrayList<String>();
         if (!hidePostNumbers)
-            text += "No: " + no + "";
-        if (id != null && !id.isEmpty()) {
-            text += (text.isEmpty() ? "" : "\n") + "Id: " + getUserId() + "";
-            if (id.equalsIgnoreCase("admin") && name != null && !name.isEmpty())
-                text += " - " + name;
-        }
+            lines.add("No: " + no);
+        if (id != null && !id.isEmpty())
+            lines.add("Id: " + getUserId());
         if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
-            text += (text.isEmpty() ? "" : "\n") + "Name: " + name + "";
+            lines.add("Name: " + name);
         if (trip != null && !trip.isEmpty())
-            text += (text.isEmpty() ? "" : "\n") + "Tripcode: " + trip + "";
+            lines.add("Tripcode: " + trip);
         if (email != null && !email.isEmpty())
-            text += (text.isEmpty() ? "" : "\n") + "Email: " + email + "";
+            lines.add("Email: " + email);
         if (country_name != null && !country_name.isEmpty())
-            text += (text.isEmpty() ? "" : "\n") + "Country: " + country_name + "";
-        return text;
-	}
-
-    public String getThreadNotificationText() {
+            lines.add("Country: " + country_name);
+        if (resto == 0)
+            lines.add(getThreadInfoText());
         String text = "";
-        text += getUserHeaderText();
+        boolean first = true;
+        for (String line : lines) {
+            if (first) {
+                text += line;
+                first = false;
+                continue;
+            }
+            text += "<br/>\n" + line;
+        }
+        return text;
+    }
+
+    public static int countLines(String s) {
+        if (s == null || s.isEmpty())
+            return 0;
+        int i = 1;
+        int idx = -1;
+        while ((idx = s.indexOf('\n', idx + 1)) != -1) {
+            i++;
+        }
+        return i;
+    }
+
+    private String getThreadInfoText() {
+        String text = "";
         if (sticky > 0 && replies == 0) {
-            text += (text.isEmpty() ? "" : "<br/>\n") + "STICKY";
+            text += "STICKY";
         }
         else {
             if (replies > 0) {
-                text += (text.isEmpty() ? "" : "<br/>\n")
-                        + replies
+                text += replies
                         + " post" + (replies == 1 ? "" : "s")
                         + " "
                         + (images > 0 ? images : "no")
@@ -383,7 +413,7 @@ public class ChanPost {
                         + (images == 1 ? "" : "s");
             }
             else {
-                text += (text.isEmpty() ? "" : "<br/>\n") + "no replies";
+                text += "no posts";
             }
             if (imagelimit == 1)
                 text += " (IL)";
@@ -395,51 +425,6 @@ public class ChanPost {
                 text += (text.isEmpty() ? "" : " ") + "STICKY";
             if (closed > 0)
                 text += (text.isEmpty() ? "" : " ") + "CLOSED";
-        }
-        return text;
-    }
-
-    public String getBoardText() {
-        if (resto != 0)
-            return ""; // just a post
-        String text = "";
-
-        String subText = abbreviate(sanitizeText(sub, true), MAX_DOUBLELINE_TEXT_LEN);
-        if (subText != null && !subText.isEmpty()) {
-            text += "<b>" + subText + "</b>";
-        }
-        else {
-            String comText = abbreviate(sanitizeText(com, true), MAX_DOUBLELINE_TEXT_LEN);
-            if (comText != null && !comText.isEmpty())
-                text += "<b>" + comText + "</b>";
-        }
-
-        if (sticky > 0 && replies == 0) { // special formatting
-            text += "<br/>\nSTICKY";
-        }
-        else {
-            if (replies > 0) {
-                text += (text.isEmpty() ? "" : "<br/>\n")
-                        + replies
-                        + " post" + (replies == 1 ? "" : "s")
-                        + " "
-                        + (images > 0 ? images : "0")
-                        + "i";
-                        //+ (images == 1 ? "" : "s");
-            }
-            else {
-                text += (text.isEmpty() ? "" : "<br/>\n") + "no replies";
-            }
-            if (imagelimit == 1)
-                text += " IL";
-            if (bumplimit == 1)
-                text += " BL";
-            if (sticky > 0)
-                text += " S";
-            if (closed > 0)
-                text += " C";
-            if (isDead)
-                text += " D";
         }
         return text;
     }
@@ -673,6 +658,75 @@ public class ChanPost {
         fsize = -1;
         filename = null;
         ext = null;
+    }
+
+    public static MatrixCursor buildMatrixCursor() {
+        return new MatrixCursor(ChanHelper.POST_COLUMNS);
+    }
+
+    public Object[] makeRow() {
+        String headerText = getHeaderText();
+        return new Object[] {
+                no,
+                board,
+                resto,
+                getThumbnailUrl(),
+                getCountryFlagUrl(),
+                headerText,
+                getDateText(),
+                getFullText(),
+                tn_w,
+                tn_h,
+                w,
+                h,
+                tim,
+                spoiler,
+                getSpoilerText(),
+                getExifText(),
+                id,
+                trip,
+                name,
+                email,
+                getImageDimensions(),
+                isDead ? 1 : 0,
+                closed,
+                0,
+                0,
+                countLines(headerText),
+                getThumbnailId()
+        };
+    }
+
+    public static Object[] makeAdRow(String boardCode, String imageUrl, String clickUrl) {
+        return new Object[] {
+                2,
+                boardCode,
+                0,
+                imageUrl,
+                "",
+                "",
+                "",
+                clickUrl,
+                120,
+                120,
+                -1,
+                -1,
+                0,
+                0,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                0,
+                0,
+                0,
+                1,
+                1,
+                0
+        };
     }
 
 }

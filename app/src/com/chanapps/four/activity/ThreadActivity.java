@@ -43,6 +43,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     public static final boolean DEBUG = false;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
+    private static final int MAX_TEXT_LINES = 9; // most we support, maybe change per screen layout?
 
     protected long threadNo;
     protected String text;
@@ -99,7 +100,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 	    if (board != null && board.defData) // def data are not clicable
 	    	return;
 	    */
-	    final String text = thread.getBoardText();
+	    final String text = thread.getFullText();
 	    final String imageUrl = thread.getImageUrl();
 	    final int tn_w = thread.tn_w;
 	    final int tn_h = thread.tn_h;
@@ -129,7 +130,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 context,
                 thread.board,
                 thread.no,
-                thread.getThreadNotificationText(),
+                thread.getHeaderText(),
                 thread.getThumbnailUrl(),
                 thread.tn_w,
                 thread.tn_h,
@@ -286,37 +287,64 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         absListView.setLongClickable(false);
     }
 
+    @Override
+    public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
+        //if (!ensureThreadCache()) {
+        //    view.setVisibility(View.GONE);
+        //    return false;
+        //}
+        //ChanPost post = getPost(cursor);
+        //if (post == null)
+        //    return false;
+        switch (view.getId()) {
+            case R.id.list_item_image:
+                return setItemImage((ImageView)view, cursor);
+            case R.id.list_item_country_flag:
+                return setItemCountryFlag((ImageView)view, cursor);
+            case R.id.list_item_header:
+                return setItemHeaderValue((TextView)view, cursor);
+            case R.id.list_item_text:
+                return setItemMessageValue((TextView)view, cursor);
+            case R.id.list_item_date:
+                return setItemDateValue((TextView)view, cursor);
+            case R.id.list_item_image_overlay:
+                return setItemImageOverlayValue((TextView)view, cursor);
+            case R.id.list_item_expand_target:
+                return setItemExpandButton((ImageView)view);
+            case R.id.list_item_reply_target:
+                return setItemReplyButton((ImageView)view, cursor);
+            default:
+                return false;
+        }
+    }
+
     private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
+        int numHeaderLines = cursor.getInt(cursor.getColumnIndex(ChanHelper.NUM_HEADER_LINES));
         String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        if (shortText == null || shortText.isEmpty())
-            tv.setText("");
-        else
-            tv.setText(shortText);
+        tv.setText(Html.fromHtml(shortText));
+        tv.setMaxLines(Math.max(numHeaderLines,1));
         return true;
     }
 
     private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
+        int numHeaderLines = cursor.getInt(cursor.getColumnIndex(ChanHelper.NUM_HEADER_LINES));
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        if (text == null || text.isEmpty()) {
-            tv.setText("");
+        tv.setText(Html.fromHtml(text));
+        tv.setMaxLines(MAX_TEXT_LINES - Math.max(numHeaderLines, 1));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (adItem > 0) {
+            final String adUrl = text;
+            tv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ChanHelper.fadeout(ThreadActivity.this, tv);
+                    launchUrlInBrowser(adUrl);
+                }
+            });
+            fullText = null;
         }
         else {
-            tv.setText(Html.fromHtml(text));
-            final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-            if (adItem > 0) {
-                final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-                tv.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ChanHelper.fadeout(ThreadActivity.this, tv);
-                        launchUrlInBrowser(adUrl);
-                    }
-                });
-                fullText = null;
-            }
-            else {
-                fullText = tv;
-            }
+            fullText = tv;
         }
         return true;
     }
@@ -383,22 +411,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     private boolean setItemImage(final ImageView iv, final Cursor cursor) {
-        int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.SPOILER));
-        final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        final int tnW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
-        final int tnH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
+        super.setImageViewValue(iv, cursor);
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (spoiler > 0) {
-            String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
-            smartSetImageView(iv, ChanBoard.spoilerThumbnailUrl(boardCode), imageLoader, displayImageOptions);
-        }
-        else if (imageUrl != null && !imageUrl.isEmpty() && ((tnW > 2 && tnH > 2) || adItem > 0)) {
-            smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
-        }
-        else {
-            iv.setImageBitmap(null); // blank
-        }
-
         if (adItem > 0) {
             final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
             iv.setOnClickListener(new View.OnClickListener() {
@@ -411,8 +425,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         }
         else {
             final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
-            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
             final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+            final long threadNo = resto == 0 ? postId : resto;
             final int w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
             final int h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
             final int position = cursor.getPosition();
@@ -460,37 +475,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (threadPos >= thread.posts.length)
             return null; // couldn't find post
         return thread.posts[threadPos];
-    }
-
-    @Override
-    public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
-        //if (!ensureThreadCache()) {
-        //    view.setVisibility(View.GONE);
-        //    return false;
-        //}
-        //ChanPost post = getPost(cursor);
-        //if (post == null)
-        //    return false;
-        switch (view.getId()) {
-            case R.id.list_item_image:
-                return setItemImage((ImageView)view, cursor);
-            case R.id.list_item_country_flag:
-                return setItemCountryFlag((ImageView)view, cursor);
-            case R.id.list_item_header:
-                return setItemHeaderValue((TextView)view, cursor);
-            case R.id.list_item_text:
-                return setItemMessageValue((TextView)view, cursor);
-            case R.id.list_item_date:
-                return setItemDateValue((TextView)view, cursor);
-            case R.id.list_item_image_overlay:
-                return setItemImageOverlayValue((TextView)view, cursor);
-            case R.id.list_item_expand_target:
-                return setItemExpandButton((ImageView)view);
-            case R.id.list_item_reply_target:
-                return setItemReplyButton((ImageView)view, cursor);
-            default:
-                return false;
-        }
     }
 
     @Override

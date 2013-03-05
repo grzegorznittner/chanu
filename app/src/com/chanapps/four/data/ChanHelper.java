@@ -90,6 +90,8 @@ public class ChanHelper {
     public static final String POST_IMAGE_DIMENSIONS = "imageDim";
     public static final String POST_EXPAND_BUTTON = "expandButton";
     public static final String AD_ITEM = "adItem";
+    public static final String NUM_HEADER_LINES = "numHeaderLines";
+    public static final String POST_THUMBNAIL_ID = "postThumbnailId";
 
     public static final String LAST_BOARD_POSITION = "lastBoardPosition";
     public static final String LAST_THREAD_POSITION = "lastThreadPosition";
@@ -128,17 +130,9 @@ public class ChanHelper {
             POST_IS_DEAD,
             POST_CLOSED,
             POST_EXPAND_BUTTON,
-            AD_ITEM
-    };
-
-    public static final String BOARD_ID = "_id";
-    public static final String BOARD_IMAGE_RESOURCE_ID = "boardImageResourceId";
-    public static final String BOARD_NAME = "boardName";
-    public static final String[] SELECTOR_COLUMNS = {
-            BOARD_ID,
-            BOARD_CODE,
-            BOARD_IMAGE_RESOURCE_ID,
-            BOARD_NAME
+            AD_ITEM,
+            NUM_HEADER_LINES,
+            POST_THUMBNAIL_ID,
     };
 
     public static final String PREF_WIDGET_BOARDS = "prefWidgetBoards";

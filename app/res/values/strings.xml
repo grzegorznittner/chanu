@@ -436,4 +436,110 @@
     <string name="board_soc">Social</string>
     <string name="board_watch">Watchlist</string>
 
+    <string-array name="board_array">
+        <item>Watchlist</item>
+        <item>/3/ 3DCG</item>
+        <item>/a/ Anime &amp; Manga</item>
+        <item>/adv/ Advice</item>
+        <item>/an/ Animals &amp; Nature</item>
+        <item>/b/ Random</item>
+        <item>/c/ Anime/Cute</item>
+        <item>/cgl/ Cosplay &amp; EGL</item>
+        <item>/ck/ Food &amp; Cooking</item>
+        <item>/cm/ Cute/Male</item>
+        <item>/co/ Comics &amp; Cartoons</item>
+        <item>/d/ Hentai/Alternative</item>
+        <item>/diy/ Do-It-Yourself</item>
+        <item>/e/ Ecchi</item>
+        <item>/fa/ Fashion</item>
+        <item>/fit/ Health &amp; Fitness</item>
+        <item>/g/ Technology</item>
+        <item>/gif/ Animated GIF</item>
+        <item>/h/ Hentai</item>
+        <item>/hc/ Hardcore</item>
+        <item>/hm/ Handsome Men</item>
+        <item>/hr/ High Resolution</item>
+        <item>/i/ Oekaki</item>
+        <item>/ic/ Artwork/Critique</item>
+        <item>/int/ International</item>
+        <item>/jp/ Otaku Culture</item>
+        <item>/k/ Weapons</item>
+        <item>/lit/ Literature</item>
+        <item>/m/ Mecha</item>
+        <item>/mlp/ Pony</item>
+        <item>/mu/ Music</item>
+        <item>/n/ Transportation</item>
+        <item>/o/ Auto</item>
+        <item>/p/ Photography</item>
+        <item>/po/ Papercraft &amp; Origami</item>
+        <item>/pol/ Politically Incorrect</item>
+        <item>/q/ 4chan Discussion</item>
+        <item>/r/ Request</item>
+        <item>/r9k/ ROBOT9001</item>
+        <item>/s/ Sexy Beautiful Women</item>
+        <item>/sci/ Science &amp; Math</item>
+        <item>/soc/ Social</item>
+        <item>/sp/ Sports</item>
+        <item>/t/ Torrents</item>
+        <item>/tg/ Traditional Games</item>
+        <item>/toy/ Toys</item>
+        <item>/trv/ Travel</item>
+        <item>/tv/ Television &amp; Film</item>
+        <item>/u/ Yuri</item>
+        <item>/v/ Video Games</item>
+        <item>/vg/ Video Game Generals</item>
+        <item>/vp/ Pokemon</item>
+        <item>/w/ Anime/Wallpapers</item>
+        <item>/watch/ Watchlist</item>
+        <item>/wg/ Wallpapers/General</item>
+        <item>/wsg/ Worksafe GIF</item>
+        <item>/x/ Paranormal</item>
+        <item>/y/ Yaoi</item>
+    </string-array>
+
+    <string-array name="board_array_worksafe">
+        <item>Watchlist</item>
+        <item>/3/ 3DCG</item>
+        <item>/a/ Anime &amp; Manga</item>
+        <item>/adv/ Advice</item>
+        <item>/an/ Animals &amp; Nature</item>
+        <item>/c/ Anime/Cute</item>
+        <item>/cgl/ Cosplay &amp; EGL</item>
+        <item>/ck/ Food &amp; Cooking</item>
+        <item>/cm/ Cute/Male</item>
+        <item>/co/ Comics &amp; Cartoons</item>
+        <item>/diy/ Do-It-Yourself</item>
+        <item>/fa/ Fashion</item>
+        <item>/fit/ Health &amp; Fitness</item>
+        <item>/g/ Technology</item>
+        <item>/i/ Oekaki</item>
+        <item>/ic/ Artwork/Critique</item>
+        <item>/int/ International</item>
+        <item>/jp/ Otaku Culture</item>
+        <item>/k/ Weapons</item>
+        <item>/lit/ Literature</item>
+        <item>/m/ Mecha</item>
+        <item>/mlp/ Pony</item>
+        <item>/mu/ Music</item>
+        <item>/n/ Transportation</item>
+        <item>/o/ Auto</item>
+        <item>/p/ Photography</item>
+        <item>/po/ Papercraft &amp; Origami</item>
+        <item>/q/ 4chan Discussion</item>
+        <item>/sci/ Science &amp; Math</item>
+        <item>/sp/ Sports</item>
+        <item>/tg/ Traditional Games</item>
+        <item>/toy/ Toys</item>
+        <item>/trv/ Travel</item>
+        <item>/tv/ Television &amp; Film</item>
+        <item>/v/ Video Games</item>
+        <item>/vg/ Video Game Generals</item>
+        <item>/vp/ Pokemon</item>
+        <item>/w/ Anime/Wallpapers</item>
+        <item>/watch/ Watchlist</item>
+        <item>/wg/ Wallpapers/General</item>
+        <item>/wsg/ Worksafe GIF</item>
+        <item>/x/ Paranormal</item>
+   </string-array>
+
 </resources>

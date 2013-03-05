@@ -20,14 +20,9 @@
 
     <GridView
             android:id="@+id/board_grid_view"
-            style="@style/GridViewTemplate"
-            android:layout_below="@id/board_progress_bar"
-            android:gravity="top|left"
+            style="@style/BoardGridView"
             />
-<!--
-            android:divider="@color/PaletteOffWhite"
-            android:dividerHeight="1px"
--->
+
     <!--
     <LinearLayout
             android:id="@+id/board_grid_advert"

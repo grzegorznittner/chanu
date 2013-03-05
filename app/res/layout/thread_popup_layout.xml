@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginTop="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"
-        android:layout_marginBottom="32dp"
-        android:padding="1dp"
-        android:orientation="vertical"
-        android:background="@color/HoloDimForegroundInverse"
+        style="@style/PopupFullTextLayout"
         >
 
     <FrameLayout
@@ -31,24 +23,24 @@
 
                 <TextView
                         android:id="@+id/popup_spoiler_text"
-                        style="@style/PopupFullTextViewStyle"
+                        style="@style/PopupFullTextView"
                         />
 
                 <TextView
                         android:id="@+id/popup_exif_text"
-                        style="@style/PopupFullTextViewStyle"
+                        style="@style/PopupFullTextView"
                         />
 
                 <TextView
                         android:id="@+id/popup_dead_thread_text_view"
-                        style="@style/PopupFullTextViewStyle"
+                        style="@style/PopupFullTextView"
                         android:clickable="false"
                         android:textStyle="bold"
                         android:text="@string/dead_thread_reply" />
 
                 <TextView
                         android:id="@+id/popup_closed_thread_text_view"
-                        style="@style/PopupFullTextViewStyle"
+                        style="@style/PopupFullTextView"
                         android:clickable="false"
                         android:textStyle="bold"
                         android:text="@string/closed_thread_reply" />
@@ -70,7 +62,7 @@
 
             <Button
                     android:id="@+id/popup_spoiler_button"
-                    style="@style/PopupFullTextButtonStyle"
+                    style="@style/PopupFullTextButton"
                     android:text="@string/spoiler" />
 
             <View
@@ -79,7 +71,7 @@
 
             <Button
                     android:id="@+id/popup_exif_button"
-                    style="@style/PopupFullTextButtonStyle"
+                    style="@style/PopupFullTextButton"
                     android:text="@string/exif" />
 
             <View
@@ -88,7 +80,7 @@
 
             <Button
                     android:id="@+id/popup_translate_button"
-                    style="@style/PopupFullTextButtonStyle"
+                    style="@style/PopupFullTextButton"
                     android:text="@string/translate" />
 
             <View
@@ -97,7 +89,7 @@
 
             <Button
                     android:id="@+id/popup_highlight_replies_button"
-                    style="@style/PopupFullTextButtonStyle"
+                    style="@style/PopupFullTextButton"
                     android:text="@string/highlight_replies" />
 
             <View
@@ -106,7 +98,7 @@
 
             <Button
                     android:id="@+id/popup_highlight_id_button"
-                    style="@style/PopupFullTextButtonStyle"
+                    style="@style/PopupFullTextButton"
                     android:text="@string/highlight_id" />
 
             <View
@@ -115,7 +107,7 @@
 
             <Button
                     android:id="@+id/popup_block_button"
-                    style="@style/PopupFullTextButtonStyle"
+                    style="@style/PopupFullTextButton"
                     android:text="@string/blocklist_button" />
 
             <View
@@ -124,7 +116,7 @@
 
             <Button
                     android:id="@+id/popup_delete_button"
-                    style="@style/PopupFullTextButtonStyle"
+                    style="@style/PopupFullTextButton"
                     android:text="@string/delete_button" />
 
             <View
@@ -133,7 +125,7 @@
 
             <Button
                     android:id="@+id/popup_report_button"
-                    style="@style/PopupFullTextButtonStyle"
+                    style="@style/PopupFullTextButton"
                     android:text="@string/report" />
 
             <View
@@ -142,7 +134,7 @@
 
             <Button
                     android:id="@+id/popup_reply_button"
-                    style="@style/PopupFullTextButtonStyle"
+                    style="@style/PopupFullTextButton"
                     android:text="@string/reply" />
 
             <View
@@ -151,7 +143,7 @@
 
             <Button
                     android:id="@+id/popup_close_button"
-                    style="@style/PopupFullTextButtonStyle"
+                    style="@style/PopupFullTextButton"
                     android:text="@string/dismiss" />
 
         </LinearLayout>
