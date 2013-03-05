@@ -361,7 +361,7 @@ public class BoardActivity
                 iv.setImageBitmap(null);
                 iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
                 if (imageResourceId > 0) // load from board
-                    iv.setImageResource(imageResourceId);
+                	imageLoader.displayImage(ImageLoader.RESOURCE_ID_PREFIX + imageResourceId, iv, displayImageOptions); // load from resource
                 else
                     imageLoader.displayImage(imageUrl, iv, displayImageOptions); // load from internet
             }

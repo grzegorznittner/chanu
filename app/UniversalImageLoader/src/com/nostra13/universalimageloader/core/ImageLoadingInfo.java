@@ -23,13 +23,31 @@ final class ImageLoadingInfo {
 	final ImageSize targetSize;
 	final DisplayImageOptions options;
 	final ImageLoadingListener listener;
+	final int resourceId;
 
 	public ImageLoadingInfo(String uri, ImageView imageView, ImageSize targetSize, DisplayImageOptions options, ImageLoadingListener listener) {
-		this.uri = Uri.encode(uri, "@#&=*+-_.,:!?()/~'%");
+		if (uri != null && uri.startsWith(ImageLoader.RESOURCE_ID_PREFIX)) {
+			String id = uri.substring(ImageLoader.RESOURCE_ID_PREFIX.length());
+			int resId = 0;
+			try {
+				resId = Integer.parseInt(id);
+			} catch (NumberFormatException nfe) {
+				// parsing error
+			}
+			this.resourceId = resId;
+			this.uri = uri;
+		} else {
+			this.uri = Uri.encode(uri, "@#&=*+-_.,:!?()/~'%");
+			this.resourceId = 0;
+		}
 		this.imageView = imageView;
 		this.targetSize = targetSize;
 		this.options = options;
 		this.listener = listener;
 		memoryCacheKey = MemoryCacheKeyUtil.generateKey(uri, targetSize);
+	}
+	
+	boolean isResourceId() {
+		return resourceId != 0;
 	}
 }

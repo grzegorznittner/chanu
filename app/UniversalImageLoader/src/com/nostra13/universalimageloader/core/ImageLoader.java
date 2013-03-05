@@ -1,6 +1,5 @@
 package com.nostra13.universalimageloader.core;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
@@ -10,13 +9,11 @@ import java.util.concurrent.Executors;
 
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapRegionDecoder;
 import android.os.Handler;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
-import com.chanapps.four.data.ChanPost;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
@@ -38,6 +35,8 @@ public class ImageLoader {
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
 	private static final String ERROR_INIT_CONFIG_WITH_NULL = "ImageLoader configuration can not be initialized with null";
 	private static final String LOG_LOAD_IMAGE_FROM_MEMORY_CACHE = "Load image from memory cache [%s]";
+	
+	public static final String RESOURCE_ID_PREFIX = "resource://";
 
 	private ImageLoaderConfiguration configuration;
 	private ExecutorService imageLoadingExecutor;
@@ -213,7 +212,12 @@ public class ImageLoader {
 
 			checkExecutors();
 			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener);
-			LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(configuration, imageLoadingInfo, new Handler());
+			LoadAndDisplayImageTask displayImageTask = null;
+			if (imageLoadingInfo.isResourceId()) {
+				displayImageTask = new LoadAndDisplayResourceImageTask(configuration, imageLoadingInfo, new Handler());
+			} else {
+				displayImageTask = new LoadAndDisplayImageTask(configuration, imageLoadingInfo, new Handler());
+			}
 			boolean isImageCachedOnDisc = configuration.discCache.get(uri).exists();
 			if (isImageCachedOnDisc) {
 				cachedImageLoadingExecutor.submit(displayImageTask);
