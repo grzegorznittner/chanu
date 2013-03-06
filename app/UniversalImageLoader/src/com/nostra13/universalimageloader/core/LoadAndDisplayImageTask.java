@@ -29,20 +29,20 @@ import com.nostra13.universalimageloader.utils.FileUtils;
  * @see ImageLoaderConfiguration
  * @see ImageLoadingInfo
  */
-class LoadAndDisplayImageTask implements Runnable {
+final class LoadAndDisplayImageTask implements Runnable {
 
-	protected static final String LOG_START_DISPLAY_IMAGE_TASK = "Start display image task [%s]";
-	protected static final String LOG_LOAD_IMAGE_FROM_INTERNET = "Load image from Internet [%s]";
-	protected static final String LOG_LOAD_IMAGE_FROM_DISC_CACHE = "Load image from disc cache [%s]";
-	protected static final String LOG_CACHE_IMAGE_IN_MEMORY = "Cache image in memory [%s]";
-	protected static final String LOG_CACHE_IMAGE_ON_DISC = "Cache image on disc [%s]";
-	protected static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
+	private static final String LOG_START_DISPLAY_IMAGE_TASK = "Start display image task [%s]";
+	private static final String LOG_LOAD_IMAGE_FROM_INTERNET = "Load image from Internet [%s]";
+	private static final String LOG_LOAD_IMAGE_FROM_DISC_CACHE = "Load image from disc cache [%s]";
+	private static final String LOG_CACHE_IMAGE_IN_MEMORY = "Cache image in memory [%s]";
+	private static final String LOG_CACHE_IMAGE_ON_DISC = "Cache image on disc [%s]";
+	private static final String LOG_DISPLAY_IMAGE_IN_IMAGEVIEW = "Display image in ImageView [%s]";
 
-	protected static final int ATTEMPT_COUNT_TO_DECODE_BITMAP = 3;
+	private static final int ATTEMPT_COUNT_TO_DECODE_BITMAP = 3;
 
-	protected final ImageLoaderConfiguration configuration;
-	protected final ImageLoadingInfo imageLoadingInfo;
-	protected final Handler handler;
+	private final ImageLoaderConfiguration configuration;
+	private final ImageLoadingInfo imageLoadingInfo;
+	private final Handler handler;
 
 	public LoadAndDisplayImageTask(ImageLoaderConfiguration configuration, ImageLoadingInfo imageLoadingInfo, Handler handler) {
 		this.configuration = configuration;
@@ -92,7 +92,7 @@ class LoadAndDisplayImageTask implements Runnable {
 		return imageViewWasReused;
 	}
 
-	protected Bitmap tryLoadBitmap() {
+	private Bitmap tryLoadBitmap() {
 		File imageFile = configuration.discCache.get(imageLoadingInfo.uri);
 
 		Bitmap bitmap = null;
@@ -214,7 +214,7 @@ class LoadAndDisplayImageTask implements Runnable {
 		}
 	}
 
-	protected void fireImageLoadingFailedEvent(final FailReason failReason) {
+	private void fireImageLoadingFailedEvent(final FailReason failReason) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
