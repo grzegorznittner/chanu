@@ -1,5 +1,6 @@
 package com.chanapps.four.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -182,17 +183,23 @@ public class BoardGroupFragment extends Fragment
     	}
     }
 
-
+    /*
     public void onPrepareOptionsMenu(Menu menu, Context menuContext, ChanBoard.Type selectedBoardType) {
         super.onPrepareOptionsMenu(menu);
         if (DEBUG) Log.i(TAG, "Called onPrepareOptionsMenu fragment selectedBoardType=" + selectedBoardType + " menuContext=" + menuContext);
         if (menuContext == null)
             return;
-        menu.removeItem(R.id.clear_watchlist_menu);
+        //menu.removeItem(R.id.clear_watchlist_menu);
         //menu.removeItem(R.id.clean_watchlist_menu);
-        MenuInflater inflater = new MenuInflater(menuContext);
-        if (selectedBoardType == ChanBoard.Type.WATCHLIST) {
-            inflater.inflate(R.menu.watchlist_menu, menu);
+        //MenuInflater inflater = new MenuInflater(menuContext);
+        //if (selectedBoardType == ChanBoard.Type.WATCHLIST) {
+        //    inflater.inflate(R.menu.watchlist_menu, menu);
+        //}
+        Activity activity = getActivity();
+        if (activity != null) {
+            String boardCode = selectedBoardType.equals(ChanBoard.Type.WATCHLIST) ? ChanBoard.WATCH_BOARD_CODE : "";
+            ChanBoard.setupActionBarBoardSpinner(this.getActivity(), menu, boardCode);
         }
     }
+    */
 }

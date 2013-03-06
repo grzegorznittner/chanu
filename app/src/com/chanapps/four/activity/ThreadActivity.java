@@ -479,6 +479,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+/*
         MenuItem item = menu.findItem(R.id.hide_post_numbers);
         if (boardCode.equals("b")) {
             item.setEnabled(false);
@@ -494,6 +495,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             else
                 item.setTitle(R.string.pref_hide_post_numbers_turn_on);
         }
+*/
+        ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
         return true;
     }
 
@@ -552,18 +555,18 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             case R.id.view_image_gallery_menu:
                 GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
                 return true;
+/*
             case R.id.hide_post_numbers:
                 toggleHidePostNumbers();
                 return true;
+*/
             case R.id.watch_thread_menu:
                 addToWatchlist();
                 return true;
-/*
             case R.id.download_all_images_menu:
             	ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
-                Toast.makeText(this, "Download of all images scheduled", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
                 return true;
-*/
             case R.id.download_all_images_to_gallery_menu:
             	ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null);
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
@@ -585,15 +588,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_thread_list);
                 rawResourceDialog.show();
                 return true;
-            case R.id.go_to_board_menu:
-                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
-                return true;
             case R.id.board_rules_menu:
                 displayBoardRules();
-                return true;
-            case R.id.about_menu:
-                RawResourceDialog aboutDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.about_header, R.raw.about_detail);
-                aboutDialog.show();
                 return true;
             case R.id.exit_menu:
                 ChanHelper.exitApplication(this);
@@ -617,9 +613,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (a == null) {
             return;
         }
-        String title = "/" + boardCode + "/" + threadNo;
-        a.setTitle(title);
+        //String title = "/" + boardCode + "/" + threadNo;
+        //a.setTitle(title);
+        a.setDisplayShowTitleEnabled(false);
         a.setDisplayHomeAsUpEnabled(true);
+        invalidateOptionsMenu();
     }
 
     protected void initPopup() {

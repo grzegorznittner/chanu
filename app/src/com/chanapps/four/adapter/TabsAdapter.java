@@ -71,7 +71,11 @@ public class TabsAdapter extends FragmentPagerAdapter
         //if (position >= getCount()) {
         if (object != null && object instanceof Fragment) {
             FragmentManager manager = ((Fragment) object).getFragmentManager();
+            if (manager == null)
+                return;
             FragmentTransaction trans = manager.beginTransaction();
+            if (trans == null)
+                return;
             trans.remove((Fragment) object);
             trans.commit();
         }
@@ -134,10 +138,10 @@ public class TabsAdapter extends FragmentPagerAdapter
                 + " with fragment=" + (fragment != null ? fragment.getTag() : null)
                 + " menu=" + menu
                 + " selectedBoardType=" + mContext.selectedBoardType);
-        if (fragment != null && menu != null) {
+        //if (fragment != null && menu != null) {
             mContext.invalidateOptionsMenu();
-            ((BoardGroupFragment)fragment).onPrepareOptionsMenu(menu, mContext, mContext.selectedBoardType);
-        }
+        //    ((BoardGroupFragment)fragment).onPrepareOptionsMenu(menu, mContext, mContext.selectedBoardType);
+        //}
     }
 
     @Override

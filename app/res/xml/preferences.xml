@@ -156,6 +156,11 @@
                 android:title="@string/pref_reset_to_defaults"
                 android:summary="@string/pref_reset_to_defaults_summ" />
 
+        <Preference
+                android:key="pref_about"
+                android:title="@string/pref_about"
+                android:summary="@string/pref_about_summ" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -41,10 +41,6 @@
           android:title="@string/help_menu"
           android:icon="@drawable/action_help"
           />
-    <item android:id="@+id/about_menu"
-          android:title="@string/about_menu"
-          android:icon="@drawable/action_help"
-            />
     <item android:id="@+id/exit_menu"
           android:title="@string/exit_menu"
           android:icon="@drawable/navigation_cancel"

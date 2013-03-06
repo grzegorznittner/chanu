@@ -90,7 +90,7 @@
     <string name="toggle_hide_post_numbers_menu">Toggle Hide Post Numbers</string>
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
-    <string name="download_all_images_menu">Download All Images</string>
+    <string name="download_all_images_menu">Prefetch All Images</string>
     <string name="download_all_images_to_gallery_menu">Download To Gallery</string>
     <string name="download_image_menu">Save to Gallery</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
@@ -168,6 +168,7 @@
     <string name="fullscreen_image_offline_upper">Off-line mode</string>
     <string name="full_screen_cancel_button">Cancel Download</string>
     <string name="full_screen_close_button">Close</string>
+    <string name="download_all_images_notice_prefetch">You will be notified when prefetch finishes</string>
     <string name="download_all_images_notice">You will be notified when download finishes</string>
     <string name="download_all_images_complete">Download complete</string>
     <string name="download_all_images_complete_detail">Images downloaded to gallery for /%1$s/%2$d</string>
@@ -309,6 +310,8 @@
     <string name="pref_clear_cache_error">Couldn\'t clear cache</string>
     <string name="pref_clear_cache_success">Cleared cache successfully</string>
     <string name="pref_clear_cache_notification_title">4Channer Cache Status</string>
+    <string name="pref_about">About</string>
+    <string name="pref_about_summ">Authorship and licensing information</string>
     <string name="pref_reset_to_defaults">Clear Preferences</string>
     <string name="pref_reset_to_defaults_summ">Reset all settings to their factory default</string>
     <string name="pref_user_category">User Info</string>
@@ -435,9 +438,11 @@
     <string name="board_pol">Politically Incorrect</string>
     <string name="board_soc">Social</string>
     <string name="board_watch">Watchlist</string>
+    <string name="board_select">Select Board</string>
 
     <string-array name="board_array">
-        <item>Watchlist</item>
+        <item>@string/board_select</item>
+        <item>@string/board_watch</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -497,7 +502,8 @@
     </string-array>
 
     <string-array name="board_array_worksafe">
-        <item>Watchlist</item>
+        <item>@string/board_select</item>
+        <item>@string/board_watch</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>

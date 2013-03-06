@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.component.RawResourceDialog;
 
 
 /**
@@ -34,7 +35,7 @@ public class SettingsFragment
 
         addPreferencesFromResource(R.xml.preferences);
 
-        Preference blocklistButton = (Preference)findPreference(SettingsActivity.PREF_BLOCKLIST_BUTTON);
+        Preference blocklistButton = findPreference(SettingsActivity.PREF_BLOCKLIST_BUTTON);
         blocklistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -44,7 +45,7 @@ public class SettingsFragment
             }
         });
 
-        Preference resetPrefsButton = (Preference)findPreference(SettingsActivity.PREF_RESET_TO_DEFAULTS);
+        Preference resetPrefsButton = findPreference(SettingsActivity.PREF_RESET_TO_DEFAULTS);
         resetPrefsButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -54,12 +55,22 @@ public class SettingsFragment
             }
         });
 
-        Preference clearCacheButton = (Preference)findPreference(SettingsActivity.PREF_CLEAR_CACHE);
+        Preference clearCacheButton = findPreference(SettingsActivity.PREF_CLEAR_CACHE);
         clearCacheButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 ClearCacheDialogFragment dialog = new ClearCacheDialogFragment(SettingsFragment.this);
                 dialog.show(getFragmentManager(), SettingsFragment.TAG);
+                return true;
+            }
+        });
+
+        Preference aboutButton = findPreference(SettingsActivity.PREF_ABOUT);
+        aboutButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                RawResourceDialog aboutDialog = new RawResourceDialog(getActivity(), R.layout.about_dialog, R.raw.about_header, R.raw.about_detail);
+                aboutDialog.show();
                 return true;
             }
         });

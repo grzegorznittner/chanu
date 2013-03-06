@@ -369,7 +369,10 @@ public class ChanPost {
         if (trip != null && !trip.isEmpty())
             lines.add("Tripcode: " + trip);
         if (email != null && !email.isEmpty())
-            lines.add("Email: " + email);
+            if (email.equals("sage"))
+                lines.add("<b>sage</b>");
+            else
+                lines.add("Email: " + email);
         if (country_name != null && !country_name.isEmpty())
             lines.add("Country: " + country_name);
         if (resto == 0)
