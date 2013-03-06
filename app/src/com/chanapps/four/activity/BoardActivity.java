@@ -94,7 +94,12 @@ public class BoardActivity
         super.onCreate(savedInstanceState);
         loadFromIntentOrPrefs();
         imageLoader = ImageLoader.getInstance();
-        imageLoader.init(ImageLoaderConfiguration.createDefault(this));
+        imageLoader.init(
+                new ImageLoaderConfiguration
+                        .Builder(this)
+                        .imageDownloader(new ExtendedImageDownloader(this))
+                        .build());
+        //        .createDefault(this));
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
                 .cacheOnDisc()
@@ -304,7 +309,7 @@ public class BoardActivity
 
     protected boolean setHeaderViewValue(TextView tv, Cursor cursor) {
         String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        tv.setText(Html.fromHtml(shortText));
+        tv.setText(Html.fromHtml(shortText.replace("Subject: ", "")));
         return true;
     }
 
@@ -366,13 +371,8 @@ public class BoardActivity
                     imageLoader.displayImage(imageUrl, iv, displayImageOptions); // load from internet
             }
         } catch (NumberFormatException nfe) {
-            try {
-                iv.setImageURI(Uri.parse(imageUrl));
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Couldn't set image view after number format exception with url=" + imageUrl, e);
-                iv.setImageBitmap(null);
-            }
+            Log.e(TAG, "Couldn't set image view after number format exception with url=" + imageUrl, nfe);
+            iv.setImageBitmap(null);
         }
         catch (Exception e) {
             Log.e(TAG, "Exception setting image view with url=" + imageUrl, e);
@@ -486,7 +486,6 @@ public class BoardActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Log.e(TAG, "Exception: onPrepareOptionsMenu");
         setupActionBarBoardSpinner(menu);
         return true;
     }
@@ -516,7 +515,6 @@ public class BoardActivity
                 break;
             }
         }
-        Log.e(TAG, "Exception matching boardCode=" + boardCode + " found pos=" + position);
         if (position >= 0)
             spinner.setSelection(position, false);
         else
@@ -544,9 +542,7 @@ public class BoardActivity
             String boardCodeForJump = m.group(1);
             if (boardCodeForJump == null || boardCodeForJump.isEmpty() || boardCodeForJump.equals(boardCode))
                 return;
-            Log.e(TAG, "Exception boardCodeForJump=" + boardCodeForJump);
             BoardActivity.startActivity(BoardActivity.this, boardCodeForJump);
-            //finish();
         }
 
         @Override
