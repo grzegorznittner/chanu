@@ -362,13 +362,12 @@ public class BoardActivity
             int urlHashCode = imageUrl != null && !imageUrl.isEmpty() ? imageUrl.hashCode() : imageResourceId;
             if (DEBUG) Log.i(TAG, "iv urlhash=" + urlHashCode + " viewhash=" + viewHashCode);
             if (iv.getDrawable() == null || viewHashCode != urlHashCode) {
+            	if (imageResourceId > 0) // load from board
+            		imageUrl = "drawable://" + imageResourceId;
                 if (DEBUG) Log.i(TAG, "calling imageloader for " + imageUrl);
                 iv.setImageBitmap(null);
                 iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
-                if (imageResourceId > 0) // load from board
-                    iv.setImageResource(imageResourceId);
-                else
-                    imageLoader.displayImage(imageUrl, iv, displayImageOptions); // load from internet
+                imageLoader.displayImage(imageUrl, iv, displayImageOptions); // load async
             }
         } catch (NumberFormatException nfe) {
             Log.e(TAG, "Couldn't set image view after number format exception with url=" + imageUrl, nfe);
