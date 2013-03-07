@@ -22,10 +22,7 @@ import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.fragment.BoardGroupFragment;
-import com.chanapps.four.fragment.GoToBoardDialogFragment;
-import com.chanapps.four.fragment.WatchlistCleanDialogFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.chanapps.four.service.NetworkProfileManager;
 
@@ -82,15 +79,15 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
     @Override
     protected void onStart() {
         super.onStart();
-
         final ActionBar bar = getActionBar();
         bar.setTitle(getString(R.string.application_name));
+        bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(false);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE);
     }
 
-    private void ensureTabsAdapter() {
+    public void ensureTabsAdapter() {
         showNSFWBoards = ensurePrefs().getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
 
         if (mTabsAdapter == null) { // create the board tabs
@@ -170,6 +167,8 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
             saveSelectedBoardType();
         }
         setTabToSelectedType(false);
+        if (menu != null)
+            ChanBoard.resetActionBarSpinner(menu);
     }
 
     private int getSelectedTabIndex() {
@@ -256,9 +255,13 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_selector_menu, menu);
         this.menu = menu;
-        BoardGroupFragment fragment = getSelectedFragment();
-        if (fragment != null)
-            fragment.onPrepareOptionsMenu(menu, this, selectedBoardType);
+        //BoardGroupFragment fragment = getSelectedFragment();
+        //if (fragment != null)
+        //    fragment.onPrepareOptionsMenu(menu, this, selectedBoardType);
+
+        String boardCode = selectedBoardType.equals(ChanBoard.Type.WATCHLIST) ? ChanBoard.WATCH_BOARD_CODE : "";
+        ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
+
         return true;
     }
 
@@ -271,20 +274,18 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
                 cleanWatchlistFragment.show(getSupportFragmentManager(), cleanWatchlistFragment.TAG);
                 return true;
              */
-            case R.id.clear_watchlist_menu:
+            /*case R.id.clear_watchlist_menu:
                 WatchlistClearDialogFragment clearWatchlistFragment = new WatchlistClearDialogFragment(getWatchlistFragment());
                 clearWatchlistFragment.show(getSupportFragmentManager(), clearWatchlistFragment.TAG);
                 return true;
             case R.id.offline_chan_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;
+            */
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
-                return true;
-            case R.id.go_to_board_menu:
-                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
                 return true;
             case R.id.global_rules_menu:
                 RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
@@ -293,10 +294,6 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
             case R.id.help_menu:
                 RawResourceDialog rawResourceDialog2 = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_board_selector);
                 rawResourceDialog2.show();
-                return true;
-            case R.id.about_menu:
-                RawResourceDialog aboutDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.about_header, R.raw.about_detail);
-                aboutDialog.show();
                 return true;
             case R.id.exit_menu:
                 ChanHelper.exitApplication(this);

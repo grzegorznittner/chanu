@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/board_jump_spinner_menu"
-          android:showAsAction="ifRoom"
+          android:showAsAction="always"
           android:actionDropDownStyle="@style/BoardJumpDropDown"
           android:actionLayout="@layout/board_jump_spinner"
             />
     <item android:id="@+id/board_jump_spinner_nsfw_menu"
-          android:showAsAction="ifRoom"
+          android:showAsAction="always"
           android:actionDropDownStyle="@style/BoardJumpDropDown"
           android:actionLayout="@layout/board_jump_spinner_nsfw"
           android:visible="false"
@@ -30,10 +30,6 @@
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"
-            />
-    <item android:id="@+id/about_menu"
-          android:title="@string/about_menu"
-          android:icon="@drawable/action_help"
             />
     <item android:id="@+id/exit_menu"
           android:title="@string/exit_menu"

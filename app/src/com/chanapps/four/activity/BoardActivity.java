@@ -1,8 +1,6 @@
 package com.chanapps.four.activity;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -33,7 +31,6 @@ import com.chanapps.four.component.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -47,7 +44,7 @@ public class BoardActivity
         implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
     private static final String DEFAULT_BOARD_CODE = "a";
 
@@ -457,15 +454,8 @@ public class BoardActivity
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
-            case R.id.go_to_board_menu:
-                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
-                return true;
             case R.id.board_rules_menu:
                 displayBoardRules();
-                return true;
-            case R.id.about_menu:
-                RawResourceDialog aboutDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.about_header, R.raw.about_detail);
-                aboutDialog.show();
                 return true;
             case R.id.exit_menu:
                 ChanHelper.exitApplication(this);
@@ -491,69 +481,8 @@ public class BoardActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        setupActionBarBoardSpinner(menu);
+        ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
         return true;
-    }
-
-    private void setupActionBarBoardSpinner(Menu menu) {
-        boolean showNSFW = ChanBoard.showNSFW(this);
-        MenuItem item = menu.findItem(R.id.board_jump_spinner_menu);
-        MenuItem itemNSFW = menu.findItem(R.id.board_jump_spinner_nsfw_menu);
-        Spinner spinner;
-        if (showNSFW) {
-            item.setVisible(false);
-            itemNSFW.setVisible(true);
-            spinner = (Spinner)itemNSFW.getActionView();
-        }
-        else {
-            item.setVisible(true);
-            itemNSFW.setVisible(false);
-            spinner = (Spinner)item.getActionView();
-        }
-        spinner.setOnItemSelectedListener(null);
-        int arrayId = showNSFW ? R.array.board_array : R.array.board_array_worksafe;
-        String[] boards = getResources().getStringArray(arrayId);
-        int position = -1;
-        for (int i = 0; i < boards.length; i++) {
-            if (boards[i].matches("/" + boardCode + "/.*")) {
-                position = i;
-                break;
-            }
-        }
-        if (position >= 0)
-            spinner.setSelection(position, false);
-        else
-            spinner.setSelected(false);
-        spinner.setOnItemSelectedListener(actionBarSpinnerHandler);
-    }
-
-    private ActionBarSpinnerHandler actionBarSpinnerHandler = new ActionBarSpinnerHandler();
-
-    private class ActionBarSpinnerHandler implements AdapterView.OnItemSelectedListener {
-
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) { // for action bar spinner
-            String boardAsMenu = (String) parent.getItemAtPosition(position);
-            if (boardAsMenu == null || boardAsMenu.isEmpty() || position == -1)
-                return;
-            if (boardAsMenu.equals(getString(R.string.board_watch))) {
-                BoardSelectorActivity.startActivity(BoardActivity.this, ChanBoard.Type.WATCHLIST);
-                return;
-            }
-            Pattern p = Pattern.compile("/([^/]*)/.*");
-            Matcher m = p.matcher(boardAsMenu);
-            if (!m.matches())
-                return;
-            String boardCodeForJump = m.group(1);
-            if (boardCodeForJump == null || boardCodeForJump.isEmpty() || boardCodeForJump.equals(boardCode))
-                return;
-            BoardActivity.startActivity(BoardActivity.this, boardCodeForJump);
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) { // for action bar spinner
-        }
-
     }
 
     @Override
@@ -567,9 +496,9 @@ public class BoardActivity
         ActionBar a = getActionBar();
         if (a == null)
             return;
-        invalidateOptionsMenu(); // because onPrepare isn't called when it should be
         a.setDisplayShowTitleEnabled(false);
         a.setDisplayHomeAsUpEnabled(true);
+        invalidateOptionsMenu(); // because onPrepare isn't called when it should be
     }
 
 	@Override

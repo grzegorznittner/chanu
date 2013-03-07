@@ -96,6 +96,7 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
             if (v != null) {
                 boolean bound = false;
                 if (binder != null) {
+                    binder.setViewValue(view, cursor, 0); // allow parent operations
                     bound = binder.setViewValue(v, cursor, from[i]);
                 }
             }

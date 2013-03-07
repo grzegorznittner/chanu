@@ -5,7 +5,5 @@
     <TextView style="@style/ThreadListItemShortText" android:id="@+id/list_item_text"/>
     <TextView style="@style/ThreadListItemDateText" android:id="@+id/list_item_date"/>
     <TextView style="@style/ThreadListItemImageOverlay" android:id="@+id/list_item_image_overlay"/>
-    <ImageView style="@style/ThreadListItemReplyTarget" android:id="@+id/list_item_reply_target"/>
-    <ImageView style="@style/ThreadListItemExpandTarget" android:id="@+id/list_item_expand_target"/>
     <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
 </RelativeLayout>

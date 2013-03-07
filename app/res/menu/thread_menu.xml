@@ -1,39 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/board_jump_spinner_menu"
+          android:showAsAction="always"
+          android:actionDropDownStyle="@style/BoardJumpDropDown"
+          android:actionLayout="@layout/board_jump_spinner"
+            />
+    <item android:id="@+id/board_jump_spinner_nsfw_menu"
+          android:showAsAction="always"
+          android:actionDropDownStyle="@style/BoardJumpDropDown"
+          android:actionLayout="@layout/board_jump_spinner_nsfw"
+          android:visible="false"
+            />
     <item android:id="@+id/refresh_thread_menu"
           android:title="@string/refresh_thread_menu"
           android:icon="@drawable/navigation_refresh"
-          android:showAsAction="ifRoom"
+          android:showAsAction="always"
             />
     <item android:id="@+id/post_reply_menu"
           android:title="@string/post_reply_menu"
           android:icon="@drawable/social_reply"
-          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/view_image_gallery_menu"
           android:title="@string/view_image_gallery_menu"
           android:icon="@drawable/collections_view_as_grid"
-          android:showAsAction="ifRoom"
             />
-    <item android:id="@+id/go_to_board_menu"
-          android:title="@string/go_to_board_menu"
-          android:icon="@drawable/navigation_forward"
-            />
+<!--
     <item android:id="@+id/hide_post_numbers"
           android:title="@string/toggle_hide_post_numbers_menu"
           android:icon="@drawable/action_about"
             />
+-->
     <item android:id="@+id/watch_thread_menu"
           android:title="@string/watch_thread_menu"
           android:icon="@drawable/rating_important"
             />
-    <!--
     <item android:id="@+id/download_all_images_menu"
           android:title="@string/download_all_images_menu"
           android:icon="@drawable/av_download"
-          android:showAsAction="ifRoom"
             />
-    -->
     <item android:id="@+id/download_all_images_to_gallery_menu"
           android:title="@string/download_all_images_to_gallery_menu"
           android:icon="@drawable/av_download"
@@ -54,10 +58,6 @@
           android:title="@string/help_menu"
           android:icon="@drawable/action_help"
           />
-    <item android:id="@+id/about_menu"
-          android:title="@string/about_menu"
-          android:icon="@drawable/action_help"
-            />
     <item android:id="@+id/exit_menu"
           android:title="@string/exit_menu"
           android:icon="@drawable/navigation_cancel"

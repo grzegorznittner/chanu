@@ -34,7 +34,7 @@ import com.chanapps.four.widget.BoardWidgetProvider;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
 	protected static final long STORE_INTERVAL_MS = 2000;
     protected static final int MAX_THREAD_RETENTION_PER_BOARD = 100;

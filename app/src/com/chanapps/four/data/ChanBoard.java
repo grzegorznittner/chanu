@@ -9,18 +9,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.MatrixCursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import android.widget.ArrayAdapter;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Spinner;
+import com.chanapps.four.activity.BoardActivity;
+import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.service.FetchChanDataService;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 public class ChanBoard {
 
@@ -402,6 +409,107 @@ public class ChanBoard {
         String imageUrl = JLIST_AD_IMAGE_ROOT_URL + "/" + adCode;
         String clickUrl = JLIST_AD_CLICK_ROOT_URL + "/" + adCode;
         return ChanPost.makeAdRow(link, imageUrl, clickUrl);
+    }
+
+    public static void setupActionBarBoardSpinner(final Activity activity, final Menu menu, final String currentBoardCode) {
+        if (DEBUG) Log.i(BoardSelectorActivity.TAG, "setupActionBarSpinner " + activity + " " + menu + " boardCode=" + currentBoardCode);
+        boolean showNSFW = ChanBoard.showNSFW(activity);
+        MenuItem item = menu.findItem(R.id.board_jump_spinner_menu);
+        MenuItem itemNSFW = menu.findItem(R.id.board_jump_spinner_nsfw_menu);
+        Spinner spinner;
+        if (showNSFW) {
+            item.setVisible(false);
+            itemNSFW.setVisible(true);
+            spinner = (Spinner)itemNSFW.getActionView();
+        }
+        else {
+            item.setVisible(true);
+            itemNSFW.setVisible(false);
+            spinner = (Spinner)item.getActionView();
+        }
+        spinner.setOnItemSelectedListener(null);
+        int position = 0;
+        if (currentBoardCode == null || currentBoardCode.isEmpty()) {
+            position = 0;
+        }
+        else if (currentBoardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
+            position = 0; // always move it to "SelectBoard" to overcome view pager action bar bug
+        }
+        else if (activity instanceof BoardSelectorActivity) {
+            position = 0; // always select from board selector
+        }
+        else {
+            int arrayId = showNSFW ? R.array.board_array : R.array.board_array_worksafe;
+            String[] boards = activity.getResources().getStringArray(arrayId);
+            for (int i = 0; i < boards.length; i++) {
+                if (boards[i].matches("/" + currentBoardCode + "/.*")) {
+                    position = i;
+                    break;
+                }
+            }
+        }
+        spinner.setSelection(position, false);
+        spinner.setOnItemSelectedListener(new ActionBarSpinnerHandler(activity, currentBoardCode));
+    }
+
+    public static void resetActionBarSpinner(Menu menu) {
+        MenuItem boardJump = menu.findItem(R.id.board_jump_spinner_menu);
+        MenuItem boardJumpNSFW = menu.findItem(R.id.board_jump_spinner_nsfw_menu);
+        if (boardJump != null && boardJump.getActionView() != null)
+            ((Spinner)boardJump.getActionView()).setSelection(0, false);
+        if (boardJumpNSFW != null && boardJumpNSFW.getActionView() != null)
+            ((Spinner)boardJumpNSFW.getActionView()).setSelection(0, false);
+    }
+
+    private static class ActionBarSpinnerHandler implements AdapterView.OnItemSelectedListener {
+
+        private Activity activity;
+        private String createdWithBoardCode = null;
+
+        public ActionBarSpinnerHandler(final Activity activity, final String createdWithBoardCode) {
+            this.activity = activity;
+            this.createdWithBoardCode = createdWithBoardCode;
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) { // for action bar spinner
+            if (position < 0)
+                return;
+            String boardAsMenu = (String) parent.getItemAtPosition(position);
+            if (DEBUG) Log.i(BoardSelectorActivity.TAG, "onItemSelected boardSelected=" + boardAsMenu + " created with board=" + createdWithBoardCode);
+            if (boardAsMenu == null || boardAsMenu.isEmpty())
+                return;
+            if (boardAsMenu.equals(activity.getString(R.string.board_select)))
+                return;
+            if (boardAsMenu.equals(activity.getString(R.string.board_watch))) {
+                if (ChanBoard.WATCH_BOARD_CODE.equals(createdWithBoardCode)) {
+                    return;
+                }
+//                else if (activity instanceof BoardSelectorActivity) { // special case change tab
+//                    BoardSelectorActivity bsa = (BoardSelectorActivity)activity;
+//                    bsa.ensureTabsAdapter();
+//                    bsa.selectedBoardType = Type.WATCHLIST;
+//                    bsa.setTabToSelectedType(false);
+//                }
+                else {
+                    BoardSelectorActivity.startActivity(activity, ChanBoard.Type.WATCHLIST);
+                }
+                return;
+            }
+            Pattern p = Pattern.compile("/([^/]*)/.*");
+            Matcher m = p.matcher(boardAsMenu);
+            if (!m.matches())
+                return;
+            String boardCodeForJump = m.group(1);
+            if (boardCodeForJump == null || boardCodeForJump.isEmpty() || boardCodeForJump.equals(createdWithBoardCode))
+                return;
+            BoardActivity.startActivity(activity, boardCodeForJump);
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) { // for action bar spinner
+        }
+
     }
 
 }

@@ -69,12 +69,9 @@
 
 
     <!-- menus -->
-    <string name="clean_watchlist_menu">Clean Watchlist</string>
-    <string name="clear_watchlist_menu">Clear Watchlist</string>
     <string name="settings_menu">Settings</string>
     <string name="help_menu">Help</string>
     <string name="global_rules_menu">Global Rules</string>
-    <string name="go_to_board_menu">Board Jump</string>
     <string name="board_rules_menu">Board Rules</string>
     <string name="go_to_top_position_menu">Scroll to Top</string>
     <string name="go_to_end_position_menu">Scroll to End</string>
@@ -90,7 +87,7 @@
     <string name="toggle_hide_post_numbers_menu">Toggle Hide Post Numbers</string>
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
-    <string name="download_all_images_menu">Download All Images</string>
+    <string name="download_all_images_menu">Prefetch All Images</string>
     <string name="download_all_images_to_gallery_menu">Download To Gallery</string>
     <string name="download_image_menu">Save to Gallery</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
@@ -170,6 +167,7 @@
     <string name="fullscreen_image_offline_upper">Off-line mode</string>
     <string name="full_screen_cancel_button">Cancel Download</string>
     <string name="full_screen_close_button">Close</string>
+    <string name="download_all_images_notice_prefetch">You will be notified when prefetch finishes</string>
     <string name="download_all_images_notice">You will be notified when download finishes</string>
     <string name="download_all_images_complete">Download complete</string>
     <string name="download_all_images_complete_detail">Images downloaded to gallery for /%1$s/%2$d</string>
@@ -274,6 +272,7 @@
     <string name="post_reply_share_pick_board">Pick Board for New Thread</string>
 
     <!-- preferences -->
+    <string name="pref_about_category">About</string>
     <string name="pref_advanced_category">Advanced</string>
     <string name="pref_custom_category">Customize</string>
     <string name="pref_custom_category_summ">Customize appearance and behavior</string>
@@ -305,12 +304,16 @@
     <string name="pref_cache_category_summ">Space to use for storing threads and images</string>
     <string name="pref_clear_cache">Clear Cache</string>
     <string name="pref_clear_cache_summ">Remove all cached data and images</string>
+    <string name="pref_clear_watchlist">Clear Watchlist</string>
+    <string name="pref_clear_watchlist_summ">Remove all threads and empty watchlist</string>
     <string name="pref_clear_cache_pre_execute">Clearing cache, you will be notified when complete</string>
     <string name="pref_clear_cache_pre_execute_no_notify">Clearing cache, you will receive a popup message when complete</string>
     <string name="pref_clear_cache_already_running">Already clearing cache, you will be notified when complete</string>
     <string name="pref_clear_cache_error">Couldn\'t clear cache</string>
     <string name="pref_clear_cache_success">Cleared cache successfully</string>
     <string name="pref_clear_cache_notification_title">4Channer Cache Status</string>
+    <string name="pref_about">About App</string>
+    <string name="pref_about_summ">Authorship and licensing information</string>
     <string name="pref_reset_to_defaults">Clear Preferences</string>
     <string name="pref_reset_to_defaults_summ">Reset all settings to their factory default</string>
     <string name="pref_user_category">User Info</string>
@@ -437,9 +440,11 @@
     <string name="board_pol">Politically Incorrect</string>
     <string name="board_soc">Social</string>
     <string name="board_watch">Watchlist</string>
+    <string name="board_select">Select Board</string>
 
     <string-array name="board_array">
-        <item>Watchlist</item>
+        <item>@string/board_select</item>
+        <item>@string/board_watch</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -499,7 +504,8 @@
     </string-array>
 
     <string-array name="board_array_worksafe">
-        <item>Watchlist</item>
+        <item>@string/board_select</item>
+        <item>@string/board_watch</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>

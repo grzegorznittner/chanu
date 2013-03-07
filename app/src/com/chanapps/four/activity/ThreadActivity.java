@@ -24,7 +24,6 @@ import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -56,7 +55,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     protected ThreadPostPopup threadPostPopup;
     protected ChanThread thread = null;
     private int threadPos = 0;
-    private TextView fullText = null; // placeholder for doing expansion
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -253,9 +251,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
                         R.id.list_item_date,
-                        R.id.list_item_image_overlay,
-                        R.id.list_item_expand_target,
-                        R.id.list_item_reply_target,
+                        R.id.list_item_image_overlay
                 });
         absListView.setAdapter(adapter);
     }
@@ -297,6 +293,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         //if (post == null)
         //    return false;
         switch (view.getId()) {
+            case R.id.list_item:
+                return setItem((RelativeLayout)view, cursor);
             case R.id.list_item_image:
                 return setItemImage((ImageView)view, cursor);
             case R.id.list_item_country_flag:
@@ -308,148 +306,137 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             case R.id.list_item_date:
                 return setItemDateValue((TextView)view, cursor);
             case R.id.list_item_image_overlay:
-                return setItemImageOverlayValue((TextView)view, cursor);
-            case R.id.list_item_expand_target:
-                return setItemExpandButton((ImageView)view);
-            case R.id.list_item_reply_target:
-                return setItemReplyButton((ImageView)view, cursor);
+                return setItemImageOverlayValue((TextView) view, cursor);
             default:
                 return false;
         }
     }
 
+    private boolean setItem(final RelativeLayout v, final Cursor cursor) {
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (adItem > 0)
+            v.setOnClickListener(new AdOnClickListener(cursor));
+        else
+            v.setOnClickListener(new PopupOnClickListener(cursor.getPosition()));
+        return true;
+    }
+
     private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
-        int numHeaderLines = cursor.getInt(cursor.getColumnIndex(ChanHelper.NUM_HEADER_LINES));
         String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
         tv.setText(Html.fromHtml(shortText));
-        tv.setMaxLines(Math.max(numHeaderLines,1));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (adItem > 0)
+            tv.setOnClickListener(new AdOnClickListener(cursor));
+        else
+            tv.setOnClickListener(new PopupOnClickListener(cursor.getPosition()));
         return true;
     }
 
     private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
-        int numHeaderLines = cursor.getInt(cursor.getColumnIndex(ChanHelper.NUM_HEADER_LINES));
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         tv.setText(Html.fromHtml(text));
-        tv.setMaxLines(MAX_TEXT_LINES - Math.max(numHeaderLines, 1));
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (adItem > 0) {
-            final String adUrl = text;
-            tv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ChanHelper.fadeout(ThreadActivity.this, tv);
-                    launchUrlInBrowser(adUrl);
-                }
-            });
-            fullText = null;
-        }
-        else {
-            fullText = tv;
-        }
+        if (adItem > 0)
+            tv.setOnClickListener(new AdOnClickListener(cursor));
+        else
+            tv.setOnClickListener(new PopupOnClickListener(cursor.getPosition()));
         return true;
+    }
+
+    private class PopupOnClickListener implements View.OnClickListener {
+        private int position = 0;
+        public PopupOnClickListener(final int position) {
+            this.position = position;
+        }
+        @Override
+        public void onClick(View v) {
+            if (v instanceof TextView) {
+                TextView tv = (TextView)v;
+                int start = tv.getSelectionStart();
+                int end = tv.getSelectionEnd();
+                Log.e(TAG, "Exception clicked view=" + v + " start=" + start + " end=" + end);
+                if (start == -1 || end == -1 || start == end) // non-web click
+                    ensurePopup().showFromCursor(ThreadActivity.this.absListView, position);
+            }
+            else {
+                Log.e(TAG, "Exception clicked view=" + v);
+                ensurePopup().showFromCursor(ThreadActivity.this.absListView, position);
+            }
+        }
     }
 
     private boolean setItemDateValue(final TextView tv, final Cursor cursor) {
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_DATE_TEXT));
-        if (text == null || text.isEmpty())
-            tv.setText("");
-        else
-            tv.setText(text);
+        tv.setText(text == null ? "" : text);
+        tv.setOnClickListener(new PopupOnClickListener(cursor.getPosition()));
         return true;
     }
 
     private boolean setItemImageOverlayValue(final TextView tv, final Cursor cursor) {
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_DIMENSIONS));
-        if (text == null || text.isEmpty()) {
-            tv.setText("");
-            tv.setVisibility(View.GONE);
-        }
-        else {
-            tv.setText(text);
-            tv.setVisibility(View.VISIBLE);
-        }
-        return true;
-    }
-
-    private boolean setItemExpandButton(final ImageView iv) {
-        if (iv == null || fullText == null) {
-            iv.setVisibility(View.GONE);
-            iv.setOnClickListener(null);
-            return false;
-        }
-        final TextView fullTextRef = fullText;
-        final ImageView buttonRef = iv;
-        iv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (fullTextRef != null) {
-                    fullTextRef.setMaxLines(Integer.MAX_VALUE);
-                    buttonRef.setVisibility(View.GONE);
-                }
-            }
-        });
-        iv.setVisibility(View.VISIBLE);
-        return true;
-    }
-
-    private boolean setItemReplyButton(final ImageView iv, final Cursor cursor) {
-        final int position = cursor.getPosition();
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (iv == null || adItem > 0 || position < 0) {
-            iv.setVisibility(View.GONE);
-            iv.setOnClickListener(null);
-            return false;
-        }
-        iv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ensurePopup().showFromCursor(ThreadActivity.this.absListView, position);
-            }
-        });
-        iv.setVisibility(View.VISIBLE);
+        tv.setText(text == null ? "" : text);
+        tv.setVisibility(text == null || text.isEmpty() ? View.GONE : View.VISIBLE);
+        tv.setOnClickListener(new ImageOnClickListener(cursor));
         return true;
     }
 
     private boolean setItemImage(final ImageView iv, final Cursor cursor) {
         super.setImageViewValue(iv, cursor);
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (adItem > 0) {
-            final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-            iv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ChanHelper.fadeout(ThreadActivity.this, iv);
-                    launchUrlInBrowser(adUrl);
-                }
-            });
-        }
-        else {
-            final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
-            final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-            final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
-            final long threadNo = resto == 0 ? postId : resto;
-            final int position = cursor.getPosition();
-            iv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ChanHelper.fadeout(ThreadActivity.this, iv);
-                    incrementCounterAndAddToWatchlistIfActive();
-                    GalleryViewActivity.startActivity(
-                            ThreadActivity.this, boardCode, threadNo, postId, position);
-                }
-            });
-        }
+        if (adItem > 0)
+            iv.setOnClickListener(new AdOnClickListener(cursor));
+        else
+            iv.setOnClickListener(new ImageOnClickListener(cursor));
         return true;
+    }
+
+    private class AdOnClickListener implements View.OnClickListener {
+
+        private String adUrl = null;
+
+        public AdOnClickListener(Cursor cursor) {
+            adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        }
+
+        @Override
+        public void onClick(View v) {
+            ChanHelper.fadeout(ThreadActivity.this, v);
+            launchUrlInBrowser(adUrl);
+        }
+
+    }
+
+    private class ImageOnClickListener implements View.OnClickListener {
+
+        long postId = 0;
+        long resto = 0;
+        int w = 0;
+        int h = 0;
+        int position = 0;
+
+        public ImageOnClickListener(Cursor cursor) {
+            postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+            w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
+            h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
+            position = cursor.getPosition();
+        }
+
+        @Override
+        public void onClick(View v) {
+            ChanHelper.fadeout(ThreadActivity.this, v);
+            incrementCounterAndAddToWatchlistIfActive();
+            GalleryViewActivity.startActivity(
+                    ThreadActivity.this, boardCode, threadNo, postId, position);
+        }
     }
 
     private boolean setItemCountryFlag(final ImageView iv, final Cursor cursor) {
         String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
-        if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty()) {
+        if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
             smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions);
-        }
-        else {
+        else
             iv.setImageBitmap(null); // blank
-        }
         return true;
     }
 
@@ -477,6 +464,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+/*
         MenuItem item = menu.findItem(R.id.hide_post_numbers);
         if (boardCode.equals("b")) {
             item.setEnabled(false);
@@ -492,6 +480,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             else
                 item.setTitle(R.string.pref_hide_post_numbers_turn_on);
         }
+*/
+        ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
         return true;
     }
 
@@ -550,18 +540,18 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             case R.id.view_image_gallery_menu:
                 GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
                 return true;
+/*
             case R.id.hide_post_numbers:
                 toggleHidePostNumbers();
                 return true;
+*/
             case R.id.watch_thread_menu:
                 addToWatchlist();
                 return true;
-/*
             case R.id.download_all_images_menu:
             	ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
-                Toast.makeText(this, "Download of all images scheduled", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
                 return true;
-*/
             case R.id.download_all_images_to_gallery_menu:
             	ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null);
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
@@ -583,15 +573,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_thread_list);
                 rawResourceDialog.show();
                 return true;
-            case R.id.go_to_board_menu:
-                new GoToBoardDialogFragment().show(getSupportFragmentManager(), GoToBoardDialogFragment.TAG);
-                return true;
             case R.id.board_rules_menu:
                 displayBoardRules();
-                return true;
-            case R.id.about_menu:
-                RawResourceDialog aboutDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.about_header, R.raw.about_detail);
-                aboutDialog.show();
                 return true;
             case R.id.exit_menu:
                 ChanHelper.exitApplication(this);
@@ -615,9 +598,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (a == null) {
             return;
         }
-        String title = "/" + boardCode + "/" + threadNo;
-        a.setTitle(title);
+        //String title = "/" + boardCode + "/" + threadNo;
+        //a.setTitle(title);
+        a.setDisplayShowTitleEnabled(false);
         a.setDisplayHomeAsUpEnabled(true);
+        invalidateOptionsMenu();
     }
 
     protected void initPopup() {

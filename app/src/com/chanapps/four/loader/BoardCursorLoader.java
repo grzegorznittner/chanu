@@ -20,7 +20,7 @@ import com.chanapps.four.data.*;
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = BoardCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     protected static final double AD_PROBABILITY = 0.20;
     protected static final int MINIMUM_AD_SPACING = 4;
