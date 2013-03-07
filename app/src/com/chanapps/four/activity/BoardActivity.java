@@ -1,8 +1,6 @@
 package com.chanapps.four.activity;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -33,7 +31,6 @@ import com.chanapps.four.component.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.fragment.GoToBoardDialogFragment;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.service.NetworkProfileManager;

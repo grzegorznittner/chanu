@@ -95,6 +95,11 @@
                 android:title="@string/pref_clear_cache"
                 android:summary="@string/pref_clear_cache_summ" />
 
+        <Preference
+                android:key="pref_clear_watchlist"
+                android:title="@string/pref_clear_watchlist"
+                android:summary="@string/pref_clear_watchlist_summ" />
+
     </PreferenceCategory>
 
     <!-- customize -->
@@ -155,6 +160,12 @@
                 android:key="pref_reset_to_defaults"
                 android:title="@string/pref_reset_to_defaults"
                 android:summary="@string/pref_reset_to_defaults_summ" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:key="pref_about_category"
+            android:title="@string/pref_about_category">
 
         <Preference
                 android:key="pref_about"

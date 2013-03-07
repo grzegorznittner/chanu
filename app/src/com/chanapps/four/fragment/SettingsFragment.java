@@ -1,13 +1,11 @@
 package com.chanapps.four.fragment;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.widget.BaseAdapter;
-import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.RawResourceDialog;
@@ -61,6 +59,16 @@ public class SettingsFragment
             public boolean onPreferenceClick(Preference preference) {
                 ClearCacheDialogFragment dialog = new ClearCacheDialogFragment(SettingsFragment.this);
                 dialog.show(getFragmentManager(), SettingsFragment.TAG);
+                return true;
+            }
+        });
+
+        Preference clearWatchlistButton = findPreference(SettingsActivity.PREF_CLEAR_WATCHLIST);
+        clearWatchlistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                WatchlistClearDialogFragment clearWatchlistFragment = new WatchlistClearDialogFragment();
+                clearWatchlistFragment.show(getFragmentManager(), clearWatchlistFragment.TAG);
                 return true;
             }
         });

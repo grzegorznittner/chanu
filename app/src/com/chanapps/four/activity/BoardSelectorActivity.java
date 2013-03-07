@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Spinner;
 import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.adapter.TabsAdapter;
 import com.chanapps.four.component.DispatcherHelper;
@@ -23,10 +22,7 @@ import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.fragment.BoardGroupFragment;
-import com.chanapps.four.fragment.GoToBoardDialogFragment;
-import com.chanapps.four.fragment.WatchlistCleanDialogFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.chanapps.four.service.NetworkProfileManager;
 
@@ -278,10 +274,11 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
                 cleanWatchlistFragment.show(getSupportFragmentManager(), cleanWatchlistFragment.TAG);
                 return true;
              */
-            case R.id.clear_watchlist_menu:
+            /*case R.id.clear_watchlist_menu:
                 WatchlistClearDialogFragment clearWatchlistFragment = new WatchlistClearDialogFragment(getWatchlistFragment());
                 clearWatchlistFragment.show(getSupportFragmentManager(), clearWatchlistFragment.TAG);
                 return true;
+            */
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
