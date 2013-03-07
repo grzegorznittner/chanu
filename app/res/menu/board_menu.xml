@@ -24,6 +24,9 @@
           android:title="@string/board_rules_menu"
           android:icon="@drawable/action_help"
             />
+    <item android:id="@+id/offline_board_view_menu"
+          android:title="@string/offline_board_view_menu"
+            />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"

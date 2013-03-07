@@ -15,16 +15,6 @@
           android:icon="@drawable/content_save"
           android:showAsAction="ifRoom"
             />
-<!--    <item android:id="@+id/share_image_menu"
-          android:title="@string/share_image_menu"
-          android:icon="@drawable/social_share"
-          android:showAsAction="ifRoom"
-            />
-    <item android:id="@+id/set_as_wallpaper_menu"
-          android:title="@string/set_as_wallpaper_menu"
-          android:icon="@drawable/content_picture"
-            />
-    -->
     <item android:id="@+id/image_search_menu"
           android:title="@string/image_search_menu"
           android:icon="@drawable/action_search"
@@ -32,6 +22,12 @@
     <item android:id="@+id/anime_image_search_menu"
           android:title="@string/anime_image_search_menu"
           android:icon="@drawable/action_search"
+            />
+    <item android:id="@+id/offline_board_view_menu"
+          android:title="@string/offline_board_view_menu"
+            />
+    <item android:id="@+id/offline_chan_view_menu"
+          android:title="@string/offline_chan_view_menu"
             />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"

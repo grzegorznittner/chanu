@@ -428,8 +428,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
             final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
             final long threadNo = resto == 0 ? postId : resto;
-            final int w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
-            final int h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
             final int position = cursor.getPosition();
             iv.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -437,7 +435,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                     ChanHelper.fadeout(ThreadActivity.this, iv);
                     incrementCounterAndAddToWatchlistIfActive();
                     GalleryViewActivity.startActivity(
-                            ThreadActivity.this, boardCode, threadNo, postId, w, h, position);
+                            ThreadActivity.this, boardCode, threadNo, postId, position);
                 }
             });
         }

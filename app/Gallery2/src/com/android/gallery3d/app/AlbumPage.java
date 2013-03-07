@@ -447,6 +447,8 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
     protected boolean onCreateActionBar(Menu menu) {
         Activity activity = (Activity) mActivity;
         GalleryActionBar actionBar = mActivity.getGalleryActionBar();
+        Log.w(TAG, "Action bar for activity " + mActivity.getClass().getCanonicalName() + " is " + actionBar
+        		+ " and it's title is '" + actionBar.getTitle() + "'");
         MenuInflater inflater = activity.getMenuInflater();
 
         if (mGetContent) {
@@ -459,7 +461,7 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
             }
         } else {
             inflater.inflate(R.menu.album, menu);
-            if (actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {
+            if (actionBar != null && actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {
             	actionBar.setTitle(mMediaSet.getName());
             }
             if (mMediaSet instanceof MtpDevice) {

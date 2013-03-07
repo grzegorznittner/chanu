@@ -275,6 +275,9 @@ public class BoardSelectorActivity extends FragmentActivity implements ChanIdent
                 WatchlistClearDialogFragment clearWatchlistFragment = new WatchlistClearDialogFragment(getWatchlistFragment());
                 clearWatchlistFragment.show(getSupportFragmentManager(), clearWatchlistFragment.TAG);
                 return true;
+            case R.id.offline_chan_view_menu:
+            	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
+                return true;
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);

@@ -447,6 +447,12 @@ public class BoardActivity
                 replyIntent.putExtra(ChanHelper.TEXT, "");
                 startActivity(replyIntent);
                 return true;
+            case R.id.offline_board_view_menu:
+            	GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);
+                return true;
+            case R.id.offline_chan_view_menu:
+            	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
+                return true;
             case R.id.settings_menu:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
