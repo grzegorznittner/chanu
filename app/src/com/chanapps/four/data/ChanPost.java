@@ -695,7 +695,6 @@ public class ChanPost {
                 closed,
                 0,
                 0,
-                countLines(headerText),
                 getThumbnailId()
         };
     }
@@ -726,7 +725,6 @@ public class ChanPost {
                 0,
                 0,
                 0,
-                1,
                 1,
                 0
         };

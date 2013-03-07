@@ -90,7 +90,6 @@ public class ChanHelper {
     public static final String POST_IMAGE_DIMENSIONS = "imageDim";
     public static final String POST_EXPAND_BUTTON = "expandButton";
     public static final String AD_ITEM = "adItem";
-    public static final String NUM_HEADER_LINES = "numHeaderLines";
     public static final String POST_THUMBNAIL_ID = "postThumbnailId";
 
     public static final String LAST_BOARD_POSITION = "lastBoardPosition";
@@ -131,7 +130,6 @@ public class ChanHelper {
             POST_CLOSED,
             POST_EXPAND_BUTTON,
             AD_ITEM,
-            NUM_HEADER_LINES,
             POST_THUMBNAIL_ID,
     };
 

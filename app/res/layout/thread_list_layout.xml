@@ -24,6 +24,7 @@
             style="@style/ListViewTemplate"
             android:layout_below="@id/board_progress_bar"
             android:gravity="top|left"
+            android:smoothScrollbar="false"
             />
 
 </RelativeLayout>
