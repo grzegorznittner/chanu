@@ -1,11 +1,15 @@
 package com.chanapps.four.component;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.support.v4.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
@@ -25,10 +29,8 @@ import com.chanapps.four.fragment.DeletePostDialogFragment;
 import com.chanapps.four.fragment.ReportPostDialogFragment;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import org.apache.http.client.utils.URLEncodedUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Locale;
@@ -47,25 +49,22 @@ public class ThreadPostPopup implements Dismissable {
 
     protected AbstractThreadCursorAdapter adapter;
 
-    private static final int POPUP_BUTTON_HEIGHT_DP = 48;
-
     protected RefreshableActivity activity;
     protected LayoutInflater layoutInflater;
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
-
+    protected String spoilerText;
+    protected String exifText;
+    
     protected View popupView;
-    protected ScrollView popupScrollView;
     protected PopupWindow popupWindow;
-    protected TextView deadThreadTextView;
-    protected TextView closedThreadTextView;
-    protected TextView spoilerTextView;
-    protected TextView exifTextView;
-
+    protected TextView popupHeaderText;
     protected View spoilerButtonLine;
     protected Button spoilerButton;
     protected View exifButtonLine;
     protected Button exifButton;
+    protected View copyButtonLine;
+    protected Button copyButton;
     protected View translateButtonLine;
     protected Button translateButton;
     protected View blockButtonLine;
@@ -96,53 +95,80 @@ public class ThreadPostPopup implements Dismissable {
         this.adapter = adapter;
 
         popupView = layoutInflater.inflate(R.layout.thread_popup_layout, null);
-        popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        popupWindow = new PopupWindow (popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.setBackgroundDrawable(new BitmapDrawable(activity.getBaseContext().getResources())); // magic so back button dismiss works
         popupWindow.setFocusable(true);
 
-        popupScrollView = (ScrollView)popupView.findViewById(R.id.popup_full_text_scroll_view);
-        deadThreadTextView = (TextView)popupView.findViewById(R.id.popup_dead_thread_text_view);
-        closedThreadTextView = (TextView)popupView.findViewById(R.id.popup_closed_thread_text_view);
+        popupHeaderText = (TextView)popupView.findViewById(R.id.popup_header_text);
+        createSpoiler();
+        createExif();
+        copyButtonLine = popupView.findViewById(R.id.popup_copy_button_line);
+        copyButton = (Button)popupView.findViewById(R.id.popup_copy_button);
+        translateButtonLine = popupView.findViewById(R.id.popup_translate_button_line);
+        translateButton = (Button)popupView.findViewById(R.id.popup_translate_button);
+        blockButtonLine = popupView.findViewById(R.id.popup_block_button_line);
+        blockButton = (Button)popupView.findViewById(R.id.popup_block_button);
+        deleteButtonLine = popupView.findViewById(R.id.popup_delete_button_line);
+        deleteButton = (Button)popupView.findViewById(R.id.popup_delete_button);
+        replyButtonLine = popupView.findViewById(R.id.popup_reply_button_line);
+        replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
+        reportButtonLine = popupView.findViewById(R.id.popup_report_button_line);
+        reportButton = (Button)popupView.findViewById(R.id.popup_report_button);
+        highlightRepliesButtonLine = popupView.findViewById(R.id.popup_highlight_replies_button_line);
+        highlightRepliesButton = (Button)popupView.findViewById(R.id.popup_highlight_replies_button);
+        highlightIdButtonLine = popupView.findViewById(R.id.popup_highlight_id_button_line);
+        highlightIdButton = (Button)popupView.findViewById(R.id.popup_highlight_id_button);
+        closeButton = (Button)popupView.findViewById(R.id.popup_close_button);
+    }
 
-        spoilerTextView = (TextView)popupView.findViewById(R.id.popup_spoiler_text);
-        spoilerButtonLine = (View)popupView.findViewById(R.id.popup_spoiler_button_line);
+    private void createSpoiler() {
+        spoilerButtonLine = popupView.findViewById(R.id.popup_spoiler_button_line);
         spoilerButton = (Button)popupView.findViewById(R.id.popup_spoiler_button);
         spoilerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                spoilerTextView.setVisibility(View.VISIBLE);
-                spoilerButtonLine.setVisibility(View.GONE);
-                spoilerButton.setVisibility(View.GONE);
+                (new SpoilerDialogFragment((ThreadActivity)activity)).show(activity.getSupportFragmentManager(), TAG);
             }
         });
+    }
 
-        exifTextView = (TextView)popupView.findViewById(R.id.popup_exif_text);
-        exifButtonLine = (View)popupView.findViewById(R.id.popup_exif_button_line);
+    private class SpoilerDialogFragment extends DialogFragment {
+        private final Context context;
+        public SpoilerDialogFragment(Context context) {
+            this.context = context;
+        }
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return new AlertDialog.Builder(context)
+                    .setMessage(spoilerText)
+                    .setTitle(R.string.spoiler_title)
+                    .create();
+        }
+    }
+
+    private void createExif() {
+        exifButtonLine = popupView.findViewById(R.id.popup_exif_button_line);
         exifButton = (Button)popupView.findViewById(R.id.popup_exif_button);
         exifButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                exifTextView.setVisibility(View.VISIBLE);
-                exifButtonLine.setVisibility(View.GONE);
-                exifButton.setVisibility(View.GONE);
+                (new ExifDialogFragment((ThreadActivity)activity)).show(activity.getSupportFragmentManager(), TAG);
             }
         });
+    }
 
-        translateButtonLine = (View)popupView.findViewById(R.id.popup_translate_button_line);
-        translateButton = (Button)popupView.findViewById(R.id.popup_translate_button);
-        blockButtonLine = (View)popupView.findViewById(R.id.popup_block_button_line);
-        blockButton = (Button)popupView.findViewById(R.id.popup_block_button);
-        deleteButtonLine = (View)popupView.findViewById(R.id.popup_delete_button_line);
-        deleteButton = (Button)popupView.findViewById(R.id.popup_delete_button);
-        replyButtonLine = (View)popupView.findViewById(R.id.popup_reply_button_line);
-        replyButton = (Button)popupView.findViewById(R.id.popup_reply_button);
-        reportButtonLine = (View)popupView.findViewById(R.id.popup_report_button_line);
-        reportButton = (Button)popupView.findViewById(R.id.popup_report_button);
-        highlightRepliesButtonLine = (View)popupView.findViewById(R.id.popup_highlight_replies_button_line);
-        highlightRepliesButton = (Button)popupView.findViewById(R.id.popup_highlight_replies_button);
-        highlightIdButtonLine = (View)popupView.findViewById(R.id.popup_highlight_id_button_line);
-        highlightIdButton = (Button)popupView.findViewById(R.id.popup_highlight_id_button);
-        closeButton = (Button)popupView.findViewById(R.id.popup_close_button);
+    private class ExifDialogFragment extends DialogFragment {
+        private final Context context;
+        public ExifDialogFragment(Context context) {
+            this.context = context;
+        }
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return new AlertDialog.Builder(context)
+                    .setMessage(Html.fromHtml(exifText))
+                    .setTitle(R.string.exif_title)
+                    .create();
+        }
     }
 
     public void showFromCursor(AdapterView<?> adapterView, int position) {
@@ -170,8 +196,10 @@ public class ThreadPostPopup implements Dismissable {
         final long clickedPostNo = (resto == 0 || postId == resto) ? 0 : postId;
         if (DEBUG) Log.i(BoardActivity.TAG, "Calling popup with postId=" + postId + " isDead=" + isDead + " postNo=" + postId + " resto=" + resto);
 
+        setPostHeader(postId);
         setSpoilerButton(spoilerText);
         setExifButton(exifText);
+        setCopyButton(messageText);
         setTranslateButton(messageText);
         setBlockButton(userId);
         setDeleteButton(isDead, isClosed, clickedBoardCode, clickedThreadNo, postId);
@@ -180,36 +208,58 @@ public class ThreadPostPopup implements Dismissable {
         displayHighlightRepliesButton(clickedBoardCode, clickedThreadNo, clickedPostNo);
         displayHighlightIdButton(clickedBoardCode, clickedThreadNo, clickedPostNo, userId, tripcode, name, email);
         setCloseButton();
-        setScrollViewMargin();
+        //setScrollViewMargin();
 
         popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
     }
 
+    protected void setPostHeader(long postId) {
+        String headerText = String.format(activity.getBaseContext().getString(R.string.popup_header_text_format), postId);
+        popupHeaderText.setText(headerText);
+    }
+
     protected void setSpoilerButton(String spoilerText) {
-        spoilerTextView.setVisibility(View.GONE);
+        this.spoilerText = spoilerText;
         if (spoilerText != null && !spoilerText.isEmpty()) {
             spoilerButtonLine.setVisibility(View.VISIBLE);
             spoilerButton.setVisibility(View.VISIBLE);
-            spoilerTextView.setText(spoilerText);
         }
         else {
             spoilerButtonLine.setVisibility(View.GONE);
             spoilerButton.setVisibility(View.GONE);
-            spoilerTextView.setText("");
         }
     }
 
     protected void setExifButton(String exifText) {
-        exifTextView.setVisibility(View.GONE);
+        this.exifText = exifText;
         if (exifText != null && !exifText.isEmpty()) {
             exifButtonLine.setVisibility(View.VISIBLE);
             exifButton.setVisibility(View.VISIBLE);
-            exifTextView.setText(exifText);
         }
         else {
             exifButtonLine.setVisibility(View.GONE);
             exifButton.setVisibility(View.GONE);
-            exifTextView.setText("");
+        }
+    }
+
+    protected void setCopyButton(final String messageText) {
+        if (!"".equals(messageText)) {
+            copyButtonLine.setVisibility(View.VISIBLE);
+            copyButton.setVisibility(View.VISIBLE);
+            copyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) activity.getBaseContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                    android.content.ClipData clip = android.content.ClipData.newPlainText(activity.getBaseContext().getString(R.string.app_name), messageText);
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(activity.getBaseContext(), R.string.copy_text_complete, Toast.LENGTH_SHORT).show();
+                    dismiss();
+                }
+            });
+        }
+        else {
+            copyButtonLine.setVisibility(View.GONE);
+            copyButton.setVisibility(View.GONE);
         }
     }
 
@@ -246,6 +296,7 @@ public class ThreadPostPopup implements Dismissable {
             translateButton.setVisibility(View.GONE);
         }
     }
+
     protected void setBlockButton(final String userId) {
         if (userId != null && !userId.isEmpty()) {
             blockButtonLine.setVisibility(View.VISIBLE);
@@ -329,18 +380,12 @@ public class ThreadPostPopup implements Dismissable {
         if (isDead) {
             replyButtonLine.setVisibility(View.GONE);
             replyButton.setVisibility(View.GONE);
-            deadThreadTextView.setVisibility(View.VISIBLE);
-            closedThreadTextView.setVisibility(View.GONE);
         }
         else if (isClosed) {
             replyButtonLine.setVisibility(View.GONE);
             replyButton.setVisibility(View.GONE);
-            deadThreadTextView.setVisibility(View.GONE);
-            closedThreadTextView.setVisibility(View.VISIBLE);
         }
         else {
-            deadThreadTextView.setVisibility(View.GONE);
-            closedThreadTextView.setVisibility(View.GONE);
             replyButtonLine.setVisibility(View.VISIBLE);
             replyButton.setVisibility(View.VISIBLE);
             replyButton.setOnClickListener(new View.OnClickListener() {
@@ -366,35 +411,6 @@ public class ThreadPostPopup implements Dismissable {
                 dismiss();
             }
         });
-    }
-
-    protected void setScrollViewMargin() {
-        ScrollView.LayoutParams params = (ScrollView.LayoutParams)popupScrollView.getLayoutParams();
-        if (params == null)
-            params = new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        int numVisibleButtons = 0;
-        if (spoilerButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (exifButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (translateButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (blockButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (deleteButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (replyButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (highlightRepliesButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (highlightIdButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        if (closeButton.getVisibility() == View.VISIBLE)
-            numVisibleButtons++;
-        int bottomMarginDp = numVisibleButtons * POPUP_BUTTON_HEIGHT_DP;
-        int bottomMarginPx = ChanGridSizer.dpToPx(activity.getBaseContext().getResources().getDisplayMetrics(), bottomMarginDp);
-        params.setMargins(params.leftMargin, params.topMargin, params.rightMargin, bottomMarginPx);
-        popupScrollView.setLayoutParams(params);
     }
 
     protected void displayHighlightRepliesButton(final String boardCode, final long threadNo, final long postNo) { // board-level doesn't highlight, only thread-level does

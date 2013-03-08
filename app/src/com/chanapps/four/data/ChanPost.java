@@ -220,7 +220,7 @@ public class ChanPost {
         }
         if (s.isEmpty())
             return null;
-        return "SPOILER:\n" + textViewFilter(s);
+        return textViewFilter(s);
     }
 
     private static final String textViewFilter(String s) {

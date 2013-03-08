@@ -64,14 +64,7 @@
                 android:inputType="textVisiblePassword|numberPassword"
                 android:maxLength="6"
                 />
-        <!--
-        <CheckBoxPreference
-                android:key="pref_pass_enabled"
-                android:title="@string/pref_pass_enabled"
-                android:summaryOn="@string/pref_pass_enabled_summ_on"
-                android:summaryOff="@string/pref_pass_enabled_summ_off"
-                android:defaultValue="false" />
-         -->
+
     </PreferenceCategory>
 
     <!-- cache -->
@@ -85,7 +78,7 @@
                 android:key="pref_cache_size"
                 android:title="Cache size"
                 android:summary="Adjust cache size"
-                chanapps:min="128"
+                chanapps:min="512"
                 chanapps:unitsLeft=""
                 chanapps:unitsRight="MB"
                 />
@@ -125,7 +118,7 @@
                     android:title="@string/pref_hide_post_numbers"
                     android:summaryOn="@string/pref_hide_post_numbers_summ_on"
                     android:summaryOff="@string/pref_hide_post_numbers_summ_off"
-                    android:defaultValue="true" />
+                    android:defaultValue="false" />
 
             <CheckBoxPreference
                     android:key="pref_automatically_manage_watchlist"

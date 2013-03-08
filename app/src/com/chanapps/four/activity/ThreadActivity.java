@@ -354,12 +354,10 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 TextView tv = (TextView)v;
                 int start = tv.getSelectionStart();
                 int end = tv.getSelectionEnd();
-                Log.e(TAG, "Exception clicked view=" + v + " start=" + start + " end=" + end);
                 if (start == -1 || end == -1 || start == end) // non-web click
                     ensurePopup().showFromCursor(ThreadActivity.this.absListView, position);
             }
             else {
-                Log.e(TAG, "Exception clicked view=" + v);
                 ensurePopup().showFromCursor(ThreadActivity.this.absListView, position);
             }
         }

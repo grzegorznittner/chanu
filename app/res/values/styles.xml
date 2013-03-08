@@ -305,17 +305,39 @@
 <!-- POPUP STYLES -->
 
     <style name="PopupFullTextLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/PaletteBlackHalfOpacity</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="PopupFullTextInnerLayout" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-    <!--
-        <item name="android:layout_marginTop">32dp</item>
-        <item name="android:layout_marginLeft">32dp</item>
-        <item name="android:layout_marginRight">32dp</item>
-        <item name="android:layout_marginBottom">32dp</item>
-        <item name="android:padding">1dp</item>
-    -->
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:layout_marginLeft">24dp</item>
+        <item name="android:layout_marginRight">24dp</item>
+        <item name="android:layout_marginBottom">24dp</item>
         <item name="android:orientation">vertical</item>
         <item name="android:background">@color/popupbackground</item>
+        <item name="android:scrollbars">vertical</item>
+    </style>
+
+    <style name="PopupFullTextHeader" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">62dp</item>
+        <item name="android:textSize">22dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:textColor">@color/PaletteBlue</item>
+        <item name="android:background">@color/PaletteTransparent</item>
+    </style>
+
+    <style name="PopupFullTextHeaderHorizontalSeparator">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">2dp</item>
+        <item name="android:background">@color/PaletteBlue</item>
     </style>
 
     <style name="PopupFullTextHorizontalSeparator">

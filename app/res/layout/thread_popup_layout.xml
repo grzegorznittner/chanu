@@ -3,16 +3,18 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         style="@style/PopupFullTextLayout"
         >
-
+    <!--
     <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            >
-
+            android:background="@color/popupbackground"
+    >
+    -->
+        <!--
         <ScrollView
                 android:id="@+id/popup_full_text_scroll_view"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:scrollbars="vertical">
 
@@ -48,13 +50,17 @@
             </LinearLayout>
 
         </ScrollView>
-
+        -->
         <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:orientation="vertical"
-                >
+                style="@style/PopupFullTextInnerLayout">
+
+            <TextView
+                    android:id="@+id/popup_header_text"
+                    style="@style/PopupFullTextHeader"
+                    />
+
+            <View
+                    style="@style/PopupFullTextHeaderHorizontalSeparator" />
 
             <View
                     android:id="@+id/popup_spoiler_button_line"
@@ -73,6 +79,15 @@
                     android:id="@+id/popup_exif_button"
                     style="@style/PopupFullTextButton"
                     android:text="@string/exif" />
+
+            <View
+                    android:id="@+id/popup_copy_button_line"
+                    style="@style/PopupFullTextHorizontalSeparator" />
+
+            <Button
+                    android:id="@+id/popup_copy_button"
+                    style="@style/PopupFullTextButton"
+                    android:text="@string/copy_text" />
 
             <View
                     android:id="@+id/popup_translate_button_line"
@@ -148,6 +163,6 @@
 
         </LinearLayout>
 
-    </FrameLayout>
+   <!-- </FrameLayout> -->
 
 </LinearLayout>

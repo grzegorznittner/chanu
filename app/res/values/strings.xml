@@ -173,7 +173,11 @@
 
     <!-- popup text -->
     <string name="spoiler">Show Spoiler</string>
+    <string name="spoiler_title">Spoiler</string>
     <string name="exif">Show EXIF Data</string>
+    <string name="exif_title">EXIF Data</string>
+    <string name="copy_text">Copy Text</string>
+    <string name="copy_text_complete">Copied to clipboard</string>
     <string name="translate">Translate</string>
     <string name="report">Report Post</string>
     <string name="reply">Post Reply</string>
@@ -186,6 +190,7 @@
     <string name="popup_country_flag">Country Flag</string>
     <string name="popup_show_image">Show Image</string>
     <string name="popup_show_text">Show Text</string>
+    <string name="popup_header_text_format">Post %1$d</string>
     <string name="popup_go_to_thread">Go To Thread</string>
 
     <!-- dialog text -->
