@@ -304,6 +304,8 @@ abstract class UploadedTexture extends BasicTexture {
                                 0, mBorder + bHeight, line, format, type);
                     }                    
                 }
+            } catch (Exception e) {
+                Log.e(TAG, "Exception handling texture", e);
             } finally {
                 freeBitmap();
             }
