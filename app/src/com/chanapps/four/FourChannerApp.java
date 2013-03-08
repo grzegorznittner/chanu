@@ -2,6 +2,7 @@ package com.chanapps.four;
 
 import com.android.gallery3d.app.GalleryAppImpl;
 import com.android.gallery3d.data.DataManager;
+import com.chanapps.four.gallery.ChanOffLineSource;
 import com.chanapps.four.gallery.ChanSource;
 
 /**
@@ -15,6 +16,7 @@ public class FourChannerApp extends GalleryAppImpl {
             mDataManager = new DataManager(this);
             mDataManager.initializeSourceMap();
             mDataManager.addSource(new ChanSource(this));
+            mDataManager.addSource(new ChanOffLineSource(this));
         }
         return mDataManager;
     }

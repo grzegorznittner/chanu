@@ -359,21 +359,16 @@ public class BoardActivity
             int urlHashCode = imageUrl != null && !imageUrl.isEmpty() ? imageUrl.hashCode() : imageResourceId;
             if (DEBUG) Log.i(TAG, "iv urlhash=" + urlHashCode + " viewhash=" + viewHashCode);
             if (iv.getDrawable() == null || viewHashCode != urlHashCode) {
-                if (imageResourceId > 0) // load from board
-                    imageUrl = "drawable://" + imageResourceId;
+            	if (imageResourceId > 0) // load from board
+            		imageUrl = "drawable://" + imageResourceId;
                 if (DEBUG) Log.i(TAG, "calling imageloader for " + imageUrl);
                 iv.setImageBitmap(null);
                 iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
                 imageLoader.displayImage(imageUrl, iv, displayImageOptions); // load async
             }
         } catch (NumberFormatException nfe) {
-            //try {
-            //    iv.setImageURI(Uri.parse(imageUrl));
-            //}
-            //catch (Exception e) {
-                Log.e(TAG, "Couldn't set image view after number format exception with url=" + imageUrl, nfe);
-                iv.setImageBitmap(null);
-            //}
+            Log.e(TAG, "Couldn't set image view after number format exception with url=" + imageUrl, nfe);
+            iv.setImageBitmap(null);
         }
         catch (Exception e) {
             Log.e(TAG, "Exception setting image view with url=" + imageUrl, e);
@@ -448,6 +443,12 @@ public class BoardActivity
                 replyIntent.putExtra(ChanHelper.TIM, 0);
                 replyIntent.putExtra(ChanHelper.TEXT, "");
                 startActivity(replyIntent);
+                return true;
+            case R.id.offline_board_view_menu:
+            	GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);
+                return true;
+            case R.id.offline_chan_view_menu:
+            	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;
             case R.id.settings_menu:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);

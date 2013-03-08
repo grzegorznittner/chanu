@@ -425,7 +425,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             ChanHelper.fadeout(ThreadActivity.this, v);
             incrementCounterAndAddToWatchlistIfActive();
             GalleryViewActivity.startActivity(
-                    ThreadActivity.this, boardCode, threadNo, postId, w, h, position);
+                    ThreadActivity.this, boardCode, threadNo, postId, position);
         }
     }
 

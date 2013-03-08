@@ -96,6 +96,8 @@
     <string name="anime_image_search_menu">IQDB Image Search</string>
     <string name="share_image_menu">Share Image</string>
     <string name="post_reply_send_menu">Post Reply</string>
+    <string name="offline_board_view_menu">Board\'s Cached Images</string>
+    <string name="offline_chan_view_menu">All Cached Images</string>
 
     <!-- board grid tab -->
     <string name="japanese_culture">Japanese Culture</string>

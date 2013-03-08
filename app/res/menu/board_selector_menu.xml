@@ -11,6 +11,9 @@
           android:actionLayout="@layout/board_jump_spinner_nsfw"
           android:visible="false"
             />
+    <item android:id="@+id/offline_chan_view_menu"
+          android:title="@string/offline_chan_view_menu"
+            />
     <item android:id="@+id/global_rules_menu"
           android:title="@string/global_rules_menu"
           android:icon="@drawable/action_help"

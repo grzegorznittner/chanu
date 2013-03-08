@@ -210,7 +210,7 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
     }
     
     public String getTitle() {
-    	if (mActionBar != null) return mActionBar.getTitle().toString();
+    	if (mActionBar != null && mActionBar.getTitle() != null) return mActionBar.getTitle().toString();
     	return null;
     }
 
