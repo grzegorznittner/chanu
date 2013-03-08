@@ -1,8 +1,10 @@
 package com.chanapps.four.component;
 
+import android.*;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.support.v4.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
@@ -12,13 +14,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.util.TypedValue;
+import android.view.*;
 import android.widget.*;
 import com.chanapps.four.activity.*;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.adapter.AbstractThreadCursorAdapter;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
@@ -53,6 +55,7 @@ public class ThreadPostPopup implements Dismissable {
     protected LayoutInflater layoutInflater;
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
+    protected View firstVisibleLineView;
     protected String spoilerText;
     protected String exifText;
     
@@ -127,22 +130,15 @@ public class ThreadPostPopup implements Dismissable {
         spoilerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                (new SpoilerDialogFragment((ThreadActivity)activity)).show(activity.getSupportFragmentManager(), TAG);
+                new SpoilerDialogFragment().show(activity.getSupportFragmentManager(), TAG);
             }
         });
     }
 
     private class SpoilerDialogFragment extends DialogFragment {
-        private final Context context;
-        public SpoilerDialogFragment(Context context) {
-            this.context = context;
-        }
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return new AlertDialog.Builder(context)
-                    .setMessage(spoilerText)
-                    .setTitle(R.string.spoiler_title)
-                    .create();
+            return createDisplayDialog((Activity)activity, getString(R.string.spoiler_title), spoilerText);
         }
     }
 
@@ -152,23 +148,36 @@ public class ThreadPostPopup implements Dismissable {
         exifButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                (new ExifDialogFragment((ThreadActivity)activity)).show(activity.getSupportFragmentManager(), TAG);
+                new ExifDialogFragment().show(activity.getSupportFragmentManager(), TAG);
             }
         });
     }
 
     private class ExifDialogFragment extends DialogFragment {
-        private final Context context;
-        public ExifDialogFragment(Context context) {
-            this.context = context;
-        }
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return new AlertDialog.Builder(context)
-                    .setMessage(Html.fromHtml(exifText))
-                    .setTitle(R.string.exif_title)
-                    .create();
+            return createDisplayDialog((Activity)activity, getString(R.string.exif_title), exifText);
         }
+    }
+
+    private Dialog createDisplayDialog(Activity activity, String title, String text) {
+        dismiss();
+        TextView tv = new TextView(activity);
+        tv.setText(Html.fromHtml(text));
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        tv.setMovementMethod(ScrollingMovementMethod.getInstance());
+        int padding = ChanGridSizer.dpToPx(activity.getResources().getDisplayMetrics(), 16);
+        tv.setPadding(padding, padding, padding, padding);
+        return new AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setView(tv)
+                .setNeutralButton(R.string.close, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //ignore
+                    }
+                })
+                .create();
     }
 
     public void showFromCursor(AdapterView<?> adapterView, int position) {
@@ -196,6 +205,7 @@ public class ThreadPostPopup implements Dismissable {
         final long clickedPostNo = (resto == 0 || postId == resto) ? 0 : postId;
         if (DEBUG) Log.i(BoardActivity.TAG, "Calling popup with postId=" + postId + " isDead=" + isDead + " postNo=" + postId + " resto=" + resto);
 
+        firstVisibleLineView = null;
         setPostHeader(postId);
         setSpoilerButton(spoilerText);
         setExifButton(exifText);
@@ -208,7 +218,8 @@ public class ThreadPostPopup implements Dismissable {
         displayHighlightRepliesButton(clickedBoardCode, clickedThreadNo, clickedPostNo);
         displayHighlightIdButton(clickedBoardCode, clickedThreadNo, clickedPostNo, userId, tripcode, name, email);
         setCloseButton();
-        //setScrollViewMargin();
+        if (firstVisibleLineView != null)
+            firstVisibleLineView.setVisibility(View.INVISIBLE);
 
         popupWindow.showAtLocation(adapterView, Gravity.CENTER, 0, 0);
     }
@@ -218,34 +229,32 @@ public class ThreadPostPopup implements Dismissable {
         popupHeaderText.setText(headerText);
     }
 
+    protected void setVisibility(View view, boolean visible) {
+        view.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    protected void setVisibility(boolean visible, View... views) {
+        for (View view : views) {
+            if (visible && firstVisibleLineView == null)
+                firstVisibleLineView = view;
+            setVisibility(view, visible);
+
+        }
+    }
+
     protected void setSpoilerButton(String spoilerText) {
         this.spoilerText = spoilerText;
-        if (spoilerText != null && !spoilerText.isEmpty()) {
-            spoilerButtonLine.setVisibility(View.VISIBLE);
-            spoilerButton.setVisibility(View.VISIBLE);
-        }
-        else {
-            spoilerButtonLine.setVisibility(View.GONE);
-            spoilerButton.setVisibility(View.GONE);
-        }
+        setVisibility(spoilerText != null && !spoilerText.isEmpty(), spoilerButtonLine, spoilerButton);
     }
 
     protected void setExifButton(String exifText) {
         this.exifText = exifText;
-        if (exifText != null && !exifText.isEmpty()) {
-            exifButtonLine.setVisibility(View.VISIBLE);
-            exifButton.setVisibility(View.VISIBLE);
-        }
-        else {
-            exifButtonLine.setVisibility(View.GONE);
-            exifButton.setVisibility(View.GONE);
-        }
+        setVisibility(exifText != null && !exifText.isEmpty(), exifButtonLine, exifButton);
     }
 
     protected void setCopyButton(final String messageText) {
-        if (!"".equals(messageText)) {
-            copyButtonLine.setVisibility(View.VISIBLE);
-            copyButton.setVisibility(View.VISIBLE);
+        boolean visible = !"".equals(messageText);
+        if (visible) {
             copyButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -257,17 +266,15 @@ public class ThreadPostPopup implements Dismissable {
                 }
             });
         }
-        else {
-            copyButtonLine.setVisibility(View.GONE);
-            copyButton.setVisibility(View.GONE);
-        }
+        setVisibility(visible, copyButtonLine, copyButton);
     }
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final String STRIP_HTML_RE = "(?s)<[^>]*>(\\s*<[^>]*>)*";
 
     protected void setTranslateButton(String messageText) {
-        if (!"".equals(messageText)) {
+        boolean visible = !"".equals(messageText);
+        if (visible) {
             final Locale locale = activity.getBaseContext().getResources().getConfiguration().locale;
             final String localeCode = locale.getLanguage();
             final String strippedText = messageText.replaceAll(STRIP_HTML_RE, " ");
@@ -281,8 +288,6 @@ public class ThreadPostPopup implements Dismissable {
             }
             final String escapedMessage = escaped;
             final String translateUrl = GOOGLE_TRANSLATE_ROOT + localeCode + "&text=" + escapedMessage;
-            translateButtonLine.setVisibility(View.VISIBLE);
-            translateButton.setVisibility(View.VISIBLE);
             translateButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -291,16 +296,12 @@ public class ThreadPostPopup implements Dismissable {
                 }
             });
         }
-        else {
-            translateButtonLine.setVisibility(View.GONE);
-            translateButton.setVisibility(View.GONE);
-        }
+        setVisibility(visible, translateButtonLine, translateButton);
     }
 
     protected void setBlockButton(final String userId) {
-        if (userId != null && !userId.isEmpty()) {
-            blockButtonLine.setVisibility(View.VISIBLE);
-            blockButton.setVisibility(View.VISIBLE);
+        boolean visible = userId != null && !userId.isEmpty();
+        if (visible) {
             blockButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -309,24 +310,19 @@ public class ThreadPostPopup implements Dismissable {
                 }
             });
         }
-        else {
-            blockButtonLine.setVisibility(View.GONE);
-            blockButton.setVisibility(View.GONE);
-        }
+        setVisibility(visible, blockButtonLine, blockButton);
     }
 
     protected void setDeleteButton(boolean isDead, boolean isClosed,
                                    final String clickedBoardCode, final long clickedThreadNo,
                                    final long clickedPostNo)
     {
-        if (!isDead
+        boolean visible = !isDead
                 && !isClosed
                 && (clickedBoardCode != null && !clickedBoardCode.isEmpty())
                 && clickedThreadNo != 0
-                && clickedPostNo != 0)
-        {
-            deleteButtonLine.setVisibility(View.VISIBLE);
-            deleteButton.setVisibility(View.VISIBLE);
+                && clickedPostNo != 0;
+        if (visible) {
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -337,22 +333,17 @@ public class ThreadPostPopup implements Dismissable {
                 }
             });
         }
-        else {
-            deleteButtonLine.setVisibility(View.GONE);
-            deleteButton.setVisibility(View.GONE);
-        }
+        setVisibility(visible, deleteButtonLine, deleteButton);
     }
 
     protected void setReportButton(boolean isDead, boolean isClosed,
                                    final String clickedBoardCode, final long clickedThreadNo, final long postId) {
-        if (!isDead
+        boolean visible = !isDead
                 && !isClosed
                 && (clickedBoardCode != null && !clickedBoardCode.isEmpty())
                 && clickedThreadNo != 0
-                && postId != 0)
-        {
-            reportButtonLine.setVisibility(View.VISIBLE);
-            reportButton.setVisibility(View.VISIBLE);
+                && postId != 0;
+        if (visible) {
             reportButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -363,10 +354,7 @@ public class ThreadPostPopup implements Dismissable {
                 }
             });
         }
-        else {
-            reportButtonLine.setVisibility(View.GONE);
-            reportButton.setVisibility(View.GONE);
-        }
+        setVisibility(visible, reportButtonLine, reportButton);
     }
 
     public void dismiss() {
@@ -377,17 +365,8 @@ public class ThreadPostPopup implements Dismissable {
                                    final String clickedBoardCode, final long clickedThreadNo, final long clickedPostNo,
                                    final long tim)
     {
-        if (isDead) {
-            replyButtonLine.setVisibility(View.GONE);
-            replyButton.setVisibility(View.GONE);
-        }
-        else if (isClosed) {
-            replyButtonLine.setVisibility(View.GONE);
-            replyButton.setVisibility(View.GONE);
-        }
-        else {
-            replyButtonLine.setVisibility(View.VISIBLE);
-            replyButton.setVisibility(View.VISIBLE);
+        boolean visible = !isDead && !isClosed;
+        if (visible) {
             replyButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -402,6 +381,7 @@ public class ThreadPostPopup implements Dismissable {
                 }
             });
         }
+        setVisibility(visible, replyButtonLine, replyButton);
     }
 
     protected void setCloseButton() {
@@ -414,9 +394,8 @@ public class ThreadPostPopup implements Dismissable {
     }
 
     protected void displayHighlightRepliesButton(final String boardCode, final long threadNo, final long postNo) { // board-level doesn't highlight, only thread-level does
-        if (postNo > 0) {
-            highlightRepliesButtonLine.setVisibility(View.VISIBLE);
-            highlightRepliesButton.setVisibility(View.VISIBLE);
+        boolean visible = postNo > 0;
+        if (visible) {
             highlightRepliesButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -426,18 +405,15 @@ public class ThreadPostPopup implements Dismissable {
                 }
             });
         }
-        else {
-            highlightRepliesButtonLine.setVisibility(View.GONE);
-            highlightRepliesButton.setVisibility(View.GONE);
-        }
+        setVisibility(visible, highlightRepliesButtonLine, highlightRepliesButton);
     }
 
     protected void displayHighlightIdButton(final String boardCode, final long threadNo, final long postNo,
                                             final String userId, final String tripcode, final String name, final String email)
     { // board-level doesn't highlight, only thread-level does
+        boolean visible = false;
         if (userId != null && !userId.isEmpty()) {
-            highlightIdButtonLine.setVisibility(View.VISIBLE);
-            highlightIdButton.setVisibility(View.VISIBLE);
+            visible = true;
             highlightIdButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -448,8 +424,7 @@ public class ThreadPostPopup implements Dismissable {
             });
         }
         else if (tripcode != null && !tripcode.isEmpty()) {
-            highlightIdButtonLine.setVisibility(View.VISIBLE);
-            highlightIdButton.setVisibility(View.VISIBLE);
+            visible = true;
             highlightIdButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -460,8 +435,7 @@ public class ThreadPostPopup implements Dismissable {
             });
         }
         else if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("Anonymous")) {
-            highlightIdButtonLine.setVisibility(View.VISIBLE);
-            highlightIdButton.setVisibility(View.VISIBLE);
+            visible = true;
             highlightIdButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -472,8 +446,7 @@ public class ThreadPostPopup implements Dismissable {
             });
         }
         else if (email != null && !email.isEmpty() && !email.equalsIgnoreCase("sage")) {
-            highlightIdButtonLine.setVisibility(View.VISIBLE);
-            highlightIdButton.setVisibility(View.VISIBLE);
+            visible = true;
             highlightIdButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -483,10 +456,7 @@ public class ThreadPostPopup implements Dismissable {
                 }
             });
         }
-        else {
-            highlightIdButtonLine.setVisibility(View.GONE);
-            highlightIdButton.setVisibility(View.GONE);
-        }
+        setVisibility(visible, highlightIdButtonLine, highlightIdButton);
     }
 
     private class HighlightRepliesTask extends AsyncTask<Long, Void, String> {
