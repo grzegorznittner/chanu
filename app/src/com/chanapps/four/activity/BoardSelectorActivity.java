@@ -26,7 +26,10 @@ import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.chanapps.four.service.NetworkProfileManager;
 
-public class BoardSelectorActivity extends FragmentActivity implements ChanIdentifiedActivity {
+public class BoardSelectorActivity
+        extends FragmentActivity
+        implements ChanIdentifiedActivity
+{
     public static final String TAG = "BoardSelectorActivity";
     public static final boolean DEBUG = false;
 

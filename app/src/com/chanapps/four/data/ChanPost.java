@@ -730,4 +730,35 @@ public class ChanPost {
         };
     }
 
+    public static Object[] makeBoardRow(String boardCode, String boardName, int boardImageResourceId) {
+        return new Object[] {
+                3,
+                boardCode,
+                0,
+                "",
+                "",
+                "",
+                "",
+                boardName,
+                250,
+                250,
+                -1,
+                -1,
+                0,
+                0,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                0,
+                0,
+                0,
+                0,
+                boardImageResourceId
+        };
+    }
+
 }

@@ -10,7 +10,6 @@ import java.net.URLEncoder;
 
 import org.apache.commons.io.IOUtils;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -101,7 +100,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     public static void startActivity(Context from, AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-        final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+        final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE));
         final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
         final long threadNo = resto == 0 ? postId : resto;
         startActivity(from, boardCode, threadNo, postId, adapterView.getFirstVisiblePosition());

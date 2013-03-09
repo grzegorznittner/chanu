@@ -54,7 +54,7 @@ public class ChanHelper {
     public static final String ORIENTATION = "orientation";
     public static final String THREAD_WATCHLIST = "threadWatchlist";
     public static final String POST_ID = "_id";
-    public static final String POST_BOARD_NAME = "board_name";
+    public static final String POST_BOARD_CODE = "board_name";
     public static final String POST_NOW = "now";
     public static final String POST_TIME = "time";
     public static final String POST_NAME = "name";
@@ -106,7 +106,7 @@ public class ChanHelper {
 
     public static final String[] POST_COLUMNS = {
             POST_ID,
-            POST_BOARD_NAME,
+            POST_BOARD_CODE,
             POST_RESTO,
             POST_IMAGE_URL,
             POST_COUNTRY_URL,

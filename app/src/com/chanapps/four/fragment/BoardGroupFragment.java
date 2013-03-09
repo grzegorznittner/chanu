@@ -1,35 +1,32 @@
 package com.chanapps.four.fragment;
 
-import android.app.Activity;
+import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.Loader;
+import android.text.Html;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ResourceCursorAdapter;
-import android.widget.ScrollView;
+import android.widget.*;
 
-import com.chanapps.four.activity.BoardActivity;
-import com.chanapps.four.activity.BoardSelectorActivity;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.ThreadActivity;
-import com.chanapps.four.component.BoardTypeView;
+import com.chanapps.four.activity.*;
+import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
+import com.chanapps.four.adapter.BoardSelectorGridCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
+import com.chanapps.four.component.ExtendedImageDownloader;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanBoard.Type;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.loader.BoardSelectorCursorLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -38,19 +35,22 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 /**
 * User: arley
 */
-public class BoardGroupFragment extends Fragment
+public class BoardGroupFragment
+    extends Fragment
+    implements RefreshableActivity,
+        AdapterView.OnItemClickListener,
+        AdapterView.OnItemLongClickListener,
+        LoaderManager.LoaderCallbacks<Cursor>,
+        AbstractBoardCursorAdapter.ViewBinder
 {
 
     private static final String TAG = BoardSelectorActivity.class.getSimpleName();
     private static final boolean DEBUG = false;
-    protected static final int IMAGE_RESOURCE_ID_KEY = R.id.grid_item_image;
 
     private ChanBoard.Type boardType;
     private ResourceCursorAdapter adapter;
-    
-    private ScrollView scrollView;
-    
-    public int columnWidth = 0;
+    private AbsListView absListView;
+
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
 
@@ -64,48 +64,94 @@ public class BoardGroupFragment extends Fragment
     }
 
     @Override
+    public void refreshActivity() {
+        // ignored
+    }
+
+    public void invalidate() {
+        // ignored
+    }
+
+    @Override
+    public Context getBaseContext() {
+        return getActivity().getBaseContext();
+    }
+
+    @Override
+    public FragmentManager getSupportFragmentManager() {
+        return getActivity().getSupportFragmentManager();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         boardType = getArguments() != null
                 ? ChanBoard.Type.valueOf(getArguments().getString(ChanHelper.BOARD_TYPE))
                 : ChanBoard.Type.JAPANESE_CULTURE;
-        if (boardType == ChanBoard.Type.WATCHLIST) {
-            imageLoader = ImageLoader.getInstance();
-            imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));
-            displayImageOptions = new DisplayImageOptions.Builder()
-                    .showImageForEmptyUri(R.drawable.stub_image)
-                    .cacheOnDisc()
-                    .imageScaleType(ImageScaleType.EXACT)
-                    .build();
-        }
         if (DEBUG) Log.v(TAG, "BoardGroupFragment " + boardType + " onCreate");
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        BoardSelectorActivity activity = (BoardSelectorActivity)getActivity();
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(
+                new ImageLoaderConfiguration
+                        .Builder(activity)
+                        .imageDownloader(new ExtendedImageDownloader(activity))
+                        .build());
+        //        .createDefault(this));
+        displayImageOptions = new DisplayImageOptions.Builder()
+                .showImageForEmptyUri(R.drawable.stub_image)
+                .cacheOnDisc()
+                //.imageScaleType(ImageScaleType.EXACT)
+                .build();
+        ensureHandler();
+        LoaderManager.enableDebugLogging(true);
+        if (DEBUG) Log.v(TAG, "onCreate init loader");
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    protected void createAbsListView(View contentView) {
+        absListView = (GridView)contentView.findViewById(R.id.board_grid_view);
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.SELECTOR);
+        cg.sizeGridToDisplay();
+        adapter = new BoardSelectorGridCursorAdapter(getActivity(),
+                R.layout.board_selector_grid_item,
+                this,
+                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
+                new int[] {R.id.grid_item_image, R.id.grid_item_text_top, R.id.grid_item_country_flag});
+        // if watchlist, board selector watchlist adapter
+        absListView.setAdapter(adapter);
+        absListView.setClickable(true);
+        absListView.setOnItemClickListener(this);
+        absListView.setLongClickable(false);
+    }
+
+    protected synchronized Handler ensureHandler() {
+        if (handler == null) {
+            if (ChanHelper.onUIThread())
+                handler = new LoaderHandler();
+            else
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        handler = new LoaderHandler();
+                    }
+                });
+        }
+        return handler;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         if (DEBUG) Log.d(TAG, "BoardGroupFragment " + boardType + " onCreateView");
-        
-        scrollView = (ScrollView) inflater.inflate(R.layout.board_selector_grid, container, false);
-
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(scrollView, display, ChanGridSizer.ServiceType.SELECTOR);
-        cg.sizeGridToDisplay();
-
-        numCols = cg.getNumColumns();
-        columnWidth = cg.getColumnWidth();
-        
-        ensureHandler();
-        BoardTypeView boardTypeView = (BoardTypeView)scrollView.findViewById(R.id.board_selector_type_view);
-        boardTypeView.setBoardData(handler, boardType, numCols, columnWidth);
-        boardTypeView.setBoardGroupFragment(this);
-        
-        return scrollView;
+        View layout = inflater.inflate(R.layout.board_selector_grid_layout, container, false);
+        createAbsListView(layout);
+        return layout;
     }
     
     @Override
@@ -135,10 +181,98 @@ public class BoardGroupFragment extends Fragment
         handler = null;
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
+        BoardSelectorCursorLoader loader = new BoardSelectorCursorLoader(getActivity(), boardType);
+        // if watchlist, watchlistcursorloader
+        cursorLoader = loader;
+        return cursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
+        adapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
+        adapter.swapCursor(null);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE));
+        ChanHelper.fadeout(getActivity(), view);
+        BoardActivity.startActivity(getActivity(), boardCode);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        return false; // don't handle yet
+    }
+
+    @Override
+    public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+        switch (view.getId()) {
+            case R.id.grid_item_text_top:
+                return setHeaderViewValue((TextView) view, cursor);
+            case R.id.grid_item_text:
+                return setTextViewValue((TextView) view, cursor);
+            case R.id.grid_item_image:
+                return setImageViewValue((ImageView) view, cursor);
+            case R.id.grid_item_country_flag:
+                return setCountryFlagValue((ImageView) view, cursor);
+        }
+        return false;
+    }
+
+    protected boolean setHeaderViewValue(TextView tv, Cursor cursor) {
+        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        tv.setText(Html.fromHtml(shortText.replace("Subject: ", "")));
+        return true;
+    }
+
+    protected boolean setTextViewValue(TextView tv, Cursor cursor) {
+        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
+        int idx = shortText.lastIndexOf('\n');
+        if (idx < 0)
+            idx = 0;
+        String threadInfo = shortText.substring(idx);
+        tv.setText(Html.fromHtml(threadInfo));
+        return true;
+    }
+
+    protected boolean setImageViewValue(ImageView iv, Cursor cursor) {
+        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        int imageResourceId = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_THUMBNAIL_ID));
+        if (imageResourceId > 0)
+            BoardActivity.smartSetImageView(iv, "", imageLoader, displayImageOptions, imageResourceId);
+        else if (!imageUrl.isEmpty())
+            BoardActivity.smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions, 0);
+        else
+            iv.setImageBitmap(null);
+        return true;
+    }
+
+    protected boolean setCountryFlagValue(ImageView iv, Cursor cursor) {
+        String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
+        if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagImageUrl);
+        if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
+            BoardActivity.smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions, 0);
+        else
+            iv.setImageBitmap(null); // blank
+        return true;
+    }
+
+
     public void onItemClick(View view, String boardCode, long threadNo) {
         //ChanHelper.fadeout(getActivity(), view);
         if (threadNo > 0) {
-        	ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
+            ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
             if (thread != null) {
                 ThreadActivity.startActivity(getActivity(), thread, view, threadNo, true);
             }
@@ -150,7 +284,8 @@ public class BoardGroupFragment extends Fragment
         }
     }
 
-    public boolean onItemLongClick(View view, Type boardType, String boardCode, long threadNo) {
+
+    public boolean onItemLongClick(View view, ChanBoard.Type boardType, String boardCode, long threadNo) {
     	Log.i(TAG, "Long click " + boardType + " /" + boardCode + "/" + threadNo);
         if (boardType == ChanBoard.Type.WATCHLIST && threadNo >= 0) {
         	ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
@@ -163,43 +298,29 @@ public class BoardGroupFragment extends Fragment
         return false;
     }
 
-    protected Handler ensureHandler() {
-        if (handler == null) {
-            handler = new Handler();
-        }
-        return handler;
-    }
-    
-    public void invalidate() {
-    	if (scrollView != null) {
-    		handler.postDelayed(new Runnable () {
-                public void run() {
-            		BoardTypeView boardTypeView = (BoardTypeView)scrollView.findViewById(R.id.board_selector_type_view);
-            		boardTypeView.postInvalidate();
-            		boardTypeView.refreshDrawableState();
-            		scrollView.postInvalidate();
-                }
-            }, 300);
-    	}
-    }
+    public class LoaderHandler extends Handler {
 
-    /*
-    public void onPrepareOptionsMenu(Menu menu, Context menuContext, ChanBoard.Type selectedBoardType) {
-        super.onPrepareOptionsMenu(menu);
-        if (DEBUG) Log.i(TAG, "Called onPrepareOptionsMenu fragment selectedBoardType=" + selectedBoardType + " menuContext=" + menuContext);
-        if (menuContext == null)
-            return;
-        //menu.removeItem(R.id.clear_watchlist_menu);
-        //menu.removeItem(R.id.clean_watchlist_menu);
-        //MenuInflater inflater = new MenuInflater(menuContext);
-        //if (selectedBoardType == ChanBoard.Type.WATCHLIST) {
-        //    inflater.inflate(R.menu.watchlist_menu, menu);
-        //}
-        Activity activity = getActivity();
-        if (activity != null) {
-            String boardCode = selectedBoardType.equals(ChanBoard.Type.WATCHLIST) ? ChanBoard.WATCH_BOARD_CODE : "";
-            ChanBoard.setupActionBarBoardSpinner(this.getActivity(), menu, boardCode);
+        public static final int SET_PROGRESS_FINISHED = 0x02;
+
+        private final String TAG = LoaderHandler.class.getSimpleName();
+        private static final boolean DEBUG = false;
+
+        public LoaderHandler() {}
+        @Override
+        public void handleMessage(Message msg) {
+            try {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case SET_PROGRESS_FINISHED:
+                        break;
+                    default:
+                        //if (DEBUG) Log.i(getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
+                        getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
+                }
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't handle message " + msg, e);
+            }
         }
     }
-    */
 }

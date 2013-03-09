@@ -401,6 +401,10 @@ public class ChanBoard {
             return false;
     }
 
+    public Object[] makeRow() { // for board selector
+        return ChanPost.makeBoardRow(link, name, getImageResourceId());
+    }
+
     public Object[] makeAdRow() {
         int adCode =
                 (!workSafe && generator.nextDouble() < AD_ADULT_PROBABILITY_ON_ADULT_BOARD)

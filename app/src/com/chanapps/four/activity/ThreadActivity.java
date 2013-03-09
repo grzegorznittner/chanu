@@ -74,7 +74,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         final long threadTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
         if (DEBUG) Log.d(TAG, "threadTim: " + threadTim);
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-        final String boardName = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+        final String boardName = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE));
         ChanBoard board = ChanFileStorage.loadBoardData(from, boardName); // better way to do this? bad to run on UI thread
         if (board != null && board.defData) // def data are not clicable
         	return;

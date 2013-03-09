@@ -1,6 +1,5 @@
 package com.chanapps.four.component;
 
-import android.*;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -191,7 +190,7 @@ public class ThreadPostPopup implements Dismissable {
         final boolean isDead = isDeadInt == 0 ? false : true;
         final boolean isClosed = isClosedInt == 0 ? false : true;
         final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
-        final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_NAME));
+        final String clickedBoardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE));
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         final String userId = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_USER_ID));
         final String tripcode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TRIPCODE));
