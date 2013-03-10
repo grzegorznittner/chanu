@@ -1,57 +1,52 @@
 package com.chanapps.four.loader;
 
-import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
-public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
+public class BoardSelectorWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
 
-    private static final String TAG = BoardSelectorCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final String TAG = BoardSelectorWatchlistCursorLoader.class.getSimpleName();
+    private static final boolean DEBUG = true;
 
     protected final ForceLoadContentObserver mObserver;
 
     protected Cursor mCursor;
     protected Context context;
 
-    protected ChanBoard.Type boardType;
-
-    protected BoardSelectorCursorLoader(Context context) {
+    public BoardSelectorWatchlistCursorLoader(Context context) {
         super(context);
         mObserver = new ForceLoadContentObserver();
-    }
-
-    public BoardSelectorCursorLoader(Context context, ChanBoard.Type boardType) {
-        this(context);
         this.context = context;
-        this.boardType = boardType;
     }
 
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
-        List<ChanBoard> boards = ChanBoard.getBoardsByType(context, boardType);
+        ChanWatchlistDataLoader dataLoader = new ChanWatchlistDataLoader(context);
+        List<ChanPost> threads = dataLoader.getWatchedThreads();
         MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
-        if (boards != null && !boards.isEmpty()) {
-            if (DEBUG) Log.i(TAG, "Loading " + boards.size() + " boards");
-            for (ChanBoard board : boards) {
-                if (DEBUG) Log.i(TAG, "Loading board:" + board.link);
-                Object[] row = board.makeRow();
+        if (threads != null && !threads.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "Loading " + threads.size() + " watchlist threads");
+            for (ChanPost thread : threads) {
+                Object[] row = thread.makeRow();
                 matrixCursor.addRow(row);
-                if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
+                if (DEBUG) Log.i(TAG, "Added thread: " + thread.board + "/" + thread.no);
+                if (DEBUG) Log.v(TAG, "Added thread row: " + Arrays.toString(row));
             }
-            if (DEBUG) Log.i(TAG, "Loading boards complete");
+            if (DEBUG) Log.i(TAG, "Loading watchlist threads complete");
         }
         registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;
@@ -140,7 +135,6 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
         super.dump(prefix, fd, writer, args);
-        writer.print(prefix); writer.print("boardType="); writer.println(boardType);
         writer.print(prefix); writer.print("mCursor="); writer.println(mCursor);
     }
 }

@@ -19,6 +19,7 @@ import android.widget.*;
 
 import com.chanapps.four.activity.*;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
+import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.BoardSelectorGridCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.ExtendedImageDownloader;
@@ -27,6 +28,7 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.loader.BoardSelectorCursorLoader;
+import com.chanapps.four.loader.BoardSelectorWatchlistCursorLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -118,16 +120,26 @@ public class BoardGroupFragment
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.SELECTOR);
         cg.sizeGridToDisplay();
-        adapter = new BoardSelectorGridCursorAdapter(getActivity(),
-                R.layout.board_selector_grid_item,
-                this,
-                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
-                new int[] {R.id.grid_item_image, R.id.grid_item_text_top, R.id.grid_item_country_flag});
-        // if watchlist, board selector watchlist adapter
+        assignCursorAdapter();
         absListView.setAdapter(adapter);
         absListView.setClickable(true);
         absListView.setOnItemClickListener(this);
         absListView.setLongClickable(false);
+    }
+
+    protected void assignCursorAdapter() {
+        if (boardType == ChanBoard.Type.WATCHLIST)
+            adapter = new BoardGridCursorAdapter(getActivity(),
+                    R.layout.board_grid_item,
+                    this,
+                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
+                    new int[] {R.id.grid_item_image, R.id.grid_item_text_top, R.id.grid_item_text, R.id.grid_item_country_flag});
+        else
+            adapter = new BoardSelectorGridCursorAdapter(getActivity(),
+                    R.layout.board_selector_grid_item,
+                    this,
+                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
+                    new int[] {R.id.grid_item_image, R.id.grid_item_text_top, R.id.grid_item_country_flag});
     }
 
     protected synchronized Handler ensureHandler() {
@@ -181,12 +193,17 @@ public class BoardGroupFragment
         handler = null;
     }
 
+    protected Loader<Cursor> createCursorLoader() {
+        if (boardType == ChanBoard.Type.WATCHLIST)
+            return new BoardSelectorWatchlistCursorLoader(getActivity());
+        else
+            return new BoardSelectorCursorLoader(getActivity(), boardType);
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
-        BoardSelectorCursorLoader loader = new BoardSelectorCursorLoader(getActivity(), boardType);
-        // if watchlist, watchlistcursorloader
-        cursorLoader = loader;
+        cursorLoader = createCursorLoader();
         return cursorLoader;
     }
 
@@ -267,7 +284,6 @@ public class BoardGroupFragment
             iv.setImageBitmap(null); // blank
         return true;
     }
-
 
     public void onItemClick(View view, String boardCode, long threadNo) {
         //ChanHelper.fadeout(getActivity(), view);

@@ -133,6 +133,8 @@
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
     <string name="thread_added_to_watchlist_activity_based">Frequent usage, thread added to watchlist</string>
     <string name="thread_watchlist_cleared">Cleared watchlist</string>
+    <string name="thread_watchlist_default_name">Watched Thread</string>
+
 
     <!-- board service -->
     <string name="board_service_couldnt_fetch">Couldn\'t get board</string>

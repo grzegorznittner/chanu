@@ -258,7 +258,9 @@ public class ThreadPostPopup implements Dismissable {
                 @Override
                 public void onClick(View v) {
                     android.content.ClipboardManager clipboard = (android.content.ClipboardManager) activity.getBaseContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                    android.content.ClipData clip = android.content.ClipData.newPlainText(activity.getBaseContext().getString(R.string.app_name), messageText);
+                    android.content.ClipData clip = android.content.ClipData.newPlainText(
+                            activity.getBaseContext().getString(R.string.app_name),
+                            messageText.replaceAll("</?br>", "").replaceAll("<[^>]*>.*",""));
                     clipboard.setPrimaryClip(clip);
                     Toast.makeText(activity.getBaseContext(), R.string.copy_text_complete, Toast.LENGTH_SHORT).show();
                     dismiss();
