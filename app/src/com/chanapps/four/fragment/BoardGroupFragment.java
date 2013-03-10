@@ -1,5 +1,6 @@
 package com.chanapps.four.fragment;
 
+import android.app.Activity;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -32,7 +33,6 @@ import com.chanapps.four.loader.BoardSelectorWatchlistCursorLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 /**
 * User: arley
@@ -46,8 +46,8 @@ public class BoardGroupFragment
         AbstractBoardCursorAdapter.ViewBinder
 {
 
-    private static final String TAG = BoardSelectorActivity.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final String TAG = BoardGroupFragment.class.getSimpleName();
+    private static final boolean DEBUG = true;
 
     private ChanBoard.Type boardType;
     private ResourceCursorAdapter adapter;
@@ -59,8 +59,6 @@ public class BoardGroupFragment
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
 
-    private int numCols = 2;
-    
     public BaseAdapter getAdapter() {
         return adapter;
     }
@@ -124,7 +122,8 @@ public class BoardGroupFragment
         absListView.setAdapter(adapter);
         absListView.setClickable(true);
         absListView.setOnItemClickListener(this);
-        absListView.setLongClickable(false);
+        absListView.setLongClickable(true);
+        absListView.setOnItemLongClickListener(this);
     }
 
     protected void assignCursorAdapter() {
@@ -221,15 +220,44 @@ public class BoardGroupFragment
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        if (DEBUG) Log.i(TAG, "clicked item boardType=" + boardType);
+        final Activity activity = getActivity();
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE));
-        ChanHelper.fadeout(getActivity(), view);
-        BoardActivity.startActivity(getActivity(), boardCode);
+        if (boardType == ChanBoard.Type.WATCHLIST) {
+            if (DEBUG) Log.i(TAG, "wtf?");
+            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            if (DEBUG) Log.i(TAG, "clicked thread " + boardCode + "/" + threadNo);
+            ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
+            if (thread != null) {
+                ThreadActivity.startActivity(getActivity(), thread, view, threadNo, true);
+            }
+            else {
+                ThreadActivity.startActivity(getActivity(), boardCode, threadNo);
+            }
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "clicked board " + boardCode);
+            BoardActivity.startActivity(activity, boardCode);
+        }
+        ChanHelper.fadeout(activity, view);
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        return false; // don't handle yet
+        if (boardType == ChanBoard.Type.WATCHLIST) {
+            Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+            final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE));
+            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            if (DEBUG) Log.i(TAG, "Long click " + boardType + " /" + boardCode + "/" + threadNo);
+            ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
+            if (thread != null && thread.posts != null && thread.posts[0] != null && thread.posts[0].tim > 0) {
+                WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(ensureHandler(), thread.posts[0].tim);
+                d.show(getFragmentManager(), WatchlistDeleteDialogFragment.TAG);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -285,35 +313,6 @@ public class BoardGroupFragment
         return true;
     }
 
-    public void onItemClick(View view, String boardCode, long threadNo) {
-        //ChanHelper.fadeout(getActivity(), view);
-        if (threadNo > 0) {
-            ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
-            if (thread != null) {
-                ThreadActivity.startActivity(getActivity(), thread, view, threadNo, true);
-            }
-            else {
-                ThreadActivity.startActivity(getActivity(), boardCode, threadNo);
-            }
-        } else {
-            BoardActivity.startActivity(getActivity(), boardCode);
-        }
-    }
-
-
-    public boolean onItemLongClick(View view, ChanBoard.Type boardType, String boardCode, long threadNo) {
-    	Log.i(TAG, "Long click " + boardType + " /" + boardCode + "/" + threadNo);
-        if (boardType == ChanBoard.Type.WATCHLIST && threadNo >= 0) {
-        	ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
-            if (thread != null && thread.posts[0].tim > 0) {
-                WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(view, handler, thread.posts[0].tim);
-                d.show(getFragmentManager(), WatchlistDeleteDialogFragment.TAG);
-                return true;
-            }
-        }
-        return false;
-    }
-
     public class LoaderHandler extends Handler {
 
         public static final int SET_PROGRESS_FINISHED = 0x02;
@@ -330,7 +329,7 @@ public class BoardGroupFragment
                     case SET_PROGRESS_FINISHED:
                         break;
                     default:
-                        //if (DEBUG) Log.i(getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
+                        if (DEBUG) Log.i(getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
                         getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
                 }
             }

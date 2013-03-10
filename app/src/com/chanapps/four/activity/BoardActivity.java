@@ -100,7 +100,7 @@ public class BoardActivity
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
                 .cacheOnDisc()
-                .imageScaleType(ImageScaleType.EXACT)
+        //        .imageScaleType(ImageScaleType.EXACT)
                 .build();
         createAbsListView();
         ensureHandler();

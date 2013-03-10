@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
+import android.widget.AbsListView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.data.ChanWatchlist;
@@ -25,11 +26,9 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
 
     private Handler handler;
     private long tim = 0;
-    private View itemView = null;
 
-    public WatchlistDeleteDialogFragment(View itemView, Handler handler, long tim) {
+    public WatchlistDeleteDialogFragment(Handler handler, long tim) {
         super();
-        this.itemView = itemView;
         this.handler = handler;
         this.tim = tim;
     }
@@ -44,7 +43,7 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 Context ctx = getActivity();
                                 ChanWatchlist.deleteThreadFromWatchlist(ctx, tim);
-                                itemView.invalidate();
+                                handler.sendEmptyMessageDelayed(0, 10);
                                 dismiss();
                             }
                         })
