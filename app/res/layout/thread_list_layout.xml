@@ -10,21 +10,12 @@
 
     <ProgressBar
             android:id="@+id/board_progress_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:indeterminate="true"
-            android:indeterminateOnly="true"
+            style="@style/BoardProgressBar"
             />
 
-    <ListView
+\    <ListView
             android:id="@+id/thread_list_view"
             style="@style/ListViewTemplate"
-            android:layout_below="@id/board_progress_bar"
-            android:gravity="top|left"
-            android:smoothScrollbar="false"
             />
 
 </RelativeLayout>

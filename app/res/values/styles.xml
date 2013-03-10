@@ -13,6 +13,8 @@
     <style name="ListViewTemplate" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:smoothScrollbar">false</item>
         <item name="android:padding">0dp</item>
         <item name="android:verticalSpacing">0dp</item>
         <item name="android:horizontalSpacing">0dp</item>
@@ -51,9 +53,18 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <style name="BoardProgressBar" parent="@android:style/Widget.ProgressBar.Large.Inverse">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateOnly">true</item>
+    </style>
+
     <style name="BoardGridView" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_centerInParent">true</item>
         <item name="android:paddingTop">2dp</item>
         <item name="android:paddingLeft">0dp</item>
         <item name="android:paddingBottom">2dp</item>
@@ -62,7 +73,6 @@
         <item name="android:horizontalSpacing">1dp</item>
         <item name="android:numColumns">2</item>
         <item name="android:stretchMode">none</item>
-        <item name="android:layout_below">@id/board_progress_bar</item>
         <item name="android:gravity">top|left</item>
     </style>
 
