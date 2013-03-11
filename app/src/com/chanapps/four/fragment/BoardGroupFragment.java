@@ -51,6 +51,7 @@ public class BoardGroupFragment
 
     private ChanBoard.Type boardType;
     private ResourceCursorAdapter adapter;
+    private ProgressBar progressBar;
     private AbsListView absListView;
 
     protected Handler handler;
@@ -109,8 +110,8 @@ public class BoardGroupFragment
                 .build();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
-        if (DEBUG) Log.v(TAG, "onCreate init loader");
         getLoaderManager().initLoader(0, null, this);
+        if (DEBUG) Log.v(TAG, "onCreate init loader");
     }
 
     protected void createAbsListView(View contentView) {
@@ -161,13 +162,23 @@ public class BoardGroupFragment
         super.onCreateView(inflater, container, savedInstanceState);
         if (DEBUG) Log.d(TAG, "BoardGroupFragment " + boardType + " onCreateView");
         View layout = inflater.inflate(R.layout.board_selector_grid_layout, container, false);
+        createProgressBar(layout);
         createAbsListView(layout);
         return layout;
     }
-    
+
+    protected void createProgressBar(View layout) {
+        progressBar = (ProgressBar)layout.findViewById(R.id.board_progress_bar);
+        if (boardType == ChanBoard.Type.WATCHLIST)
+            progressBar.setVisibility(View.VISIBLE);
+        else
+            progressBar.setVisibility(View.GONE);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
+        getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
     }
 
     @Override
@@ -203,6 +214,7 @@ public class BoardGroupFragment
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         cursorLoader = createCursorLoader();
+        ensureHandler().sendEmptyMessage(LoaderHandler.SET_PROGRESS_START);
         return cursorLoader;
     }
 
@@ -210,12 +222,14 @@ public class BoardGroupFragment
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
         adapter.swapCursor(data);
+        ensureHandler().sendEmptyMessage(LoaderHandler.SET_PROGRESS_FINISHED);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
         adapter.swapCursor(null);
+        ensureHandler().sendEmptyMessage(LoaderHandler.SET_PROGRESS_START);
     }
 
     @Override
@@ -315,7 +329,8 @@ public class BoardGroupFragment
 
     public class LoaderHandler extends Handler {
 
-        public static final int SET_PROGRESS_FINISHED = 0x02;
+        public static final int SET_PROGRESS_START = 0x02;
+        public static final int SET_PROGRESS_FINISHED = 0x03;
 
         private final String TAG = LoaderHandler.class.getSimpleName();
         private static final boolean DEBUG = false;
@@ -326,7 +341,13 @@ public class BoardGroupFragment
             try {
                 super.handleMessage(msg);
                 switch (msg.what) {
+                    case SET_PROGRESS_START:
+                        if (progressBar != null && boardType == ChanBoard.Type.WATCHLIST)
+                            progressBar.setVisibility(View.VISIBLE);
+                        break;
                     case SET_PROGRESS_FINISHED:
+                        if (progressBar != null && boardType == ChanBoard.Type.WATCHLIST)
+                            progressBar.setVisibility(View.GONE);
                         break;
                     default:
                         if (DEBUG) Log.i(getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
