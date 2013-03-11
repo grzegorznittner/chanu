@@ -131,6 +131,7 @@ public class ChanHelper {
             POST_EXPAND_BUTTON,
             AD_ITEM,
             POST_THUMBNAIL_ID,
+            POST_EXT
     };
 
     public static final String PREF_WIDGET_BOARDS = "prefWidgetBoards";

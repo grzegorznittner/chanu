@@ -189,7 +189,7 @@ public class ImageLoader {
 			return;
 		}
 
-		ImageSize targetSize = new ImageSize(100, 100); //getImageSizeScaleTo(imageView);
+		ImageSize targetSize = imageView == null ? new ImageSize(100, 100) : getImageSizeScaleTo(imageView);
 		String memoryCacheKey = MemoryCacheKeyUtil.generateKey(uri, targetSize);
 		cacheKeyForImageView.put(imageView, memoryCacheKey);
 

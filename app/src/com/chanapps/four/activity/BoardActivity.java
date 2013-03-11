@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -90,10 +92,16 @@ public class BoardActivity
 		if (DEBUG) Log.v(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         loadFromIntentOrPrefs();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int maxWidth = displayMetrics.widthPixels;
+        int maxHeight = displayMetrics.heightPixels;
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(
                 new ImageLoaderConfiguration
                         .Builder(this)
+                        .memoryCacheExtraOptions(maxWidth, maxHeight)
+                        .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
                         .imageDownloader(new ExtendedImageDownloader(this))
                         .build());
         //        .createDefault(this));

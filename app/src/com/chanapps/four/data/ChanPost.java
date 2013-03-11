@@ -318,12 +318,16 @@ public class ChanPost {
     }
 
     public String getImageUrl() {
-   		if (tim != 0) {
-   			return "http://images.4chan.org/" + board + "/src/" + tim + ext;
-   		}
-   		return null;
+        return getImageUrl(board, tim, ext);
    	}
-   	
+
+    public static String getImageUrl(String board, long tim, String ext) {
+        if (tim != 0) {
+            return "http://images.4chan.org/" + board + "/src/" + tim + ext;
+        }
+        return null;
+    }
+
    	public String getImageName() {
    		return no + ext;
    	}
@@ -447,6 +451,7 @@ public class ChanPost {
     }
 
     public void copyThreadStatusFields(ChanPost from) {
+        ext = from.ext;
         closed = from.closed;
         bumplimit = from.bumplimit;
         imagelimit = from.imagelimit;
@@ -695,7 +700,8 @@ public class ChanPost {
                 closed,
                 0,
                 0,
-                getThumbnailId()
+                getThumbnailId(),
+                ext
         };
     }
 
@@ -726,7 +732,8 @@ public class ChanPost {
                 0,
                 0,
                 1,
-                0
+                0,
+                ""
         };
     }
 
@@ -757,7 +764,8 @@ public class ChanPost {
                 0,
                 0,
                 0,
-                boardImageResourceId
+                boardImageResourceId,
+                ""
         };
     }
 

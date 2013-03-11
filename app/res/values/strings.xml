@@ -13,6 +13,7 @@
     <string name="settings_activity">Settings</string>
     <string name="board_image">Board Image</string>
     <string name="thread_post_image">Thread Image</string>
+    <string name="thread_post_image_expanded">Expanded Thread Image</string>
     <string name="thread_post_reply_button">Reply</string>
     <string name="thread_post_expand_button">Expand</string>
     <string name="thread_country_flag">Country Flag</string>
@@ -120,6 +121,8 @@
     <string name="thread_activity_fresh">Thread is current</string>
     <string name="thread_end_of_thread">End of Thread</string>
     <string name="thread_couldnt_load">Couldn\'t load thread</string>
+    <string name="thread_couldnt_load_image_cancelled">Couldn\'t load image, cancelled</string>
+    <string name="thread_couldnt_load_image">Couldn\'t load image: %1$s</string>
     <string name="thread_no_replies_found">No replies found</string>
     <string name="thread_prev_replies_found">Found %1$d references</string>
     <string name="thread_next_replies_found">Found %1$d replies</string>

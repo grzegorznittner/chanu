@@ -13,7 +13,7 @@
             style="@style/BoardProgressBar"
             />
 
-\    <ListView
+    <ListView
             android:id="@+id/thread_list_view"
             style="@style/ListViewTemplate"
             />
