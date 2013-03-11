@@ -334,6 +334,18 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     @Override
+    public void onBackPressed() {
+        // send the back event to the top sub-state
+        GLRoot root = getGLRoot();
+        root.lockRenderThread();
+        try {
+            getStateManager().onBackPressed();
+        } finally {
+            root.unlockRenderThread();
+        }
+    }
+    
+    @Override
 	protected void onDestroy () {
 		super.onDestroy();
 		if (DEBUG) Log.i(TAG, "onDestroy");
