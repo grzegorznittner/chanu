@@ -7,6 +7,7 @@ import java.net.URI;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
+import android.util.Log;
 import android.widget.ImageView.ScaleType;
 
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -22,6 +23,7 @@ import com.nostra13.universalimageloader.core.download.ImageDownloader;
  * @see ImageDownloader
  */
 public class ImageDecoder {
+	private static final String TAG = "ImageDecoder";
 
 	private final URI imageUri;
 	private final ImageDownloader imageDownloader;
@@ -73,6 +75,9 @@ public class ImageDecoder {
 		InputStream imageStream = imageDownloader.getStream(imageUri);
 		try {
 			return BitmapFactory.decodeStream(imageStream, null, decodeOptions);
+		} catch(OutOfMemoryError ooe) {
+			Log.e(TAG, "OutOfMemory for target size: " + targetSize.getWidth() + "x" + targetSize.getHeight() + " scaleType: " + scaleType);
+			throw ooe;
 		} finally {
 			imageStream.close();
 		}
