@@ -7,12 +7,10 @@
     <ImageView
             android:id="@+id/grid_item_image"
             style="@style/BoardAdGridImage"
-            android:contentDescription="@string/jlist_ad_message"
             />
 
     <TextView
-            style="@style/BoardGridTextImageOverlay"
-            android:text="@string/jlist_ad_message_compact"
+            style="@style/BoardGridTextAdImageOverlay"
             />
 
 </RelativeLayout>

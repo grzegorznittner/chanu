@@ -87,15 +87,11 @@ public class BoardActivity
         return intent;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-		if (DEBUG) Log.v(TAG, "************ onCreate");
-        super.onCreate(savedInstanceState);
-        loadFromIntentOrPrefs();
+    protected void initImageLoader() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int maxWidth = displayMetrics.widthPixels;
-        int maxHeight = displayMetrics.heightPixels;
+        final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, 110);
+        final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, 140);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(
                 new ImageLoaderConfiguration
@@ -104,12 +100,19 @@ public class BoardActivity
                         .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
                         .imageDownloader(new ExtendedImageDownloader(this))
                         .build());
-        //        .createDefault(this));
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
                 .cacheOnDisc()
-        //        .imageScaleType(ImageScaleType.EXACT)
+                        //        .imageScaleType(ImageScaleType.EXACT)
                 .build();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+		if (DEBUG) Log.v(TAG, "************ onCreate");
+        super.onCreate(savedInstanceState);
+        loadFromIntentOrPrefs();
+        initImageLoader();
         createAbsListView();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);

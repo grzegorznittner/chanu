@@ -8,6 +8,8 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
@@ -26,6 +28,9 @@ import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
@@ -231,6 +236,29 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     @Override
+    protected void initImageLoader() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
+        int maxWidth = displayMetrics.widthPixels - padding;
+        int maxHeight = displayMetrics.heightPixels - padding;
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(
+                new ImageLoaderConfiguration
+                        .Builder(this)
+                        .memoryCacheExtraOptions(maxWidth, maxHeight)
+                        .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
+                        .imageDownloader(new ExtendedImageDownloader(this))
+                        .build());
+        //        .createDefault(this));
+        displayImageOptions = new DisplayImageOptions.Builder()
+                .showImageForEmptyUri(R.drawable.stub_image)
+                .cacheOnDisc()
+                        //        .imageScaleType(ImageScaleType.EXACT)
+                .build();
+    }
+
+    @Override
     protected void initAdapter() {
         adapter = new ThreadListCursorAdapter(this,
                 R.layout.thread_list_item,
@@ -389,8 +417,28 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                                              final ProgressBar itemExpandedProgressBar)
     {
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_DIMENSIONS));
-        tv.setText(text == null ? "" : text);
-        tv.setVisibility(text == null || text.isEmpty() ? View.GONE : View.VISIBLE);
+        if (text == null || text.isEmpty()) {
+            tv.setVisibility(View.GONE);
+            return true;
+        }
+        int post_tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
+        int post_tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
+        if (post_tn_w > 0 && post_tn_h > 0) {
+            ViewGroup.LayoutParams params = tv.getLayoutParams();
+            params.width = post_tn_w;
+            if (post_tn_w <= 125) { // smaller image
+                text = text.replace(" ", "\n");
+                if (post_tn_w < post_tn_h) { // small and narrow
+                    text = text.replace("x", "x\n");
+                    tv.setLines(3);
+                }
+                else {
+                    tv.setLines(2);
+                }
+            }
+        }
+        tv.setText(text);
+        tv.setVisibility(View.VISIBLE);
         //tv.setOnClickListener(new ExpandImageOnClickListener(cursor, itemExpandedImage, itemExpandedProgressBar));
         return true;
     }
@@ -401,6 +449,13 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                                  final ProgressBar itemExpandedProgressBar)
     {
         Log.e(TAG, "Exception: setItem iv=" + iv + " cursor=" + cursor + " iei=" + itemExpandedImage);
+        int post_tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
+        int post_tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
+        if (post_tn_w > 0 && post_tn_h > 0) {
+            ViewGroup.LayoutParams params = iv.getLayoutParams();
+            params.width = post_tn_w;
+            params.height = post_tn_h;
+        }
         super.setImageViewValue(iv, cursor);
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0)
@@ -448,6 +503,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         private String postImageUrl = null;
         int postW = 0;
         int postH = 0;
+        int listPosition = 0;
 
         public ExpandImageOnClickListener(Cursor cursor,
                                           final ImageView itemExpandedImage,
@@ -455,12 +511,25 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         {
             itemExpandedImageHolder = itemExpandedImage;
             itemExpandedProgressBarHolder = itemExpandedProgressBar;
+            listPosition = cursor.getPosition();
+
             postW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
             postH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
             long postTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
             String postExt = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXT));
             postImageUrl = postTim > 0 ? ChanPost.getImageUrl(boardCode, postTim, postExt) : null;
             Log.e(TAG, "Exception: tim=" + postTim + " ext=" + postExt + " url=" + postImageUrl);
+        }
+
+        public void safeClearImageView(ImageView v) {
+            Drawable d = v.getDrawable();
+            if (d != null && d instanceof BitmapDrawable) {
+                BitmapDrawable bd = (BitmapDrawable)d;
+                Bitmap b = bd.getBitmap();
+                if (b != null)
+                    b.recycle();
+            }
+            v.setImageBitmap(null);
         }
 
         @Override
@@ -470,18 +539,20 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 return;
             if (itemExpandedImageHolder.getVisibility() == View.VISIBLE) {
                 Log.e(TAG, "Exception Visible, hiding");
-                itemExpandedImageHolder.setImageBitmap(null);
+                safeClearImageView(itemExpandedImageHolder);
                 itemExpandedImageHolder.setVisibility(View.GONE);
             }
             else if (postImageUrl != null) {
+
                 Log.e(TAG, "Exception Loading image url=" + postImageUrl);
-                itemExpandedImageHolder.setImageBitmap(null);
+                safeClearImageView(itemExpandedImageHolder);
 
                 float aspectRatio = postW / postH;
                 DisplayMetrics displayMetrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                int maxWidth = displayMetrics.widthPixels;
-                int maxHeight = displayMetrics.heightPixels;
+                int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
+                int maxWidth = displayMetrics.widthPixels - padding;
+                int maxHeight = displayMetrics.heightPixels - padding;
                 if (postW > 0)
                     maxWidth = Math.min(postW, maxWidth);
                 if (postH > 0)
@@ -494,13 +565,31 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                     maxHeight = Math.round((float)maxWidth / aspectRatio);
                 }
                 else if (aspectRatio < 1) {
-                    maxHeight = Math.min(maxHeight, Math.round((float)maxWidth / aspectRatio));
+                    maxWidth = Math.min(maxWidth, Math.round((float)maxHeight * aspectRatio));
                 }
+
+                ViewParent parent = v.getParent();
+                int parentHeight = 0;
+                if (parent instanceof View) {
+                    View parentView = (View)parent;
+                    parentHeight = parentView.getHeight();
+                }
+                int lastPosition = absListView.getLastVisiblePosition();
+                boolean shouldMove = listPosition >= lastPosition - 1;
+                final int parentOffset = shouldMove ? parentHeight + maxHeight : 0; // allow for margin
+                //final int imageOffset = shouldMove ? parentHeight + maxHeight : 0;
+                final int imageOffset = 0;
 
                 itemExpandedImageHolder.setMaxWidth(maxWidth);
                 itemExpandedImageHolder.setMaxHeight(maxHeight);
 
                 itemExpandedProgressBarHolder.setVisibility(View.VISIBLE);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        absListView.smoothScrollBy(parentOffset, 250);
+                    }
+                }, 250);
                 imageLoader.displayImage(postImageUrl, itemExpandedImageHolder, displayImageOptions, new ImageLoadingListener() {
                     @Override
                     public void onLoadingStarted() {
@@ -520,6 +609,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                         Log.e(TAG, "Exception Loading complete");
                         itemExpandedImageHolder.setVisibility(View.VISIBLE);
                         itemExpandedProgressBarHolder.setVisibility(View.GONE);
+                        absListView.smoothScrollBy(imageOffset, 250);
+                        //absListView.smoothScrollToPositionFromTop(listPosition, parentOffset);
                     }
 
                     @Override

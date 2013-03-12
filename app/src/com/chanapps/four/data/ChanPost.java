@@ -371,7 +371,7 @@ public class ChanPost {
         if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
             lines.add("Name: " + name);
         if (trip != null && !trip.isEmpty())
-            lines.add("Tripcode: " + trip);
+            lines.add("Trip: " + getUserTrip());
         if (email != null && !email.isEmpty())
             if (email.equals("sage"))
                 lines.add("<b>sage</b>");
@@ -637,6 +637,16 @@ public class ChanPost {
             return getUserId(id, useFriendlyIds);
     }
 
+    public String getUserTrip() {
+        if (trip == null)
+            return "";
+        if (trip.charAt(0) == '!' && trip.charAt(1) == '!')
+            return "!!" + getUserId(trip.substring(2), useFriendlyIds);
+        if (trip.charAt(0) == '!')
+            return "!" + getUserId(trip.substring(1), useFriendlyIds);
+        return trip;
+    }
+
     public static String getUserId(String id, boolean useFriendlyIds) {
         if (!useFriendlyIds)
             return id;
@@ -715,8 +725,8 @@ public class ChanPost {
                 "",
                 "",
                 clickUrl,
-                120,
-                120,
+                176,
+                0,
                 -1,
                 -1,
                 0,
