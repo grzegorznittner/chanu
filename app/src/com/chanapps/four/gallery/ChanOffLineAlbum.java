@@ -23,6 +23,7 @@ import com.chanapps.four.data.ChanFileStorage;
  */
 public class ChanOffLineAlbum extends MediaSet {
 	private static final String TAG = "ChanOffLineAlbum";
+	private static final boolean DEBUG = false;
 	
 	private GalleryApp application;
 	private String name;
@@ -98,7 +99,7 @@ public class ChanOffLineAlbum extends MediaSet {
 		Log.i(TAG, "Loading data from " + dir.getAbsolutePath());
 		File[] files = dir.listFiles(new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
-            	Log.i(TAG, "Checking file " + directory.getAbsolutePath() + "/" + fileName);
+            	if (DEBUG) Log.d(TAG, "Checking file " + directory.getAbsolutePath() + "/" + fileName);
                 return !fileName.endsWith(".txt");
             }
         });

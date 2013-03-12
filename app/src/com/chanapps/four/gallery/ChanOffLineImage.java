@@ -33,7 +33,7 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService {
     private static final String TAG = "ChanOffLineImage";
-    public static final boolean DEBUG  = false;
+    public static final boolean DEBUG  = true;
     
 	private ChanActivityId activityId;
 	private String name;
@@ -64,6 +64,9 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
         activityId = new ChanActivityId(dir, 0, false);
         this.dir = dir;
         this.imageFile = imageFile;
+        if (!this.imageFile.exists()) {
+        	Log.e(TAG, "Initialized with not existing image! " + imageFile.getAbsolutePath(), new Exception());
+        }
         String tmpExt = FilenameUtils.getExtension(imageFile.getName());
         ext = tmpExt == null || tmpExt.isEmpty() ? "jpg" : tmpExt;
         name = "Cached /" + dir + "/" + imageFile.getName();
@@ -85,16 +88,16 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 
     private class RegionDecoderJob implements Job<BitmapRegionDecoder> {
         public BitmapRegionDecoder run(JobContext jc) {
-        	if (DEBUG) Log.i(TAG, "Large image exists " + imageFile.getName());
+        	if (DEBUG) Log.i(TAG, "Large image exists " + imageFile.getAbsolutePath());
     		try {
-				return BitmapRegionDecoder.newInstance(imageFile.getName(), true);
+				return BitmapRegionDecoder.newInstance(imageFile.getAbsolutePath(), true);
 			} catch (IOException e) {
-				Log.e(TAG, "BitmapRegionDecoder error for " + imageFile.getName(), e);
+				Log.e(TAG, "BitmapRegionDecoder error for " + imageFile.getAbsolutePath(), e);
 			}
             return null;
         }
     }
-    	
+    
     private class BitmapJob implements Job<Bitmap> {
     	int type;
     	
@@ -109,11 +112,11 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
     			options.inPreferredConfig = Config.ARGB_8888;
     			switch (type) {
                 case TYPE_THUMBNAIL:
-        			options.inSampleSize = computeImageScale(640, 640);
+        			options.inSampleSize = computeImageScale(200, 200);
         			break;
                 case TYPE_MICROTHUMBNAIL:
                 default:
-        			options.inSampleSize = computeImageScale(200, 200);
+        			options.inSampleSize = computeImageScale(100, 100);
     			}
     			    			
     			InputStream imageStream = new FileInputStream(imageFile);
@@ -176,6 +179,14 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
         }
         if ("gif".equals(ext)) {
         	supported |= SUPPORT_PLAY;
+        }
+        if (DEBUG) {
+        	StringBuffer buf = new StringBuffer();
+        	buf.append((supported & SUPPORT_SETAS) > 0? "SUPPORT_SETAS " : "");
+        	buf.append((supported & SUPPORT_SHARE) > 0? "SUPPORT_SHARE " : "");
+        	buf.append((supported & SUPPORT_FULL_IMAGE) > 0? "SUPPORT_FULL_IMAGE " : "");
+        	buf.append((supported & SUPPORT_PLAY) > 0? "SUPPORT_PLAY " : "");
+        	Log.i(TAG, "Supported operations for " + this.name + " " + buf.toString());
         }
         return supported;
     }
