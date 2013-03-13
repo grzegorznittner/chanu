@@ -100,8 +100,10 @@ public class BoardGroupFragment
         BoardSelectorActivity activity = (BoardSelectorActivity)getActivity();
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, 110);
-        final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, 140);
+        //final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, 110) / 2;
+        //final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, 140) / 2;
+        final int maxWidth = 125;
+        final int maxHeight = 125;
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(
                 new ImageLoaderConfiguration
@@ -113,7 +115,7 @@ public class BoardGroupFragment
         //        .createDefault(this));
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
-                .cacheOnDisc()
+                // .cacheOnDisc() // already on disk
                 //.imageScaleType(ImageScaleType.EXACT)
                 .build();
         ensureHandler();

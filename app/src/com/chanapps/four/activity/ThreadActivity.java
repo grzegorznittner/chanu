@@ -33,6 +33,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -254,7 +255,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
                 .cacheOnDisc()
-                        //        .imageScaleType(ImageScaleType.EXACT)
+                .imageScaleType(ImageScaleType.EXACT)
                 .build();
     }
 
