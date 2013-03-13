@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import android.graphics.Bitmap;
+import android.nfc.Tag;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
@@ -30,6 +31,8 @@ import com.nostra13.universalimageloader.utils.FileUtils;
  * @see ImageLoadingInfo
  */
 final class LoadAndDisplayImageTask implements Runnable {
+
+    private static final String TAG = LoadAndDisplayImageTask.class.getSimpleName();
 
 	private static final String LOG_START_DISPLAY_IMAGE_TASK = "Start display image task [%s]";
 	private static final String LOG_LOAD_IMAGE_FROM_INTERNET = "Load image from Internet [%s]";
@@ -55,7 +58,18 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_START_DISPLAY_IMAGE_TASK, imageLoadingInfo.memoryCacheKey));
 
 		if (checkTaskIsNotActual()) return;
-		Bitmap bmp = tryLoadBitmap();
+		Bitmap bmp;
+        try {
+          bmp = tryLoadBitmap();
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't load bitmap, exception", e);
+            bmp = null;
+        }
+        catch (OutOfMemoryError e) {
+            Log.e(TAG, "Couldn't load bitmap, out of memory error", e);
+            bmp = null;
+        }
 		if (bmp == null) return;
 
 		if (checkTaskIsNotActual()) return;

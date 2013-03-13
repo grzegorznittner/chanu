@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
@@ -183,8 +184,8 @@ public class ImageLoader {
 			if (options.isShowImageForEmptyUri()) {
 				imageView.setImageResource(options.getImageForEmptyUri());
 			} else {
-				imageView.setImageBitmap(null);
-			}
+                ChanHelper.safeClearImageView(imageView);
+            }
 			listener.onLoadingComplete(null);
 			return;
 		}
@@ -207,8 +208,8 @@ public class ImageLoader {
 				imageView.setImageResource(options.getStubImage());
 			} else {
 				if (options.isResetViewBeforeLoading()) {
-					imageView.setImageBitmap(null);
-				}
+                    ChanHelper.safeClearImageView(imageView);
+                }
 			}
 
 			checkExecutors();
