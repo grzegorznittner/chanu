@@ -3,7 +3,6 @@ package com.chanapps.four.gallery;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +19,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.BitmapRegionDecoder;
 import android.net.Uri;
 import android.util.Log;
@@ -39,10 +39,7 @@ import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
-import com.nostra13.universalimageloader.core.ImageDecoder;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader;
 import com.nostra13.universalimageloader.utils.FileUtils;
 
@@ -197,56 +194,62 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         }
 
         public Bitmap run(JobContext jc) {
-        	Bitmap bitmap = null;
-            if (type == TYPE_THUMBNAIL) {
-            	downloadFullImage();
-            	if (new File(localImagePath).exists()) {
-    	        	if (DEBUG) Log.i(TAG, "Large image exists but used as thumbnail " + localImagePath);
-//    	        	if (".gif".equals(ext)) {
-//    	        		bitmap = decodeGif(localImagePath);
-//    	        	} else {
-	    	    		try {
-	    					bitmap = BitmapFactory.decodeFile(localImagePath);
-	    				} catch (Throwable e) {
-	    					Log.e(TAG, "Bitmap docode error for " + localImagePath, e);
-	    					bitmap = downloadThumbnail();
-	    				}
-//    	        	}
-            	}
-            } else {
-            	bitmap = downloadThumbnail();
-            }
-            return ensureGLCompatibleBitmap(bitmap);
+        	try {
+            	return downloadThumbnail();
+        	} catch (Throwable e) {
+				Log.e(TAG, "Bitmap docode error for " + localImagePath, e);
+				return null;
+			}
         }
 
-		private Bitmap decodeGif(String filePath) {
-			GifDecoder gifDecoder = new GifDecoder();
-			int result;
+        private int computeImageScale(File imageFile, int targetWidth, int targetHeight) throws IOException {
+			// decode image size
+			Options options = new Options();
+			options.inJustDecodeBounds = true;
+			InputStream imageStream = new FileInputStream(imageFile);
 			try {
-				result = gifDecoder.read(new FileInputStream(filePath));
-				if (result == 0) {
-					return gifDecoder.getBitmap();
-				} else {
-					if (DEBUG) Log.w(TAG, "GifDecoder returned " + result);
-				}
-			} catch (FileNotFoundException e) {
-				Log.e(TAG, "Error loading GIF", e);
+				BitmapFactory.decodeStream(imageStream, null, options);
+			} finally {
+				imageStream.close();
 			}
-			return null;
+
+			int scale = 1;
+			int imageWidth = width = options.outWidth;
+			int imageHeight = height = options.outHeight;
+
+			while (imageWidth / 2 >= targetWidth && imageHeight / 2 >= targetHeight) { // &&
+				imageWidth /= 2;
+				imageHeight /= 2;
+				scale *= 2;
+			}
+
+			if (scale < 1) {
+				scale = 1;
+			}
+
+			return scale;
 		}
 
-		private Bitmap downloadThumbnail() {
+        private Bitmap downloadThumbnail() {
 			File thumbFile = ImageLoader.getInstance().getDiscCache().get(thumbUrl);
             Bitmap bitmap = null;
             try {
 	            if (!thumbFile.exists()) {
 	            	saveImageOnDisc(thumbFile);
 	            }
-//	            if (".gif".equals(ext)) {
-//	        		bitmap = decodeGif(thumbFile.getAbsolutePath());
-//	        	} else {
-	        		bitmap = BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), null);
-//	        	}
+	            
+	            Options options = new Options();
+				options.inPreferredConfig = Config.ARGB_8888;
+				switch (type) {
+	            case TYPE_THUMBNAIL:
+	    			options.inSampleSize = computeImageScale(thumbFile, 200, 200);
+	    			break;
+	            case TYPE_MICROTHUMBNAIL:
+	            default:
+	    			options.inSampleSize = computeImageScale(thumbFile, 100, 100);
+				}
+
+        		bitmap = BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), options);
             } catch (Exception e) {
         		Log.e(TAG, "Error loading/transforming thumbnail", e);
         		thumbFile.delete();
@@ -263,22 +266,9 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 	    }
         
     	private void saveImageOnDisc(File targetFile) throws URISyntaxException, IOException {
-			// Download, decode, compress and save image
-			ImageSize targetImageSize = new ImageSize(tn_w, tn_h);
 			FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
 			URLConnectionImageDownloader downloader = new URLConnectionImageDownloader(fetchParams.connectTimeout, fetchParams.readTimeout);
-			ImageDecoder decoder = new ImageDecoder(new URI(thumbUrl), downloader);
-			Bitmap bmp = decoder.decode(targetImageSize, ImageScaleType.EXACT);
-
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
-			boolean compressedSuccessfully = bmp.compress(Bitmap.CompressFormat.JPEG, 80, os);
-			if (compressedSuccessfully) {
-				bmp.recycle();
-				return;
-			}
-
-    		// If previous compression wasn't needed or failed
-    		// Download and save original image
     		InputStream is = downloader.getStream(new URI(thumbUrl));
     		try {
     			OutputStream os2 = new BufferedOutputStream(new FileOutputStream(targetFile));

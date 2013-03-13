@@ -17,16 +17,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import android.widget.Toast;
-import com.chanapps.four.activity.*;
-import com.chanapps.four.component.ToastRunnable;
+import com.chanapps.four.activity.BoardActivity;
+import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
+import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
-import com.chanapps.four.widget.BoardWidgetProvider;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -70,7 +71,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         	return false;
         }
         if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + " page " + pageNo );
-
+        if (boardCode == null) {
+        	Log.e(TAG, "Wrong params passed, boardCode: " + boardCode,
+        			new Exception("Locate caller and fix issue!"));
+        }
         Intent intent = new Intent(context, FetchChanDataService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         if (pageNo == -1) {
@@ -88,6 +92,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         	return false;
         }
         if (DEBUG) Log.i(TAG, "Start chan priorty fetch service for " + boardCode + " page " + pageNo );
+        if (boardCode == null) {
+        	Log.e(TAG, "Wrong params passed, boardCode: " + boardCode,
+        			new Exception("Locate caller and fix issue!"));
+        }
         Intent intent = new Intent(context, FetchChanDataService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         if (pageNo == -1) {
@@ -106,7 +114,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         	return false;
         }
         if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + "/" + threadNo );
-        
+        if (boardCode == null || threadNo == 0) {
+        	Log.e(TAG, "Wrong params passed, boardCode: " + boardCode + " threadNo: " + threadNo,
+        			new Exception("Locate caller and fix issue!"));
+        }
         Intent intent = new Intent(context, FetchChanDataService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
@@ -119,6 +130,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         	return false;
         }
         if (DEBUG) Log.i(TAG, "Start chan priority fetch service for " + boardCode + "/" + threadNo );
+        if (boardCode == null || threadNo == 0) {
+        	Log.e(TAG, "Wrong params passed, boardCode: " + boardCode + " threadNo: " + threadNo,
+        			new Exception("Locate caller and fix issue!"));
+        }
         Intent intent = new Intent(context, FetchChanDataService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);

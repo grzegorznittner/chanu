@@ -301,12 +301,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     	if (DEBUG) Log.i(TAG, "onStop");
     }
 
-	@Override
-	protected void onRestart() {
-		super.onRestart();
-        if (DEBUG) Log.i(TAG, "onRestart");
-	}
-
     @Override
 	protected void onResume () {
 		super.onResume();
@@ -333,6 +327,18 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         DispatcherHelper.saveActivityToPrefs(this);
     }
 
+    @Override
+    public void onBackPressed() {
+        // send the back event to the top sub-state
+        GLRoot root = getGLRoot();
+        root.lockRenderThread();
+        try {
+            getStateManager().onBackPressed();
+        } finally {
+            root.unlockRenderThread();
+        }
+    }
+    
     @Override
 	protected void onDestroy () {
 		super.onDestroy();
@@ -436,20 +442,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 else
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
                 return true;
-            /*case R.id.share_image_menu:
-                if (checkLocalImage() != null)
-                    shareImage();
-                else
-                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.set_as_wallpaper_menu:
-                if (checkLocalImage() != null)
-                    (new SetWallpaperDialogFragment(localImageUri))
-                            .show(getFragmentManager(), SetWallpaperDialogFragment.TAG);
-                else
-                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
-                return true;
-                */
             case R.id.image_search_menu:
                 if (checkLocalImage() != null)
                     imageSearch();
