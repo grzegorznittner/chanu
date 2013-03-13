@@ -259,6 +259,9 @@ public class UpdateWidgetService extends Service {
                 if (DEBUG) Log.i(TAG, "IOException on download for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl + " rechecking network", e);
                 NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
             }
+            catch (OutOfMemoryError e) {
+                if (DEBUG) Log.i(TAG, "Out of memory on download for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
+            }
             finally {
                 IOUtils.closeQuietly(bis);
                 IOUtils.closeQuietly(is);

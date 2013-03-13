@@ -186,7 +186,8 @@ public class BoardGroupFragment
     @Override
     public void onResume() {
         super.onResume();
-        getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
+        //if (getLoaderManager().hasRunningLoaders())
+        //    getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
     }
 
     @Override
@@ -321,7 +322,7 @@ public class BoardGroupFragment
         else if (!imageUrl.isEmpty())
             BoardActivity.smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions, 0);
         else
-            iv.setImageBitmap(null);
+            ChanHelper.safeClearImageView(iv);
         return true;
     }
 
@@ -331,7 +332,7 @@ public class BoardGroupFragment
         if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
             BoardActivity.smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions, 0);
         else
-            iv.setImageBitmap(null); // blank
+            ChanHelper.safeClearImageView(iv);
         return true;
     }
 

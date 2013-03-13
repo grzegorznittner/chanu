@@ -521,17 +521,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             Log.e(TAG, "Exception: tim=" + postTim + " ext=" + postExt + " url=" + postImageUrl);
         }
 
-        public void safeClearImageView(ImageView v) {
-            Drawable d = v.getDrawable();
-            if (d != null && d instanceof BitmapDrawable) {
-                BitmapDrawable bd = (BitmapDrawable)d;
-                Bitmap b = bd.getBitmap();
-                if (b != null)
-                    b.recycle();
-            }
-            v.setImageBitmap(null);
-        }
-
         @Override
         public void onClick(View v) {
             Log.e(TAG, "Exception, clicked v=" + v + " expandedHolder=" + itemExpandedImageHolder);
@@ -539,35 +528,43 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 return;
             if (itemExpandedImageHolder.getVisibility() == View.VISIBLE) {
                 Log.e(TAG, "Exception Visible, hiding");
-                safeClearImageView(itemExpandedImageHolder);
+                ChanHelper.safeClearImageView(itemExpandedImageHolder);
                 itemExpandedImageHolder.setVisibility(View.GONE);
             }
             else if (postImageUrl != null) {
 
                 Log.e(TAG, "Exception Loading image url=" + postImageUrl);
-                safeClearImageView(itemExpandedImageHolder);
+                ChanHelper.safeClearImageView(itemExpandedImageHolder);
 
+                // calculate image dimensions
                 float aspectRatio = postW / postH;
                 DisplayMetrics displayMetrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
                 int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
                 int maxWidth = displayMetrics.widthPixels - padding;
-                int maxHeight = displayMetrics.heightPixels - padding;
-                if (postW > 0)
-                    maxWidth = Math.min(postW, maxWidth);
-                if (postH > 0)
-                    maxHeight = Math.min(postH, maxHeight);
+                int maxHeight = maxWidth; // to avoid excessively big images
+                float scaleFactor = 1;
+                if (postW >= postH) {
+                    // square or wide image, base sizing on width
+                    if (postW > maxWidth)
+                        scaleFactor = (float)maxWidth / (float)postW;
+                }
+                else {
+                    // tall image
+                    if (postH > maxHeight)
+                        scaleFactor = (float)maxHeight / (float)postH;
+                }
+                int width = Math.round(scaleFactor * (float)postW);
+                int height = Math.round(scaleFactor * (float)postH);
 
-                if (aspectRatio == 1) {
-                    maxHeight = maxWidth;
-                }
-                else if (aspectRatio > 1) {
-                    maxHeight = Math.round((float)maxWidth / aspectRatio);
-                }
-                else if (aspectRatio < 1) {
-                    maxWidth = Math.min(maxWidth, Math.round((float)maxHeight * aspectRatio));
+                // set layout dimensions
+                ViewGroup.LayoutParams params = itemExpandedImageHolder.getLayoutParams();
+                if (params != null) {
+                    params.width = width;
+                    params.height = height;
                 }
 
+                // calculate auto-scroll on image expand
                 ViewParent parent = v.getParent();
                 int parentHeight = 0;
                 if (parent instanceof View) {
@@ -576,13 +573,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 }
                 int lastPosition = absListView.getLastVisiblePosition();
                 boolean shouldMove = listPosition >= lastPosition - 1;
-                final int parentOffset = shouldMove ? parentHeight + maxHeight : 0; // allow for margin
+                final int parentOffset = shouldMove ? parentHeight + height : 0; // allow for margin
                 //final int imageOffset = shouldMove ? parentHeight + maxHeight : 0;
                 final int imageOffset = 0;
 
-                itemExpandedImageHolder.setMaxWidth(maxWidth);
-                itemExpandedImageHolder.setMaxHeight(maxHeight);
-
+                // set visibility delayed
                 itemExpandedProgressBarHolder.setVisibility(View.VISIBLE);
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -590,6 +585,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                         absListView.smoothScrollBy(parentOffset, 250);
                     }
                 }, 250);
+
+                // display image async
                 imageLoader.displayImage(postImageUrl, itemExpandedImageHolder, displayImageOptions, new ImageLoadingListener() {
                     @Override
                     public void onLoadingStarted() {
@@ -663,7 +660,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
             smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions);
         else
-            iv.setImageBitmap(null); // blank
+            ChanHelper.safeClearImageView(iv);
         return true;
     }
 

@@ -4,11 +4,15 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Looper;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.DeserializationConfig.Feature;
@@ -200,6 +204,17 @@ public class ChanHelper {
 
     public static boolean onUIThread() {
         return Looper.getMainLooper().equals(Looper.myLooper());
+    }
+
+    public static void safeClearImageView(ImageView v) {
+        Drawable d = v.getDrawable();
+        if (d != null && d instanceof BitmapDrawable) {
+            BitmapDrawable bd = (BitmapDrawable)d;
+            Bitmap b = bd.getBitmap();
+            if (b != null)
+                b.recycle();
+        }
+        v.setImageBitmap(null);
     }
 
 }

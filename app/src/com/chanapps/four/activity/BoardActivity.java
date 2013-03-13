@@ -339,7 +339,7 @@ public class BoardActivity
         else if (!imageUrl.isEmpty())
             smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
         else
-            iv.setImageBitmap(null);
+            ChanHelper.safeClearImageView(iv);
         return true;
     }
 
@@ -349,7 +349,7 @@ public class BoardActivity
         if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
             smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions);
         else
-            iv.setImageBitmap(null); // blank
+            ChanHelper.safeClearImageView(iv);
         return true;
     }
 
@@ -373,17 +373,17 @@ public class BoardActivity
             	if (imageResourceId > 0) // load from board
             		imageUrl = "drawable://" + imageResourceId;
                 if (DEBUG) Log.i(TAG, "calling imageloader for " + imageUrl);
-                iv.setImageBitmap(null);
+                ChanHelper.safeClearImageView(iv);
                 iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
                 imageLoader.displayImage(imageUrl, iv, displayImageOptions); // load async
             }
         } catch (NumberFormatException nfe) {
             Log.e(TAG, "Couldn't set image view after number format exception with url=" + imageUrl, nfe);
-            iv.setImageBitmap(null);
+            ChanHelper.safeClearImageView(iv);
         }
         catch (Exception e) {
             Log.e(TAG, "Exception setting image view with url=" + imageUrl, e);
-            iv.setImageBitmap(null);
+            ChanHelper.safeClearImageView(iv);
         }
     }
 
