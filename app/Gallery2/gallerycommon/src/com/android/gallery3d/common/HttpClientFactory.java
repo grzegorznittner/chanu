@@ -115,14 +115,14 @@ public final class HttpClientFactory {
             } catch (NameNotFoundException e) {
                 throw new IllegalStateException("getPackageInfo failed");
             }
-            sUserAgent = String.format("%s/%s; %s/%s/%s/%s; %s/%s/%s",
+            sUserAgent = String.format("%s/%s; %s/%s/%s/%s; %d/%s/%s",
                     pi.packageName,
                     pi.versionName,
                     Build.BRAND,
                     Build.DEVICE,
                     Build.MODEL,
                     Build.ID,
-                    Build.VERSION.SDK,
+                    Build.VERSION.SDK_INT,
                     Build.VERSION.RELEASE,
                     Build.VERSION.INCREMENTAL);
         }

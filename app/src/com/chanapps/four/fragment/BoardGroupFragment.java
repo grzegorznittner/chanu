@@ -1,6 +1,7 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -11,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.Loader;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -96,16 +98,24 @@ public class BoardGroupFragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         BoardSelectorActivity activity = (BoardSelectorActivity)getActivity();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        //final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, 110) / 2;
+        //final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, 140) / 2;
+        final int maxWidth = 125;
+        final int maxHeight = 125;
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(
                 new ImageLoaderConfiguration
                         .Builder(activity)
+                        .memoryCacheExtraOptions(maxWidth, maxHeight)
+                        .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
                         .imageDownloader(new ExtendedImageDownloader(activity))
                         .build());
         //        .createDefault(this));
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
-                .cacheOnDisc()
+                // .cacheOnDisc() // already on disk
                 //.imageScaleType(ImageScaleType.EXACT)
                 .build();
         ensureHandler();
@@ -178,7 +188,8 @@ public class BoardGroupFragment
     @Override
     public void onResume() {
         super.onResume();
-        getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
+        //if (getLoaderManager().hasRunningLoaders())
+        //    getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
     }
 
     @Override
@@ -313,7 +324,7 @@ public class BoardGroupFragment
         else if (!imageUrl.isEmpty())
             BoardActivity.smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions, 0);
         else
-            iv.setImageBitmap(null);
+            ChanHelper.safeClearImageView(iv);
         return true;
     }
 
@@ -323,7 +334,7 @@ public class BoardGroupFragment
         if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
             BoardActivity.smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions, 0);
         else
-            iv.setImageBitmap(null); // blank
+            ChanHelper.safeClearImageView(iv);
         return true;
     }
 

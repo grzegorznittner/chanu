@@ -361,14 +361,14 @@ public class Utils {
         } catch (NameNotFoundException e) {
             throw new IllegalStateException("getPackageInfo failed");
         }
-        return String.format("%s/%s; %s/%s/%s/%s; %s/%s/%s",
+        return String.format("%s/%s; %s/%s/%s/%s; %d/%s/%s",
                 packageInfo.packageName,
                 packageInfo.versionName,
                 Build.BRAND,
                 Build.DEVICE,
                 Build.MODEL,
                 Build.ID,
-                Build.VERSION.SDK,
+                Build.VERSION.SDK_INT,
                 Build.VERSION.RELEASE,
                 Build.VERSION.INCREMENTAL);
     }

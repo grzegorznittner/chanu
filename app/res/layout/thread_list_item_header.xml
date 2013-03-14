@@ -12,10 +12,14 @@
 
     </RelativeLayout>
 
-    <ImageView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded"/>
+    <RelativeLayout style="@style/ThreadListLayout" android:id="@+id/list_item_inner_bottom" android:layout_below="@+id/list_item_inner">
 
-    <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/>
+        <ImageView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded"/>
 
-    <View style="@style/ThreadListItemHeaderBar" android:layout_below="@+id/list_item_image_expanded"/>
+        <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/>
+
+    </RelativeLayout>
+
+    <View style="@style/ThreadListItemHeaderBar" android:layout_below="@+id/list_item_inner_bottom"/>
 
 </RelativeLayout>

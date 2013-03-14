@@ -20,8 +20,10 @@ import com.android.gallery3d.app.GalleryApp;
 
 import android.net.Uri;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 
 public class UriSource extends MediaSource {
     @SuppressWarnings("unused")
@@ -40,8 +42,14 @@ public class UriSource extends MediaSource {
         if (segment.length != 2) {
             throw new RuntimeException("bad path: " + path);
         }
-
-        String decoded = URLDecoder.decode(segment[1]);
+        String decoded;
+        try {
+            decoded = URLDecoder.decode(segment[1], "UTF-8");
+        }
+        catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "Unsupported encoding for url:" + segment[1]);
+            decoded = segment[1];
+        }
         return new UriImage(mApplication, path, Uri.parse(decoded));
     }
 
@@ -51,7 +59,15 @@ public class UriSource extends MediaSource {
         // Assume the type is image if the type cannot be resolved
         // This could happen for "http" URI.
         if (type == null || type.startsWith("image/")) {
-            return Path.fromString("/uri/" + URLEncoder.encode(uri.toString()));
+            String encoded;
+            try {
+                encoded = URLEncoder.encode(uri.toString(), "UTF-8");
+            }
+            catch (UnsupportedEncodingException e) {
+                Log.e(TAG, "Unsupported encoding for url:" + uri.toString());
+                encoded = uri.toString();
+            }
+            return Path.fromString("/uri/" + encoded);
         }
         return null;
     }

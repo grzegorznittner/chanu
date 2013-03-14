@@ -18,6 +18,7 @@ package com.android.gallery3d.app;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Display;
@@ -79,8 +80,10 @@ public class Wallpaper extends Activity {
                 int width = getWallpaperDesiredMinimumWidth();
                 int height = getWallpaperDesiredMinimumHeight();
                 Display display = getWindowManager().getDefaultDisplay();
-                float spotlightX = (float) display.getWidth() / width;
-                float spotlightY = (float) display.getHeight() / height;
+                Point size = new Point();
+                display.getSize(size);
+                float spotlightX = (float) size.x / width;
+                float spotlightY = (float) size.y / height;
                 Intent request = new Intent(CropImage.ACTION_CROP)
                         .setDataAndType(mPickedItem, IMAGE_TYPE)
                         .addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)

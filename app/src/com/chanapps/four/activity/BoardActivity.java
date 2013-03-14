@@ -87,15 +87,11 @@ public class BoardActivity
         return intent;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-		if (DEBUG) Log.v(TAG, "************ onCreate");
-        super.onCreate(savedInstanceState);
-        loadFromIntentOrPrefs();
+    protected void initImageLoader() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int maxWidth = displayMetrics.widthPixels;
-        int maxHeight = displayMetrics.heightPixels;
+        final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, 110);
+        final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, 140);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(
                 new ImageLoaderConfiguration
@@ -104,12 +100,19 @@ public class BoardActivity
                         .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
                         .imageDownloader(new ExtendedImageDownloader(this))
                         .build());
-        //        .createDefault(this));
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
                 .cacheOnDisc()
-        //        .imageScaleType(ImageScaleType.EXACT)
+                        //        .imageScaleType(ImageScaleType.EXACT)
                 .build();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+		if (DEBUG) Log.v(TAG, "************ onCreate");
+        super.onCreate(savedInstanceState);
+        loadFromIntentOrPrefs();
+        initImageLoader();
         createAbsListView();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
@@ -336,7 +339,7 @@ public class BoardActivity
         else if (!imageUrl.isEmpty())
             smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
         else
-            iv.setImageBitmap(null);
+            ChanHelper.safeClearImageView(iv);
         return true;
     }
 
@@ -346,7 +349,7 @@ public class BoardActivity
         if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
             smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions);
         else
-            iv.setImageBitmap(null); // blank
+            ChanHelper.safeClearImageView(iv);
         return true;
     }
 
@@ -370,17 +373,17 @@ public class BoardActivity
             	if (imageResourceId > 0) // load from board
             		imageUrl = "drawable://" + imageResourceId;
                 if (DEBUG) Log.i(TAG, "calling imageloader for " + imageUrl);
-                iv.setImageBitmap(null);
+                ChanHelper.safeClearImageView(iv);
                 iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
                 imageLoader.displayImage(imageUrl, iv, displayImageOptions); // load async
             }
         } catch (NumberFormatException nfe) {
             Log.e(TAG, "Couldn't set image view after number format exception with url=" + imageUrl, nfe);
-            iv.setImageBitmap(null);
+            ChanHelper.safeClearImageView(iv);
         }
         catch (Exception e) {
             Log.e(TAG, "Exception setting image view with url=" + imageUrl, e);
-            iv.setImageBitmap(null);
+            ChanHelper.safeClearImageView(iv);
         }
     }
 
