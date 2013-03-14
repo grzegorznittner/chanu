@@ -3,7 +3,7 @@
 
     <RelativeLayout style="@style/ThreadListLayout" android:id="@+id/list_item_inner">
 
-        <com.chanapps.four.component.StretchyImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
+        <com.chanapps.four.component.StretchyImageView style="@style/ThreadListItemHeaderImage" android:id="@+id/list_item_image"/>
         <TextView style="@style/ThreadListItemHeadText" android:id="@+id/list_item_header"/>
         <TextView style="@style/ThreadListItemShortText" android:id="@+id/list_item_text"/>
         <TextView style="@style/ThreadListItemDateText" android:id="@+id/list_item_date"/>

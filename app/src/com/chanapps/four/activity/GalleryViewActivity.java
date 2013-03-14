@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URLEncoder;
 
+import com.chanapps.four.loader.ChanImageLoader;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -178,9 +179,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         
-        imageLoader = ImageLoader.getInstance();
-        imageLoader.init(ImageLoaderConfiguration.createDefault(this));
-        
+        imageLoader = ChanImageLoader.getInstance(getApplicationContext());
+
         setContentView(R.layout.gallery_layout);
     }
 

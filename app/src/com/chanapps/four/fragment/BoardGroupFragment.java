@@ -1,7 +1,6 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -12,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.Loader;
 import android.text.Html;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -25,16 +23,16 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.BoardSelectorGridCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.ExtendedImageDownloader;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.loader.BoardSelectorCursorLoader;
 import com.chanapps.four.loader.BoardSelectorWatchlistCursorLoader;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 /**
 * User: arley
@@ -55,6 +53,8 @@ public class BoardGroupFragment
     private ResourceCursorAdapter adapter;
     private ProgressBar progressBar;
     private AbsListView absListView;
+    private int columnWidth = 0;
+    private int columnHeight = 0;
 
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
@@ -97,26 +97,10 @@ public class BoardGroupFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        BoardSelectorActivity activity = (BoardSelectorActivity)getActivity();
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        //final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, 110) / 2;
-        //final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, 140) / 2;
-        final int maxWidth = 125;
-        final int maxHeight = 125;
-        imageLoader = ImageLoader.getInstance();
-        imageLoader.init(
-                new ImageLoaderConfiguration
-                        .Builder(activity)
-                        .memoryCacheExtraOptions(maxWidth, maxHeight)
-                        .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
-                        .imageDownloader(new ExtendedImageDownloader(activity))
-                        .build());
-        //        .createDefault(this));
+        imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
-                // .cacheOnDisc() // already on disk
-                //.imageScaleType(ImageScaleType.EXACT)
+                .imageScaleType(ImageScaleType.EXACT)
                 .build();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
@@ -129,6 +113,8 @@ public class BoardGroupFragment
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.SELECTOR);
         cg.sizeGridToDisplay();
+        columnWidth = cg.getColumnWidth();
+        columnHeight = cg.getColumnHeight();
         assignCursorAdapter();
         absListView.setAdapter(adapter);
         absListView.setClickable(true);
@@ -317,24 +303,21 @@ public class BoardGroupFragment
     }
 
     protected boolean setImageViewValue(ImageView iv, Cursor cursor) {
+        ViewGroup.LayoutParams params = iv.getLayoutParams();
+        if (params != null && columnWidth > 0 && columnHeight > 0) {
+            params.width = columnWidth;
+            params.height = columnHeight;
+        }
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         int imageResourceId = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_THUMBNAIL_ID));
-        if (imageResourceId > 0)
-            BoardActivity.smartSetImageView(iv, "", imageLoader, displayImageOptions, imageResourceId);
-        else if (!imageUrl.isEmpty())
-            BoardActivity.smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions, 0);
-        else
-            ChanHelper.safeClearImageView(iv);
+        ChanImageLoader.smartSetImageView(iv, imageUrl, displayImageOptions, imageResourceId);
         return true;
     }
 
     protected boolean setCountryFlagValue(ImageView iv, Cursor cursor) {
         String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
         if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagImageUrl);
-        if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
-            BoardActivity.smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions, 0);
-        else
-            ChanHelper.safeClearImageView(iv);
+        ChanImageLoader.smartSetImageView(iv, countryFlagImageUrl, displayImageOptions, 0);
         return true;
     }
 
