@@ -60,6 +60,7 @@
         <item name="android:layout_centerInParent">true</item>
         <item name="android:indeterminate">true</item>
         <item name="android:indeterminateOnly">true</item>
+        <item name="android:background">@color/PaletteTransparent</item>
     </style>
 
     <style name="BoardGridView" parent="AppTheme">

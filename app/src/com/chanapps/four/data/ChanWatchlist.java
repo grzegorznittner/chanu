@@ -1,5 +1,7 @@
 package com.chanapps.four.data;
 
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +14,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -20,6 +23,7 @@ import android.widget.Toast;
 
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ToastRunnable;
+import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.service.FetchChanDataService;
 
 /**
@@ -40,6 +44,13 @@ public class ChanWatchlist {
 
     private static final String FIELD_SEPARATOR = "\t";
     private static final String FIELD_SEPARATOR_REGEX = "\\t";
+
+    private static WeakReference<BoardGroupFragment> watchlistFragment = null;
+
+    public static void setWatchlistFragment(BoardGroupFragment fragment) {
+        watchlistFragment = new WeakReference<BoardGroupFragment>(fragment);
+        Log.e(TAG, "Exception: set watchlistFragment=" + watchlistFragment + " get=" + watchlistFragment.get());
+    }
 
     private static String getThreadPath(long tim, String boardCode, long threadNo,
                                         String text, String imageUrl, int imageWidth, int imageHeight)
@@ -96,6 +107,11 @@ public class ChanWatchlist {
             Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
             savedWatchlist.add(threadPath);
             saveWatchlist(ctx, savedWatchlist);
+            Log.e(TAG, "Exception: watchlistFragment=" + watchlistFragment + " get=" + (watchlistFragment == null ? null : watchlistFragment.get()));
+            if (watchlistFragment != null && watchlistFragment.get() != null) {
+                watchlistFragment.get().reloadNextTime = true;
+                Log.e(TAG, "Exception: set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);
+            }
             if (DEBUG) Log.v(TAG, "Thread " + threadPath + " added to watchlist");
             return R.string.thread_added_to_watchlist;
         }
@@ -218,6 +234,10 @@ public class ChanWatchlist {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
         editor.remove(ChanHelper.THREAD_WATCHLIST);
         editor.commit();
+        if (watchlistFragment != null && watchlistFragment.get() != null) {
+            watchlistFragment.get().reloadNextTime = true;
+            Log.e(TAG, "Exception: set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);
+        }
         if (DEBUG) Log.v(TAG, "Watchlist cleared");
     }
 
@@ -225,6 +245,10 @@ public class ChanWatchlist {
         if (DEBUG) Log.v(TAG, "Cleaning watchlist...");
         List<Long> deadTims = getDeadTims(ctx, cleanAllDeadThreads);
         deleteThreadsFromWatchlist(ctx, deadTims);
+        if (watchlistFragment != null && watchlistFragment.get() != null) {
+            watchlistFragment.get().reloadNextTime = true;
+            Log.e(TAG, "Exception: set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);
+        }
         if (DEBUG) Log.i(TAG, "Watchlist cleaned");
     }
 

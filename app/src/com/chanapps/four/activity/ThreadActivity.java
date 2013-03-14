@@ -65,6 +65,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         if (threadNo > 0) {
         	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, absListView);
+            progressBar.setVisibility(View.VISIBLE);
         }
         return cursorLoader;
     }
@@ -457,7 +458,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                                  final ImageView itemExpandedImage,
                                  final ProgressBar itemExpandedProgressBar)
     {
-        Log.e(TAG, "Exception: setItem iv=" + iv + " cursor=" + cursor + " iei=" + itemExpandedImage);
         int post_tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
         int post_tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
         long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
@@ -535,7 +535,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             long postTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
             String postExt = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXT));
             postImageUrl = postTim > 0 ? ChanPost.getImageUrl(boardCode, postTim, postExt) : null;
-            Log.e(TAG, "Exception: tim=" + postTim + " ext=" + postExt + " url=" + postImageUrl);
         }
 
         @Override

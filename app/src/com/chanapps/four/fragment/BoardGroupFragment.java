@@ -23,10 +23,7 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.BoardSelectorGridCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.*;
 import com.chanapps.four.loader.BoardSelectorCursorLoader;
 import com.chanapps.four.loader.BoardSelectorWatchlistCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -55,6 +52,8 @@ public class BoardGroupFragment
     private AbsListView absListView;
     private int columnWidth = 0;
     private int columnHeight = 0;
+
+    public boolean reloadNextTime = false;
 
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
@@ -92,6 +91,8 @@ public class BoardGroupFragment
                 ? ChanBoard.Type.valueOf(getArguments().getString(ChanHelper.BOARD_TYPE))
                 : ChanBoard.Type.JAPANESE_CULTURE;
         if (DEBUG) Log.v(TAG, "BoardGroupFragment " + boardType + " onCreate");
+        if (boardType == ChanBoard.Type.WATCHLIST)
+            ChanWatchlist.setWatchlistFragment(BoardGroupFragment.this);
     }
 
     @Override
@@ -140,15 +141,17 @@ public class BoardGroupFragment
 
     protected synchronized Handler ensureHandler() {
         if (handler == null) {
-            if (ChanHelper.onUIThread())
+            if (ChanHelper.onUIThread()) {
                 handler = new LoaderHandler();
-            else
+            }
+            else {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         handler = new LoaderHandler();
                     }
                 });
+            }
         }
         return handler;
     }
@@ -174,8 +177,11 @@ public class BoardGroupFragment
     @Override
     public void onResume() {
         super.onResume();
-        //if (getLoaderManager().hasRunningLoaders())
-        //    getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
+        Log.e(TAG, "Exception: boardType=" + boardType + " reloadNextTime=" + reloadNextTime);
+        if (boardType == ChanBoard.Type.WATCHLIST && reloadNextTime) {
+            reloadNextTime = false;
+            ensureHandler().sendEmptyMessageDelayed(0, 10);
+        }
     }
 
     @Override
@@ -201,10 +207,12 @@ public class BoardGroupFragment
     }
 
     protected Loader<Cursor> createCursorLoader() {
-        if (boardType == ChanBoard.Type.WATCHLIST)
+        if (boardType == ChanBoard.Type.WATCHLIST) {
             return new BoardSelectorWatchlistCursorLoader(getActivity());
-        else
+        }
+        else {
             return new BoardSelectorCursorLoader(getActivity(), boardType);
+        }
     }
 
     @Override
