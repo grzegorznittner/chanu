@@ -56,6 +56,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     private final String thumbUrl;
     private final String localImagePath;
     private final String contentType;
+    private final int w, h;
     private final int tn_h, tn_w;
     private final int fsize;
     private final String ext;
@@ -73,8 +74,8 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         thumbUrl = post.getThumbnailUrl();
         tn_h = post.tn_h;
         tn_w = post.tn_w;
-        width = post.w;
-        height = post.h;
+        w = post.w;
+        h = post.h;
         fsize = post.fsize;
         ext = post.ext;
         name = "/" + post.board + "/" + (post.resto != 0 ? post.resto : post.no);
@@ -98,14 +99,27 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
     private class RegionDecoderJob implements Job<BitmapRegionDecoder> {
         public BitmapRegionDecoder run(JobContext jc) {
-        	if (!new File(localImagePath).exists()) {
+        	File localImageFile = new File(localImagePath);
+        	if (!localImageFile.exists()) {
         		downloadFullImage();
         	}
 
-        	if (new File(localImagePath).exists()) {
-	        	if (DEBUG) Log.i(TAG, "Large image exists " + localImagePath);
+        	if (localImageFile.exists()) {
+	        	if (DEBUG) {
+	        		Log.i(TAG, "Large image exists, local: " + localImagePath + " url: " + url);
+	        		FileInputStream fis = null;
+	        		try {
+	        			fis = new FileInputStream(localImageFile);
+	        			byte buffer[] = new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	        			int actualSize = fis.read(buffer, 0, 10);
+	        			Log.i(TAG, "Magic code for url: " + url + " hex: " + toHexString(buffer));
+	        		} catch (Exception e) {
+	        			Log.e(TAG, "Error while getting magic number", e);
+	        		}
+	        	}
+	        	
 	    		try {
-					return BitmapRegionDecoder.newInstance(localImagePath, true);
+					return BitmapRegionDecoder.newInstance(localImagePath, false);
 				} catch (IOException e) {
 					Log.e(TAG, "BitmapRegionDecoder error for " + localImagePath, e);
 				}
@@ -202,34 +216,6 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 			}
         }
 
-        private int computeImageScale(File imageFile, int targetWidth, int targetHeight) throws IOException {
-			// decode image size
-			Options options = new Options();
-			options.inJustDecodeBounds = true;
-			InputStream imageStream = new FileInputStream(imageFile);
-			try {
-				BitmapFactory.decodeStream(imageStream, null, options);
-			} finally {
-				imageStream.close();
-			}
-
-			int scale = 1;
-			int imageWidth = width = options.outWidth;
-			int imageHeight = height = options.outHeight;
-
-			while (imageWidth / 2 >= targetWidth && imageHeight / 2 >= targetHeight) { // &&
-				imageWidth /= 2;
-				imageHeight /= 2;
-				scale *= 2;
-			}
-
-			if (scale < 1) {
-				scale = 1;
-			}
-
-			return scale;
-		}
-
         private Bitmap downloadThumbnail() {
 			File thumbFile = ImageLoader.getInstance().getDiscCache().get(thumbUrl);
             Bitmap bitmap = null;
@@ -257,14 +243,6 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 			return bitmap;
 		}
 		
-		public Bitmap ensureGLCompatibleBitmap(Bitmap bitmap) {
-	        if (bitmap == null || bitmap.getConfig() != null)
-	        	return bitmap;
-	        Bitmap newBitmap = bitmap.copy(Config.ARGB_8888, false);
-	        bitmap.recycle();
-	        return newBitmap;
-	    }
-        
     	private void saveImageOnDisc(File targetFile) throws URISyntaxException, IOException {
 			FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
 			URLConnectionImageDownloader downloader = new URLConnectionImageDownloader(fetchParams.connectTimeout, fetchParams.readTimeout);
@@ -285,7 +263,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
     @Override
     public int getSupportedOperations() {
-        int supported = SUPPORT_SETAS;
+        int supported = SUPPORT_SETAS | SUPPORT_INFO;
         if (isSharable()) supported |= SUPPORT_SHARE;
         if (".jpg".equals(ext) || ".jpeg".equals(ext) || ".png".equals(ext)) {
             supported |= SUPPORT_FULL_IMAGE;
@@ -328,9 +306,10 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     public MediaDetails getDetails() {
         MediaDetails details = super.getDetails();
         if (width != 0 && height != 0) {
-            details.addDetail(MediaDetails.INDEX_WIDTH, width);
-            details.addDetail(MediaDetails.INDEX_HEIGHT, height);
+            details.addDetail(MediaDetails.INDEX_WIDTH, w);
+            details.addDetail(MediaDetails.INDEX_HEIGHT, h);
         }
+        details.addDetail(MediaDetails.INDEX_PATH, this.url);
         details.addDetail(MediaDetails.INDEX_MIMETYPE, contentType);
         return details;
     }
@@ -372,5 +351,57 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 	@Override
 	public Context getApplicationContext() {
 		return mApplication != null ? mApplication.getAndroidContext() : null;
+	}
+	
+	public int computeImageScale(File imageFile, int targetWidth, int targetHeight) throws IOException {
+		// decode image size
+		Options options = new Options();
+		options.inJustDecodeBounds = true;
+		InputStream imageStream = new FileInputStream(imageFile);
+		try {
+			BitmapFactory.decodeStream(imageStream, null, options);
+			int scale = 1;
+			int imageWidth = width = options.outWidth;
+			int imageHeight = height = options.outHeight;
+
+			while (imageWidth / 2 >= targetWidth && imageHeight / 2 >= targetHeight) { // &&
+				imageWidth /= 2;
+				imageHeight /= 2;
+				scale *= 2;
+			}
+
+			if (scale < 1) {
+				scale = 1;
+			}
+
+			return scale;
+		} finally {
+			IOUtils.closeQuietly(imageStream);
+		}
+	}
+	
+	public void updateImageBounds(File imageFile) {
+		// decode image size
+		Options options = new Options();
+		options.inJustDecodeBounds = true;
+		InputStream imageStream = null;
+		try {
+			imageStream = new FileInputStream(imageFile);
+			BitmapFactory.decodeStream(imageStream, null, options);
+			width = options.outWidth;
+			height = options.outHeight;
+		} catch (Exception e) {
+			Log.e(TAG, "Error while decoding image bounds", e);
+		} finally {
+			IOUtils.closeQuietly(imageStream);
+		}
+	}
+
+	public static String toHexString(byte[] magicNumber) {
+        StringBuffer buf = new StringBuffer();
+        for (byte b : magicNumber) {
+                buf.append("0x").append(Integer.toHexString((0xF0 & b) >>> 4)).append(Integer.toHexString(0x0F & b)).append(" ");
+        }
+        return buf.toString();
 	}
 }

@@ -47,6 +47,7 @@ import com.android.gallery3d.ui.GLRootView;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.component.ToastRunnable;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
@@ -60,7 +61,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
     public static final String TAG = "GalleryViewActivity";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static final String VIEW_TYPE = "viewType";
 
@@ -333,7 +334,11 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         GLRoot root = getGLRoot();
         root.lockRenderThread();
         try {
-            getStateManager().onBackPressed();
+        	if (getStateManager().getStateCount() > 0) {
+        		getStateManager().onBackPressed();
+        	} else {
+        		navigateUp();
+        	}
         } finally {
             root.unlockRenderThread();
         }
@@ -421,7 +426,11 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         try {
         switch (item.getItemId()) {
             case android.R.id.home:
-                navigateUp();
+            	if (getStateManager().getStateCount() > 0) {
+            		getStateManager().onBackPressed();
+            	} else {
+            		navigateUp();
+            	}
                 return true;
             case R.id.download_all_images_to_gallery_menu:
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null);
@@ -518,12 +527,33 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     private void navigateUp() {
-        Intent upIntent = new Intent(this, ThreadActivity.class);
-        upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        upIntent.putExtra(ChanHelper.POST_NO, postNo);
-        upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
-        upIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_THREAD_POSITION, 0));
+    	Intent upIntent = null;
+    	switch(viewType) {
+    	case PHOTO_VIEW:
+    		upIntent = new Intent(this, ThreadActivity.class);
+            upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+            upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+            upIntent.putExtra(ChanHelper.POST_NO, postNo);
+            upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
+            upIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_THREAD_POSITION, 0));
+    		break;
+    	case ALBUM_VIEW:
+    		upIntent = new Intent(this, ThreadActivity.class);
+            upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+            upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+            upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
+            upIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_THREAD_POSITION, 0));
+    		break;
+    	case OFFLINE_ALBUM_VIEW:
+    		upIntent = new Intent(this, BoardActivity.class);
+            upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+            upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
+    		break;
+    	case OFFLINE_ALBUMSET_VIEW:
+    		intent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.getBoardByCode(this, boardCode).type.toString());
+            intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
+            break;
+    	}
         NavUtils.navigateUpTo(this, upIntent);
     }
 
