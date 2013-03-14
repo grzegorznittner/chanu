@@ -192,7 +192,9 @@ public class MobileProfile extends AbstractNetworkProfile {
 		if(DEBUG) Log.d(TAG, "onThreadSelected");
 		super.onThreadSelected(context, board, threadId);
 		
-		FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId);
+		if (board != null || threadId > 0) {
+			FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId);
+		}
 	}
 	
 	@Override

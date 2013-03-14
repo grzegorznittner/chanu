@@ -6,17 +6,17 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory.Options;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.BitmapRegionDecoder;
 import android.net.Uri;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
-import android.widget.ImageView.ScaleType;
 
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.common.Utils;
@@ -28,12 +28,10 @@ import com.android.gallery3d.util.ThreadPool.JobContext;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.ChanFileStorage;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService {
     private static final String TAG = "ChanOffLineImage";
-    public static final boolean DEBUG  = true;
+    public static final boolean DEBUG  = false;
     
 	private ChanActivityId activityId;
 	private String name;
@@ -90,7 +88,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
         public BitmapRegionDecoder run(JobContext jc) {
         	if (DEBUG) Log.i(TAG, "Large image exists " + imageFile.getAbsolutePath());
     		try {
-				return BitmapRegionDecoder.newInstance(imageFile.getAbsolutePath(), true);
+				return BitmapRegionDecoder.newInstance(imageFile.getAbsolutePath(), false);
 			} catch (IOException e) {
 				Log.e(TAG, "BitmapRegionDecoder error for " + imageFile.getAbsolutePath(), e);
 			}
@@ -133,14 +131,6 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 			}
         }
 
-		public Bitmap ensureGLCompatibleBitmap(Bitmap bitmap) {
-	        if (bitmap == null || bitmap.getConfig() != null)
-	        	return bitmap;
-	        Bitmap newBitmap = bitmap.copy(Config.ARGB_8888, false);
-	        bitmap.recycle();
-	        return newBitmap;
-	    }
-		
 		private int computeImageScale(int targetWidth, int targetHeight) throws IOException {
 			// decode image size
 			Options options = new Options();
@@ -172,7 +162,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 
     @Override
     public int getSupportedOperations() {
-        int supported = SUPPORT_SETAS;
+        int supported = SUPPORT_SETAS | SUPPORT_INFO;
         if (isSharable()) supported |= SUPPORT_SHARE;
         if ("jpg".equals(ext) || "jpeg".equals(ext) || "png".equals(ext)) {
             supported |= SUPPORT_FULL_IMAGE;
@@ -213,14 +203,33 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
     public Uri getContentUri() {
         return getPlayUri();
     }
+	
+	public void updateImageBounds(File imageFile) {
+		// decode image size
+		Options options = new Options();
+		options.inJustDecodeBounds = true;
+		InputStream imageStream = null;
+		try {
+			imageStream = new FileInputStream(imageFile);
+			BitmapFactory.decodeStream(imageStream, null, options);
+			width = options.outWidth;
+			height = options.outHeight;
+		} catch (Exception e) {
+			Log.e(TAG, "Error while decoding image bounds", e);
+		} finally {
+			IOUtils.closeQuietly(imageStream);
+		}
+	}
 
     @Override
     public MediaDetails getDetails() {
+    	updateImageBounds(imageFile);
         MediaDetails details = super.getDetails();
         if (width != 0 && height != 0) {
             details.addDetail(MediaDetails.INDEX_WIDTH, width);
             details.addDetail(MediaDetails.INDEX_HEIGHT, height);
         }
+        details.addDetail(MediaDetails.INDEX_PATH, this.imageFile.getAbsoluteFile());
         details.addDetail(MediaDetails.INDEX_MIMETYPE, contentType);
         return details;
     }
