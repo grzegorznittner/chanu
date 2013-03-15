@@ -43,7 +43,8 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 Context ctx = getActivity();
                                 ChanWatchlist.deleteThreadFromWatchlist(ctx, tim);
-                                handler.sendEmptyMessageDelayed(0, 10);
+                                if (handler != null)
+                                    handler.sendEmptyMessageDelayed(0, 10);
                                 dismiss();
                             }
                         })

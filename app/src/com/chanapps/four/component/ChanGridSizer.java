@@ -117,6 +117,10 @@ public class ChanGridSizer {
         return columnWidth;
     }
 
+    public int getColumnHeight() {
+        return columnHeight;
+    }
+
     public int getNumColumns() {
         return numColumns;
     }

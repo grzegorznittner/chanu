@@ -8,8 +8,6 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
@@ -24,13 +22,12 @@ import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -48,7 +45,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     public static final boolean DEBUG = false;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
-    private static final int MAX_TEXT_LINES = 9; // most we support, maybe change per screen layout?
+    private static final int MIN_THUMBNAIL_WIDTH_PX = 125; // avoid microsized thumbnails too small to click on
 
     protected long threadNo;
     protected String text;
@@ -60,13 +57,15 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     protected boolean inWatchlist = false;
     protected ThreadPostPopup threadPostPopup;
     protected ChanThread thread = null;
-    private int threadPos = 0;
+    protected DisplayImageOptions expandedDisplayImageOptions;
+    protected int threadPos = 0;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         if (threadNo > 0) {
         	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, absListView);
+            progressBar.setVisibility(View.VISIBLE);
         }
         return cursorLoader;
     }
@@ -238,24 +237,16 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     protected void initImageLoader() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
-        int maxWidth = displayMetrics.widthPixels - padding;
-        int maxHeight = displayMetrics.heightPixels - padding;
-        imageLoader = ImageLoader.getInstance();
-        imageLoader.init(
-                new ImageLoaderConfiguration
-                        .Builder(this)
-                        .memoryCacheExtraOptions(maxWidth, maxHeight)
-                        .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
-                        .imageDownloader(new ExtendedImageDownloader(this))
-                        .build());
-        //        .createDefault(this));
+        imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
                 .cacheOnDisc()
                 .imageScaleType(ImageScaleType.EXACT)
+                .build();
+        expandedDisplayImageOptions = new DisplayImageOptions.Builder()
+                .showImageForEmptyUri(R.drawable.stub_image)
+                .imageScaleType(ImageScaleType.POWER_OF_2)
+                .cacheOnDisc()
                 .build();
     }
 
@@ -412,6 +403,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         return true;
     }
 
+
     private boolean setItemImageOverlayValue(final TextView tv,
                                              final Cursor cursor,
                                              final ImageView itemExpandedImage,
@@ -424,9 +416,15 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         }
         int post_tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
         int post_tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
+        long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+        if (resto == 0) {
+            post_tn_w /= 2;
+            post_tn_h /= 2;
+        }
         if (post_tn_w > 0 && post_tn_h > 0) {
             ViewGroup.LayoutParams params = tv.getLayoutParams();
-            params.width = post_tn_w;
+            lazyInitThumbnailScaleFactor(tv.getContext());
+            params.width = Math.max(MIN_THUMBNAIL_WIDTH_PX, Math.round(thumbnailScaleFactor * (float)post_tn_w));
             if (post_tn_w <= 125) { // smaller image
                 text = text.replace(" ", "\n");
                 if (post_tn_w < post_tn_h) { // small and narrow
@@ -440,8 +438,19 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         }
         tv.setText(text);
         tv.setVisibility(View.VISIBLE);
-        //tv.setOnClickListener(new ExpandImageOnClickListener(cursor, itemExpandedImage, itemExpandedProgressBar));
+        tv.setOnClickListener(new ExpandImageOnClickListener(cursor, itemExpandedImage, itemExpandedProgressBar));
         return true;
+    }
+
+    private static float thumbnailScaleFactor = 0; // avoid too-small thumbnails
+
+    private void lazyInitThumbnailScaleFactor(Context context) {
+        if (thumbnailScaleFactor == 0) {
+            WindowManager manager = (WindowManager)context.getSystemService(WINDOW_SERVICE);
+            DisplayMetrics metrics = new DisplayMetrics();
+            manager.getDefaultDisplay().getMetrics(metrics);
+            thumbnailScaleFactor = metrics.density > 1 ? 1 + 0.5f*(metrics.density - 1) : metrics.density;
+        }
     }
 
     private boolean setItemImage(final ImageView iv,
@@ -449,15 +458,22 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                                  final ImageView itemExpandedImage,
                                  final ProgressBar itemExpandedProgressBar)
     {
-        Log.e(TAG, "Exception: setItem iv=" + iv + " cursor=" + cursor + " iei=" + itemExpandedImage);
         int post_tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
         int post_tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
+        long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+        if (resto == 0) {
+            post_tn_w /= 2;
+            post_tn_h /= 2;
+        }
         if (post_tn_w > 0 && post_tn_h > 0) {
             ViewGroup.LayoutParams params = iv.getLayoutParams();
-            params.width = post_tn_w;
-            params.height = post_tn_h;
+            lazyInitThumbnailScaleFactor(iv.getContext());
+            params.width = Math.max(MIN_THUMBNAIL_WIDTH_PX, Math.round(thumbnailScaleFactor * (float)post_tn_w));
+            params.height = Math.round(thumbnailScaleFactor * (float)post_tn_h);
         }
-        super.setImageViewValue(iv, cursor);
+        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        int imageResourceId = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_THUMBNAIL_ID));
+        ChanImageLoader.smartSetImageView(iv, imageUrl, displayImageOptions, imageResourceId);
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0)
             iv.setOnClickListener(new AdOnClickListener(cursor));
@@ -519,22 +535,17 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             long postTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
             String postExt = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXT));
             postImageUrl = postTim > 0 ? ChanPost.getImageUrl(boardCode, postTim, postExt) : null;
-            Log.e(TAG, "Exception: tim=" + postTim + " ext=" + postExt + " url=" + postImageUrl);
         }
 
         @Override
         public void onClick(View v) {
-            Log.e(TAG, "Exception, clicked v=" + v + " expandedHolder=" + itemExpandedImageHolder);
             if (itemExpandedImageHolder == null)
                 return;
             if (itemExpandedImageHolder.getVisibility() == View.VISIBLE) {
-                Log.e(TAG, "Exception Visible, hiding");
                 ChanHelper.safeClearImageView(itemExpandedImageHolder);
                 itemExpandedImageHolder.setVisibility(View.GONE);
             }
             else if (postImageUrl != null) {
-
-                Log.e(TAG, "Exception Loading image url=" + postImageUrl);
                 ChanHelper.safeClearImageView(itemExpandedImageHolder);
 
                 // calculate image dimensions
@@ -580,7 +591,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
                 // set visibility delayed
                 itemExpandedProgressBarHolder.setVisibility(View.VISIBLE);
-                handler.postDelayed(new Runnable() {
+                ensureHandler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         absListView.smoothScrollBy(parentOffset, 250);
@@ -588,10 +599,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 }, 250);
 
                 // display image async
-                imageLoader.displayImage(postImageUrl, itemExpandedImageHolder, displayImageOptions, new ImageLoadingListener() {
+                imageLoader.displayImage(postImageUrl, itemExpandedImageHolder, expandedDisplayImageOptions, new ImageLoadingListener() {
                     @Override
                     public void onLoadingStarted() {
-                        Log.e(TAG, "Exception Loading started");
                     }
 
                     @Override
@@ -604,7 +614,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
                     @Override
                     public void onLoadingComplete(Bitmap loadedImage) {
-                        Log.e(TAG, "Exception Loading complete");
                         itemExpandedImageHolder.setVisibility(View.VISIBLE);
                         itemExpandedProgressBarHolder.setVisibility(View.GONE);
                         absListView.smoothScrollBy(imageOffset, 250);
@@ -659,7 +668,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     private boolean setItemCountryFlag(final ImageView iv, final Cursor cursor) {
         String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
         if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
-            smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions);
+            ChanImageLoader.smartSetImageView(iv, countryFlagImageUrl, displayImageOptions, 0);
         else
             ChanHelper.safeClearImageView(iv);
         return true;
@@ -869,10 +878,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     protected int getLayoutId() {
-        if (GridView.class.equals(absListViewClass))
-            return R.layout.thread_list_layout;
-        else
-            return R.layout.thread_list_layout;
+        return R.layout.thread_list_layout;
     }
 
     protected ThreadPostPopup ensurePopup() {

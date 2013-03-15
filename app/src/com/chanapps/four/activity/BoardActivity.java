@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,13 +17,8 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
@@ -35,10 +29,10 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.BoardCursorLoader;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class BoardActivity
@@ -53,8 +47,6 @@ public class BoardActivity
     public static final int LOADER_RESTART_INTERVAL_MED_MS = 2000;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 1000;
     public static final int LOADER_RESTART_INTERVAL_MICRO_MS = 100;
-
-    protected static final int IMAGE_URL_HASHCODE_KEY = R.id.grid_item_image;
 
     protected AbstractBoardCursorAdapter adapter;
     protected AbsListView absListView;
@@ -88,22 +80,11 @@ public class BoardActivity
     }
 
     protected void initImageLoader() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, 110);
-        final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, 140);
-        imageLoader = ImageLoader.getInstance();
-        imageLoader.init(
-                new ImageLoaderConfiguration
-                        .Builder(this)
-                        .memoryCacheExtraOptions(maxWidth, maxHeight)
-                        .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
-                        .imageDownloader(new ExtendedImageDownloader(this))
-                        .build());
+        imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
+                .imageScaleType(ImageScaleType.EXACT)
                 .cacheOnDisc()
-                        //        .imageScaleType(ImageScaleType.EXACT)
                 .build();
     }
 
@@ -122,10 +103,15 @@ public class BoardActivity
         progressBar.setVisibility(View.VISIBLE);
     }
 
+    protected int columnWidth = 0;
+    protected int columnHeight = 0;
+
     protected void sizeGridToDisplay() {
         Display display = getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer((GridView)absListView, display, ChanGridSizer.ServiceType.BOARD);
+        ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.BOARD);
         cg.sizeGridToDisplay();
+        columnWidth = cg.getColumnWidth();
+        columnHeight = cg.getColumnHeight();
     }
 
     protected void initAdapter() {
@@ -204,10 +190,6 @@ public class BoardActivity
 
     public void setProgressFinished() {
         progressBar.setVisibility(View.GONE);
-    }
-
-    public GridView getGridView() {
-        return (GridView)absListView;
     }
 
     protected String getLastPositionName() {
@@ -332,59 +314,22 @@ public class BoardActivity
     }
 
     protected boolean setImageViewValue(ImageView iv, Cursor cursor) {
+        ViewGroup.LayoutParams params = iv.getLayoutParams();
+        if (params != null && columnWidth > 0 && columnHeight > 0) {
+            params.width = columnWidth;
+            params.height = columnHeight;
+        }
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         int imageResourceId = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_THUMBNAIL_ID));
-        if (imageResourceId > 0)
-            smartSetImageView(iv, "", imageLoader, displayImageOptions, imageResourceId);
-        else if (!imageUrl.isEmpty())
-            smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions);
-        else
-            ChanHelper.safeClearImageView(iv);
+        ChanImageLoader.smartSetImageView(iv, imageUrl, displayImageOptions, imageResourceId);
         return true;
     }
 
     protected boolean setCountryFlagValue(ImageView iv, Cursor cursor) {
         String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
         if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagImageUrl);
-        if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
-            smartSetImageView(iv, countryFlagImageUrl, imageLoader, displayImageOptions);
-        else
-            ChanHelper.safeClearImageView(iv);
+        ChanImageLoader.smartSetImageView(iv, countryFlagImageUrl, displayImageOptions, 0);
         return true;
-    }
-
-    public static void smartSetImageView(ImageView iv, String imageUrl,
-                                         ImageLoader imageLoader, DisplayImageOptions displayImageOptions) {
-        smartSetImageView(iv, imageUrl, imageLoader, displayImageOptions, 0);
-    }
-
-    public static void smartSetImageView(ImageView iv,
-                                         String imageUrl,
-                                         ImageLoader imageLoader,
-                                         DisplayImageOptions displayImageOptions,
-                                         int imageResourceId)
-    {
-        try {
-            Integer viewHashCodeInt = (Integer)iv.getTag(IMAGE_URL_HASHCODE_KEY);
-            int viewHashCode = viewHashCodeInt != null ? viewHashCodeInt : 0;
-            int urlHashCode = imageUrl != null && !imageUrl.isEmpty() ? imageUrl.hashCode() : imageResourceId;
-            if (DEBUG) Log.i(TAG, "iv urlhash=" + urlHashCode + " viewhash=" + viewHashCode);
-            if (iv.getDrawable() == null || viewHashCode != urlHashCode) {
-            	if (imageResourceId > 0) // load from board
-            		imageUrl = "drawable://" + imageResourceId;
-                if (DEBUG) Log.i(TAG, "calling imageloader for " + imageUrl);
-                ChanHelper.safeClearImageView(iv);
-                iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
-                imageLoader.displayImage(imageUrl, iv, displayImageOptions); // load async
-            }
-        } catch (NumberFormatException nfe) {
-            Log.e(TAG, "Couldn't set image view after number format exception with url=" + imageUrl, nfe);
-            ChanHelper.safeClearImageView(iv);
-        }
-        catch (Exception e) {
-            Log.e(TAG, "Exception setting image view with url=" + imageUrl, e);
-            ChanHelper.safeClearImageView(iv);
-        }
     }
 
     @Override

@@ -46,7 +46,8 @@
 
     <style name="BoardGridLayout" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">140dp</item>
+        <!-- <item name="android:layout_height">140dp</item> -->
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_marginLeft">0dp</item>
         <item name="android:layout_marginRight">0dp</item>
         <item name="android:padding">0dp</item>
@@ -59,6 +60,7 @@
         <item name="android:layout_centerInParent">true</item>
         <item name="android:indeterminate">true</item>
         <item name="android:indeterminateOnly">true</item>
+        <item name="android:background">@color/PaletteTransparent</item>
     </style>
 
     <style name="BoardGridView" parent="AppTheme">
@@ -77,8 +79,8 @@
     </style>
 
     <style name="BoardGridImage" parent="AppTheme">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">110dp</item>
+        <item name="android:layout_height">110dp</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:scaleType">centerCrop</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
@@ -105,12 +107,18 @@
         <item name="android:lines">1</item>
     </style>
 
+    <style name="BoardGridTextImageOverlayWrapper" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+    </style>
+
     <style name="BoardGridTextImageTopOverlay" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">30dp</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_marginTop">92dp</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingLeft">2dp</item>
         <item name="android:paddingRight">2dp</item>
@@ -185,7 +193,7 @@
 
     <style name="ThreadListItemImage" parent="AppTheme">
         <item name="android:layout_width">110dp</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">110dp</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:layout_marginTop">8dp</item>
@@ -197,11 +205,16 @@
         <item name="android:contentDescription">@string/thread_post_image</item>
     </style>
 
+    <style name="ThreadListItemHeaderImage" parent="ThreadListItemImage">
+        <item name="android:layout_width">110dp</item>
+        <item name="android:layout_height">110dp</item>
+    </style>
+
     <style name="ThreadListItemExpandedProgressBar" parent="@android:style/Widget.ProgressBar.Large.Inverse">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">16dp</item>
-        <item name="android:paddingBottom">16dp</item>
+        <item name="android:layout_width">96dp</item>
+        <item name="android:layout_height">96dp</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:padding">16dp</item>
         <item name="android:indeterminate">true</item>
         <item name="android:indeterminateOnly">true</item>
     </style>
@@ -219,6 +232,8 @@
 
     <style name="ThreadListItemAdImage" parent="ThreadListItemImage">
         <item name="android:paddingBottom">8dp</item>
+        <item name="android:layout_width">94dp</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="ThreadListItemImageOverlay" parent="AppTheme">

@@ -7,15 +7,20 @@
             style="@style/BoardGridImage"
             />
 
-    <TextView
-            android:id="@+id/grid_item_text_top"
-            style="@style/BoardGridTextImageTopOverlay"
-            />
+    <RelativeLayout
+        style="@style/BoardGridTextImageOverlayWrapper">
 
-    <TextView
-            android:id="@+id/grid_item_text"
-            style="@style/BoardGridTextImageOverlay"
-            />
+        <TextView
+                android:id="@+id/grid_item_text_top"
+                style="@style/BoardGridTextImageTopOverlay"
+                />
+
+        <TextView
+                android:id="@+id/grid_item_text"
+                style="@style/BoardGridTextImageOverlay"
+                />
+
+    </RelativeLayout>
 
     <ImageView
             android:id="@+id/grid_item_country_flag"
