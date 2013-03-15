@@ -115,6 +115,8 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 	        			Log.i(TAG, "Magic code for url: " + url + " hex: " + toHexString(buffer));
 	        		} catch (Exception e) {
 	        			Log.e(TAG, "Error while getting magic number", e);
+	        		} finally {
+	        			IOUtils.closeQuietly(fis);
 	        		}
 	        	}
 	        	
@@ -246,17 +248,15 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     	private void saveImageOnDisc(File targetFile) throws URISyntaxException, IOException {
 			FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
 			URLConnectionImageDownloader downloader = new URLConnectionImageDownloader(fetchParams.connectTimeout, fetchParams.readTimeout);
-			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
-    		InputStream is = downloader.getStream(new URI(thumbUrl));
+    		InputStream is = null;
+    		OutputStream os = null;
     		try {
-    			OutputStream os2 = new BufferedOutputStream(new FileOutputStream(targetFile));
-    			try {
-    				FileUtils.copyStream(is, os2);
-    			} finally {
-    				os2.close();
-    			}
+    			is = downloader.getStreamFromNetwork(new URI(thumbUrl));
+    			os = new BufferedOutputStream(new FileOutputStream(targetFile));
+				FileUtils.copyStream(is, os);
     		} finally {
-    			is.close();
+				IOUtils.closeQuietly(os);
+    			IOUtils.closeQuietly(is);
     		}
     	}
     }
@@ -400,7 +400,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 	public static String toHexString(byte[] magicNumber) {
         StringBuffer buf = new StringBuffer();
         for (byte b : magicNumber) {
-                buf.append("0x").append(Integer.toHexString((0xF0 & b) >>> 4)).append(Integer.toHexString(0x0F & b)).append(" ");
+        	buf.append("0x").append(Integer.toHexString((0xF0 & b) >>> 4)).append(Integer.toHexString(0x0F & b)).append(" ");
         }
         return buf.toString();
 	}
