@@ -121,7 +121,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
     			try {
     				bitmap = BitmapFactory.decodeStream(imageStream, null, options);
     			} finally {
-    				imageStream.close();
+    				IOUtils.closeQuietly(imageStream);
     			}
 	            //return ensureGLCompatibleBitmap(bitmap);
     			return bitmap;
@@ -139,7 +139,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 			try {
 				BitmapFactory.decodeStream(imageStream, null, options);
 			} finally {
-				imageStream.close();
+				IOUtils.closeQuietly(imageStream);
 			}
 
 			int scale = 1;
