@@ -31,6 +31,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 /**
  * Created with IntelliJ IDEA.
@@ -57,7 +58,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     protected boolean inWatchlist = false;
     protected ThreadPostPopup threadPostPopup;
     protected ChanThread thread = null;
-    protected DisplayImageOptions expandedDisplayImageOptions;
     protected int threadPos = 0;
 
     @Override
@@ -242,11 +242,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 .showImageForEmptyUri(R.drawable.stub_image)
                 .cacheOnDisc()
                 .imageScaleType(ImageScaleType.EXACT)
-                .build();
-        expandedDisplayImageOptions = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.stub_image)
-                .imageScaleType(ImageScaleType.POWER_OF_2)
-                .cacheOnDisc()
                 .build();
     }
 
@@ -549,12 +544,15 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 ChanHelper.safeClearImageView(itemExpandedImageHolder);
 
                 // calculate image dimensions
-                float aspectRatio = postW / postH;
+                Log.e(TAG, "Exception: post size " + postW + "x" + postH);
                 DisplayMetrics displayMetrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
                 int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
                 int maxWidth = displayMetrics.widthPixels - padding;
                 int maxHeight = maxWidth; // to avoid excessively big images
+                itemExpandedImageHolder.setMaxWidth(maxWidth);
+                itemExpandedImageHolder.setMaxHeight(maxHeight);
+                Log.e(TAG, "Exception: max size " + maxWidth + "x" + maxHeight);
                 float scaleFactor = 1;
                 if (postW >= postH) {
                     // square or wide image, base sizing on width
@@ -568,13 +566,14 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 }
                 int width = Math.round(scaleFactor * (float)postW);
                 int height = Math.round(scaleFactor * (float)postH);
-
+                Log.e(TAG, "Exception: target size " + width + "x" + height);
                 // set layout dimensions
                 ViewGroup.LayoutParams params = itemExpandedImageHolder.getLayoutParams();
                 if (params != null) {
                     params.width = width;
                     params.height = height;
                 }
+                itemExpandedImageHolder.setVisibility(View.VISIBLE);
 
                 // calculate auto-scroll on image expand
                 ViewParent parent = v.getParent();
@@ -585,7 +584,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 }
                 int lastPosition = absListView.getLastVisiblePosition();
                 boolean shouldMove = listPosition >= lastPosition - 1;
-                final int parentOffset = shouldMove ? parentHeight + height : 0; // allow for margin
+                final int parentOffset = shouldMove ? parentHeight + 50 : 0; // allow for margin
                 //final int imageOffset = shouldMove ? parentHeight + maxHeight : 0;
                 final int imageOffset = 0;
 
@@ -598,6 +597,14 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                     }
                 }, 250);
 
+                ImageSize imageSize = new ImageSize(width, height);
+                DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
+                        .showImageForEmptyUri(R.drawable.stub_image)
+                        .imageScaleType(ImageScaleType.EXACT)
+                        .cacheOnDisc()
+                        .imageSize(imageSize)
+                        .build();
+
                 // display image async
                 imageLoader.displayImage(postImageUrl, itemExpandedImageHolder, expandedDisplayImageOptions, new ImageLoadingListener() {
                     @Override
@@ -608,13 +615,12 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                     public void onLoadingFailed(FailReason failReason) {
                         itemExpandedProgressBarHolder.setVisibility(View.GONE);
                         itemExpandedImageHolder.setVisibility(View.GONE);
-                        String msg = String.format(getString(R.string.thread_couldnt_load_image), failReason.toString());
+                        String msg = String.format(getString(R.string.thread_couldnt_load_image), failReason.toString().toLowerCase().replaceAll("_", " "));
                         Toast.makeText(ThreadActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onLoadingComplete(Bitmap loadedImage) {
-                        itemExpandedImageHolder.setVisibility(View.VISIBLE);
                         itemExpandedProgressBarHolder.setVisibility(View.GONE);
                         absListView.smoothScrollBy(imageOffset, 250);
                         //absListView.smoothScrollToPositionFromTop(listPosition, parentOffset);
