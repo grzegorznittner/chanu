@@ -190,7 +190,14 @@ public class ImageLoader {
 			return;
 		}
 
-		ImageSize targetSize = imageView == null ? new ImageSize(100, 100) : getImageSizeScaleTo(imageView);
+        ImageSize targetSize;
+        if (options.getImageSize() != null)
+            targetSize = options.getImageSize();
+        else if (imageView != null)
+            targetSize = getImageSizeScaleTo(imageView);
+        else
+            targetSize = new ImageSize(100, 100);
+        Log.e(TAG, "Exception decided target size " + targetSize.toString());
 		String memoryCacheKey = MemoryCacheKeyUtil.generateKey(uri, targetSize);
 		cacheKeyForImageView.put(imageView, memoryCacheKey);
 
@@ -213,7 +220,8 @@ public class ImageLoader {
 			}
 
 			checkExecutors();
-			ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener);
+            Log.e(TAG, "Exception imageLoadingInfo target size " + targetSize.toString());
+            ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener);
 			LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(configuration, imageLoadingInfo, new Handler());
 			boolean isImageCachedOnDisc = configuration.discCache.get(uri).exists();
 			if (isImageCachedOnDisc) {

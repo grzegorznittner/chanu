@@ -1,6 +1,7 @@
 package com.nostra13.universalimageloader.core;
 
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 /**
  * Contains options for image display. Defines:
@@ -33,6 +34,7 @@ public final class DisplayImageOptions {
 	private final boolean cacheInMemory;
 	private final boolean cacheOnDisc;
 	private final ImageScaleType imageScaleType;
+    private final ImageSize imageSize;
 
 	private DisplayImageOptions(Builder builder) {
 		stubImage = builder.stubImage;
@@ -41,6 +43,7 @@ public final class DisplayImageOptions {
 		cacheInMemory = builder.cacheInMemory;
 		cacheOnDisc = builder.cacheOnDisc;
 		imageScaleType = builder.imageScaleType;
+        imageSize = builder.imageSize;
 	}
 
 	boolean isShowStubImage() {
@@ -58,6 +61,10 @@ public final class DisplayImageOptions {
 	Integer getImageForEmptyUri() {
 		return imageForEmptyUri;
 	}
+
+    ImageSize getImageSize() {
+        return imageSize;
+    }
 
 	boolean isResetViewBeforeLoading() {
 		return resetViewBeforeLoading;
@@ -87,6 +94,7 @@ public final class DisplayImageOptions {
 		private boolean cacheInMemory = false;
 		private boolean cacheOnDisc = false;
 		private ImageScaleType imageScaleType = ImageScaleType.POWER_OF_2;
+        private ImageSize imageSize = null;
 
 		/**
 		 * Stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading
@@ -137,6 +145,11 @@ public final class DisplayImageOptions {
 			this.imageScaleType = imageScaleType;
 			return this;
 		}
+
+        public Builder imageSize(ImageSize imageSize) {
+            this.imageSize = imageSize;
+            return this;
+        }
 
 		/** Builds configured {@link DisplayImageOptions} object */
 		public DisplayImageOptions build() {

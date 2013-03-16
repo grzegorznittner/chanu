@@ -60,7 +60,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (checkTaskIsNotActual()) return;
 		Bitmap bmp;
         try {
-          bmp = tryLoadBitmap();
+            if (imageLoadingInfo != null && imageLoadingInfo.targetSize != null)
+                Log.e(TAG, "Exception loadanddisplay run imageLoadingInfo target size " + imageLoadingInfo.targetSize.toString());
+            else
+                Log.e(TAG, "Exception loadanddisplay null target size");
+            bmp = tryLoadBitmap();
         }
         catch (Exception e) {
             Log.e(TAG, "Couldn't load bitmap, exception", e);
@@ -128,7 +132,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 			if (imageLoadingInfo.options.isCacheOnDisc()) {
 				if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_ON_DISC, imageLoadingInfo.memoryCacheKey));
 
-				saveImageOnDisc(imageFile);
+                if (imageLoadingInfo != null && imageLoadingInfo.targetSize != null)
+                    Log.e(TAG, "Exception tryloadbitmap imageLoadingInfo target size " + imageLoadingInfo.targetSize.toString());
+                else
+                    Log.e(TAG, "Exception tryloadbitmap null target size");
+                saveImageOnDisc(imageFile);
 				configuration.discCache.put(imageLoadingInfo.uri, imageFile);
 				imageUriForDecoding = imageFile.toURI();
 			} else {
@@ -200,6 +208,11 @@ final class LoadAndDisplayImageTask implements Runnable {
 		int width = configuration.maxImageWidthForDiscCache;
 		int height = configuration.maxImageHeightForDiscCache;
 		if (width > 0 || height > 0) {
+            if (imageLoadingInfo != null && imageLoadingInfo.targetSize != null) {
+                width = imageLoadingInfo.targetSize.getWidth();
+                height = imageLoadingInfo.targetSize.getHeight();
+            }
+
 			// Download, decode, compress and save image
 			ImageSize targetImageSize = new ImageSize(width, height);
 			ImageDecoder decoder = new ImageDecoder(new URI(imageLoadingInfo.uri), configuration.downloader);
