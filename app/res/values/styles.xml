@@ -399,7 +399,7 @@
         <item name="android:gravity">center</item>
     </style>
 
-    <style name="PopupFullTextInnerLayout" parent="AppTheme">
+    <style name="PopupFullTextScrollLayout" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">24dp</item>
@@ -407,8 +407,15 @@
         <item name="android:layout_marginRight">24dp</item>
         <item name="android:layout_marginBottom">24dp</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:background">@color/popupbackground</item>
         <item name="android:scrollbars">vertical</item>
+        <item name="android:background">@color/popupbackground</item>
+    </style>
+
+    <style name="PopupFullTextInnerLayout" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/popupbackground</item>
     </style>
 
     <style name="PopupFullTextHeader" parent="AppTheme">

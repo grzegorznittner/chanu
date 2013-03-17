@@ -51,7 +51,11 @@
 
         </ScrollView>
         -->
-        <LinearLayout
+    <ScrollView
+            android:id="@+id/popup_full_text_scroll_view"
+            style="@style/PopupFullTextScrollLayout">
+
+    <LinearLayout
                 style="@style/PopupFullTextInnerLayout">
 
             <TextView
@@ -163,6 +167,7 @@
 
         </LinearLayout>
 
+    </ScrollView>
    <!-- </FrameLayout> -->
 
 </LinearLayout>
