@@ -83,7 +83,7 @@ public class BoardActivity
         imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
-                .imageScaleType(ImageScaleType.EXACT)
+                .imageScaleType(ImageScaleType.POWER_OF_2)
                 .cacheOnDisc()
                 .build();
     }

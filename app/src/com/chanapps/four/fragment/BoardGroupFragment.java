@@ -30,6 +30,7 @@ import com.chanapps.four.loader.ChanImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 /**
 * User: arley
@@ -95,13 +96,19 @@ public class BoardGroupFragment
             ChanWatchlist.setWatchlistFragment(BoardGroupFragment.this);
     }
 
+    //private static final int SELECTOR_WIDTH_PX = 125;
+    //private static final int SELECTOR_HEIGHT_PX = 125;
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //ImageSize imageSize = new ImageSize(SELECTOR_WIDTH_PX, SELECTOR_HEIGHT_PX); // view pager needs micro images
         imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
-                .imageScaleType(ImageScaleType.EXACT)
+                .imageScaleType(ImageScaleType.POWER_OF_2)
+                //.imageSize(imageSize)
+                //.cacheOnDisc()
                 .build();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);

@@ -241,7 +241,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
                 .cacheOnDisc()
-                .imageScaleType(ImageScaleType.EXACT)
+                .imageScaleType(ImageScaleType.POWER_OF_2)
                 .build();
     }
 
