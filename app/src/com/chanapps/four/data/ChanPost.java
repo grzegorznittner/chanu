@@ -148,10 +148,10 @@ public class ChanPost {
         String text = "";
         String subText = sanitizeText(sub);
         if (subText != null && !subText.isEmpty())
-            text += "Subject: " + subText + "</b>";
+            text += "<b>" + subText + "</b>";
         String comText = com != null && com.trim().length() > 0 ? sanitizeText(com) : "";
         if (comText != null && !comText.isEmpty())
-            text += (text.isEmpty() ? "" : "<br/>\n") + comText;
+            text += (text.isEmpty() ? "" : "<br/>\n<br/>\n") + comText;
         return text;
     }
 
