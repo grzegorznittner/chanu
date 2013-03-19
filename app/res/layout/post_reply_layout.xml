@@ -76,7 +76,6 @@
         <TextView
                 android:id="@+id/post_reply_pass_status"
                 style="@style/PostReplyEditText"
-                android:textStyle="bold"
             >
         </TextView>
 
@@ -184,6 +183,12 @@
                 android:maxLength="100"
                 >
         </EditText>
+
+        <TextView
+                style="@style/PostReplyEditText"
+                android:layout_marginBottom="0dp"
+                android:text="Password">
+        </TextView>
 
         <EditText
                 android:id="@+id/post_reply_password"
