@@ -157,6 +157,28 @@ public class StateManager {
             getTopState().onBackPressed();
         }
     }
+    
+    public void compactActivityStateStack() {
+    	Class<? extends ActivityState> stateClass = getTopState().getClass();
+    	for (int i = mStack.size() - 2; i >= 0; i--) {
+    		StateEntry entry = mStack.get(i);
+    		if (entry.activityState.getClass().equals(stateClass)) {
+    			Log.i(TAG, "Removing state from stack " + i);
+    			mStack.remove(i);
+    		} else {
+    			break;
+    		}
+    	}
+    }
+    
+    public String getStackDescription() {
+    	StringBuffer buf = new StringBuffer();
+    	for (int i = mStack.size() - 1; i >= 0; i--) {
+    		StateEntry entry = mStack.get(i);
+    		buf.append(" " + i + ". " + entry.activityState.getClass());
+    	}
+    	return buf.toString();
+    }
 
     void finishState(ActivityState state) {
         Log.v(TAG, "finishState " + state.getClass());
