@@ -23,13 +23,16 @@ import org.codehaus.jackson.map.ObjectMapper;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 import com.chanapps.four.widget.BoardWidgetProvider;
 
@@ -218,10 +221,48 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 			}
 		}
 
-        if (board != null)
-            board.threads = threads.toArray(new ChanPost[0]);
+        updateBoardData(threads);
         if (DEBUG) Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
+
+	private void updateBoardData(List<ChanPost> threads) {
+		if (board != null) {
+        	synchronized (board) {
+        		boolean oldEnough = Calendar.getInstance().getTimeInMillis() - board.lastFetched > ChanBoard.MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST;
+	        	if (!force && !board.defData && board.threads.length > 0 && !oldEnough && ChanBoard.REFRESH_THREADS_ON_REQUEST) {
+	        		board.loadedThreads = threads.toArray(new ChanPost[0]);
+	        		board.updateCountersAfterLoad();
+	        		
+	        		if (board.newThreads > 0 || board.updatedThreads > 0) {
+	        			StringBuffer msg = new StringBuffer();
+	        			if (board.newThreads > 0) {
+	        				msg.append("" + board.newThreads + " new ");
+	        			}
+	        			if (board.updatedThreads > 0) {
+	        				if (board.newThreads > 0) {
+	        					msg.append("and ");
+	        				}
+	        				msg.append("" + board.updatedThreads + " updated ");
+	        			}
+	        			msg.append("thread");
+	        			if (board.newThreads + board.updatedThreads > 1) {
+	        				msg.append("s");
+	        			}
+	        			msg.append(", click refresh button.");
+	        			NetworkProfileManager.instance().makeToast(msg.toString(), Toast.LENGTH_LONG);
+	        		} else {
+	        			board.threads = board.loadedThreads;
+		        		board.loadedThreads = new ChanThread[0];
+	        		}
+	        	} else {
+	        		board.threads = threads.toArray(new ChanPost[0]);
+	        		board.loadedThreads = new ChanThread[0];
+	        		board.newThreads = 0;
+	        		board.updatedThreads = 0;
+	        	}
+        	}
+        }
+	}
 
 	@Override
 	public ChanActivityId getChanActivityId() {

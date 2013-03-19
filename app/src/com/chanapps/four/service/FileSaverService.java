@@ -3,6 +3,7 @@
  */
 package com.chanapps.four.service;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Calendar;
@@ -11,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.UserStatistics;
@@ -28,12 +30,21 @@ public class FileSaverService extends BaseChanService {
     private static final String PARAM_VALUE = "paramValue";
     private static final String PARAM_STACKTRACE = "paramStack";
     
-    public enum FileType {USER_STATISTICS, LOG_EVENT};
+    public enum FileType {USER_STATISTICS, LOG_EVENT, BOARD_SAVE};
     
     public static void startService(Context context, FileType fileType) {
         if (DEBUG) Log.i(TAG, "Start file saver service for " + fileType);
         Intent intent = new Intent(context, FileSaverService.class);
         intent.putExtra(ChanHelper.NAME, fileType.toString());
+        context.startService(intent);
+    }
+    
+    public static void startService(Context context, FileType fileType, String value) {
+        if (DEBUG) Log.i(TAG, "Start file saver service for " + fileType);
+        Intent intent = new Intent(context, FileSaverService.class);
+        intent.putExtra(ChanHelper.NAME, fileType.toString());
+    	intent.putExtra(PARAM_VALUE, value);
+    	
         context.startService(intent);
     }
     
@@ -83,6 +94,11 @@ public class FileSaverService extends BaseChanService {
 				String type = intent.getStringExtra(PARAM_TYPE);
 				String value = intent.getStringExtra(PARAM_VALUE);
 				String stack = intent.getStringExtra(PARAM_STACKTRACE);
+				break;
+			case BOARD_SAVE:
+				String boardCode = intent.getStringExtra(PARAM_VALUE);
+				ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
+				ChanFileStorage.storeBoardData(getBaseContext(), board);
 				break;
 			}
 			

@@ -78,6 +78,12 @@ public interface NetworkProfile {
 	void onBoardRefreshed(Context context, Handler handler, String board);
 	
 	/**
+	 * Called when user clicked on update view data button (displayed when new items available)
+	 * @param board Board name
+	 */
+	void onUpdateViewData(Context baseContext, Handler chanHandler,	String board);
+	
+	/**
 	 * Called when user opened thread page.
 	 * @param board Board name
 	 * @param threadId Thread id

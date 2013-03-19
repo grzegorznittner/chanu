@@ -147,6 +147,12 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	}
 
 	@Override
+	public void onUpdateViewData(Context baseContext, Handler chanHandler, String board) {
+		if (DEBUG) Log.d(TAG, "onUpdateViewData called with board: " + board);
+		usageCounter++;
+	}
+
+	@Override
 	public void onThreadSelected(Context context, String board, long threadId) {
 		if (DEBUG) Log.d(TAG, "onThreadSelected called with board: " + board + " threadId: " + threadId);
 		usageCounter++;

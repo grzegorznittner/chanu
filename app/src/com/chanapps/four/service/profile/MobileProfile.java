@@ -150,7 +150,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 	public void onBoardSelected(Context context, String board) {
 		super.onBoardSelected(context, board);
 		
-		FetchChanDataService.scheduleBoardFetchWithPriority(context, board);
+		FetchChanDataService.scheduleBoardFetch(context, board);
 //		Health health = getConnectionHealth();
 //		if (health == Health.GOOD || health == Health.PERFECT) {
 //			ChanBoard boardObj = ChanFileStorage.loadBoardData(context, board);
@@ -172,17 +172,50 @@ public class MobileProfile extends AbstractNetworkProfile {
 	@Override
 	public void onBoardRefreshed(Context context, Handler handler, String board) {
 		super.onBoardRefreshed(context, handler, board);
-		if (!FetchChanDataService.scheduleBoardFetchWithPriority(context, board))
-            handler.sendEmptyMessage(LoaderHandler.SET_PROGRESS_FINISHED);
-        if ("a".equals(board)) {
+		if (!FetchChanDataService.scheduleBoardFetchWithPriority(context, board)) {
+			onUpdateViewData(context, handler, board);
+            //handler.sendEmptyMessage(LoaderHandler.SET_PROGRESS_FINISHED);
+		}
+        if (DEBUG) {
 			UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
 			int i = 1;
 			for (ChanBoardStat stat : userStats.topBoards()) {
-				if(DEBUG) Log.i(TAG, "Top boards: " + i++  + ". " + stat);
+				Log.i(TAG, "Top boards: " + i++  + ". " + stat);
 			}
 			i = 1;
 			for (ChanThreadStat stat : userStats.topThreads()) {
-				if(DEBUG) Log.i(TAG, "Top threads: " + i++ + ". " + stat);
+				Log.i(TAG, "Top threads: " + i++ + ". " + stat);
+			}
+		}
+	}
+
+	@Override
+	public void onUpdateViewData(Context baseContext, Handler chanHandler, String boardCode) {
+		super.onUpdateViewData(baseContext, chanHandler, boardCode);
+		
+		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+		ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
+		
+		ChanBoard board = ChanFileStorage.loadFreshBoardData(baseContext, boardCode);
+		if (board == null || board.defData) {
+			// board data corrupted, we need to reload it
+			if (DEBUG) Log.w(TAG, "Board " + boardCode + " is corrupted, it is scheduled for reload");
+			FetchChanDataService.scheduleBoardFetch(baseContext, boardCode);
+			return;
+		}
+		
+		boolean boardActivity = currentActivityId != null
+				&& currentActivityId.boardCode != null
+				&& currentActivityId.boardCode.equals(boardCode);
+		
+		if (boardActivity && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY
+				&& currentActivityId.threadNo == 0) {
+			// user is on the board page, we need to be reloaded it
+			Handler handler = activity.getChanHandler();
+			if (handler != null) {
+				if (DEBUG) Log.w(TAG, "Reloading board");
+				handler.sendEmptyMessage(LoaderHandler.SET_PROGRESS_FINISHED);
+				handler.sendEmptyMessage(0);
 			}
 		}
 	}
@@ -224,7 +257,12 @@ public class MobileProfile extends AbstractNetworkProfile {
 					&& currentActivityId.boardCode != null
 					&& currentActivityId.boardCode.equals(data.boardCode);
             //makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_loaded_board), data.boardCode));
-			ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
+			ChanBoard board = null;
+			if (data.priority) {
+				board = ChanFileStorage.loadFreshBoardData(service.getApplicationContext(), data.boardCode);
+			} else {
+				board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
+			}
 			if (board == null || board.defData) {
 				// board data corrupted, we need to reload it
 				if (DEBUG) Log.w(TAG, "Board " + data.boardCode + " is corrupted, it is scheduled for reload");
@@ -232,6 +270,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 				return;
 			}
 
+			/* Not valid since we use board catalog
 			if (boardActivity && board.threads.length < MIN_THREADS_PER_BOARD) {
 				// user has not changed board (may go to the thread) and board has not enough threads available
 		        if (DEBUG) Log.i(TAG, "Starting service to load next page for " + data.boardCode + " page " + data.pageNo
@@ -243,6 +282,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 		        	FetchChanDataService.scheduleBoardFetchService(service.getApplicationContext(), data.boardCode, data.pageNo + 1);
 		        }
 			}
+			*/
 			
 			if (boardActivity && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY
 					&& currentActivityId.threadNo == 0) {
