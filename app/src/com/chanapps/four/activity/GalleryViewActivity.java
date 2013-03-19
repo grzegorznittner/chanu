@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URLEncoder;
 
-import com.chanapps.four.loader.ChanImageLoader;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -54,15 +53,15 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
     public static final String TAG = "GalleryViewActivity";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static final String VIEW_TYPE = "viewType";
 
@@ -306,6 +305,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	protected void onResume () {
 		super.onResume();
 		if (DEBUG) Log.i(TAG, "onResume");
+		loadPrefs();
 		prepareGalleryView();
         
         NetworkProfileManager.instance().activityChange(this);
@@ -318,9 +318,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     @Override
 	protected void onPause() {
         super.onPause();
+        if (DEBUG) Log.i(TAG, "onPause");
         saveInstanceState();
-        if (DEBUG) Log.i(TAG, "onPause - removing download id " + imageUrl);
-        ImageDownloadService.cancelService(getBaseContext(), imageUrl);
     }
 
     protected void saveInstanceState() {
@@ -361,6 +360,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+    	super.onConfigurationChanged(newConfig);
     	prepareGalleryView();
     }
     
@@ -387,29 +387,35 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     	super.mGLRootView = (GLRootView) contentView.findViewById(R.id.gl_root_view);
 
     	Bundle data = new Bundle();
-    	switch(viewType) {
-    	case PHOTO_VIEW:
-    		data.putString(PhotoPage.KEY_MEDIA_SET_PATH, 
-    				Path.fromString("/chan/" + boardCode + "/" + threadNo).toString());
-    		data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, 
-    				Path.fromString("/chan/" + boardCode + "/" + threadNo + "/" + postNo).toString());
-    		getStateManager().startState(PhotoPage.class, data);
-    		break;
-    	case ALBUM_VIEW:
-    		data.putString(AlbumPage.KEY_MEDIA_PATH,
-    				Path.fromString("/chan/" + boardCode + "/" + threadNo).toString());
-    		getStateManager().startState(PhotoPage.class, data);
-    		break;
-    	case OFFLINE_ALBUM_VIEW:
-    		data.putString(AlbumPage.KEY_MEDIA_PATH,
-    				Path.fromString("/chan-offline/" + boardCode).toString());
-    		getStateManager().startState(AlbumPage.class, data);
-    		break;
-    	case OFFLINE_ALBUMSET_VIEW:
-    		data.putString(AlbumSetPage.KEY_MEDIA_PATH,
-    				Path.fromString("/chan-offline").toString());
-    		getStateManager().startState(AlbumSetPage.class, data);
-    		break;
+    	try {
+	    	switch(viewType) {
+	    	case PHOTO_VIEW:
+	    		data.putString(PhotoPage.KEY_MEDIA_SET_PATH, 
+	    				Path.fromString("/chan/" + boardCode + "/" + threadNo).toString());
+	    		data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, 
+	    				Path.fromString("/chan/" + boardCode + "/" + threadNo + "/" + postNo).toString());
+	    		getStateManager().startState(PhotoPage.class, data);
+	    		break;
+	    	case ALBUM_VIEW:
+	    		data.putString(AlbumPage.KEY_MEDIA_PATH,
+	    				Path.fromString("/chan/" + boardCode + "/" + threadNo).toString());
+	    		getStateManager().startState(AlbumPage.class, data);
+	    		break;
+	    	case OFFLINE_ALBUM_VIEW:
+	    		data.putString(AlbumPage.KEY_MEDIA_PATH,
+	    				Path.fromString("/chan-offline/" + boardCode).toString());
+	    		getStateManager().startState(AlbumPage.class, data);
+	    		break;
+	    	case OFFLINE_ALBUMSET_VIEW:
+	    		data.putString(AlbumSetPage.KEY_MEDIA_PATH,
+	    				Path.fromString("/chan-offline").toString());
+	    		getStateManager().startState(AlbumSetPage.class, data);
+	    		break;
+	    	}
+    	} catch (Exception e) {
+    		Toast.makeText(this, "Gallery not initialized properly, viewType: " + viewType, Toast.LENGTH_SHORT).show();
+    		Log.e(TAG, "Gallery not initialized properly, viewType: " + viewType + ", board: " + boardCode + ", threadNo: " + threadNo, e);
+    		navigateUp();
     	}
     }
 
@@ -426,7 +432,9 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         try {
         switch (item.getItemId()) {
             case android.R.id.home:
-            	if (getStateManager().getStateCount() > 0) {
+            	Log.i(TAG, "Gallery state stack: " + getStateManager().getStackDescription());
+            	getStateManager().compactActivityStateStack();
+            	if (getStateManager().getStateCount() > 1) {
             		getStateManager().onBackPressed();
             	} else {
             		navigateUp();
@@ -550,8 +558,12 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
     		break;
     	case OFFLINE_ALBUMSET_VIEW:
-    		intent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.getBoardByCode(this, boardCode).type.toString());
-            intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
+    		upIntent = new Intent(this, BoardSelectorActivity.class);
+    		ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
+    		if (board != null) {
+    			upIntent.putExtra(ChanHelper.BOARD_TYPE, board.type.toString());
+    		}
+    		upIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
             break;
     	}
         NavUtils.navigateUpTo(this, upIntent);

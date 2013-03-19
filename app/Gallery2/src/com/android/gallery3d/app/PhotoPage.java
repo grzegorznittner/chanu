@@ -605,11 +605,11 @@ public class PhotoPage extends ActivityState
             mFilmStripView.pause();
         }
         DetailsHelper.pause();
-        mPhotoView.pause();
-        mModel.pause();
-        mHandler.removeMessages(MSG_HIDE_BARS);
-        mActionBar.removeOnMenuVisibilityListener(mMenuVisibilityListener);
-        mMenuExecutor.pause();
+        if (mPhotoView != null) mPhotoView.pause();
+        if (mModel != null) mModel.pause();
+        if (mHandler != null) mHandler.removeMessages(MSG_HIDE_BARS);
+        if (mActionBar != null) mActionBar.removeOnMenuVisibilityListener(mMenuVisibilityListener);
+        if (mMenuExecutor != null) mMenuExecutor.pause();
     }
 
     @Override

@@ -259,6 +259,21 @@ public class ChanFileStorage {
 		return prepareDefaultBoardData(context, boardCode);
 	}
 	
+	public static ChanBoard loadFreshBoardData(Context context, String boardCode) {
+		ChanBoard board = loadBoardData(context, boardCode);
+		if (board != null && !board.defData && board.loadedThreads != null && board.loadedThreads.length > 0) {
+			synchronized (board) {
+				board.threads = board.loadedThreads;
+				board.loadedThreads = new ChanThread[0];
+				board.newThreads = 0;
+				board.updatedThreads = 0;
+			}
+			FileSaverService.startService(context, FileType.BOARD_SAVE, board.link);
+		}
+		
+		return board;
+	}
+	
 	private static ChanBoard prepareDefaultBoardData(Context context, String boardCode) {
 		ChanBoard board = ChanBoard.getBoardByCode(context, boardCode).copy();
 		ChanThread thread = new ChanThread();

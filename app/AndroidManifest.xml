@@ -61,7 +61,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".GalleryViewActivity" android:label="@string/full_screen_image_activity">
+        <activity android:name=".GalleryViewActivity" android:label="@string/full_screen_image_activity"
+            	 android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>

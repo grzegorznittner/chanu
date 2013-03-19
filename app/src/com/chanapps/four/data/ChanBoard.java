@@ -34,6 +34,8 @@ public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();
 
     private static final boolean DEBUG = false;
+    public static final boolean REFRESH_THREADS_ON_REQUEST = true;
+    public static final long MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST = 60 * 60 * 1000;
 
     // AD STUFF
     private static final String JLIST_AD_AFFILIATE_CODE = "4539";
@@ -77,6 +79,9 @@ public class ChanBoard {
     public boolean textOnly;
 	public ChanPost stickyPosts[] = new ChanPost[0];
 	public ChanPost threads[] = new ChanThread[0];
+	public ChanPost loadedThreads[] = new ChanThread[0];
+	public int newThreads = 0;
+	public int updatedThreads = 0;
     public long lastFetched;
     public boolean defData = false;
 
@@ -89,7 +94,8 @@ public class ChanBoard {
 	}
 
 	public String toString() {
-        return "Board " + link + " page: " + no + ", stickyPosts: " + stickyPosts.length + ", threads: " + threads.length;
+        return "Board " + link + " page: " + no + ", stickyPosts: " + stickyPosts.length
+        		+ ", threads: " + threads.length + ", newThreads: " + loadedThreads.length;
     }
 
     private static List<ChanBoard> boards;
@@ -418,6 +424,29 @@ public class ChanBoard {
         String imageUrl = JLIST_AD_IMAGE_ROOT_URL + "/" + adCode;
         String clickUrl = JLIST_AD_CLICK_ROOT_URL + "/" + adCode;
         return ChanPost.makeAdRow(link, imageUrl, clickUrl);
+    }
+    
+    public void updateCountersAfterLoad() {
+    	if (loadedThreads.length == 0) {
+    		return;
+    	}
+    	Map<Long, ChanPost> currentThreads = new HashMap<Long, ChanPost>();
+    	for (ChanPost thread : threads) {
+    		currentThreads.put(thread.no, thread);
+    	}
+    	this.newThreads = 0;
+    	this.updatedThreads = 0;
+    	for (ChanPost newPost : loadedThreads) {
+    		if (currentThreads.containsKey(newPost.no)) {
+    			ChanPost currentPost = currentThreads.get(newPost.no);
+    			if (currentPost.replies != newPost.replies) {
+    				updatedThreads++;
+    			}
+    		} else {
+    			newThreads++;
+    		}
+    	}
+    	Log.i(TAG, "Updated board " + name + ", " + newThreads + " new threads, " + updatedThreads + " updated threads.");
     }
 
     public static void setupActionBarBoardSpinner(final Activity activity, final Menu menu, final String currentBoardCode) {

@@ -170,6 +170,29 @@ public class NetworkProfileManager {
 		}
 	}
 	
+	/**
+	 * Replaces currently viewed data with the one fetched recently
+	 */
+	public void updateViewData(ChanIdentifiedActivity newActivity) {
+		if (DEBUG) Log.i(TAG, "updateViewData " + newActivity.getChanActivityId(), new Exception("updateViewData"));
+		if (newActivity == null) {
+			return;
+		}
+		currentActivityId = newActivity.getChanActivityId();
+		currentActivity = newActivity;
+		
+		if (activeProfile == null) {
+			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
+		}
+
+		switch(currentActivityId.activity) {
+		case BOARD_ACTIVITY:
+			activeProfile.onUpdateViewData(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
+			break;
+		default:
+			// we only support update view data for board view
+		}
+	}
 	public void finishedImageDownload(ChanIdentifiedService service, int time, int size) {
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(service.getApplicationContext());
@@ -284,8 +307,12 @@ public class NetworkProfileManager {
             }
         }
 	}
+	
+	public void makeToast(final String text) {
+		makeToast(text, Toast.LENGTH_SHORT);
+	}
 
-    public void makeToast(final String text) {
+    public void makeToast(final String text, final int length) {
         final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         if (activity != null) {
             Handler handler = activity.getChanHandler();
@@ -293,7 +320,7 @@ public class NetworkProfileManager {
                 handler.postDelayed(new Runnable() {
                     public void run() {
                         if (DEBUG) Log.w(TAG, "Calling toast with '" + text + "'");
-                        Toast.makeText(activity.getBaseContext(), text, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity.getBaseContext(), text, length).show();
                     }
                 }, 300);
             } else {
