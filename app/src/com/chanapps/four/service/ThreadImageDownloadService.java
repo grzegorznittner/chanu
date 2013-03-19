@@ -50,7 +50,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	private static final String TAG = ThreadImageDownloadService.class.getSimpleName();
     private static final boolean DEBUG = false;
     
-    private static final String GALLERY_PREFIX = "4Channer_";
+    private static final String GALLERY_PREFIX = "Chanu_";
     
     private static final String TARGET_TYPE = "ThreadImageDownloadService.targetType";
     private static final String START_POST_NO = "ThreadImageDownloadService.startPostNo";
@@ -263,7 +263,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		notifBuilder.setContentTitle(context.getString(R.string.download_all_images_complete));
 		notifBuilder.setContentText
                 (String.format(context.getString(R.string.download_all_images_complete_detail), board, threadNo));
-		notifBuilder.setSmallIcon(R.drawable.four_leaf_clover_1);
+		notifBuilder.setSmallIcon(R.drawable.app_icon);
 		
 		Intent threadActivityIntent = null;
 		switch(targetType) {
@@ -335,7 +335,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		notifBuilder.setAutoCancel(true);
 		notifBuilder.setContentTitle("Error downloading images for thread /" + board + " / " + threadNo);
 		notifBuilder.setContentText(thread.getFullText());
-		notifBuilder.setSmallIcon(R.drawable.four_leaf_clover_1);
+		notifBuilder.setSmallIcon(R.drawable.app_icon);
 		
 		Intent threadActivityIntent = ThreadActivity.createIntentForActivity(getApplicationContext(),
 				board, threadNo,

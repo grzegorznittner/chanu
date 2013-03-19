@@ -18,7 +18,7 @@ import java.util.List;
 public class BoardSelectorWatchlistCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = BoardSelectorWatchlistCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     protected final ForceLoadContentObserver mObserver;
 

@@ -1,6 +1,6 @@
 <resources>
     <!-- titles -->
-    <string name="application_name">4channer</string>
+    <string name="application_name">Chanu</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="title_item_list">Items</string>
     <string name="fragment_layout">2 Pane Layout</string>
@@ -9,7 +9,7 @@
     <string name="title_photogrid_activity">PhotoGrid</string>
     <string name="full_screen_image_activity">View Image</string>
     <string name="post_reply_activity">New Post</string>
-    <string name="post_reply_share_activity">4channer</string>
+    <string name="post_reply_share_activity">Chanu</string>
     <string name="settings_activity">Settings</string>
     <string name="board_image">Board Image</string>
     <string name="thread_post_image">Thread Image</string>
@@ -321,7 +321,7 @@
     <string name="pref_clear_cache_already_running">Already clearing cache, you will be notified when complete</string>
     <string name="pref_clear_cache_error">Couldn\'t clear cache</string>
     <string name="pref_clear_cache_success">Cleared cache successfully</string>
-    <string name="pref_clear_cache_notification_title">4Channer Cache Status</string>
+    <string name="pref_clear_cache_notification_title">Chanu Cache Status</string>
     <string name="pref_about">About App</string>
     <string name="pref_about_summ">Authorship and licensing information</string>
     <string name="pref_reset_to_defaults">Clear Preferences</string>
@@ -362,7 +362,7 @@
     <string name="camera_capture">Capture picture</string>
     <string name="camera_open_error">Couldn\'t open camera</string>
     <string name="camera_capture_error">Couldn\'t take picture</string>
-    <string name="camera_folder_name">4Channer Camera</string>
+    <string name="camera_folder_name">Chanu Camera</string>
 
     <!-- ads -->
     <string name="advert_header">Advert</string>
@@ -387,6 +387,7 @@
     <string name="no_connection_profile">Offline mode</string>
 
     <!-- board names -->
+    <string name="board_type_worksafe">Worksafe</string>
     <string name="board_type_japanese_culture">Japanese Culture</string>
     <string name="board_a">Anime &amp; Manga</string>
     <string name="board_c">Anime/Cute</string>
@@ -400,6 +401,7 @@
     <string name="board_type_interests">Interests</string>
     <string name="board_v">Video Games</string>
     <string name="board_vg">Video Game Generals</string>
+    <string name="board_vr">Retro Games</string>
     <string name="board_co">Comics &amp; Cartoons</string>
     <string name="board_g">Technology</string>
     <string name="board_tv">Television &amp; Film</string>
@@ -408,8 +410,10 @@
     <string name="board_an">Animals &amp; Nature</string>
     <string name="board_tg">Traditional Games</string>
     <string name="board_sp">Sports</string>
+    <string name="board_asp">Alternative Sports</string>
     <string name="board_sci">Science &amp; Math</string>
     <string name="board_int">International</string>
+    <string name="board_out">Outdoors</string>
     <string name="board_type_creative">Creative</string>
     <string name="board_i">Oekaki</string>
     <string name="board_po">Papercraft &amp; Origami</string>
@@ -421,6 +425,7 @@
     <string name="board_fa">Fashion</string>
     <string name="board_toy">Toys</string>
     <string name="board_3">3DCG</string>
+    <string name="board_gd">Graphic Design</string>
     <string name="board_diy">Do-It-Yourself</string>
     <string name="board_wsg">Worksafe GIF</string>
     <string name="board_type_adult">Adult</string>
@@ -442,6 +447,7 @@
     <string name="board_x">Paranormal</string>
     <string name="board_lit">Literature</string>
     <string name="board_adv">Advice</string>
+    <string name="board_lgbt">LGBT</string>
     <string name="board_mlp">Pony</string>
     <string name="board_type_misc">Misc</string>
     <string name="board_b">Random</string>
@@ -459,6 +465,7 @@
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
         <item>/an/ Animals &amp; Nature</item>
+        <item>/asp/ Alternative Sports</item>
         <item>/b/ Random</item>
         <item>/c/ Anime/Cute</item>
         <item>/cgl/ Cosplay &amp; EGL</item>
@@ -471,6 +478,7 @@
         <item>/fa/ Fashion</item>
         <item>/fit/ Health &amp; Fitness</item>
         <item>/g/ Technology</item>
+        <item>/gd/ Graphic Design</item>
         <item>/gif/ Animated GIF</item>
         <item>/h/ Hentai</item>
         <item>/hc/ Hardcore</item>
@@ -481,12 +489,14 @@
         <item>/int/ International</item>
         <item>/jp/ Otaku Culture</item>
         <item>/k/ Weapons</item>
+        <item>/lgbt/ LGBT</item>
         <item>/lit/ Literature</item>
         <item>/m/ Mecha</item>
         <item>/mlp/ Pony</item>
         <item>/mu/ Music</item>
         <item>/n/ Transportation</item>
         <item>/o/ Auto</item>
+        <item>/out/ Outdoors</item>
         <item>/p/ Photography</item>
         <item>/po/ Papercraft &amp; Origami</item>
         <item>/pol/ Politically Incorrect</item>
@@ -506,6 +516,7 @@
         <item>/v/ Video Games</item>
         <item>/vg/ Video Game Generals</item>
         <item>/vp/ Pokemon</item>
+        <item>/vr/ Retro Games</item>
         <item>/w/ Anime/Wallpapers</item>
         <item>/wg/ Wallpapers/General</item>
         <item>/wsg/ Worksafe GIF</item>
@@ -519,6 +530,7 @@
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
+        <item>/asp/ Alternative Sports</item>
         <item>/an/ Animals &amp; Nature</item>
         <item>/c/ Anime/Cute</item>
         <item>/cgl/ Cosplay &amp; EGL</item>
@@ -529,17 +541,20 @@
         <item>/fa/ Fashion</item>
         <item>/fit/ Health &amp; Fitness</item>
         <item>/g/ Technology</item>
+        <item>/gd/ Graphic Design</item>
         <item>/i/ Oekaki</item>
         <item>/ic/ Artwork/Critique</item>
         <item>/int/ International</item>
         <item>/jp/ Otaku Culture</item>
         <item>/k/ Weapons</item>
+        <item>/lgbt/ LGBT</item>
         <item>/lit/ Literature</item>
         <item>/m/ Mecha</item>
         <item>/mlp/ Pony</item>
         <item>/mu/ Music</item>
         <item>/n/ Transportation</item>
         <item>/o/ Auto</item>
+        <item>/out/ Outdoors</item>
         <item>/p/ Photography</item>
         <item>/po/ Papercraft &amp; Origami</item>
         <item>/q/ 4chan Discussion</item>
@@ -552,6 +567,7 @@
         <item>/v/ Video Games</item>
         <item>/vg/ Video Game Generals</item>
         <item>/vp/ Pokemon</item>
+        <item>/vr/ Retro Games</item>
         <item>/w/ Anime/Wallpapers</item>
         <item>/wg/ Wallpapers/General</item>
         <item>/wsg/ Worksafe GIF</item>

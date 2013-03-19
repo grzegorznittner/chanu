@@ -30,8 +30,6 @@ public class ChanHelper {
 	public static final int WARNING = 3;
 	public static final int ERROR = 4;
 	
-	//public static final String PREF_NAME = "4Channer";
-
 	public static final String BOARD_TYPE = "boardType";
     public static final String BOARD_CODE = "boardCode";
     public static final String BOARD_CATALOG = "boardCatalog";

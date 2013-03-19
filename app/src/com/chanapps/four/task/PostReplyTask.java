@@ -292,7 +292,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
         ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
         if (activityId != null) {
             if (activityId.activity == LastActivity.THREAD_ACTIVITY) {
-                ChanFileStorage.resetLastFetched(activityId.threadNo);
+                ChanFileStorage.resetLastFetched(activityId.boardCode, activityId.threadNo);
                 FetchChanDataService.scheduleThreadFetchWithPriority(activity, activity.boardCode, activity.threadNo);
             } else if (activityId.activity == LastActivity.BOARD_ACTIVITY) {
                 ChanFileStorage.resetLastFetched(activityId.boardCode);

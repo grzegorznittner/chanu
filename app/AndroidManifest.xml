@@ -32,7 +32,7 @@
 
     <application
             android:name="com.chanapps.four.FourChannerApp"
-            android:icon="@drawable/four_leaf_clover_1"
+            android:icon="@drawable/app_icon"
             android:label="@string/application_name"
             android:theme="@style/AppTheme"
             android:debuggable="true">

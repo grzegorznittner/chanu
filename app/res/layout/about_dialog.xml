@@ -5,9 +5,9 @@
         android:layout_height="wrap_content">
 
         <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/four_leaf_clover_1"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/app_icon"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:padding="16dp"
@@ -15,7 +15,6 @@
 
         <TextView
                 android:id="@+id/header_text"
-                android:text="4channer"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:paddingTop="16dp"
@@ -37,7 +36,6 @@
                 android:paddingRight="16dp"
                 android:paddingBottom="16dp"
                 android:paddingTop="0dp"
-                android:text="It's what Yotsuba uses"
                 android:linksClickable="true"
                 android:autoLink="web"
                 android:scrollbars="vertical"/>

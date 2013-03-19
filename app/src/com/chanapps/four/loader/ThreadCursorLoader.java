@@ -69,9 +69,11 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             hidePostNumbers = boardName.equals("b") ? false : prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
             useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
             ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
+            if (DEBUG) Log.i(TAG, "Loaded board from storage " + board);
             ChanThread thread;
             try {
                 thread = ChanFileStorage.loadThreadData(getContext(), boardName, threadNo);
+                if (DEBUG) Log.i(TAG, "Loaded thread from storage " + thread);
             } catch (Exception e) {
                 Log.e(TAG, "Couldn't load thread from storage " + boardName + "/" + threadNo, e);
                 thread = null;

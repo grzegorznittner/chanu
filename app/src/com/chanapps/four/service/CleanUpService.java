@@ -179,8 +179,8 @@ public class CleanUpService extends BaseChanService {
 	
 	private int getPreferredCacheSize() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int prefSize = prefs.getInt(SettingsActivity.PREF_CACHE_SIZE, 128);
-        return prefSize < 128 ? 128 : prefSize;
+        int prefSize = prefs.getInt(SettingsActivity.PREF_CACHE_SIZE, 512);
+        return prefSize < 512 ? 512 : prefSize;
     }
 
 	private List<String> prepareTopWatchedBoards(Context context) {

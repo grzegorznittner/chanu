@@ -1,6 +1,5 @@
 package com.nostra13.universalimageloader.core;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
@@ -10,14 +9,12 @@ import java.util.concurrent.Executors;
 
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapRegionDecoder;
 import android.os.Handler;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanPost;
 import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
@@ -34,6 +31,7 @@ import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 public class ImageLoader {
 
 	public static final String TAG = ImageLoader.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
 	private static final String ERROR_WRONG_ARGUMENTS = "Wrong arguments were passed to displayImage() method (ImageView reference are required)";
 	private static final String ERROR_NOT_INIT = "ImageLoader must be init with configuration before using";
@@ -197,7 +195,7 @@ public class ImageLoader {
             targetSize = getImageSizeScaleTo(imageView);
         else
             targetSize = new ImageSize(100, 100);
-        Log.e(TAG, "Exception decided target size " + targetSize.toString());
+        if (DEBUG) Log.i(TAG, "decided target size " + targetSize.toString());
 		String memoryCacheKey = MemoryCacheKeyUtil.generateKey(uri, targetSize);
 		cacheKeyForImageView.put(imageView, memoryCacheKey);
 
@@ -220,7 +218,7 @@ public class ImageLoader {
 			}
 
 			checkExecutors();
-            Log.e(TAG, "Exception imageLoadingInfo target size " + targetSize.toString());
+            if (DEBUG) Log.i(TAG, "imageLoadingInfo target size " + targetSize.toString());
             ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener);
 			LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(configuration, imageLoadingInfo, new Handler());
 			boolean isImageCachedOnDisc = configuration.discCache.get(uri).exists();

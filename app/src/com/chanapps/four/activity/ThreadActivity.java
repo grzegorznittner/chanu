@@ -65,6 +65,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         if (threadNo > 0) {
         	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, absListView);
+            if (DEBUG) Log.i(TAG, "Started loader for " + boardCode + "/" + threadNo);
             progressBar.setVisibility(View.VISIBLE);
         }
         return cursorLoader;
@@ -89,7 +90,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         final int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
         final int pos = adapterView.getFirstVisiblePosition();
         Intent intent = createIntentForActivity(from, boardName, postId, text, imageUrl, tn_w, tn_h, threadTim, fromParent, pos);
-        if (DEBUG) Log.i(TAG, "Calling thread activity with postId=" + postId);
+        if (DEBUG) Log.i(TAG, "Calling thread activity " + boardName + "/" + postId);
         from.startActivity(intent);
     }
     
@@ -217,7 +218,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (intent.getBooleanExtra(ChanHelper.TRIGGER_BOARD_REFRESH, false)) {
         	FetchChanDataService.scheduleBoardFetch(getBaseContext(), boardCode);
         }
-        if (DEBUG) Log.i(TAG, "Thread no read from intent: " + threadNo);
+        if (DEBUG) Log.i(TAG, "Thread intent is: " + intent.getStringExtra(ChanHelper.BOARD_CODE) + "/" + intent.getLongExtra(ChanHelper.THREAD_NO, 0));
+        if (DEBUG) Log.i(TAG, "Thread loaded: " + boardCode + "/" + threadNo);
     }
 
     @Override
@@ -314,6 +316,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         //ChanPost post = getPost(cursor);
         //if (post == null)
         //    return false;
+        if (DEBUG) Log.i(TAG, "setViewValue for  position=" + cursor.getPosition());
+        if (DEBUG) Log.i(TAG, "                 boardCode=" + cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE)));
+        if (DEBUG) Log.i(TAG, "                    postId=" + cursor.getString(cursor.getColumnIndex(ChanHelper.POST_ID)));
+        if (DEBUG) Log.i(TAG, "                      text=" + cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT)));
+
         switch (view.getId()) {
             case R.id.list_item:
                 return setItem((ViewGroup)view, cursor);
@@ -544,7 +551,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 ChanHelper.safeClearImageView(itemExpandedImageHolder);
 
                 // calculate image dimensions
-                Log.e(TAG, "Exception: post size " + postW + "x" + postH);
+                if (DEBUG) Log.i(TAG, "post size " + postW + "x" + postH);
                 DisplayMetrics displayMetrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
                 int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
@@ -552,7 +559,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 int maxHeight = maxWidth; // to avoid excessively big images
                 itemExpandedImageHolder.setMaxWidth(maxWidth);
                 itemExpandedImageHolder.setMaxHeight(maxHeight);
-                Log.e(TAG, "Exception: max size " + maxWidth + "x" + maxHeight);
+                if (DEBUG) Log.i(TAG, "max size " + maxWidth + "x" + maxHeight);
                 float scaleFactor = 1;
                 if (postW >= postH) {
                     // square or wide image, base sizing on width
@@ -566,7 +573,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 }
                 int width = Math.round(scaleFactor * (float)postW);
                 int height = Math.round(scaleFactor * (float)postH);
-                Log.e(TAG, "Exception: target size " + width + "x" + height);
+                if (DEBUG) Log.i(TAG, "target size " + width + "x" + height);
                 // set layout dimensions
                 ViewGroup.LayoutParams params = itemExpandedImageHolder.getLayoutParams();
                 if (params != null) {

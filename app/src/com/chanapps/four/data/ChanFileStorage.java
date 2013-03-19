@@ -35,9 +35,9 @@ public class ChanFileStorage {
 	    }
 	};
 	@SuppressWarnings("serial")
-	private static Map<Long, ChanThread> threadCache = new LinkedHashMap<Long, ChanThread>(MAX_THREADS_IN_CACHE + 1, .75F, true) {
+	private static Map<String, ChanThread> threadCache = new LinkedHashMap<String, ChanThread>(MAX_THREADS_IN_CACHE + 1, .75F, true) {
 	    // This method is called just after a new entry has been added
-	    public boolean removeEldestEntry(Map.Entry<Long, ChanThread> eldest) {
+	    public boolean removeEldestEntry(Map.Entry<String, ChanThread> eldest) {
 	        return size() > MAX_THREADS_IN_CACHE;
 	    }
 	};
@@ -178,8 +178,8 @@ public class ChanFileStorage {
 		return threadFile.length();
 	}
     
-    public static void resetLastFetched(long threadNo) {
-    	ChanThread currentThread = threadCache.get(threadNo);
+    public static void resetLastFetched(String boardCode, long threadNo) {
+    	ChanThread currentThread = threadCache.get(boardCode + "/" + threadNo);
     	if (currentThread != null) {
     		currentThread.lastFetched = 0;
     	}
@@ -197,11 +197,11 @@ public class ChanFileStorage {
     		// default data should never be stored
     		return;
     	}
-    	ChanThread currentThread = threadCache.get(thread.no);
+    	ChanThread currentThread = threadCache.get(thread.board + "/" + thread.no);
     	if (currentThread != null && currentThread.lastFetched > thread.lastFetched) {
     		return;
     	}
-		threadCache.put(thread.no, thread);
+		threadCache.put(thread.board + "/" + thread.no, thread);
         File boardDir = getBoardCacheDirectory(context, thread.board);
 		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
 			//File tempThreadFile = new File(boardDir, "t_" + thread.no + "tmp" + CACHE_EXT);
@@ -284,11 +284,11 @@ public class ChanFileStorage {
 			if (DEBUG) Log.w(TAG, "Trying to load '" + boardCode + FILE_SEP + threadNo + "' thread! Check stack trace why has it happened.", new Exception());
 			return null;
 		}
-		if (threadCache.containsKey(threadNo)) {
-			ChanThread thread = threadCache.get(threadNo);
+		if (threadCache.containsKey(boardCode + "/" + threadNo)) {
+			ChanThread thread = threadCache.get(boardCode + "/" + threadNo);
 			if (thread == null || thread.defData) {
 				if (DEBUG) Log.w(TAG, "Null thread " + boardCode + "/" + threadNo + " stored in cache, removing key");
-				threadCache.remove(threadNo);
+				threadCache.remove(boardCode + "/" + threadNo);
 			} else {
 				if (DEBUG) Log.i(TAG, "Returning thread " + boardCode + FILE_SEP +  threadNo + " data from cache, posts: " + thread.posts.length);
 				return thread;

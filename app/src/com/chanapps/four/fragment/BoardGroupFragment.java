@@ -45,7 +45,7 @@ public class BoardGroupFragment
 {
 
     private static final String TAG = BoardGroupFragment.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private ChanBoard.Type boardType;
     private ResourceCursorAdapter adapter;
@@ -96,19 +96,19 @@ public class BoardGroupFragment
             ChanWatchlist.setWatchlistFragment(BoardGroupFragment.this);
     }
 
-    //private static final int SELECTOR_WIDTH_PX = 125;
-    //private static final int SELECTOR_HEIGHT_PX = 125;
+    private static final int SELECTOR_WIDTH_PX = 150;
+    private static final int SELECTOR_HEIGHT_PX = 150;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //ImageSize imageSize = new ImageSize(SELECTOR_WIDTH_PX, SELECTOR_HEIGHT_PX); // view pager needs micro images
+        ImageSize imageSize = new ImageSize(SELECTOR_WIDTH_PX, SELECTOR_HEIGHT_PX); // view pager needs micro images
         imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
                 .imageScaleType(ImageScaleType.POWER_OF_2)
-                //.imageSize(imageSize)
-                //.cacheOnDisc()
+                .imageSize(imageSize)
+                .cacheOnDisc()
                 .build();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
@@ -175,16 +175,16 @@ public class BoardGroupFragment
 
     protected void createProgressBar(View layout) {
         progressBar = (ProgressBar)layout.findViewById(R.id.board_progress_bar);
-        if (boardType == ChanBoard.Type.WATCHLIST)
+        //if (boardType == ChanBoard.Type.WATCHLIST)
             progressBar.setVisibility(View.VISIBLE);
-        else
-            progressBar.setVisibility(View.GONE);
+        //else
+        //    progressBar.setVisibility(View.GONE);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.e(TAG, "Exception: boardType=" + boardType + " reloadNextTime=" + reloadNextTime);
+        if (DEBUG) Log.i(TAG, "boardType=" + boardType + " reloadNextTime=" + reloadNextTime);
         if (boardType == ChanBoard.Type.WATCHLIST && reloadNextTime) {
             reloadNextTime = false;
             ensureHandler().sendEmptyMessageDelayed(0, 10);
@@ -351,11 +351,11 @@ public class BoardGroupFragment
                 super.handleMessage(msg);
                 switch (msg.what) {
                     case SET_PROGRESS_START:
-                        if (progressBar != null && boardType == ChanBoard.Type.WATCHLIST)
+                        if (progressBar != null) // && boardType == ChanBoard.Type.WATCHLIST)
                             progressBar.setVisibility(View.VISIBLE);
                         break;
                     case SET_PROGRESS_FINISHED:
-                        if (progressBar != null && boardType == ChanBoard.Type.WATCHLIST)
+                        if (progressBar != null) // && boardType == ChanBoard.Type.WATCHLIST)
                             progressBar.setVisibility(View.GONE);
                         break;
                     default:

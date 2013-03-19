@@ -76,6 +76,7 @@
         <item name="android:numColumns">2</item>
         <item name="android:stretchMode">none</item>
         <item name="android:gravity">top|left</item>
+        <item name="android:smoothScrollbar">true</item>
     </style>
 
     <style name="BoardGridImage" parent="AppTheme">

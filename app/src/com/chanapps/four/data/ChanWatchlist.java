@@ -49,7 +49,7 @@ public class ChanWatchlist {
 
     public static void setWatchlistFragment(BoardGroupFragment fragment) {
         watchlistFragment = new WeakReference<BoardGroupFragment>(fragment);
-        Log.e(TAG, "Exception: set watchlistFragment=" + watchlistFragment + " get=" + watchlistFragment.get());
+        if (DEBUG) Log.i(TAG, "set watchlistFragment=" + watchlistFragment + " get=" + watchlistFragment.get());
     }
 
     private static String getThreadPath(long tim, String boardCode, long threadNo,
@@ -110,7 +110,7 @@ public class ChanWatchlist {
             Log.e(TAG, "Exception: watchlistFragment=" + watchlistFragment + " get=" + (watchlistFragment == null ? null : watchlistFragment.get()));
             if (watchlistFragment != null && watchlistFragment.get() != null) {
                 watchlistFragment.get().reloadNextTime = true;
-                Log.e(TAG, "Exception: set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);
+                if (DEBUG) Log.i(TAG, "set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);
             }
             if (DEBUG) Log.v(TAG, "Thread " + threadPath + " added to watchlist");
             return R.string.thread_added_to_watchlist;
@@ -236,7 +236,7 @@ public class ChanWatchlist {
         editor.commit();
         if (watchlistFragment != null && watchlistFragment.get() != null) {
             watchlistFragment.get().reloadNextTime = true;
-            Log.e(TAG, "Exception: set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);
+            if (DEBUG) Log.i(TAG, "set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);
         }
         if (DEBUG) Log.v(TAG, "Watchlist cleared");
     }
@@ -247,7 +247,7 @@ public class ChanWatchlist {
         deleteThreadsFromWatchlist(ctx, deadTims);
         if (watchlistFragment != null && watchlistFragment.get() != null) {
             watchlistFragment.get().reloadNextTime = true;
-            Log.e(TAG, "Exception: set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);
+            if (DEBUG) Log.i(TAG, "set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);
         }
         if (DEBUG) Log.i(TAG, "Watchlist cleaned");
     }

@@ -252,6 +252,7 @@ public class ChanBoard {
                 {   Type.INTERESTS.toString(),
                         "v", ctx.getString(R.string.board_v),
                         "vg", ctx.getString(R.string.board_vg),
+                        "vr", ctx.getString(R.string.board_vr),
                         "co", ctx.getString(R.string.board_co),
                         "g", ctx.getString(R.string.board_g),
                         "tv", ctx.getString(R.string.board_tv),
@@ -260,8 +261,10 @@ public class ChanBoard {
                         "an", ctx.getString(R.string.board_an),
                         "tg", ctx.getString(R.string.board_tg),
                         "sp", ctx.getString(R.string.board_sp),
+                        "asp", ctx.getString(R.string.board_asp),
                         "sci", ctx.getString(R.string.board_sci),
-                        "int", ctx.getString(R.string.board_int)
+                        "int", ctx.getString(R.string.board_int),
+                        "out", ctx.getString(R.string.board_out)
                 },
                 {   Type.CREATIVE.toString(),
                         "i", ctx.getString(R.string.board_i),
@@ -274,6 +277,7 @@ public class ChanBoard {
                         "fa", ctx.getString(R.string.board_fa),
                         "toy", ctx.getString(R.string.board_toy),
                         "3", ctx.getString(R.string.board_3),
+                        "gd", ctx.getString(R.string.board_gd),
                         "diy", ctx.getString(R.string.board_diy),
                         "wsg", ctx.getString(R.string.board_wsg)
                 },
@@ -284,6 +288,7 @@ public class ChanBoard {
                         "x", ctx.getString(R.string.board_x),
                         "lit", ctx.getString(R.string.board_lit),
                         "adv", ctx.getString(R.string.board_adv),
+                        "lgbt", ctx.getString(R.string.board_lgbt),
                         "mlp", ctx.getString(R.string.board_mlp)
                 },
                 {   Type.ADULT.toString(),

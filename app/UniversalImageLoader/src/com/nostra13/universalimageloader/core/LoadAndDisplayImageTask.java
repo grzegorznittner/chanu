@@ -33,6 +33,7 @@ import com.nostra13.universalimageloader.utils.FileUtils;
 final class LoadAndDisplayImageTask implements Runnable {
 
     private static final String TAG = LoadAndDisplayImageTask.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
 	private static final String LOG_START_DISPLAY_IMAGE_TASK = "Start display image task [%s]";
 	private static final String LOG_LOAD_IMAGE_FROM_INTERNET = "Load image from Internet [%s]";
@@ -61,9 +62,9 @@ final class LoadAndDisplayImageTask implements Runnable {
 		Bitmap bmp;
         try {
             if (imageLoadingInfo != null && imageLoadingInfo.targetSize != null)
-                Log.e(TAG, "Exception loadanddisplay run imageLoadingInfo target size " + imageLoadingInfo.targetSize.toString());
+                if (DEBUG) Log.i(TAG, "loadanddisplay run imageLoadingInfo target size " + imageLoadingInfo.targetSize.toString());
             else
-                Log.e(TAG, "Exception loadanddisplay null target size");
+                if (DEBUG) Log.i(TAG, "loadanddisplay null target size");
             bmp = tryLoadBitmap();
         }
         catch (Exception e) {
@@ -133,9 +134,9 @@ final class LoadAndDisplayImageTask implements Runnable {
 				if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_CACHE_IMAGE_ON_DISC, imageLoadingInfo.memoryCacheKey));
 
                 if (imageLoadingInfo != null && imageLoadingInfo.targetSize != null)
-                    Log.e(TAG, "Exception tryloadbitmap imageLoadingInfo target size " + imageLoadingInfo.targetSize.toString());
+                    if (DEBUG) Log.i(TAG, "tryloadbitmap imageLoadingInfo target size " + imageLoadingInfo.targetSize.toString());
                 else
-                    Log.e(TAG, "Exception tryloadbitmap null target size");
+                    if (DEBUG) Log.i(TAG, "tryloadbitmap null target size");
                 saveImageOnDisc(imageFile);
 				configuration.discCache.put(imageLoadingInfo.uri, imageFile);
 				imageUriForDecoding = imageFile.toURI();

@@ -370,7 +370,6 @@ public class BoardActivity
             launchUrlInBrowser(adUrl);
             return;
         }
-
         ThreadActivity.startActivity(this, adapterView, view, position, id, true);
     }
 
