@@ -717,7 +717,7 @@ public class ChanPost {
 
     public static Object[] makeAdRow(String boardCode, String imageUrl, String clickUrl) {
         return new Object[] {
-                0,
+                2,
                 boardCode,
                 0,
                 imageUrl,
@@ -749,7 +749,7 @@ public class ChanPost {
 
     public static Object[] makeBoardRow(String boardCode, String boardName, int boardImageResourceId) {
         return new Object[] {
-                0,
+                3,
                 boardCode,
                 0,
                 "",

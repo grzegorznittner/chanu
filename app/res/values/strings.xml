@@ -85,7 +85,6 @@
     <string name="view_as_list_menu">View As List</string>
     <string name="post_reply_menu">New Post</string>
     <string name="toggle_image_only_menu">Toggle Image Only</string>
-    <string name="toggle_hide_post_numbers_menu">Toggle Hide Post Numbers</string>
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
     <string name="download_all_images_menu">Prefetch All Images</string>

@@ -711,23 +711,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-/*
-        MenuItem item = menu.findItem(R.id.hide_post_numbers);
-        if (boardCode.equals("b")) {
-            item.setEnabled(false);
-            item.setVisible(false);
-        }
-        else {
-            item.setEnabled(true);
-            item.setVisible(true);
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
-            if (hidePostNumbers)
-                item.setTitle(R.string.pref_hide_post_numbers_turn_off);
-            else
-                item.setTitle(R.string.pref_hide_post_numbers_turn_on);
-        }
-*/
         ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
         return true;
     }
@@ -735,16 +718,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     @Override
     protected void setAbsListViewClass() {
         absListViewClass = ListView.class;
-    }
-
-    protected void toggleHidePostNumbers() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
-        hidePostNumbers = !hidePostNumbers; // invert
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, hidePostNumbers);
-        editor.commit();
-        refreshActivity();
     }
 
     private void postReply() {
@@ -787,11 +760,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             case R.id.view_image_gallery_menu:
                 GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
                 return true;
-/*
-            case R.id.hide_post_numbers:
-                toggleHidePostNumbers();
-                return true;
-*/
             case R.id.watch_thread_menu:
                 addToWatchlist();
                 return true;

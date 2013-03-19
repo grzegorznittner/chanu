@@ -291,7 +291,7 @@ public class UpdateWidgetService extends Service {
 
         private void updateWidgetViews() {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+            boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
             boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.board_widget);
             int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };

@@ -249,7 +249,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 				+ " " + thread.posts.length + " posts, file " + targetFile);
 		
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
         boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         if (thread != null) {
             thread.hidePostNumbers = hidePostNumbers;
@@ -322,7 +322,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	
 	private void notifyDownloadError(ChanThread thread) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, true);
+        boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
         boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         if (thread != null) {
             thread.hidePostNumbers = hidePostNumbers;

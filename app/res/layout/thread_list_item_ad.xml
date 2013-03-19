@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" style="@style/ThreadAdListLayout" android:id="@+id/list_item">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" style="@style/ThreadListLayout" android:id="@+id/list_item">
     <com.chanapps.four.component.StretchyImageView style="@style/ThreadListItemAdImage" android:id="@+id/list_item_image"/>
     <TextView style="@style/ThreadListItemHeadTextAd" android:id="@+id/list_item_ad_header"/>
     <TextView style="@style/ThreadListItemShortTextAd"/>
