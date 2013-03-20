@@ -36,7 +36,7 @@ public class ChanGridSizer {
             ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_LARGE
     };
 
-    private static final int MAX_COLUMN_WIDTH_XLARGE = 300;
+    private static final int MAX_COLUMN_WIDTH_XLARGE = 200;
     private static final int[] MAX_COLUMN_WIDTHS_XLARGE = {
             ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,

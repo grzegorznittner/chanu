@@ -78,6 +78,7 @@
         <item name="android:stretchMode">none</item>
         <item name="android:gravity">top|left</item>
         <item name="android:smoothScrollbar">true</item>
+        <item name="android:cacheColorHint">#00000000</item>
     </style>
 
     <style name="BoardGridImage" parent="AppTheme">

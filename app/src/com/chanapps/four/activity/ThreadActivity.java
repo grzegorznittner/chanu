@@ -66,7 +66,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (threadNo > 0) {
         	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, absListView);
             if (DEBUG) Log.i(TAG, "Started loader for " + boardCode + "/" + threadNo);
-            progressBar.setVisibility(View.VISIBLE);
+            if (progressBar != null)
+                progressBar.setVisibility(View.VISIBLE);
         }
         return cursorLoader;
     }
@@ -485,7 +486,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     private boolean setItemExpandedProgressBar(final ProgressBar b) {
-        b.setVisibility(View.GONE);
+        if (b != null)
+            b.setVisibility(View.GONE);
         return true;
     }
 
@@ -524,7 +526,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         int postH = 0;
         int listPosition = 0;
 
-        public ExpandImageOnClickListener(Cursor cursor,
+        public ExpandImageOnClickListener(final Cursor cursor,
                                           final ImageView itemExpandedImage,
                                           final ProgressBar itemExpandedProgressBar)
         {
@@ -581,6 +583,14 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                     params.height = height;
                 }
                 itemExpandedImageHolder.setVisibility(View.VISIBLE);
+                /*
+                if (itemExpandedProgressBarHolder != null) {
+                    int progressBarPx = ChanGridSizer.dpToPx(getResources().getDisplayMetrics(), 96);
+                    int progressBarPaddingWidth = Math.max(0, width - progressBarPx);
+                    int progressBarPaddingHeight = Math.max(0, height - progressBarPx);
+                    itemExpandedProgressBarHolder.setPadding(0, progressBarPaddingHeight/2, 0, 0);
+                }
+                */
 
                 // calculate auto-scroll on image expand
                 ViewParent parent = v.getParent();
@@ -596,7 +606,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 final int imageOffset = 0;
 
                 // set visibility delayed
-                itemExpandedProgressBarHolder.setVisibility(View.VISIBLE);
+                if (itemExpandedProgressBarHolder != null)
+                    itemExpandedProgressBarHolder.setVisibility(View.VISIBLE);
                 ensureHandler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -620,7 +631,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
                     @Override
                     public void onLoadingFailed(FailReason failReason) {
-                        itemExpandedProgressBarHolder.setVisibility(View.GONE);
+                        if (itemExpandedProgressBarHolder != null)
+                            itemExpandedProgressBarHolder.setVisibility(View.GONE);
                         itemExpandedImageHolder.setVisibility(View.GONE);
                         String msg = String.format(getString(R.string.thread_couldnt_load_image), failReason.toString().toLowerCase().replaceAll("_", " "));
                         Toast.makeText(ThreadActivity.this, msg, Toast.LENGTH_SHORT).show();
@@ -628,14 +640,16 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
                     @Override
                     public void onLoadingComplete(Bitmap loadedImage) {
-                        itemExpandedProgressBarHolder.setVisibility(View.GONE);
+                        if (itemExpandedProgressBarHolder != null)
+                            itemExpandedProgressBarHolder.setVisibility(View.GONE);
                         absListView.smoothScrollBy(imageOffset, 250);
                         //absListView.smoothScrollToPositionFromTop(listPosition, parentOffset);
                     }
 
                     @Override
                     public void onLoadingCancelled() {
-                        itemExpandedProgressBarHolder.setVisibility(View.GONE);
+                        if (itemExpandedProgressBarHolder != null)
+                            itemExpandedProgressBarHolder.setVisibility(View.GONE);
                         itemExpandedImageHolder.setVisibility(View.GONE);
                         Toast.makeText(ThreadActivity.this, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
                     }
@@ -751,7 +765,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 //                }
                 return true;
             case R.id.refresh_thread_menu:
-                progressBar.setVisibility(View.VISIBLE);
+                if (progressBar != null)
+                    progressBar.setVisibility(View.VISIBLE);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.post_reply_menu:

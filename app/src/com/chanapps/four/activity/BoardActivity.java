@@ -34,6 +34,7 @@ import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 public class BoardActivity
         extends FragmentActivity
@@ -79,11 +80,16 @@ public class BoardActivity
         return intent;
     }
 
+    static private int THUMB_WIDTH_PX = 150;
+    static private int THUMB_HEIGHT_PX = 150;
+
     protected void initImageLoader() {
+        ImageSize imageSize = new ImageSize(THUMB_WIDTH_PX, THUMB_HEIGHT_PX); // view pager needs micro images
         imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.drawable.stub_image)
                 .imageScaleType(ImageScaleType.POWER_OF_2)
+                .imageSize(imageSize)
                 .cacheOnDisc()
                 .build();
     }
@@ -189,7 +195,8 @@ public class BoardActivity
 	}
 
     public void setProgressFinished() {
-        progressBar.setVisibility(View.GONE);
+        if (progressBar != null)
+            progressBar.setVisibility(View.GONE);
     }
 
     protected String getLastPositionName() {
@@ -335,7 +342,8 @@ public class BoardActivity
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
-        progressBar.setVisibility(View.VISIBLE);
+        if (progressBar != null)
+            progressBar.setVisibility(View.VISIBLE);
         cursorLoader = new BoardCursorLoader(this, boardCode);
         return cursorLoader;
 	}
@@ -356,7 +364,8 @@ public class BoardActivity
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
-        progressBar.setVisibility(View.VISIBLE);
+        if (progressBar != null)
+            progressBar.setVisibility(View.VISIBLE);
 		adapter.swapCursor(null);
 	}
 
@@ -387,7 +396,8 @@ public class BoardActivity
                 NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.refresh_board_menu:
-                progressBar.setVisibility(View.VISIBLE);
+                if (progressBar != null)
+                    progressBar.setVisibility(View.VISIBLE);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.new_thread_menu:

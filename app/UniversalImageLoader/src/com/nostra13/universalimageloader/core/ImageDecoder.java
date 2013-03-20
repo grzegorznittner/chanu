@@ -73,6 +73,8 @@ public class ImageDecoder {
 	public Bitmap decode(ImageSize targetSize, ImageScaleType scaleType, ScaleType viewScaleType) throws IOException {
 		Options decodeOptions = getBitmapOptionsForImageDecoding(targetSize, scaleType, viewScaleType);
 		InputStream imageStream = imageDownloader.getStream(imageUri);
+        if (imageStream == null)
+            return null;
 		try {
 			return BitmapFactory.decodeStream(imageStream, null, decodeOptions);
 		} catch(OutOfMemoryError ooe) {
@@ -97,10 +99,13 @@ public class ImageDecoder {
 		Options options = new Options();
 		options.inJustDecodeBounds = true;
 		InputStream imageStream = imageDownloader.getStream(imageUri);
+        if (imageStream == null)
+            return 1;
 		try {
-			BitmapFactory.decodeStream(imageStream, null, options);
-		} finally {
-			imageStream.close();
+            BitmapFactory.decodeStream(imageStream, null, options);
+        } finally {
+			if (imageStream != null)
+                imageStream.close();
 		}
 
 		int scale = 1;

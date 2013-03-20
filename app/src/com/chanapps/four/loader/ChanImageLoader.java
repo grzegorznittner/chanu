@@ -13,6 +13,8 @@ import com.chanapps.four.data.ChanHelper;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
 /**
  * Created with IntelliJ IDEA.
@@ -74,7 +76,7 @@ public class ChanImageLoader {
                 if (DEBUG) Log.i(TAG, "calling imageloader for " + imageUrl);
                 ChanHelper.safeClearImageView(iv);
                 iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
-                imageLoader.displayImage(imageUrl, iv, displayImageOptions); // load async
+                imageLoader.displayImage(imageUrl, iv, displayImageOptions, new ThumbnailImageLoadingListener(iv)); // load async
             }
         } catch (NumberFormatException nfe) {
             Log.e(TAG, "Couldn't set image view after number format exception with url=" + imageUrl, nfe);
@@ -83,6 +85,36 @@ public class ChanImageLoader {
         catch (Exception e) {
             Log.e(TAG, "Exception setting image view with url=" + imageUrl, e);
             ChanHelper.safeClearImageView(iv);
+        }
+    }
+
+    private static class ThumbnailImageLoadingListener implements ImageLoadingListener {
+
+        ImageView imageView = null;
+
+        public ThumbnailImageLoadingListener(final ImageView imageView) {
+            this.imageView = imageView;
+        }
+
+        public void onLoadingStarted() {
+            if (imageView != null)
+                imageView.setImageResource(R.drawable.loading_150);
+        }
+
+        /** Is called when an error was occurred during image loading */
+        public void onLoadingFailed(FailReason failReason) {
+            if (imageView != null)
+                imageView.setImageResource(R.drawable.cancel_128);
+        }
+
+        /** Is called when image is loaded successfully and displayed in {@link ImageView} */
+        public void onLoadingComplete(Bitmap loadedImage) {
+        }
+
+        /** Is called when image loading task was cancelled because {@link ImageView} was reused in newer task */
+        public void onLoadingCancelled() {
+            if (imageView != null)
+                imageView.setImageResource(R.drawable.cancel_128);
         }
     }
 }
