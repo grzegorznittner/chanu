@@ -76,8 +76,8 @@
 
         <com.chanapps.four.component.CacheSizePreference
                 android:key="pref_cache_size"
-                android:title="Cache size"
-                android:summary="Adjust cache size"
+                android:title="@string/pref_cache_size"
+                android:summary="@string/pref_cache_size_summ"
                 chanapps:min="512"
                 chanapps:unitsLeft=""
                 chanapps:unitsRight="MB"
@@ -87,6 +87,16 @@
                 android:key="pref_clear_cache"
                 android:title="@string/pref_clear_cache"
                 android:summary="@string/pref_clear_cache_summ" />
+
+        <com.chanapps.four.component.WatchlistRetentionPreference
+                android:key="pref_watchlist_retention"
+                android:title="@string/pref_watchlist_retention"
+                android:summary="@string/pref_watchlist_retention_summ"
+                chanapps:min="0"
+                chanapps:max="365"
+                chanapps:unitsLeft=""
+                chanapps:unitsRight="days"
+                />
 
         <Preference
                 android:key="pref_clear_watchlist"

@@ -22,7 +22,9 @@ import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.ToastRunnable;
+import com.chanapps.four.component.WatchlistRetentionPreference;
 import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.service.FetchChanDataService;
 
@@ -40,7 +42,7 @@ public class ChanWatchlist {
     
     public static final String DEFAULT_WATCHTEXT = "new thread";
 
-    public static final long MAX_DEAD_THREAD_RETENTION_MS = 0; // clear immediately
+    public static final long MAX_DEAD_THREAD_RETENTION_DEFAULT_MS = 1000 * 60 * 60 * 24 * 30; // one month
 
     private static final String FIELD_SEPARATOR = "\t";
     private static final String FIELD_SEPARATOR_REGEX = "\\t";
@@ -289,11 +291,19 @@ public class ChanWatchlist {
         return threadPathList;
     }
 
+    public static long getWatchlistRetentionMs(Context ctx) {
+        int days = PreferenceManager.getDefaultSharedPreferences(ctx).getInt(
+                SettingsActivity.PREF_WATCHLIST_RETENTION,
+                WatchlistRetentionPreference.DEFAULT_VALUE);
+        return 1000 * 60 * 60 * 24 * days;
+    }
+
     public static List<Long> getDeadTims(Context ctx, boolean cleanAllDeadThreads) {
         Set<String> threadPaths = new HashSet<String>();
         threadPaths.addAll(getWatchlistFromPrefs(ctx));
         List<Long> deadTims = new ArrayList<Long>();
         long now = (new Date()).getTime();
+        long deadThreadRetentionMs = getWatchlistRetentionMs(ctx);
         for (String threadPath : threadPaths) {
             String[] threadComponents = getThreadPathComponents(threadPath);
             long tim = Long.valueOf(threadComponents[0]);
@@ -302,7 +312,7 @@ public class ChanWatchlist {
             try {
                 ChanThread thread = ChanFileStorage.loadThreadData(ctx, boardCode, threadNo);
                 long interval = now - thread.lastFetched;
-                boolean threadIsOld = interval > MAX_DEAD_THREAD_RETENTION_MS;
+                boolean threadIsOld = interval > deadThreadRetentionMs;
                 if (thread.isDead && (cleanAllDeadThreads || threadIsOld))
                     deadTims.add(tim);
             }
