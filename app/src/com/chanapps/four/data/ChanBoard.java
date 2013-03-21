@@ -230,21 +230,23 @@ public class ChanBoard {
     public static int getImageResourceId(String boardCode, long postNo, int index) { // allows special-casing first (usually sticky) and multiple
         int imageId = 0;
         String fileRoot;
-        if (index == 0) {
+        if (index == 0)
             fileRoot = boardCode;
-        }
-        else if (index > 0) {
+        else if (index > 0)
             fileRoot = boardCode + "_" + (index+1);
-        }
         else if (isImagelessSticky(boardCode, postNo))
             fileRoot = boardCode + "_" + postNo;
         else
             fileRoot = boardCode;
+        if (boardCode.equals("3") || boardCode.equals("int")) // avoid collisions
+            fileRoot = "board_" + fileRoot;
         try {
             imageId = R.drawable.class.getField(fileRoot).getInt(null);
         } catch (Exception e) {
             try {
-                fileRoot = "board_" + boardCode;
+                fileRoot = boardCode;
+                if (boardCode.equals("3") || boardCode.equals("int")) // avoid collisions
+                    fileRoot = "board_" + fileRoot;
                 imageId = R.drawable.class.getField(fileRoot).getInt(null);
             } catch (Exception e1) {
                 imageId = R.drawable.stub_image;

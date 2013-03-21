@@ -205,7 +205,6 @@ public class ChanHelper {
     }
 
     public static void safeClearImageView(ImageView v) {
-        /*
         Drawable d = v.getDrawable();
         if (d != null && d instanceof BitmapDrawable) {
             BitmapDrawable bd = (BitmapDrawable)d;
@@ -213,7 +212,6 @@ public class ChanHelper {
             if (b != null)
                 b.recycle();
         }
-        */
         v.setImageBitmap(null);
     }
 

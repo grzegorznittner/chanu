@@ -30,9 +30,9 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <!-- <item name="android:background">#000000</item> -->
-        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">0dp</item>
-        <item name="android:paddingLeft">2dp</item>
+        <item name="android:paddingLeft">0dp</item>
         <item name="android:paddingRight">0dp</item>
     </style>
 
@@ -68,12 +68,12 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_centerInParent">true</item>
-        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingTop">0dp</item>
         <item name="android:paddingLeft">0dp</item>
-        <item name="android:paddingBottom">2dp</item>
+        <item name="android:paddingBottom">0dp</item>
         <item name="android:paddingRight">0dp</item>
-        <item name="android:verticalSpacing">1dp</item>
-        <item name="android:horizontalSpacing">1dp</item>
+        <item name="android:verticalSpacing">0dp</item>
+        <item name="android:horizontalSpacing">0dp</item>
         <item name="android:numColumns">2</item>
         <item name="android:stretchMode">none</item>
         <item name="android:gravity">top|left</item>
@@ -108,63 +108,66 @@
         <item name="android:background">@color/PaletteBlackHalfOpacity</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:lines">1</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="BoardGridTextImageOverlayWrapper" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentLeft">true</item>
     </style>
 
     <style name="BoardGridTextImageTopOverlay" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">30dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingLeft">2dp</item>
-        <item name="android:paddingRight">2dp</item>
-        <item name="android:paddingBottom">0dp</item>
-        <item name="android:gravity">center_horizontal|top</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:background">@color/PaletteBlackHalfOpacity</item>
-        <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:lines">2</item>
-    </style>
-
-    <style name="BoardGridTextImageOverlay" parent="AppTheme">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">22dp</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_below">@+id/grid_item_text_top</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingLeft">2dp</item>
-        <item name="android:paddingRight">2dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
         <item name="android:paddingBottom">0dp</item>
         <item name="android:gravity">center_horizontal|top</item>
         <item name="android:textSize">12sp</item>
         <item name="android:background">@color/PaletteBlackHalfOpacity</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:lines">1</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="BoardGridTextImageOverlay" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_below">@+id/grid_item_text_top</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:gravity">center_horizontal|top</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:background">@color/PaletteBlackHalfOpacity</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:lines">1</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="BoardGridTextAdImageOverlay" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_height">36dp</item>
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingLeft">2dp</item>
-        <item name="android:paddingRight">2dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
         <item name="android:paddingBottom">0dp</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">12sp</item>
         <item name="android:background">@color/PaletteBlackHalfOpacity</item>
         <item name="android:textColor">@color/PaletteBlue</item>
         <item name="android:text">@string/jlist_ad_message_compact</item>
-        <item name="android:textStyle">bold</item>
         <item name="android:lines">1</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="BoardGridCountryFlag" parent="AppTheme">
@@ -187,7 +190,7 @@
         <item name="android:layout_marginRight">0dp</item>
         <item name="android:orientation">vertical</item>
         <item name="android:padding">0dp</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="ThreadAdListLayout" parent="ThreadListLayout">
@@ -249,7 +252,7 @@
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:layout_below">@+id/list_item_image</item>
         <item name="android:gravity">center</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
     </style>
 
@@ -264,7 +267,7 @@
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_toRightOf">@+id/list_item_image</item>
         <item name="android:gravity">top|left</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
     </style>
 
@@ -282,7 +285,7 @@
         <item name="android:layout_toRightOf">@+id/list_item_image</item>
         <item name="android:layout_below">@+id/list_item_header</item>
         <item name="android:gravity">top|left</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
         <!-- <item name="android:textIsSelectable">true</item>  -->
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
@@ -298,7 +301,7 @@
         <item name="android:paddingRight">8dp</item>
         <item name="android:gravity">top|right</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:text">10:12 AM</item>
     </style>
 
@@ -313,7 +316,7 @@
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:gravity">top|left</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
     </style>
 
@@ -326,7 +329,7 @@
         <item name="android:layout_marginRight">40dp</item>
         <item name="android:layout_below">@+id/list_item_header</item>
         <item name="android:gravity">top|left</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
         <!--<item name="android:textIsSelectable">true</item>-->
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>

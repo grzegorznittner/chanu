@@ -29,6 +29,7 @@ import java.nio.FloatBuffer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.microedition.khronos.opengles.GL11;
+import javax.security.auth.login.LoginException;
 
 // NinePatchTexture is a texture backed by a NinePatch resource.
 //
@@ -61,6 +62,7 @@ public class NinePatchTexture extends ResourceTexture {
                 ? null
                 : NinePatchChunk.deserialize(bitmap.getNinePatchChunk());
         if (mChunk == null) {
+            Log.e(TAG, "Invalid nine-patch image: " + mResId);
             throw new RuntimeException("invalid nine-patch image: " + mResId);
         }
         return bitmap;

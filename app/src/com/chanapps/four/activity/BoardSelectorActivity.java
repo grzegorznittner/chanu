@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
 import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.adapter.TabsAdapter;
 import com.chanapps.four.component.DispatcherHelper;
@@ -52,6 +53,8 @@ public class BoardSelectorActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DEBUG) Log.v(TAG, "onCreate");
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar loader
+
         NetworkProfileManager.instance().activityChange(this);
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(this); // always check since state may have changed
         scheduleGlobalAlarm();

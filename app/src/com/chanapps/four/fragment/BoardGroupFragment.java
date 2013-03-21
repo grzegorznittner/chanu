@@ -12,10 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.Loader;
 import android.text.Html;
 import android.util.Log;
-import android.view.Display;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.*;
 
 import com.chanapps.four.activity.*;
@@ -51,6 +48,7 @@ public class BoardGroupFragment
     private ResourceCursorAdapter adapter;
     private ProgressBar progressBar;
     private AbsListView absListView;
+    private TextView emptyWatchlistText;
     private int columnWidth = 0;
     private int columnHeight = 0;
 
@@ -168,17 +166,12 @@ public class BoardGroupFragment
         super.onCreateView(inflater, container, savedInstanceState);
         if (DEBUG) Log.d(TAG, "BoardGroupFragment " + boardType + " onCreateView");
         View layout = inflater.inflate(R.layout.board_selector_grid_layout, container, false);
-        createProgressBar(layout);
+        progressBar = (ProgressBar)layout.findViewById(R.id.board_progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
+        if (boardType == ChanBoard.Type.WATCHLIST)
+            emptyWatchlistText = (TextView)layout.findViewById(R.id.board_empty_watchlist);
         createAbsListView(layout);
         return layout;
-    }
-
-    protected void createProgressBar(View layout) {
-        progressBar = (ProgressBar)layout.findViewById(R.id.board_progress_bar);
-        //if (boardType == ChanBoard.Type.WATCHLIST)
-            progressBar.setVisibility(View.VISIBLE);
-        //else
-        //    progressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -227,6 +220,8 @@ public class BoardGroupFragment
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         cursorLoader = createCursorLoader();
         ensureHandler().sendEmptyMessage(LoaderHandler.SET_PROGRESS_START);
+        if (getActivity() != null)
+            getActivity().setProgressBarIndeterminateVisibility(true);
         return cursorLoader;
     }
 
@@ -235,6 +230,13 @@ public class BoardGroupFragment
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
         adapter.swapCursor(data);
         ensureHandler().sendEmptyMessage(LoaderHandler.SET_PROGRESS_FINISHED);
+        if (boardType == ChanBoard.Type.WATCHLIST)
+            if (data.getCount() <= 0)
+                emptyWatchlistText.setVisibility(View.VISIBLE);
+            else
+                emptyWatchlistText.setVisibility(View.GONE);
+        if (getActivity() != null)
+            getActivity().setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
@@ -242,6 +244,8 @@ public class BoardGroupFragment
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
         adapter.swapCursor(null);
         ensureHandler().sendEmptyMessage(LoaderHandler.SET_PROGRESS_START);
+        if (getActivity() != null)
+            getActivity().setProgressBarIndeterminateVisibility(true);
     }
 
     @Override

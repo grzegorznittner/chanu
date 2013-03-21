@@ -76,7 +76,8 @@ public class ChanImageLoader {
                 if (DEBUG) Log.i(TAG, "calling imageloader for " + imageUrl);
                 ChanHelper.safeClearImageView(iv);
                 iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
-                imageLoader.displayImage(imageUrl, iv, displayImageOptions, new ThumbnailImageLoadingListener(iv)); // load async
+                //imageLoader.displayImage(imageUrl, iv, displayImageOptions, new ThumbnailImageLoadingListener(iv)); // load async
+                imageLoader.displayImage(imageUrl, iv, displayImageOptions); // load async
             }
         } catch (NumberFormatException nfe) {
             Log.e(TAG, "Couldn't set image view after number format exception with url=" + imageUrl, nfe);

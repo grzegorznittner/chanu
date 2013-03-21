@@ -116,11 +116,24 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
                 default:
         			options.inSampleSize = computeImageScale(100, 100);
     			}
-    			    			
-    			InputStream imageStream = new FileInputStream(imageFile);
+
+                InputStream imageStream;
+    			try {
+                    imageStream = new FileInputStream(imageFile);
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "Couldn't load image file " + imageFile, e);
+                    return null;
+                }
+
     			try {
     				bitmap = BitmapFactory.decodeStream(imageStream, null, options);
-    			} finally {
+    			}
+                catch (Exception e) {
+                    Log.e(TAG, "Couldn't decode bitmap file " + imageFile, e);
+                    return null;
+                }
+                finally {
     				IOUtils.closeQuietly(imageStream);
     			}
 	            //return ensureGLCompatibleBitmap(bitmap);
@@ -135,11 +148,26 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 			// decode image size
 			Options options = new Options();
 			options.inJustDecodeBounds = true;
-			InputStream imageStream = new FileInputStream(imageFile);
+
+            InputStream imageStream;
+            try {
+                imageStream = new FileInputStream(imageFile);
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't open image file " + imageFile, e);
+                return 1;
+            }
+            if (imageStream == null)
+                return 1;
+
 			try {
 				BitmapFactory.decodeStream(imageStream, null, options);
-			} finally {
-				IOUtils.closeQuietly(imageStream);
+			} catch(Exception e) {
+                Log.e(TAG, "Couldn't decode image file " + imageFile, e);
+                return 1;
+            }
+            finally {
+            	IOUtils.closeQuietly(imageStream);
 			}
 
 			int scale = 1;
