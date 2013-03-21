@@ -28,7 +28,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
 
     public static final String WIDGET_CACHE_DIR = "widgets";
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static int[] getAppWidgetIds(Context context) {
         ComponentName widgetProvider = new ComponentName(context, BoardWidgetProvider.class);

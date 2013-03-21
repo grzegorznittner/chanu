@@ -109,7 +109,7 @@ public class ChanWatchlist {
             Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
             savedWatchlist.add(threadPath);
             saveWatchlist(ctx, savedWatchlist);
-            Log.e(TAG, "Exception: watchlistFragment=" + watchlistFragment + " get=" + (watchlistFragment == null ? null : watchlistFragment.get()));
+            if (DEBUG) Log.i(TAG, "watchlistFragment=" + watchlistFragment + " get=" + (watchlistFragment == null ? null : watchlistFragment.get()));
             if (watchlistFragment != null && watchlistFragment.get() != null) {
                 watchlistFragment.get().reloadNextTime = true;
                 if (DEBUG) Log.i(TAG, "set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);

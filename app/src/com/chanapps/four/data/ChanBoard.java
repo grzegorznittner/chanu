@@ -219,10 +219,24 @@ public class ChanBoard {
         return getImageResourceId(boardCode, 0);
     }
 
-    public static int getImageResourceId(String boardCode, long postNo) { // allows special-casing first (usually sticky) and multiple
+    public static int getIndexedImageResourceId(String boardCode, int index) {
+        return getImageResourceId(boardCode, 0, index);
+    }
+
+    public static int getImageResourceId(String boardCode, long postNo) {
+        return getImageResourceId(boardCode, postNo, -1);
+    }
+
+    public static int getImageResourceId(String boardCode, long postNo, int index) { // allows special-casing first (usually sticky) and multiple
         int imageId = 0;
         String fileRoot;
-        if (isImagelessSticky(boardCode, postNo))
+        if (index == 0) {
+            fileRoot = boardCode;
+        }
+        else if (index > 0) {
+            fileRoot = boardCode + "_" + (index+1);
+        }
+        else if (isImagelessSticky(boardCode, postNo))
             fileRoot = boardCode + "_" + postNo;
         else
             fileRoot = boardCode;

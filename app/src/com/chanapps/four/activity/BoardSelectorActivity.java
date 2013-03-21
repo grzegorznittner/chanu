@@ -51,9 +51,9 @@ public class BoardSelectorActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (DEBUG) Log.v(TAG, "onCreate");
         NetworkProfileManager.instance().activityChange(this);
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(this); // always check since state may have changed
-        if (DEBUG) Log.v(TAG, "onCreate");
         scheduleGlobalAlarm();
 
         Intent intent = getIntent();

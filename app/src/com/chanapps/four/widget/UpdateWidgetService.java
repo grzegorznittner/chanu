@@ -43,7 +43,7 @@ public class UpdateWidgetService extends Service {
 
     public static final String TAG = UpdateWidgetService.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -270,8 +270,7 @@ public class UpdateWidgetService extends Service {
         }
 
         private Bitmap loadDefaultBoardBitmap(int i) {
-            ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
-            int imageResourceId = board.iconId;
+            int imageResourceId = ChanBoard.getIndexedImageResourceId(boardCode, i);
             return BitmapFactory.decodeResource(getResources(), imageResourceId);
         }
 
