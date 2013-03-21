@@ -324,7 +324,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 thread.isDead = false;
                 thread.lastFetched = 0;
             } else {
-                if (thread.isDead) {
+                if (thread.isDead && thread.posts.length == thread.replies) {
                     if (DEBUG) Log.i(TAG, "Dead thread retrieved from storage, therefore service is terminating");
                     return;
                 }
