@@ -19,7 +19,7 @@ public interface ClickableLoaderActivity extends
 //        AdapterView.OnItemLongClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,
         AbstractBoardCursorAdapter.ViewBinder {
+
     public LoaderManager getLoaderManager();
-    public void setProgressFinished();
-//    public GridView getGridView();
+
 }

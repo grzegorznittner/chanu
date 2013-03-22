@@ -106,7 +106,7 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
         if (v != null && v instanceof RelativeLayout && postNo != 0)
             setHighlightViews(v, tag, postNo);
         else
-            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteBlack));
+            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteTransparent));
 
         bindView(v, context, cursor);
         return v;

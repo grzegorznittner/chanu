@@ -48,6 +48,8 @@ public class BoardActivity
     public static final int LOADER_RESTART_INTERVAL_MED_MS = 2000;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 1000;
     public static final int LOADER_RESTART_INTERVAL_MICRO_MS = 100;
+    private static final int THUMB_WIDTH_PX = 150;
+    private static final int THUMB_HEIGHT_PX = 150;
 
     protected AbstractBoardCursorAdapter adapter;
     protected AbsListView absListView;
@@ -61,6 +63,8 @@ public class BoardActivity
     protected SharedPreferences prefs;
     protected long tim;
     protected String boardCode;
+    protected int columnWidth = 0;
+    protected int columnHeight = 0;
 
     public static void startActivity(Activity from, String boardCode) {
         Intent intent = createIntentForActivity(from, boardCode);
@@ -80,9 +84,6 @@ public class BoardActivity
         return intent;
     }
 
-    static private int THUMB_WIDTH_PX = 150;
-    static private int THUMB_HEIGHT_PX = 150;
-
     protected void initImageLoader() {
         ImageSize imageSize = new ImageSize(THUMB_WIDTH_PX, THUMB_HEIGHT_PX); // view pager needs micro images
         imageLoader = ChanImageLoader.getInstance(getApplicationContext());
@@ -98,6 +99,7 @@ public class BoardActivity
     protected void onCreate(Bundle savedInstanceState) {
 		if (DEBUG) Log.v(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         loadFromIntentOrPrefs();
         initImageLoader();
         createAbsListView();
@@ -106,12 +108,17 @@ public class BoardActivity
         if (DEBUG) Log.v(TAG, "onCreate init loader");
         progressBar = (ProgressBar)findViewById(R.id.board_progress_bar);
         getLoaderManager().initLoader(0, null, this);
-        progressBar.setVisibility(View.VISIBLE);
     }
 
-    protected int columnWidth = 0;
-    protected int columnHeight = 0;
-
+    protected void setProgressOn(boolean progressOn) {
+        setProgressBarIndeterminateVisibility(progressOn);
+        if (progressBar != null) {
+            if (progressOn)
+                progressBar.setVisibility(View.VISIBLE);
+            else
+                progressBar.setVisibility(View.GONE);
+        }
+    }
     protected void sizeGridToDisplay() {
         Display display = getWindowManager().getDefaultDisplay();
         ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.BOARD);
@@ -190,14 +197,8 @@ public class BoardActivity
 		Loader loader = getLoaderManager().getLoader(0);
 		if (loader == null) {
 			getLoaderManager().initLoader(0, null, this);
-            progressBar.setVisibility(View.VISIBLE);
 		}
 	}
-
-    public void setProgressFinished() {
-        if (progressBar != null)
-            progressBar.setVisibility(View.GONE);
-    }
 
     protected String getLastPositionName() {
         return ChanHelper.LAST_BOARD_POSITION;
@@ -342,8 +343,7 @@ public class BoardActivity
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
-        if (progressBar != null)
-            progressBar.setVisibility(View.VISIBLE);
+        setProgressOn(true);
         cursorLoader = new BoardCursorLoader(this, boardCode);
         return cursorLoader;
 	}
@@ -352,20 +352,19 @@ public class BoardActivity
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
 		adapter.swapCursor(data);
-        setProgressFinished();
         if (absListView != null) {
             if (scrollOnNextLoaderFinished > 0) {
                 absListView.setSelection(scrollOnNextLoaderFinished);
                 scrollOnNextLoaderFinished = 0;
             }
         }
+        setProgressOn(false);
     }
 
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
-        if (progressBar != null)
-            progressBar.setVisibility(View.VISIBLE);
+        setProgressOn(true);
 		adapter.swapCursor(null);
 	}
 
@@ -396,8 +395,6 @@ public class BoardActivity
                 NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.refresh_board_menu:
-                if (progressBar != null)
-                    progressBar.setVisibility(View.VISIBLE);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.new_thread_menu:

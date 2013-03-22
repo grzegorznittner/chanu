@@ -66,8 +66,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (threadNo > 0) {
         	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, absListView);
             if (DEBUG) Log.i(TAG, "Started loader for " + boardCode + "/" + threadNo);
-            if (progressBar != null)
-                progressBar.setVisibility(View.VISIBLE);
+            setProgressOn(true);
+        }
+        else {
+            cursorLoader = null;
+            setProgressOn(false);
         }
         return cursorLoader;
     }
@@ -370,7 +373,13 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        tv.setText(Html.fromHtml(text));
+        if (text == null || text.isEmpty()) {
+            tv.setVisibility(View.GONE);
+        }
+        else {
+            tv.setText(Html.fromHtml(text));
+            tv.setVisibility(View.VISIBLE);
+        }
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0)
             tv.setOnClickListener(new AdOnClickListener(cursor));
@@ -417,6 +426,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             tv.setVisibility(View.GONE);
             return true;
         }
+        /*
         int post_tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
         int post_tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
         long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
@@ -439,6 +449,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 }
             }
         }
+        */
         tv.setText(text);
         tv.setVisibility(View.VISIBLE);
         tv.setOnClickListener(new ExpandImageOnClickListener(cursor, itemExpandedImage, itemExpandedProgressBar));
@@ -461,6 +472,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                                  final ImageView itemExpandedImage,
                                  final ProgressBar itemExpandedProgressBar)
     {
+        /*
         int post_tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
         int post_tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
         long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
@@ -474,6 +486,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             params.width = Math.max(MIN_THUMBNAIL_WIDTH_PX, Math.round(thumbnailScaleFactor * (float)post_tn_w));
             params.height = Math.round(thumbnailScaleFactor * (float)post_tn_h);
         }
+        */
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         int imageResourceId = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_THUMBNAIL_ID));
         ChanImageLoader.smartSetImageView(iv, imageUrl, displayImageOptions, imageResourceId);
@@ -556,8 +569,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                 if (DEBUG) Log.i(TAG, "post size " + postW + "x" + postH);
                 DisplayMetrics displayMetrics = new DisplayMetrics();
                 getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
-                int maxWidth = displayMetrics.widthPixels - padding;
+                //int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
+                int maxWidth = displayMetrics.widthPixels;
                 int maxHeight = maxWidth; // to avoid excessively big images
                 itemExpandedImageHolder.setMaxWidth(maxWidth);
                 itemExpandedImageHolder.setMaxHeight(maxHeight);
@@ -765,8 +778,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 //                }
                 return true;
             case R.id.refresh_thread_menu:
-                if (progressBar != null)
-                    progressBar.setVisibility(View.VISIBLE);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.post_reply_menu:

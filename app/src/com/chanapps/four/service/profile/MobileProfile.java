@@ -214,7 +214,6 @@ public class MobileProfile extends AbstractNetworkProfile {
 			Handler handler = activity.getChanHandler();
 			if (handler != null) {
 				if (DEBUG) Log.w(TAG, "Reloading board");
-				handler.sendEmptyMessage(LoaderHandler.SET_PROGRESS_FINISHED);
 				handler.sendEmptyMessage(0);
 			}
 		}
@@ -233,8 +232,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 	@Override
 	public void onThreadRefreshed(Context context, Handler handler, String board, long threadId) {
 		super.onThreadRefreshed(context, handler, board, threadId);
-		if (!FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId))
-            handler.sendEmptyMessage(LoaderHandler.SET_PROGRESS_FINISHED);
+		FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId);
 	}
 
 	@Override

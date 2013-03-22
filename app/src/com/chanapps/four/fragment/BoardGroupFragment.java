@@ -1,6 +1,7 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -46,8 +47,8 @@ public class BoardGroupFragment
 
     private ChanBoard.Type boardType;
     private ResourceCursorAdapter adapter;
-    private ProgressBar progressBar;
     private AbsListView absListView;
+    private ProgressBar progressBar;
     private TextView emptyWatchlistText;
     private int columnWidth = 0;
     private int columnHeight = 0;
@@ -167,7 +168,6 @@ public class BoardGroupFragment
         if (DEBUG) Log.d(TAG, "BoardGroupFragment " + boardType + " onCreateView");
         View layout = inflater.inflate(R.layout.board_selector_grid_layout, container, false);
         progressBar = (ProgressBar)layout.findViewById(R.id.board_progress_bar);
-        progressBar.setVisibility(View.VISIBLE);
         if (boardType == ChanBoard.Type.WATCHLIST)
             emptyWatchlistText = (TextView)layout.findViewById(R.id.board_empty_watchlist);
         createAbsListView(layout);
@@ -215,13 +215,22 @@ public class BoardGroupFragment
         }
     }
 
+    private void setProgressOn(boolean progressOn) {
+        if (getActivity() != null)
+            getActivity().setProgressBarIndeterminateVisibility(progressOn);
+        if (progressBar != null) {
+            if (progressOn)
+                progressBar.setVisibility(View.VISIBLE);
+            else
+                progressBar.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         cursorLoader = createCursorLoader();
-        ensureHandler().sendEmptyMessage(LoaderHandler.SET_PROGRESS_START);
-        if (getActivity() != null)
-            getActivity().setProgressBarIndeterminateVisibility(true);
+        setProgressOn(true);
         return cursorLoader;
     }
 
@@ -229,23 +238,19 @@ public class BoardGroupFragment
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
         adapter.swapCursor(data);
-        ensureHandler().sendEmptyMessage(LoaderHandler.SET_PROGRESS_FINISHED);
         if (boardType == ChanBoard.Type.WATCHLIST)
             if (data.getCount() <= 0)
                 emptyWatchlistText.setVisibility(View.VISIBLE);
             else
                 emptyWatchlistText.setVisibility(View.GONE);
-        if (getActivity() != null)
-            getActivity().setProgressBarIndeterminateVisibility(false);
+        setProgressOn(false);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
         adapter.swapCursor(null);
-        ensureHandler().sendEmptyMessage(LoaderHandler.SET_PROGRESS_START);
-        if (getActivity() != null)
-            getActivity().setProgressBarIndeterminateVisibility(true);
+        setProgressOn(true);
     }
 
     @Override
@@ -342,9 +347,6 @@ public class BoardGroupFragment
 
     public class LoaderHandler extends Handler {
 
-        public static final int SET_PROGRESS_START = 0x02;
-        public static final int SET_PROGRESS_FINISHED = 0x03;
-
         private final String TAG = LoaderHandler.class.getSimpleName();
         private static final boolean DEBUG = false;
 
@@ -354,14 +356,6 @@ public class BoardGroupFragment
             try {
                 super.handleMessage(msg);
                 switch (msg.what) {
-                    case SET_PROGRESS_START:
-                        if (progressBar != null) // && boardType == ChanBoard.Type.WATCHLIST)
-                            progressBar.setVisibility(View.VISIBLE);
-                        break;
-                    case SET_PROGRESS_FINISHED:
-                        if (progressBar != null) // && boardType == ChanBoard.Type.WATCHLIST)
-                            progressBar.setVisibility(View.GONE);
-                        break;
                     default:
                         if (DEBUG) Log.i(getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
                         getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);

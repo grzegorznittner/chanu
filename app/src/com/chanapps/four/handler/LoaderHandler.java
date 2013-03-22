@@ -14,8 +14,6 @@ import com.chanapps.four.activity.ClickableLoaderActivity;
 */
 public class LoaderHandler extends Handler {
 
-    public static final int SET_PROGRESS_FINISHED = 0x02;
-
     private ClickableLoaderActivity activity;
     private static final String TAG = LoaderHandler.class.getSimpleName();
     private static final boolean DEBUG = false;
@@ -30,9 +28,6 @@ public class LoaderHandler extends Handler {
         try {
             super.handleMessage(msg);
             switch (msg.what) {
-                case SET_PROGRESS_FINISHED:
-                    activity.setProgressFinished();
-                    break;
                 default:
                     if (DEBUG) Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
                     activity.getLoaderManager().restartLoader(0, null, activity);

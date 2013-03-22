@@ -361,7 +361,7 @@
 
     <!-- Help and about_dialog -->
     <string name="about_menu">About</string>
-    <string name="exit_menu">Quit</string>
+    <string name="exit_menu">Exit</string>
 
     <!-- camera -->
     <string name="camera_capture">Capture picture</string>

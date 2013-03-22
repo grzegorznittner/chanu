@@ -14,12 +14,10 @@
     <item android:id="@+id/refresh_board_menu"
           android:title="@string/refresh_board_menu"
           android:icon="@drawable/navigation_refresh"
-          android:showAsAction="always"
             />
     <item android:id="@+id/new_thread_menu"
           android:title="@string/new_thread_menu"
           android:icon="@drawable/content_new"
-          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/board_rules_menu"
           android:title="@string/board_rules_menu"
