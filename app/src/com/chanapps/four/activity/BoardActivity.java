@@ -448,15 +448,11 @@ public class BoardActivity
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
-        return true;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        int menuId = ChanBoard.showNSFW(this) ? R.menu.board_menu_adult : R.menu.board_menu;
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.board_menu, menu);
+        inflater.inflate(menuId, menu);
+        ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
         this.menu = menu;
         this.refreshMenuItem = menu.findItem(R.id.refresh_menu);
         return true;

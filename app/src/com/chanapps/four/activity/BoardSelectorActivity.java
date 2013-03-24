@@ -270,16 +270,15 @@ public class BoardSelectorActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         if (DEBUG) Log.i(TAG, "Activity-level onCreateOptionsMenu called selectedBoardType="+selectedBoardType);
+        int menuId = ChanBoard.showNSFW(this) ? R.menu.board_selector_menu_adult : R.menu.board_selector_menu;
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.board_selector_menu, menu);
+        inflater.inflate(menuId, menu);
         this.menu = menu;
         //BoardGroupFragment fragment = getSelectedFragment();
         //if (fragment != null)
         //    fragment.onPrepareOptionsMenu(menu, this, selectedBoardType);
-
         String boardCode = selectedBoardType.equals(ChanBoard.Type.WATCHLIST) ? ChanBoard.WATCH_BOARD_CODE : "";
         ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
-
         return true;
     }
 

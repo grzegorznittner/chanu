@@ -734,12 +734,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
-        return true;
-    }
-
-    @Override
     protected void setAbsListViewClass() {
         absListViewClass = ListView.class;
     }
@@ -825,8 +819,10 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (DEBUG) Log.i(TAG, "onCreateOptionsMenu called");
+        int menuId = ChanBoard.showNSFW(this) ? R.menu.thread_menu_adult : R.menu.thread_menu;
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.thread_menu, menu);
+        inflater.inflate(menuId, menu);
+        ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
         return true;
     }
 

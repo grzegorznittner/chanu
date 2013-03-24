@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
@@ -479,18 +480,7 @@ public class ChanBoard {
         if (DEBUG) Log.i(BoardSelectorActivity.TAG, "setupActionBarSpinner " + activity + " " + menu + " boardCode=" + currentBoardCode);
         boolean showNSFW = ChanBoard.showNSFW(activity);
         MenuItem item = menu.findItem(R.id.board_jump_spinner_menu);
-        MenuItem itemNSFW = menu.findItem(R.id.board_jump_spinner_nsfw_menu);
-        Spinner spinner;
-        if (showNSFW) {
-            item.setVisible(false);
-            itemNSFW.setVisible(true);
-            spinner = (Spinner)itemNSFW.getActionView();
-        }
-        else {
-            item.setVisible(true);
-            itemNSFW.setVisible(false);
-            spinner = (Spinner)item.getActionView();
-        }
+        Spinner spinner = (Spinner)item.getActionView();
         spinner.setOnItemSelectedListener(null);
         int position = 0;
         if (currentBoardCode == null || currentBoardCode.isEmpty()) {
@@ -503,6 +493,15 @@ public class ChanBoard {
             position = 0; // always select from board selector
         }
         else {
+            SpinnerAdapter spinnerAdapter = spinner.getAdapter();
+            for (int i = 0; i < spinnerAdapter.getCount(); i++) {
+                String boardText = (String)spinnerAdapter.getItem(i);
+                if (boardText.matches("/" + currentBoardCode + "/.*")) {
+                    position = i;
+                    break;
+                }
+            }
+            /*
             int arrayId = showNSFW ? R.array.board_array : R.array.board_array_worksafe;
             String[] boards = activity.getResources().getStringArray(arrayId);
             for (int i = 0; i < boards.length; i++) {
@@ -511,6 +510,7 @@ public class ChanBoard {
                     break;
                 }
             }
+            */
         }
         spinner.setSelection(position, false);
         spinner.setOnItemSelectedListener(new ActionBarSpinnerHandler(activity, currentBoardCode));
@@ -518,11 +518,8 @@ public class ChanBoard {
 
     public static void resetActionBarSpinner(Menu menu) {
         MenuItem boardJump = menu.findItem(R.id.board_jump_spinner_menu);
-        MenuItem boardJumpNSFW = menu.findItem(R.id.board_jump_spinner_nsfw_menu);
         if (boardJump != null && boardJump.getActionView() != null)
             ((Spinner)boardJump.getActionView()).setSelection(0, false);
-        if (boardJumpNSFW != null && boardJumpNSFW.getActionView() != null)
-            ((Spinner)boardJumpNSFW.getActionView()).setSelection(0, false);
     }
 
     private static class ActionBarSpinnerHandler implements AdapterView.OnItemSelectedListener {
