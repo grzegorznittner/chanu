@@ -31,7 +31,6 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
     public static final String TAG = GlobalAlarmReceiver.class.getSimpleName();
 
     public static final String GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION = "com.chanapps.four.component.GlobalAlarmReceiver.schedule";
-    public static final String GLOBAL_ALARM_RECEIVER_UPDATE_ACTION = "com.chanapps.four.component.GlobalAlarmReceiver.update";
 
     private static final long WIDGET_UPDATE_INTERVAL_MS = AlarmManager.INTERVAL_FIFTEEN_MINUTES; // FIXME should be configurable
     //private static final long WIDGET_UPDATE_INTERVAL_MS = 60000; // 60 sec, just for testing
@@ -40,7 +39,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) { // when first boot up, default and then schedule for refresh
         String action = intent.getAction();
-
+        if (DEBUG) Log.i(TAG, "Received action: " + action);
         if (Intent.ACTION_BOOT_COMPLETED.equals(action) || GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION.equals(action)) {
             /* use this when you screw up widgets and need to reset
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
@@ -52,14 +51,6 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
                 public void run() {
                     updateAndFetch(context);
                     scheduleGlobalAlarm(context);
-                }
-            }).start();
-        }
-        else if (GLOBAL_ALARM_RECEIVER_UPDATE_ACTION.equals(action)) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    updateAndFetch(context);
                 }
             }).start();
         }
@@ -81,11 +72,11 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.BAD)
         {
             if (DEBUG) Log.i(TAG, "fetchAll fetching widgets, watchlists, and uncached boards");
-            BoardWidgetProvider.fetchAllWidgets(context);
             if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
                 (new ChanWatchlist.CleanWatchlistTask(context, null, false)).execute();
             ChanWatchlist.fetchWatchlistThreads(context);
-            ChanBoard.preloadUncachedBoards(context);
+            BoardWidgetProvider.fetchAllWidgets(context);
+            //ChanBoard.preloadUncachedBoards(context);
         }
         else {
             if (DEBUG) Log.i(TAG, "fetchAll no connection, skipping fetch");
@@ -103,7 +94,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
 
     private static PendingIntent getPendingIntentForGlobalAlarm(Context context) {
         Intent intent = new Intent(context, GlobalAlarmReceiver.class);
-        intent.setAction(GLOBAL_ALARM_RECEIVER_UPDATE_ACTION);
+        intent.setAction(GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return pendingIntent;
     }

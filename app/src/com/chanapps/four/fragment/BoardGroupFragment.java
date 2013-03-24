@@ -42,7 +42,7 @@ public class BoardGroupFragment
 {
 
     private static final String TAG = BoardGroupFragment.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private ChanBoard.Type boardType;
     private ResourceCursorAdapter adapter;
@@ -222,6 +222,7 @@ public class BoardGroupFragment
     }
 
     protected Loader<Cursor> createCursorLoader() {
+        if (DEBUG) Log.v(TAG, "createCursorLoader type=" + boardType);
         if (boardType == ChanBoard.Type.WATCHLIST) {
             return new BoardSelectorWatchlistCursorLoader(getActivity());
         }
@@ -243,7 +244,7 @@ public class BoardGroupFragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader type=" + boardType);
         cursorLoader = createCursorLoader();
         setProgressOn(true);
         return cursorLoader;
@@ -251,7 +252,7 @@ public class BoardGroupFragment
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished type=" + boardType);
         adapter.swapCursor(data);
         if (boardType == ChanBoard.Type.WATCHLIST)
             if (data.getCount() <= 0)
@@ -263,9 +264,8 @@ public class BoardGroupFragment
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset type=" + boardType);
         adapter.swapCursor(null);
-        setProgressOn(true);
     }
 
     @Override

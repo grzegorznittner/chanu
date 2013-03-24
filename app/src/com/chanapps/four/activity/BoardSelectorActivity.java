@@ -26,13 +26,14 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.chanapps.four.service.NetworkProfileManager;
+import com.chanapps.four.widget.BoardWidgetProvider;
 
 public class BoardSelectorActivity
         extends FragmentActivity
         implements ChanIdentifiedActivity
 {
     public static final String TAG = "BoardSelectorActivity";
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
@@ -57,6 +58,7 @@ public class BoardSelectorActivity
 
         NetworkProfileManager.instance().activityChange(this);
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(this); // always check since state may have changed
+        updateWidgets();
         scheduleGlobalAlarm();
 
         Intent intent = getIntent();
@@ -80,6 +82,16 @@ public class BoardSelectorActivity
         Intent intent = new Intent(this, GlobalAlarmReceiver.class);
         intent.setAction(GlobalAlarmReceiver.GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION);
         startService(intent);
+        if (DEBUG) Log.i(TAG, "Scheduled global alarm");
+    }
+
+    protected void updateWidgets() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BoardWidgetProvider.updateAll(getApplicationContext());
+            }
+        }).start();
     }
 
     @Override

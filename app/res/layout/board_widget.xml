@@ -32,7 +32,7 @@
                android:contentDescription="Center Thumbnail Image"
                android:scaleType="centerCrop"
                android:layout_weight="1"
-               android:src="@drawable/vg"
+               android:src="@drawable/a_2"
             />
 
     <ImageView android:id="@+id/image_right"
@@ -41,8 +41,7 @@
                android:contentDescription="Right Thumbnail Image"
                android:scaleType="centerCrop"
                android:layout_weight="1"
-               android:src="@drawable/q"
+               android:src="@drawable/a_3"
             />
 
-    <!-- android:src="@drawable/board_3" -->
 </LinearLayout>

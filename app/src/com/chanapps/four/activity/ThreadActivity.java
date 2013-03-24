@@ -648,7 +648,12 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                         if (itemExpandedProgressBarHolder != null)
                             itemExpandedProgressBarHolder.setVisibility(View.GONE);
                         itemExpandedImageHolder.setVisibility(View.GONE);
-                        String msg = String.format(getString(R.string.thread_couldnt_load_image), failReason.toString().toLowerCase().replaceAll("_", " "));
+                        String reason = failReason.toString();
+                        String msg;
+                        if (reason.equalsIgnoreCase("io_error"))
+                            msg = getString(R.string.thread_couldnt_download_image);
+                        else
+                            msg = String.format(getString(R.string.thread_couldnt_load_image), failReason.toString().toLowerCase().replaceAll("_", " "));
                         Toast.makeText(ThreadActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
 
