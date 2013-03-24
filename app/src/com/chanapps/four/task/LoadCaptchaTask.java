@@ -60,7 +60,6 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
         recaptchaLoading.startAnimation(rotation);
         recaptchaButton.setVisibility(View.GONE);
         recaptchaButton.setImageBitmap(null);
-        ChanHelper.safeClearImageView(recaptchaButton);
     }
 
     @Override

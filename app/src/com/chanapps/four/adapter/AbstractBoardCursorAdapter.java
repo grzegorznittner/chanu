@@ -115,33 +115,7 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         if (!cursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
-        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        String imageUrl = null;
-        String tag = null;
-        if (adItem > 0) {
-            tag = ChanHelper.AD_ITEM;
-        }
-        else {
-            tag = ChanHelper.POST_IMAGE_URL; // board-level always has an image for threads, even if we make default
-    		imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        }
-
-        View v;
-        if (convertView == null || !tag.equals(convertView.getTag())) {
-            v = newView(context, parent, tag, position);
-            v.setTag(tag);
-            if (ChanHelper.POST_IMAGE_URL.equals(tag) || ChanHelper.AD_ITEM.equals(tag)) {
-        		ImageView imageView = (ImageView)v.findViewById(getThumbnailImageId());
-                if (imageUrl == null || imageUrl.isEmpty())
-                    imageView.setTag(boardCode); // resource file
-                else
-                    imageView.setTag(imageUrl);
-            }
-        } else {
-        	if (DEBUG) Log.d(TAG, "Reusing existing " + tag + " layout for " + position);
-            v = convertView;
-        }
+        View v = convertView != null ? convertView : newView(context, parent, "", position);
         bindView(v, context, cursor);
         return v;
     }

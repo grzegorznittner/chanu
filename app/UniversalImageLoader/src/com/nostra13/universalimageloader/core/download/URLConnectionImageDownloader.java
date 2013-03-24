@@ -1,6 +1,7 @@
 package com.nostra13.universalimageloader.core.download;
 
 import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -8,6 +9,8 @@ import java.net.URLConnection;
 
 import android.nfc.Tag;
 import com.android.gallery3d.ui.Log;
+import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
@@ -51,7 +54,17 @@ public class URLConnectionImageDownloader extends ImageDownloader {
             URLConnection conn = imageUri.toURL().openConnection();
             conn.setConnectTimeout(connectTimeout);
             conn.setReadTimeout(readTimeout);
-            return new FlushedInputStream(new BufferedInputStream(conn.getInputStream()));
+            FlushedInputStream fis;
+            try {
+                fis = new FlushedInputStream(new BufferedInputStream(conn.getInputStream()));
+                return fis;
+            }
+            catch (FileNotFoundException e) {
+                Log.e(TAG, "Couldn't get image from network", e);
+                NetworkProfileManager.instance().failedFetchingData(
+                        new ImageDownloadService(), NetworkProfile.Failure.NETWORK);
+                return null;
+            }
         }
     }
 }

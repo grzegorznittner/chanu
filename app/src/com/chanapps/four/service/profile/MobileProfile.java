@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import android.widget.Toast;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanBoardStat;
@@ -170,11 +171,23 @@ public class MobileProfile extends AbstractNetworkProfile {
 	}
 
 	@Override
-	public void onBoardRefreshed(Context context, Handler handler, String board) {
+	public void onBoardRefreshed(final Context context, Handler handler, String board) {
 		super.onBoardRefreshed(context, handler, board);
 		if (!FetchChanDataService.scheduleBoardFetchWithPriority(context, board)) {
 			onUpdateViewData(context, handler, board);
-            //handler.sendEmptyMessage(LoaderHandler.SET_PROGRESS_FINISHED);
+            if (handler != null)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
+                        if (profile.getConnectionType() == Type.NO_CONNECTION
+                                || profile.getConnectionHealth() == Health.NO_CONNECTION
+                                || profile.getConnectionHealth() == Health.BAD)
+                            Toast.makeText(context, R.string.board_refresh_no_connection, Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(context, R.string.board_refresh_fresh, Toast.LENGTH_SHORT).show();
+                    }
+                });
 		}
         if (DEBUG) {
 			UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();

@@ -429,10 +429,20 @@ public class ChanBoard {
     }
 
     public Object[] makeRow() { // for board selector
-        return ChanPost.makeBoardRow(link, name, getImageResourceId());
+        return ChanThread.makeBoardRow(link, name, getImageResourceId());
     }
 
-    public Object[] makeAdRow() {
+    public Object[] makeThreadAdRow(Context context) {
+        int adCode =
+                (!workSafe && generator.nextDouble() < AD_ADULT_PROBABILITY_ON_ADULT_BOARD)
+                        ? JLIST_AD_ADULT_CODES[generator.nextInt(JLIST_AD_ADULT_CODES.length)]
+                        : JLIST_AD_CODES[generator.nextInt(JLIST_AD_CODES.length)];
+        String imageUrl = JLIST_AD_IMAGE_ROOT_URL + "/" + adCode;
+        String clickUrl = JLIST_AD_CLICK_ROOT_URL + "/" + adCode;
+        return ChanThread.makeAdRow(context, imageUrl, clickUrl);
+    }
+
+    public Object[] makePostAdRow() {
         int adCode =
                 (!workSafe && generator.nextDouble() < AD_ADULT_PROBABILITY_ON_ADULT_BOARD)
                         ? JLIST_AD_ADULT_CODES[generator.nextInt(JLIST_AD_ADULT_CODES.length)]

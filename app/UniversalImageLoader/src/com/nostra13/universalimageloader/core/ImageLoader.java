@@ -182,7 +182,7 @@ public class ImageLoader {
 			if (options.isShowImageForEmptyUri()) {
 				imageView.setImageResource(options.getImageForEmptyUri());
 			} else {
-                ChanHelper.safeClearImageView(imageView);
+                imageView.setImageBitmap(null);
             }
 			listener.onLoadingComplete(null);
 			return;
@@ -213,14 +213,15 @@ public class ImageLoader {
 				imageView.setImageResource(options.getStubImage());
 			} else {
 				if (options.isResetViewBeforeLoading()) {
-                    ChanHelper.safeClearImageView(imageView);
+                    imageView.setImageBitmap(null);
                 }
 			}
 
 			checkExecutors();
             if (DEBUG) Log.i(TAG, "imageLoadingInfo target size " + targetSize.toString());
             ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener);
-			LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(configuration, imageLoadingInfo, new Handler());
+			LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(
+                    imageView.getContext(), configuration, imageLoadingInfo, new Handler());
 			boolean isImageCachedOnDisc = configuration.discCache.get(uri).exists();
 			if (isImageCachedOnDisc) {
 				cachedImageLoadingExecutor.submit(displayImageTask);

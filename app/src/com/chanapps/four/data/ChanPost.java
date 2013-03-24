@@ -155,6 +155,18 @@ public class ChanPost {
         return text;
     }
 
+    private static final int MAX_THREAD_SUBJECT_LEN = 100;
+
+    public String getThreadSubject(Context context) {
+        String subText = sanitizeText(sub);
+        if (subText != null && !subText.isEmpty())
+            return subText;
+        String comText = sanitizeText(com);
+        if (comText != null && !comText.isEmpty())
+            return comText.substring(0, Math.min(comText.length(), MAX_THREAD_SUBJECT_LEN)); // always shorter than this since only one line
+        return context.getResources().getString(R.string.thread_no_text_subject);
+    }
+
     private String sanitizeText(String text) {
         return sanitizeText(text, false);
     }
@@ -293,13 +305,13 @@ public class ChanPost {
 
     public String getThumbnailUrl() { // thumbnail with fallback
         if (ChanBoard.isImagelessSticky(board, no))
-            return "";
+            return "drawable://" + ChanBoard.getImageResourceId(board, no);
         else if (spoiler > 0)
             return ChanBoard.spoilerThumbnailUrl(board);
         else if (tim > 0 && filedeleted == 0 && tn_w > 2 && tn_h > 2)
             return "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg";
         else if (resto == 0) // thread default
-            return "";
+            return "drawable://" + ChanBoard.getImageResourceId(board, no);
         else
             return "";
     }
@@ -380,7 +392,7 @@ public class ChanPost {
         if (country_name != null && !country_name.isEmpty())
             lines.add("Country: " + country_name);
         if (resto == 0)
-            lines.add(getThreadInfoText());
+            lines.add(getThreadInfo());
         String text = "";
         boolean first = true;
         for (String line : lines) {
@@ -405,7 +417,7 @@ public class ChanPost {
         return i;
     }
 
-    private String getThreadInfoText() {
+    public String getThreadInfo() {
         String text = "";
         if (sticky > 0 && replies == 0) {
             text += "STICKY";
@@ -743,38 +755,6 @@ public class ChanPost {
                 0,
                 1,
                 0,
-                ""
-        };
-    }
-
-    public static Object[] makeBoardRow(String boardCode, String boardName, int boardImageResourceId) {
-        return new Object[] {
-                3,
-                boardCode,
-                0,
-                "",
-                "",
-                "",
-                "",
-                boardName,
-                250,
-                250,
-                -1,
-                -1,
-                0,
-                0,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                0,
-                0,
-                0,
-                0,
-                boardImageResourceId,
                 ""
         };
     }

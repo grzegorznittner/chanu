@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.nfc.Tag;
 import android.os.Handler;
@@ -16,6 +17,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -44,12 +46,14 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	private static final int ATTEMPT_COUNT_TO_DECODE_BITMAP = 3;
 
+    private final Context context;
 	private final ImageLoaderConfiguration configuration;
 	private final ImageLoadingInfo imageLoadingInfo;
 	private final Handler handler;
 
-	public LoadAndDisplayImageTask(ImageLoaderConfiguration configuration, ImageLoadingInfo imageLoadingInfo, Handler handler) {
-		this.configuration = configuration;
+	public LoadAndDisplayImageTask(Context context, ImageLoaderConfiguration configuration, ImageLoadingInfo imageLoadingInfo, Handler handler) {
+		this.context = context;
+        this.configuration = configuration;
 		this.imageLoadingInfo = imageLoadingInfo;
 		this.handler = handler;
 	}
@@ -61,6 +65,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (checkTaskIsNotActual()) return;
 		Bitmap bmp;
         try {
+            NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
             if (imageLoadingInfo != null && imageLoadingInfo.targetSize != null)
                 if (DEBUG) Log.i(TAG, "loadanddisplay run imageLoadingInfo target size " + imageLoadingInfo.targetSize.toString());
             else
@@ -218,8 +223,18 @@ final class LoadAndDisplayImageTask implements Runnable {
 			ImageSize targetImageSize = new ImageSize(width, height);
 			ImageDecoder decoder = new ImageDecoder(new URI(imageLoadingInfo.uri), configuration.downloader);
 			Bitmap bmp = decoder.decode(targetImageSize, ImageScaleType.EXACT);
-
-			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
+            if (bmp == null) {
+                Log.e(TAG, "Couldn't save bitmap, null decode: " + imageLoadingInfo.uri);
+                return;
+            }
+            OutputStream os;
+            try {
+			    os = new BufferedOutputStream(new FileOutputStream(targetFile));
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't open output stream for file: " + targetFile, e);
+                return;
+            }
 			boolean compressedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
 			if (compressedSuccessfully) {
 				bmp.recycle();

@@ -82,9 +82,10 @@
     </style>
 
     <style name="BoardGridImage" parent="AppTheme">
-        <item name="android:layout_width">110dp</item>
-        <item name="android:layout_height">110dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
         <item name="android:scaleType">centerCrop</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
     </style>
@@ -105,7 +106,7 @@
         <item name="android:paddingBottom">4dp</item>
         <item name="android:gravity">center_horizontal|center_vertical</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:background">@color/PaletteBlackHalfOpacity</item>
+        <item name="android:background">@color/PaletteTextOverlayBackground</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:lines">1</item>
         <item name="android:textStyle">bold</item>
@@ -129,7 +130,7 @@
         <item name="android:paddingBottom">0dp</item>
         <item name="android:gravity">center_horizontal|top</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:background">@color/PaletteBlackHalfOpacity</item>
+        <item name="android:background">@color/PaletteTextOverlayBackground</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:lines">1</item>
         <item name="android:textStyle">bold</item>
@@ -139,14 +140,14 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_below">@+id/grid_item_text_top</item>
+        <item name="android:layout_below">@+id/grid_item_thread_subject</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingLeft">0dp</item>
         <item name="android:paddingRight">0dp</item>
         <item name="android:paddingBottom">2dp</item>
         <item name="android:gravity">center_horizontal|top</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:background">@color/PaletteBlackHalfOpacity</item>
+        <item name="android:background">@color/PaletteTextOverlayBackground</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:lines">1</item>
         <item name="android:textStyle">bold</item>
@@ -163,7 +164,7 @@
         <item name="android:paddingBottom">0dp</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:background">@color/PaletteBlackHalfOpacity</item>
+        <item name="android:background">@color/PaletteTextOverlayBackground</item>
         <item name="android:textColor">@color/PaletteBlue</item>
         <item name="android:text">@string/jlist_ad_message_compact</item>
         <item name="android:lines">1</item>
@@ -518,6 +519,7 @@
     <color name="PaletteLighterGray">#ddd</color>
     <color name="PaletteBlack">#ff010101</color>
     <color name="PaletteBlackHalfOpacity">#80010101</color>
+    <color name="PaletteTextOverlayBackground">#a0010101</color>
     <color name="PaletteBlackMostlyOpaque">#ec000000</color>
     <color name="popupbackground">#fff0f0f0</color>
 

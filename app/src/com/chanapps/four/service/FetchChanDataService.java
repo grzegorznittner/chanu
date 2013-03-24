@@ -27,7 +27,9 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
+import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
+import com.chanapps.four.service.profile.NoConnectionProfile;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -202,8 +204,20 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		if (!isChanForegroundActivity()) {
+            if (DEBUG)
+                Log.i(TAG, "Not foreground activity, exiting");
 			return;
 		}
+
+        NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(this.getBaseContext());
+        NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
+        if (profile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION
+                || profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION
+                || profile.getConnectionHealth() == NetworkProfile.Health.BAD) {
+            if (DEBUG) Log.i(TAG, "No network connection, exiting");
+            return;
+        }
+
 		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
 		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
 		pageNo = boardCatalog ? -1 : intent.getIntExtra(ChanHelper.PAGE, 0);

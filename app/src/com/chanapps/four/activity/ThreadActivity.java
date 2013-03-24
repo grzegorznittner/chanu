@@ -245,9 +245,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     protected void initImageLoader() {
         imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.stub_image)
                 .cacheOnDisc()
                 .imageScaleType(ImageScaleType.POWER_OF_2)
+                .resetViewBeforeLoading()
                 .build();
     }
 
@@ -488,8 +488,10 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         }
         */
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        int imageResourceId = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_THUMBNAIL_ID));
-        ChanImageLoader.smartSetImageView(iv, imageUrl, displayImageOptions, imageResourceId);
+        if (imageUrl != null && !imageUrl.isEmpty())
+            imageLoader.displayImage(imageUrl, iv, displayImageOptions);
+        else
+            iv.setImageBitmap(null);
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0)
             iv.setOnClickListener(new AdOnClickListener(cursor));
@@ -506,7 +508,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
     private boolean setItemImageExpanded(final ImageView iv, final Cursor cursor) {
         iv.setVisibility(View.GONE);
-        //super.setImageViewValue(iv, cursor);
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0)
             return false;
@@ -525,7 +526,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         @Override
         public void onClick(View v) {
             ChanHelper.fadeout(ThreadActivity.this, v);
-            launchUrlInBrowser(adUrl);
+            ChanHelper.launchUrlInBrowser(ThreadActivity.this, adUrl);
         }
 
     }
@@ -559,11 +560,11 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             if (itemExpandedImageHolder == null)
                 return;
             if (itemExpandedImageHolder.getVisibility() == View.VISIBLE) {
-                ChanHelper.safeClearImageView(itemExpandedImageHolder);
+                ChanHelper.clearBigImageView(itemExpandedImageHolder);
                 itemExpandedImageHolder.setVisibility(View.GONE);
             }
             else if (postImageUrl != null) {
-                ChanHelper.safeClearImageView(itemExpandedImageHolder);
+                ChanHelper.clearBigImageView(itemExpandedImageHolder);
 
                 // calculate image dimensions
                 if (DEBUG) Log.i(TAG, "post size " + postW + "x" + postH);
@@ -630,10 +631,10 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 
                 ImageSize imageSize = new ImageSize(width, height);
                 DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
-                        .showImageForEmptyUri(R.drawable.stub_image)
                         .imageScaleType(ImageScaleType.EXACT)
                         .cacheOnDisc()
                         .imageSize(imageSize)
+                        .resetViewBeforeLoading()
                         .build();
 
                 // display image async
@@ -667,15 +668,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                         Toast.makeText(ThreadActivity.this, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
                     }
                 }); // load async
-
-                //smartSetImageView(itemExpandedImageHolder, imageUrl, imageLoader, displayImageOptions, 0);
-                //itemExpandedImageHolder.setImageResource(R.drawable.a);
-                /*
-                ChanHelper.fadeout(ThreadActivity.this, v);
-                incrementCounterAndAddToWatchlistIfActive();
-                GalleryViewActivity.startActivity(
-                        ThreadActivity.this, boardCode, threadNo, postId, position);
-                */
             }
         }
     }
@@ -708,9 +700,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     private boolean setItemCountryFlag(final ImageView iv, final Cursor cursor) {
         String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
         if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
-            ChanImageLoader.smartSetImageView(iv, countryFlagImageUrl, displayImageOptions, 0);
+            imageLoader.displayImage(countryFlagImageUrl, iv, displayImageOptions);
         else
-            ChanHelper.safeClearImageView(iv);
+            iv.setImageBitmap(null);
         return true;
     }
 
@@ -777,7 +769,7 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
 //                    NavUtils.navigateUpTo(this, upIntent);
 //                }
                 return true;
-            case R.id.refresh_thread_menu:
+            case R.id.refresh_menu:
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.post_reply_menu:

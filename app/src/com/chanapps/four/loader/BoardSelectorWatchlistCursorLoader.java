@@ -37,11 +37,11 @@ public class BoardSelectorWatchlistCursorLoader extends AsyncTaskLoader<Cursor> 
     	if (DEBUG) Log.i(TAG, "loadInBackground");
         ChanWatchlistDataLoader dataLoader = new ChanWatchlistDataLoader(context);
         List<ChanPost> threads = dataLoader.getWatchedThreads();
-        MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
+        MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
         if (threads != null && !threads.isEmpty()) {
             if (DEBUG) Log.i(TAG, "Loading " + threads.size() + " watchlist threads");
             for (ChanPost thread : threads) {
-                Object[] row = thread.makeRow();
+                Object[] row = ChanThread.makeRow(context, thread);
                 matrixCursor.addRow(row);
                 if (DEBUG) Log.i(TAG, "Added thread: " + thread.board + "/" + thread.no);
                 if (DEBUG) Log.v(TAG, "Added thread row: " + Arrays.toString(row));

@@ -33,7 +33,6 @@ public class ChanImageLoader {
     static private final int MAX_MEMORY_HEIGHT = 125;
 
     static private ImageLoader imageLoader = null;
-    protected static final int IMAGE_URL_HASHCODE_KEY = R.id.grid_item_image;
 
     static public ImageLoader getInstance(Context context) {
         if (imageLoader == null) {
@@ -50,72 +49,10 @@ public class ChanImageLoader {
                             .memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
                             .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
                             .imageDownloader(new ExtendedImageDownloader(context))
+                            .threadPriority(Thread.MAX_PRIORITY)
                             .build());
         }
         return imageLoader;
     }
 
-    public static void smartSetImageView(ImageView iv,
-                                         String imageUrl,
-                                         DisplayImageOptions displayImageOptions,
-                                         int imageResourceId)
-    {
-        try {
-            if (imageResourceId == 0 && (imageUrl == null || imageUrl.isEmpty())) {
-                ChanHelper.safeClearImageView(iv);
-                return;
-            }
-            ImageLoader imageLoader = getInstance(iv.getContext());
-            Integer viewHashCodeInt = (Integer)iv.getTag(IMAGE_URL_HASHCODE_KEY);
-            int viewHashCode = viewHashCodeInt != null ? viewHashCodeInt : 0;
-            int urlHashCode = imageUrl != null && !imageUrl.isEmpty() ? imageUrl.hashCode() : imageResourceId;
-            if (DEBUG) Log.i(TAG, "iv urlhash=" + urlHashCode + " viewhash=" + viewHashCode);
-            if (iv.getDrawable() == null || viewHashCode != urlHashCode) {
-            	if (imageResourceId > 0) // load from board
-            		imageUrl = "drawable://" + imageResourceId;
-                if (DEBUG) Log.i(TAG, "calling imageloader for " + imageUrl);
-                ChanHelper.safeClearImageView(iv);
-                iv.setTag(IMAGE_URL_HASHCODE_KEY, urlHashCode);
-                //imageLoader.displayImage(imageUrl, iv, displayImageOptions, new ThumbnailImageLoadingListener(iv)); // load async
-                imageLoader.displayImage(imageUrl, iv, displayImageOptions); // load async
-            }
-        } catch (NumberFormatException nfe) {
-            Log.e(TAG, "Couldn't set image view after number format exception with url=" + imageUrl, nfe);
-            ChanHelper.safeClearImageView(iv);
-        }
-        catch (Exception e) {
-            Log.e(TAG, "Exception setting image view with url=" + imageUrl, e);
-            ChanHelper.safeClearImageView(iv);
-        }
-    }
-
-    private static class ThumbnailImageLoadingListener implements ImageLoadingListener {
-
-        ImageView imageView = null;
-
-        public ThumbnailImageLoadingListener(final ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        public void onLoadingStarted() {
-            if (imageView != null)
-                imageView.setImageResource(R.drawable.loading_150);
-        }
-
-        /** Is called when an error was occurred during image loading */
-        public void onLoadingFailed(FailReason failReason) {
-            if (imageView != null)
-                imageView.setImageResource(R.drawable.cancel_128);
-        }
-
-        /** Is called when image is loaded successfully and displayed in {@link ImageView} */
-        public void onLoadingComplete(Bitmap loadedImage) {
-        }
-
-        /** Is called when image loading task was cancelled because {@link ImageView} was reused in newer task */
-        public void onLoadingCancelled() {
-            if (imageView != null)
-                imageView.setImageResource(R.drawable.cancel_128);
-        }
-    }
 }

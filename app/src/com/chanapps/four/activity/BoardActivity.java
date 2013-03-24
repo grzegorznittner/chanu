@@ -27,6 +27,7 @@ import com.chanapps.four.component.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -60,6 +61,8 @@ public class BoardActivity
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
     protected ProgressBar progressBar;
+    protected Menu menu;
+    protected MenuItem refreshMenuItem;
     protected SharedPreferences prefs;
     protected long tim;
     protected String boardCode;
@@ -88,10 +91,10 @@ public class BoardActivity
         ImageSize imageSize = new ImageSize(THUMB_WIDTH_PX, THUMB_HEIGHT_PX); // view pager needs micro images
         imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.stub_image)
                 .imageScaleType(ImageScaleType.POWER_OF_2)
                 .imageSize(imageSize)
                 .cacheOnDisc()
+                .resetViewBeforeLoading()
                 .build();
     }
 
@@ -111,13 +114,11 @@ public class BoardActivity
     }
 
     protected void setProgressOn(boolean progressOn) {
+        if (refreshMenuItem != null)
+            refreshMenuItem.setVisible(!progressOn);
         setProgressBarIndeterminateVisibility(progressOn);
-        if (progressBar != null) {
-            if (progressOn)
-                progressBar.setVisibility(View.VISIBLE);
-            else
-                progressBar.setVisibility(View.GONE);
-        }
+        if (progressBar != null)
+            progressBar.setVisibility(progressOn ? View.VISIBLE : View.GONE);
     }
     protected void sizeGridToDisplay() {
         Display display = getWindowManager().getDefaultDisplay();
@@ -131,8 +132,18 @@ public class BoardActivity
         adapter = new BoardGridCursorAdapter(this,
                 R.layout.board_grid_item,
                 this,
-                new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
-                new int[] {R.id.grid_item_image, R.id.grid_item_text_top, R.id.grid_item_text, R.id.grid_item_country_flag});
+                new String[] {
+                        ChanThread.THREAD_THUMBNAIL_URL,
+                        ChanThread.THREAD_SUBJECT,
+                        ChanThread.THREAD_INFO,
+                        ChanThread.THREAD_COUNTRY_FLAG_URL},
+                new int[] {
+                        R.id.grid_item_thread_thumb,
+                        R.id.grid_item_thread_subject,
+                        R.id.grid_item_thread_info,
+                        R.id.grid_item_country_flag},
+                columnWidth,
+                columnHeight);
         absListView.setAdapter(adapter);
     }
 
@@ -293,50 +304,48 @@ public class BoardActivity
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         switch (view.getId()) {
-            case R.id.grid_item_text_top:
-                return setHeaderViewValue((TextView) view, cursor);
-            case R.id.grid_item_text:
-                return setTextViewValue((TextView) view, cursor);
-            case R.id.grid_item_image:
-                return setImageViewValue((ImageView) view, cursor);
+            case R.id.grid_item_thread_subject:
+                return setThreadSubject((TextView) view, cursor);
+            case R.id.grid_item_thread_info:
+                return setThreadInfo((TextView) view, cursor);
+            case R.id.grid_item_thread_thumb:
+                return setThreadThumb((ImageView) view, cursor);
             case R.id.grid_item_country_flag:
-                return setCountryFlagValue((ImageView) view, cursor);
+                return setCountryFlag((ImageView) view, cursor);
         }
         return false;
     }
 
-    protected boolean setHeaderViewValue(TextView tv, Cursor cursor) {
-        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        tv.setText(Html.fromHtml(shortText.replace("Subject: ", "")));
+    protected boolean setThreadSubject(TextView tv, Cursor cursor) {
+        tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
         return true;
     }
 
-    protected boolean setTextViewValue(TextView tv, Cursor cursor) {
-        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        int idx = shortText.lastIndexOf('\n');
-        if (idx < 0)
-            idx = 0;
-        String threadInfo = shortText.substring(idx);
-        tv.setText(Html.fromHtml(threadInfo));
+    protected boolean setThreadInfo(TextView tv, Cursor cursor) {
+        tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO))));
         return true;
     }
 
-    protected boolean setImageViewValue(ImageView iv, Cursor cursor) {
+    protected boolean setThreadThumb(ImageView iv, Cursor cursor) {
+        /*
         ViewGroup.LayoutParams params = iv.getLayoutParams();
         if (params != null && columnWidth > 0 && columnHeight > 0) {
             params.width = columnWidth;
             params.height = columnHeight;
         }
-        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        int imageResourceId = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_THUMBNAIL_ID));
-        ChanImageLoader.smartSetImageView(iv, imageUrl, displayImageOptions, imageResourceId);
+        */
+        imageLoader.displayImage(
+                cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
+                iv,
+                displayImageOptions); // load async
         return true;
     }
 
-    protected boolean setCountryFlagValue(ImageView iv, Cursor cursor) {
-        String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
-        if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagImageUrl);
-        ChanImageLoader.smartSetImageView(iv, countryFlagImageUrl, displayImageOptions, 0);
+    protected boolean setCountryFlag(ImageView iv, Cursor cursor) {
+        imageLoader.displayImage(
+                cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_COUNTRY_FLAG_URL)),
+                iv,
+                displayImageOptions); // load async
         return true;
     }
 
@@ -371,18 +380,15 @@ public class BoardActivity
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
         ChanHelper.fadeout(this, view);
-        if (adItem > 0) {
-            final String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-            launchUrlInBrowser(adUrl);
-            return;
+        if (clickUrl == null || clickUrl.isEmpty()) {
+            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+            ThreadActivity.startActivity(this, boardCode, threadNo);
         }
-        ThreadActivity.startActivity(this, adapterView, view, position, id, true);
-    }
-
-    protected void launchUrlInBrowser(String url) {
-        ChanHelper.launchUrlInBrowser(this, url);
+        else {
+            ChanHelper.launchUrlInBrowser(this, clickUrl);
+        }
     }
 
     @Override
@@ -394,7 +400,7 @@ public class BoardActivity
                 intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
                 NavUtils.navigateUpTo(this, intent);
                 return true;
-            case R.id.refresh_board_menu:
+            case R.id.refresh_menu:
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.new_thread_menu:
@@ -451,6 +457,8 @@ public class BoardActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_menu, menu);
+        this.menu = menu;
+        this.refreshMenuItem = menu.findItem(R.id.refresh_menu);
         return true;
     }
 

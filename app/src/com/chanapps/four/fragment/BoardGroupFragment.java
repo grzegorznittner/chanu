@@ -1,7 +1,6 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -104,10 +103,10 @@ public class BoardGroupFragment
         ImageSize imageSize = new ImageSize(SELECTOR_WIDTH_PX, SELECTOR_HEIGHT_PX); // view pager needs micro images
         imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.stub_image)
                 .imageScaleType(ImageScaleType.POWER_OF_2)
                 .imageSize(imageSize)
                 .cacheOnDisc()
+                .resetViewBeforeLoading()
                 .build();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
@@ -135,14 +134,30 @@ public class BoardGroupFragment
             adapter = new BoardGridCursorAdapter(getActivity(),
                     R.layout.board_grid_item,
                     this,
-                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_SHORT_TEXT, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
-                    new int[] {R.id.grid_item_image, R.id.grid_item_text_top, R.id.grid_item_text, R.id.grid_item_country_flag});
+                    new String[] {
+                            ChanThread.THREAD_THUMBNAIL_URL,
+                            ChanThread.THREAD_SUBJECT,
+                            ChanThread.THREAD_INFO,
+                            ChanThread.THREAD_COUNTRY_FLAG_URL },
+                    new int[] {
+                            R.id.grid_item_thread_thumb,
+                            R.id.grid_item_thread_subject,
+                            R.id.grid_item_thread_info,
+                            R.id.grid_item_country_flag},
+                    columnWidth,
+                    columnHeight);
         else
             adapter = new BoardSelectorGridCursorAdapter(getActivity(),
                     R.layout.board_selector_grid_item,
                     this,
-                    new String[] {ChanHelper.POST_IMAGE_URL, ChanHelper.POST_TEXT, ChanHelper.POST_COUNTRY_URL},
-                    new int[] {R.id.grid_item_image, R.id.grid_item_text_top, R.id.grid_item_country_flag});
+                    new String[] {
+                            ChanThread.THREAD_THUMBNAIL_URL,
+                            ChanThread.THREAD_SUBJECT },
+                    new int[] {
+                            R.id.grid_item_thread_thumb,
+                            R.id.grid_item_thread_subject},
+                    columnWidth,
+                    columnHeight);
     }
 
     protected synchronized Handler ensureHandler() {
@@ -258,18 +273,17 @@ public class BoardGroupFragment
         if (DEBUG) Log.i(TAG, "clicked item boardType=" + boardType);
         final Activity activity = getActivity();
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE));
+        final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         if (boardType == ChanBoard.Type.WATCHLIST) {
-            if (DEBUG) Log.i(TAG, "wtf?");
-            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
             if (DEBUG) Log.i(TAG, "clicked thread " + boardCode + "/" + threadNo);
-            ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
-            if (thread != null) {
-                ThreadActivity.startActivity(getActivity(), thread, view, threadNo, true);
-            }
-            else {
+            //ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
+            //if (thread != null) {
+            //    ThreadActivity.startActivity(getActivity(), thread, view, threadNo, true);
+            //}
+            //else {
                 ThreadActivity.startActivity(getActivity(), boardCode, threadNo);
-            }
+            //}
         }
         else {
             if (DEBUG) Log.i(TAG, "clicked board " + boardCode);
@@ -282,8 +296,8 @@ public class BoardGroupFragment
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if (boardType == ChanBoard.Type.WATCHLIST) {
             Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-            final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE));
-            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
             if (DEBUG) Log.i(TAG, "Long click " + boardType + " /" + boardCode + "/" + threadNo);
             ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
             if (thread != null && thread.posts != null && thread.posts[0] != null && thread.posts[0].tim > 0) {
@@ -298,50 +312,48 @@ public class BoardGroupFragment
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         switch (view.getId()) {
-            case R.id.grid_item_text_top:
-                return setHeaderViewValue((TextView) view, cursor);
-            case R.id.grid_item_text:
-                return setTextViewValue((TextView) view, cursor);
-            case R.id.grid_item_image:
-                return setImageViewValue((ImageView) view, cursor);
+            case R.id.grid_item_thread_subject:
+                return setThreadSubject((TextView) view, cursor);
+            case R.id.grid_item_thread_info:
+                return setThreadInfo((TextView) view, cursor);
+            case R.id.grid_item_thread_thumb:
+                return setThreadThumb((ImageView) view, cursor);
             case R.id.grid_item_country_flag:
-                return setCountryFlagValue((ImageView) view, cursor);
+                return setThreadCountryFlag((ImageView) view, cursor);
         }
         return false;
     }
 
-    protected boolean setHeaderViewValue(TextView tv, Cursor cursor) {
-        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        tv.setText(Html.fromHtml(shortText.replace("Subject: ", "")));
+    protected boolean setThreadSubject(TextView tv, Cursor cursor) {
+        tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
         return true;
     }
 
-    protected boolean setTextViewValue(TextView tv, Cursor cursor) {
-        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        int idx = shortText.lastIndexOf('\n');
-        if (idx < 0)
-            idx = 0;
-        String threadInfo = shortText.substring(idx);
-        tv.setText(Html.fromHtml(threadInfo));
+    protected boolean setThreadInfo(TextView tv, Cursor cursor) {
+        tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO))));
         return true;
     }
 
-    protected boolean setImageViewValue(ImageView iv, Cursor cursor) {
+    protected boolean setThreadThumb(ImageView iv, Cursor cursor) {
+        /*
         ViewGroup.LayoutParams params = iv.getLayoutParams();
         if (params != null && columnWidth > 0 && columnHeight > 0) {
             params.width = columnWidth;
             params.height = columnHeight;
         }
-        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        int imageResourceId = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_THUMBNAIL_ID));
-        ChanImageLoader.smartSetImageView(iv, imageUrl, displayImageOptions, imageResourceId);
+        */
+        imageLoader.displayImage(
+                cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
+                iv,
+                displayImageOptions); // load async
         return true;
     }
 
-    protected boolean setCountryFlagValue(ImageView iv, Cursor cursor) {
-        String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
-        if (DEBUG) Log.v(TAG, "Country flag url=" + countryFlagImageUrl);
-        ChanImageLoader.smartSetImageView(iv, countryFlagImageUrl, displayImageOptions, 0);
+    protected boolean setThreadCountryFlag(ImageView iv, Cursor cursor) {
+        imageLoader.displayImage(
+                cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_COUNTRY_FLAG_URL)),
+                iv,
+                displayImageOptions);
         return true;
     }
 

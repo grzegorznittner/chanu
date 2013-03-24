@@ -95,7 +95,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                     post.useFriendlyIds = useFriendlyIds;
                     matrixCursor.addRow(post.makeRow());
                     if (generator.nextDouble() < AD_PROBABILITY && !(adSpace > 0)) {
-                        matrixCursor.addRow(board.makeAdRow());
+                        matrixCursor.addRow(board.makePostAdRow());
                         adSpace = MINIMUM_AD_SPACING;
                     }
                     else {

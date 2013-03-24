@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,27 +15,29 @@ import com.chanapps.four.data.ChanHelper;
  */
 public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
 
-    public BoardGridCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
-        super(context, layout, viewBinder, from, to);
-    }
+    private int columnWidth;
+    private int columnHeight;
 
-    public BoardGridCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to, boolean isWatchlist) {
-        super(context, layout, viewBinder, from, to, isWatchlist);
+    public BoardGridCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to, int columnWidth, int columnHeight) {
+        super(context, layout, viewBinder, from, to);
+        this.columnWidth = columnWidth;
+        this.columnHeight = columnHeight;
     }
 
     protected View newView(Context context, ViewGroup parent, String tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        if (ChanHelper.AD_ITEM.equals(tag)) {
-            return mInflater.inflate(R.layout.board_grid_item_ad, parent, false);
+        View view = mInflater.inflate(R.layout.board_grid_item, parent, false);
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        if (params != null && columnWidth > 0 && columnHeight > 0) {
+            params.width = columnWidth;
+            params.height = columnHeight;
         }
-        else {
-            return mInflater.inflate(R.layout.board_grid_item, parent, false);
-        }
+        return view;
     }
 
     @Override
     protected int getThumbnailImageId() {
-        return R.id.grid_item_image;
+        return R.id.grid_item_thread_thumb;
     }
 
 }

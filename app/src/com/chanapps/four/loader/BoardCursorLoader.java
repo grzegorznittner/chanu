@@ -7,14 +7,11 @@ import java.util.Random;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
 
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
@@ -56,11 +53,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public Cursor loadInBackground() {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean hidePostNumbers = boardName.equals("b") ? false : prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
-        boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
-        MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
+        MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
         if (board != null && board.threads != null && board.threads.length > 0 && !board.defData) { // show loading
             if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
             int adSpace = MINIMUM_AD_SPACING;
@@ -71,14 +65,12 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                     if (DEBUG) Log.i(TAG, "Skipped thread: " + thread.no);
                     continue;
                 }
-                thread.hidePostNumbers = hidePostNumbers;
-                thread.useFriendlyIds = useFriendlyIds;
-                Object[] row = thread.makeRow();
+                Object[] row = ChanThread.makeRow(context, thread);
                 matrixCursor.addRow(row);
                 i++;
                 if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
                 if (generator.nextDouble() < AD_PROBABILITY && !(adSpace > 0)) {
-                    matrixCursor.addRow(board.makeAdRow());
+                    matrixCursor.addRow(board.makeThreadAdRow(context));
                     adSpace = MINIMUM_AD_SPACING;
                 }
                 else {

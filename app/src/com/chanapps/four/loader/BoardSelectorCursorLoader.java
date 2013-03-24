@@ -8,6 +8,7 @@ import android.database.MatrixCursor;
 import android.util.Log;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -42,7 +43,7 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
     public Cursor loadInBackground() {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
         List<ChanBoard> boards = ChanBoard.getBoardsByType(context, boardType);
-        MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
+        MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
         if (boards != null && !boards.isEmpty()) {
             if (DEBUG) Log.i(TAG, "Loading " + boards.size() + " boards");
             for (ChanBoard board : boards) {

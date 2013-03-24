@@ -1,6 +1,9 @@
 package com.chanapps.four.data;
 
+import android.content.Context;
+import android.database.MatrixCursor;
 import android.util.Log;
+import com.chanapps.four.activity.R;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import java.util.*;
@@ -15,8 +18,72 @@ public class ChanThread extends ChanPost {
     public boolean loadedFromBoard = false;
 
 	public ChanPost posts[] = new ChanPost[0];
-	
-	public String toString() {
+
+    public static final String THREAD_COMPOSITE_ID = "_id";
+    public static final String THREAD_BOARD_CODE = "threadBoardCode";
+    public static final String THREAD_NO = "threadNo";
+    public static final String THREAD_SUBJECT = "threadSub";
+    public static final String THREAD_INFO = "threadInfo";
+    public static final String THREAD_THUMBNAIL_URL = "threadThumb";
+    public static final String THREAD_COUNTRY_FLAG_URL = "threadFlag";
+    public static final String THREAD_CLICK_URL = "threadClick";
+
+    public static final String[] THREAD_COLUMNS = {
+            THREAD_COMPOSITE_ID,
+            THREAD_BOARD_CODE,
+            THREAD_NO,
+            THREAD_SUBJECT,
+            THREAD_INFO,
+            THREAD_THUMBNAIL_URL,
+            THREAD_COUNTRY_FLAG_URL,
+            THREAD_CLICK_URL
+    };
+
+    public static MatrixCursor buildMatrixCursor() {
+        return new MatrixCursor(THREAD_COLUMNS);
+    }
+
+    public static Object[] makeRow(Context context, ChanPost post) {
+        String id = post.board + "/" + post.no;
+        return new Object[] {
+                id.hashCode(),
+                post.board,
+                post.no,
+                post.getThreadSubject(context),
+                post.getThreadInfo(),
+                post.getThumbnailUrl(),
+                post.getCountryFlagUrl(),
+                ""
+        };
+    }
+
+    public static Object[] makeBoardRow(String boardCode, String boardName, int boardImageResourceId) {
+        return new Object[] {
+                boardCode.hashCode(),
+                boardCode,
+                0,
+                boardName,
+                "",
+                "drawable://" + boardImageResourceId,
+                "",
+                ""
+        };
+    }
+
+    public static Object[] makeAdRow(Context context, String imageUrl, String clickUrl) {
+        return new Object[] {
+                0,
+                "",
+                0,
+                context.getResources().getString(R.string.board_advert_subject),
+                context.getResources().getString(R.string.board_advert_info),
+                imageUrl,
+                "",
+                clickUrl
+        };
+    }
+
+    public String toString() {
 		return "Thread " + no + " " + com + ", posts: " + posts.length 
 				+ ", thumb: " + getThumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
 	}

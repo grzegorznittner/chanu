@@ -3,7 +3,7 @@
     style="@style/BoardGridLayout">
 
     <ImageView
-            android:id="@+id/grid_item_image"
+            android:id="@+id/grid_item_thread_thumb"
             style="@style/BoardGridImage"
             />
 
@@ -11,12 +11,12 @@
         style="@style/BoardGridTextImageOverlayWrapper">
 
         <TextView
-                android:id="@+id/grid_item_text_top"
+                android:id="@+id/grid_item_thread_subject"
                 style="@style/BoardGridTextImageTopOverlay"
                 />
 
         <TextView
-                android:id="@+id/grid_item_text"
+                android:id="@+id/grid_item_thread_info"
                 style="@style/BoardGridTextImageOverlay"
                 />
 

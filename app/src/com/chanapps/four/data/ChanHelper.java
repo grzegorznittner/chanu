@@ -205,6 +205,7 @@ public class ChanHelper {
     }
 
     public static void safeClearImageView(ImageView v) {
+        /*
         Drawable d = v.getDrawable();
         if (d != null && d instanceof BitmapDrawable) {
             BitmapDrawable bd = (BitmapDrawable)d;
@@ -212,6 +213,23 @@ public class ChanHelper {
             if (b != null)
                 b.recycle();
         }
+        */
+        v.setImageBitmap(null);
+    }
+
+    public static void clearBigImageView(final ImageView v) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Drawable d = v.getDrawable();
+                if (d != null && d instanceof BitmapDrawable) {
+                    BitmapDrawable bd = (BitmapDrawable)d;
+                    Bitmap b = bd.getBitmap();
+                    if (b != null)
+                        b.recycle();
+                }
+            }
+        }).start();
         v.setImageBitmap(null);
     }
 
