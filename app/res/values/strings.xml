@@ -8,7 +8,7 @@
     <string name="board_activity">Board</string>
     <string name="title_photogrid_activity">PhotoGrid</string>
     <string name="full_screen_image_activity">View Image</string>
-    <string name="post_reply_activity">New Post</string>
+    <string name="post_reply_activity">Post Reply</string>
     <string name="post_reply_share_activity">Chanu</string>
     <string name="settings_activity">Settings</string>
     <string name="board_image">Board Image</string>
@@ -121,6 +121,7 @@
     <string name="thread_activity_refresh">Refreshing thread...</string>
     <string name="thread_activity_fresh">Thread is current</string>
     <string name="thread_end_of_thread">End of Thread</string>
+    <string name="thread_context_select">Select Posts</string>
     <string name="thread_couldnt_load">Couldn\'t load thread</string>
     <string name="thread_couldnt_load_image_cancelled">Couldn\'t load image, cancelled</string>
     <string name="thread_couldnt_load_image">Couldn\'t load image: %1$s</string>

@@ -224,6 +224,7 @@
         <item name="android:layout_centerInParent">true</item>
         <item name="android:indeterminate">true</item>
         <item name="android:indeterminateOnly">true</item>
+        <item name="android:visibility">gone</item>
     </style>
 
     <style name="ThreadListItemImageExpanded" parent="AppTheme">

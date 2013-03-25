@@ -14,6 +14,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.*;
 import android.widget.*;
 
@@ -33,6 +34,8 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
+import java.util.Arrays;
+
 /**
  * Created with IntelliJ IDEA.
  * User: arley
@@ -40,20 +43,24 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
  * Time: 12:26 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ThreadActivity extends BoardActivity implements ChanIdentifiedActivity, RefreshableActivity {
+public class ThreadActivity
+        extends BoardActivity
+        implements ChanIdentifiedActivity,
+        RefreshableActivity,
+        AdapterView.OnItemClickListener,
+        AbsListView.MultiChoiceModeListener
+{
 
     protected static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
-    private static final int MIN_THUMBNAIL_WIDTH_PX = 125; // avoid microsized thumbnails too small to click on
 
     protected long threadNo;
     protected String text;
     protected String imageUrl;
     protected int imageWidth;
     protected int imageHeight;
-    protected boolean hidePostNumbers = true;
     protected UserStatistics userStats = null;
     protected boolean inWatchlist = false;
     protected ThreadPostPopup threadPostPopup;
@@ -75,119 +82,17 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         return cursorLoader;
     }
 
-    public static void startActivity(Activity from, AdapterView<?> adapterView, int position) {
-        startActivity(from, adapterView, null, position, 0, false);
-    }
-
-    public static void startActivity(Activity from, AdapterView<?> adapterView, View view, int position, long id, boolean fromParent) {
-            Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final long threadTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
-        if (DEBUG) Log.d(TAG, "threadTim: " + threadTim);
-        final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-        final String boardName = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE));
-        ChanBoard board = ChanFileStorage.loadBoardData(from, boardName); // better way to do this? bad to run on UI thread
-        if (board != null && board.defData) // def data are not clicable
-        	return;
-        final String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        final int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
-        final int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
-        final int pos = adapterView.getFirstVisiblePosition();
-        Intent intent = createIntentForActivity(from, boardName, postId, text, imageUrl, tn_w, tn_h, threadTim, fromParent, pos);
-        if (DEBUG) Log.i(TAG, "Calling thread activity " + boardName + "/" + postId);
-        from.startActivity(intent);
-    }
-    
-    public static void startActivity(Activity from, ChanThread thread, View view, long id, boolean fromParent) {
-	    final long threadTim = thread.tim;
-	    if (DEBUG) Log.d(TAG, "threadTim: " + threadTim);
-	    final long postId = thread.no;
-	    final String boardName = thread.board;
-        /* still needed?
-	    ChanBoard board = ChanFileStorage.loadBoardData(from, boardName); // better way to do this? bad to run on UI thread
-	    if (board != null && board.defData) // def data are not clicable
-	    	return;
-	    */
-	    final String text = thread.getFullText();
-	    final String imageUrl = thread.getImageUrl();
-	    final int tn_w = thread.tn_w;
-	    final int tn_h = thread.tn_h;
-	    final int pos = 0;
-	    Intent intent = createIntentForActivity(from, boardName, postId, text, imageUrl, tn_w, tn_h, threadTim, fromParent, pos);
-	    if (DEBUG) Log.i(TAG, "Calling thread activity with postId=" + postId);
-	    from.startActivity(intent);
-    }
-
     public static void startActivity(Activity from, String boardCode, long threadNo) {
-        if (threadNo <= 0) {
+        if (threadNo <= 0)
             startActivity(from, boardCode);
-            return;
-        }
-        final long threadTim = 0;
-	    final String text = "";
-	    final String imageUrl = "";
-	    final int tn_w = 0;
-	    final int tn_h = 0;
-	    final int pos = 0;
-	    Intent intent = createIntentForActivity(from, boardCode, threadNo, text, imageUrl, tn_w, tn_h, threadTim, false, pos);
-	    from.startActivity(intent);
+	    else
+            from.startActivity(createIntentForActivity(from, boardCode, threadNo));
     }
 
-    public static Intent createIntentForThread(Context context, ChanPost thread) {
-        return createIntentForActivity(
-                context,
-                thread.board,
-                thread.no,
-                thread.getHeaderText(),
-                thread.getThumbnailUrl(),
-                thread.tn_w,
-                thread.tn_h,
-                thread.tim,
-                false,
-                0,
-                true
-        );
-    }
-
-    public static Intent createIntentForActivity(Context context,
-            final String boardCode,
-            final long threadNo,
-            final String text,
-            final String imageUrl,
-            final int tn_w,
-            final int tn_h,
-            final long tim,
-            final boolean fromParent,
-            final int firstVisiblePosition)
-    {
-    	return createIntentForActivity(context, boardCode, threadNo, text, imageUrl, tn_w, tn_h, tim, fromParent, firstVisiblePosition, false);
-    }
-
-    public static Intent createIntentForActivity(Context context,
-                                                 final String boardCode,
-                                                 final long threadNo,
-                                                 final String text,
-                                                 final String imageUrl,
-                                                 final int tn_w,
-                                                 final int tn_h,
-                                                 final long tim,
-                                                 final boolean fromParent,
-                                                 final int firstVisiblePosition,
-                                                 final boolean refreshBoard)
-    {
+    public static Intent createIntentForActivity(Context context, final String boardCode, final long threadNo) {
         Intent intent = new Intent(context, ThreadActivity.class);
-        intent.putExtra(ChanHelper.TIM, tim);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(ChanHelper.TEXT, text);
-        intent.putExtra(ChanHelper.IMAGE_URL, imageUrl);
-        intent.putExtra(ChanHelper.IMAGE_WIDTH, tn_w);
-        intent.putExtra(ChanHelper.IMAGE_HEIGHT, tn_h);
-        intent.putExtra(ChanHelper.LAST_BOARD_POSITION, firstVisiblePosition);
-        intent.putExtra(ChanHelper.LAST_THREAD_POSITION, 0);
-        intent.putExtra(ChanHelper.TRIGGER_BOARD_REFRESH, refreshBoard);
-        if (fromParent)
-            intent.putExtra(ChanHelper.FROM_PARENT, true);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putInt(ChanHelper.LAST_THREAD_POSITION, 0); // reset it
         editor.commit();
@@ -279,6 +184,9 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
                         R.id.list_item_image_overlay
                 });
         absListView.setAdapter(adapter);
+        absListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+        absListView.setMultiChoiceModeListener(this);
+        absListView.setOnCreateContextMenuListener(this);
     }
 
     @Override
@@ -304,38 +212,23 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         setContentView(getLayoutId());
         initAbsListView();
         initAdapter();
-        absListView.setClickable(false);
-        absListView.setLongClickable(false);
+        absListView.setOnItemClickListener(this);
     }
-
-    private ImageView itemExpandedImage = null; // placeholder for image expansion
-    private ProgressBar itemExpandedProgressBar = null; // placeholder for image expansion
 
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
-        //if (!ensureThreadCache()) {
-        //    view.setVisibility(View.GONE);
-        //    return false;
-        //}
-        //ChanPost post = getPost(cursor);
-        //if (post == null)
-        //    return false;
-        if (DEBUG) Log.i(TAG, "setViewValue for  position=" + cursor.getPosition());
-        if (DEBUG) Log.i(TAG, "                 boardCode=" + cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE)));
-        if (DEBUG) Log.i(TAG, "                    postId=" + cursor.getString(cursor.getColumnIndex(ChanHelper.POST_ID)));
-        if (DEBUG) Log.i(TAG, "                      text=" + cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT)));
+        if (DEBUG) Log.v(TAG, "setViewValue for  position=" + cursor.getPosition());
+        if (DEBUG) Log.v(TAG, "                 boardCode=" + cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE)));
+        if (DEBUG) Log.v(TAG, "                    postId=" + cursor.getString(cursor.getColumnIndex(ChanHelper.POST_ID)));
+        if (DEBUG) Log.v(TAG, "                      text=" + cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT)));
 
         switch (view.getId()) {
-            case R.id.list_item:
-                return setItem((ViewGroup)view, cursor);
-            case R.id.list_item_expanded_progress_bar:
-                itemExpandedProgressBar = (ProgressBar)view;
-                return setItemExpandedProgressBar((ProgressBar) view);
+            case R.id.list_item :
+                return setItemBackground((ViewGroup)view, cursor);
             case R.id.list_item_image_expanded:
-                itemExpandedImage = (ImageView)view;
                 return setItemImageExpanded((ImageView)view, cursor);
             case R.id.list_item_image:
-                return setItemImage((ImageView)view, cursor, itemExpandedImage, itemExpandedProgressBar);
+                return setItemImage((ImageView)view, cursor);
             case R.id.list_item_country_flag:
                 return setItemCountryFlag((ImageView)view, cursor);
             case R.id.list_item_header:
@@ -345,29 +238,42 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             case R.id.list_item_date:
                 return setItemDateValue((TextView)view, cursor);
             case R.id.list_item_image_overlay:
-                return setItemImageOverlayValue((TextView) view, cursor, itemExpandedImage, itemExpandedProgressBar);
+                return setItemImageOverlayValue((TextView) view, cursor);
             default:
                 return false;
         }
     }
 
-    private boolean setItem(final ViewGroup v, final Cursor cursor) {
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (adItem > 0)
-            v.setOnClickListener(new AdOnClickListener(cursor));
+    protected boolean setItemBackground(ViewGroup item, Cursor cursor) {
+        SparseBooleanArray positions = absListView.getCheckedItemPositions();
+        if (positions.get(cursor.getPosition()))
+            item.setBackgroundColor(R.color.PaletteBlueHalfOpacity);
         else
-            v.setOnClickListener(new PopupOnClickListener(cursor.getPosition()));
+            item.setBackgroundDrawable(null);
         return true;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Cursor cursor = adapter.getCursor();
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        if (adItem > 0) {
+            String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            ChanHelper.launchUrlInBrowser(ThreadActivity.this, adUrl);
+        }
+        else if (imageUrl != null && !imageUrl.isEmpty()) {
+            LinearLayout threadListItem = (LinearLayout)view;
+            ImageView itemExpandedImage = (ImageView)threadListItem.findViewById(R.id.list_item_image_expanded);
+            ProgressBar itemExpandedProgressBar = (ProgressBar)threadListItem.findViewById(R.id.list_item_expanded_progress_bar);
+            ExpandImageOnClickListener listener = new ExpandImageOnClickListener(cursor, itemExpandedImage, itemExpandedProgressBar);
+            listener.onClick(view);
+        }
     }
 
     private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
         String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
         tv.setText(Html.fromHtml(shortText));
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (adItem > 0)
-            tv.setOnClickListener(new AdOnClickListener(cursor));
-        else
-            tv.setOnClickListener(new PopupOnClickListener(cursor.getPosition()));
         return true;
     }
 
@@ -380,129 +286,35 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             tv.setText(Html.fromHtml(text));
             tv.setVisibility(View.VISIBLE);
         }
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (adItem > 0)
-            tv.setOnClickListener(new AdOnClickListener(cursor));
-        else
-            tv.setOnClickListener(new PopupOnClickListener(cursor.getPosition()));
         return true;
-    }
-
-    private class PopupOnClickListener implements View.OnClickListener {
-        private int position = 0;
-        public PopupOnClickListener(final int position) {
-            this.position = position;
-        }
-        @Override
-        public void onClick(View v) {
-            if (v instanceof TextView) {
-                TextView tv = (TextView)v;
-                int start = tv.getSelectionStart();
-                int end = tv.getSelectionEnd();
-                if (start == -1 || end == -1 || start == end) // non-web click
-                    ensurePopup().showFromCursor(ThreadActivity.this.absListView, position);
-            }
-            else {
-                ensurePopup().showFromCursor(ThreadActivity.this.absListView, position);
-            }
-        }
     }
 
     private boolean setItemDateValue(final TextView tv, final Cursor cursor) {
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_DATE_TEXT));
         tv.setText(text == null ? "" : text);
-        tv.setOnClickListener(new PopupOnClickListener(cursor.getPosition()));
         return true;
     }
 
 
-    private boolean setItemImageOverlayValue(final TextView tv,
-                                             final Cursor cursor,
-                                             final ImageView itemExpandedImage,
-                                             final ProgressBar itemExpandedProgressBar)
+    private boolean setItemImageOverlayValue(final TextView tv, final Cursor cursor)
     {
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_DIMENSIONS));
         if (text == null || text.isEmpty()) {
             tv.setVisibility(View.GONE);
             return true;
         }
-        /*
-        int post_tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
-        int post_tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
-        long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
-        if (resto == 0) {
-            post_tn_w /= 2;
-            post_tn_h /= 2;
-        }
-        if (post_tn_w > 0 && post_tn_h > 0) {
-            ViewGroup.LayoutParams params = tv.getLayoutParams();
-            lazyInitThumbnailScaleFactor(tv.getContext());
-            params.width = Math.max(MIN_THUMBNAIL_WIDTH_PX, Math.round(thumbnailScaleFactor * (float)post_tn_w));
-            if (post_tn_w <= 125) { // smaller image
-                text = text.replace(" ", "\n");
-                if (post_tn_w < post_tn_h) { // small and narrow
-                    text = text.replace("x", "x\n");
-                    tv.setLines(3);
-                }
-                else {
-                    tv.setLines(2);
-                }
-            }
-        }
-        */
         tv.setText(text);
         tv.setVisibility(View.VISIBLE);
-        tv.setOnClickListener(new ExpandImageOnClickListener(cursor, itemExpandedImage, itemExpandedProgressBar));
         return true;
     }
 
-    private static float thumbnailScaleFactor = 0; // avoid too-small thumbnails
-
-    private void lazyInitThumbnailScaleFactor(Context context) {
-        if (thumbnailScaleFactor == 0) {
-            WindowManager manager = (WindowManager)context.getSystemService(WINDOW_SERVICE);
-            DisplayMetrics metrics = new DisplayMetrics();
-            manager.getDefaultDisplay().getMetrics(metrics);
-            thumbnailScaleFactor = metrics.density > 1 ? 1 + 0.5f*(metrics.density - 1) : metrics.density;
-        }
-    }
-
-    private boolean setItemImage(final ImageView iv,
-                                 final Cursor cursor,
-                                 final ImageView itemExpandedImage,
-                                 final ProgressBar itemExpandedProgressBar)
+    private boolean setItemImage(final ImageView iv, final Cursor cursor)
     {
-        /*
-        int post_tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
-        int post_tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
-        long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
-        if (resto == 0) {
-            post_tn_w /= 2;
-            post_tn_h /= 2;
-        }
-        if (post_tn_w > 0 && post_tn_h > 0) {
-            ViewGroup.LayoutParams params = iv.getLayoutParams();
-            lazyInitThumbnailScaleFactor(iv.getContext());
-            params.width = Math.max(MIN_THUMBNAIL_WIDTH_PX, Math.round(thumbnailScaleFactor * (float)post_tn_w));
-            params.height = Math.round(thumbnailScaleFactor * (float)post_tn_h);
-        }
-        */
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         if (imageUrl != null && !imageUrl.isEmpty())
             imageLoader.displayImage(imageUrl, iv, displayImageOptions);
         else
             iv.setImageBitmap(null);
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (adItem > 0)
-            iv.setOnClickListener(new AdOnClickListener(cursor));
-        else
-            iv.setOnClickListener(new ExpandImageOnClickListener(cursor, itemExpandedImage, itemExpandedProgressBar));
-        return true;
-    }
-
-    private boolean setItemExpandedProgressBar(final ProgressBar b) {
-        if (b != null)
-            b.setVisibility(View.GONE);
         return true;
     }
 
@@ -513,22 +325,6 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             return false;
         iv.setOnClickListener(new ImageOnClickListener(cursor));
         return true;
-    }
-
-    private class AdOnClickListener implements View.OnClickListener {
-
-        private String adUrl = null;
-
-        public AdOnClickListener(Cursor cursor) {
-            adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        }
-
-        @Override
-        public void onClick(View v) {
-            ChanHelper.fadeout(ThreadActivity.this, v);
-            ChanHelper.launchUrlInBrowser(ThreadActivity.this, adUrl);
-        }
-
     }
 
     private class ExpandImageOnClickListener implements View.OnClickListener {
@@ -739,12 +535,21 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
     }
 
     private void postReply() {
+        long[] postNos = {};
+        postReply(postNos);
+    }
+
+    private void postReply(long postNos[]) {
+        String replyText = "";
+        for (long postNo : postNos) {
+            replyText += ">>" + postNo + "\n";
+        }
         Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
         replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         replyIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
         replyIntent.putExtra(ChanHelper.POST_NO, 0);
         replyIntent.putExtra(ChanHelper.TIM, tim);
-        replyIntent.putExtra(ChanHelper.TEXT, "");
+        replyIntent.putExtra(ChanHelper.TEXT, replyText);
         startActivity(replyIntent);
     }
 
@@ -832,8 +637,8 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
         if (a == null) {
             return;
         }
-        //String title = "/" + boardCode + "/" + threadNo;
-        //a.setTitle(title);
+        //a.setTitle(String.valueOf(threadNo));
+        //a.setDisplayShowTitleEnabled(true);
         a.setDisplayShowTitleEnabled(false);
         a.setDisplayHomeAsUpEnabled(true);
         invalidateOptionsMenu();
@@ -886,6 +691,91 @@ public class ThreadActivity extends BoardActivity implements ChanIdentifiedActiv
             initPopup();
         }
         return threadPostPopup;
+    }
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.thread_context_menu, menu);
+        mode.setTitle(R.string.thread_context_select);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        if (DEBUG) Log.i(TAG, "onPrepareActionMode");
+        prehighlightItems();
+        return true;
+    }
+
+    protected void prehighlightItems() {
+        SparseBooleanArray positions = absListView.getCheckedItemPositions();
+        if (DEBUG) Log.i(TAG, "prehighlightItems size=" + positions.size());
+        for (int i = 0; i < positions.size(); i++) {
+            if (positions.get(i))
+                highlightItem(i, true);
+        }
+    }
+
+    protected void highlightItem(int position, boolean checked) {
+        if (DEBUG) Log.i(TAG, "highlightItem pos=" + position + " checked=" + checked);
+        for (int i = 0; i < absListView.getChildCount(); i++) {
+            View child = absListView.getChildAt(i);
+            if (child == null)
+                continue;
+            int childPosition = absListView.getPositionForView(child);
+            if (DEBUG) Log.v(TAG, "child Id: " + child.getId() + " childPosition:" + childPosition);
+            if (childPosition != position)
+                continue;
+            if (DEBUG) Log.i(TAG, "Found item to highlight pos=" + position + " child=" + child + " checked=" + checked);
+            if (checked)
+                child.setBackgroundColor(R.color.PaletteBlueHalfOpacity);
+            else
+                child.setBackgroundDrawable(null);
+
+            break;
+        }
+    }
+
+    @Override
+    public void onItemCheckedStateChanged(final ActionMode mode, final int position, final long id, final boolean checked) {
+        Log.i(TAG, "onItemCheckedStateChanged pos=" + position + " checked=" + checked);
+        int delayMs = absListView.getCheckedItemCount() > 1 ? 10 : 250; // need to wait for list view to display
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                highlightItem(position, checked);
+            }
+        }, delayMs);
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        long[] postNos = absListView.getCheckedItemIds();
+        switch (item.getItemId()) {
+            case R.id.post_reply_menu:
+                String msg = "Post nos: " + Arrays.toString(postNos);
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                mode.finish();
+                postReply(postNos);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        SparseBooleanArray positions = absListView.getCheckedItemPositions();
+        if (DEBUG) Log.i(TAG, "onDestroyActionMode checked size=" + positions.size());
+        for (int i = 0; i < positions.size(); i++) {
+            if (positions.get(i)) {
+                absListView.setItemChecked(i, false);
+                //highlightItem(i, false);
+            }
+        }
+
+        // nothing
     }
 
 }

@@ -314,7 +314,7 @@ public class UpdateWidgetService extends Service {
         private PendingIntent makePendingIntent(ChanPost thread, int i) {
             Intent intent = (thread == null || thread.no < 1)
                 ? BoardActivity.createIntentForActivity(context, new String(boardCode))
-                : ThreadActivity.createIntentForThread(context, thread);
+                : ThreadActivity.createIntentForActivity(context, new String(thread.board), thread.no);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = 100 * appWidgetId + i;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);

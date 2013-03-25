@@ -815,23 +815,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         }
     }
 
-    public void navigateUp() {
-        Intent intent = ThreadActivity.createIntentForActivity(
-                this,
-                boardCode,
-                threadNo,
-                null,
-                null,
-                0,
-                0,
-                tim,
-                false,
-                0,
-                true
-        );
-        NavUtils.navigateUpTo(this, intent);
-    }
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.post_reply_send_menu);

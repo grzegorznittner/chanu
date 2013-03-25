@@ -164,6 +164,10 @@ public class ChanPost {
         String comText = sanitizeText(com);
         if (comText != null && !comText.isEmpty())
             return comText.substring(0, Math.min(comText.length(), MAX_THREAD_SUBJECT_LEN)); // always shorter than this since only one line
+        if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
+            return name;
+        if (email != null && !email.isEmpty() && !name.equalsIgnoreCase("sage"))
+            return email;
         return context.getResources().getString(R.string.thread_no_text_subject);
     }
 
