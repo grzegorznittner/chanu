@@ -84,6 +84,8 @@
     <string name="view_as_grid_menu">View As Grid</string>
     <string name="view_as_list_menu">View As List</string>
     <string name="post_reply_menu">New Post</string>
+    <string name="select_text_menu">Select Text</string>
+    <string name="select_text_hint">Select Text</string>
     <string name="toggle_image_only_menu">Toggle Image Only</string>
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
@@ -189,7 +191,7 @@
     <string name="exif">Show EXIF Data</string>
     <string name="exif_title">EXIF Data</string>
     <string name="copy_text">Copy Text</string>
-    <string name="copy_text_complete">Copied to clipboard</string>
+    <string name="copy_text_complete">Copied text</string>
     <string name="translate">Translate</string>
     <string name="report">Report Post</string>
     <string name="reply">Post Reply</string>
@@ -248,7 +250,7 @@
     <string name="post_reply_pass_enabled_text">Bypassing captcha with Pass</string>
     <string name="post_reply_pass_enable_text">Click to bypass captcha</string>
     <string name="post_reply_pass_disabled_text">4chan Pass logged out</string>
-    <string name="post_reply_pass_mobile_text">4chan Pass unavailable on mobile</string>
+    <string name="post_reply_pass_mobile_text">4chan Pass unavailable on mobile data</string>
     <string name="post_reply_pass_no_connection_text">Cannot post while connection is down</string>
     <string name="post_reply_pass_enable_hint">Authorize 4chan Pass</string>
     <string name="post_reply_pass_disable_hint">Logout 4chan Pass</string>

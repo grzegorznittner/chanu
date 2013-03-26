@@ -2,6 +2,7 @@ package com.chanapps.four.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
@@ -10,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.Html;
 import android.util.DisplayMetrics;
@@ -23,6 +25,7 @@ import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.fragment.SelectTextDialogFragment;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
@@ -741,23 +744,30 @@ public class ThreadActivity
     public void onItemCheckedStateChanged(final ActionMode mode, final int position, final long id, final boolean checked) {
         Log.i(TAG, "onItemCheckedStateChanged pos=" + position + " checked=" + checked);
         int delayMs = absListView.getCheckedItemCount() > 1 ? 10 : 250; // need to wait for list view to display
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                highlightItem(position, checked);
-            }
-        }, delayMs);
+        if (handler != null)
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    highlightItem(position, checked);
+                }
+            }, delayMs);
     }
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-        long[] postNos = absListView.getCheckedItemIds();
         switch (item.getItemId()) {
             case R.id.post_reply_menu:
-                String msg = "Post nos: " + Arrays.toString(postNos);
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                long[] postNos = absListView.getCheckedItemIds();
+                if (DEBUG) Log.i(TAG, "Post nos: " + Arrays.toString(postNos));
                 mode.finish();
                 postReply(postNos);
+                return true;
+            case R.id.select_text_menu:
+                SparseBooleanArray postPos = absListView.getCheckedItemPositions();
+                String text = selectText(postPos);
+                copyToClipboard(text);
+                //mode.finish();
+                //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
                 return true;
             default:
                 return false;
@@ -768,14 +778,45 @@ public class ThreadActivity
     public void onDestroyActionMode(ActionMode mode) {
         SparseBooleanArray positions = absListView.getCheckedItemPositions();
         if (DEBUG) Log.i(TAG, "onDestroyActionMode checked size=" + positions.size());
-        for (int i = 0; i < positions.size(); i++) {
+        for (int i = 0; i < absListView.getCount(); i++) {
             if (positions.get(i)) {
                 absListView.setItemChecked(i, false);
                 //highlightItem(i, false);
             }
         }
-
         // nothing
+    }
+
+    protected String selectText(SparseBooleanArray postPos) {
+        String text = "";
+        for (int i = 0; i < absListView.getCount(); i++) {
+            if (!postPos.get(i))
+                continue;
+            Cursor cursor = (Cursor)adapter.getItem(i);
+            if (cursor == null)
+                continue;
+            String postNo = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_ID));
+            String itemText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            if (itemText == null)
+                itemText = "";
+            String postPrefix = ">>" + postNo + "<br/>";
+            text += (text.isEmpty() ? "" : "<br/><br/>") + postPrefix + ChanPost.quoteText(itemText);
+        }
+        if (DEBUG) Log.i(TAG, "Selected text: " + text);
+        return text;
+    }
+
+    protected String planifyText(String text) {
+        return text.replaceAll("<br/?>", "\n").replaceAll("<[^>]*>","");
+    }
+
+    protected void copyToClipboard(String text) {
+        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        android.content.ClipData clip = android.content.ClipData.newPlainText(
+                getApplicationContext().getString(R.string.app_name),
+                planifyText(text));
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(getApplicationContext(), R.string.copy_text_complete, Toast.LENGTH_SHORT).show();
     }
 
 }

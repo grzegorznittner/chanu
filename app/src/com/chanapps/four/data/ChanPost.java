@@ -113,9 +113,10 @@ public class ChanPost {
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingBooleanDeserializer.class)
     public boolean useFriendlyIds = true;
 
-    public static final String quoteText(String s) {
-        if (s == null || s.isEmpty())
+    public static final String quoteText(String in) {
+        if (in == null || in.isEmpty())
             return "";
+        String s = in.replaceAll("<br/>", "\n");
         String o = "> ";
         int l = 0;
         for (int i = 0; i < s.length(); i++) {
@@ -141,7 +142,7 @@ public class ChanPost {
                 l++;
             }
         }
-        return o;
+        return o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
     }
 
     public String getFullText() {
