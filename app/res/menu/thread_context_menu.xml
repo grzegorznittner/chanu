@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/post_reply_menu"
-          android:title="@string/post_reply_menu"
+    <item android:id="@+id/post_reply_all_menu"
+          android:title="@string/post_reply_all_menu"
           android:icon="@drawable/social_reply"
+            />
+    <item android:id="@+id/post_reply_all_quote_menu"
+          android:title="@string/post_reply_all_quote_menu"
+          android:icon="@drawable/social_reply_all"
             />
     <item android:id="@+id/select_text_menu"
           android:title="@string/select_text_menu"

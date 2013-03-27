@@ -547,12 +547,16 @@ public class ThreadActivity
         for (long postNo : postNos) {
             replyText += ">>" + postNo + "\n";
         }
+        postReply(replyText);
+    }
+
+    private void postReply(String replyText) {
         Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
         replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         replyIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
         replyIntent.putExtra(ChanHelper.POST_NO, 0);
         replyIntent.putExtra(ChanHelper.TIM, tim);
-        replyIntent.putExtra(ChanHelper.TEXT, replyText);
+        replyIntent.putExtra(ChanHelper.TEXT, planifyText(replyText));
         startActivity(replyIntent);
     }
 
@@ -756,17 +760,23 @@ public class ThreadActivity
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.post_reply_menu:
+            case R.id.post_reply_all_menu:
                 long[] postNos = absListView.getCheckedItemIds();
                 if (DEBUG) Log.i(TAG, "Post nos: " + Arrays.toString(postNos));
                 mode.finish();
                 postReply(postNos);
                 return true;
-            case R.id.select_text_menu:
+            case R.id.post_reply_all_quote_menu:
                 SparseBooleanArray postPos = absListView.getCheckedItemPositions();
-                String text = selectText(postPos);
-                copyToClipboard(text);
-                //mode.finish();
+                String quoteText = selectQuoteText(postPos);
+                mode.finish();
+                postReply(quoteText);
+                return true;
+            case R.id.select_text_menu:
+                SparseBooleanArray postCheckedPos = absListView.getCheckedItemPositions();
+                String selectText = selectText(postCheckedPos);
+                mode.finish();
+                copyToClipboard(selectText);
                 //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
                 return true;
             default:
@@ -795,6 +805,23 @@ public class ThreadActivity
             Cursor cursor = (Cursor)adapter.getItem(i);
             if (cursor == null)
                 continue;
+            String itemText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            if (itemText == null)
+                itemText = "";
+            text += (text.isEmpty() ? "" : "\n\n") + itemText;
+        }
+        if (DEBUG) Log.i(TAG, "Selected text: " + text);
+        return text;
+    }
+
+    protected String selectQuoteText(SparseBooleanArray postPos) {
+        String text = "";
+        for (int i = 0; i < absListView.getCount(); i++) {
+            if (!postPos.get(i))
+                continue;
+            Cursor cursor = (Cursor)adapter.getItem(i);
+            if (cursor == null)
+                continue;
             String postNo = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_ID));
             String itemText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
             if (itemText == null)
@@ -802,7 +829,7 @@ public class ThreadActivity
             String postPrefix = ">>" + postNo + "<br/>";
             text += (text.isEmpty() ? "" : "<br/><br/>") + postPrefix + ChanPost.quoteText(itemText);
         }
-        if (DEBUG) Log.i(TAG, "Selected text: " + text);
+        if (DEBUG) Log.i(TAG, "Selected quote text: " + text);
         return text;
     }
 
