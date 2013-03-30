@@ -186,7 +186,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     private File ensureGalleryFolder() {
         File galleryFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File gallery4chanFolder = new File(galleryFolder, "Chanu");
+        File gallery4chanFolder = new File(galleryFolder, getString(com.chanapps.four.activity.R.string.app_name));
         if (!gallery4chanFolder.exists()) {
             if (!gallery4chanFolder.mkdirs()) {
                 return null;

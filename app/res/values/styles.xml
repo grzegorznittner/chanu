@@ -90,11 +90,6 @@
         <item name="android:contentDescription">@string/thread_post_image</item>
     </style>
 
-    <style name="BoardAdGridImage" parent="BoardGridImage">
-        <item name="android:contentDescription">@string/jlist_ad_message</item>
-        <item name="android:scaleType">fitCenter</item>
-    </style>
-
     <style name="BoardSelectorGridTextImageOverlay" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -194,28 +189,18 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="ThreadAdListLayout" parent="ThreadListLayout">
-        <item name="android:background">@color/PaletteOffWhiteHalfOpacity</item>
-    </style>
-
     <style name="ThreadListItemImage" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_marginTop">8dp</item>
+        <!-- <item name="android:layout_marginTop">8dp</item> -->
         <item name="android:layout_marginRight">8dp</item>
-        <item name="android:layout_marginLeft">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
+        <!-- <item name="android:layout_marginBottom">8dp</item> -->
+        <!-- <item name="android:paddingBottom">8dp</item> -->
         <item name="android:gravity">top|left</item>
         <item name="android:scaleType">fitStart</item>
-        <item name="android:src">@drawable/board_3</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
-    </style>
-
-    <style name="ThreadListItemHeaderImage" parent="ThreadListItemImage">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="ThreadListItemExpandedProgressBar" parent="@android:style/Widget.Holo.Light.ProgressBar.Large">
@@ -238,18 +223,12 @@
         <item name="android:contentDescription">@string/thread_post_image_expanded</item>
     </style>
 
-    <style name="ThreadListItemAdImage" parent="ThreadListItemImage">
-        <item name="android:paddingBottom">8dp</item>
-        <item name="android:layout_width">94dp</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
     <style name="ThreadListItemHeadText" parent="AppTheme">
-        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minLines">1</item>
         <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingBottom">4dp</item>
         <item name="android:paddingRight">64dp</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentRight">true</item>
@@ -264,16 +243,11 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">4dp</item>
-        <item name="android:lines">1</item>
         <item name="android:layout_toRightOf">@+id/list_item_image</item>
         <item name="android:layout_below">@+id/list_item_header</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
-    </style>
-
-    <style name="ThreadListItemHeadTextAd" parent="ThreadListItemHeadText">
-        <item name="android:text">@string/advert_header</item>
     </style>
 
     <style name="ThreadListItemShortText" parent="AppTheme">
@@ -289,7 +263,17 @@
         <item name="android:textSize">14sp</item>
         <!-- <item name="android:textIsSelectable">true</item>  -->
         <item name="android:autoLink">web|email</item>
-        <item name="android:linksClickable">true</item>
+        <item name="android:linksClickable">false</item>
+    </style>
+
+    <style name="ThreadListItemExifText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="ThreadListItemFullText" parent="AppTheme">
@@ -297,64 +281,29 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingRight">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingBottom">4dp</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">14sp</item>
         <!-- <item name="android:textIsSelectable">true</item>  -->
         <item name="android:autoLink">web|email</item>
-        <item name="android:linksClickable">true</item>
+        <item name="android:linksClickable">false</item>
+        <!-- <item name="android:focusable">false</item> -->
+        <!-- <item name="android:focusableInTouchMode">true</item> -->
     </style>
 
     <style name="ThreadListItemDateText" parent="AppTheme">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minLines">1</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:minLines">1</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingRight">8dp</item>
         <item name="android:gravity">top|right</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
         <item name="android:textSize">14sp</item>
         <item name="android:text">10:12 AM</item>
-    </style>
-
-    <style name="ThreadListItemNoImageHeadText" parent="AppTheme">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:minLines">1</item>
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">4dp</item>
-        <item name="android:paddingRight">64dp</item>
-        <item name="android:layout_marginLeft">8dp</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:gravity">top|left</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
-    </style>
-
-    <style name="ThreadListItemNoImageShortText" parent="AppTheme">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">8dp</item>
-        <item name="android:layout_marginLeft">8dp</item>
-        <item name="android:layout_marginRight">40dp</item>
-        <item name="android:layout_below">@+id/list_item_header</item>
-        <item name="android:gravity">top|left</item>
-        <item name="android:textSize">14sp</item>
-        <!--<item name="android:textIsSelectable">true</item>-->
-        <item name="android:autoLink">web|email</item>
-        <item name="android:linksClickable">true</item>
-    </style>
-
-    <style name="ThreadListItemShortTextAd" parent="ThreadListItemShortText">
-        <item name="android:layout_below">@+id/list_item_ad_header</item>
-        <item name="android:textIsSelectable">false</item>
-        <item name="android:autoLink">none</item>
-        <item name="android:linksClickable">false</item>
-        <item name="android:text">@string/jlist_ad_message</item>
     </style>
 
     <style name="ThreadListItemCountryFlag" parent="AppTheme">
@@ -364,6 +313,7 @@
         <item name="android:layout_marginRight">8dp</item>
         <item name="android:layout_below">@+id/list_item_date</item>
         <item name="android:layout_alignParentRight">true</item>
+        <item name="android:gravity">right</item>
         <item name="android:scaleType">fitXY</item>
         <item name="android:contentDescription">@string/popup_country_flag</item>
     </style>
@@ -517,6 +467,7 @@
     <color name="PaletteOffWhiteHalfOpacity">#80ddd9d7</color>
     <color name="PaletteWhite">#fefefe</color>
     <color name="PaletteTransparent">#00000000</color>
+    <color name="PaletteLightestGray">#eee</color>
     <color name="PaletteLighterGray">#ddd</color>
     <color name="PaletteBlack">#ff010101</color>
     <color name="PaletteBlackHalfOpacity">#80010101</color>

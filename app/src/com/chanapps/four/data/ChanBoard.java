@@ -443,14 +443,14 @@ public class ChanBoard {
         return ChanThread.makeAdRow(context, imageUrl, clickUrl);
     }
 
-    public Object[] makePostAdRow() {
+    public Object[] makePostAdRow(Context context) {
         int adCode =
                 (!workSafe && generator.nextDouble() < AD_ADULT_PROBABILITY_ON_ADULT_BOARD)
                         ? JLIST_AD_ADULT_CODES[generator.nextInt(JLIST_AD_ADULT_CODES.length)]
                         : JLIST_AD_CODES[generator.nextInt(JLIST_AD_CODES.length)];
         String imageUrl = JLIST_AD_IMAGE_ROOT_URL + "/" + adCode;
         String clickUrl = JLIST_AD_CLICK_ROOT_URL + "/" + adCode;
-        return ChanPost.makeAdRow(link, imageUrl, clickUrl);
+        return ChanPost.makeAdRow(context, link, imageUrl, clickUrl);
     }
     
     public void updateCountersAfterLoad() {

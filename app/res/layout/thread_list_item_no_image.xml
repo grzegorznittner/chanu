@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" style="@style/ThreadListLayout" android:id="@+id/list_item">
-    <TextView style="@style/ThreadListItemNoImageHeadText" android:id="@+id/list_item_header"/>
-    <TextView style="@style/ThreadListItemNoImageShortText" android:id="@+id/list_item_text"/>
-    <TextView style="@style/ThreadListItemDateText" android:id="@+id/list_item_date"/>
-    <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
-</RelativeLayout>

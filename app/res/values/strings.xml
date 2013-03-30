@@ -1,5 +1,6 @@
 <resources>
     <!-- titles -->
+    <string name="app_name">Chanu</string>
     <string name="application_name">Chanu</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="title_item_list">Items</string>
@@ -88,17 +89,20 @@
     <string name="post_reply_all_quote_menu">Post Quoted Reply</string>
     <string name="select_text_menu">Select Text</string>
     <string name="select_text_hint">Select Text</string>
+    <string name="share_text">Share Text</string>
     <string name="toggle_image_only_menu">Toggle Image Only</string>
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
     <string name="download_all_images_menu">Prefetch All Images</string>
     <string name="download_all_images_to_gallery_menu">Download To Gallery</string>
+    <string name="download_images_to_gallery_menu">Download To Gallery</string>
     <string name="download_image_menu">Save to Gallery</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
     <string name="view_image_gallery_menu">View Image Gallery</string>
     <string name="image_search_menu">Reverse Image Search</string>
     <string name="anime_image_search_menu">IQDB Image Search</string>
     <string name="share_image_menu">Share Image</string>
+    <string name="share_text_menu">Share Text</string>
     <string name="post_reply_send_menu">Post Reply</string>
     <string name="offline_board_view_menu">Cached Images</string>
     <string name="offline_chan_view_menu">All Cached Images</string>
@@ -126,6 +130,7 @@
     <string name="thread_activity_fresh">Thread is current</string>
     <string name="thread_end_of_thread">End of Thread</string>
     <string name="thread_context_select">Select Posts</string>
+    <string name="thread_no_posts_selected">No Posts Selected</string>
     <string name="thread_couldnt_load">Couldn\'t load thread</string>
     <string name="thread_couldnt_load_image_cancelled">Couldn\'t load image, cancelled</string>
     <string name="thread_couldnt_load_image">Couldn\'t load image: %1$s</string>

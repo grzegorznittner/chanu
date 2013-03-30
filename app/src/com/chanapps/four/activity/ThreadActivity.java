@@ -2,7 +2,6 @@ package com.chanapps.four.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
@@ -11,7 +10,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.Html;
 import android.util.DisplayMetrics;
@@ -25,7 +23,6 @@ import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.fragment.SelectTextDialogFragment;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
@@ -50,7 +47,6 @@ public class ThreadActivity
         extends BoardActivity
         implements ChanIdentifiedActivity,
         RefreshableActivity,
-        AdapterView.OnItemClickListener,
         AbsListView.MultiChoiceModeListener
 {
 
@@ -168,15 +164,18 @@ public class ThreadActivity
                         ChanHelper.POST_IMAGE_URL,
                         ChanHelper.POST_IMAGE_URL,
                         ChanHelper.POST_IMAGE_URL,
+                        ChanHelper.POST_IMAGE_URL,
                         ChanHelper.POST_SHORT_TEXT,
                         ChanHelper.POST_TEXT,
                         ChanHelper.POST_COUNTRY_URL,
                         ChanHelper.POST_DATE_TEXT,
                         ChanHelper.POST_IMAGE_DIMENSIONS,
                         ChanHelper.POST_EXPAND_BUTTON,
+                        //ChanHelper.POST_EXPAND_BUTTON,
                         ChanHelper.POST_EXPAND_BUTTON
                 },
                 new int[] {
+                        R.id.list_item_header_bar,
                         R.id.list_item_expanded_progress_bar,
                         R.id.list_item_image_expanded,
                         R.id.list_item_image,
@@ -184,12 +183,10 @@ public class ThreadActivity
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
                         R.id.list_item_date,
-                        R.id.list_item_image_overlay
+                        //R.id.list_item_image_overlay,
+                        R.id.list_item_image_exif
                 });
         absListView.setAdapter(adapter);
-        absListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
-        absListView.setMultiChoiceModeListener(this);
-        absListView.setOnCreateContextMenuListener(this);
     }
 
     @Override
@@ -215,7 +212,14 @@ public class ThreadActivity
         setContentView(getLayoutId());
         initAbsListView();
         initAdapter();
+        setupContextMenu();
         absListView.setOnItemClickListener(this);
+    }
+
+    protected void setupContextMenu() {
+        absListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+        absListView.setMultiChoiceModeListener(this);
+        absListView.setOnCreateContextMenuListener(this);
     }
 
     @Override
@@ -227,9 +231,13 @@ public class ThreadActivity
 
         switch (view.getId()) {
             case R.id.list_item :
-                return setItemBackground((ViewGroup)view, cursor);
+                return setItem((ViewGroup)view, cursor);
+            case R.id.list_item_header_bar:
+                return setItemHeaderBar(view, cursor);
             case R.id.list_item_image_expanded:
                 return setItemImageExpanded((ImageView)view, cursor);
+            case R.id.list_item_expanded_progress_bar:
+                return setItemImageExpandedProgressBar((ProgressBar)view, cursor);
             case R.id.list_item_image:
                 return setItemImage((ImageView)view, cursor);
             case R.id.list_item_country_flag:
@@ -240,49 +248,123 @@ public class ThreadActivity
                 return setItemMessageValue((TextView)view, cursor);
             case R.id.list_item_date:
                 return setItemDateValue((TextView)view, cursor);
-            case R.id.list_item_image_overlay:
-                return setItemImageOverlayValue((TextView) view, cursor);
+            //case R.id.list_item_image_overlay:
+            //    return setItemImageOverlayValue((TextView) view, cursor);
+            case R.id.list_item_image_exif:
+                return setItemImageExifValue((TextView) view, cursor);
             default:
                 return false;
         }
     }
 
-    protected boolean setItemBackground(ViewGroup item, Cursor cursor) {
+    protected boolean setItem(ViewGroup item, Cursor cursor) {
         SparseBooleanArray positions = absListView.getCheckedItemPositions();
-        if (positions.get(cursor.getPosition()))
+        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (adItem > 0) {
+            item.setBackgroundResource(R.color.PaletteLighterGray);
+            Log.i(TAG, "setting to ad color");
+        }
+        else if (positions.get(cursor.getPosition())) {
             item.setBackgroundColor(R.color.PaletteBlueHalfOpacity);
+            Log.i(TAG, "setting to blue color");
+        }
         else
             item.setBackgroundDrawable(null);
+        if (adItem > 0)
+            item.setOnClickListener(itemAdListener);
+        //item.setOnClickListener(itemImageListener);
+        //item.setOnLongClickListener(itemLongListener);
         return true;
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Cursor cursor = adapter.getCursor();
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        if (adItem > 0) {
-            String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-            ChanHelper.launchUrlInBrowser(ThreadActivity.this, adUrl);
-        }
-        else if (imageUrl != null && !imageUrl.isEmpty()) {
-            LinearLayout threadListItem = (LinearLayout)view;
-            ImageView itemExpandedImage = (ImageView)threadListItem.findViewById(R.id.list_item_image_expanded);
-            ProgressBar itemExpandedProgressBar = (ProgressBar)threadListItem.findViewById(R.id.list_item_expanded_progress_bar);
-            ExpandImageOnClickListener listener = new ExpandImageOnClickListener(cursor, itemExpandedImage, itemExpandedProgressBar);
-            listener.onClick(view);
-        }
+    protected boolean setItemHeaderBar(View view, Cursor cursor) {
+        if (cursor.getPosition() == 0)
+            view.setVisibility(View.VISIBLE);
+        else
+            view.setVisibility(View.GONE);
+        return true;
     }
+
+    protected View.OnClickListener itemAdListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = absListView.getPositionForView(v);
+            Cursor cursor = adapter.getCursor();
+            cursor.moveToPosition(pos);
+            final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+            String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            if (adItem > 0 && adUrl != null && !adUrl.isEmpty())
+                ChanHelper.launchUrlInBrowser(ThreadActivity.this, adUrl);
+        }
+    };
+
+    protected View.OnClickListener itemImageListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = absListView.getPositionForView(v);
+            if (DEBUG) Log.i(TAG, "received image click pos: " + pos);
+            Cursor cursor = adapter.getCursor();
+            cursor.moveToPosition(pos);
+            final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+            final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+            if (adItem > 0) {
+                String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+                ChanHelper.launchUrlInBrowser(ThreadActivity.this, adUrl);
+                return;
+            }
+            if (imageUrl == null || imageUrl.isEmpty())
+                return;
+            View itemView = null;
+            for (int i = 0; i < absListView.getChildCount(); i++) {
+                View child = absListView.getChildAt(i);
+                if (absListView.getPositionForView(child) == pos) {
+                    itemView = child;
+                    break;
+                }
+            }
+            if (itemView == null)
+                return;
+            ImageView itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
+            ProgressBar itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
+            TextView itemExpandedExifText = (TextView)itemView.findViewById(R.id.list_item_image_exif);
+            if (DEBUG) Log.i(TAG, "found " + itemView + " " + itemExpandedImage + " " + itemExpandedProgressBar + " " + itemExpandedExifText);
+            ExpandImageOnClickListener listener = new ExpandImageOnClickListener(
+                    cursor, itemExpandedImage, itemExpandedProgressBar, itemExpandedExifText);
+            listener.onClick(itemView);
+        }
+    };
+
+    protected View.OnLongClickListener itemLongListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            int pos = absListView.getPositionForView(v);
+            boolean handled = absListView.showContextMenuForChild(v);
+            if (DEBUG) Log.i(TAG, "Longclick received pos=" + pos + " on v=" + v + " handled=" + handled);
+            return handled;
+            //return absListView.performLongClick();
+        }
+    };
+
+    /*
+        @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+    }
+     */
 
     private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
         String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        tv.setText(Html.fromHtml(shortText));
+        String imageDimensions = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_DIMENSIONS));
+        String text = shortText
+                + (!shortText.isEmpty() && !imageDimensions.isEmpty() ? "<br/>" : "")
+                + imageDimensions;
+        tv.setText(Html.fromHtml(text));
         return true;
     }
 
     private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
+        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        if (text == null || text.isEmpty()) {
+        if (adItem > 0 || text == null || text.isEmpty()) {
             tv.setVisibility(View.GONE);
         }
         else {
@@ -294,7 +376,8 @@ public class ThreadActivity
 
     private boolean setItemDateValue(final TextView tv, final Cursor cursor) {
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_DATE_TEXT));
-        tv.setText(text == null ? "" : text);
+        if (DEBUG) Log.i(TAG, "date text:" + text);
+        tv.setText(text);
         return true;
     }
 
@@ -304,20 +387,40 @@ public class ThreadActivity
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_DIMENSIONS));
         if (text == null || text.isEmpty()) {
             tv.setVisibility(View.GONE);
-            return true;
         }
-        tv.setText(text);
-        tv.setVisibility(View.VISIBLE);
+        else {
+            tv.setText(text);
+            tv.setVisibility(View.VISIBLE);
+        }
+        return true;
+    }
+
+    private boolean setItemImageExifValue(final TextView tv, final Cursor cursor)
+    {
+        String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
+        if (text == null || text.isEmpty()) {
+            tv.setText("");
+            tv.setVisibility(View.GONE);
+        }
+        else {
+            tv.setText(Html.fromHtml(text));
+            tv.setVisibility(View.VISIBLE);
+        }
         return true;
     }
 
     private boolean setItemImage(final ImageView iv, final Cursor cursor)
     {
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        if (imageUrl != null && !imageUrl.isEmpty())
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            iv.setVisibility(View.VISIBLE);
             imageLoader.displayImage(imageUrl, iv, displayImageOptions);
-        else
+            iv.setOnClickListener(itemImageListener);
+        }
+        else {
+            iv.setVisibility(View.INVISIBLE);
             iv.setImageBitmap(null);
+        }
         return true;
     }
 
@@ -330,10 +433,19 @@ public class ThreadActivity
         return true;
     }
 
+    private boolean setItemImageExpandedProgressBar(final ProgressBar progressBar, final Cursor cursor) {
+        progressBar.setVisibility(View.GONE);
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (adItem > 0)
+            return false;
+        return true;
+    }
+
     private class ExpandImageOnClickListener implements View.OnClickListener {
 
         private ImageView itemExpandedImageHolder;
         private ProgressBar itemExpandedProgressBarHolder;
+        private TextView itemExpandedExifTextHolder;
         private String postImageUrl = null;
         int postW = 0;
         int postH = 0;
@@ -341,10 +453,12 @@ public class ThreadActivity
 
         public ExpandImageOnClickListener(final Cursor cursor,
                                           final ImageView itemExpandedImage,
-                                          final ProgressBar itemExpandedProgressBar)
+                                          final ProgressBar itemExpandedProgressBar,
+                                          final TextView itemExpandedExifText)
         {
             itemExpandedImageHolder = itemExpandedImage;
             itemExpandedProgressBarHolder = itemExpandedProgressBar;
+            itemExpandedExifTextHolder = itemExpandedExifText;
             listPosition = cursor.getPosition();
 
             postW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
@@ -356,14 +470,26 @@ public class ThreadActivity
 
         @Override
         public void onClick(View v) {
-            if (itemExpandedImageHolder == null)
+            if (itemExpandedImageHolder == null) {
+                itemExpandedImageHolder.setVisibility(View.GONE);
+                itemExpandedExifTextHolder.setVisibility(View.GONE);
                 return;
+            }
             if (itemExpandedImageHolder.getVisibility() == View.VISIBLE) {
                 ChanHelper.clearBigImageView(itemExpandedImageHolder);
                 itemExpandedImageHolder.setVisibility(View.GONE);
+                itemExpandedExifTextHolder.setVisibility(View.GONE);
             }
             else if (postImageUrl != null) {
                 ChanHelper.clearBigImageView(itemExpandedImageHolder);
+
+                // set exif text visibility
+                if (itemExpandedExifTextHolder != null
+                        && itemExpandedExifTextHolder.getText() != null
+                        && itemExpandedExifTextHolder.getText().length() > 0)
+                    itemExpandedExifTextHolder.setVisibility(View.VISIBLE);
+                else
+                    itemExpandedExifTextHolder.setVisibility(View.GONE);
 
                 // calculate image dimensions
                 if (DEBUG) Log.i(TAG, "post size " + postW + "x" + postH);
@@ -396,25 +522,28 @@ public class ThreadActivity
                     params.height = height;
                 }
                 itemExpandedImageHolder.setVisibility(View.VISIBLE);
+
                 /*
                 if (itemExpandedProgressBarHolder != null) {
                     int progressBarPx = ChanGridSizer.dpToPx(getResources().getDisplayMetrics(), 96);
-                    int progressBarPaddingWidth = Math.max(0, width - progressBarPx);
+                    //int progressBarPaddingWidth = Math.max(0, width - progressBarPx);
                     int progressBarPaddingHeight = Math.max(0, height - progressBarPx);
                     itemExpandedProgressBarHolder.setPadding(0, progressBarPaddingHeight/2, 0, 0);
                 }
                 */
 
                 // calculate auto-scroll on image expand
+                /*
                 ViewParent parent = v.getParent();
                 int parentHeight = 0;
                 if (parent instanceof View) {
                     View parentView = (View)parent;
                     parentHeight = parentView.getHeight();
                 }
+                */
                 int lastPosition = absListView.getLastVisiblePosition();
                 boolean shouldMove = listPosition >= lastPosition - 1;
-                final int parentOffset = shouldMove ? parentHeight + 50 : 0; // allow for margin
+                final int parentOffset = shouldMove ? 100 : 0; // allow for margin
                 //final int imageOffset = shouldMove ? parentHeight + maxHeight : 0;
                 final int imageOffset = 0;
 
@@ -472,6 +601,7 @@ public class ThreadActivity
                         Toast.makeText(ThreadActivity.this, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
                     }
                 }); // load async
+
             }
         }
     }
@@ -596,10 +726,6 @@ public class ThreadActivity
             	ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
                 Toast.makeText(this, R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.download_all_images_to_gallery_menu:
-            	ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null);
-                Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
-                return true;
             case R.id.go_to_top_position_menu:
                 if (absListView != null && absListView.getAdapter() != null && absListView.getAdapter().getCount() > 0)
                     absListView.setSelection(0);
@@ -702,6 +828,7 @@ public class ThreadActivity
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        if (DEBUG) Log.i(TAG, "onCreateActionMode");
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.thread_context_menu, menu);
         mode.setTitle(R.string.thread_context_select);
@@ -726,58 +853,73 @@ public class ThreadActivity
 
     protected void highlightItem(int position, boolean checked) {
         if (DEBUG) Log.i(TAG, "highlightItem pos=" + position + " checked=" + checked);
+        View itemToHighlight = null;
         for (int i = 0; i < absListView.getChildCount(); i++) {
             View child = absListView.getChildAt(i);
-            if (child == null)
-                continue;
-            int childPosition = absListView.getPositionForView(child);
-            if (DEBUG) Log.v(TAG, "child Id: " + child.getId() + " childPosition:" + childPosition);
-            if (childPosition != position)
-                continue;
-            if (DEBUG) Log.i(TAG, "Found item to highlight pos=" + position + " child=" + child + " checked=" + checked);
-            if (checked)
-                child.setBackgroundColor(R.color.PaletteBlueHalfOpacity);
-            else
-                child.setBackgroundDrawable(null);
-
-            break;
+            if (DEBUG) Log.i(TAG, "checking child=" + child + " pos=" + absListView.getPositionForView(child));
+            if (child != null && absListView.getPositionForView(child) == position) {
+                itemToHighlight = child;
+                break;
+            }
         }
+        if (itemToHighlight == null) {
+            if (DEBUG) Log.i(TAG, "Couldn't find item to highlight for pos=" + position);
+            return;
+        }
+        if (DEBUG) Log.i(TAG, "Found item to highlight pos=" + position + " item=" + itemToHighlight + " checked=" + checked);
+        if (checked)
+            itemToHighlight.setBackgroundColor(R.color.PaletteBlueHalfOpacity);
+        else
+            itemToHighlight.setBackgroundDrawable(null);
     }
 
     @Override
     public void onItemCheckedStateChanged(final ActionMode mode, final int position, final long id, final boolean checked) {
         Log.i(TAG, "onItemCheckedStateChanged pos=" + position + " checked=" + checked);
-        int delayMs = absListView.getCheckedItemCount() > 1 ? 10 : 250; // need to wait for list view to display
+        if (absListView.getCheckedItemCount() <= 1) { // wait for list view to display
         if (handler != null)
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     highlightItem(position, checked);
                 }
-            }, delayMs);
+            }, 100);
+        }
+        else {
+            highlightItem(position, checked);
+        }
     }
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        long[] postNos = absListView.getCheckedItemIds();
+        SparseBooleanArray postPos = absListView.getCheckedItemPositions();
+        if (postNos.length == 0) {
+            Toast.makeText(getApplicationContext(), R.string.thread_no_posts_selected, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         switch (item.getItemId()) {
             case R.id.post_reply_all_menu:
-                long[] postNos = absListView.getCheckedItemIds();
                 if (DEBUG) Log.i(TAG, "Post nos: " + Arrays.toString(postNos));
                 mode.finish();
                 postReply(postNos);
                 return true;
             case R.id.post_reply_all_quote_menu:
-                SparseBooleanArray postPos = absListView.getCheckedItemPositions();
                 String quoteText = selectQuoteText(postPos);
                 mode.finish();
                 postReply(quoteText);
                 return true;
             case R.id.select_text_menu:
-                SparseBooleanArray postCheckedPos = absListView.getCheckedItemPositions();
-                String selectText = selectText(postCheckedPos);
+                String selectText = selectText(postPos);
                 mode.finish();
                 copyToClipboard(selectText);
                 //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
+                return true;
+            case R.id.download_images_to_gallery_menu:
+                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);
+                mode.finish();
+                Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return false;
