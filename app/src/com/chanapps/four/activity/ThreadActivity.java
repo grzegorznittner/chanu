@@ -54,6 +54,7 @@ public class ThreadActivity
         extends BoardActivity
         implements ChanIdentifiedActivity,
         RefreshableActivity,
+        AbsListView.OnItemClickListener,
         AbsListView.MultiChoiceModeListener
 {
 
@@ -277,8 +278,8 @@ public class ThreadActivity
         }
         else
             item.setBackgroundDrawable(null);
-        if (adItem > 0)
-            item.setOnClickListener(itemAdListener);
+        //if (adItem > 0)
+        //    item.setOnClickListener(itemAdListener);
         //item.setOnClickListener(itemImageListener);
         //item.setOnLongClickListener(itemLongListener);
         return true;
@@ -434,10 +435,10 @@ public class ThreadActivity
         if (imageUrl != null && !imageUrl.isEmpty()) {
             iv.setVisibility(View.VISIBLE);
             imageLoader.displayImage(imageUrl, iv, displayImageOptions);
-            if (adItem > 0)
-                iv.setOnClickListener(itemAdListener);
-            else
-                iv.setOnClickListener(itemImageListener);
+            //if (adItem > 0)
+            //    iv.setOnClickListener(itemAdListener);
+            //else
+            //    iv.setOnClickListener(itemImageListener);
         }
         else {
             iv.setVisibility(View.INVISIBLE);
@@ -1004,4 +1005,13 @@ public class ThreadActivity
         return result;
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (adItem > 0)
+            itemAdListener.onClick(view);
+        else
+            itemImageListener.onClick(view);
+    }
 }
