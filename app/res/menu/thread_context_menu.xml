@@ -12,6 +12,10 @@
           android:title="@string/post_reply_all_quote_menu"
           android:icon="@drawable/social_reply_all"
             />
+    <item android:id="@+id/go_to_link_menu"
+          android:title="@string/go_to_link_menu"
+          android:icon="@drawable/navigation_forward"
+            />
     <item android:id="@+id/select_text_menu"
           android:title="@string/select_text_menu"
           android:icon="@drawable/content_copy"

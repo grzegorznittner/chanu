@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -23,6 +25,7 @@ import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.fragment.ListOfLinksDialogFragment;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
@@ -34,7 +37,11 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -305,13 +312,7 @@ public class ThreadActivity
             if (DEBUG) Log.i(TAG, "received image click pos: " + pos);
             Cursor cursor = adapter.getCursor();
             cursor.moveToPosition(pos);
-            final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
             final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-            if (adItem > 0) {
-                String adUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-                ChanHelper.launchUrlInBrowser(ThreadActivity.this, adUrl);
-                return;
-            }
             if (imageUrl == null || imageUrl.isEmpty())
                 return;
             View itemView = null;
@@ -334,23 +335,6 @@ public class ThreadActivity
         }
     };
 
-    protected View.OnLongClickListener itemLongListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(View v) {
-            int pos = absListView.getPositionForView(v);
-            boolean handled = absListView.showContextMenuForChild(v);
-            if (DEBUG) Log.i(TAG, "Longclick received pos=" + pos + " on v=" + v + " handled=" + handled);
-            return handled;
-            //return absListView.performLongClick();
-        }
-    };
-
-    /*
-        @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-    }
-     */
-
     private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
         String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
         String imageDimensions = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_DIMENSIONS));
@@ -366,32 +350,66 @@ public class ThreadActivity
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         if (adItem > 0 || text == null || text.isEmpty()) {
             tv.setVisibility(View.GONE);
+            return true;
+        }
+
+        tv.setText(Html.fromHtml(text));
+
+        /*
+        if (text.contains("http://") || text.contains("www.")) {
+            Log.i(TAG, "Set listener for pos=" + cursor.getPosition());
+            tv.setOnClickListener(itemMessageListener);
         }
         else {
-            tv.setText(Html.fromHtml(text));
-            tv.setVisibility(View.VISIBLE);
+            tv.setOnClickListener(null);
         }
+        */
+
+        tv.setVisibility(View.VISIBLE);
         return true;
+        /*
+        if (isActionModeVisible) {
+            tv.setOnLongClickListener(null);
+            return true;
+        }
+
+        boolean foundLinks = Linkify.addLinks(tv, Linkify.WEB_URLS|Linkify.EMAIL_ADDRESSES);
+        if (!foundLinks) {
+            tv.setOnLongClickListener(null);
+            return true;
+        }
+
+        //tv.setMovementMethod(LinkMovementMethod.getInstance());
+        tv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                ViewParent parent = v.getParent();
+                if (parent instanceof LinearLayout) {
+                    LinearLayout layout = (LinearLayout)parent;
+                    //((LinearLayout) parent).performLongClick();
+                    int pos = absListView.getPositionForView(layout);
+                    Toast.makeText(ThreadActivity.this, "LongPress pos=" + pos, Toast.LENGTH_SHORT).show();
+                    if (!absListView.isItemChecked(pos)) {
+                        absListView.setItemChecked(pos, true);
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                    //absListView.setOnItemLongClickListener(null);
+                    //absListView.showContextMenuForChild(layout);
+                }
+                return false;
+            }
+        });
+        return true;
+        */
     }
 
     private boolean setItemDateValue(final TextView tv, final Cursor cursor) {
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_DATE_TEXT));
         if (DEBUG) Log.i(TAG, "date text:" + text);
         tv.setText(text);
-        return true;
-    }
-
-
-    private boolean setItemImageOverlayValue(final TextView tv, final Cursor cursor)
-    {
-        String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_DIMENSIONS));
-        if (text == null || text.isEmpty()) {
-            tv.setVisibility(View.GONE);
-        }
-        else {
-            tv.setText(text);
-            tv.setVisibility(View.VISIBLE);
-        }
         return true;
     }
 
@@ -411,11 +429,15 @@ public class ThreadActivity
 
     private boolean setItemImage(final ImageView iv, final Cursor cursor)
     {
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         if (imageUrl != null && !imageUrl.isEmpty()) {
             iv.setVisibility(View.VISIBLE);
             imageLoader.displayImage(imageUrl, iv, displayImageOptions);
-            iv.setOnClickListener(itemImageListener);
+            if (adItem > 0)
+                iv.setOnClickListener(itemAdListener);
+            else
+                iv.setOnClickListener(itemImageListener);
         }
         else {
             iv.setVisibility(View.INVISIBLE);
@@ -819,13 +841,6 @@ public class ThreadActivity
         return R.layout.thread_list_layout;
     }
 
-    protected ThreadPostPopup ensurePopup() {
-        if (threadPostPopup == null) {
-            initPopup();
-        }
-        return threadPostPopup;
-    }
-
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         if (DEBUG) Log.i(TAG, "onCreateActionMode");
@@ -837,57 +852,12 @@ public class ThreadActivity
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        if (DEBUG) Log.i(TAG, "onPrepareActionMode");
-        prehighlightItems();
         return true;
-    }
-
-    protected void prehighlightItems() {
-        SparseBooleanArray positions = absListView.getCheckedItemPositions();
-        if (DEBUG) Log.i(TAG, "prehighlightItems size=" + positions.size());
-        for (int i = 0; i < positions.size(); i++) {
-            if (positions.get(i))
-                highlightItem(i, true);
-        }
-    }
-
-    protected void highlightItem(int position, boolean checked) {
-        if (DEBUG) Log.i(TAG, "highlightItem pos=" + position + " checked=" + checked);
-        View itemToHighlight = null;
-        for (int i = 0; i < absListView.getChildCount(); i++) {
-            View child = absListView.getChildAt(i);
-            if (DEBUG) Log.i(TAG, "checking child=" + child + " pos=" + absListView.getPositionForView(child));
-            if (child != null && absListView.getPositionForView(child) == position) {
-                itemToHighlight = child;
-                break;
-            }
-        }
-        if (itemToHighlight == null) {
-            if (DEBUG) Log.i(TAG, "Couldn't find item to highlight for pos=" + position);
-            return;
-        }
-        if (DEBUG) Log.i(TAG, "Found item to highlight pos=" + position + " item=" + itemToHighlight + " checked=" + checked);
-        if (checked)
-            itemToHighlight.setBackgroundColor(R.color.PaletteBlueHalfOpacity);
-        else
-            itemToHighlight.setBackgroundDrawable(null);
     }
 
     @Override
     public void onItemCheckedStateChanged(final ActionMode mode, final int position, final long id, final boolean checked) {
         Log.i(TAG, "onItemCheckedStateChanged pos=" + position + " checked=" + checked);
-        if (absListView.getCheckedItemCount() <= 1) { // wait for list view to display
-        if (handler != null)
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    highlightItem(position, checked);
-                }
-            }, 100);
-        }
-        else {
-            highlightItem(position, checked);
-        }
     }
 
     @Override
@@ -909,6 +879,11 @@ public class ThreadActivity
                 String quoteText = selectQuoteText(postPos);
                 mode.finish();
                 postReply(quoteText);
+                return true;
+            case R.id.go_to_link_menu:
+                String[] urls = extractUrlsFromPosts(postPos);
+                mode.finish();
+                (new ListOfLinksDialogFragment(urls)).show(getSupportFragmentManager(), ListOfLinksDialogFragment.TAG);
                 return true;
             case R.id.select_text_menu:
                 String selectText = selectText(postPos);
@@ -933,10 +908,8 @@ public class ThreadActivity
         for (int i = 0; i < absListView.getCount(); i++) {
             if (positions.get(i)) {
                 absListView.setItemChecked(i, false);
-                //highlightItem(i, false);
             }
         }
-        // nothing
     }
 
     protected String selectText(SparseBooleanArray postPos) {
@@ -986,6 +959,49 @@ public class ThreadActivity
                 planifyText(text));
         clipboard.setPrimaryClip(clip);
         Toast.makeText(getApplicationContext(), R.string.copy_text_complete, Toast.LENGTH_SHORT).show();
+    }
+
+    protected String[] extractUrlsFromPosts(SparseBooleanArray postPos) {
+        String text = "";
+        for (int i = 0; i < absListView.getCount(); i++) {
+            if (!postPos.get(i))
+                continue;
+            Cursor cursor = (Cursor)adapter.getItem(i);
+            if (cursor == null)
+                continue;
+            String itemText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            if (itemText == null)
+                itemText = "";
+            text += (text.isEmpty() ? "" : "\n") + itemText;
+        }
+        text = text.replaceAll("\n", ""); // convert to single line
+        if (DEBUG) Log.i(TAG, "extracted text: " + text);
+        List<String> urlList = extractUrls(text);
+        String[] urls = urlList.toArray(new String[urlList.size()]);
+        return urls;
+    };
+
+    protected static List<String> extractUrls(String input) {
+        List<String> result = new ArrayList<String>();
+
+        Pattern pattern = Pattern.compile(
+                "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
+                        "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" +
+                        "|mil|biz|info|mobi|name|aero|jobs|museum" +
+                        "|travel|[a-z]{2}))(:[\\d]{1,5})?" +
+                        "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
+                        "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
+                        "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
+                        "(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
+                        "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" +
+                        "(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b");
+
+        Matcher matcher = pattern.matcher(input);
+        while (matcher.find()) {
+            result.add(matcher.group());
+        }
+
+        return result;
     }
 
 }

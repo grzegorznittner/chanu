@@ -262,7 +262,7 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">14sp</item>
         <!-- <item name="android:textIsSelectable">true</item>  -->
-        <item name="android:autoLink">web|email</item>
+        <item name="android:autoLink">web</item>
         <item name="android:linksClickable">false</item>
     </style>
 

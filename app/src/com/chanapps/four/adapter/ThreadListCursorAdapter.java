@@ -23,22 +23,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     @Override
     protected View newView(Context context, ViewGroup parent, String tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        //if (ChanHelper.AD_ITEM.equals(tag)) {
-        //    return mInflater.inflate(R.layout.thread_list_item_ad, parent, false);
-        //}
-        //else if (ChanHelper.POST_RESTO.equals(tag)) { // first item is the post which started the thread
-        //    return mInflater.inflate(R.layout.thread_list_item_header, parent, false);
-        //s}
-        //else {
-            return mInflater.inflate(R.layout.thread_list_item, parent, false);
-        //}
-        /*
-        else if (ChanHelper.POST_IMAGE_URL.equals(tag)) {
-            return mInflater.inflate(R.layout.thread_list_item, parent, false);
-        } else {
-            return mInflater.inflate(R.layout.thread_list_item_no_image, parent, false);
-        }
-        */
+        return mInflater.inflate(R.layout.thread_list_item, parent, false);
     }
 
     @Override
@@ -58,7 +43,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             v.setBackgroundColor(context.getResources().getColor(R.color.PaletteLightBlue));
         }
         else if (!tag.equals(ChanHelper.AD_ITEM)){
-            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteTransparent));
+            v.setBackgroundDrawable(null);
         }
     }
 
