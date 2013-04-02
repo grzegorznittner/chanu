@@ -147,13 +147,13 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         context.startService(updateIntent);
     }
 
-    public static void updateFirstTime(Context context, int appWidgetId) {
+    public static void updateFirstTime(Context context, int appWidgetId, String boardCode) {
         if (DEBUG) Log.i(TAG, "calling first time update widget service for widget=" + appWidgetId);
-        Intent updateIntent = new Intent(context, UpdateWidgetService.class);
-        updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        updateIntent.putExtra(ChanHelper.FIRST_TIME_INIT, true);
-        context.startService(updateIntent);
-        String boardCode = getBoardCodeForWidget(context, appWidgetId);
+        //Intent updateIntent = new Intent(context, UpdateWidgetService.class);
+        //updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        //updateIntent.putExtra(ChanHelper.FIRST_TIME_INIT, true);
+        //context.startService(updateIntent);
+        UpdateWidgetService.firstTimeInit(context, appWidgetId, boardCode);
         FetchChanDataService.scheduleBoardFetch(context, boardCode); // make it fresh
     }
 
@@ -183,11 +183,11 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    public static void initWidget(final Context context, final int appWidgetId, final String boardCode) {
+    public static boolean initWidget(final Context context, final int appWidgetId, final String boardCode) {
         if (DEBUG) Log.i(TAG, "Configuring widget=" + appWidgetId + " with board=" + boardCode);
         if (boardCode == null || ChanBoard.getBoardByCode(context, boardCode) == null) {
             Log.e(TAG, "Couldn't find board=" + boardCode + " for widget=" + appWidgetId + " not adding widget");
-            return;
+            return false;
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Set<String> widgetBoards = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
@@ -211,7 +211,8 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet(ChanHelper.PREF_WIDGET_BOARDS, newWidgetBoards);
         editor.commit();
-        updateFirstTime(context, appWidgetId);
+        updateFirstTime(context, appWidgetId, boardCode);
+        return true;
     }
 
 

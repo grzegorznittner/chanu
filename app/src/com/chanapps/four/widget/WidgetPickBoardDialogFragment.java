@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 
@@ -59,10 +60,15 @@ public class WidgetPickBoardDialogFragment extends DialogFragment {
                 String boardLine = boards[which];
                 String boardCode = boardLine.substring(1, boardLine.indexOf(' '));
                 if (DEBUG) Log.i(TAG, "Configured widget=" + appWidgetId + " configuring for board=" + boardCode);
-                BoardWidgetProvider.initWidget(getActivity(), appWidgetId, boardCode);
-                Intent intent = new Intent();
-                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-                getActivity().setResult(Activity.RESULT_OK, intent);
+                boolean addedWidget = BoardWidgetProvider.initWidget(getActivity(), appWidgetId, boardCode);
+                if (addedWidget) {
+                    Intent intent = new Intent();
+                    intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+                    getActivity().setResult(Activity.RESULT_OK, intent);
+                }
+                else {
+                    Toast.makeText(getActivity(), R.string.widget_board, Toast.LENGTH_SHORT).show();
+                }
                 getActivity().finish();
             }
         })

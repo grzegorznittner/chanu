@@ -395,9 +395,10 @@ public class ChanPost {
             else
                 lines.add("Email: " + email);
         if (country_name != null && !country_name.isEmpty())
-            lines.add("Country: " + country_name);
+            lines.add("From: " + country_name);
         if (resto == 0)
             lines.add(getThreadInfo());
+        lines.add(getFullText());
         String text = "";
         boolean first = true;
         for (String line : lines) {

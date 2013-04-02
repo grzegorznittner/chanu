@@ -374,6 +374,7 @@
     <!-- widgets -->
     <string name="widget_board">Pick Board</string>
     <string name="widget_board_summ">Board for widget images</string>
+    <string name="widget_board_add_error">Couldn\'t add widget</string>
 
     <!-- Help and about_dialog -->
     <string name="about_menu">About</string>

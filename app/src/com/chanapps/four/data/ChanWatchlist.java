@@ -295,7 +295,8 @@ public class ChanWatchlist {
         int days = PreferenceManager.getDefaultSharedPreferences(ctx).getInt(
                 SettingsActivity.PREF_WATCHLIST_RETENTION,
                 WatchlistRetentionPreference.DEFAULT_VALUE);
-        return 1000 * 60 * 60 * 24 * days;
+        long ms = 1000 * 60 * 60 * 24 * days;
+        return ms;
     }
 
     public static List<Long> getDeadTims(Context ctx, boolean cleanAllDeadThreads) {

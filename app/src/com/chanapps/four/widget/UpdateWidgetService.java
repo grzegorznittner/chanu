@@ -54,9 +54,13 @@ public class UpdateWidgetService extends Service {
         else {
             boolean firstTimeInit = intent.getBooleanExtra(ChanHelper.FIRST_TIME_INIT, false);
             if (DEBUG) Log.i(TAG, "starting update widget service for widget=" + appWidgetId + " firstTime=" + firstTimeInit);
-            (new WidgetUpdateTask(appWidgetId, firstTimeInit)).execute();
+            (new WidgetUpdateTask(getApplicationContext(), appWidgetId, firstTimeInit)).execute();
         }
         return Service.START_NOT_STICKY;
+    }
+
+    static public void firstTimeInit(Context context, int appWidgetId, String boardCode) {
+        (new WidgetUpdateTask(context, appWidgetId, true, boardCode)).execute();
     }
 
     @Override
@@ -64,7 +68,7 @@ public class UpdateWidgetService extends Service {
         return null;
     }
 
-    public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
+    public static class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
 
         private static final int NUM_TOP_THREADS = 3;
         private static final int BITMAP_BUFFER_SIZE = 8192;
@@ -76,11 +80,15 @@ public class UpdateWidgetService extends Service {
         private ChanPost[] threads = new ChanPost[NUM_TOP_THREADS];
         private List<Bitmap> bitmaps = new ArrayList<Bitmap>(NUM_TOP_THREADS);
 
-        public WidgetUpdateTask(int appWidgetId, boolean firstTimeInit) {
+        public WidgetUpdateTask(Context context, int appWidgetId, boolean firstTimeInit) {
+            this(context, appWidgetId, firstTimeInit, BoardWidgetProvider.getBoardCodeForWidget(context, appWidgetId));
+        }
+
+        public WidgetUpdateTask(Context context, int appWidgetId, boolean firstTimeInit, String widgetBoardCode) {
             this.appWidgetId = appWidgetId;
             this.firstTimeInit = firstTimeInit;
-            context = getApplicationContext();
-            boardCode = BoardWidgetProvider.getBoardCodeForWidget(context, appWidgetId);
+            this.context = context;
+            boardCode = widgetBoardCode;
             if (boardCode == null) {
                 Log.e(TAG, "Null board code found for widget=" + appWidgetId + " defaulting to /a");
                 boardCode = "a";
@@ -105,7 +113,7 @@ public class UpdateWidgetService extends Service {
         public void onPostExecute(Void result) {
             if (firstTimeInit) {
                 initWidgetViews();
-                (new WidgetUpdateTask(appWidgetId, false)).execute();
+                (new WidgetUpdateTask(context, appWidgetId, false)).execute();
             }
             else {
                 updateWidgetViews(); // run on UI thread since setting views
@@ -271,7 +279,7 @@ public class UpdateWidgetService extends Service {
 
         private Bitmap loadDefaultBoardBitmap(int i) {
             int imageResourceId = ChanBoard.getIndexedImageResourceId(boardCode, i);
-            return BitmapFactory.decodeResource(getResources(), imageResourceId);
+            return BitmapFactory.decodeResource(context.getResources(), imageResourceId);
         }
 
         private void initWidgetViews() { // do this first time to avoid blank widget on network timeouts

@@ -12,8 +12,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.Html;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -72,7 +70,6 @@ public class ThreadActivity
     protected boolean inWatchlist = false;
     protected ThreadPostPopup threadPostPopup;
     protected ChanThread thread = null;
-    protected int threadPos = 0;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -179,7 +176,6 @@ public class ThreadActivity
                         ChanHelper.POST_DATE_TEXT,
                         ChanHelper.POST_IMAGE_DIMENSIONS,
                         ChanHelper.POST_EXPAND_BUTTON,
-                        //ChanHelper.POST_EXPAND_BUTTON,
                         ChanHelper.POST_EXPAND_BUTTON
                 },
                 new int[] {
@@ -191,7 +187,6 @@ public class ThreadActivity
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
                         R.id.list_item_date,
-                        //R.id.list_item_image_overlay,
                         R.id.list_item_image_exif
                 });
         absListView.setAdapter(adapter);
@@ -256,8 +251,6 @@ public class ThreadActivity
                 return setItemMessageValue((TextView)view, cursor);
             case R.id.list_item_date:
                 return setItemDateValue((TextView)view, cursor);
-            //case R.id.list_item_image_overlay:
-            //    return setItemImageOverlayValue((TextView) view, cursor);
             case R.id.list_item_image_exif:
                 return setItemImageExifValue((TextView) view, cursor);
             default:
@@ -278,10 +271,6 @@ public class ThreadActivity
         }
         else
             item.setBackgroundDrawable(null);
-        //if (adItem > 0)
-        //    item.setOnClickListener(itemAdListener);
-        //item.setOnClickListener(itemImageListener);
-        //item.setOnLongClickListener(itemLongListener);
         return true;
     }
 
@@ -306,16 +295,20 @@ public class ThreadActivity
         }
     };
 
-    protected View.OnClickListener itemImageListener = new View.OnClickListener() {
+    protected View.OnClickListener itemExpandListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int pos = absListView.getPositionForView(v);
-            if (DEBUG) Log.i(TAG, "received image click pos: " + pos);
+            if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
             Cursor cursor = adapter.getCursor();
             cursor.moveToPosition(pos);
+            final String postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
             final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-            if (imageUrl == null || imageUrl.isEmpty())
+            boolean expandable = (postText != null && !postText.isEmpty())
+                    || (imageUrl != null && !imageUrl.isEmpty());
+            if (!expandable)
                 return;
+
             View itemView = null;
             for (int i = 0; i < absListView.getChildCount(); i++) {
                 View child = absListView.getChildAt(i);
@@ -326,123 +319,77 @@ public class ThreadActivity
             }
             if (itemView == null)
                 return;
+
             ImageView itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
             ProgressBar itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
+            TextView itemExpandedText = (TextView)itemView.findViewById(R.id.list_item_text);
             TextView itemExpandedExifText = (TextView)itemView.findViewById(R.id.list_item_image_exif);
-            if (DEBUG) Log.i(TAG, "found " + itemView + " " + itemExpandedImage + " " + itemExpandedProgressBar + " " + itemExpandedExifText);
+            if (DEBUG) Log.i(TAG, "found " + itemView + " " + itemExpandedImage + " " + itemExpandedProgressBar + " " + itemExpandedText + " " + itemExpandedExifText);
             ExpandImageOnClickListener listener = new ExpandImageOnClickListener(
-                    cursor, itemExpandedImage, itemExpandedProgressBar, itemExpandedExifText);
+                    cursor, itemExpandedImage, itemExpandedProgressBar, itemExpandedText, itemExpandedExifText);
             listener.onClick(itemView);
         }
     };
 
     private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
         String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        String imageDimensions = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_DIMENSIONS));
-        String text = shortText
-                + (!shortText.isEmpty() && !imageDimensions.isEmpty() ? "<br/>" : "")
-                + imageDimensions;
+        //String imageDimensions = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_DIMENSIONS));
+        String text = shortText;
+                //+ (!shortText.isEmpty() && !imageDimensions.isEmpty() ? "<br/>" : "")
+                //+ imageDimensions;
         tv.setText(Html.fromHtml(text));
         return true;
     }
 
     private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
+        tv.setVisibility(View.GONE);
+        return true;
+        /*
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         if (adItem > 0 || text == null || text.isEmpty()) {
             tv.setVisibility(View.GONE);
             return true;
         }
-
         tv.setText(Html.fromHtml(text));
-
-        /*
-        if (text.contains("http://") || text.contains("www.")) {
-            Log.i(TAG, "Set listener for pos=" + cursor.getPosition());
-            tv.setOnClickListener(itemMessageListener);
-        }
-        else {
-            tv.setOnClickListener(null);
-        }
-        */
-
         tv.setVisibility(View.VISIBLE);
-        return true;
-        /*
-        if (isActionModeVisible) {
-            tv.setOnLongClickListener(null);
-            return true;
-        }
-
-        boolean foundLinks = Linkify.addLinks(tv, Linkify.WEB_URLS|Linkify.EMAIL_ADDRESSES);
-        if (!foundLinks) {
-            tv.setOnLongClickListener(null);
-            return true;
-        }
-
-        //tv.setMovementMethod(LinkMovementMethod.getInstance());
-        tv.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                ViewParent parent = v.getParent();
-                if (parent instanceof LinearLayout) {
-                    LinearLayout layout = (LinearLayout)parent;
-                    //((LinearLayout) parent).performLongClick();
-                    int pos = absListView.getPositionForView(layout);
-                    Toast.makeText(ThreadActivity.this, "LongPress pos=" + pos, Toast.LENGTH_SHORT).show();
-                    if (!absListView.isItemChecked(pos)) {
-                        absListView.setItemChecked(pos, true);
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                    //absListView.setOnItemLongClickListener(null);
-                    //absListView.showContextMenuForChild(layout);
-                }
-                return false;
-            }
-        });
         return true;
         */
     }
 
     private boolean setItemDateValue(final TextView tv, final Cursor cursor) {
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_DATE_TEXT));
-        if (DEBUG) Log.i(TAG, "date text:" + text);
         tv.setText(text);
         return true;
     }
 
     private boolean setItemImageExifValue(final TextView tv, final Cursor cursor)
     {
-        String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
-        if (text == null || text.isEmpty()) {
-            tv.setText("");
-            tv.setVisibility(View.GONE);
-        }
-        else {
-            tv.setText(Html.fromHtml(text));
-            tv.setVisibility(View.VISIBLE);
-        }
+        tv.setVisibility(View.GONE);
         return true;
     }
 
     private boolean setItemImage(final ImageView iv, final Cursor cursor)
     {
-        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         if (imageUrl != null && !imageUrl.isEmpty()) {
+            ViewGroup.LayoutParams params = iv.getLayoutParams();
+            if (params != null) {
+                int px = ChanGridSizer.dpToPx(getResources().getDisplayMetrics(), 80);
+                params.width = px;
+                iv.setLayoutParams(params);
+            }
             iv.setVisibility(View.VISIBLE);
             imageLoader.displayImage(imageUrl, iv, displayImageOptions);
-            //if (adItem > 0)
-            //    iv.setOnClickListener(itemAdListener);
-            //else
-            //    iv.setOnClickListener(itemImageListener);
         }
         else {
-            iv.setVisibility(View.INVISIBLE);
             iv.setImageBitmap(null);
+            ViewGroup.LayoutParams params = iv.getLayoutParams();
+            if (params != null) {
+                params.width = 0;
+                iv.setLayoutParams(params);
+            }
+            iv.setVisibility(View.VISIBLE);
         }
         return true;
     }
@@ -468,8 +415,11 @@ public class ThreadActivity
 
         private ImageView itemExpandedImageHolder;
         private ProgressBar itemExpandedProgressBarHolder;
+        private TextView itemExpandedTextHolder;
         private TextView itemExpandedExifTextHolder;
+        private String postText = null;
         private String postImageUrl = null;
+        private String postExifText = null;
         int postW = 0;
         int postH = 0;
         int listPosition = 0;
@@ -477,15 +427,19 @@ public class ThreadActivity
         public ExpandImageOnClickListener(final Cursor cursor,
                                           final ImageView itemExpandedImage,
                                           final ProgressBar itemExpandedProgressBar,
+                                          final TextView itemExpandedText,
                                           final TextView itemExpandedExifText)
         {
             itemExpandedImageHolder = itemExpandedImage;
             itemExpandedProgressBarHolder = itemExpandedProgressBar;
+            itemExpandedTextHolder = itemExpandedText;
             itemExpandedExifTextHolder = itemExpandedExifText;
             listPosition = cursor.getPosition();
 
             postW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
             postH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
+            postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            postExifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
             long postTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
             String postExt = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXT));
             postImageUrl = postTim > 0 ? ChanPost.getImageUrl(boardCode, postTim, postExt) : null;
@@ -493,139 +447,130 @@ public class ThreadActivity
 
         @Override
         public void onClick(View v) {
-            if (itemExpandedImageHolder == null) {
+            if (itemExpandedTextHolder.getVisibility() == View.VISIBLE
+                   || itemExpandedImageHolder.getVisibility() == View.VISIBLE) // toggle expansion
+            {
+                ChanHelper.clearBigImageView(itemExpandedImageHolder);
+                itemExpandedImageHolder.setVisibility(View.GONE);
+                itemExpandedTextHolder.setVisibility(View.GONE);
+                itemExpandedExifTextHolder.setVisibility(View.GONE);
+                return;
+            }
+            // set text visibility
+            Log.i(TAG, "Post text: " + postText);
+            if (postText != null && !postText.isEmpty()) {
+                itemExpandedTextHolder.setText(Html.fromHtml(postText));
+                itemExpandedTextHolder.setVisibility(View.VISIBLE);
+            }
+            else {
+                itemExpandedTextHolder.setVisibility(View.GONE);
+            }
+
+            ChanHelper.clearBigImageView(itemExpandedImageHolder); // clear old image
+
+            if (postImageUrl == null) {// no image to display
                 itemExpandedImageHolder.setVisibility(View.GONE);
                 itemExpandedExifTextHolder.setVisibility(View.GONE);
                 return;
             }
-            if (itemExpandedImageHolder.getVisibility() == View.VISIBLE) {
-                ChanHelper.clearBigImageView(itemExpandedImageHolder);
-                itemExpandedImageHolder.setVisibility(View.GONE);
+
+            if (DEBUG) Log.v(TAG, "Post exif text:" + postExifText);
+            if (postExifText != null && !postExifText.isEmpty()) {
+                itemExpandedExifTextHolder.setText(Html.fromHtml(postExifText));
+                itemExpandedExifTextHolder.setVisibility(View.VISIBLE);
+            }
+            else {
                 itemExpandedExifTextHolder.setVisibility(View.GONE);
             }
-            else if (postImageUrl != null) {
-                ChanHelper.clearBigImageView(itemExpandedImageHolder);
 
-                // set exif text visibility
-                if (itemExpandedExifTextHolder != null
-                        && itemExpandedExifTextHolder.getText() != null
-                        && itemExpandedExifTextHolder.getText().length() > 0)
-                    itemExpandedExifTextHolder.setVisibility(View.VISIBLE);
-                else
-                    itemExpandedExifTextHolder.setVisibility(View.GONE);
-
-                // calculate image dimensions
-                if (DEBUG) Log.i(TAG, "post size " + postW + "x" + postH);
-                DisplayMetrics displayMetrics = new DisplayMetrics();
-                getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-                //int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
-                int maxWidth = displayMetrics.widthPixels;
-                int maxHeight = maxWidth; // to avoid excessively big images
-                itemExpandedImageHolder.setMaxWidth(maxWidth);
-                itemExpandedImageHolder.setMaxHeight(maxHeight);
-                if (DEBUG) Log.i(TAG, "max size " + maxWidth + "x" + maxHeight);
-                float scaleFactor = 1;
-                if (postW >= postH) {
-                    // square or wide image, base sizing on width
-                    if (postW > maxWidth)
-                        scaleFactor = (float)maxWidth / (float)postW;
-                }
-                else {
-                    // tall image
-                    if (postH > maxHeight)
-                        scaleFactor = (float)maxHeight / (float)postH;
-                }
-                int width = Math.round(scaleFactor * (float)postW);
-                int height = Math.round(scaleFactor * (float)postH);
-                if (DEBUG) Log.i(TAG, "target size " + width + "x" + height);
-                // set layout dimensions
-                ViewGroup.LayoutParams params = itemExpandedImageHolder.getLayoutParams();
-                if (params != null) {
-                    params.width = width;
-                    params.height = height;
-                }
-                itemExpandedImageHolder.setVisibility(View.VISIBLE);
-
-                /*
-                if (itemExpandedProgressBarHolder != null) {
-                    int progressBarPx = ChanGridSizer.dpToPx(getResources().getDisplayMetrics(), 96);
-                    //int progressBarPaddingWidth = Math.max(0, width - progressBarPx);
-                    int progressBarPaddingHeight = Math.max(0, height - progressBarPx);
-                    itemExpandedProgressBarHolder.setPadding(0, progressBarPaddingHeight/2, 0, 0);
-                }
-                */
-
-                // calculate auto-scroll on image expand
-                /*
-                ViewParent parent = v.getParent();
-                int parentHeight = 0;
-                if (parent instanceof View) {
-                    View parentView = (View)parent;
-                    parentHeight = parentView.getHeight();
-                }
-                */
-                int lastPosition = absListView.getLastVisiblePosition();
-                boolean shouldMove = listPosition >= lastPosition - 1;
-                final int parentOffset = shouldMove ? 100 : 0; // allow for margin
-                //final int imageOffset = shouldMove ? parentHeight + maxHeight : 0;
-                final int imageOffset = 0;
-
-                // set visibility delayed
-                if (itemExpandedProgressBarHolder != null)
-                    itemExpandedProgressBarHolder.setVisibility(View.VISIBLE);
-                ensureHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        absListView.smoothScrollBy(parentOffset, 250);
-                    }
-                }, 250);
-
-                ImageSize imageSize = new ImageSize(width, height);
-                DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
-                        .imageScaleType(ImageScaleType.EXACT)
-                        .cacheOnDisc()
-                        .imageSize(imageSize)
-                        .resetViewBeforeLoading()
-                        .build();
-
-                // display image async
-                imageLoader.displayImage(postImageUrl, itemExpandedImageHolder, expandedDisplayImageOptions, new ImageLoadingListener() {
-                    @Override
-                    public void onLoadingStarted() {
-                    }
-
-                    @Override
-                    public void onLoadingFailed(FailReason failReason) {
-                        if (itemExpandedProgressBarHolder != null)
-                            itemExpandedProgressBarHolder.setVisibility(View.GONE);
-                        itemExpandedImageHolder.setVisibility(View.GONE);
-                        String reason = failReason.toString();
-                        String msg;
-                        if (reason.equalsIgnoreCase("io_error"))
-                            msg = getString(R.string.thread_couldnt_download_image);
-                        else
-                            msg = String.format(getString(R.string.thread_couldnt_load_image), failReason.toString().toLowerCase().replaceAll("_", " "));
-                        Toast.makeText(ThreadActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onLoadingComplete(Bitmap loadedImage) {
-                        if (itemExpandedProgressBarHolder != null)
-                            itemExpandedProgressBarHolder.setVisibility(View.GONE);
-                        absListView.smoothScrollBy(imageOffset, 250);
-                        //absListView.smoothScrollToPositionFromTop(listPosition, parentOffset);
-                    }
-
-                    @Override
-                    public void onLoadingCancelled() {
-                        if (itemExpandedProgressBarHolder != null)
-                            itemExpandedProgressBarHolder.setVisibility(View.GONE);
-                        itemExpandedImageHolder.setVisibility(View.GONE);
-                        Toast.makeText(ThreadActivity.this, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
-                    }
-                }); // load async
-
+            // calculate image dimensions
+            if (DEBUG) Log.v(TAG, "post size " + postW + "x" + postH);
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            //int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
+            int maxWidth = displayMetrics.widthPixels;
+            int maxHeight = maxWidth; // to avoid excessively big images
+            itemExpandedImageHolder.setMaxWidth(maxWidth);
+            itemExpandedImageHolder.setMaxHeight(maxHeight);
+            if (DEBUG) Log.v(TAG, "max size " + maxWidth + "x" + maxHeight);
+            float scaleFactor = 1;
+            if (postW >= postH) {
+                // square or wide image, base sizing on width
+                if (postW > maxWidth)
+                    scaleFactor = (float)maxWidth / (float)postW;
             }
+            else {
+                // tall image
+                if (postH > maxHeight)
+                    scaleFactor = (float)maxHeight / (float)postH;
+            }
+            int width = Math.round(scaleFactor * (float)postW);
+            int height = Math.round(scaleFactor * (float)postH);
+            if (DEBUG) Log.v(TAG, "target size " + width + "x" + height);
+            // set layout dimensions
+            ViewGroup.LayoutParams params = itemExpandedImageHolder.getLayoutParams();
+            if (params != null) {
+                params.width = width;
+                params.height = height;
+            }
+            itemExpandedImageHolder.setVisibility(View.VISIBLE);
+
+            int lastPosition = absListView.getLastVisiblePosition();
+            boolean shouldMove = listPosition >= lastPosition - 1;
+            final int parentOffset = shouldMove ? 100 : 0; // allow for margin
+
+            // set visibility delayed
+            if (itemExpandedProgressBarHolder != null)
+                itemExpandedProgressBarHolder.setVisibility(View.VISIBLE);
+            ensureHandler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    absListView.smoothScrollBy(parentOffset, 250);
+                }
+            }, 250);
+
+            ImageSize imageSize = new ImageSize(width, height);
+            DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
+                    .imageScaleType(ImageScaleType.EXACT)
+                    .cacheOnDisc()
+                    .imageSize(imageSize)
+                    .resetViewBeforeLoading()
+                    .build();
+
+            // display image async
+            imageLoader.displayImage(postImageUrl, itemExpandedImageHolder, expandedDisplayImageOptions, new ImageLoadingListener() {
+                @Override
+                public void onLoadingStarted() {
+                }
+
+                @Override
+                public void onLoadingFailed(FailReason failReason) {
+                    if (itemExpandedProgressBarHolder != null)
+                        itemExpandedProgressBarHolder.setVisibility(View.GONE);
+                    itemExpandedImageHolder.setVisibility(View.GONE);
+                    String reason = failReason.toString();
+                    String msg;
+                    if (reason.equalsIgnoreCase("io_error"))
+                        msg = getString(R.string.thread_couldnt_download_image);
+                    else
+                        msg = String.format(getString(R.string.thread_couldnt_load_image), failReason.toString().toLowerCase().replaceAll("_", " "));
+                    Toast.makeText(ThreadActivity.this, msg, Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onLoadingComplete(Bitmap loadedImage) {
+                    if (itemExpandedProgressBarHolder != null)
+                        itemExpandedProgressBarHolder.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onLoadingCancelled() {
+                    if (itemExpandedProgressBarHolder != null)
+                        itemExpandedProgressBarHolder.setVisibility(View.GONE);
+                    itemExpandedImageHolder.setVisibility(View.GONE);
+                    Toast.makeText(ThreadActivity.this, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
+                }
+            }); // load async
         }
     }
 
@@ -663,27 +608,6 @@ public class ThreadActivity
         return true;
     }
 
-
-    private boolean ensureThreadCache() {
-        if (thread == null)
-            thread = ChanFileStorage.loadThreadData(this, boardCode, threadNo);
-        if (thread == null || thread.posts == null || thread.posts.length == 0)
-            return false; // couldn't get thread
-        return true;
-    }
-
-    private ChanPost getPost(final Cursor cursor) {
-        int pos = cursor.getPosition();
-        if (pos == 0) { // the thread
-            threadPos = 0; // index for tracking current post
-        }
-        long postNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-        while (threadPos < thread.posts.length && thread.posts[threadPos].no != postNo) // spin past removed posts
-            threadPos++;
-        if (threadPos >= thread.posts.length)
-            return null; // couldn't find post
-        return thread.posts[threadPos];
-    }
 
     @Override
     protected void setAbsListViewClass() {
@@ -1012,6 +936,6 @@ public class ThreadActivity
         if (adItem > 0)
             itemAdListener.onClick(view);
         else
-            itemImageListener.onClick(view);
+            itemExpandListener.onClick(view);
     }
 }
