@@ -214,7 +214,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		int width = configuration.maxImageWidthForDiscCache;
 		int height = configuration.maxImageHeightForDiscCache;
 		if (width > 0 || height > 0) {
-            if (imageLoadingInfo != null && imageLoadingInfo.targetSize != null) {
+            if (imageLoadingInfo != null && imageLoadingInfo.targetSize != null && !imageLoadingInfo.centerCrop) {
                 width = imageLoadingInfo.targetSize.getWidth();
                 height = imageLoadingInfo.targetSize.getHeight();
             }
@@ -226,6 +226,21 @@ final class LoadAndDisplayImageTask implements Runnable {
             if (bmp == null) {
                 Log.e(TAG, "Couldn't save bitmap, null decode: " + imageLoadingInfo.uri);
                 return;
+            }
+            if (imageLoadingInfo.centerCrop) {
+				if (bmp.getWidth() >= bmp.getHeight()) {
+					if (bmp.getWidth() > width) {
+						bmp = Bitmap.createBitmap(bmp,
+							bmp.getWidth() / 2 - bmp.getHeight() / 2, 0,
+							bmp.getHeight(), bmp.getHeight());
+					}
+				} else {
+					if (bmp.getHeight() > height) {
+						bmp = Bitmap.createBitmap(bmp, 0,
+							bmp.getHeight() / 2 - bmp.getWidth() / 2,
+							bmp.getWidth(), bmp.getWidth());
+					}
+				}
             }
             OutputStream os;
             try {

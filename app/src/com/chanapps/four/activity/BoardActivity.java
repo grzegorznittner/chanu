@@ -162,6 +162,13 @@ public class BoardActivity
         if (GridView.class.equals(absListViewClass)) {
             absListView = (GridView)findViewById(R.id.board_grid_view);
             sizeGridToDisplay();
+            ImageSize imageSize = new ImageSize(columnWidth, columnHeight);
+            displayImageOptions = new DisplayImageOptions.Builder()
+                    .imageScaleType(ImageScaleType.POWER_OF_2)
+                    .imageSize(imageSize)
+                    .cacheOnDisc()
+                    .resetViewBeforeLoading()
+                    .build();
         }
         else {
             absListView = (ListView)findViewById(R.id.board_list_view);

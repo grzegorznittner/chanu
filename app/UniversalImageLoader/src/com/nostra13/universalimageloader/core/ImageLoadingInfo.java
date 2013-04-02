@@ -21,13 +21,16 @@ final class ImageLoadingInfo {
 	final String memoryCacheKey;
 	final ImageView imageView;
 	final ImageSize targetSize;
+	final boolean centerCrop;
 	final DisplayImageOptions options;
 	final ImageLoadingListener listener;
 
-	public ImageLoadingInfo(String uri, ImageView imageView, ImageSize targetSize, DisplayImageOptions options, ImageLoadingListener listener) {
+	public ImageLoadingInfo(String uri, ImageView imageView, ImageSize targetSize, boolean centerCrop,
+			DisplayImageOptions options, ImageLoadingListener listener) {
 		this.uri = Uri.encode(uri, "@#&=*+-_.,:!?()/~'%");
 		this.imageView = imageView;
 		this.targetSize = targetSize;
+		this.centerCrop = centerCrop;
 		this.options = options;
 		this.listener = listener;
 		memoryCacheKey = MemoryCacheKeyUtil.generateKey(uri, targetSize);
