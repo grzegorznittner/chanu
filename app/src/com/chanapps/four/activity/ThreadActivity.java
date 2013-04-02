@@ -11,7 +11,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
-import android.text.Html;
+import android.text.*;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -259,18 +259,25 @@ public class ThreadActivity
     }
 
     protected boolean setItem(ViewGroup item, Cursor cursor) {
-        SparseBooleanArray positions = absListView.getCheckedItemPositions();
+        //SparseBooleanArray positions = absListView.getCheckedItemPositions();
+        int expandable = itemExpandable(cursor, item);
+        ImageView expander = (ImageView)item.findViewById(R.id.list_item_expander);
+        if (DEBUG) Log.i(TAG, "pos=" + cursor.getPosition() + " expandable=" + expandable);
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0) {
-            item.setBackgroundResource(R.color.PaletteLighterGray);
-            Log.i(TAG, "setting to ad color");
+            item.setBackgroundColor(R.color.PaletteLighterGray);
+            if (expander != null)
+                expander.setVisibility(View.GONE);
         }
-        else if (positions.get(cursor.getPosition())) {
-            item.setBackgroundColor(R.color.PaletteBlueHalfOpacity);
-            Log.i(TAG, "setting to blue color");
+        else if (expandable > 0) {
+            if (expander != null)
+                expander.setVisibility(View.VISIBLE);
         }
-        else
+        else {
             item.setBackgroundDrawable(null);
+            if (expander != null)
+                expander.setVisibility(View.GONE);
+        }
         return true;
     }
 
@@ -300,15 +307,6 @@ public class ThreadActivity
         public void onClick(View v) {
             int pos = absListView.getPositionForView(v);
             if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
-            Cursor cursor = adapter.getCursor();
-            cursor.moveToPosition(pos);
-            final String postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-            final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-            boolean expandable = (postText != null && !postText.isEmpty())
-                    || (imageUrl != null && !imageUrl.isEmpty());
-            if (!expandable)
-                return;
-
             View itemView = null;
             for (int i = 0; i < absListView.getChildCount(); i++) {
                 View child = absListView.getChildAt(i);
@@ -320,25 +318,65 @@ public class ThreadActivity
             if (itemView == null)
                 return;
 
+            Cursor cursor = adapter.getCursor();
+            cursor.moveToPosition(pos);
+            int expandable = itemExpandable(cursor, itemView);
+            if (expandable == 0)
+                return;
+
             ImageView itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
             ProgressBar itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
             TextView itemExpandedText = (TextView)itemView.findViewById(R.id.list_item_text);
             TextView itemExpandedExifText = (TextView)itemView.findViewById(R.id.list_item_image_exif);
             if (DEBUG) Log.i(TAG, "found " + itemView + " " + itemExpandedImage + " " + itemExpandedProgressBar + " " + itemExpandedText + " " + itemExpandedExifText);
             ExpandImageOnClickListener listener = new ExpandImageOnClickListener(
-                    cursor, itemExpandedImage, itemExpandedProgressBar, itemExpandedText, itemExpandedExifText);
+                    cursor, expandable, itemExpandedImage, itemExpandedProgressBar, itemExpandedText, itemExpandedExifText);
             listener.onClick(itemView);
         }
     };
 
+    private static final int TEXT_EXPANDABLE = 0x01;
+    private static final int IMAGE_EXPANDABLE = 0x02;
+
+    private int itemExpandable(Cursor cursor, View itemView) {
+        final String postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        TextView itemHeader = (TextView)itemView.findViewById(R.id.list_item_header);
+        Spanned spanned = Html.fromHtml(postText);
+        boolean textExpandable = textExpandable(itemHeader.getPaint(), spanned.toString(), imageUrl);
+        boolean imageExpandable = imageUrl != null && !imageUrl.isEmpty();
+        int expandable = 0;
+        if (textExpandable)
+            expandable |= TEXT_EXPANDABLE;
+        if (imageExpandable)
+            expandable |= IMAGE_EXPANDABLE;
+        return expandable;
+    }
+
     private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
-        String shortText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        //String imageDimensions = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_DIMENSIONS));
-        String text = shortText;
-                //+ (!shortText.isEmpty() && !imageDimensions.isEmpty() ? "<br/>" : "")
-                //+ imageDimensions;
-        tv.setText(Html.fromHtml(text));
+        String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
+        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        Spanned spanned = Html.fromHtml(text);
+        tv.setText(spanned);
         return true;
+    }
+
+    private static final int TEXT_HORIZ_PADDING_DP = 8 + 28;
+    private static final int IMAGE_WIDTH_DP = 80;
+    private static final int ITEM_HEIGHT_DP = 80;
+
+    private boolean textExpandable(TextPaint tp, String text, String imageUrl) {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int screenWidth = metrics.widthPixels;
+        int paddingWidth = ChanGridSizer.dpToPx(metrics, TEXT_HORIZ_PADDING_DP);
+        int imageWidth = (imageUrl == null || imageUrl.isEmpty()) ? 0 : ChanGridSizer.dpToPx(metrics, IMAGE_WIDTH_DP);
+        int textWidth = screenWidth - paddingWidth - imageWidth;
+        int actualHeight = ChanGridSizer.dpToPx(metrics, ITEM_HEIGHT_DP);
+        StaticLayout sl = new StaticLayout(text, tp, textWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+        int fullHeight = sl.getHeight();
+        boolean textExpandable = fullHeight > actualHeight;
+        if (DEBUG) Log.v(TAG, "Header height actual=" + actualHeight + " full=" + fullHeight);
+        return textExpandable;
     }
 
     private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
@@ -413,6 +451,7 @@ public class ThreadActivity
 
     private class ExpandImageOnClickListener implements View.OnClickListener {
 
+        private int expandable = 0;
         private ImageView itemExpandedImageHolder;
         private ProgressBar itemExpandedProgressBarHolder;
         private TextView itemExpandedTextHolder;
@@ -425,11 +464,14 @@ public class ThreadActivity
         int listPosition = 0;
 
         public ExpandImageOnClickListener(final Cursor cursor,
+                                          final int expandable,
                                           final ImageView itemExpandedImage,
                                           final ProgressBar itemExpandedProgressBar,
                                           final TextView itemExpandedText,
                                           final TextView itemExpandedExifText)
         {
+            this.expandable = expandable;
+
             itemExpandedImageHolder = itemExpandedImage;
             itemExpandedProgressBarHolder = itemExpandedProgressBar;
             itemExpandedTextHolder = itemExpandedText;
@@ -457,8 +499,8 @@ public class ThreadActivity
                 return;
             }
             // set text visibility
-            Log.i(TAG, "Post text: " + postText);
-            if (postText != null && !postText.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "Post text: " + postText);
+            if ((expandable & TEXT_EXPANDABLE) > 0 && postText != null && !postText.isEmpty()) {
                 itemExpandedTextHolder.setText(Html.fromHtml(postText));
                 itemExpandedTextHolder.setVisibility(View.VISIBLE);
             }
@@ -468,7 +510,7 @@ public class ThreadActivity
 
             ChanHelper.clearBigImageView(itemExpandedImageHolder); // clear old image
 
-            if (postImageUrl == null) {// no image to display
+            if ((expandable & IMAGE_EXPANDABLE) == 0 || postImageUrl == null || postImageUrl.isEmpty()) {// no image to display
                 itemExpandedImageHolder.setVisibility(View.GONE);
                 itemExpandedExifTextHolder.setVisibility(View.GONE);
                 return;
