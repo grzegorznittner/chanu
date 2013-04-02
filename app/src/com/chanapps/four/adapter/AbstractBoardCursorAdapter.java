@@ -91,12 +91,13 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         final int[] from = mFrom;
         final int[] to = mTo;
 
+        if (binder != null)
+            binder.setViewValue(view, cursor, 0); // allow parent operations
         for (int i = 0; i < count; i++) {
             final View v = view.findViewById(to[i]);
             if (v != null) {
                 boolean bound = false;
                 if (binder != null) {
-                    binder.setViewValue(view, cursor, 0); // allow parent operations
                     bound = binder.setViewValue(v, cursor, from[i]);
                 }
             }

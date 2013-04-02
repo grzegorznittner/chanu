@@ -230,7 +230,7 @@
         <item name="android:maxLines">4</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
-        <item name="android:paddingRight">64dp</item>
+        <item name="android:paddingRight">28dp</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_toRightOf">@+id/list_item_image</item>
@@ -288,6 +288,20 @@
         <item name="android:gravity">right</item>
         <item name="android:scaleType">fitXY</item>
         <item name="android:contentDescription">@string/popup_country_flag</item>
+    </style>
+
+    <style name="ThreadListItemExpander" parent="AppTheme">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:gravity">right</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:src">@drawable/navigation_expand_light</item>
+        <item name="android:background">@color/PaletteTransparent</item>
+        <item name="android:contentDescription">@string/thread_post_expand_button</item>
     </style>
 
     <style name="ThreadListItemHeaderBar" parent="AppTheme">

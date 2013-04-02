@@ -9,6 +9,7 @@
         <TextView style="@style/ThreadListItemHeadText" android:id="@+id/list_item_header"/>
         <TextView style="@style/ThreadListItemDateText" android:id="@+id/list_item_date"/>
         <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
+        <ImageView style="@style/ThreadListItemExpander" android:id="@+id/list_item_expander"/>
 
     </RelativeLayout>
 
