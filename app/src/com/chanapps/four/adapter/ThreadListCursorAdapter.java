@@ -33,11 +33,12 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
 
     @Override
     protected void setHighlightViews(View v, String tag, long postNo) {
-        if (highlightPostNo == postNo || highlightIdPostNos.contains(postNo)) {
-            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteLightBlue));
-        }
-        else if (highlightPrevPostNos.contains(postNo)) {
-            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteLightBlue));
+        //if (highlightPostNos.contains(postNo) || highlightIdPostNos.contains(postNo)) {
+        //    v.setBackgroundColor(context.getResources().getColor(R.color.PaletteLightBlue));
+        //}
+        //else
+        if (highlightPrevPostNos.contains(postNo)) {
+            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteLightGreen));
         }
         else if (highlightNextPostNos.contains(postNo)) {
             v.setBackgroundColor(context.getResources().getColor(R.color.PaletteLightBlue));

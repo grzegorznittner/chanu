@@ -12,6 +12,14 @@
           android:title="@string/post_reply_all_quote_menu"
           android:icon="@drawable/social_reply_all"
             />
+    <item android:id="@+id/highlight_previous_menu"
+          android:title="@string/highlight_previous"
+          android:icon="@drawable/navigation_previous_item"
+            />
+    <item android:id="@+id/highlight_replies_menu"
+          android:title="@string/highlight_replies"
+          android:icon="@drawable/navigation_next_item"
+          />
     <item android:id="@+id/go_to_link_menu"
           android:title="@string/go_to_link_menu"
           android:icon="@drawable/navigation_forward"

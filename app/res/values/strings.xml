@@ -138,9 +138,8 @@
     <string name="thread_couldnt_load_image">Couldn\'t load image: %1$s</string>
     <string name="thread_couldnt_download_image">Couldn\'t download image</string>
     <string name="thread_no_replies_found">No replies found</string>
-    <string name="thread_prev_replies_found">Found %1$d references</string>
+    <string name="thread_prev_replies_found">Found %1$d previous</string>
     <string name="thread_next_replies_found">Found %1$d replies</string>
-    <string name="thread_both_replies_found">Found %1$d references and %2$d replies</string>
     <string name="thread_no_id_found">No other posts found for %1$s</string>
     <string name="thread_id_found">Found %1$d posts for %2$s</string>
     <string name="thread_no_text_subject">New Thread</string>
@@ -210,7 +209,8 @@
     <string name="dismiss">Close</string>
     <string name="dead_thread_reply">Dead Thread No Reply</string>
     <string name="closed_thread_reply">Closed Thread No Reply</string>
-    <string name="highlight_replies">Show Referenced Posts</string>
+    <string name="highlight_replies">Highlight Replies</string>
+    <string name="highlight_previous">Highlight Previous</string>
     <string name="highlight_id">Show Posts from User</string>
     <string name="popup_country_flag">Country Flag</string>
     <string name="popup_show_image">Show Image</string>

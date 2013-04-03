@@ -25,7 +25,7 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
     protected static final String TAG = AbstractThreadCursorAdapter.class.getSimpleName();
     protected static final boolean DEBUG = false;
 
-    protected long highlightPostNo = 0;
+    protected Set<Long> highlightPostNos = new HashSet<Long>();
     protected Set<Long> highlightPrevPostNos = new HashSet<Long>();
     protected Set<Long> highlightNextPostNos = new HashSet<Long>();
     protected Set<Long> highlightIdPostNos = new HashSet<Long>();
@@ -34,11 +34,14 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
         super(context, layout, viewBinder, from, to);
     }
 
-    public void setHighlightPostReplies(long highlightPostNo, long[] prevPostNos, long[] nextPostNos) {
-        this.highlightPostNo = highlightPostNo;
+    public void setHighlightPostReplies(long[] postNos, long[] prevPostNos, long[] nextPostNos) {
+        highlightPostNos.clear();
         highlightPrevPostNos.clear();
         highlightNextPostNos.clear();
         highlightIdPostNos.clear();
+        if (postNos != null)
+            for (long postNo : postNos)
+                highlightPostNos.add(postNo);
         if (prevPostNos != null)
             for (long postNo : prevPostNos)
                 highlightPrevPostNos.add(postNo);
@@ -48,10 +51,11 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
     }
 
     public void setHighlightPostsWithId(long highlightPostNo, long[] idPostNos) {
-        this.highlightPostNo = highlightPostNo;
+        highlightPostNos.clear();
         highlightPrevPostNos.clear();
         highlightNextPostNos.clear();
         highlightIdPostNos.clear();
+        highlightPostNos.add(highlightPostNo);
         if (idPostNos != null)
             for (long postNo : idPostNos)
                 highlightIdPostNos.add(postNo);
@@ -106,7 +110,7 @@ public abstract class AbstractThreadCursorAdapter extends AbstractBoardCursorAda
         if (v != null && v instanceof RelativeLayout && postNo != 0)
             setHighlightViews(v, tag, postNo);
         else
-            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteTransparent));
+            v.setBackgroundDrawable(null);
 
         bindView(v, context, cursor);
         return v;

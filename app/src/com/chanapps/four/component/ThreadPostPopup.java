@@ -28,6 +28,7 @@ import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.fragment.BlocklistAddDialogFragment;
 import com.chanapps.four.fragment.DeletePostDialogFragment;
 import com.chanapps.four.fragment.ReportPostDialogFragment;
+import com.chanapps.four.task.HighlightRepliesTask;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -400,8 +401,6 @@ public class ThreadPostPopup implements Dismissable {
             highlightRepliesButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    HighlightRepliesTask task = new HighlightRepliesTask(activity.getBaseContext(), adapter, boardCode, threadNo);
-                    task.execute(postNo);
                     popupWindow.dismiss();
                 }
             });
@@ -458,59 +457,6 @@ public class ThreadPostPopup implements Dismissable {
             });
         }
         setVisibility(visible, highlightIdButtonLine, highlightIdButton);
-    }
-
-    private class HighlightRepliesTask extends AsyncTask<Long, Void, String> {
-        private Context context = null;
-        private AbstractThreadCursorAdapter threadAdapter = null;
-        private String boardCode = null;
-        private long threadNo = 0;
-        public HighlightRepliesTask(Context context, AbstractThreadCursorAdapter adapter, String boardCode, long threadNo) {
-            this.context = context;
-            this.threadAdapter = adapter;
-            this.boardCode = boardCode;
-            this.threadNo = threadNo;
-        }
-        @Override
-        protected String doInBackground(Long... postNos) {
-            String result = null;
-            long postNo = postNos[0];
-            long[] prevPosts = null;
-            long[] nextPosts = null;
-            try {
-                ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
-                if (thread != null) {
-                    prevPosts = thread.getPrevPostsReferenced(postNo);
-                    nextPosts = thread.getNextPostsReferredTo(postNo);
-                }
-                else {
-                    result = context.getString(R.string.thread_couldnt_load);
-                    Log.e(TAG, "Coludn't load thread " + boardCode + "/" + threadNo);
-                }
-            }
-            catch (Exception e) {
-                result = context.getString(R.string.thread_couldnt_load);
-                Log.e(TAG, "Exception while getting thread post highlights", e);
-            }
-            threadAdapter.setHighlightPostReplies(postNo, prevPosts, nextPosts);
-            int prevCount = prevPosts == null ? 0 : prevPosts.length;
-            int nextCount = nextPosts == null ? 0 : nextPosts.length;
-            if (prevCount == 0 && nextCount == 0)
-                result = context.getString(R.string.thread_no_replies_found);
-            else if (prevCount == 0 && nextCount > 0)
-                result = String.format(context.getString(R.string.thread_next_replies_found), nextCount);
-            else if (prevCount > 0 && nextCount == 0)
-                result = String.format(context.getString(R.string.thread_prev_replies_found), prevCount);
-            else
-                result = String.format(context.getString(R.string.thread_both_replies_found), prevCount, nextCount);
-            if (DEBUG) Log.i(TAG, "Set highlight posts prev=" + Arrays.toString(prevPosts) + " next=" + Arrays.toString(nextPosts));
-            return result;
-        }
-        @Override
-        protected void onPostExecute(String result) {
-            Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-            threadAdapter.notifyDataSetChanged();
-        }
     }
 
     private class HighlightIdTask extends AsyncTask<Long, Void, String> {

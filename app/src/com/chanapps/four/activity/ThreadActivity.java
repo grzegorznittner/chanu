@@ -29,6 +29,7 @@ import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
+import com.chanapps.four.task.HighlightRepliesTask;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
@@ -875,6 +876,14 @@ public class ThreadActivity
                 String quoteText = selectQuoteText(postPos);
                 mode.finish();
                 postReply(quoteText);
+                return true;
+            case R.id.highlight_replies_menu:
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.PrevOrNext.NEXT))
+                        .execute(postNos);
+                return true;
+            case R.id.highlight_previous_menu:
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.PrevOrNext.PREV))
+                        .execute(postNos);
                 return true;
             case R.id.go_to_link_menu:
                 String[] urls = extractUrlsFromPosts(postPos);
