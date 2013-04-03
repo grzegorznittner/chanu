@@ -36,21 +36,25 @@ public class ChanImageLoader {
 
     static public ImageLoader getInstance(Context context) {
         if (imageLoader == null) {
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            WindowManager manager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-            manager.getDefaultDisplay().getMetrics(displayMetrics);
-            int padding = ChanGridSizer.dpToPx(displayMetrics, FULL_SCREEN_IMAGE_PADDING_DP);
-            final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.widthPixels) - 2 * padding;
-            final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.heightPixels) - 2 * padding;
-            imageLoader = ImageLoader.getInstance();
-            imageLoader.init(
-                    new ImageLoaderConfiguration
-                            .Builder(context)
-                            .memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
-                            .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
-                            .imageDownloader(new ExtendedImageDownloader(context))
-                            .threadPriority(Thread.MAX_PRIORITY)
-                            .build());
+        	synchronized (ChanImageLoader.class) {
+				if (imageLoader == null) {
+		            DisplayMetrics displayMetrics = new DisplayMetrics();
+		            WindowManager manager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+		            manager.getDefaultDisplay().getMetrics(displayMetrics);
+		            int padding = ChanGridSizer.dpToPx(displayMetrics, FULL_SCREEN_IMAGE_PADDING_DP);
+		            final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.widthPixels) - 2 * padding;
+		            final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.heightPixels) - 2 * padding;
+		            imageLoader = ImageLoader.getInstance();
+		            imageLoader.init(
+		                    new ImageLoaderConfiguration
+		                            .Builder(context)
+		                            .memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
+		                            .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
+		                            .imageDownloader(new ExtendedImageDownloader(context))
+		                            .threadPriority(Thread.MAX_PRIORITY)
+		                            .build());
+				}
+        	}
         }
         return imageLoader;
     }

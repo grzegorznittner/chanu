@@ -1,5 +1,7 @@
 package com.nostra13.universalimageloader.core;
 
+import android.util.Log;
+
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
@@ -26,7 +28,8 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public final class DisplayImageOptions {
+public final class DisplayImageOptions implements Cloneable {
+	private static final String TAG = "DisplayImageOptions";
 
 	private final Integer stubImage;
 	private final Integer imageForEmptyUri;
@@ -35,6 +38,7 @@ public final class DisplayImageOptions {
 	private final boolean cacheOnDisc;
 	private final ImageScaleType imageScaleType;
     private final ImageSize imageSize;
+    private boolean centerCrop = false;
 
 	private DisplayImageOptions(Builder builder) {
 		stubImage = builder.stubImage;
@@ -80,6 +84,21 @@ public final class DisplayImageOptions {
 
 	ImageScaleType getImageScaleType() {
 		return imageScaleType;
+	}
+	
+	boolean isCenterCrop() {
+		return centerCrop;
+	}
+	
+	public DisplayImageOptions modifyCenterCrop(boolean centerCropImage) {
+		try {
+			DisplayImageOptions options = (DisplayImageOptions)clone();
+			options.centerCrop = centerCropImage;
+			return options;
+		} catch (CloneNotSupportedException e) {
+			Log.e(TAG, "Clone error", e);
+		}
+		return this;
 	}
 
 	/**

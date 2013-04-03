@@ -99,15 +99,7 @@ public class BoardGroupFragment
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        ImageSize imageSize = new ImageSize(SELECTOR_WIDTH_PX, SELECTOR_HEIGHT_PX); // view pager needs micro images
-        imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
-        displayImageOptions = new DisplayImageOptions.Builder()
-                .imageScaleType(ImageScaleType.POWER_OF_2)
-                .imageSize(imageSize)
-                .cacheOnDisc()
-                .resetViewBeforeLoading()
-                .build();
+        super.onActivityCreated(savedInstanceState);        
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
         getLoaderManager().initLoader(0, null, this);
@@ -121,6 +113,16 @@ public class BoardGroupFragment
         cg.sizeGridToDisplay();
         columnWidth = cg.getColumnWidth();
         columnHeight = cg.getColumnHeight();
+        
+        ImageSize imageSize = new ImageSize(columnWidth, columnHeight); // view pager needs micro images
+        imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
+        displayImageOptions = new DisplayImageOptions.Builder()
+                .imageScaleType(ImageScaleType.POWER_OF_2)
+                .imageSize(imageSize)
+                .cacheOnDisc()
+                .resetViewBeforeLoading()
+                .build();
+        
         assignCursorAdapter();
         absListView.setAdapter(adapter);
         absListView.setClickable(true);
@@ -345,7 +347,7 @@ public class BoardGroupFragment
         imageLoader.displayImage(
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
                 iv,
-                displayImageOptions); // load async
+                displayImageOptions.modifyCenterCrop(true)); // load async
         return true;
     }
 
