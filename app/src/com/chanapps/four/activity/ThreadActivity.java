@@ -265,7 +265,7 @@ public class ThreadActivity
         if (DEBUG) Log.i(TAG, "pos=" + cursor.getPosition() + " expandable=" + expandable);
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0) {
-            item.setBackgroundColor(R.color.PaletteLighterGray);
+            item.setBackgroundColor(getResources().getColor(R.color.PaletteLighterGray));
             if (expander != null)
                 expander.setVisibility(View.GONE);
         }
@@ -418,7 +418,7 @@ public class ThreadActivity
                 iv.setLayoutParams(params);
             }
             iv.setVisibility(View.VISIBLE);
-            imageLoader.displayImage(imageUrl, iv, displayImageOptions);
+            imageLoader.displayImage(imageUrl, iv, displayImageOptions.modifyCenterCrop(true));
         }
         else {
             iv.setImageBitmap(null);

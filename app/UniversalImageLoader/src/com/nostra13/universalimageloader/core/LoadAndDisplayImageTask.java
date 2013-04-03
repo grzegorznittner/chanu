@@ -92,8 +92,42 @@ final class LoadAndDisplayImageTask implements Runnable {
 		if (checkTaskIsNotActual()) return;
 		if (configuration.loggingEnabled) Log.i(ImageLoader.TAG, String.format(LOG_DISPLAY_IMAGE_IN_IMAGEVIEW, imageLoadingInfo.memoryCacheKey));
 
+		if (imageLoadingInfo.options.isCenterCrop()) {
+			bmp = centerCropImage(bmp);
+        }
+		
 		DisplayBitmapTask displayBitmapTask = new DisplayBitmapTask(bmp, imageLoadingInfo.imageView, imageLoadingInfo.listener);
 		handler.post(displayBitmapTask);
+	}
+
+	private Bitmap centerCropImage(Bitmap bmp) {
+		int width = configuration.maxImageWidthForDiscCache;
+		int height = configuration.maxImageHeightForDiscCache;
+		if (imageLoadingInfo != null && imageLoadingInfo.targetSize != null) {
+		    width = imageLoadingInfo.targetSize.getWidth();
+		    height = imageLoadingInfo.targetSize.getHeight();
+		}
+		
+		int origWidth = bmp.getWidth();
+		int origHeight = bmp.getHeight();
+		double scale = Math.max((double)width / (double)origWidth, (double)height / (double)origHeight);
+		int scaledWidth = (int)(origWidth * scale);
+		int scaledHeight = (int)(origHeight * scale);
+		bmp = Bitmap.createScaledBitmap(bmp, scaledWidth, scaledHeight, true);
+		
+		if (bmp.getWidth() >= bmp.getHeight()) {
+			bmp = Bitmap.createBitmap(bmp,
+				bmp.getWidth() / 2 - bmp.getHeight() / 2, 0,
+				bmp.getHeight(), bmp.getHeight());
+		} else {
+			bmp = Bitmap.createBitmap(bmp, 0,
+				bmp.getHeight() / 2 - bmp.getWidth() / 2,
+				bmp.getWidth(), bmp.getWidth());
+		}
+		if (DEBUG) Log.i(TAG, "Image resize orig " + origWidth + "x" + origHeight
+				+ ", scale=" + scale + ", scaled=" + scaledWidth + "x" + scaledHeight + ", cropped="
+				+ bmp.getWidth() + "x" + bmp.getHeight());
+		return bmp;
 	}
 
 	/**
@@ -214,7 +248,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 		int width = configuration.maxImageWidthForDiscCache;
 		int height = configuration.maxImageHeightForDiscCache;
 		if (width > 0 || height > 0) {
-            if (imageLoadingInfo != null && imageLoadingInfo.targetSize != null && !imageLoadingInfo.centerCrop) {
+            if (imageLoadingInfo != null && imageLoadingInfo.targetSize != null) {
                 width = imageLoadingInfo.targetSize.getWidth();
                 height = imageLoadingInfo.targetSize.getHeight();
             }
@@ -226,21 +260,6 @@ final class LoadAndDisplayImageTask implements Runnable {
             if (bmp == null) {
                 Log.e(TAG, "Couldn't save bitmap, null decode: " + imageLoadingInfo.uri);
                 return;
-            }
-            if (imageLoadingInfo.centerCrop) {
-				if (bmp.getWidth() >= bmp.getHeight()) {
-					if (bmp.getWidth() > width) {
-						bmp = Bitmap.createBitmap(bmp,
-							bmp.getWidth() / 2 - bmp.getHeight() / 2, 0,
-							bmp.getHeight(), bmp.getHeight());
-					}
-				} else {
-					if (bmp.getHeight() > height) {
-						bmp = Bitmap.createBitmap(bmp, 0,
-							bmp.getHeight() / 2 - bmp.getWidth() / 2,
-							bmp.getWidth(), bmp.getWidth());
-					}
-				}
             }
             OutputStream os;
             try {

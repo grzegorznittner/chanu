@@ -344,7 +344,7 @@ public class BoardActivity
         imageLoader.displayImage(
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
                 iv,
-                displayImageOptions); // load async
+                displayImageOptions.modifyCenterCrop(true)); // load async
         return true;
     }
 

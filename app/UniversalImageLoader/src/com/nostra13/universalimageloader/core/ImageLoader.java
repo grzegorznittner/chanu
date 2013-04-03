@@ -219,9 +219,7 @@ public class ImageLoader {
 
 			checkExecutors();
             if (DEBUG) Log.i(TAG, "imageLoadingInfo target size " + targetSize.toString());
-            // hack to make thumbnails center cropped
-            boolean isThumbnail = uri.contains("thumbs.4chan.org");
-            ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, isThumbnail, options, listener);
+            ImageLoadingInfo imageLoadingInfo = new ImageLoadingInfo(uri, imageView, targetSize, options, listener);
 			LoadAndDisplayImageTask displayImageTask = new LoadAndDisplayImageTask(
                     imageView.getContext(), configuration, imageLoadingInfo, new Handler());
 			boolean isImageCachedOnDisc = configuration.discCache.get(uri).exists();
