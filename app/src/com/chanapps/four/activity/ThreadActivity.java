@@ -274,11 +274,12 @@ public class ThreadActivity
         if (DEBUG) Log.i(TAG, "pos=" + cursor.getPosition() + " expandable=" + expandable);
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0) {
-            item.setBackgroundColor(getResources().getColor(R.color.PaletteLighterGray));
+            item.setBackgroundColor(R.color.PaletteLighterGray);
             if (expander != null)
                 expander.setVisibility(View.GONE);
         }
         else if (expandable > 0) {
+            item.setBackgroundDrawable(null);
             if (expander != null)
                 expander.setVisibility(View.VISIBLE);
         }
