@@ -57,9 +57,13 @@ public class ThreadActivity
 {
 
     protected static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
+    private static final int SNIPPET_LINES_DEFAULT = 3;
+    private static final int TEXT_HORIZ_PADDING_DP = 8 + 28;
+    private static final int IMAGE_WIDTH_DP = 80;
+    private static final int SNIPPET_HEIGHT_DP = ((80 - 8)*3)/4; // three lines used for snippet
 
     protected long threadNo;
     protected String text;
@@ -172,6 +176,7 @@ public class ThreadActivity
                         ChanHelper.POST_IMAGE_URL,
                         ChanHelper.POST_SHORT_TEXT,
                         ChanHelper.POST_TEXT,
+                        ChanHelper.POST_TEXT,
                         ChanHelper.POST_COUNTRY_URL,
                         ChanHelper.POST_DATE_TEXT,
                         ChanHelper.POST_IMAGE_DIMENSIONS,
@@ -184,6 +189,7 @@ public class ThreadActivity
                         R.id.list_item_image_expanded,
                         R.id.list_item_image,
                         R.id.list_item_header,
+                        R.id.list_item_snippet,
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
                         R.id.list_item_date,
@@ -238,15 +244,17 @@ public class ThreadActivity
             case R.id.list_item_header_bar:
                 return setItemHeaderBar(view, cursor);
             case R.id.list_item_image_expanded:
-                return setItemImageExpanded((ImageView)view, cursor);
+                return setItemImageExpanded((ImageView) view, cursor);
             case R.id.list_item_expanded_progress_bar:
-                return setItemImageExpandedProgressBar((ProgressBar)view, cursor);
+                return setItemImageExpandedProgressBar((ProgressBar) view, cursor);
             case R.id.list_item_image:
-                return setItemImage((ImageView)view, cursor);
+                return setItemImage((ImageView) view, cursor);
             case R.id.list_item_country_flag:
-                return setItemCountryFlag((ImageView)view, cursor);
+                return setItemCountryFlag((ImageView) view, cursor);
             case R.id.list_item_header:
-                return setItemHeaderValue((TextView)view, cursor);
+                return setItemHeaderValue((TextView) view, cursor);
+            case R.id.list_item_snippet:
+                return setItemSnippetValue((TextView) view, cursor);
             case R.id.list_item_text:
                 return setItemMessageValue((TextView)view, cursor);
             case R.id.list_item_date:
@@ -262,6 +270,7 @@ public class ThreadActivity
         //SparseBooleanArray positions = absListView.getCheckedItemPositions();
         int expandable = itemExpandable(cursor, item);
         ImageView expander = (ImageView)item.findViewById(R.id.list_item_expander);
+        ImageView collapse = (ImageView)item.findViewById(R.id.list_item_collapse);
         if (DEBUG) Log.i(TAG, "pos=" + cursor.getPosition() + " expandable=" + expandable);
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0) {
@@ -278,6 +287,8 @@ public class ThreadActivity
             if (expander != null)
                 expander.setVisibility(View.GONE);
         }
+        if (collapse != null)
+            collapse.setVisibility(View.GONE);
         return true;
     }
 
@@ -324,14 +335,7 @@ public class ThreadActivity
             if (expandable == 0)
                 return;
 
-            ImageView itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
-            ProgressBar itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
-            TextView itemExpandedText = (TextView)itemView.findViewById(R.id.list_item_text);
-            TextView itemExpandedExifText = (TextView)itemView.findViewById(R.id.list_item_image_exif);
-            if (DEBUG) Log.i(TAG, "found " + itemView + " " + itemExpandedImage + " " + itemExpandedProgressBar + " " + itemExpandedText + " " + itemExpandedExifText);
-            ExpandImageOnClickListener listener = new ExpandImageOnClickListener(
-                    cursor, expandable, itemExpandedImage, itemExpandedProgressBar, itemExpandedText, itemExpandedExifText);
-            listener.onClick(itemView);
+            (new ExpandImageOnClickListener(cursor, expandable, itemView)).onClick(itemView);
         }
     };
 
@@ -355,15 +359,25 @@ public class ThreadActivity
 
     private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
-        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         Spanned spanned = Html.fromHtml(text);
         tv.setText(spanned);
         return true;
     }
 
-    private static final int TEXT_HORIZ_PADDING_DP = 8 + 28;
-    private static final int IMAGE_WIDTH_DP = 80;
-    private static final int ITEM_HEIGHT_DP = 80;
+    private boolean setItemSnippetValue(final TextView tv, final Cursor cursor) {
+        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (adItem > 0) {
+            tv.setVisibility(View.INVISIBLE);
+        }
+        else {
+            String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            Spanned spanned = Html.fromHtml(text);
+            tv.setText(spanned);
+            tv.setLines(SNIPPET_LINES_DEFAULT); // default num lines
+            tv.setVisibility(View.VISIBLE);
+        }
+        return true;
+    }
 
     private boolean textExpandable(TextPaint tp, String text, String imageUrl) {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -371,7 +385,7 @@ public class ThreadActivity
         int paddingWidth = ChanGridSizer.dpToPx(metrics, TEXT_HORIZ_PADDING_DP);
         int imageWidth = (imageUrl == null || imageUrl.isEmpty()) ? 0 : ChanGridSizer.dpToPx(metrics, IMAGE_WIDTH_DP);
         int textWidth = screenWidth - paddingWidth - imageWidth;
-        int actualHeight = ChanGridSizer.dpToPx(metrics, ITEM_HEIGHT_DP);
+        int actualHeight = ChanGridSizer.dpToPx(metrics, SNIPPET_HEIGHT_DP);
         StaticLayout sl = new StaticLayout(text, tp, textWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
         int fullHeight = sl.getHeight();
         boolean textExpandable = fullHeight > actualHeight;
@@ -452,10 +466,13 @@ public class ThreadActivity
     private class ExpandImageOnClickListener implements View.OnClickListener {
 
         private int expandable = 0;
-        private ImageView itemExpandedImageHolder;
-        private ProgressBar itemExpandedProgressBarHolder;
-        private TextView itemExpandedTextHolder;
-        private TextView itemExpandedExifTextHolder;
+        private ImageView itemExpander;
+        private ImageView itemCollapse;
+        private ImageView itemExpandedImage;
+        private ProgressBar itemExpandedProgressBar;
+        private TextView itemExpandedSnippet;
+        private TextView itemExpandedText;
+        private TextView itemExpandedExifText;
         private String postText = null;
         private String postImageUrl = null;
         private String postExifText = null;
@@ -463,66 +480,77 @@ public class ThreadActivity
         int postH = 0;
         int listPosition = 0;
 
-        public ExpandImageOnClickListener(final Cursor cursor,
-                                          final int expandable,
-                                          final ImageView itemExpandedImage,
-                                          final ProgressBar itemExpandedProgressBar,
-                                          final TextView itemExpandedText,
-                                          final TextView itemExpandedExifText)
-        {
+        public ExpandImageOnClickListener(final Cursor cursor, final int expandable, final View itemView) {
             this.expandable = expandable;
-
-            itemExpandedImageHolder = itemExpandedImage;
-            itemExpandedProgressBarHolder = itemExpandedProgressBar;
-            itemExpandedTextHolder = itemExpandedText;
-            itemExpandedExifTextHolder = itemExpandedExifText;
+            itemExpander = (ImageView)itemView.findViewById(R.id.list_item_expander);
+            itemCollapse = (ImageView)itemView.findViewById(R.id.list_item_collapse);
+            itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
+            itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
+            itemExpandedSnippet = (TextView)itemView.findViewById(R.id.list_item_snippet);
+            itemExpandedText = (TextView)itemView.findViewById(R.id.list_item_text);
+            itemExpandedExifText = (TextView)itemView.findViewById(R.id.list_item_image_exif);
+            
             listPosition = cursor.getPosition();
-
             postW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
             postH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
             postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
             postExifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
             long postTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
             String postExt = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXT));
-            postImageUrl = postTim > 0 ? ChanPost.getImageUrl(boardCode, postTim, postExt) : null;
+            postImageUrl = postTim > 0 ? ChanPost.imageUrl(boardCode, postTim, postExt) : null;
         }
 
         @Override
         public void onClick(View v) {
-            if (itemExpandedTextHolder.getVisibility() == View.VISIBLE
-                   || itemExpandedImageHolder.getVisibility() == View.VISIBLE) // toggle expansion
-            {
-                ChanHelper.clearBigImageView(itemExpandedImageHolder);
-                itemExpandedImageHolder.setVisibility(View.GONE);
-                itemExpandedTextHolder.setVisibility(View.GONE);
-                itemExpandedExifTextHolder.setVisibility(View.GONE);
+            if (itemCollapse.getVisibility() == View.VISIBLE) { // toggle expansion
+                ChanHelper.clearBigImageView(itemExpandedImage);
+                itemCollapse.setVisibility(View.GONE);
+                itemExpander.setVisibility(View.VISIBLE);
+                itemExpandedImage.setVisibility(View.GONE);
+                itemExpandedText.setVisibility(View.GONE);
+                itemExpandedExifText.setVisibility(View.GONE);
+                itemExpandedSnippet.setLines(SNIPPET_LINES_DEFAULT); // default num lines
+                itemExpandedSnippet.setVisibility(View.VISIBLE);
                 return;
             }
+            // show that we can collapse view
+            itemExpander.setVisibility(View.GONE);
+            itemCollapse.setVisibility(View.VISIBLE);
+
             // set text visibility
             if (DEBUG) Log.i(TAG, "Post text: " + postText);
             if ((expandable & TEXT_EXPANDABLE) > 0 && postText != null && !postText.isEmpty()) {
-                itemExpandedTextHolder.setText(Html.fromHtml(postText));
-                itemExpandedTextHolder.setVisibility(View.VISIBLE);
+                if ((expandable & IMAGE_EXPANDABLE) > 0) { // image visible, remove the duplicate top text
+                    itemExpandedSnippet.setVisibility(View.INVISIBLE);
+                    itemExpandedText.setText(Html.fromHtml(postText));
+                    itemExpandedText.setVisibility(View.VISIBLE);
+                }
+                else { // no image, so just expand to fill rest of space
+                    int lc = itemExpandedSnippet.getLineCount();
+                    itemExpandedSnippet.setLines(Math.max(lc, SNIPPET_LINES_DEFAULT));
+                    itemExpandedSnippet.setVisibility(View.VISIBLE);
+                    itemExpandedText.setVisibility(View.GONE);
+                }
             }
             else {
-                itemExpandedTextHolder.setVisibility(View.GONE);
+                itemExpandedText.setVisibility(View.GONE);
             }
 
-            ChanHelper.clearBigImageView(itemExpandedImageHolder); // clear old image
+            ChanHelper.clearBigImageView(itemExpandedImage); // clear old image
 
             if ((expandable & IMAGE_EXPANDABLE) == 0 || postImageUrl == null || postImageUrl.isEmpty()) {// no image to display
-                itemExpandedImageHolder.setVisibility(View.GONE);
-                itemExpandedExifTextHolder.setVisibility(View.GONE);
+                itemExpandedImage.setVisibility(View.GONE);
+                itemExpandedExifText.setVisibility(View.GONE);
                 return;
             }
 
             if (DEBUG) Log.v(TAG, "Post exif text:" + postExifText);
             if (postExifText != null && !postExifText.isEmpty()) {
-                itemExpandedExifTextHolder.setText(Html.fromHtml(postExifText));
-                itemExpandedExifTextHolder.setVisibility(View.VISIBLE);
+                itemExpandedExifText.setText(Html.fromHtml(postExifText));
+                itemExpandedExifText.setVisibility(View.VISIBLE);
             }
             else {
-                itemExpandedExifTextHolder.setVisibility(View.GONE);
+                itemExpandedExifText.setVisibility(View.GONE);
             }
 
             // calculate image dimensions
@@ -532,8 +560,8 @@ public class ThreadActivity
             //int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
             int maxWidth = displayMetrics.widthPixels;
             int maxHeight = maxWidth; // to avoid excessively big images
-            itemExpandedImageHolder.setMaxWidth(maxWidth);
-            itemExpandedImageHolder.setMaxHeight(maxHeight);
+            itemExpandedImage.setMaxWidth(maxWidth);
+            itemExpandedImage.setMaxHeight(maxHeight);
             if (DEBUG) Log.v(TAG, "max size " + maxWidth + "x" + maxHeight);
             float scaleFactor = 1;
             if (postW >= postH) {
@@ -550,20 +578,20 @@ public class ThreadActivity
             int height = Math.round(scaleFactor * (float)postH);
             if (DEBUG) Log.v(TAG, "target size " + width + "x" + height);
             // set layout dimensions
-            ViewGroup.LayoutParams params = itemExpandedImageHolder.getLayoutParams();
+            ViewGroup.LayoutParams params = itemExpandedImage.getLayoutParams();
             if (params != null) {
                 params.width = width;
                 params.height = height;
             }
-            itemExpandedImageHolder.setVisibility(View.VISIBLE);
+            itemExpandedImage.setVisibility(View.VISIBLE);
 
             int lastPosition = absListView.getLastVisiblePosition();
             boolean shouldMove = listPosition >= lastPosition - 1;
             final int parentOffset = shouldMove ? 100 : 0; // allow for margin
 
             // set visibility delayed
-            if (itemExpandedProgressBarHolder != null)
-                itemExpandedProgressBarHolder.setVisibility(View.VISIBLE);
+            if (itemExpandedProgressBar != null)
+                itemExpandedProgressBar.setVisibility(View.VISIBLE);
             ensureHandler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -580,16 +608,16 @@ public class ThreadActivity
                     .build();
 
             // display image async
-            imageLoader.displayImage(postImageUrl, itemExpandedImageHolder, expandedDisplayImageOptions, new ImageLoadingListener() {
+            imageLoader.displayImage(postImageUrl, itemExpandedImage, expandedDisplayImageOptions, new ImageLoadingListener() {
                 @Override
                 public void onLoadingStarted() {
                 }
 
                 @Override
                 public void onLoadingFailed(FailReason failReason) {
-                    if (itemExpandedProgressBarHolder != null)
-                        itemExpandedProgressBarHolder.setVisibility(View.GONE);
-                    itemExpandedImageHolder.setVisibility(View.GONE);
+                    if (itemExpandedProgressBar != null)
+                        itemExpandedProgressBar.setVisibility(View.GONE);
+                    itemExpandedImage.setVisibility(View.GONE);
                     String reason = failReason.toString();
                     String msg;
                     if (reason.equalsIgnoreCase("io_error"))
@@ -601,15 +629,15 @@ public class ThreadActivity
 
                 @Override
                 public void onLoadingComplete(Bitmap loadedImage) {
-                    if (itemExpandedProgressBarHolder != null)
-                        itemExpandedProgressBarHolder.setVisibility(View.GONE);
+                    if (itemExpandedProgressBar != null)
+                        itemExpandedProgressBar.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void onLoadingCancelled() {
-                    if (itemExpandedProgressBarHolder != null)
-                        itemExpandedProgressBarHolder.setVisibility(View.GONE);
-                    itemExpandedImageHolder.setVisibility(View.GONE);
+                    if (itemExpandedProgressBar != null)
+                        itemExpandedProgressBar.setVisibility(View.GONE);
+                    itemExpandedImage.setVisibility(View.GONE);
                     Toast.makeText(ThreadActivity.this, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
                 }
             }); // load async

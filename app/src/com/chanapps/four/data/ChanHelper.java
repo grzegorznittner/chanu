@@ -2,6 +2,7 @@ package com.chanapps.four.data;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -138,6 +139,31 @@ public class ChanHelper {
 
     public static final String PREF_WIDGET_BOARDS = "prefWidgetBoards";
     public static final String PREF_BLOCKLIST = "prefBlocklist";
+
+    public static String join(List<String> list, String delimiter) {
+        String text = "";
+        boolean first = true;
+        for (String item : list) {
+            if (first) {
+                text += item;
+                first = false;
+                continue;
+            }
+            text += delimiter + item;
+        }
+        return text;
+    }
+
+    public static int countLines(String s) {
+        if (s == null || s.isEmpty())
+            return 0;
+        int i = 1;
+        int idx = -1;
+        while ((idx = s.indexOf('\n', idx + 1)) != -1) {
+            i++;
+        }
+        return i;
+    }
 
     public enum Orientation {
         PORTRAIT,

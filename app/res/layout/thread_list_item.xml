@@ -7,9 +7,11 @@
 
         <ImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
         <TextView style="@style/ThreadListItemHeadText" android:id="@+id/list_item_header"/>
+        <TextView style="@style/ThreadListItemSnippetText" android:id="@+id/list_item_snippet"/>
         <TextView style="@style/ThreadListItemDateText" android:id="@+id/list_item_date"/>
         <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
         <ImageView style="@style/ThreadListItemExpander" android:id="@+id/list_item_expander"/>
+        <ImageView style="@style/ThreadListItemCollapse" android:id="@+id/list_item_collapse"/>
 
     </RelativeLayout>
 

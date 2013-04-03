@@ -28,9 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -193,7 +191,7 @@ public class UpdateWidgetService extends Service {
             if (thread.no < 1) {
                 return null;
             }
-            return thread.getThumbnailUrl();
+            return thread.thumbnailUrl();
         }
 
         private Bitmap getWidgetBitmapFromBoardStorage(int i, String thumbnailUrl) {

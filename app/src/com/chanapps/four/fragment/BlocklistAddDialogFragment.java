@@ -12,7 +12,6 @@ import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.Dismissable;
 import com.chanapps.four.data.ChanBlocklist;
 import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanWatchlist;
 
 /**
 * Created with IntelliJ IDEA.
@@ -37,7 +36,7 @@ public class BlocklistAddDialogFragment extends DialogFragment {
         this.activity = activity;
         this.userId = userId;
         useFriendlyIds = PreferenceManager.getDefaultSharedPreferences(activity.getBaseContext()).getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
-        formattedUserId = ChanPost.getUserId(userId, useFriendlyIds);
+        formattedUserId = ChanPost.formattedUserId(userId, useFriendlyIds);
     }
 
     @Override

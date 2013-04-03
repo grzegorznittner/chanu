@@ -9,17 +9,12 @@ import android.app.DialogFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
-import com.chanapps.four.activity.BoardActivity;
-import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanBlocklist;
-import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanPost;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 /**
 * Created with IntelliJ IDEA.
@@ -47,7 +42,7 @@ public class BlocklistDialogFragment extends DialogFragment {
         blocklistArray = ChanBlocklist.getSorted(context);
         formattedBlocklistArray = new String[blocklistArray.length];
         for (int i = 0; i < blocklistArray.length; i++) {
-            formattedBlocklistArray[i] = ChanPost.getUserId(blocklistArray[i], useFriendlyIds);
+            formattedBlocklistArray[i] = ChanPost.formattedUserId(blocklistArray[i], useFriendlyIds);
         }
     }
 

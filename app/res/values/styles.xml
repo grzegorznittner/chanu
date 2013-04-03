@@ -226,10 +226,9 @@
     <style name="ThreadListItemHeadText" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minLines">1</item>
-        <item name="android:maxLines">4</item>
+        <item name="android:lines">1</item>
         <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingBottom">0dp</item>
         <item name="android:paddingRight">28dp</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentRight">true</item>
@@ -237,6 +236,20 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
+    </style>
+
+    <style name="ThreadListItemSnippetText" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">3</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingRight">28dp</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_toRightOf">@+id/list_item_image</item>
+        <item name="android:layout_below">@+id/list_item_header</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="ThreadListItemExifText" parent="AppTheme">
@@ -302,6 +315,22 @@
         <item name="android:src">@drawable/navigation_expand_light</item>
         <item name="android:background">@color/PaletteTransparent</item>
         <item name="android:contentDescription">@string/thread_post_expand_button</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListItemCollapse" parent="AppTheme">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:gravity">right</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:src">@drawable/navigation_collapse</item>
+        <item name="android:background">@color/PaletteTransparent</item>
+        <item name="android:contentDescription">@string/thread_post_collapse_button</item>
+        <item name="android:visibility">gone</item>
     </style>
 
     <style name="ThreadListItemHeaderBar" parent="AppTheme">

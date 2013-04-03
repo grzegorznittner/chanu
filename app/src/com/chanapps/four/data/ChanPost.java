@@ -18,9 +18,16 @@ public class ChanPost {
     private static final boolean DEBUG = false;
     
     public static final int MAX_SINGLELINE_TEXT_LEN = 20;
-    public static final int MAX_DOUBLELINE_TEXT_LEN = 40;
     private static final int MIN_LINE = 30;
     private static final int MAX_LINE = 40;
+
+    private static final int CHAN_ID = 0x01;
+    private static final int CHAN_NAME = 0x02;
+    private static final int CHAN_TRIP = 0x04;
+    private static final int CHAN_EMAIL = 0x08;
+    private static final int CHAN_HEADER_SET = 0x10;
+
+    private int headerComponents = 0;
 
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingStringDeserializer.class)
     public String board;
@@ -145,20 +152,40 @@ public class ChanPost {
         return o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
     }
 
-    public String getFullText() {
-        String text = "";
+    private String missingHeaderLines() {
+        List<String> lines = new ArrayList<String>();
+        if ((headerComponents & CHAN_HEADER_SET) == 0)
+            headerLine(); // side effect sets headerComponents
+        if ((headerComponents & CHAN_ID) == 0 && id != null && !id.isEmpty() && !id.equalsIgnoreCase("heaven"))
+            lines.add(formattedUserId());
+        if ((headerComponents & CHAN_NAME) == 0 && name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
+            lines.add(name);
+        if ((headerComponents & CHAN_TRIP) == 0 && trip != null && !trip.isEmpty())
+            lines.add(formattedUserTrip());
+        if ((headerComponents & CHAN_EMAIL) == 0 && email != null && !email.isEmpty())
+            lines.add(email.equalsIgnoreCase("sage") ? "<b>sage</b>" : email);
+        return ChanHelper.join(lines, "<br/>\n");
+    }
+
+    public String fullText() {
+        List<String> lines = new ArrayList<String>();
+        if (resto == 0)
+            lines.add("<b>" + threadInfoLine() + "</b>");
+        String missingHeaderLines = missingHeaderLines();
+        if (!missingHeaderLines.isEmpty())
+            lines.add(missingHeaderLines);
         String subText = sanitizeText(sub);
         if (subText != null && !subText.isEmpty())
-            text += "<b>" + subText + "</b>";
-        String comText = com != null && com.trim().length() > 0 ? sanitizeText(com) : "";
+            lines.add("<b>" + subText + "</b>");
+        String comText = sanitizeText(com);
         if (comText != null && !comText.isEmpty())
-            text += (text.isEmpty() ? "" : "<br/>\n<br/>\n") + comText;
-        return text;
+            lines.add(comText);
+        return ChanHelper.join(lines, "<br/>\n");
     }
 
     private static final int MAX_THREAD_SUBJECT_LEN = 100;
 
-    public String getThreadSubject(Context context) {
+    public String threadSubject(Context context) {
         String subText = sanitizeText(sub);
         if (subText != null && !subText.isEmpty())
             return subText;
@@ -167,7 +194,7 @@ public class ChanPost {
             return comText.substring(0, Math.min(comText.length(), MAX_THREAD_SUBJECT_LEN)); // always shorter than this since only one line
         if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
             return name;
-        if (email != null && !email.isEmpty() && !name.equalsIgnoreCase("sage"))
+        if (email != null && !email.isEmpty() && !email.equalsIgnoreCase("sage"))
             return email;
         return context.getResources().getString(R.string.thread_no_text_subject);
     }
@@ -199,7 +226,7 @@ public class ChanPost {
         return text;
     }
 
-    public String getExifText() {
+    public String exifText() {
         return exifText(com);
     }
 
@@ -218,7 +245,7 @@ public class ChanPost {
         return textViewFilter(t);
     }
 
-    public String getSpoilerText() {
+    public String spoilerText() {
         return spoilerText(com);
     }
 
@@ -304,11 +331,11 @@ public class ChanPost {
     }
 
     public String toString() {
-		return "Post " + no + " " + com + ", thumb: " + getThumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
+		return "Post " + no + " " + com + ", thumb: " + thumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
 	}
 
 
-    public String getThumbnailUrl() { // thumbnail with fallback
+    public String thumbnailUrl() { // thumbnail with fallback
         if (ChanBoard.isImagelessSticky(board, no))
             return "drawable://" + ChanBoard.getImageResourceId(board, no);
         else if (spoiler > 0)
@@ -321,7 +348,7 @@ public class ChanPost {
             return "";
     }
 
-    public int getThumbnailId() { // for resource types
+    public int thumbnailId() { // for resource types
         if (ChanBoard.isImagelessSticky(board, no))
             return ChanBoard.getImageResourceId(board, no);
         else if (spoiler > 0)
@@ -334,43 +361,43 @@ public class ChanPost {
             return 0;
     }
 
-    public String getImageUrl() {
-        return getImageUrl(board, tim, ext);
+    public String imageUrl() {
+        return imageUrl(board, tim, ext);
    	}
 
-    public static String getImageUrl(String board, long tim, String ext) {
+    public static String imageUrl(String board, long tim, String ext) {
         if (tim != 0) {
             return "http://images.4chan.org/" + board + "/src/" + tim + ext;
         }
         return null;
     }
 
-   	public String getImageName() {
+   	public String imageName() {
    		return no + ext;
    	}
 
-    public String getCountryFlagUrl() {
+    public String countryFlagUrl() {
         if (country != null && !country.isEmpty())
-            return getCountryFlagUrl(board, country);
+            return countryFlagUrl(board, country);
         else
             return null;
     }
 
-    public String getCountryFlagUrl(String boardCode, String countryCode) {
+    public String countryFlagUrl(String boardCode, String countryCode) {
         return "http://static.4chan.org/image/country/"
                 + (boardCode.equals("pol") ? "troll/" : "")
                 + countryCode.toLowerCase()
                 + ".gif";
     }
 
-    public String getDateText() {
+    public String dateText() {
         long milliseconds = 1000 * time; // time in seconds, convert
         return (time > 0)
             ? DateUtils.getRelativeTimeSpanString(milliseconds, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString()
             : "";
     }
 
-    public String getImageDimensions() {
+    public String imageDimensions() {
         if (fsize > 0) {
             int kbSize = (fsize / 1024) + 1;
             String size = (kbSize > 1000) ? (kbSize / 1000) + "MB" : kbSize + "KB";
@@ -379,51 +406,40 @@ public class ChanPost {
         return "";
     }
 
-    public String getHeaderText() {
-        List<String> lines = new ArrayList<String>();
+    public String headerLine() { // as side effect, set headerComponents
+        List<String> items = new ArrayList<String>();
         if (!hidePostNumbers)
-            lines.add("No: " + no);
-        if (id != null && !id.isEmpty())
-            lines.add("Id: " + getUserId());
-        if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
-            lines.add("Name: " + name);
-        if (trip != null && !trip.isEmpty())
-            lines.add("Trip: " + getUserTrip());
-        if (email != null && !email.isEmpty())
-            if (email.equals("sage"))
-                lines.add("<b>sage</b>");
-            else
-                lines.add("Email: " + email);
-        if (country_name != null && !country_name.isEmpty())
-            lines.add("From: " + country_name);
-        if (resto == 0)
-            lines.add(getThreadInfo());
-        lines.add(getFullText());
-        String text = "";
-        boolean first = true;
-        for (String line : lines) {
-            if (first) {
-                text += line;
-                first = false;
-                continue;
-            }
-            text += "<br/>\n" + line;
+            items.add(Long.toString(no));
+        if (email != null && !email.isEmpty() && email.equals("sage")) {
+            items.add("<b>sage</b>");
+            headerComponents |= CHAN_ID;
+            headerComponents |= CHAN_EMAIL;
         }
-        return text;
+        else if (id != null && !id.isEmpty() && id.equalsIgnoreCase("heaven")) {
+            items.add("<b>sage</b>");
+            headerComponents |= CHAN_ID;
+            headerComponents |= CHAN_EMAIL;
+        }
+        else if (id != null && !id.isEmpty()) {
+            items.add(formattedUserId(id, false));
+            headerComponents |= CHAN_ID;
+        }
+        else if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous")) {
+            items.add(name);
+            headerComponents |= CHAN_NAME;
+        }
+        else if (trip != null && !trip.isEmpty()) {
+            items.add(formattedUserTrip());
+            headerComponents |= CHAN_TRIP;
+        }
+        else if (email != null && !email.isEmpty() && !email.equalsIgnoreCase("sage")) {
+            items.add(email);
+            headerComponents |= CHAN_EMAIL;
+        }
+        return ChanHelper.join(items, " ");
     }
 
-    public static int countLines(String s) {
-        if (s == null || s.isEmpty())
-            return 0;
-        int i = 1;
-        int idx = -1;
-        while ((idx = s.indexOf('\n', idx + 1)) != -1) {
-            i++;
-        }
-        return i;
-    }
-
-    public String getThreadInfo() {
+    public String threadInfoLine() {
         String text = "";
         if (sticky > 0 && replies == 0) {
             text += "STICKY";
@@ -648,24 +664,24 @@ public class ChanPost {
         }
     }
 
-    public String getUserId() {
+    public String formattedUserId() {
         if (id == null)
             return "";
         else
-            return getUserId(id, useFriendlyIds);
+            return formattedUserId(id, useFriendlyIds);
     }
 
-    public String getUserTrip() {
+    public String formattedUserTrip() {
         if (trip == null)
             return "";
         if (trip.charAt(0) == '!' && trip.charAt(1) == '!')
-            return "!!" + getUserId(trip.substring(2), useFriendlyIds);
+            return "!!" + formattedUserId(trip.substring(2), useFriendlyIds);
         if (trip.charAt(0) == '!')
-            return "!" + getUserId(trip.substring(1), useFriendlyIds);
+            return "!" + formattedUserId(trip.substring(1), useFriendlyIds);
         return trip;
     }
 
-    public static String getUserId(String id, boolean useFriendlyIds) {
+    public static String formattedUserId(String id, boolean useFriendlyIds) {
         if (!useFriendlyIds)
             return id;
         if (id.equalsIgnoreCase(SAGE_POST_ID))
@@ -701,34 +717,33 @@ public class ChanPost {
     }
 
     public Object[] makeRow() {
-        String headerText = getHeaderText();
         return new Object[] {
                 no,
                 board,
                 resto,
-                getThumbnailUrl(),
-                getCountryFlagUrl(),
-                headerText,
-                getDateText(),
-                getFullText(),
+                thumbnailUrl(),
+                countryFlagUrl(),
+                headerLine(),
+                dateText(),
+                fullText(),
                 tn_w,
                 tn_h,
                 w,
                 h,
                 tim,
                 spoiler,
-                getSpoilerText(),
-                getExifText(),
+                spoilerText(),
+                exifText(),
                 id,
                 trip,
                 name,
                 email,
-                getImageDimensions(),
+                imageDimensions(),
                 isDead ? 1 : 0,
                 closed,
                 0,
                 0,
-                getThumbnailId(),
+                thumbnailId(),
                 ext
         };
     }

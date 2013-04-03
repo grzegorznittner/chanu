@@ -70,8 +70,8 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         super(path, nextVersionNumber());
         mApplication = application;
         activityId = new ChanActivityId(post.board, post.resto != 0 ? post.resto : post.no, false);
-        url = post.getImageUrl();
-        thumbUrl = post.getThumbnailUrl();
+        url = post.imageUrl();
+        thumbUrl = post.thumbnailUrl();
         tn_h = post.tn_h;
         tn_w = post.tn_w;
         w = post.w;
@@ -79,7 +79,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         fsize = post.fsize;
         ext = post.ext;
         name = "/" + post.board + "/" + (post.resto != 0 ? post.resto : post.no);
-        localImagePath = ChanFileStorage.getBoardCacheDirectory(mApplication.getAndroidContext(), post.board) + "/" + post.getImageName();
+        localImagePath = ChanFileStorage.getBoardCacheDirectory(mApplication.getAndroidContext(), post.board) + "/" + post.imageName();
         mApplication = Utils.checkNotNull(application);
         String extNoDot = post.ext != null && post.ext.startsWith(".") ? post.ext.substring(1) : post.ext;
         contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extNoDot);

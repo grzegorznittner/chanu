@@ -17,6 +17,7 @@
     <string name="thread_post_image_expanded">Expanded Thread Image</string>
     <string name="thread_post_reply_button">Reply</string>
     <string name="thread_post_expand_button">Expand</string>
+    <string name="thread_post_collapse_button">Collapse</string>
     <string name="thread_country_flag">Country Flag</string>
 
     <!-- blocklist -->
@@ -144,6 +145,7 @@
     <string name="thread_id_found">Found %1$d posts for %2$s</string>
     <string name="thread_no_text_subject">New Thread</string>
     <string name="thread_go_to_link">Go To Link</string>
+    <string name="thread_image_download_error">Error downloading thread images</string>
 
     <!-- watchlist -->
     <string name="board_end_of_watchlist">End of Watchlist</string>

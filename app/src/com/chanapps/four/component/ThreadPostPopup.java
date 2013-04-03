@@ -547,7 +547,7 @@ public class ThreadPostPopup implements Dismissable {
             }
             threadAdapter.setHighlightPostsWithId(postNo, idPosts);
             boolean useFriendlyIds = PreferenceManager.getDefaultSharedPreferences(activity.getBaseContext()).getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
-            String formattedUserId = ChanPost.getUserId(userId, useFriendlyIds);
+            String formattedUserId = ChanPost.formattedUserId(userId, useFriendlyIds);
             if ((idPosts == null || idPosts.length == 0)) {
                 result = String.format(context.getString(R.string.thread_no_id_found), formattedUserId);
             }

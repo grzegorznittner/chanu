@@ -524,11 +524,11 @@ public class ChanFileStorage {
     }
     
     public static String getLocalGalleryImageFilename(ChanPost post) {
-        return post.board + "_" + post.getImageName();
+        return post.board + "_" + post.imageName();
     }
 
     public static String getLocalImageUrl(Context context, ChanPost post) {
-        return "file://" + getBoardCacheDirectory(context, post.board) + FILE_SEP + post.getImageName();
+        return "file://" + getBoardCacheDirectory(context, post.board) + FILE_SEP + post.imageName();
     }
 
     public static File createWallpaperFile(Context context) {

@@ -54,14 +54,13 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.loader.ChanImageLoader;
-import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
     public static final String TAG = "GalleryViewActivity";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static final String VIEW_TYPE = "viewType";
 
@@ -154,7 +153,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 return false;
 			for (ChanPost post : thread.posts) {
 				if (post.no == postNo) {
-                    this.imageUrl = post.getImageUrl();
+                    this.imageUrl = post.imageUrl();
 					this.post = post;
 					return true;
 				}

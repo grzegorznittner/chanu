@@ -49,10 +49,10 @@ public class ChanThread extends ChanPost {
                 id.hashCode(),
                 post.board,
                 post.no,
-                post.getThreadSubject(context),
-                post.getThreadInfo(),
-                post.getThumbnailUrl(),
-                post.getCountryFlagUrl(),
+                post.threadSubject(context),
+                post.threadInfoLine(),
+                post.thumbnailUrl(),
+                post.countryFlagUrl(),
                 ""
         };
     }
@@ -85,7 +85,7 @@ public class ChanThread extends ChanPost {
 
     public String toString() {
 		return "Thread " + no + " " + com + ", posts: " + posts.length 
-				+ ", thumb: " + getThumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
+				+ ", thumb: " + thumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
 	}
 	
     public void mergePosts(List<ChanPost> posts) {

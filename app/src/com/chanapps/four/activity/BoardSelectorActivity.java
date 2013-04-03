@@ -33,7 +33,7 @@ public class BoardSelectorActivity
         implements ChanIdentifiedActivity
 {
     public static final String TAG = "BoardSelectorActivity";
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;

@@ -48,7 +48,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class ThreadImageDownloadService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = ThreadImageDownloadService.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     
     private static final String TARGET_TYPE = "ThreadImageDownloadService.targetType";
     private static final String START_POST_NO = "ThreadImageDownloadService.startPostNo";
@@ -203,7 +203,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		OutputStream out = null;
 		HttpURLConnection conn = null;
 		try {
-			conn = (HttpURLConnection)new URL(post.getImageUrl()).openConnection();
+			conn = (HttpURLConnection)new URL(post.imageUrl()).openConnection();
 			FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
 			// we need to double read timeout as file might be large
 			conn.setReadTimeout(fetchParams.readTimeout * 2);
@@ -214,7 +214,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			int fileLength = IOUtils.copy(in, out);
 			long endTime = Calendar.getInstance().getTimeInMillis();
 			NetworkProfileManager.instance().finishedImageDownload(this, (int)(endTime - startTime), fileLength);
-			if (DEBUG) Log.i(TAG, "Stored image " + post.getImageUrl() + " to file "
+			if (DEBUG) Log.i(TAG, "Stored image " + post.imageUrl() + " to file "
 					+ targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
 			return fileLength;
 		} finally {
@@ -237,7 +237,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			if (!galleryFolder.exists() || !galleryFolder.isDirectory()) {
 				galleryFolder.mkdirs();
 			}
-			File galleryFile = new File(galleryFolder, post.getImageName());
+			File galleryFile = new File(galleryFolder, post.imageName());
 			out = new FileOutputStream(galleryFile);
 			IOUtils.copy(in, out);
 			IOUtils.closeQuietly(out);
@@ -300,7 +300,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 				threadActivityIntent = ThreadActivity.createIntentForActivity(context,
 						board, threadNo,
 		                thread.getThreadNotificationText(),
-		                thread.getThumbnailUrl(),
+		                thread.thumbnailUrl(),
 		                thread.tn_w, thread.tn_h, thread.tim,
 		                false, 0);
 			}
@@ -320,7 +320,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			    targetFolder);
 		for (ChanPost post : thread.posts) {
 			if (post.tim != 0) {
-				File image = new File(galleryFolder, post.getImageName());
+				File image = new File(galleryFolder, post.imageName());
 				if (image.exists()) {
 					return Uri.fromFile(image);
 				}
@@ -342,8 +342,8 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		Builder notifBuilder = new Notification.Builder(getApplicationContext());
 		notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
 		notifBuilder.setAutoCancel(true);
-		notifBuilder.setContentTitle("Error downloading images for thread /" + board + " / " + threadNo);
-		notifBuilder.setContentText(thread.getFullText());
+		notifBuilder.setContentTitle(getString(R.string.thread_image_download_error));
+		notifBuilder.setContentText(board + "/" + threadNo);
 		notifBuilder.setSmallIcon(R.drawable.app_icon);
 		
 		Intent threadActivityIntent = ThreadActivity.createIntentForActivity(getApplicationContext(), board, threadNo);
@@ -389,7 +389,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 				    targetFolder);
 			for (ChanPost post : thread.posts) {
 				if (post.tim != 0) {
-					File image = new File(galleryFolder, post.getImageName());
+					File image = new File(galleryFolder, post.imageName());
 					if (image.exists()) {
 						scansScheduled++;
                         if (DEBUG) Log.i(TAG, "Schedulling scan: " + image.getAbsolutePath() + " counter=" + scansScheduled);
