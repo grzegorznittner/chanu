@@ -6,12 +6,12 @@ import android.util.Log;
 import android.widget.AbsListView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.adapter.AbstractThreadCursorAdapter;
+import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.component.ThreadPostPopup;
 import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,20 +31,28 @@ public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
     private AbsListView absListView = null;
     private String boardCode = null;
     private long threadNo = 0;
-    private PrevOrNext prevOrNext = PrevOrNext.PREV;
+    private SearchType searchType = SearchType.PREVIOUS_POSTS;
     private Set<Long> repliesSet = new HashSet<Long>();
 
-    public enum PrevOrNext {
-        PREV, 
-        NEXT
+    public enum SearchType {
+        PREVIOUS_POSTS,
+        POST_REPLIES,
+        SAME_POSTERS
     }
     
-    public HighlightRepliesTask(Context context, AbsListView absListView, String boardCode, long threadNo, PrevOrNext prevOrNext) {
+    public HighlightRepliesTask(Context context, AbsListView absListView, String boardCode, long threadNo, SearchType searchType) {
         this.context = context;
         this.absListView = absListView;
         this.boardCode = boardCode;
         this.threadNo = threadNo;
-        this.prevOrNext = prevOrNext;
+        this.searchType = searchType;
+    }
+
+    protected void addPostsToReplies(long[] replies) {
+        if (replies == null)
+            return;
+        for (long postNo : replies)
+            repliesSet.add(postNo);
     }
 
     @Override
@@ -55,41 +63,55 @@ public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
             ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
             if (thread != null) {
                 for (long postNo : postNos) {
-                    long[] replies = prevOrNext == PrevOrNext.PREV
-                            ? thread.getPrevPostsReferenced(postNo)
-                            : thread.getNextPostsReferredTo(postNo);
-                    for (long replyPostNo : replies)
-                        repliesSet.add(replyPostNo);
+                    switch (searchType) {
+                        case PREVIOUS_POSTS:
+                            addPostsToReplies(thread.getPrevPostsReferenced(postNo));
+                            break;
+                        case POST_REPLIES:
+                            addPostsToReplies(thread.getNextPostsReferredTo(postNo));
+                            break;
+                        case SAME_POSTERS:
+                            ChanPost post = thread.getPost(postNo);
+                            if (post == null)
+                                break;
+                            addPostsToReplies(thread.getIdPosts(postNo, post.id));
+                            addPostsToReplies(thread.getTripcodePosts(postNo, post.trip));
+                            addPostsToReplies(thread.getNamePosts(postNo, post.name));
+                            addPostsToReplies(thread.getEmailPosts(postNo, post.email));
+                            break;
+                    }
                 }
             }
             else {
-                Log.e(ThreadPostPopup.TAG, "Coludn't load thread " + boardCode + "/" + threadNo);
+                Log.e(ThreadActivity.TAG, "Coludn't load thread " + boardCode + "/" + threadNo);
                 return context.getString(R.string.thread_couldnt_load);
             }
         }
         catch (Exception e) {
-            Log.e(ThreadPostPopup.TAG, "Exception while getting thread post replies", e);
+            Log.e(ThreadActivity.TAG, "Exception while getting thread post replies", e);
             return context.getString(R.string.thread_couldnt_load);
         }
-        if (DEBUG) Log.i(ThreadPostPopup.TAG, "Set highlight posts=" + Arrays.toString(repliesSet.toArray()));
+        if (DEBUG) Log.i(ThreadActivity.TAG, "Set highlight posts=" + Arrays.toString(repliesSet.toArray()));
 
         if (repliesSet.size() == 0)
             return context.getString(R.string.thread_no_replies_found);
-        else if (prevOrNext == PrevOrNext.PREV)
-            return String.format(context.getString(R.string.thread_prev_replies_found), repliesSet.size());
-        else
-            return String.format(context.getString(R.string.thread_next_replies_found), repliesSet.size());
+
+        switch (searchType) {
+            case PREVIOUS_POSTS:
+                return String.format(context.getString(R.string.thread_prev_replies_found), repliesSet.size());
+            case POST_REPLIES:
+            default:
+                return String.format(context.getString(R.string.thread_next_replies_found), repliesSet.size());
+            case SAME_POSTERS:
+                return String.format(context.getString(R.string.thread_id_found), repliesSet.size());
+        }
     }
 
     @Override
     protected void onPostExecute(String result) {
         Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-        for (int pos = 0; pos < absListView.getCount(); pos++) {
-            if (repliesSet.contains(absListView.getItemIdAtPosition(pos)))
-                absListView.setItemChecked(pos, true);
-            else
-                absListView.setItemChecked(pos, false);
-        }
+        for (int pos = 0; pos < absListView.getCount(); pos++)
+            absListView.setItemChecked(pos, repliesSet.contains(absListView.getItemIdAtPosition(pos)));
     }
 
 }

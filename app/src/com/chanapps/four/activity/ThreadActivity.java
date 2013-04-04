@@ -57,7 +57,7 @@ public class ThreadActivity
         AbsListView.MultiChoiceModeListener
 {
 
-    protected static final String TAG = ThreadActivity.class.getSimpleName();
+    public static final String TAG = ThreadActivity.class.getSimpleName();
     public static final boolean DEBUG = true;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
@@ -883,11 +883,15 @@ public class ThreadActivity
                 postReply(quoteText);
                 return true;
             case R.id.highlight_replies_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.PrevOrNext.NEXT))
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.POST_REPLIES))
                         .execute(postNos);
                 return true;
             case R.id.highlight_previous_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.PrevOrNext.PREV))
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.PREVIOUS_POSTS))
+                        .execute(postNos);
+                return true;
+            case R.id.highlight_ids_menu:
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.SAME_POSTERS))
                         .execute(postNos);
                 return true;
             case R.id.go_to_link_menu:

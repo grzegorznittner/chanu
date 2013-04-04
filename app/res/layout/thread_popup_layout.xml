@@ -118,7 +118,7 @@
             <Button
                     android:id="@+id/popup_highlight_id_button"
                     style="@style/PopupFullTextButton"
-                    android:text="@string/highlight_id" />
+                    android:text="@string/highlight_ids" />
 
             <View
                     android:id="@+id/popup_block_button_line"
