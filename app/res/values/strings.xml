@@ -91,6 +91,7 @@
     <string name="go_to_link_menu">Go To Link</string>
     <string name="select_text_menu">Select Text</string>
     <string name="select_text_hint">Select Text</string>
+    <string name="copy_text_menu">Copy Text</string>
     <string name="share_text">Share Text</string>
     <string name="toggle_image_only_menu">Toggle Image Only</string>
     <string name="prev_image_menu">Prev Image</string>

@@ -27,7 +27,7 @@ import com.chanapps.four.data.ChanHelper;
  */
 abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
 	protected static final String TAG = AbstractBoardCursorAdapter.class.getSimpleName();
-	protected static final boolean DEBUG = false;
+	protected static final boolean DEBUG = true;
 	
     /**
      * A list of columns containing the data to bind to the UI.
@@ -91,6 +91,16 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         final int[] from = mFrom;
         final int[] to = mTo;
 
+        Object tag = view.getTag();
+        if (tag != null && tag instanceof Long) {
+            long viewPostId = (Long)tag;
+            long cursorPostId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            if (viewPostId == cursorPostId) {
+                if (DEBUG) Log.i(TAG, "view already set, bypassing pos=" + cursor.getPosition());
+                return;
+            }
+        }
+
         if (binder != null)
             binder.setViewValue(view, cursor, 0); // allow parent operations
         for (int i = 0; i < count; i++) {
@@ -120,8 +130,6 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         bindView(v, context, cursor);
         return v;
     }
-
-    abstract protected int getThumbnailImageId();
 
     abstract protected View newView(Context context, ViewGroup parent, String tag, int position);
 

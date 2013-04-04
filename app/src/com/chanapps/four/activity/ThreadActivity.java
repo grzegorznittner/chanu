@@ -58,7 +58,7 @@ public class ThreadActivity
 {
 
     protected static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
     private static final int SNIPPET_LINES_DEFAULT = 3;
@@ -268,12 +268,13 @@ public class ThreadActivity
     }
 
     protected boolean setItem(ViewGroup item, Cursor cursor) {
-        //SparseBooleanArray positions = absListView.getCheckedItemPositions();
+        long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        item.setTag(adItem > 0 ? null : postId);
         int expandable = itemExpandable(cursor, item);
         ImageView expander = (ImageView)item.findViewById(R.id.list_item_expander);
         ImageView collapse = (ImageView)item.findViewById(R.id.list_item_collapse);
         if (DEBUG) Log.i(TAG, "pos=" + cursor.getPosition() + " expandable=" + expandable);
-        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0) {
             item.setBackgroundColor(R.color.PaletteLighterGray);
             if (expander != null)
@@ -328,12 +329,14 @@ public class ThreadActivity
                     break;
                 }
             }
+            if (DEBUG) Log.i(TAG, "found itemView=" + itemView);
             if (itemView == null)
                 return;
 
             Cursor cursor = adapter.getCursor();
             cursor.moveToPosition(pos);
             int expandable = itemExpandable(cursor, itemView);
+            if (DEBUG) Log.i(TAG, "clicked expandable=" + expandable);
             if (expandable == 0)
                 return;
 
@@ -398,17 +401,6 @@ public class ThreadActivity
     private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
         tv.setVisibility(View.GONE);
         return true;
-        /*
-        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        if (adItem > 0 || text == null || text.isEmpty()) {
-            tv.setVisibility(View.GONE);
-            return true;
-        }
-        tv.setText(Html.fromHtml(text));
-        tv.setVisibility(View.VISIBLE);
-        return true;
-        */
     }
 
     private boolean setItemDateValue(final TextView tv, final Cursor cursor) {
@@ -504,6 +496,7 @@ public class ThreadActivity
 
         @Override
         public void onClick(View v) {
+            if (DEBUG) Log.i(TAG, "handling click for pos=" + listPosition);
             if (itemCollapse.getVisibility() == View.VISIBLE) { // toggle expansion
                 ChanHelper.clearBigImageView(itemExpandedImage);
                 itemCollapse.setVisibility(View.GONE);
@@ -513,40 +506,50 @@ public class ThreadActivity
                 itemExpandedExifText.setVisibility(View.GONE);
                 itemExpandedSnippet.setLines(SNIPPET_LINES_DEFAULT); // default num lines
                 itemExpandedSnippet.setVisibility(View.VISIBLE);
+                if (DEBUG) Log.i(TAG, "collapsed pos=" + listPosition);
                 return;
             }
+
+            if (DEBUG) Log.i(TAG, "expanding pos=" + listPosition);
             // show that we can collapse view
             itemExpander.setVisibility(View.GONE);
             itemCollapse.setVisibility(View.VISIBLE);
 
             // set text visibility
-            if (DEBUG) Log.i(TAG, "Post text: " + postText);
+            if (DEBUG) Log.i(TAG, "Setting post text len=" + (postText == null ? 0 : postText.length()));
             if ((expandable & TEXT_EXPANDABLE) > 0 && postText != null && !postText.isEmpty()) {
                 if ((expandable & IMAGE_EXPANDABLE) > 0) { // image visible, remove the duplicate top text
                     itemExpandedSnippet.setVisibility(View.INVISIBLE);
                     itemExpandedText.setText(Html.fromHtml(postText));
                     itemExpandedText.setVisibility(View.VISIBLE);
+                    if (DEBUG) Log.i(TAG, "Set image expand to visible, text to bottom");
                 }
                 else { // no image, so just expand to fill rest of space
                     int lc = itemExpandedSnippet.getLineCount();
                     itemExpandedSnippet.setLines(Math.max(lc, SNIPPET_LINES_DEFAULT));
                     itemExpandedSnippet.setVisibility(View.VISIBLE);
                     itemExpandedText.setVisibility(View.GONE);
+                    if (DEBUG) Log.i(TAG, "No image to expand, set text to full height");
                 }
             }
             else {
                 itemExpandedText.setVisibility(View.GONE);
+                if (DEBUG) Log.i(TAG, "No text to expand, setting text to gone");
             }
 
+            if (DEBUG) Log.i(TAG, "Clearing existing image");
             ChanHelper.clearBigImageView(itemExpandedImage); // clear old image
+            if (DEBUG) Log.i(TAG, "Existing image cleared");
 
+            if (DEBUG) Log.i(TAG, "Found postImageUrl=" + postImageUrl);
             if ((expandable & IMAGE_EXPANDABLE) == 0 || postImageUrl == null || postImageUrl.isEmpty()) {// no image to display
                 itemExpandedImage.setVisibility(View.GONE);
                 itemExpandedExifText.setVisibility(View.GONE);
+                if (DEBUG) Log.i(TAG, "No image found to expand, collapsing");
                 return;
             }
 
-            if (DEBUG) Log.v(TAG, "Post exif text:" + postExifText);
+            if (DEBUG) Log.i(TAG, "Post exif text len=" + (postExifText == null ? 0 : postExifText.length()));
             if (postExifText != null && !postExifText.isEmpty()) {
                 itemExpandedExifText.setText(Html.fromHtml(postExifText));
                 itemExpandedExifText.setVisibility(View.VISIBLE);
@@ -556,7 +559,7 @@ public class ThreadActivity
             }
 
             // calculate image dimensions
-            if (DEBUG) Log.v(TAG, "post size " + postW + "x" + postH);
+            if (DEBUG) Log.i(TAG, "post size " + postW + "x" + postH);
             DisplayMetrics displayMetrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             //int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
@@ -564,7 +567,7 @@ public class ThreadActivity
             int maxHeight = maxWidth; // to avoid excessively big images
             itemExpandedImage.setMaxWidth(maxWidth);
             itemExpandedImage.setMaxHeight(maxHeight);
-            if (DEBUG) Log.v(TAG, "max size " + maxWidth + "x" + maxHeight);
+            if (DEBUG) Log.i(TAG, "max size " + maxWidth + "x" + maxHeight);
             float scaleFactor = 1;
             if (postW >= postH) {
                 // square or wide image, base sizing on width
@@ -578,14 +581,16 @@ public class ThreadActivity
             }
             int width = Math.round(scaleFactor * (float)postW);
             int height = Math.round(scaleFactor * (float)postH);
-            if (DEBUG) Log.v(TAG, "target size " + width + "x" + height);
+            if (DEBUG) Log.i(TAG, "target size " + width + "x" + height);
             // set layout dimensions
             ViewGroup.LayoutParams params = itemExpandedImage.getLayoutParams();
             if (params != null) {
                 params.width = width;
                 params.height = height;
+                if (DEBUG) Log.i(TAG, "set expanded image size=" + width + "x" + height);
             }
             itemExpandedImage.setVisibility(View.VISIBLE);
+            if (DEBUG) Log.i(TAG, "Set expanded image to visible");
 
             int lastPosition = absListView.getLastVisiblePosition();
             boolean shouldMove = listPosition >= lastPosition - 1;
@@ -890,7 +895,7 @@ public class ThreadActivity
                 mode.finish();
                 (new ListOfLinksDialogFragment(urls)).show(getSupportFragmentManager(), ListOfLinksDialogFragment.TAG);
                 return true;
-            case R.id.select_text_menu:
+            case R.id.copy_text_menu:
                 String selectText = selectText(postPos);
                 mode.finish();
                 copyToClipboard(selectText);

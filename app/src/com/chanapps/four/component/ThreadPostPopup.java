@@ -63,24 +63,24 @@ public class ThreadPostPopup implements Dismissable {
     protected PopupWindow popupWindow;
     protected TextView popupHeaderText;
     protected View spoilerButtonLine;
-    protected Button spoilerButton;
+    protected Button spoilerButton;     // todo
     protected View exifButtonLine;
     protected Button exifButton;
     protected View copyButtonLine;
     protected Button copyButton;
-    protected View translateButtonLine;
+    protected View translateButtonLine;  // todo
     protected Button translateButton;
-    protected View blockButtonLine;
+    protected View blockButtonLine;      // todo
     protected Button blockButton;
-    protected View deleteButtonLine;
+    protected View deleteButtonLine;     // todo
     protected Button deleteButton;
     protected View replyButtonLine;
     protected Button replyButton;
-    protected View reportButtonLine;
+    protected View reportButtonLine;     // todo
     protected Button reportButton;
     protected View highlightRepliesButtonLine;
     protected Button highlightRepliesButton;
-    protected View highlightIdButtonLine;
+    protected View highlightIdButtonLine;  // todo
     protected Button highlightIdButton;
     protected Button closeButton;
 
@@ -491,7 +491,7 @@ public class ThreadPostPopup implements Dismissable {
                 result = context.getString(R.string.thread_couldnt_load);
                 Log.e(TAG, "Exception while getting thread post highlights", e);
             }
-            threadAdapter.setHighlightPostsWithId(postNo, idPosts);
+            //threadAdapter.setHighlightPostsWithId(postNo, idPosts);
             boolean useFriendlyIds = PreferenceManager.getDefaultSharedPreferences(activity.getBaseContext()).getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
             String formattedUserId = ChanPost.formattedUserId(userId, useFriendlyIds);
             if ((idPosts == null || idPosts.length == 0)) {
@@ -542,7 +542,7 @@ public class ThreadPostPopup implements Dismissable {
                 result = context.getString(R.string.thread_couldnt_load);
                 Log.e(TAG, "Exception while getting thread post highlights", e);
             }
-            threadAdapter.setHighlightPostsWithId(postNo, tripcodePosts);
+            //threadAdapter.setHighlightPostsWithId(postNo, tripcodePosts);
             if ((tripcodePosts == null || tripcodePosts.length == 0)) {
                 result = String.format(context.getString(R.string.thread_no_id_found), tripcode);
             }
@@ -591,7 +591,7 @@ public class ThreadPostPopup implements Dismissable {
                 result = context.getString(R.string.thread_couldnt_load);
                 Log.e(TAG, "Exception while getting thread post highlights", e);
             }
-            threadAdapter.setHighlightPostsWithId(postNo, namePosts);
+            //threadAdapter.setHighlightPostsWithId(postNo, namePosts);
             if ((namePosts == null || namePosts.length == 0)) {
                 result = String.format(context.getString(R.string.thread_no_id_found), name);
             }
@@ -640,7 +640,7 @@ public class ThreadPostPopup implements Dismissable {
                 result = context.getString(R.string.thread_couldnt_load);
                 Log.e(TAG, "Exception while getting thread post highlights", e);
             }
-            threadAdapter.setHighlightPostsWithId(postNo, emailPosts);
+            //threadAdapter.setHighlightPostsWithId(postNo, emailPosts);
             if ((emailPosts == null || emailPosts.length == 0)) {
                 result = String.format(context.getString(R.string.thread_no_id_found), email);
             }
