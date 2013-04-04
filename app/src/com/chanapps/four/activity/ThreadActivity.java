@@ -784,33 +784,13 @@ public class ThreadActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (DEBUG) Log.i(TAG, "onCreateOptionsMenu called");
         int menuId = ChanBoard.showNSFW(this) ? R.menu.thread_menu_adult : R.menu.thread_menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(menuId, menu);
         ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
+        this.menu = menu;
+        this.refreshMenuItem = menu.findItem(R.id.refresh_menu);
         return true;
-    }
-
-    @Override
-    protected void setActionBarTitle() {
-        ActionBar a = getActionBar();
-        if (a == null) {
-            return;
-        }
-        //a.setTitle(String.valueOf(threadNo));
-        //a.setDisplayShowTitleEnabled(true);
-        a.setDisplayShowTitleEnabled(false);
-        a.setDisplayHomeAsUpEnabled(true);
-        invalidateOptionsMenu();
-    }
-
-    protected void initPopup() {
-        threadPostPopup = new ThreadPostPopup(this,
-                this.getLayoutInflater(),
-                imageLoader,
-                displayImageOptions,
-                (AbstractThreadCursorAdapter)adapter);
     }
 
     protected UserStatistics ensureUserStats() {

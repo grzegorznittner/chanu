@@ -120,6 +120,7 @@ public class BoardGroupFragment
                 .imageScaleType(ImageScaleType.POWER_OF_2)
                 .imageSize(imageSize)
                 .cacheOnDisc()
+                .cacheInMemory()
                 .resetViewBeforeLoading()
                 .build();
         

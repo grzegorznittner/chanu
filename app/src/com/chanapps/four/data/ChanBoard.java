@@ -478,7 +478,6 @@ public class ChanBoard {
 
     public static void setupActionBarBoardSpinner(final Activity activity, final Menu menu, final String currentBoardCode) {
         if (DEBUG) Log.i(BoardSelectorActivity.TAG, "setupActionBarSpinner " + activity + " " + menu + " boardCode=" + currentBoardCode);
-        boolean showNSFW = ChanBoard.showNSFW(activity);
         MenuItem item = menu.findItem(R.id.board_jump_spinner_menu);
         Spinner spinner = (Spinner)item.getActionView();
         spinner.setOnItemSelectedListener(null);
