@@ -26,25 +26,4 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
         return mInflater.inflate(R.layout.thread_list_item, parent, false);
     }
 
-    @Override
-    protected int getThumbnailImageId() {
-        return R.id.list_item_image;
-    }
-
-    @Override
-    protected void setHighlightViews(View v, String tag, long postNo) {
-        if (highlightPostNo == postNo || highlightIdPostNos.contains(postNo)) {
-            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteLightBlue));
-        }
-        else if (highlightPrevPostNos.contains(postNo)) {
-            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteLightBlue));
-        }
-        else if (highlightNextPostNos.contains(postNo)) {
-            v.setBackgroundColor(context.getResources().getColor(R.color.PaletteLightBlue));
-        }
-        else if (!tag.equals(ChanHelper.AD_ITEM)){
-            v.setBackgroundDrawable(null);
-        }
-    }
-
 }

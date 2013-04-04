@@ -35,9 +35,4 @@ public class BoardSelectorGridCursorAdapter extends AbstractBoardCursorAdapter {
         return view;
     }
 
-    @Override
-    protected int getThumbnailImageId() {
-        return R.id.grid_item_thread_thumb;
-    }
-
 }

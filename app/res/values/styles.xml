@@ -219,6 +219,7 @@
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingRight">8dp</item>
         <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingTop">4dp</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:contentDescription">@string/thread_post_image_expanded</item>
     </style>

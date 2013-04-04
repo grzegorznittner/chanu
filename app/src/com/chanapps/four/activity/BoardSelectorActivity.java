@@ -1,7 +1,10 @@
 package com.chanapps.four.activity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
@@ -23,6 +26,7 @@ import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -58,8 +62,7 @@ public class BoardSelectorActivity
 
         NetworkProfileManager.instance().activityChange(this);
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(this); // always check since state may have changed
-        updateWidgets();
-        scheduleGlobalAlarm();
+        asyncUpdateWidgetsAndWatchlist();
 
         Intent intent = getIntent();
         if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
@@ -76,6 +79,22 @@ public class BoardSelectorActivity
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
         setContentView(mViewPager);
+    }
+
+    protected void asyncUpdateWidgetsAndWatchlist() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean hasWidgets = ensurePrefs().getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>()).size() > 0;
+                boolean hasWatchlist = ensurePrefs().getStringSet(ChanHelper.THREAD_WATCHLIST, new HashSet<String>()).size() > 0;
+                if (hasWidgets)
+                    updateWidgets();
+                if (hasWatchlist)
+                    ChanWatchlist.fetchWatchlistThreads(getApplicationContext());
+                if (hasWidgets || hasWatchlist)
+                    scheduleGlobalAlarm();
+            }
+        });
     }
 
     protected void scheduleGlobalAlarm() { // will reschedule if not already scheduled
@@ -172,8 +191,12 @@ public class BoardSelectorActivity
     }
 
     private SharedPreferences ensurePrefs() {
-        if (prefs == null)
-            prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs == null) {
+            synchronized (this) {
+                if (prefs == null)
+                    prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            }
+        }
         return prefs;
     }
 

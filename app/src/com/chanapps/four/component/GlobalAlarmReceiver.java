@@ -69,14 +69,16 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
         NetworkProfile currentProfile = NetworkProfileManager.instance().getCurrentProfile();
         if (currentProfile.getConnectionType() != NetworkProfile.Type.NO_CONNECTION
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.NO_CONNECTION
-                && currentProfile.getConnectionHealth() != NetworkProfile.Health.BAD)
+                && currentProfile.getConnectionHealth() != NetworkProfile.Health.BAD
+                && currentProfile.getConnectionHealth() != NetworkProfile.Health.VERY_SLOW
+                && currentProfile.getConnectionHealth() != NetworkProfile.Health.SLOW)
         {
             if (DEBUG) Log.i(TAG, "fetchAll fetching widgets, watchlists, and uncached boards");
             if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
                 (new ChanWatchlist.CleanWatchlistTask(context, null, false)).execute();
             ChanWatchlist.fetchWatchlistThreads(context);
             BoardWidgetProvider.fetchAllWidgets(context);
-            //ChanBoard.preloadUncachedBoards(context);
+            ChanBoard.preloadUncachedBoards(context);
         }
         else {
             if (DEBUG) Log.i(TAG, "fetchAll no connection, skipping fetch");
