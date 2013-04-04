@@ -2,12 +2,15 @@ package com.nostra13.universalimageloader.core;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -17,11 +20,13 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.chanapps.four.component.ExtendedImageDownloader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.download.ImageDownloader;
 import com.nostra13.universalimageloader.utils.FileUtils;
 
 /**
@@ -245,6 +250,56 @@ final class LoadAndDisplayImageTask implements Runnable {
 	}
 
 	private void saveImageOnDisc(File targetFile) throws IOException, URISyntaxException {
+		ImageDownloader imageDownloader = configuration.downloader;
+		
+		if (imageLoadingInfo.options.getFullSizeImageLocation() != null) {
+			File fullImageFile = new File (imageLoadingInfo.options.getFullSizeImageLocation());
+			if (DEBUG) Log.i(TAG, "Full image path specified: " + imageLoadingInfo.options.getFullSizeImageLocation()
+					+ ", file " + (fullImageFile.exists() ? "exists" : "doesn't exist"));
+			if (!fullImageFile.exists()) {
+				InputStream is = configuration.downloader.getStream(new URI(imageLoadingInfo.uri));
+				OutputStream os = null;
+				try {
+					os = new BufferedOutputStream(new FileOutputStream(fullImageFile));
+					FileUtils.copyStream(is, os);
+				} finally {
+					IOUtils.closeQuietly(os);
+					IOUtils.closeQuietly(is);
+				}
+				if (DEBUG) Log.i(TAG, "Full image loaded");
+			}
+			if (fullImageFile.exists()) {
+				// image will be served from local filesystem
+				imageDownloader = new ImageDownloader() {					
+					@Override
+					public InputStream getStream(URI imageUri) throws IOException {
+						if (DEBUG) Log.i(TAG, "Returning stream to full image from " + imageLoadingInfo.options.getFullSizeImageLocation());	
+						return new FileInputStream(imageLoadingInfo.options.getFullSizeImageLocation());
+					}
+				
+					@Override
+					public InputStream getStreamFromNetwork(URI imageUri) throws IOException {
+						return null;
+					}
+				};
+			}
+		}
+
+		if (!downscaleImageIfNecessary(targetFile, imageDownloader)) {
+			InputStream is = null;
+			OutputStream os = null;
+			try {
+				is = imageDownloader.getStream(new URI(imageLoadingInfo.uri));
+				os = new BufferedOutputStream(new FileOutputStream(targetFile));
+				FileUtils.copyStream(is, os);
+			} finally {
+				IOUtils.closeQuietly(os);
+				IOUtils.closeQuietly(is);
+			}
+		}
+	}
+
+	private boolean downscaleImageIfNecessary(File targetFile, ImageDownloader imageDownloader) throws URISyntaxException, IOException {
 		int width = configuration.maxImageWidthForDiscCache;
 		int height = configuration.maxImageHeightForDiscCache;
 		if (width > 0 || height > 0) {
@@ -255,40 +310,22 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 			// Download, decode, compress and save image
 			ImageSize targetImageSize = new ImageSize(width, height);
-			ImageDecoder decoder = new ImageDecoder(new URI(imageLoadingInfo.uri), configuration.downloader);
+			ImageDecoder decoder = new ImageDecoder(new URI(imageLoadingInfo.uri), imageDownloader);
 			Bitmap bmp = decoder.decode(targetImageSize, ImageScaleType.EXACT);
             if (bmp == null) {
                 Log.e(TAG, "Couldn't save bitmap, null decode: " + imageLoadingInfo.uri);
-                return;
+                return false;
             }
-            OutputStream os;
-            try {
-			    os = new BufferedOutputStream(new FileOutputStream(targetFile));
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Couldn't open output stream for file: " + targetFile, e);
-                return;
-            }
-			boolean compressedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache, configuration.imageQualityForDiscCache, os);
+            
+            OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
+			boolean compressedSuccessfully = bmp.compress(configuration.imageCompressFormatForDiscCache,
+					configuration.imageQualityForDiscCache, os);
 			if (compressedSuccessfully) {
 				bmp.recycle();
-				return;
+				return true;
 			}
 		}
-
-		// If previous compression wasn't needed or failed
-		// Download and save original image
-		InputStream is = configuration.downloader.getStream(new URI(imageLoadingInfo.uri));
-		try {
-			OutputStream os = new BufferedOutputStream(new FileOutputStream(targetFile));
-			try {
-				FileUtils.copyStream(is, os);
-			} finally {
-				os.close();
-			}
-		} finally {
-			is.close();
-		}
+		return false;
 	}
 
 	private void fireImageLoadingFailedEvent(final FailReason failReason) {

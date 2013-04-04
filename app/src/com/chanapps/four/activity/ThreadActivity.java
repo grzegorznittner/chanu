@@ -473,6 +473,7 @@ public class ThreadActivity
         int postW = 0;
         int postH = 0;
         int listPosition = 0;
+        String fullImageLocation = null;
 
         public ExpandImageOnClickListener(final Cursor cursor, final int expandable, final View itemView) {
             this.expandable = expandable;
@@ -492,6 +493,8 @@ public class ThreadActivity
             long postTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
             String postExt = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXT));
             postImageUrl = postTim > 0 ? ChanPost.imageUrl(boardCode, postTim, postExt) : null;
+            long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            fullImageLocation = ChanFileStorage.getBoardCacheDirectory(getBaseContext(), boardCode) + "/" + postId + postExt;
         }
 
         @Override
@@ -611,6 +614,7 @@ public class ThreadActivity
                     .imageScaleType(ImageScaleType.EXACT)
                     .cacheOnDisc()
                     .imageSize(imageSize)
+                    .fullSizeImageLocation(fullImageLocation)
                     .resetViewBeforeLoading()
                     .build();
 

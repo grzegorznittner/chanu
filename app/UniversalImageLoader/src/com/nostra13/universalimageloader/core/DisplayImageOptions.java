@@ -38,6 +38,7 @@ public final class DisplayImageOptions implements Cloneable {
 	private final boolean cacheOnDisc;
 	private final ImageScaleType imageScaleType;
     private final ImageSize imageSize;
+    private final String fullSizeImageLocation;
     private boolean centerCrop = false;
 
 	private DisplayImageOptions(Builder builder) {
@@ -48,6 +49,7 @@ public final class DisplayImageOptions implements Cloneable {
 		cacheOnDisc = builder.cacheOnDisc;
 		imageScaleType = builder.imageScaleType;
         imageSize = builder.imageSize;
+        fullSizeImageLocation = builder.fullSizeImageLocation;
 	}
 
 	boolean isShowStubImage() {
@@ -86,6 +88,10 @@ public final class DisplayImageOptions implements Cloneable {
 		return imageScaleType;
 	}
 	
+	String getFullSizeImageLocation() {
+		return fullSizeImageLocation;
+	}
+	
 	boolean isCenterCrop() {
 		return centerCrop;
 	}
@@ -114,6 +120,7 @@ public final class DisplayImageOptions implements Cloneable {
 		private boolean cacheOnDisc = false;
 		private ImageScaleType imageScaleType = ImageScaleType.POWER_OF_2;
         private ImageSize imageSize = null;
+        private String fullSizeImageLocation = null;
 
 		/**
 		 * Stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading
@@ -167,6 +174,11 @@ public final class DisplayImageOptions implements Cloneable {
 
         public Builder imageSize(ImageSize imageSize) {
             this.imageSize = imageSize;
+            return this;
+        }
+        
+        public Builder fullSizeImageLocation(String imageLocation) {
+            this.fullSizeImageLocation = imageLocation;
             return this;
         }
 
