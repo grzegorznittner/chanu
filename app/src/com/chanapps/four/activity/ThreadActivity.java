@@ -1,6 +1,11 @@
 package com.chanapps.four.activity;
 
-import android.app.ActionBar;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,18 +16,43 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
-import android.text.*;
+import android.text.Html;
+import android.text.Layout;
+import android.text.Spanned;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.*;
-import android.widget.*;
+import android.view.ActionMode;
+import android.view.Display;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.chanapps.four.adapter.AbstractThreadCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
-import com.chanapps.four.component.*;
-import com.chanapps.four.data.*;
+import com.chanapps.four.component.ChanGridSizer;
+import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.component.ThreadPostPopup;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.ChanThreadStat;
+import com.chanapps.four.data.ChanWatchlist;
+import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.fragment.ListOfLinksDialogFragment;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
@@ -35,12 +65,6 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -56,8 +80,7 @@ public class ThreadActivity
         AbsListView.OnItemClickListener,
         AbsListView.MultiChoiceModeListener
 {
-
-    protected static final String TAG = ThreadActivity.class.getSimpleName();
+    public static final String TAG = ThreadActivity.class.getSimpleName();
     public static final boolean DEBUG = false;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
@@ -784,33 +807,13 @@ public class ThreadActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (DEBUG) Log.i(TAG, "onCreateOptionsMenu called");
         int menuId = ChanBoard.showNSFW(this) ? R.menu.thread_menu_adult : R.menu.thread_menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(menuId, menu);
         ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
+        this.menu = menu;
+        this.refreshMenuItem = menu.findItem(R.id.refresh_menu);
         return true;
-    }
-
-    @Override
-    protected void setActionBarTitle() {
-        ActionBar a = getActionBar();
-        if (a == null) {
-            return;
-        }
-        //a.setTitle(String.valueOf(threadNo));
-        //a.setDisplayShowTitleEnabled(true);
-        a.setDisplayShowTitleEnabled(false);
-        a.setDisplayHomeAsUpEnabled(true);
-        invalidateOptionsMenu();
-    }
-
-    protected void initPopup() {
-        threadPostPopup = new ThreadPostPopup(this,
-                this.getLayoutInflater(),
-                imageLoader,
-                displayImageOptions,
-                (AbstractThreadCursorAdapter)adapter);
     }
 
     protected UserStatistics ensureUserStats() {
@@ -887,11 +890,15 @@ public class ThreadActivity
                 postReply(quoteText);
                 return true;
             case R.id.highlight_replies_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.PrevOrNext.NEXT))
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.POST_REPLIES))
                         .execute(postNos);
                 return true;
             case R.id.highlight_previous_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.PrevOrNext.PREV))
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.PREVIOUS_POSTS))
+                        .execute(postNos);
+                return true;
+            case R.id.highlight_ids_menu:
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.SAME_POSTERS))
                         .execute(postNos);
                 return true;
             case R.id.go_to_link_menu:

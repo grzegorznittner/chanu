@@ -80,7 +80,7 @@ public class ThreadPostPopup implements Dismissable {
     protected Button reportButton;
     protected View highlightRepliesButtonLine;
     protected Button highlightRepliesButton;
-    protected View highlightIdButtonLine;  // todo
+    protected View highlightIdButtonLine;
     protected Button highlightIdButton;
     protected Button closeButton;
 

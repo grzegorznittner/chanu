@@ -20,6 +20,10 @@
           android:title="@string/highlight_replies"
           android:icon="@drawable/navigation_next_item"
           />
+    <item android:id="@+id/highlight_ids_menu"
+          android:title="@string/highlight_ids"
+          android:icon="@drawable/action_search"
+          />
     <item android:id="@+id/go_to_link_menu"
           android:title="@string/go_to_link_menu"
           android:icon="@drawable/navigation_forward"

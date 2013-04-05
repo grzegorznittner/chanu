@@ -213,7 +213,7 @@ public class ImageLoader {
 				imageView.setImageResource(options.getStubImage());
 			} else {
 				if (options.isResetViewBeforeLoading()) {
-                    imageView.setImageBitmap(null);
+                    imageView.setImageDrawable(null);
                 }
 			}
 

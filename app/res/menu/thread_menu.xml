@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/board_jump_spinner_menu"
-          android:actionDropDownStyle="@style/BoardJumpDropDown"
-          android:actionLayout="@layout/board_jump_spinner"
-          android:showAsAction="always"
-            />
     <item android:id="@+id/refresh_menu"
           android:title="@string/refresh_thread_menu"
           android:icon="@drawable/navigation_refresh"
           android:showAsAction="always"
             />
+    <item android:id="@+id/board_jump_spinner_menu"
+          android:actionDropDownStyle="@style/BoardJumpDropDown"
+          android:actionLayout="@layout/board_jump_spinner"
+          android:showAsAction="always"
+            />
     <item android:id="@+id/post_reply_menu"
           android:title="@string/post_reply_menu"
           android:icon="@drawable/social_reply"
-          android:showAsAction="always"
             />
     <item android:id="@+id/view_image_gallery_menu"
           android:title="@string/view_image_gallery_menu"

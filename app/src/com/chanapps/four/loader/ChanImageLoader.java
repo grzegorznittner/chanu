@@ -6,6 +6,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import com.android.gallery3d.util.ThreadPool;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.ExtendedImageDownloader;
@@ -46,13 +47,14 @@ public class ChanImageLoader {
 		            final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.heightPixels) - 2 * padding;
 		            imageLoader = ImageLoader.getInstance();
 		            imageLoader.init(
-		                    new ImageLoaderConfiguration
-		                            .Builder(context)
-		                            .memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
-		                            .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
-		                            .imageDownloader(new ExtendedImageDownloader(context))
-		                            .threadPriority(Thread.MAX_PRIORITY)
-		                            .build());
+                            new ImageLoaderConfiguration
+                                    .Builder(context)
+                                    .memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
+                                    .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
+                                    .imageDownloader(new ExtendedImageDownloader(context))
+                                    .threadPriority(Thread.MIN_PRIORITY)
+                                    .threadPoolSize(1)
+                                    .build());
 				}
         	}
         }

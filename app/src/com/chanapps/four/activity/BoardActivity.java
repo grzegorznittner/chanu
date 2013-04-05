@@ -88,14 +88,8 @@ public class BoardActivity
     }
 
     protected void initImageLoader() {
-        ImageSize imageSize = new ImageSize(THUMB_WIDTH_PX, THUMB_HEIGHT_PX); // view pager needs micro images
         imageLoader = ChanImageLoader.getInstance(getApplicationContext());
-        displayImageOptions = new DisplayImageOptions.Builder()
-                .imageScaleType(ImageScaleType.POWER_OF_2)
-                .imageSize(imageSize)
-                .cacheOnDisc()
-                .resetViewBeforeLoading()
-                .build();
+        resetImageOptions(new ImageSize(THUMB_WIDTH_PX, THUMB_HEIGHT_PX)); // view pager needs micro images
     }
 
     @Override
@@ -120,6 +114,7 @@ public class BoardActivity
         if (progressBar != null)
             progressBar.setVisibility(progressOn ? View.VISIBLE : View.GONE);
     }
+
     protected void sizeGridToDisplay() {
         Display display = getWindowManager().getDefaultDisplay();
         ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.BOARD);
@@ -158,17 +153,21 @@ public class BoardActivity
         absListViewClass = GridView.class; // always for board view
     }
 
+    protected void resetImageOptions(ImageSize imageSize) {
+        displayImageOptions = new DisplayImageOptions.Builder()
+                .imageScaleType(ImageScaleType.POWER_OF_2)
+                .imageSize(imageSize)
+                .cacheOnDisc()
+                .cacheInMemory()
+                .resetViewBeforeLoading()
+                .build();
+    }
+
     protected void initAbsListView() {
         if (GridView.class.equals(absListViewClass)) {
             absListView = (GridView)findViewById(R.id.board_grid_view);
             sizeGridToDisplay();
-            ImageSize imageSize = new ImageSize(columnWidth, columnHeight);
-            displayImageOptions = new DisplayImageOptions.Builder()
-                    .imageScaleType(ImageScaleType.POWER_OF_2)
-                    .imageSize(imageSize)
-                    .cacheOnDisc()
-                    .resetViewBeforeLoading()
-                    .build();
+            resetImageOptions(new ImageSize(columnWidth, columnHeight));
         }
         else {
             absListView = (ListView)findViewById(R.id.board_list_view);
@@ -334,17 +333,11 @@ public class BoardActivity
     }
 
     protected boolean setThreadThumb(ImageView iv, Cursor cursor) {
-        /*
-        ViewGroup.LayoutParams params = iv.getLayoutParams();
-        if (params != null && columnWidth > 0 && columnHeight > 0) {
-            params.width = columnWidth;
-            params.height = columnHeight;
-        }
-        */
         imageLoader.displayImage(
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
                 iv,
-                displayImageOptions.modifyCenterCrop(true)); // load async
+                displayImageOptions);
+                //displayImageOptions.modifyCenterCrop(true)); // load async
         return true;
     }
 

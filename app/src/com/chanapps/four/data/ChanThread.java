@@ -210,7 +210,7 @@ public class ChanThread extends ChanPost {
 
     public long[] getNamePosts(long postNo, String name) { // what other posts refer to this post
         List<Long> namePosts = new ArrayList<Long>();
-        if (name == null || name.isEmpty())
+        if (name == null || name.isEmpty() || name.equals("Anonymous"))
             return null;
         for (ChanPost post : posts)
             if (post.no != postNo && name.equals(post.name))

@@ -138,11 +138,11 @@
     <string name="thread_couldnt_load_image_cancelled">Couldn\'t load image, cancelled</string>
     <string name="thread_couldnt_load_image">Couldn\'t load image: %1$s</string>
     <string name="thread_couldnt_download_image">Couldn\'t download image</string>
-    <string name="thread_no_replies_found">No replies found</string>
+    <string name="thread_no_replies_found">No posts found</string>
     <string name="thread_prev_replies_found">Found %1$d previous</string>
     <string name="thread_next_replies_found">Found %1$d replies</string>
     <string name="thread_no_id_found">No other posts found for %1$s</string>
-    <string name="thread_id_found">Found %1$d posts for %2$s</string>
+    <string name="thread_id_found">Found %1$d posts for same posters</string>
     <string name="thread_no_text_subject">New Thread</string>
     <string name="thread_go_to_link">Go To Link</string>
     <string name="thread_image_download_error">Error downloading thread images</string>
@@ -212,7 +212,7 @@
     <string name="closed_thread_reply">Closed Thread No Reply</string>
     <string name="highlight_replies">Highlight Replies</string>
     <string name="highlight_previous">Highlight Previous</string>
-    <string name="highlight_id">Show Posts from User</string>
+    <string name="highlight_ids">Highlight Poster</string>
     <string name="popup_country_flag">Country Flag</string>
     <string name="popup_show_image">Show Image</string>
     <string name="popup_show_text">Show Text</string>
