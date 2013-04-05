@@ -23,6 +23,7 @@ import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.DeletePostDialogFragment;
 import com.chanapps.four.fragment.ListOfLinksDialogFragment;
+import com.chanapps.four.fragment.ReportPostDialogFragment;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
@@ -891,6 +892,10 @@ public class ThreadActivity
             case R.id.delete_posts_menu:
                 (new DeletePostDialogFragment(mode, this, boardCode, threadNo, postNos))
                         .show(getSupportFragmentManager(), DeletePostDialogFragment.TAG);
+                return true;
+            case R.id.report_posts_menu:
+                (new ReportPostDialogFragment(mode, this, boardCode, threadNo, postNos))
+                        .show(getSupportFragmentManager(), ReportPostDialogFragment.TAG);
                 return true;
             case R.id.download_images_to_gallery_menu:
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);

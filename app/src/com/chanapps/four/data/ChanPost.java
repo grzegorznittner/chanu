@@ -16,7 +16,8 @@ public class ChanPost {
 
 	public static final String TAG = ChanPost.class.getSimpleName();
     private static final boolean DEBUG = false;
-    
+
+    private static final int MAX_HEADER_NAME_LEN = 15;
     public static final int MAX_SINGLELINE_TEXT_LEN = 20;
     private static final int MIN_LINE = 30;
     private static final int MAX_LINE = 40;
@@ -410,6 +411,7 @@ public class ChanPost {
 
     public String headerLine() { // as side effect, set headerComponents
         List<String> items = new ArrayList<String>();
+        String info = "";
         if (!hidePostNumbers)
             items.add(Long.toString(no));
         if (email != null && !email.isEmpty() && email.equals("sage")) {
@@ -422,19 +424,23 @@ public class ChanPost {
             headerComponents |= CHAN_ID;
             headerComponents |= CHAN_EMAIL;
         }
-        else if (id != null && !id.isEmpty()) {
-            items.add(formattedUserId(id, false));
+        else if (id != null && !id.isEmpty()
+                && (info = formattedUserId()).length() < MAX_HEADER_NAME_LEN) {
+            items.add(info);
             headerComponents |= CHAN_ID;
         }
-        else if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous")) {
+        else if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous")
+                && name.length() < MAX_HEADER_NAME_LEN) {
             items.add(name);
             headerComponents |= CHAN_NAME;
         }
-        else if (trip != null && !trip.isEmpty()) {
-            items.add(formattedUserTrip());
+        else if (trip != null && !trip.isEmpty()
+                && (info = formattedUserTrip()).length() < MAX_HEADER_NAME_LEN) {
+            items.add(info);
             headerComponents |= CHAN_TRIP;
         }
-        else if (email != null && !email.isEmpty() && !email.equalsIgnoreCase("sage")) {
+        else if (email != null && !email.isEmpty() && !email.equalsIgnoreCase("sage")
+                && email.length() < MAX_HEADER_NAME_LEN) {
             items.add(email);
             headerComponents |= CHAN_EMAIL;
         }

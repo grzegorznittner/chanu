@@ -103,7 +103,10 @@ public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
             default:
                 return String.format(context.getString(R.string.thread_next_replies_found), repliesSet.size());
             case SAME_POSTERS:
-                return String.format(context.getString(R.string.thread_id_found), repliesSet.size());
+                String s = String.format(context.getString(R.string.thread_id_found), repliesSet.size());
+                for (long postNo : postNos)
+                    repliesSet.add(postNo);
+                return s;
         }
     }
 

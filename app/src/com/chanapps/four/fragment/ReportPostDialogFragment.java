@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -14,7 +15,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.RefreshableActivity;
-import com.chanapps.four.component.Dismissable;
 import com.chanapps.four.task.LoadCaptchaTask;
 import com.chanapps.four.task.ReportPostTask;
 
@@ -29,26 +29,27 @@ public class ReportPostDialogFragment extends DialogFragment {
 
     public static final String TAG = ReportPostDialogFragment.class.getSimpleName();
 
-    private Dismissable dismissable;
+    private ActionMode mode;
     private RefreshableActivity refreshableActivity;
     private String boardCode;
     private long threadNo = 0;
-    private long postNo = 0;
+    private long[] postNos = {};
     private Spinner reportTypeSpinner;
     private EditText reportRecaptchaResponse;
     private ImageButton recaptchaButton;
     private ImageView recaptchaLoading;
+    private TextView reportPostBugWarning;
     private LoadCaptchaTask loadCaptchaTask;
 
 
-    public ReportPostDialogFragment(Dismissable dismissable, RefreshableActivity refreshableActivity,
-                                    String boardCode, long threadNo, long postNo) {
+    public ReportPostDialogFragment(ActionMode mode, RefreshableActivity refreshableActivity,
+                                    String boardCode, long threadNo, long[] postNos) {
         super();
-        this.dismissable = dismissable;
+        this.mode = mode;
         this.refreshableActivity = refreshableActivity;
         this.boardCode = boardCode;
         this.threadNo = threadNo;
-        this.postNo = postNo;
+        this.postNos = postNos;
     }
 
     @Override
@@ -81,6 +82,15 @@ public class ReportPostDialogFragment extends DialogFragment {
             }
         });
         recaptchaLoading = (ImageView)view.findViewById(R.id.report_post_recaptcha_loading);
+        reportPostBugWarning = (TextView)view.findViewById(R.id.report_post_bug_warning);
+        if (postNos.length > 1) {
+            String s = String.format(getString(R.string.report_post_bug_warning), postNos[0]);
+            reportPostBugWarning.setText(s);
+            reportPostBugWarning.setVisibility(View.VISIBLE);
+        }
+        else {
+            reportPostBugWarning.setVisibility(View.GONE);
+        }
         reloadCaptcha();
         AlertDialog dialog = builder.create();
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.report_post), (DialogInterface.OnClickListener)null);
@@ -95,12 +105,10 @@ public class ReportPostDialogFragment extends DialogFragment {
 
     @Override
     public void onCancel(DialogInterface dialog) {
-        dismissable.dismiss();
     }
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        dismissable.dismiss();
     }
 
     @Override
@@ -130,13 +138,14 @@ public class ReportPostDialogFragment extends DialogFragment {
 
                 closeKeyboard();
                 ReportPostTask reportPostTask = new ReportPostTask(
-                        refreshableActivity, boardCode, threadNo, postNo,
+                        refreshableActivity, boardCode, threadNo, postNos,
                         reportType, reportTypeIndex, recaptchaChallenge, recaptchaResponse);
                 ReportingPostDialogFragment dialogFragment = new ReportingPostDialogFragment(reportPostTask);
                 dialogFragment.show(getActivity().getSupportFragmentManager(), ReportingPostDialogFragment.TAG);
                 if (!reportPostTask.isCancelled())
                     reportPostTask.execute(dialogFragment);
                 dismiss();
+                mode.finish();
             }
         });
     }

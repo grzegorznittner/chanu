@@ -36,6 +36,10 @@
           android:title="@string/delete_posts_menu"
           android:icon="@drawable/content_remove"
             />
+    <item android:id="@+id/report_posts_menu"
+          android:title="@string/report_posts_menu"
+          android:icon="@drawable/alerts_and_states_warning"
+            />
     <item android:id="@+id/action_share"
           android:icon="@drawable/ic_menu_share_holo_light"
           android:title="@string/share_text"
