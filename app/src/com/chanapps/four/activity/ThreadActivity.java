@@ -58,7 +58,7 @@ public class ThreadActivity
 {
 
     protected static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
     private static final int SNIPPET_LINES_DEFAULT = 3;
@@ -276,7 +276,7 @@ public class ThreadActivity
         ImageView collapse = (ImageView)item.findViewById(R.id.list_item_collapse);
         if (DEBUG) Log.i(TAG, "pos=" + cursor.getPosition() + " expandable=" + expandable);
         if (adItem > 0) {
-            item.setBackgroundColor(R.color.PaletteLighterGray);
+            item.setBackgroundColor(getResources().getColor(R.color.PaletteLighterGray));
             if (expander != null)
                 expander.setVisibility(View.GONE);
         }
