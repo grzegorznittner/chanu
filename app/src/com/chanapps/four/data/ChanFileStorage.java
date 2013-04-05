@@ -1,11 +1,7 @@
 package com.chanapps.four.data;
 
 import java.io.*;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -537,7 +533,7 @@ public class ChanFileStorage {
         return new File(dir, name);
     }
 
-    public static int deletePost(Context context, String boardCode, long threadNo, long postNo, boolean imageOnly)
+    public static int deletePosts(Context context, String boardCode, long threadNo, long[] postNos, boolean imageOnly)
     {
         ChanThread thread = loadThreadData(context, boardCode, threadNo);
         if (thread == null)
@@ -545,20 +541,31 @@ public class ChanFileStorage {
         ChanPost[] posts = thread.posts;
         if (posts == null)
             return 2;
-        int del = -1;
-        for (int i = 0; i < posts.length; i++) {
-            ChanPost post = posts[i];
-            if (post != null && post.no == postNo) {
-                del = i;
-                break;
+
+        Set<Long> deletePostNos = new HashSet<Long>(postNos.length);
+        for (long postNo : postNos)
+            deletePostNos.add(postNo);
+
+        List<ChanPost> postList = new ArrayList<ChanPost>(posts.length);
+        for (ChanPost post : posts) {
+            boolean found = deletePostNos.contains(post.no);
+            if (found && !imageOnly) {
+                // don't add it, thus it will be deleted
+            }
+            else if (found && imageOnly) {
+                post.clearImageInfo();
+                postList.add(post);
+            }
+            else {
+                postList.add(post);
             }
         }
-        if (del == -1)
-            return 3;
-        if (imageOnly)
-            posts[del].clearImageInfo();
-        else
-            removeElement(posts, del);
+
+        ChanPost[] survivingPosts = new ChanPost[postList.size()];
+        int i = 0;
+        for (ChanPost post: postList)
+            survivingPosts[i++] = post;
+        thread.posts = survivingPosts;
 
         try {
             storeThreadData(context, thread);
@@ -570,7 +577,4 @@ public class ChanFileStorage {
         return 0;
     }
 
-    public static void removeElement(Object[] a, int del) {
-        System.arraycopy(a,del+1,a,del,a.length-1-del);
-    }
 }

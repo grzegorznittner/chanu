@@ -1,6 +1,5 @@
 package com.chanapps.four.activity;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +17,6 @@ import android.util.SparseBooleanArray;
 import android.view.*;
 import android.widget.*;
 
-import com.chanapps.four.adapter.AbstractThreadCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
@@ -59,7 +57,7 @@ public class ThreadActivity
 {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
     private static final int SNIPPET_LINES_DEFAULT = 3;
@@ -675,7 +673,7 @@ public class ThreadActivity
 
         @Override
         public void onClick(View v) {
-            ChanHelper.fadeout(ThreadActivity.this, v);
+            ChanHelper.simulateClickAnim(ThreadActivity.this, v);
             incrementCounterAndAddToWatchlistIfActive();
             GalleryViewActivity.startActivity(
                     ThreadActivity.this, boardCode, threadNo, postId, position);
@@ -845,7 +843,6 @@ public class ThreadActivity
 
     @Override
     public void onItemCheckedStateChanged(final ActionMode mode, final int position, final long id, final boolean checked) {
-        Log.i(TAG, "onItemCheckedStateChanged pos=" + position + " checked=" + checked);
     }
 
     @Override

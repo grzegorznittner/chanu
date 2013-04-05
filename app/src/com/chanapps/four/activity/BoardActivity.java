@@ -363,7 +363,7 @@ public class BoardActivity
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
-        setProgressOn(true);
+        //setProgressOn(true);
 		adapter.swapCursor(null);
 	}
 
@@ -371,7 +371,7 @@ public class BoardActivity
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
-        ChanHelper.fadeout(this, view);
+        ChanHelper.simulateClickAnim(this, view);
         if (clickUrl == null || clickUrl.isEmpty()) {
             final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
             ThreadActivity.startActivity(this, boardCode, threadNo);

@@ -208,8 +208,8 @@ public class ChanHelper {
 		jp.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
 	}
 
-    public static void fadeout(Context context, View view) {
-        Animation animation = AnimationUtils.loadAnimation(context, R.animator.fadeout);
+    public static void simulateClickAnim(Context context, View view) {
+        Animation animation = AnimationUtils.loadAnimation(context, R.animator.fadeoutin);
         view.startAnimation(animation);
     }
 

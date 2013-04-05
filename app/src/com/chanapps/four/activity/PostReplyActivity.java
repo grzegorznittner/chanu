@@ -931,10 +931,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         return null;
     }
 
-    /*
     public void navigateUp() {
         Intent upIntent;
-        if (threadNo != 0 || !fromBoard) {
+        if (threadNo != 0) {
             upIntent = new Intent(this, ThreadActivity.class);
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
             upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
@@ -948,7 +947,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         }
         NavUtils.navigateUpTo(this, upIntent);
     }
-    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -990,8 +988,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 switch (msg.what) {
                     case POST_FINISHED:
                     default:
-                        FetchChanDataService.scheduleThreadFetchAfterPost(PostReplyActivity.this, boardCode, threadNo);
-                        finish();
+                        //FetchChanDataService.scheduleThreadFetchAfterPost(PostReplyActivity.this, boardCode, threadNo);
+                        //finish();
+                        navigateUp();
                 }
             }
             catch (Exception e) {

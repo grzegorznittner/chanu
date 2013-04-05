@@ -6,7 +6,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.Loader;
@@ -275,7 +274,7 @@ public class BoardGroupFragment
             if (DEBUG) Log.i(TAG, "clicked board " + boardCode);
             BoardActivity.startActivity(activity, boardCode);
         }
-        ChanHelper.fadeout(activity, view);
+        ChanHelper.simulateClickAnim(activity, view);
     }
 
     @Override
