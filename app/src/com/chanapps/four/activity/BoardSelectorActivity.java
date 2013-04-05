@@ -43,9 +43,9 @@ public class BoardSelectorActivity
     private TabsAdapter mTabsAdapter;
     private SharedPreferences prefs = null;
     private boolean showNSFWBoards = false;
+    private int menuId;
     public List<ChanBoard.Type> activeBoardTypes = new ArrayList<ChanBoard.Type>();
     public ChanBoard.Type selectedBoardType = ChanBoard.Type.JAPANESE_CULTURE;
-    public Menu menu;
 
     public static void startActivity(Activity from, ChanBoard.Type boardType) {
         Intent intent = new Intent(from, BoardSelectorActivity.class);
@@ -208,8 +208,8 @@ public class BoardSelectorActivity
             saveSelectedBoardType();
         }
         setTabToSelectedType(false);
-        if (menu != null)
-            ChanBoard.resetActionBarSpinner(menu);
+        //if (menu != null)
+        //    ChanBoard.resetActionBarSpinner(menu);
     }
 
     private int getSelectedTabIndex() {
@@ -261,8 +261,12 @@ public class BoardSelectorActivity
     @Override
     protected void onResume() {
         super.onResume();
+        if (DEBUG) Log.i(TAG, "onResume");
         restoreInstanceState();
         NetworkProfileManager.instance().activityChange(this);
+        int newMenuId = ChanBoard.showNSFW(this) ? R.menu.board_selector_menu_adult : R.menu.board_selector_menu;
+        if (menuId != newMenuId)
+            invalidateOptionsMenu();
     }
 
     @Override
@@ -293,10 +297,13 @@ public class BoardSelectorActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         if (DEBUG) Log.i(TAG, "Activity-level onCreateOptionsMenu called selectedBoardType="+selectedBoardType);
-        int menuId = ChanBoard.showNSFW(this) ? R.menu.board_selector_menu_adult : R.menu.board_selector_menu;
+        menuId = ChanBoard.showNSFW(this) ? R.menu.board_selector_menu_adult : R.menu.board_selector_menu;
+        //if (this.menu != null && this.menu == menu && this.menuId == menuId) // same menu
+        //    return true;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(menuId, menu);
-        this.menu = menu;
+        //this.menu = menu;
+        //this.menuId = menuId;
         //BoardGroupFragment fragment = getSelectedFragment();
         //if (fragment != null)
         //    fragment.onPrepareOptionsMenu(menu, this, selectedBoardType);

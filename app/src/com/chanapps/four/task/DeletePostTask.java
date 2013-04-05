@@ -40,19 +40,19 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
     private RefreshableActivity refreshableActivity = null;
     private String boardCode = null;
     private long threadNo = 0;
-    private long postNo = 0;
+    private long[] postNos = {};
     private String password = null;
     private boolean imageOnly = false;
     private Context context = null;
     private DeletingPostDialogFragment dialogFragment = null;
 
     public DeletePostTask(RefreshableActivity refreshableActivity,
-                          String boardCode, long threadNo, long postNo, String password, boolean imageOnly) {
+                          String boardCode, long threadNo, long[] postNos, String password, boolean imageOnly) {
         this.refreshableActivity = refreshableActivity;
         this.context = refreshableActivity.getBaseContext();
         this.boardCode = boardCode;
         this.threadNo = threadNo;
-        this.postNo = postNo;
+        this.postNos = postNos;
         this.password = password;
         this.imageOnly = imageOnly;
     }
@@ -92,7 +92,8 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
         partsList.add(new StringPart("mode", "usrdel", PartBase.ASCII_CHARSET));
         partsList.add(new StringPart("res", Long.toString(threadNo), PartBase.ASCII_CHARSET));
         partsList.add(new StringPart("pwd", password, PartBase.ASCII_CHARSET));
-        partsList.add(new StringPart(Long.toString(postNo), "delete", PartBase.ASCII_CHARSET));
+        for (long postNo : postNos)
+            partsList.add(new StringPart(Long.toString(postNo), "delete", PartBase.ASCII_CHARSET));
         if (imageOnly)
             partsList.add(new StringPart("onlyimgdel", "on", PartBase.ASCII_CHARSET));
         Part[] parts = partsList.toArray(new Part[partsList.size()]);
@@ -183,7 +184,8 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
 
     protected int updateLastFetched() {
         // forcing thread/board refresh
-        ChanFileStorage.deletePost(context, boardCode, threadNo, postNo, imageOnly);
+        for (long postNo : postNos)
+            ChanFileStorage.deletePost(context, boardCode, threadNo, postNo, imageOnly);
         /*
         ChanActivityId refreshableActivityId = NetworkProfileManager.instance().getActivityId();
         if (refreshableActivityId != null) {

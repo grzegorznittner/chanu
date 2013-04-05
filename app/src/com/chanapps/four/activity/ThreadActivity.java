@@ -23,6 +23,7 @@ import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.fragment.DeletePostDialogFragment;
 import com.chanapps.four.fragment.ListOfLinksDialogFragment;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
@@ -58,7 +59,7 @@ public class ThreadActivity
 {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
     private static final int SNIPPET_LINES_DEFAULT = 3;
@@ -602,12 +603,13 @@ public class ThreadActivity
             // set visibility delayed
             if (itemExpandedProgressBar != null)
                 itemExpandedProgressBar.setVisibility(View.VISIBLE);
-            ensureHandler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    absListView.smoothScrollBy(parentOffset, 250);
-                }
-            }, 250);
+            if (handler != null)
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        absListView.smoothScrollBy(parentOffset, 250);
+                    }
+                }, 250);
 
             ImageSize imageSize = new ImageSize(width, height);
             DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
@@ -888,6 +890,10 @@ public class ThreadActivity
                 mode.finish();
                 copyToClipboard(selectText);
                 //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
+                return true;
+            case R.id.delete_posts_menu:
+                (new DeletePostDialogFragment(mode, this, boardCode, threadNo, postNos))
+                        .show(getSupportFragmentManager(), DeletePostDialogFragment.TAG);
                 return true;
             case R.id.download_images_to_gallery_menu:
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);

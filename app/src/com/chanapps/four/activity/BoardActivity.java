@@ -185,17 +185,8 @@ public class BoardActivity
     }
 
     protected synchronized Handler ensureHandler() {
-        if (handler == null) {
-            if (ChanHelper.onUIThread())
+        if (handler == null && ChanHelper.onUIThread())
                 handler = new LoaderHandler(this);
-            else
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        handler = new LoaderHandler(BoardActivity.this);
-                    }
-                });
-        }
         return handler;
     }
 
@@ -212,9 +203,8 @@ public class BoardActivity
         restoreInstanceState();
 		NetworkProfileManager.instance().activityChange(this);
 		Loader loader = getLoaderManager().getLoader(0);
-		if (loader == null) {
+		if (loader == null)
 			getLoaderManager().initLoader(0, null, this);
-		}
 	}
 
     protected String getLastPositionName() {
@@ -336,8 +326,8 @@ public class BoardActivity
         imageLoader.displayImage(
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
                 iv,
-                displayImageOptions);
-                //displayImageOptions.modifyCenterCrop(true)); // load async
+                //displayImageOptions);
+                displayImageOptions.modifyCenterCrop(true)); // load async
         return true;
     }
 
@@ -474,14 +464,15 @@ public class BoardActivity
 
 	@Override
 	public Handler getChanHandler() {
-        return ensureHandler();
+        return handler;
 	}
 
     @Override
     public void refreshActivity() {
         invalidateOptionsMenu();
         createAbsListView();
-        ensureHandler().sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+        if (handler != null)
+            handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
     }
 
 }

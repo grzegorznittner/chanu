@@ -157,13 +157,15 @@ public class ChanPost {
         if ((headerComponents & CHAN_HEADER_SET) == 0)
             headerLine(); // side effect sets headerComponents
         if ((headerComponents & CHAN_ID) == 0 && id != null && !id.isEmpty() && !id.equalsIgnoreCase("heaven"))
-            lines.add(formattedUserId());
+            lines.add("<b>" + formattedUserId() + "</b>");
         if ((headerComponents & CHAN_NAME) == 0 && name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
-            lines.add(name);
+            lines.add("<b>" + name + "</b>");
         if ((headerComponents & CHAN_TRIP) == 0 && trip != null && !trip.isEmpty())
-            lines.add(formattedUserTrip());
+            lines.add("<b>" + formattedUserTrip() + "</b>");
         if ((headerComponents & CHAN_EMAIL) == 0 && email != null && !email.isEmpty())
-            lines.add(email.equalsIgnoreCase("sage") ? "<b>sage</b>" : email);
+            lines.add(email.equalsIgnoreCase("sage") ? "<b>sage</b>" : "<b>" + email +"</b>");
+        if (country_name != null && !country_name.isEmpty())
+            lines.add("<b>" + country_name + "</b>");
         return ChanHelper.join(lines, "<br/>\n");
     }
 

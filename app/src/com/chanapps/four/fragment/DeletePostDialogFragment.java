@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -32,23 +33,23 @@ public class DeletePostDialogFragment extends DialogFragment {
 
     public static final String TAG = DeletePostDialogFragment.class.getSimpleName();
 
-    private Dismissable dismissable = null;
+    private ActionMode mode = null;
     private RefreshableActivity refreshableActivity = null;
     private String boardCode = null;
     private long threadNo = 0;
-    private long postNo = 0;
+    private long[] postNos = {};
     private String password = null;
     private EditText passwordText = null;
     private CheckBox imageOnlyCheckbox = null;
 
-    public DeletePostDialogFragment(Dismissable dismissable, RefreshableActivity refreshableActivity,
-                                    String boardCode, long threadNo, long postNo) {
+    public DeletePostDialogFragment(ActionMode mode, RefreshableActivity refreshableActivity,
+                                    String boardCode, long threadNo, long[] postNos) {
         super();
-        this.dismissable = dismissable;
+        this.mode = mode;
         this.refreshableActivity = refreshableActivity;
         this.boardCode = boardCode;
         this.threadNo = threadNo;
-        this.postNo = postNo;
+        this.postNos = postNos;
         this.password = PreferenceManager
                 .getDefaultSharedPreferences(refreshableActivity.getBaseContext())
                 .getString(SettingsActivity.PREF_USER_PASSWORD, "");
@@ -73,18 +74,17 @@ public class DeletePostDialogFragment extends DialogFragment {
                     closeKeyboard();
                     boolean onlyImages = imageOnlyCheckbox.isChecked();
                     DeletePostTask deletePostTask = new DeletePostTask(
-                            refreshableActivity, boardCode, threadNo, postNo, password, onlyImages);
+                            refreshableActivity, boardCode, threadNo, postNos, password, onlyImages);
                     DeletingPostDialogFragment dialogFragment = new DeletingPostDialogFragment(deletePostTask, onlyImages);
                     dialogFragment.show(getActivity().getSupportFragmentManager(), DeletingPostDialogFragment.TAG);
                     if (!deletePostTask.isCancelled())
                         deletePostTask.execute(dialogFragment);
-                    DeletePostDialogFragment.this.dismiss();
+                    mode.finish();
                 }
             })
             .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    DeletePostDialogFragment.this.dismiss();
                 }
             });
         passwordText = (EditText)view.findViewById(R.id.delete_post_password);
@@ -102,12 +102,12 @@ public class DeletePostDialogFragment extends DialogFragment {
 
     @Override
     public void onCancel(DialogInterface dialog) {
-        dismissable.dismiss();
+        //
     }
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        dismissable.dismiss();
+        //
     }
 
     private void closeKeyboard() {

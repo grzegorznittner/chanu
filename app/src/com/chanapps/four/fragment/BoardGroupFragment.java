@@ -99,8 +99,7 @@ public class BoardGroupFragment
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);        
-        ensureHandler();
+        super.onActivityCreated(savedInstanceState);
         LoaderManager.enableDebugLogging(true);
         getLoaderManager().initLoader(0, null, this);
         if (DEBUG) Log.v(TAG, "onCreate init loader");
@@ -163,23 +162,6 @@ public class BoardGroupFragment
                     columnHeight);
     }
 
-    protected synchronized Handler ensureHandler() {
-        if (handler == null) {
-            if (ChanHelper.onUIThread()) {
-                handler = new LoaderHandler();
-            }
-            else {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        handler = new LoaderHandler();
-                    }
-                });
-            }
-        }
-        return handler;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -195,10 +177,11 @@ public class BoardGroupFragment
     @Override
     public void onResume() {
         super.onResume();
+        handler = new Handler();
         if (DEBUG) Log.i(TAG, "boardType=" + boardType + " reloadNextTime=" + reloadNextTime);
         if (boardType == ChanBoard.Type.WATCHLIST && reloadNextTime) {
             reloadNextTime = false;
-            ensureHandler().sendEmptyMessageDelayed(0, 10);
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -304,7 +287,7 @@ public class BoardGroupFragment
             if (DEBUG) Log.i(TAG, "Long click " + boardType + " /" + boardCode + "/" + threadNo);
             ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
             if (thread != null && thread.posts != null && thread.posts[0] != null && thread.posts[0].tim > 0) {
-                WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(ensureHandler(), thread.posts[0].tim);
+                WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, thread.posts[0].tim);
                 d.show(getFragmentManager(), WatchlistDeleteDialogFragment.TAG);
                 return true;
             }
@@ -360,25 +343,4 @@ public class BoardGroupFragment
         return true;
     }
 
-    public class LoaderHandler extends Handler {
-
-        private final String TAG = LoaderHandler.class.getSimpleName();
-        private static final boolean DEBUG = false;
-
-        public LoaderHandler() {}
-        @Override
-        public void handleMessage(Message msg) {
-            try {
-                super.handleMessage(msg);
-                switch (msg.what) {
-                    default:
-                        if (DEBUG) Log.i(getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
-                        getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
-                }
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Couldn't handle message " + msg, e);
-            }
-        }
-    }
 }
