@@ -46,7 +46,7 @@ public class BoardGroupFragment
     private ChanBoard.Type boardType;
     private ResourceCursorAdapter adapter;
     private AbsListView absListView;
-    private ProgressBar progressBar;
+    //private ProgressBar progressBar;
     private TextView emptyWatchlistText;
     private int columnWidth = 0;
     private int columnHeight = 0;
@@ -166,7 +166,7 @@ public class BoardGroupFragment
         super.onCreateView(inflater, container, savedInstanceState);
         if (DEBUG) Log.d(TAG, "BoardGroupFragment " + boardType + " onCreateView");
         View layout = inflater.inflate(R.layout.board_selector_grid_layout, container, false);
-        progressBar = (ProgressBar)layout.findViewById(R.id.board_progress_bar);
+        //progressBar = (ProgressBar)layout.findViewById(R.id.board_progress_bar);
         if (boardType == ChanBoard.Type.WATCHLIST)
             emptyWatchlistText = (TextView)layout.findViewById(R.id.board_empty_watchlist);
         createAbsListView(layout);
@@ -219,12 +219,14 @@ public class BoardGroupFragment
     private void setProgressOn(boolean progressOn) {
         if (getActivity() != null)
             getActivity().setProgressBarIndeterminateVisibility(progressOn);
+        /*
         if (progressBar != null) {
             if (progressOn)
                 progressBar.setVisibility(View.VISIBLE);
             else
                 progressBar.setVisibility(View.GONE);
         }
+        */
     }
 
     @Override

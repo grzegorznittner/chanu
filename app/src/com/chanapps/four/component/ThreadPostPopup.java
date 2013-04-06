@@ -76,7 +76,7 @@ public class ThreadPostPopup implements Dismissable {
     protected Button deleteButton;
     protected View replyButtonLine;
     protected Button replyButton;
-    protected View reportButtonLine;     // todo
+    protected View reportButtonLine;
     protected Button reportButton;
     protected View highlightRepliesButtonLine;
     protected Button highlightRepliesButton;

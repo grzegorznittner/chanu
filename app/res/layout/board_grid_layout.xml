@@ -12,12 +12,12 @@
             style="@style/BoardGridView"
             />
 
+    <!--
     <ProgressBar
             android:id="@+id/board_progress_bar"
             style="@style/BoardProgressBar"
             />
 
-    <!--
     <LinearLayout
             android:id="@+id/board_grid_advert"
             android:orientation="vertical"

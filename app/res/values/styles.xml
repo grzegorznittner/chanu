@@ -55,6 +55,7 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <!--
     <style name="BoardProgressBar" parent="@android:style/Widget.Holo.Light.ProgressBar.Large">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -64,6 +65,7 @@
         <item name="android:visibility">gone</item>
         <item name="android:background">@color/PaletteTransparent</item>
     </style>
+    -->
 
     <style name="BoardGridView" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
@@ -87,7 +89,7 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:scaleType">center</item>
+        <item name="android:scaleType">centerCrop</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
         <item name="android:adjustViewBounds">false</item>
     </style>
@@ -201,7 +203,7 @@
         <!-- <item name="android:layout_marginBottom">8dp</item> -->
         <!-- <item name="android:paddingBottom">8dp</item> -->
         <item name="android:gravity">top|left</item>
-        <item name="android:scaleType">center</item>
+        <item name="android:scaleType">centerCrop</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
     </style>
 

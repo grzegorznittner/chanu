@@ -486,8 +486,78 @@
     <string name="board_pol">Politically Incorrect</string>
     <string name="board_soc">Social</string>
     <string name="board_watch">Watchlist</string>
-    <string name="board_select">Board</string>
+    <string name="board_watch_abbrev">Watch</string>
+    <string name="board_select">Select Board</string>
+    <string name="board_select_abbrev">Go</string>
 
+    <!-- spinner dropdown -->
+    <string-array name="board_array">
+        <item>@string/board_select_abbrev</item>
+        <item>@string/board_watch_abbrev</item>
+        <item>/3/</item>
+        <item>/a/</item>
+        <item>/adv/</item>
+        <item>/an/</item>
+        <item>/asp/</item>
+        <item>/b/</item>
+        <item>/c/</item>
+        <item>/cgl/</item>
+        <item>/ck/</item>
+        <item>/cm/</item>
+        <item>/co/</item>
+        <item>/d/</item>
+        <item>/diy/</item>
+        <item>/e/</item>
+        <item>/fa/</item>
+        <item>/fit/</item>
+        <item>/g/</item>
+        <item>/gd/</item>
+        <item>/gif/</item>
+        <item>/h/</item>
+        <item>/hc/</item>
+        <item>/hm/</item>
+        <item>/hr/</item>
+        <item>/i/</item>
+        <item>/ic/</item>
+        <item>/int/</item>
+        <item>/jp/</item>
+        <item>/k/</item>
+        <item>/lgbt/</item>
+        <item>/lit/</item>
+        <item>/m/</item>
+        <item>/mlp/</item>
+        <item>/mu/</item>
+        <item>/n/</item>
+        <item>/o/</item>
+        <item>/out/</item>
+        <item>/p/</item>
+        <item>/po/</item>
+        <item>/pol/</item>
+        <item>/q/</item>
+        <item>/r/</item>
+        <item>/r9k/</item>
+        <item>/s/</item>
+        <item>/sci/</item>
+        <item>/soc/</item>
+        <item>/sp/</item>
+        <item>/t/</item>
+        <item>/tg/</item>
+        <item>/toy/</item>
+        <item>/trv/</item>
+        <item>/tv/</item>
+        <item>/u/</item>
+        <item>/v/</item>
+        <item>/vg/</item>
+        <item>/vp/</item>
+        <item>/vr/</item>
+        <item>/w/</item>
+        <item>/wg/</item>
+        <item>/wsg/</item>
+        <item>/x/</item>
+        <item>/y/</item>
+    </string-array>
+
+    <!--
     <string-array name="board_array">
         <item>@string/board_select</item>
         <item>@string/board_watch</item>
@@ -553,7 +623,7 @@
         <item>/x/ Paranormal</item>
         <item>/y/ Yaoi</item>
     </string-array>
-
+-->
     <string-array name="board_array_worksafe">
         <item>@string/board_select</item>
         <item>@string/board_watch</item>

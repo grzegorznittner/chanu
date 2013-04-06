@@ -1,5 +1,6 @@
 package com.chanapps.four.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.*;
+import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -38,6 +40,7 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1018,5 +1021,34 @@ public class ThreadActivity
             itemAdListener.onClick(view);
         else
             itemExpandListener.onClick(view);
+    }
+
+    @Override
+    protected void setActionBarTitle() {
+        final ActionBar a = getActionBar();
+        if (a == null)
+            return;
+        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+        if (board == null)
+            board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
+        ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
+        String boardTitle = board == null ? "Board " + boardCode : board.name;
+        String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
+                ? " Thread " + threadNo
+                : thread.posts[0].threadSubject(getApplicationContext())
+                    .replaceAll("<br/?>", " ")
+                    .replaceAll("<[^>]*>", "");
+        long lastFetched = 0;
+        if (thread != null && thread.lastFetched > 0)
+            lastFetched = thread.lastFetched;
+        else if (board != null && board.lastFetched > 0)
+            lastFetched = board.lastFetched;
+        String time = lastFetched > 0
+                ? "updated " + DateUtils.getRelativeTimeSpanString(lastFetched, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString()
+                : "last update unknown";
+        a.setTitle(boardTitle + ": " + threadTitle);
+        a.setSubtitle(time);
+        a.setDisplayShowTitleEnabled(true);
+        a.setDisplayHomeAsUpEnabled(true);
     }
 }
