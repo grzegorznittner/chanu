@@ -19,6 +19,7 @@
     <string name="thread_post_expand_button">Expand</string>
     <string name="thread_post_collapse_button">Collapse</string>
     <string name="thread_country_flag">Country Flag</string>
+    <string name="not_implemented">Not yet implemented</string>
 
     <!-- blocklist -->
     <string name="blocklist_button">Block Posts With Id</string>
@@ -77,16 +78,22 @@
     <string name="help_menu">Help</string>
     <string name="global_rules_menu">Global Rules</string>
     <string name="board_rules_menu">Board Rules</string>
-    <string name="go_to_top_position_menu">Scroll to Top</string>
-    <string name="go_to_end_position_menu">Scroll to End</string>
+    <string name="go_to_top_position_menu">Go to Top</string>
+    <string name="play_thread_menu">Play Thread</string>
+    <string name="play_thread_stop_menu">Stop Thread</string>
+    <string name="go_to_end_position_menu">Go to End</string>
     <string name="refresh_board_menu">Refresh Board</string>
     <string name="refresh_thread_menu">Refresh Thread</string>
     <string name="new_thread_menu">New Thread</string>
-    <string name="prefetch_board_menu">Prefetch Board Threads</string>
+    <string name="prefetch_board_menu">Preload Board Threads</string>
     <string name="watch_thread_menu">Watch Thread</string>
     <string name="view_as_grid_menu">View As Grid</string>
     <string name="view_as_list_menu">View As List</string>
+    <string name="thread_image_popup_menu">Thread Images</string>
+    <string name="thread_navigate_popup_menu">Thread Navigation</string>
+    <string name="thread_reply_menu">Thread Reply</string>
     <string name="post_reply_menu">Post Reply</string>
+    <string name="post_reply_quote_menu">Post Quoted Reply</string>
     <string name="post_reply_all_menu">Post Reply</string>
     <string name="post_reply_all_quote_menu">Post Quoted Reply</string>
     <string name="go_to_link_menu">Go To Link</string>
@@ -99,7 +106,7 @@
     <string name="toggle_image_only_menu">Toggle Image Only</string>
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
-    <string name="download_all_images_menu">Prefetch All Images</string>
+    <string name="download_all_images_menu">Preload All Images</string>
     <string name="download_all_images_to_gallery_menu">Download To Gallery</string>
     <string name="download_images_to_gallery_menu">Download To Gallery</string>
     <string name="download_image_menu">Save to Gallery</string>
@@ -155,7 +162,7 @@
     <string name="board_empty_watchlist">There are currently no threads in your watchlist\nSelect a board to find a thread to watch</string>
     <string name="thread_already_in_watchlist">Thread already in watchlist</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
-    <string name="thread_added_to_watchlist_activity_based">Frequent usage, thread added to watchlist</string>
+    <string name="thread_added_to_watchlist_activity_based">Thread auto-added to watchlist</string>
     <string name="thread_watchlist_cleared">Cleared watchlist</string>
     <string name="thread_watchlist_default_name">Watched Thread</string>
 
@@ -193,7 +200,7 @@
     <string name="fullscreen_image_offline_upper">Off-line mode</string>
     <string name="full_screen_cancel_button">Cancel Download</string>
     <string name="full_screen_close_button">Close</string>
-    <string name="download_all_images_notice_prefetch">You will be notified when prefetch finishes</string>
+    <string name="download_all_images_notice_prefetch">You will be notified when preload finishes</string>
     <string name="download_all_images_notice">You will be notified when download finishes</string>
     <string name="download_all_images_complete">Download complete</string>
     <string name="download_all_images_complete_detail">Images downloaded to gallery for /%1$s/%2$d</string>

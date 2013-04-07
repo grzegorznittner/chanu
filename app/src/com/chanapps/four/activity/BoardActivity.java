@@ -65,7 +65,6 @@ public class BoardActivity
     protected DisplayImageOptions displayImageOptions;
     //protected ProgressBar progressBar;
     protected Menu menu;
-    protected MenuItem refreshMenuItem;
     protected SharedPreferences prefs;
     protected long tim;
     protected String boardCode;
@@ -111,11 +110,7 @@ public class BoardActivity
     }
 
     protected void setProgressOn(boolean progressOn) {
-        if (refreshMenuItem != null)
-            refreshMenuItem.setVisible(!progressOn);
         setProgressBarIndeterminateVisibility(progressOn);
-        //if (progressBar != null)
-        //    progressBar.setVisibility(progressOn ? View.VISIBLE : View.GONE);
     }
 
     protected void sizeGridToDisplay() {
@@ -454,7 +449,6 @@ public class BoardActivity
         inflater.inflate(menuId, menu);
         ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
         this.menu = menu;
-        this.refreshMenuItem = menu.findItem(R.id.refresh_menu);
         return true;
     }
 

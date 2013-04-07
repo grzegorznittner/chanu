@@ -57,7 +57,8 @@ public class ThreadActivity
         implements ChanIdentifiedActivity,
         RefreshableActivity,
         AbsListView.OnItemClickListener,
-        AbsListView.MultiChoiceModeListener
+        AbsListView.MultiChoiceModeListener,
+        PopupMenu.OnMenuItemClickListener
 {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
@@ -699,11 +700,6 @@ public class ThreadActivity
         absListViewClass = ListView.class;
     }
 
-    private void postReply() {
-        long[] postNos = {};
-        postReply(postNos);
-    }
-
     private void postReply(long postNos[]) {
         String replyText = "";
         for (long postNo : postNos) {
@@ -722,50 +718,49 @@ public class ThreadActivity
         startActivity(replyIntent);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // FIXME: know that I'm coming from watching and return there
-                Intent upIntent = new Intent(this, BoardActivity.class);
-                upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-                upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
-
-                if (DEBUG) Log.i(TAG, "Made up intent with board=" + boardCode);
+    protected boolean navigateUp() {
+        // FIXME: know that I'm coming from watching and return there
+        Intent upIntent = new Intent(this, BoardActivity.class);
+        upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
+        if (DEBUG) Log.i(TAG, "Made up intent with board=" + boardCode);
 //                if (NavUtils.shouldUpRecreateTask(this, upIntent)) { // needed when calling from widget
 //                    if (DEBUG) Log.i(TAG, "Should recreate task");
-                    TaskStackBuilder.create(this).addParentStack(this).startActivities();
-                    this.finish();
+        TaskStackBuilder.create(this).addParentStack(this).startActivities();
+        this.finish();
 //                }
 //                else {
 //                    if (DEBUG) Log.i(TAG, "Navigating up...");
 //                    NavUtils.navigateUpTo(this, upIntent);
 //                }
-                return true;
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem playMenuItem = menu.findItem(R.id.play_thread_menu);
+        if (playMenuItem != null)
+            synchronized (this) {
+                playMenuItem.setIcon(shouldPlayThread ? R.drawable.av_stop : R.drawable.av_play);
+                playMenuItem.setTitle(shouldPlayThread ? R.string.play_thread_stop_menu : R.string.play_thread_menu);
+            }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                return navigateUp();
             case R.id.refresh_menu:
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
-            case R.id.post_reply_menu:
-                postReply();
-                return true;
-            case R.id.view_image_gallery_menu:
-                GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
-                return true;
-            case R.id.watch_thread_menu:
-                addToWatchlist();
-                return true;
-            case R.id.download_all_images_menu:
-            	ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
-                Toast.makeText(this, R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.go_to_top_position_menu:
-                if (absListView != null && absListView.getAdapter() != null && absListView.getAdapter().getCount() > 0)
-                    absListView.setSelection(0);
-                return true;
-            case R.id.go_to_end_position_menu:
-                if (absListView != null && absListView.getAdapter() != null && absListView.getAdapter().getCount() > 0)
-                    absListView.setSelection(absListView.getAdapter().getCount());
-                return true;
+            case R.id.thread_reply_popup_button_menu:
+                return showPopupMenu(R.id.thread_list_layout, R.id.thread_reply_popup_button_menu, R.menu.thread_reply_popup_menu);
+            case R.id.thread_image_popup_button_menu:
+                return showPopupMenu(R.id.thread_list_layout, R.id.thread_image_popup_button_menu, R.menu.thread_image_popup_menu);
+            case R.id.play_thread_menu:
+                return playThreadMenu();
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
@@ -786,6 +781,19 @@ public class ThreadActivity
         }
     }
 
+    protected boolean showPopupMenu(int layoutId, int menuItemId, int popupMenuId) {
+        View v = findViewById(menuItemId);
+        if (v == null)
+            v = findViewById(layoutId);
+        if (v == null)
+            return false;
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.inflate(popupMenuId);
+        popup.setOnMenuItemClickListener(this);
+        popup.show();
+        return true;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         int menuId = ChanBoard.showNSFW(this) ? R.menu.thread_menu_adult : R.menu.thread_menu;
@@ -793,7 +801,6 @@ public class ThreadActivity
         inflater.inflate(menuId, menu);
         ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
         this.menu = menu;
-        this.refreshMenuItem = menu.findItem(R.id.refresh_menu);
         return true;
     }
 
@@ -808,12 +815,15 @@ public class ThreadActivity
         ensureUserStats().threadUse(boardCode, threadNo);
         String key = boardCode + "/" + threadNo;
         ChanThreadStat stat = ensureUserStats().boardThreadStats.get(key);
-        if (stat != null && stat.usage >= WATCHLIST_ACTIVITY_THRESHOLD && !inWatchlist) {
-            int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
-            if (stringId == R.string.thread_added_to_watchlist)
-                Toast.makeText(this, R.string.thread_added_to_watchlist_activity_based, Toast.LENGTH_SHORT).show();
-            inWatchlist = true;
-        }
+        if (stat != null && stat.usage >= WATCHLIST_ACTIVITY_THRESHOLD && !inWatchlist)
+            addToWatchlistIfNotAlreadyIn();
+    }
+
+    protected void addToWatchlistIfNotAlreadyIn() {
+        int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
+        if (stringId == R.string.thread_added_to_watchlist)
+            Toast.makeText(this, R.string.thread_added_to_watchlist_activity_based, Toast.LENGTH_SHORT).show();
+        inWatchlist = true;
     }
 
     protected void addToWatchlist() {
@@ -904,6 +914,7 @@ public class ThreadActivity
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);
                 mode.finish();
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
+                addToWatchlistIfNotAlreadyIn();
                 return true;
             default:
                 return false;
@@ -1051,4 +1062,118 @@ public class ThreadActivity
         a.setDisplayShowTitleEnabled(true);
         a.setDisplayHomeAsUpEnabled(true);
     }
+
+    protected boolean shouldPlayThread = false;
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (item == null)
+            return false;
+        switch (item.getItemId()) {
+
+            // post_reply_popup_menu
+            case R.id.post_reply_menu:
+                postReply("");
+                return true;
+            case R.id.post_reply_quote_menu:
+                SparseBooleanArray pos = new SparseBooleanArray();
+                pos.append(0, true);
+                String quoteText = selectQuoteText(pos);
+                postReply(quoteText);
+                return true;
+            case R.id.watch_thread_menu:
+                addToWatchlist();
+                return true;
+
+            // thread_image_popup_menu
+            case R.id.view_image_gallery_menu:
+                GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
+                addToWatchlistIfNotAlreadyIn();
+                return true;
+            case R.id.download_all_images_menu:
+                ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
+                Toast.makeText(this, R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
+                addToWatchlistIfNotAlreadyIn();
+                return true;
+            case R.id.download_all_images_to_gallery_menu:
+                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo);
+                Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
+                addToWatchlistIfNotAlreadyIn();
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    protected boolean playThreadMenu() {
+        synchronized (this) {
+            if (shouldPlayThread) {
+                shouldPlayThread = false;
+                invalidateOptionsMenu();
+                return true;
+            }
+            if (absListView == null || absListView.getAdapter() == null || absListView.getAdapter().getCount() <= 0) {
+                shouldPlayThread = false;
+                invalidateOptionsMenu();
+                return false;
+            }
+            shouldPlayThread = true;
+            invalidateOptionsMenu();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        synchronized (this) {
+                            if (shouldPlayThread == false)
+                                break;
+                            if (absListView == null || adapter == null || adapter.getCount() <= 0)
+                                break;
+                            if (absListView.getLastVisiblePosition() == adapter.getCount() - 1)
+                                break; // stop
+                            if (handler == null)
+                                break;
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (absListView == null || adapter == null)
+                                        return;
+                                    int first = absListView.getFirstVisiblePosition();
+                                    int last = absListView.getLastVisiblePosition();
+                                    for (int pos = first; pos <= last; pos++)
+                                        expandVisibleItem(first, pos);
+                                    absListView.smoothScrollBy(5, 50);
+                                }
+                                private void expandVisibleItem(int first, int pos) {
+                                    View listItem = absListView.getChildAt(pos - first);
+                                    View expandButton = listItem == null ? null : listItem.findViewById(R.id.list_item_expander);
+                                    Cursor cursor = adapter.getCursor();
+                                    //if (DEBUG) Log.v(TAG, "pos=" + pos + " listItem=" + listItem + " expandButton=" + expandButton);
+                                    if (listItem != null
+                                            && expandButton != null
+                                            && expandButton.getVisibility() == View.VISIBLE
+                                            && cursor.moveToPosition(pos))
+                                    {
+                                        long id = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+                                        absListView.performItemClick(expandButton, pos, id);
+                                    }
+                                }
+                            });
+                        }
+                        try {
+                            Thread.sleep(50);
+                        }
+                        catch (InterruptedException e) {
+                            break;
+                        }
+                    }
+                    synchronized (this) {
+                        shouldPlayThread = false;
+                    }
+                }
+            }).start();
+        }
+        return true;
+    }
+
 }

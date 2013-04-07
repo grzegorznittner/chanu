@@ -22,6 +22,7 @@
 <!--        <item name="android:divider">@color/PaletteOffWhite</item> -->
         <item name="android:dividerHeight">1px</item>
         <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:fastScrollEnabled">true</item>
     </style>
 
 <!-- SELECTOR GRID STYLES -->
@@ -82,6 +83,7 @@
         <item name="android:gravity">top|left</item>
         <item name="android:smoothScrollbar">true</item>
         <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:fastScrollEnabled">true</item>
     </style>
 
     <style name="BoardGridImage" parent="AppTheme">

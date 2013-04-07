@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/view_image_gallery_menu"
+          android:title="@string/view_image_gallery_menu"
+          android:icon="@drawable/collections_view_as_grid"
+          android:showAsAction="ifRoom"
+            />
+
+    <item android:id="@+id/download_all_images_menu"
+          android:title="@string/download_all_images_menu"
+          android:icon="@drawable/av_add_to_queue"
+          android:showAsAction="ifRoom"
+            />
+
+    <item android:id="@+id/download_all_images_to_gallery_menu"
+          android:title="@string/download_all_images_to_gallery_menu"
+          android:icon="@drawable/av_download"
+          android:showAsAction="ifRoom"
+            />
+
+</menu>

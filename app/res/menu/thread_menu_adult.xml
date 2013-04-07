@@ -12,36 +12,25 @@
           android:icon="@drawable/navigation_refresh"
           android:showAsAction="ifRoom"
             />
-    <item android:id="@+id/post_reply_menu"
-          android:title="@string/post_reply_menu"
+
+    <item android:id="@+id/thread_reply_popup_button_menu"
+          android:title="@string/thread_reply_menu"
           android:icon="@drawable/social_reply"
           android:showAsAction="ifRoom"
             />
-    <item android:id="@+id/view_image_gallery_menu"
-          android:title="@string/view_image_gallery_menu"
-          android:icon="@drawable/collections_view_as_grid"
+
+    <item android:id="@+id/thread_image_popup_button_menu"
+          android:title="@string/thread_image_popup_menu"
+          android:icon="@drawable/content_picture"
+          android:showAsAction="ifRoom"
+          />
+
+    <item android:id="@+id/play_thread_menu"
+          android:title="@string/play_thread_menu"
+          android:icon="@drawable/av_play"
           android:showAsAction="ifRoom"
             />
-    <item android:id="@+id/watch_thread_menu"
-          android:title="@string/watch_thread_menu"
-          android:icon="@drawable/rating_important"
-          android:showAsAction="ifRoom"
-            />
-    <item android:id="@+id/download_all_images_menu"
-          android:title="@string/download_all_images_menu"
-          android:icon="@drawable/av_download"
-          android:showAsAction="ifRoom"
-            />
-    <item android:id="@+id/go_to_top_position_menu"
-          android:title="@string/go_to_top_position_menu"
-          android:icon="@drawable/av_rewind"
-          android:showAsAction="ifRoom"
-            />
-    <item android:id="@+id/go_to_end_position_menu"
-          android:title="@string/go_to_end_position_menu"
-          android:icon="@drawable/av_fast_forward"
-          android:showAsAction="ifRoom"
-            />
+
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"

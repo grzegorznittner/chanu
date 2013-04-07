@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/post_reply_exit_menu"
+          android:title="@string/exit_menu"
+          android:icon="@drawable/navigation_cancel"
+          android:showAsAction="ifRoom"
+            />
     <item android:id="@+id/post_reply_send_menu"
           android:title="@string/post_reply_send_menu"
           android:icon="@drawable/social_send_now"
-          android:showAsAction="always"
+          android:showAsAction="ifRoom"
             />
 </menu>

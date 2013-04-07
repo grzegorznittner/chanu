@@ -841,6 +841,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 navigateUp();
                 return true;
 */
+            case R.id.post_reply_exit_menu:
+                finish();
+                return true;
             case R.id.post_reply_send_menu:
                 validateAndSendReply();
                 return true;
