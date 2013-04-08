@@ -1,5 +1,6 @@
 package com.chanapps.four.activity;
 
+import java.util.Date;
 import java.util.List;
 
 import android.app.ActionBar;
@@ -17,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
@@ -25,6 +27,7 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanThread;
@@ -60,9 +63,8 @@ public class BoardActivity
     protected int scrollOnNextLoaderFinished = 0;
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
-    protected ProgressBar progressBar;
+    //protected ProgressBar progressBar;
     protected Menu menu;
-    protected MenuItem refreshMenuItem;
     protected SharedPreferences prefs;
     protected long tim;
     protected String boardCode;
@@ -103,16 +105,12 @@ public class BoardActivity
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
         if (DEBUG) Log.v(TAG, "onCreate init loader");
-        progressBar = (ProgressBar)findViewById(R.id.board_progress_bar);
+        //progressBar = (ProgressBar)findViewById(R.id.board_progress_bar);
         getLoaderManager().initLoader(0, null, this);
     }
 
     protected void setProgressOn(boolean progressOn) {
-        if (refreshMenuItem != null)
-            refreshMenuItem.setVisible(!progressOn);
         setProgressBarIndeterminateVisibility(progressOn);
-        if (progressBar != null)
-            progressBar.setVisibility(progressOn ? View.VISIBLE : View.GONE);
     }
 
     protected void sizeGridToDisplay() {
@@ -167,7 +165,7 @@ public class BoardActivity
         if (GridView.class.equals(absListViewClass)) {
             absListView = (GridView)findViewById(R.id.board_grid_view);
             sizeGridToDisplay();
-            resetImageOptions(new ImageSize(columnWidth, columnHeight));
+            resetImageOptions(new ImageSize(columnWidth/2, columnHeight/2));
         }
         else {
             absListView = (ListView)findViewById(R.id.board_list_view);
@@ -269,6 +267,7 @@ public class BoardActivity
         loadFromIntentOrPrefs();
         setActionBarTitle();
         scrollToLastPosition();
+        invalidateOptionsMenu(); // for correct spinner display
     }
 
     protected void saveInstanceState() {
@@ -326,8 +325,8 @@ public class BoardActivity
         imageLoader.displayImage(
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
                 iv,
-                //displayImageOptions);
-                displayImageOptions.modifyCenterCrop(true)); // load async
+                displayImageOptions);
+                //displayImageOptions.modifyCenterCrop(true)); // load async
         return true;
     }
 
@@ -358,12 +357,13 @@ public class BoardActivity
             }
         }
         setProgressOn(false);
+        setActionBarTitle(); // to reflect updated time
     }
 
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
-        setProgressOn(true);
+        //setProgressOn(true);
 		adapter.swapCursor(null);
 	}
 
@@ -371,7 +371,7 @@ public class BoardActivity
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
-        ChanHelper.fadeout(this, view);
+        ChanHelper.simulateClickAnim(this, view);
         if (clickUrl == null || clickUrl.isEmpty()) {
             final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
             ThreadActivity.startActivity(this, boardCode, threadNo);
@@ -390,6 +390,11 @@ public class BoardActivity
                 intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
                 NavUtils.navigateUpTo(this, intent);
                 return true;
+            //case R.id.board_spinner_popup_menu:
+            //    PopupMenu popup = new PopupMenu(this, absListView);
+             //   popup.inflate(R.menu.board_spinner_menu_adult);
+             //   popup.show();
+             //   return true;
             case R.id.refresh_menu:
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
@@ -444,17 +449,24 @@ public class BoardActivity
         inflater.inflate(menuId, menu);
         ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
         this.menu = menu;
-        this.refreshMenuItem = menu.findItem(R.id.refresh_menu);
         return true;
     }
 
     protected void setActionBarTitle() {
-        ActionBar a = getActionBar();
+        final ActionBar a = getActionBar();
         if (a == null)
             return;
-        a.setDisplayShowTitleEnabled(false);
+        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+        if (board == null)
+            board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
+        String title = (board == null ? "Board " + boardCode : board.name);
+        String time = (board != null && board.lastFetched > 0)
+                ? "updated " + DateUtils.getRelativeTimeSpanString(board.lastFetched, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString()
+                : "last update unknown";
+        a.setTitle(title);
+        a.setSubtitle(time);
+        a.setDisplayShowTitleEnabled(true);
         a.setDisplayHomeAsUpEnabled(true);
-        invalidateOptionsMenu(); // because onPrepare isn't called when it should be
     }
 
 	@Override
@@ -469,7 +481,8 @@ public class BoardActivity
 
     @Override
     public void refreshActivity() {
-        invalidateOptionsMenu();
+        setActionBarTitle(); // for update time
+        invalidateOptionsMenu(); // in case spinner needs to be reset
         createAbsListView();
         if (handler != null)
             handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);

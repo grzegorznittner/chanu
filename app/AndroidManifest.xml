@@ -35,6 +35,7 @@
             android:icon="@drawable/app_icon"
             android:label="@string/application_name"
             android:theme="@style/AppTheme"
+            android:uiOptions="splitActionBarWhenNarrow"
             android:debuggable="true">
 
         <activity

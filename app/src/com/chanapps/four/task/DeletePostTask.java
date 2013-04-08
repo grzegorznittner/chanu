@@ -184,13 +184,12 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
 
     protected int updateLastFetched() {
         // forcing thread/board refresh
-        for (long postNo : postNos)
-            ChanFileStorage.deletePost(context, boardCode, threadNo, postNo, imageOnly);
+        ChanFileStorage.deletePosts(context, boardCode, threadNo, postNos, imageOnly);
         /*
         ChanActivityId refreshableActivityId = NetworkProfileManager.instance().getActivityId();
         if (refreshableActivityId != null) {
             if (refreshableActivityId.activity == LastActivity.THREAD_ACTIVITY) {
-                ChanFileStorage.resetLastFetched(refreshableActivityId.threadNo);
+                ChanFileStorage.resetLastFetched(boardCode, threadNo);
                 FetchChanDataService.scheduleThreadFetchWithPriority(context, boardCode, threadNo);
             }
         }

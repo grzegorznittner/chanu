@@ -13,9 +13,11 @@
             style="@style/ListViewTemplate"
             />
 
+    <!--
     <ProgressBar
             android:id="@+id/board_progress_bar"
             style="@style/BoardProgressBar"
             />
+    -->
 
 </RelativeLayout>

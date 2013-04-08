@@ -529,9 +529,9 @@ public class ChanBoard {
             if (DEBUG) Log.i(BoardSelectorActivity.TAG, "onItemSelected boardSelected=" + boardAsMenu + " created with board=" + createdWithBoardCode);
             if (boardAsMenu == null || boardAsMenu.isEmpty())
                 return;
-            if (boardAsMenu.equals(activity.getString(R.string.board_select)))
+            if (boardAsMenu.equals(activity.getString(R.string.board_select_abbrev)))
                 return;
-            if (boardAsMenu.equals(activity.getString(R.string.board_watch))) {
+            if (boardAsMenu.equals(activity.getString(R.string.board_watch_abbrev))) {
                 if (ChanBoard.WATCH_BOARD_CODE.equals(createdWithBoardCode)) {
                     return;
                 }

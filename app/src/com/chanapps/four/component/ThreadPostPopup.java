@@ -72,11 +72,11 @@ public class ThreadPostPopup implements Dismissable {
     protected Button translateButton;
     protected View blockButtonLine;      // todo
     protected Button blockButton;
-    protected View deleteButtonLine;     // todo
+    protected View deleteButtonLine;
     protected Button deleteButton;
     protected View replyButtonLine;
     protected Button replyButton;
-    protected View reportButtonLine;     // todo
+    protected View reportButtonLine;
     protected Button reportButton;
     protected View highlightRepliesButtonLine;
     protected Button highlightRepliesButton;
@@ -347,9 +347,6 @@ public class ThreadPostPopup implements Dismissable {
             reportButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    (new ReportPostDialogFragment(ThreadPostPopup.this, activity,
-                            clickedBoardCode, clickedThreadNo, postId))
-                            .show(activity.getSupportFragmentManager(), BoardActivity.TAG);
                     dismiss();
                 }
             });

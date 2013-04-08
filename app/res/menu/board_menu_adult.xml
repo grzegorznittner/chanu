@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/board_jump_spinner_menu"
+          android:title="@string/board_select"
+          android:icon="@drawable/collections_view_as_list"
+          android:actionDropDownStyle="@style/BoardJumpDropDown"
+          android:actionLayout="@layout/board_jump_spinner_nsfw"
+          android:showAsAction="ifRoom"
+            />
     <item android:id="@+id/refresh_menu"
           android:title="@string/refresh_board_menu"
           android:icon="@drawable/navigation_refresh"
-          android:showAsAction="always"
-            />
-    <item android:id="@+id/board_jump_spinner_menu"
-          android:actionDropDownStyle="@style/BoardJumpDropDown"
-          android:actionLayout="@layout/board_jump_spinner_nsfw"
-          android:showAsAction="always"
+          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/new_thread_menu"
           android:title="@string/new_thread_menu"
           android:icon="@drawable/content_new"
+          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/offline_board_view_menu"
           android:title="@string/offline_board_view_menu"
           android:icon="@drawable/device_access_storage"
+          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/board_rules_menu"
           android:title="@string/board_rules_menu"

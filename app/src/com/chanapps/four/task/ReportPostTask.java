@@ -39,9 +39,7 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
 
     private RefreshableActivity refreshableActivity = null;
     private String boardCode = null;
-    private long threadNo = 0;
-    private long postNo = 0;
-    private String reportType;
+    private long[] postNos = {};
     private int reportTypeIndex;
     private String recaptchaChallenge;
     private String recaptchaResponse;
@@ -49,7 +47,7 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
     private ReportingPostDialogFragment dialogFragment = null;
 
     public ReportPostTask(RefreshableActivity refreshableActivity,
-                          String boardCode, long threadNo, long postNo,
+                          String boardCode, long threadNo, long[] postNos,
                           String reportType, int reportTypeIndex,
                           String recaptchaChallenge,
                           String recaptchaResponse)
@@ -57,9 +55,7 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
         this.refreshableActivity = refreshableActivity;
         this.context = refreshableActivity.getBaseContext();
         this.boardCode = boardCode;
-        this.threadNo = threadNo;
-        this.postNo = postNo;
-        this.reportType = reportType;
+        this.postNos = postNos;
         this.reportTypeIndex = reportTypeIndex;
         this.recaptchaChallenge = recaptchaChallenge;
         this.recaptchaResponse = recaptchaResponse;
@@ -105,11 +101,14 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
     }
 
     protected MultipartEntity buildMultipartEntity() {
-        List<Part> partsList = new ArrayList<Part>();
+        List<StringPart> partsList = new ArrayList<StringPart>();
         partsList.add(new StringPart("mode", "report", PartBase.ASCII_CHARSET));
         partsList.add(new StringPart("cat", reportTypeCode(reportTypeIndex), PartBase.ASCII_CHARSET));
         partsList.add(new StringPart("board", boardCode, PartBase.ASCII_CHARSET));
-        partsList.add(new StringPart("no", Long.toString(postNo), PartBase.ASCII_CHARSET));
+// known 4chan bug: can't report multiple posts
+//        for (long postNo : postNos)
+//            partsList.add(new StringPart("no", Long.toString(postNo), PartBase.ASCII_CHARSET));
+        partsList.add(new StringPart("no", Long.toString(postNos[0]), PartBase.ASCII_CHARSET));
         partsList.add(new StringPart("recaptcha_challenge_field", recaptchaChallenge, PartBase.ASCII_CHARSET));
         partsList.add(new StringPart("recaptcha_response_field", recaptchaResponse, PartBase.ASCII_CHARSET));
         Part[] parts = partsList.toArray(new Part[partsList.size()]);
@@ -119,7 +118,7 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
         return entity;
     }
 
-    protected void dumpPartsList(List<Part> partsList) {
+    protected void dumpPartsList(List<StringPart> partsList) {
         if (DEBUG) Log.i(TAG, "Dumping mime parts list:");
         for (Part p : partsList) {
             if (!(p instanceof StringPart))
@@ -212,7 +211,8 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
         }
         else {
             Toast.makeText(context, R.string.report_post_successful, Toast.LENGTH_SHORT).show();
-            refreshableActivity.refreshActivity();
+            // actually no reason to refresh when reporting posts, as nothing happens
+            //refreshableActivity.refreshActivity();
         }
         dialogFragment.dismiss();
     }

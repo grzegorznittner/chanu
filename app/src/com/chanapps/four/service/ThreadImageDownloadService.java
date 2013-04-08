@@ -65,6 +65,10 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
         startDownload(context, board, threadNo, TargetType.TO_BOARD, 0, 0, null, new long[] {});
     }
     
+    public static void startDownloadToGalleryFolder(Context context, String board, long threadNo) {
+        startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, null, new long[] {});
+    }
+
     public static void startDownloadToGalleryFolder(Context context, String board, long threadNo, String galleryFolder) {
         startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, galleryFolder, new long[] {});
     }
