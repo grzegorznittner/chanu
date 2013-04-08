@@ -32,6 +32,10 @@
           android:title="@string/copy_text_menu"
           android:icon="@drawable/content_copy"
             />
+    <item android:id="@+id/delete_posts_menu"
+          android:title="@string/delete_posts_menu"
+          android:icon="@drawable/content_remove"
+            />
     <item android:id="@+id/action_share"
           android:icon="@drawable/ic_menu_share_holo_light"
           android:title="@string/share_text"

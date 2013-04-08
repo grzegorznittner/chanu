@@ -500,16 +500,6 @@ public class ChanBoard {
                     break;
                 }
             }
-            /*
-            int arrayId = showNSFW ? R.array.board_array : R.array.board_array_worksafe;
-            String[] boards = activity.getResources().getStringArray(arrayId);
-            for (int i = 0; i < boards.length; i++) {
-                if (boards[i].matches("/" + currentBoardCode + "/.*")) {
-                    position = i;
-                    break;
-                }
-            }
-            */
         }
         spinner.setSelection(position, false);
         spinner.setOnItemSelectedListener(new ActionBarSpinnerHandler(activity, currentBoardCode));

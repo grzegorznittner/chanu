@@ -344,7 +344,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     }
 
     protected synchronized Handler ensureHandler() {
-        if (handler == null)
+        if (handler == null && ChanHelper.onUIThread())
             handler = new PostReplyHandler();
         return handler;
     }

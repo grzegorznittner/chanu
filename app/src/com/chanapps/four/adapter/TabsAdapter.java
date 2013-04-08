@@ -132,14 +132,14 @@ public class TabsAdapter extends FragmentPagerAdapter
         selectInSpinnerIfPresent(position, true);
         // following jazz is for watchlist clean/clear menus
         Fragment fragment = getItem(position);
-        Menu menu = mContext.menu;
+        //Menu menu = mContext.menu;
         mContext.selectedBoardType = mContext.activeBoardTypes.get(position);
         if (DEBUG) Log.d(BoardSelectorActivity.TAG, "TabsAdapter pager set to " + position
                 + " with fragment=" + (fragment != null ? fragment.getTag() : null)
-                + " menu=" + menu
+        //        + " menu=" + menu
                 + " selectedBoardType=" + mContext.selectedBoardType);
         //if (fragment != null && menu != null) {
-            mContext.invalidateOptionsMenu();
+        //    mContext.invalidateOptionsMenu();
         //    ((BoardGroupFragment)fragment).onPrepareOptionsMenu(menu, mContext, mContext.selectedBoardType);
         //}
     }

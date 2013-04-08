@@ -29,6 +29,7 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ensureHandler();
         Intent intent = getIntent();
         String type = intent.getType();
         Uri imageUri = (Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -46,7 +47,7 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
 
     protected void handleSendImage(Uri imageUri) {
         this.imageUri = imageUri;
-        new PickShareBoardDialogFragment(ensureHandler()).show(getSupportFragmentManager(), PickShareBoardDialogFragment.TAG);
+        new PickShareBoardDialogFragment(handler).show(getSupportFragmentManager(), PickShareBoardDialogFragment.TAG);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
 
     @Override
     protected synchronized Handler ensureHandler() {
-        if (handler == null)
+        if (handler == null && ChanHelper.onUIThread())
             handler = new ShareHandler();
         return handler;
     }

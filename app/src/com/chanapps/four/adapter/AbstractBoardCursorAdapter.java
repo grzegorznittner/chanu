@@ -27,7 +27,7 @@ import com.chanapps.four.data.ChanHelper;
  */
 abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
 	protected static final String TAG = AbstractBoardCursorAdapter.class.getSimpleName();
-	protected static final boolean DEBUG = true;
+	protected static final boolean DEBUG = false;
 	
     /**
      * A list of columns containing the data to bind to the UI.

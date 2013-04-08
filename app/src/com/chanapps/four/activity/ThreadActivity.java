@@ -53,6 +53,7 @@ import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.ChanThreadStat;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.data.UserStatistics;
+import com.chanapps.four.fragment.DeletePostDialogFragment;
 import com.chanapps.four.fragment.ListOfLinksDialogFragment;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
@@ -625,12 +626,13 @@ public class ThreadActivity
             // set visibility delayed
             if (itemExpandedProgressBar != null)
                 itemExpandedProgressBar.setVisibility(View.VISIBLE);
-            ensureHandler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    absListView.smoothScrollBy(parentOffset, 250);
-                }
-            }, 250);
+            if (handler != null)
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        absListView.smoothScrollBy(parentOffset, 250);
+                    }
+                }, 250);
 
             ImageSize imageSize = new ImageSize(width, height);
             DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
@@ -911,6 +913,10 @@ public class ThreadActivity
                 mode.finish();
                 copyToClipboard(selectText);
                 //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
+                return true;
+            case R.id.delete_posts_menu:
+                (new DeletePostDialogFragment(mode, this, boardCode, threadNo, postNos))
+                        .show(getSupportFragmentManager(), DeletePostDialogFragment.TAG);
                 return true;
             case R.id.download_images_to_gallery_menu:
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);

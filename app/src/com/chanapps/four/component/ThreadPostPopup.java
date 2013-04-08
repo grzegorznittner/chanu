@@ -325,12 +325,10 @@ public class ThreadPostPopup implements Dismissable {
                 && clickedThreadNo != 0
                 && clickedPostNo != 0;
         if (visible) {
+            final long[] postNos = { clickedPostNo };
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    (new DeletePostDialogFragment(ThreadPostPopup.this, activity,
-                            clickedBoardCode, clickedThreadNo, clickedPostNo))
-                            .show(activity.getSupportFragmentManager(), BoardActivity.TAG);
                     dismiss();
                 }
             });
