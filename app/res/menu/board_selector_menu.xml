@@ -7,6 +7,8 @@
             />
     <item android:id="@+id/offline_chan_view_menu"
           android:title="@string/offline_chan_view_menu"
+          android:icon="@drawable/device_access_storage"
+          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/global_rules_menu"
           android:title="@string/global_rules_menu"

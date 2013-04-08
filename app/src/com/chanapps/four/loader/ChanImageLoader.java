@@ -11,6 +11,7 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.ExtendedImageDownloader;
 import com.chanapps.four.data.ChanHelper;
+import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -54,6 +55,12 @@ public class ChanImageLoader {
                                     .imageDownloader(new ExtendedImageDownloader(context))
                                     .threadPriority(Thread.MIN_PRIORITY)
                                     .threadPoolSize(1)
+                                    .discCacheFileNameGenerator(new FileNameGenerator() {
+                                        @Override
+                                        public String generate(String imageUri) {
+                                            return String.valueOf(Math.abs(imageUri.hashCode())) + ".jpg";
+                                        }
+                                    })
                                     .build());
 				}
         	}

@@ -365,10 +365,10 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     
 	private String checkLocalImage() {
     	try {
-            String localImageUri = ChanFileStorage.getLocalImageUrl(getBaseContext(), post);
-            File localImage = new File(URI.create(localImageUri));
+            Uri uri = ChanFileStorage.getLocalImageUri(getBaseContext(), post);
+            File localImage = new File(URI.create(uri.toString()));
 	    	if (localImage.exists()) {
-    			return localImageUri;
+    			return uri.toString();
 	    	} else {
 	    		if (DEBUG) Log.i(TAG, "Image " + localImageUri + " doesn't exist");
 	    	}

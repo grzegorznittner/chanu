@@ -197,8 +197,8 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	private int downloadImage(ChanPost post) throws IOException, MalformedURLException, FileNotFoundException, InterruptedException {
 		long startTime = Calendar.getInstance().getTimeInMillis();
 		
-		String imageFile = ChanFileStorage.getLocalImageUrl(getBaseContext(), post);
-		File targetFile = new File(URI.create(imageFile));
+		Uri uri = ChanFileStorage.getLocalImageUri(getBaseContext(), post);
+		File targetFile = new File(URI.create(uri.toString()));
 		if (targetFile.exists()) {
 			return (int)targetFile.length();
 		}
@@ -232,8 +232,8 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		InputStream in = null;
 		OutputStream out = null;
 		try {
-			String imageFilePath = ChanFileStorage.getLocalImageUrl(getBaseContext(), post);
-			File imageFile = new File(URI.create(imageFilePath));
+			Uri uri = ChanFileStorage.getLocalImageUri(getBaseContext(), post);
+			File imageFile = new File(URI.create(uri.toString()));
 			
 			in = new FileInputStream(imageFile);
 			File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 

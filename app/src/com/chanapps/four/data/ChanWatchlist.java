@@ -263,7 +263,7 @@ public class ChanWatchlist {
             ((Activity) ctx).runOnUiThread(new ToastRunnable(ctx, ctx.getString(R.string.dialog_deleted_from_watchlist)));
     }
 
-    public static void deleteThreadsFromWatchlist(Context ctx, List<Long> tims) {
+    private static void deleteThreadsFromWatchlist(Context ctx, List<Long> tims) {
         Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
         Set<String> toDelete = new HashSet<String>();
         for (String s : savedWatchlist) {

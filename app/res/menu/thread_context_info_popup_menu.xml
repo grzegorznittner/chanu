@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/download_images_to_gallery_menu"
+          android:title="@string/download_images_to_gallery_menu"
+          android:icon="@drawable/av_download"
+            />
+    <item android:id="@+id/go_to_link_menu"
+          android:title="@string/go_to_link_menu"
+          android:icon="@drawable/navigation_forward"
+            />
+    <item android:id="@+id/translate_posts_menu"
+          android:title="@string/translate"
+          android:icon="@drawable/content_import_export"
+            />
+</menu>

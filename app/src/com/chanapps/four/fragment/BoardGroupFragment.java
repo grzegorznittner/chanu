@@ -332,7 +332,8 @@ public class BoardGroupFragment
         imageLoader.displayImage(
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
                 iv,
-                displayImageOptions.modifyCenterCrop(true)); // load async
+                displayImageOptions); // load async
+                //displayImageOptions.modifyCenterCrop(true)); // load async
         return true;
     }
 

@@ -8,6 +8,8 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
@@ -31,6 +33,7 @@ import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
+import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.task.HighlightRepliesTask;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -38,10 +41,9 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.io.File;
+import java.net.URI;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,11 +60,12 @@ public class ThreadActivity
         RefreshableActivity,
         AbsListView.OnItemClickListener,
         AbsListView.MultiChoiceModeListener,
-        PopupMenu.OnMenuItemClickListener
+        PopupMenu.OnMenuItemClickListener,
+        MediaScannerConnection.OnScanCompletedListener
 {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
     private static final int SNIPPET_LINES_DEFAULT = 3;
@@ -77,8 +80,9 @@ public class ThreadActivity
     protected int imageHeight;
     protected UserStatistics userStats = null;
     protected boolean inWatchlist = false;
-    protected ThreadPostPopup threadPostPopup;
     protected ChanThread thread = null;
+    protected boolean shouldPlayThread = false;
+    protected ShareActionProvider shareActionProvider = null;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -278,7 +282,7 @@ public class ThreadActivity
         int expandable = itemExpandable(cursor, item);
         ImageView expander = (ImageView)item.findViewById(R.id.list_item_expander);
         ImageView collapse = (ImageView)item.findViewById(R.id.list_item_collapse);
-        if (DEBUG) Log.i(TAG, "pos=" + cursor.getPosition() + " expandable=" + expandable);
+        //if (DEBUG) Log.i(TAG, "pos=" + cursor.getPosition() + " expandable=" + expandable);
         if (adItem > 0) {
             item.setBackgroundColor(R.color.PaletteLighterGray);
             if (expander != null)
@@ -430,7 +434,8 @@ public class ThreadActivity
                 iv.setLayoutParams(params);
             }
             iv.setVisibility(View.VISIBLE);
-            imageLoader.displayImage(imageUrl, iv, displayImageOptions.modifyCenterCrop(true));
+            //imageLoader.displayImage(imageUrl, iv, displayImageOptions.modifyCenterCrop(true));
+            imageLoader.displayImage(imageUrl, iv, displayImageOptions);
         }
         else {
             iv.setImageBitmap(null);
@@ -461,6 +466,17 @@ public class ThreadActivity
         return true;
     }
 
+    protected File fullSizeImageFile(Cursor cursor) {
+        long postNo = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+        String ext = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXT));
+        Uri uri = ChanFileStorage.getLocalImageUri(getApplicationContext(), boardCode, postNo, ext);
+        File localImage = new File(URI.create(uri.toString()));
+        if (localImage != null && localImage.exists() && localImage.canRead() && localImage.length() > 0)
+            return localImage;
+        else
+            return null;
+    }
+
     private class ExpandImageOnClickListener implements View.OnClickListener {
 
         private int expandable = 0;
@@ -477,9 +493,14 @@ public class ThreadActivity
         int postW = 0;
         int postH = 0;
         int listPosition = 0;
-        String fullImageLocation = null;
+        String fullImagePath = null;
 
         public ExpandImageOnClickListener(final Cursor cursor, final int expandable, final View itemView) {
+            long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            long postTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
+            String postExt = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXT));
+            Uri uri = ChanFileStorage.getLocalImageUri(getApplicationContext(), boardCode, postId, postExt);
+
             this.expandable = expandable;
             itemExpander = (ImageView)itemView.findViewById(R.id.list_item_expander);
             itemCollapse = (ImageView)itemView.findViewById(R.id.list_item_collapse);
@@ -494,26 +515,29 @@ public class ThreadActivity
             postH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
             postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
             postExifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
-            long postTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
-            String postExt = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXT));
             postImageUrl = postTim > 0 ? ChanPost.imageUrl(boardCode, postTim, postExt) : null;
-            long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-            fullImageLocation = ChanFileStorage.getBoardCacheDirectory(getBaseContext(), boardCode) + "/" + postId + postExt;
+            fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
+        }
+
+        private void collapseView() {
+            ChanHelper.clearBigImageView(itemExpandedImage);
+            if (itemExpandedProgressBar != null)
+                itemExpandedProgressBar.setVisibility(View.GONE);
+            itemCollapse.setVisibility(View.GONE);
+            itemExpander.setVisibility(View.VISIBLE);
+            itemExpandedImage.setVisibility(View.GONE);
+            itemExpandedText.setVisibility(View.GONE);
+            itemExpandedExifText.setVisibility(View.GONE);
+            itemExpandedSnippet.setLines(SNIPPET_LINES_DEFAULT); // default num lines
+            itemExpandedSnippet.setVisibility(View.VISIBLE);
+            if (DEBUG) Log.i(TAG, "collapsed pos=" + listPosition);
         }
 
         @Override
         public void onClick(View v) {
             if (DEBUG) Log.i(TAG, "handling click for pos=" + listPosition);
             if (itemCollapse.getVisibility() == View.VISIBLE) { // toggle expansion
-                ChanHelper.clearBigImageView(itemExpandedImage);
-                itemCollapse.setVisibility(View.GONE);
-                itemExpander.setVisibility(View.VISIBLE);
-                itemExpandedImage.setVisibility(View.GONE);
-                itemExpandedText.setVisibility(View.GONE);
-                itemExpandedExifText.setVisibility(View.GONE);
-                itemExpandedSnippet.setLines(SNIPPET_LINES_DEFAULT); // default num lines
-                itemExpandedSnippet.setVisibility(View.VISIBLE);
-                if (DEBUG) Log.i(TAG, "collapsed pos=" + listPosition);
+                collapseView();
                 return;
             }
 
@@ -550,9 +574,8 @@ public class ThreadActivity
 
             if (DEBUG) Log.i(TAG, "Found postImageUrl=" + postImageUrl);
             if ((expandable & IMAGE_EXPANDABLE) == 0 || postImageUrl == null || postImageUrl.isEmpty()) {// no image to display
-                itemExpandedImage.setVisibility(View.GONE);
-                itemExpandedExifText.setVisibility(View.GONE);
                 if (DEBUG) Log.i(TAG, "No image found to expand, collapsing");
+                collapseView();
                 return;
             }
 
@@ -619,7 +642,7 @@ public class ThreadActivity
                     .imageScaleType(ImageScaleType.EXACT)
                     .cacheOnDisc()
                     .imageSize(imageSize)
-                    .fullSizeImageLocation(fullImageLocation)
+                    .fullSizeImageLocation(fullImagePath)
                     .resetViewBeforeLoading()
                     .build();
 
@@ -631,15 +654,19 @@ public class ThreadActivity
 
                 @Override
                 public void onLoadingFailed(FailReason failReason) {
-                    if (itemExpandedProgressBar != null)
-                        itemExpandedProgressBar.setVisibility(View.GONE);
-                    itemExpandedImage.setVisibility(View.GONE);
+                    collapseView();
                     String reason = failReason.toString();
                     String msg;
-                    if (reason.equalsIgnoreCase("io_error"))
+                    NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
+                    if (profile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION
+                            || profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION
+                            || profile.getConnectionHealth() == NetworkProfile.Health.BAD)
+                        msg = getString(R.string.thread_couldnt_download_image_down);
+                    else if (reason.equalsIgnoreCase("io_error"))
                         msg = getString(R.string.thread_couldnt_download_image);
                     else
                         msg = String.format(getString(R.string.thread_couldnt_load_image), failReason.toString().toLowerCase().replaceAll("_", " "));
+                    if (DEBUG) Log.e(TAG, "Failed to download " + postImageUrl + " to file=" + fullImagePath + " reason=" + reason);
                     Toast.makeText(ThreadActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
 
@@ -651,9 +678,7 @@ public class ThreadActivity
 
                 @Override
                 public void onLoadingCancelled() {
-                    if (itemExpandedProgressBar != null)
-                        itemExpandedProgressBar.setVisibility(View.GONE);
-                    itemExpandedImage.setVisibility(View.GONE);
+                    collapseView();
                     Toast.makeText(ThreadActivity.this, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
                 }
             }); // load async
@@ -846,76 +871,49 @@ public class ThreadActivity
         if (DEBUG) Log.i(TAG, "onCreateActionMode");
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.thread_context_menu, menu);
+
+        MenuItem shareItem = menu.findItem(R.id.thread_context_share_action_menu);
+        if (shareItem != null) {
+            shareActionProvider = (ShareActionProvider)shareItem.getActionProvider();
+        }
+        else {
+            shareActionProvider = null;
+        }
+
         mode.setTitle(R.string.thread_context_select);
         return true;
     }
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        updateSharedIntent();
         return true;
     }
 
     @Override
     public void onItemCheckedStateChanged(final ActionMode mode, final int position, final long id, final boolean checked) {
+        if (DEBUG) Log.i(TAG, "Updating shared intent pos=" + position + " checked=" + checked);
+        updateSharedIntent();
     }
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         long[] postNos = absListView.getCheckedItemIds();
-        SparseBooleanArray postPos = absListView.getCheckedItemPositions();
+        //SparseBooleanArray postPos = absListView.getCheckedItemPositions();
         if (postNos.length == 0) {
             Toast.makeText(getApplicationContext(), R.string.thread_no_posts_selected, Toast.LENGTH_SHORT).show();
             return false;
         }
 
         switch (item.getItemId()) {
-            case R.id.post_reply_all_menu:
-                if (DEBUG) Log.i(TAG, "Post nos: " + Arrays.toString(postNos));
-                mode.finish();
-                postReply(postNos);
-                return true;
-            case R.id.post_reply_all_quote_menu:
-                String quoteText = selectQuoteText(postPos);
-                mode.finish();
-                postReply(quoteText);
-                return true;
-            case R.id.highlight_replies_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.POST_REPLIES))
-                        .execute(postNos);
-                return true;
-            case R.id.highlight_previous_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.PREVIOUS_POSTS))
-                        .execute(postNos);
-                return true;
-            case R.id.highlight_ids_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.SAME_POSTERS))
-                        .execute(postNos);
-                return true;
-            case R.id.go_to_link_menu:
-                String[] urls = extractUrlsFromPosts(postPos);
-                mode.finish();
-                (new ListOfLinksDialogFragment(urls)).show(getSupportFragmentManager(), ListOfLinksDialogFragment.TAG);
-                return true;
-            case R.id.copy_text_menu:
-                String selectText = selectText(postPos);
-                mode.finish();
-                copyToClipboard(selectText);
-                //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
-                return true;
-            case R.id.delete_posts_menu:
-                (new DeletePostDialogFragment(mode, this, boardCode, threadNo, postNos))
-                        .show(getSupportFragmentManager(), DeletePostDialogFragment.TAG);
-                return true;
-            case R.id.report_posts_menu:
-                (new ReportPostDialogFragment(mode, this, boardCode, threadNo, postNos))
-                        .show(getSupportFragmentManager(), ReportPostDialogFragment.TAG);
-                return true;
-            case R.id.download_images_to_gallery_menu:
-                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);
-                mode.finish();
-                Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
-                addToWatchlistIfNotAlreadyIn();
-                return true;
+            case R.id.thread_context_reply_popup_button_menu:
+                return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_reply_popup_button_menu, R.menu.thread_context_reply_popup_menu);
+            case R.id.thread_context_replies_popup_button_menu:
+                return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_replies_popup_button_menu, R.menu.thread_context_replies_popup_menu);
+            case R.id.thread_context_info_popup_button_menu:
+                return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_info_popup_button_menu, R.menu.thread_context_info_popup_menu);
+            case R.id.thread_context_delete_report_popup_button_menu:
+                return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_delete_report_popup_button_menu, R.menu.thread_context_delete_report_popup_menu);
             default:
                 return false;
         }
@@ -943,9 +941,8 @@ public class ThreadActivity
             String itemText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
             if (itemText == null)
                 itemText = "";
-            text += (text.isEmpty() ? "" : "\n\n") + itemText;
+            text += (text.isEmpty() ? "" : "<br/><br/>") + itemText;
         }
-        if (DEBUG) Log.i(TAG, "Selected text: " + text);
         return text;
     }
 
@@ -1063,15 +1060,15 @@ public class ThreadActivity
         a.setDisplayHomeAsUpEnabled(true);
     }
 
-    protected boolean shouldPlayThread = false;
-
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item == null)
             return false;
+        long[] postNos = absListView.getCheckedItemIds();
+        SparseBooleanArray postPos = absListView.getCheckedItemPositions();
         switch (item.getItemId()) {
 
-            // post_reply_popup_menu
+            // thread_reply_popup_menu
             case R.id.post_reply_menu:
                 postReply("");
                 return true;
@@ -1100,6 +1097,63 @@ public class ThreadActivity
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                 addToWatchlistIfNotAlreadyIn();
                 return true;
+
+            // thread_context_reply_popup_menu
+            case R.id.post_reply_all_menu:
+                if (DEBUG) Log.i(TAG, "Post nos: " + Arrays.toString(postNos));
+                postReply(postNos);
+                return true;
+            case R.id.post_reply_all_quote_menu:
+                String quotesText = selectQuoteText(postPos);
+                postReply(quotesText);
+                return true;
+            case R.id.copy_text_menu:
+                String selectText = selectText(postPos);
+                copyToClipboard(selectText);
+                //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
+                return true;
+
+            // thread_context_replies_popup_menu
+            case R.id.highlight_replies_menu:
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.POST_REPLIES))
+                        .execute(postNos);
+                return true;
+            case R.id.highlight_previous_menu:
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.PREVIOUS_POSTS))
+                        .execute(postNos);
+                return true;
+            case R.id.highlight_ids_menu:
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.SAME_POSTERS))
+                        .execute(postNos);
+                return true;
+
+            // thread context info popup menu
+            case R.id.download_images_to_gallery_menu:
+                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);
+                Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
+                addToWatchlistIfNotAlreadyIn();
+                return true;
+            case R.id.go_to_link_menu:
+                String[] urls = extractUrlsFromPosts(postPos);
+                if (urls != null && urls.length > 0)
+                    (new ListOfLinksDialogFragment(urls)).show(getSupportFragmentManager(), ListOfLinksDialogFragment.TAG);
+                else
+                    Toast.makeText(getApplicationContext(), R.string.go_to_link_not_found, Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.translate_posts_menu:
+                return false;
+
+            // thread context delete report popup menu
+            case R.id.delete_posts_menu:
+                (new DeletePostDialogFragment(this, boardCode, threadNo, postNos))
+                        .show(getSupportFragmentManager(), DeletePostDialogFragment.TAG);
+                return true;
+            case R.id.report_posts_menu:
+                (new ReportPostDialogFragment(this, boardCode, threadNo, postNos))
+                        .show(getSupportFragmentManager(), ReportPostDialogFragment.TAG);
+                return true;
+            case R.id.block_posts_menu:
+                return false;
 
             default:
                 return false;
@@ -1142,7 +1196,7 @@ public class ThreadActivity
                                     int last = absListView.getLastVisiblePosition();
                                     for (int pos = first; pos <= last; pos++)
                                         expandVisibleItem(first, pos);
-                                    absListView.smoothScrollBy(5, 50);
+                                    absListView.smoothScrollBy(2, 25);
                                 }
                                 private void expandVisibleItem(int first, int pos) {
                                     View listItem = absListView.getChildAt(pos - first);
@@ -1161,7 +1215,7 @@ public class ThreadActivity
                             });
                         }
                         try {
-                            Thread.sleep(50);
+                            Thread.sleep(25);
                         }
                         catch (InterruptedException e) {
                             break;
@@ -1174,6 +1228,85 @@ public class ThreadActivity
             }).start();
         }
         return true;
+    }
+
+    synchronized private void setShareIntent(Intent intent) {
+        if (shareActionProvider != null && intent != null)
+            shareActionProvider.setShareIntent(intent);
+    }
+
+    public void updateSharedIntent() {
+        SparseBooleanArray postPos = absListView.getCheckedItemPositions();
+        String text = "/" + boardCode + "/ " + getActionBar().getTitle().toString();
+        String extraText = selectText(postPos);
+        if (extraText != null && !extraText.isEmpty())
+            text += "\n\n" + extraText.replaceAll("</?br/?>", "\n").replaceAll("<[^>]*>", "");
+        ArrayList<String> paths = new ArrayList<String>();
+        Cursor cursor = adapter.getCursor();
+        for (int i = 0; i < absListView.getCount(); i++) {
+            if (!postPos.get(i) || !cursor.moveToPosition(i))
+                continue;
+            File file = fullSizeImageFile(cursor); // try for full size first
+            if (file == null) { // if can't find it, fall back to thumbnail
+                String url = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL)); // thumbnail
+                if (DEBUG) Log.i(TAG, "Couldn't find full image, falling back to thumbnail=" + url);
+                file = (url == null || url.isEmpty()) ? null : imageLoader.getDiscCache().get(url);
+            }
+            if (file == null || !file.exists() || !file.canRead() || file.length() <= 0)
+                continue;
+            paths.add(file.getAbsolutePath());
+        }
+        Intent intent;
+        if (paths.size() == 0) {
+            intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_TEXT, text);
+            intent.setType("text/html");
+            setShareIntent(intent);
+        }
+        else {
+            ArrayList<Uri> uris = new ArrayList<Uri>();
+            ArrayList<String> missingPaths = new ArrayList<String>();
+            for (String path : paths) {
+                if (checkedImageUris.containsKey(path)) {
+                    Uri uri = checkedImageUris.get(path);
+                    uris.add(uri);
+                    if (DEBUG) Log.i(TAG, "Added uri=" + uri);
+                }
+                else {
+                    uris.add(Uri.fromFile(new File(path)));
+                    missingPaths.add(path);
+                }
+            }
+            intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+            intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+            intent.putExtra(Intent.EXTRA_TEXT, text);
+            intent.setType("image/jpeg");
+            setShareIntent(intent);
+            if (missingPaths.size() > 0) {
+                if (DEBUG) Log.i(TAG, "launching scanner for missing paths count=" + missingPaths.size());
+                asyncUpdateSharedIntent(missingPaths);
+            }
+        }
+    }
+
+    protected void asyncUpdateSharedIntent(ArrayList<String> pathList) {
+        String[] paths = new String[pathList.size()];
+        String[] types = new String[pathList.size()];
+        for (int i = 0; i < pathList.size(); i++) {
+            paths[i] = pathList.get(i);
+            types[i] = "image/jpeg";
+        }
+        MediaScannerConnection.scanFile(getApplicationContext(), paths, types, this);
+    }
+
+    Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
+
+    public void onScanCompleted(String path, Uri uri) {
+        if (DEBUG) Log.i(TAG, "Scan completed for path=" + path + " result uri=" + uri);
+        if (uri == null)
+            uri = Uri.parse(path);
+        checkedImageUris.put(path, uri);
+        updateSharedIntent();
     }
 
 }

@@ -29,7 +29,7 @@ public class ReportPostDialogFragment extends DialogFragment {
 
     public static final String TAG = ReportPostDialogFragment.class.getSimpleName();
 
-    private ActionMode mode;
+    //private ActionMode mode;
     private RefreshableActivity refreshableActivity;
     private String boardCode;
     private long threadNo = 0;
@@ -42,10 +42,11 @@ public class ReportPostDialogFragment extends DialogFragment {
     private LoadCaptchaTask loadCaptchaTask;
 
 
-    public ReportPostDialogFragment(ActionMode mode, RefreshableActivity refreshableActivity,
+    public ReportPostDialogFragment(//ActionMode mode,
+                                    RefreshableActivity refreshableActivity,
                                     String boardCode, long threadNo, long[] postNos) {
         super();
-        this.mode = mode;
+        //this.mode = mode;
         this.refreshableActivity = refreshableActivity;
         this.boardCode = boardCode;
         this.threadNo = threadNo;
@@ -145,7 +146,7 @@ public class ReportPostDialogFragment extends DialogFragment {
                 if (!reportPostTask.isCancelled())
                     reportPostTask.execute(dialogFragment);
                 dismiss();
-                mode.finish();
+                //mode.finish();
             }
         });
     }
