@@ -1,5 +1,12 @@
 package com.chanapps.four.activity;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -13,18 +20,38 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
-import android.text.*;
+import android.text.Html;
+import android.text.Layout;
+import android.text.Spanned;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.*;
+import android.view.ActionMode;
+import android.view.Display;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.*;
 
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
-import com.chanapps.four.component.*;
-import com.chanapps.four.data.*;
+import com.chanapps.four.component.ChanGridSizer;
+import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.component.ThreadPostPopup;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.ChanThreadStat;
+import com.chanapps.four.data.ChanWatchlist;
+import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.fragment.DeletePostDialogFragment;
 import com.chanapps.four.fragment.ListOfLinksDialogFragment;
 import com.chanapps.four.fragment.ReportPostDialogFragment;
@@ -63,7 +90,6 @@ public class ThreadActivity
         PopupMenu.OnMenuItemClickListener,
         MediaScannerConnection.OnScanCompletedListener
 {
-
     public static final String TAG = ThreadActivity.class.getSimpleName();
     public static final boolean DEBUG = false;
 
@@ -284,7 +310,7 @@ public class ThreadActivity
         ImageView collapse = (ImageView)item.findViewById(R.id.list_item_collapse);
         //if (DEBUG) Log.i(TAG, "pos=" + cursor.getPosition() + " expandable=" + expandable);
         if (adItem > 0) {
-            item.setBackgroundColor(R.color.PaletteLighterGray);
+            item.setBackgroundColor(getResources().getColor(R.color.PaletteLighterGray));
             if (expander != null)
                 expander.setVisibility(View.GONE);
         }
@@ -536,7 +562,7 @@ public class ThreadActivity
         @Override
         public void onClick(View v) {
             if (DEBUG) Log.i(TAG, "handling click for pos=" + listPosition);
-            if (itemCollapse.getVisibility() == View.VISIBLE) { // toggle expansion
+            if (itemCollapse.getVisibility() == View.VISIBLE || expandable == 0) { // toggle expansion
                 collapseView();
                 return;
             }
@@ -574,8 +600,9 @@ public class ThreadActivity
 
             if (DEBUG) Log.i(TAG, "Found postImageUrl=" + postImageUrl);
             if ((expandable & IMAGE_EXPANDABLE) == 0 || postImageUrl == null || postImageUrl.isEmpty()) {// no image to display
-                if (DEBUG) Log.i(TAG, "No image found to expand, collapsing");
-                collapseView();
+                if (DEBUG) Log.i(TAG, "No image found to expand, hiding image and exiting");
+                itemExpandedImage.setVisibility(View.GONE);
+                itemExpandedExifText.setVisibility(View.GONE);
                 return;
             }
 
@@ -1177,6 +1204,7 @@ public class ThreadActivity
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    absListView.setFastScrollEnabled(false);
                     while (true) {
                         synchronized (this) {
                             if (shouldPlayThread == false)
@@ -1224,6 +1252,7 @@ public class ThreadActivity
                     synchronized (this) {
                         shouldPlayThread = false;
                     }
+                    absListView.setFastScrollEnabled(true);
                 }
             }).start();
         }
