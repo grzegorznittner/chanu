@@ -273,6 +273,7 @@ public class ThreadPostPopup implements Dismissable {
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final String STRIP_HTML_RE = "(?s)<[^>]*>(\\s*<[^>]*>)*";
+    public static final int MAX_HTTP_GET_URL_LEN = 2000;
 
     protected void setTranslateButton(String messageText) {
         boolean visible = !"".equals(messageText);
@@ -288,15 +289,11 @@ public class ThreadPostPopup implements Dismissable {
                 Log.e(TAG, "Unsupported encoding utf-8? You crazy!", e);
                 escaped = strippedText;
             }
-            final String escapedMessage = escaped;
-            final String translateUrl = GOOGLE_TRANSLATE_ROOT + localeCode + "&text=" + escapedMessage;
-            translateButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            String translateUrl = GOOGLE_TRANSLATE_ROOT + localeCode + "&text=" + escaped;
+            if (translateUrl.length() > MAX_HTTP_GET_URL_LEN)
+                translateUrl = translateUrl.substring(0, MAX_HTTP_GET_URL_LEN);
                     ChanHelper.launchUrlInBrowser((ThreadActivity)activity, translateUrl); // yes cheating here
                     dismiss();
-                }
-            });
         }
         setVisibility(visible, translateButtonLine, translateButton);
     }

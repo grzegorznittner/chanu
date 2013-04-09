@@ -1,5 +1,7 @@
 package com.chanapps.four.activity;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -14,7 +16,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,10 +40,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
-import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.DispatcherHelper;
-import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.component.ThreadPostPopup;
+import com.chanapps.four.component.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
@@ -60,19 +58,13 @@ import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
-import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.task.HighlightRepliesTask;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.io.File;
 import java.net.URI;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -94,10 +86,14 @@ public class ThreadActivity
     public static final boolean DEBUG = false;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
-    private static final int SNIPPET_LINES_DEFAULT = 3;
-    private static final int TEXT_HORIZ_PADDING_DP = 8 + 28;
-    private static final int IMAGE_WIDTH_DP = 80;
-    private static final int SNIPPET_HEIGHT_DP = ((80 - 8)*3)/4; // three lines used for snippet
+    public static final int SNIPPET_LINES_DEFAULT = 3;
+    public static final int TEXT_HORIZ_PADDING_DP = 8 + 28;
+    public static final int IMAGE_WIDTH_DP = 80;
+    public static final int SNIPPET_HEIGHT_DP = ((80 - 8)*3)/4; // three lines used for snippet
+    public static final int TEXT_EXPANDABLE = 0x01;
+    public static final int IMAGE_EXPANDABLE = 0x02;
+    public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
+    public static final int MAX_HTTP_GET_URL_LEN = 2000;
 
     protected long threadNo;
     protected String text;
@@ -109,6 +105,7 @@ public class ThreadActivity
     protected ChanThread thread = null;
     protected boolean shouldPlayThread = false;
     protected ShareActionProvider shareActionProvider = null;
+    protected Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -130,6 +127,10 @@ public class ThreadActivity
             startActivity(from, boardCode);
 	    else
             from.startActivity(createIntentForActivity(from, boardCode, threadNo));
+    }
+
+    public AbsListView getAbsListView() {
+        return absListView;
     }
 
     public static Intent createIntentForActivity(Context context, final String boardCode, final long threadNo) {
@@ -167,6 +168,22 @@ public class ThreadActivity
         imageHeight = intent.hasExtra(ChanHelper.IMAGE_HEIGHT)
                 ? intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0)
                 : prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
+        // backup in case we are missing stuff
+        if (boardCode.isEmpty()) {
+            Intent selectorIntent = new Intent(this, BoardSelectorActivity.class);
+            selectorIntent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString());
+            selectorIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
+            selectorIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(selectorIntent);
+            finish();
+        }
+        if (threadNo == 0) {
+            Intent boardIntent = createIntentForActivity(this, boardCode);
+            boardIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(boardIntent);
+            finish();
+        }
+        // normal processing resumes
         if (intent.getBooleanExtra(ChanHelper.TRIGGER_BOARD_REFRESH, false)) {
         	FetchChanDataService.scheduleBoardFetch(getBaseContext(), boardCode);
         }
@@ -374,12 +391,9 @@ public class ThreadActivity
             if (expandable == 0)
                 return;
 
-            (new ExpandImageOnClickListener(cursor, expandable, itemView)).onClick(itemView);
+            (new ThreadExpandImageOnClickListener(ThreadActivity.this, cursor, expandable, itemView)).onClick(itemView);
         }
     };
-
-    private static final int TEXT_EXPANDABLE = 0x01;
-    private static final int IMAGE_EXPANDABLE = 0x02;
 
     private int itemExpandable(Cursor cursor, View itemView) {
         final String postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
@@ -480,7 +494,7 @@ public class ThreadActivity
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0)
             return false;
-        iv.setOnClickListener(new ImageOnClickListener(cursor));
+        iv.setOnClickListener(new ThreadImageOnClickListener(this, cursor));
         return true;
     }
 
@@ -503,240 +517,6 @@ public class ThreadActivity
             return null;
     }
 
-    private class ExpandImageOnClickListener implements View.OnClickListener {
-
-        private int expandable = 0;
-        private ImageView itemExpander;
-        private ImageView itemCollapse;
-        private ImageView itemExpandedImage;
-        private ProgressBar itemExpandedProgressBar;
-        private TextView itemExpandedSnippet;
-        private TextView itemExpandedText;
-        private TextView itemExpandedExifText;
-        private String postText = null;
-        private String postImageUrl = null;
-        private String postExifText = null;
-        int postW = 0;
-        int postH = 0;
-        int listPosition = 0;
-        String fullImagePath = null;
-
-        public ExpandImageOnClickListener(final Cursor cursor, final int expandable, final View itemView) {
-            long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-            long postTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
-            String postExt = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXT));
-            Uri uri = ChanFileStorage.getLocalImageUri(getApplicationContext(), boardCode, postId, postExt);
-
-            this.expandable = expandable;
-            itemExpander = (ImageView)itemView.findViewById(R.id.list_item_expander);
-            itemCollapse = (ImageView)itemView.findViewById(R.id.list_item_collapse);
-            itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
-            itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
-            itemExpandedSnippet = (TextView)itemView.findViewById(R.id.list_item_snippet);
-            itemExpandedText = (TextView)itemView.findViewById(R.id.list_item_text);
-            itemExpandedExifText = (TextView)itemView.findViewById(R.id.list_item_image_exif);
-            
-            listPosition = cursor.getPosition();
-            postW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
-            postH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
-            postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-            postExifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
-            postImageUrl = postTim > 0 ? ChanPost.imageUrl(boardCode, postTim, postExt) : null;
-            fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
-        }
-
-        private void collapseView() {
-            ChanHelper.clearBigImageView(itemExpandedImage);
-            if (itemExpandedProgressBar != null)
-                itemExpandedProgressBar.setVisibility(View.GONE);
-            itemCollapse.setVisibility(View.GONE);
-            itemExpander.setVisibility(View.VISIBLE);
-            itemExpandedImage.setVisibility(View.GONE);
-            itemExpandedText.setVisibility(View.GONE);
-            itemExpandedExifText.setVisibility(View.GONE);
-            itemExpandedSnippet.setLines(SNIPPET_LINES_DEFAULT); // default num lines
-            itemExpandedSnippet.setVisibility(View.VISIBLE);
-            if (DEBUG) Log.i(TAG, "collapsed pos=" + listPosition);
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (DEBUG) Log.i(TAG, "handling click for pos=" + listPosition);
-            if (itemCollapse.getVisibility() == View.VISIBLE || expandable == 0) { // toggle expansion
-                collapseView();
-                return;
-            }
-
-            if (DEBUG) Log.i(TAG, "expanding pos=" + listPosition);
-            // show that we can collapse view
-            itemExpander.setVisibility(View.GONE);
-            itemCollapse.setVisibility(View.VISIBLE);
-
-            // set text visibility
-            if (DEBUG) Log.i(TAG, "Setting post text len=" + (postText == null ? 0 : postText.length()));
-            if ((expandable & TEXT_EXPANDABLE) > 0 && postText != null && !postText.isEmpty()) {
-                if ((expandable & IMAGE_EXPANDABLE) > 0) { // image visible, remove the duplicate top text
-                    itemExpandedSnippet.setVisibility(View.INVISIBLE);
-                    itemExpandedText.setText(Html.fromHtml(postText));
-                    itemExpandedText.setVisibility(View.VISIBLE);
-                    if (DEBUG) Log.i(TAG, "Set image expand to visible, text to bottom");
-                }
-                else { // no image, so just expand to fill rest of space
-                    int lc = itemExpandedSnippet.getLineCount();
-                    itemExpandedSnippet.setLines(Math.max(lc, SNIPPET_LINES_DEFAULT));
-                    itemExpandedSnippet.setVisibility(View.VISIBLE);
-                    itemExpandedText.setVisibility(View.GONE);
-                    if (DEBUG) Log.i(TAG, "No image to expand, set text to full height");
-                }
-            }
-            else {
-                itemExpandedText.setVisibility(View.GONE);
-                if (DEBUG) Log.i(TAG, "No text to expand, setting text to gone");
-            }
-
-            if (DEBUG) Log.i(TAG, "Clearing existing image");
-            ChanHelper.clearBigImageView(itemExpandedImage); // clear old image
-            if (DEBUG) Log.i(TAG, "Existing image cleared");
-
-            if (DEBUG) Log.i(TAG, "Found postImageUrl=" + postImageUrl);
-            if ((expandable & IMAGE_EXPANDABLE) == 0 || postImageUrl == null || postImageUrl.isEmpty()) {// no image to display
-                if (DEBUG) Log.i(TAG, "No image found to expand, hiding image and exiting");
-                itemExpandedImage.setVisibility(View.GONE);
-                itemExpandedExifText.setVisibility(View.GONE);
-                return;
-            }
-
-            if (DEBUG) Log.i(TAG, "Post exif text len=" + (postExifText == null ? 0 : postExifText.length()));
-            if (postExifText != null && !postExifText.isEmpty()) {
-                itemExpandedExifText.setText(Html.fromHtml(postExifText));
-                itemExpandedExifText.setVisibility(View.VISIBLE);
-            }
-            else {
-                itemExpandedExifText.setVisibility(View.GONE);
-            }
-
-            // calculate image dimensions
-            if (DEBUG) Log.i(TAG, "post size " + postW + "x" + postH);
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-            //int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
-            int maxWidth = displayMetrics.widthPixels;
-            int maxHeight = maxWidth; // to avoid excessively big images
-            itemExpandedImage.setMaxWidth(maxWidth);
-            itemExpandedImage.setMaxHeight(maxHeight);
-            if (DEBUG) Log.i(TAG, "max size " + maxWidth + "x" + maxHeight);
-            float scaleFactor = 1;
-            if (postW >= postH) {
-                // square or wide image, base sizing on width
-                if (postW > maxWidth)
-                    scaleFactor = (float)maxWidth / (float)postW;
-            }
-            else {
-                // tall image
-                if (postH > maxHeight)
-                    scaleFactor = (float)maxHeight / (float)postH;
-            }
-            int width = Math.round(scaleFactor * (float)postW);
-            int height = Math.round(scaleFactor * (float)postH);
-            if (DEBUG) Log.i(TAG, "target size " + width + "x" + height);
-            // set layout dimensions
-            ViewGroup.LayoutParams params = itemExpandedImage.getLayoutParams();
-            if (params != null) {
-                params.width = width;
-                params.height = height;
-                if (DEBUG) Log.i(TAG, "set expanded image size=" + width + "x" + height);
-            }
-            itemExpandedImage.setVisibility(View.VISIBLE);
-            if (DEBUG) Log.i(TAG, "Set expanded image to visible");
-
-            int lastPosition = absListView.getLastVisiblePosition();
-            boolean shouldMove = listPosition >= lastPosition - 1;
-            final int parentOffset = shouldMove ? 100 : 0; // allow for margin
-
-            // set visibility delayed
-            if (itemExpandedProgressBar != null)
-                itemExpandedProgressBar.setVisibility(View.VISIBLE);
-            if (handler != null)
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        absListView.smoothScrollBy(parentOffset, 250);
-                    }
-                }, 250);
-
-            ImageSize imageSize = new ImageSize(width, height);
-            DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
-                    .imageScaleType(ImageScaleType.EXACT)
-                    .cacheOnDisc()
-                    .imageSize(imageSize)
-                    .fullSizeImageLocation(fullImagePath)
-                    .resetViewBeforeLoading()
-                    .build();
-
-            // display image async
-            imageLoader.displayImage(postImageUrl, itemExpandedImage, expandedDisplayImageOptions, new ImageLoadingListener() {
-                @Override
-                public void onLoadingStarted() {
-                }
-
-                @Override
-                public void onLoadingFailed(FailReason failReason) {
-                    collapseView();
-                    String reason = failReason.toString();
-                    String msg;
-                    NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
-                    if (profile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION
-                            || profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION
-                            || profile.getConnectionHealth() == NetworkProfile.Health.BAD)
-                        msg = getString(R.string.thread_couldnt_download_image_down);
-                    else if (reason.equalsIgnoreCase("io_error"))
-                        msg = getString(R.string.thread_couldnt_download_image);
-                    else
-                        msg = String.format(getString(R.string.thread_couldnt_load_image), failReason.toString().toLowerCase().replaceAll("_", " "));
-                    if (DEBUG) Log.e(TAG, "Failed to download " + postImageUrl + " to file=" + fullImagePath + " reason=" + reason);
-                    Toast.makeText(ThreadActivity.this, msg, Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onLoadingComplete(Bitmap loadedImage) {
-                    if (itemExpandedProgressBar != null)
-                        itemExpandedProgressBar.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onLoadingCancelled() {
-                    collapseView();
-                    Toast.makeText(ThreadActivity.this, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
-                }
-            }); // load async
-        }
-    }
-
-    private class ImageOnClickListener implements View.OnClickListener {
-
-        long postId = 0;
-        long resto = 0;
-        int w = 0;
-        int h = 0;
-        int position = 0;
-
-        public ImageOnClickListener(Cursor cursor) {
-            postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-            resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
-            w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
-            h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
-            position = cursor.getPosition();
-        }
-
-        @Override
-        public void onClick(View v) {
-            ChanHelper.simulateClickAnim(ThreadActivity.this, v);
-            incrementCounterAndAddToWatchlistIfActive();
-            GalleryViewActivity.startActivity(
-                    ThreadActivity.this, boardCode, threadNo, postId, position);
-        }
-    }
-
     private boolean setItemCountryFlag(final ImageView iv, final Cursor cursor) {
         String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
         if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
@@ -745,7 +525,6 @@ public class ThreadActivity
             iv.setImageBitmap(null);
         return true;
     }
-
 
     @Override
     protected void setAbsListViewClass() {
@@ -863,7 +642,7 @@ public class ThreadActivity
         return userStats;
     }
 
-    protected void incrementCounterAndAddToWatchlistIfActive() {
+    public void incrementCounterAndAddToWatchlistIfActive() {
         ensureUserStats().threadUse(boardCode, threadNo);
         String key = boardCode + "/" + threadNo;
         ChanThreadStat stat = ensureUserStats().boardThreadStats.get(key);
@@ -1134,11 +913,6 @@ public class ThreadActivity
                 String quotesText = selectQuoteText(postPos);
                 postReply(quotesText);
                 return true;
-            case R.id.copy_text_menu:
-                String selectText = selectText(postPos);
-                copyToClipboard(selectText);
-                //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
-                return true;
 
             // thread_context_replies_popup_menu
             case R.id.highlight_replies_menu:
@@ -1152,6 +926,11 @@ public class ThreadActivity
             case R.id.highlight_ids_menu:
                 (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.SAME_POSTERS))
                         .execute(postNos);
+                return true;
+            case R.id.copy_text_menu:
+                String selectText = selectText(postPos);
+                copyToClipboard(selectText);
+                //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
                 return true;
 
             // thread context info popup menu
@@ -1168,7 +947,7 @@ public class ThreadActivity
                     Toast.makeText(getApplicationContext(), R.string.go_to_link_not_found, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.translate_posts_menu:
-                return false;
+                return translatePosts(postPos);
 
             // thread context delete report popup menu
             case R.id.delete_posts_menu:
@@ -1185,6 +964,30 @@ public class ThreadActivity
             default:
                 return false;
         }
+    }
+
+    protected boolean translatePosts(SparseBooleanArray postPos) {
+        final Locale locale = getResources().getConfiguration().locale;
+        final String localeCode = locale.getLanguage();
+        final String text = selectText(postPos);
+        final String strippedText = text.replaceAll("<br/?>", "\n").replaceAll("<[^>]*>", "").trim();
+        String escaped;
+        try {
+            escaped = URLEncoder.encode(strippedText, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "Unsupported encoding utf-8? You crazy!", e);
+            escaped = strippedText;
+        }
+        if (escaped.isEmpty()) {
+            Toast.makeText(getApplicationContext(), R.string.translate_no_text, Toast.LENGTH_SHORT);
+            return true;
+        }
+        String translateUrl = GOOGLE_TRANSLATE_ROOT + localeCode + "&text=" + escaped;
+        if (translateUrl.length() > MAX_HTTP_GET_URL_LEN)
+            translateUrl = translateUrl.substring(0, MAX_HTTP_GET_URL_LEN);
+        ChanHelper.launchUrlInBrowser(this, translateUrl);
+        return true;
     }
 
     protected boolean playThreadMenu() {
@@ -1204,7 +1007,13 @@ public class ThreadActivity
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    absListView.setFastScrollEnabled(false);
+                    if (handler != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                absListView.setFastScrollEnabled(false);
+                            }
+                        });
                     while (true) {
                         synchronized (this) {
                             if (shouldPlayThread == false)
@@ -1252,16 +1061,35 @@ public class ThreadActivity
                     synchronized (this) {
                         shouldPlayThread = false;
                     }
-                    absListView.setFastScrollEnabled(true);
+                    if (handler != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                absListView.setFastScrollEnabled(true);
+                            }
+                        });
                 }
             }).start();
         }
         return true;
     }
 
-    synchronized private void setShareIntent(Intent intent) {
-        if (shareActionProvider != null && intent != null)
-            shareActionProvider.setShareIntent(intent);
+    private void setShareIntent(final Intent intent) {
+        if (ChanHelper.onUIThread())
+            synchronized (this) {
+                if (shareActionProvider != null && intent != null)
+                    shareActionProvider.setShareIntent(intent);
+            }
+        else if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (this) {
+                        if (shareActionProvider != null && intent != null)
+                            shareActionProvider.setShareIntent(intent);
+                    }
+                }
+            });
     }
 
     public void updateSharedIntent() {
@@ -1327,8 +1155,6 @@ public class ThreadActivity
         }
         MediaScannerConnection.scanFile(getApplicationContext(), paths, types, this);
     }
-
-    Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
 
     public void onScanCompleted(String path, Uri uri) {
         if (DEBUG) Log.i(TAG, "Scan completed for path=" + path + " result uri=" + uri);
