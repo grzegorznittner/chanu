@@ -118,9 +118,10 @@ final class LoadAndDisplayImageTask implements Runnable {
 		double scale = Math.max((double)width / (double)origWidth, (double)height / (double)origHeight);
 		int scaledWidth = (int)(origWidth * scale);
 		int scaledHeight = (int)(origHeight * scale);
-		bmp = Bitmap.createScaledBitmap(bmp, scaledWidth, scaledHeight, true);
-		
-		if (bmp.getWidth() >= bmp.getHeight()) {
+        //bmp = Bitmap.createScaledBitmap(bmp, scaledWidth, scaledHeight, true); // filter busts share intent
+        bmp = Bitmap.createScaledBitmap(bmp, scaledWidth, scaledHeight, false);
+
+        if (bmp.getWidth() >= bmp.getHeight()) {
 			bmp = Bitmap.createBitmap(bmp,
 				bmp.getWidth() / 2 - bmp.getHeight() / 2, 0,
 				bmp.getHeight(), bmp.getHeight());

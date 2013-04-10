@@ -3,6 +3,7 @@ package com.chanapps.four.data;
 import java.io.*;
 import java.util.*;
 
+import android.net.Uri;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -523,8 +524,12 @@ public class ChanFileStorage {
         return post.board + "_" + post.imageName();
     }
 
-    public static String getLocalImageUrl(Context context, ChanPost post) {
-        return "file://" + getBoardCacheDirectory(context, post.board) + FILE_SEP + post.imageName();
+    public static Uri getLocalImageUri(Context context, String boardCode, long postNo, String ext) {
+        return Uri.parse("file://" + getBoardCacheDirectory(context, boardCode) + FILE_SEP + postNo + ext);
+    }
+
+    public static Uri getLocalImageUri(Context context, ChanPost post) {
+        return Uri.parse("file://" + getBoardCacheDirectory(context, post.board) + FILE_SEP + post.imageName());
     }
 
     public static File createWallpaperFile(Context context) {

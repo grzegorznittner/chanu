@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/highlight_replies_menu"
+          android:title="@string/highlight_replies"
+          android:icon="@drawable/navigation_next_item"
+            />
+    <item android:id="@+id/highlight_previous_menu"
+          android:title="@string/highlight_previous"
+          android:icon="@drawable/navigation_previous_item"
+            />
+    <item android:id="@+id/highlight_ids_menu"
+          android:title="@string/highlight_ids"
+          android:icon="@drawable/action_search"
+            />
+    <item android:id="@+id/copy_text_menu"
+          android:title="@string/copy_text_menu"
+          android:icon="@drawable/content_copy"
+            />
+
+</menu>

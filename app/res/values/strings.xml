@@ -24,11 +24,16 @@
     <!-- blocklist -->
     <string name="blocklist_button">Block Posts With Id</string>
     <string name="blocklist_title">Blocklist</string>
-    <string name="blocklist_title_remove">Click to remove from blocklist</string>
-    <string name="blocklist_message">Click to delete from blocklist</string>
+    <string name="blocklist_title_remove">Select to remove from blocklist</string>
+    <string name="blocklist_message">Select to remove from blocklist</string>
     <string name="blocklist_message_empty">Your blocklist is empty</string>
     <string name="blocklist_removed_id">Removed %1$s from blocklist</string>
-    <string name="blocklist_add_id_confirm">Add %1$s to blocklist?</string>
+    <string name="blocklist_add_id_confirm">Add %1$s%2$s %3$s to blocklist?</string>
+    <string name="blocklist_remove_id_confirm">Remove %1$s%2$s %3$s from blocklist?</string>
+    <string name="blocklist_select_view_type">Select block type</string>
+    <string name="blocklist_select_type">Select block type</string>
+    <string name="blocklist_no_types_found">No blockable tripcode, name, email or id found</string>
+    <string name="blocklist_empty">Blocklist is empty, visit threads to select items to block</string>
 
     <!-- delete post -->
     <string name="delete_button">Delete Post</string>
@@ -97,12 +102,20 @@
     <string name="post_reply_all_menu">Post Reply</string>
     <string name="post_reply_all_quote_menu">Post Quoted Reply</string>
     <string name="go_to_link_menu">Go To Link</string>
+    <string name="go_to_link_not_found">No links found in posts</string>
     <string name="select_text_menu">Select Text</string>
     <string name="select_text_hint">Select Text</string>
     <string name="copy_text_menu">Copy Text</string>
+    <string name="delete_report_posts_menu">Delete/Report Posts</string>
     <string name="delete_posts_menu">Delete Posts</string>
     <string name="report_posts_menu">Report Posts</string>
+    <string name="block_posts_menu">Block Posts</string>
+    <string name="translate_posts_menu">Translate Posts</string>
+    <string name="translate_no_text">No text found to translate</string>
+    <string name="share_image">Share Image</string>
     <string name="share_text">Share Text</string>
+    <string name="share_text_default">Thread /</string>
+    <string name="share_text_empty">No text found to share</string>
     <string name="toggle_image_only_menu">Toggle Image Only</string>
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
@@ -132,7 +145,6 @@
     <string name="board_activity_refresh">Refreshing board...</string>
     <string name="board_activity_fresh">Board is current</string>
     <string name="board_refresh_fresh">Board is fresh</string>
-    <string name="board_refresh_no_connection">Network down</string>
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
     <string name="board_end_of_board">End of Board</string>
     <string name="board_click_for_more">(click for more)</string>
@@ -147,6 +159,7 @@
     <string name="thread_couldnt_load">Couldn\'t load thread</string>
     <string name="thread_couldnt_load_image_cancelled">Couldn\'t load image, cancelled</string>
     <string name="thread_couldnt_load_image">Couldn\'t load image: %1$s</string>
+    <string name="thread_couldnt_download_image_down">Network down, can\'t download image</string>
     <string name="thread_couldnt_download_image">Couldn\'t download image</string>
     <string name="thread_no_replies_found">No posts found</string>
     <string name="thread_prev_replies_found">Found %1$d previous</string>
@@ -220,8 +233,10 @@
     <string name="dismiss">Close</string>
     <string name="dead_thread_reply">Dead Thread No Reply</string>
     <string name="closed_thread_reply">Closed Thread No Reply</string>
+    <string name="thread_replies">Thread Replies</string>
+    <string name="thread_info">Thread Info</string>
     <string name="highlight_replies">Highlight Replies</string>
-    <string name="highlight_previous">Highlight Previous</string>
+    <string name="highlight_previous">Highlight References</string>
     <string name="highlight_ids">Highlight Poster</string>
     <string name="popup_country_flag">Country Flag</string>
     <string name="popup_show_image">Show Image</string>
@@ -338,7 +353,7 @@
     <string name="pref_automatically_manage_watchlist_summ_on">Add and remove threads automatically</string>
     <string name="pref_automatically_manage_watchlist_summ_off">Manually add and remove threads</string>
     <string name="pref_blocklist_button">Blocklist</string>
-    <string name="pref_blocklist_button_summ">Block all threads and posts from these Ids</string>
+    <string name="pref_blocklist_button_summ">Filter threads and posts</string>
     <string name="pref_cache_category">Cache</string>
     <string name="pref_cache_category_summ">Space to use for storing threads and images</string>
     <string name="pref_clear_cache">Clear Cache</string>
@@ -632,53 +647,53 @@
     </string-array>
 -->
     <string-array name="board_array_worksafe">
-        <item>@string/board_select</item>
-        <item>@string/board_watch</item>
-        <item>/3/ 3DCG</item>
-        <item>/a/ Anime &amp; Manga</item>
-        <item>/adv/ Advice</item>
-        <item>/asp/ Alternative Sports</item>
-        <item>/an/ Animals &amp; Nature</item>
-        <item>/c/ Anime/Cute</item>
-        <item>/cgl/ Cosplay &amp; EGL</item>
-        <item>/ck/ Food &amp; Cooking</item>
-        <item>/cm/ Cute/Male</item>
-        <item>/co/ Comics &amp; Cartoons</item>
-        <item>/diy/ Do-It-Yourself</item>
-        <item>/fa/ Fashion</item>
-        <item>/fit/ Health &amp; Fitness</item>
-        <item>/g/ Technology</item>
-        <item>/gd/ Graphic Design</item>
-        <item>/i/ Oekaki</item>
-        <item>/ic/ Artwork/Critique</item>
-        <item>/int/ International</item>
-        <item>/jp/ Otaku Culture</item>
-        <item>/k/ Weapons</item>
-        <item>/lgbt/ LGBT</item>
-        <item>/lit/ Literature</item>
-        <item>/m/ Mecha</item>
-        <item>/mlp/ Pony</item>
-        <item>/mu/ Music</item>
-        <item>/n/ Transportation</item>
-        <item>/o/ Auto</item>
-        <item>/out/ Outdoors</item>
-        <item>/p/ Photography</item>
-        <item>/po/ Papercraft &amp; Origami</item>
-        <item>/q/ 4chan Discussion</item>
-        <item>/sci/ Science &amp; Math</item>
-        <item>/sp/ Sports</item>
-        <item>/tg/ Traditional Games</item>
-        <item>/toy/ Toys</item>
-        <item>/trv/ Travel</item>
-        <item>/tv/ Television &amp; Film</item>
-        <item>/v/ Video Games</item>
-        <item>/vg/ Video Game Generals</item>
-        <item>/vp/ Pokemon</item>
-        <item>/vr/ Retro Games</item>
-        <item>/w/ Anime/Wallpapers</item>
-        <item>/wg/ Wallpapers/General</item>
-        <item>/wsg/ Worksafe GIF</item>
-        <item>/x/ Paranormal</item>
+        <item>@string/board_select_abbrev</item>
+        <item>@string/board_watch_abbrev</item>
+        <item>/3/</item>
+        <item>/a/</item>
+        <item>/adv/</item>
+        <item>/asp/</item>
+        <item>/an/</item>
+        <item>/c/</item>
+        <item>/cgl/</item>
+        <item>/ck/</item>
+        <item>/cm/</item>
+        <item>/co/</item>
+        <item>/diy/</item>
+        <item>/fa/</item>
+        <item>/fit/</item>
+        <item>/g/</item>
+        <item>/gd/</item>
+        <item>/i/</item>
+        <item>/ic/</item>
+        <item>/int/</item>
+        <item>/jp/</item>
+        <item>/k/</item>
+        <item>/lgbt/</item>
+        <item>/lit/</item>
+        <item>/m/</item>
+        <item>/mlp/</item>
+        <item>/mu/</item>
+        <item>/n/</item>
+        <item>/o/</item>
+        <item>/out/</item>
+        <item>/p/</item>
+        <item>/po/</item>
+        <item>/q/</item>
+        <item>/sci/</item>
+        <item>/sp/</item>
+        <item>/tg/</item>
+        <item>/toy/</item>
+        <item>/trv/</item>
+        <item>/tv/</item>
+        <item>/v/</item>
+        <item>/vg/</item>
+        <item>/vp/</item>
+        <item>/vr/</item>
+        <item>/w/</item>
+        <item>/wg/</item>
+        <item>/wsg/</item>
+        <item>/x/</item>
    </string-array>
 
 </resources>

@@ -101,10 +101,11 @@ public class NetworkProfileManager {
 			userStats = ChanFileStorage.loadUserStats(newActivity.getBaseContext());
 		}
 		userStats.registerActivity(newActivity);
-		
-		if (activeProfile == null) {
+
+        // always do this because otherwise receiver is not always called
+		//if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
-		}
+		//}
 
 		switch(currentActivityId.activity) {
 		case BOARD_SELECTOR_ACTIVITY:

@@ -158,22 +158,22 @@ public class ChanPost {
         if ((headerComponents & CHAN_HEADER_SET) == 0)
             headerLine(); // side effect sets headerComponents
         if ((headerComponents & CHAN_ID) == 0 && id != null && !id.isEmpty() && !id.equalsIgnoreCase("heaven"))
-            lines.add("<b>" + formattedUserId() + "</b>");
+            lines.add(formattedUserId());
         if ((headerComponents & CHAN_NAME) == 0 && name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
-            lines.add("<b>" + name + "</b>");
+            lines.add(name);
         if ((headerComponents & CHAN_TRIP) == 0 && trip != null && !trip.isEmpty())
-            lines.add("<b>" + formattedUserTrip() + "</b>");
+            lines.add(formattedUserTrip());
         if ((headerComponents & CHAN_EMAIL) == 0 && email != null && !email.isEmpty())
-            lines.add(email.equalsIgnoreCase("sage") ? "<b>sage</b>" : "<b>" + email +"</b>");
+            lines.add(email.equalsIgnoreCase("sage") ? "sage" : email);
         if (country_name != null && !country_name.isEmpty())
-            lines.add("<b>" + country_name + "</b>");
+            lines.add(country_name);
         return ChanHelper.join(lines, "<br/>\n");
     }
 
     public String fullText() {
         List<String> lines = new ArrayList<String>();
         if (resto == 0)
-            lines.add("<b>" + threadInfoLine() + "</b>");
+            lines.add(threadInfoLine());
         String missingHeaderLines = missingHeaderLines();
         if (!missingHeaderLines.isEmpty())
             lines.add(missingHeaderLines);
@@ -682,6 +682,15 @@ public class ChanPost {
     public String formattedUserTrip() {
         if (trip == null)
             return "";
+        else
+            return formattedUserTrip(trip, useFriendlyIds);
+    }
+
+    public static String formattedUserTrip(String trip, boolean useFriendlyIds) {
+        if (trip == null)
+            return "";
+        if (!useFriendlyIds)
+            return trip;
         if (trip.charAt(0) == '!' && trip.charAt(1) == '!')
             return "!!" + formattedUserId(trip.substring(2), useFriendlyIds);
         if (trip.charAt(0) == '!')

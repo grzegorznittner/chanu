@@ -179,13 +179,7 @@ public class MobileProfile extends AbstractNetworkProfile {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
-                        if (profile.getConnectionType() == Type.NO_CONNECTION
-                                || profile.getConnectionHealth() == Health.NO_CONNECTION
-                                || profile.getConnectionHealth() == Health.BAD)
-                            Toast.makeText(context, R.string.board_refresh_no_connection, Toast.LENGTH_SHORT).show();
-                        else
-                            Toast.makeText(context, R.string.board_refresh_fresh, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, R.string.board_refresh_fresh, Toast.LENGTH_SHORT).show();
                     }
                 });
 		}

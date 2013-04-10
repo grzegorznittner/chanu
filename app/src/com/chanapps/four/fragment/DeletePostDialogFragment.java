@@ -33,7 +33,7 @@ public class DeletePostDialogFragment extends DialogFragment {
 
     public static final String TAG = DeletePostDialogFragment.class.getSimpleName();
 
-    private ActionMode mode = null;
+    //private ActionMode mode = null;
     private RefreshableActivity refreshableActivity = null;
     private String boardCode = null;
     private long threadNo = 0;
@@ -42,10 +42,11 @@ public class DeletePostDialogFragment extends DialogFragment {
     private EditText passwordText = null;
     private CheckBox imageOnlyCheckbox = null;
 
-    public DeletePostDialogFragment(ActionMode mode, RefreshableActivity refreshableActivity,
+    public DeletePostDialogFragment(//ActionMode mode,
+                                    RefreshableActivity refreshableActivity,
                                     String boardCode, long threadNo, long[] postNos) {
         super();
-        this.mode = mode;
+        //this.mode = mode;
         this.refreshableActivity = refreshableActivity;
         this.boardCode = boardCode;
         this.threadNo = threadNo;
@@ -79,7 +80,7 @@ public class DeletePostDialogFragment extends DialogFragment {
                     dialogFragment.show(getActivity().getSupportFragmentManager(), DeletingPostDialogFragment.TAG);
                     if (!deletePostTask.isCancelled())
                         deletePostTask.execute(dialogFragment);
-                    mode.finish();
+                    //mode.finish();
                 }
             })
             .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {

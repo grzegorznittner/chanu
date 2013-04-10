@@ -61,7 +61,11 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             int i = 0;
             for (ChanPost thread : board.threads) {
                 if (DEBUG) Log.i(TAG, "Loading thread:" + thread.no);
-                if (ChanBlocklist.contains(context, thread.id)) {
+                if (ChanBlocklist.contains(context, ChanBlocklist.BlockType.TRIPCODE, thread.trip)
+                        || ChanBlocklist.contains(context, ChanBlocklist.BlockType.NAME, thread.name)
+                        || ChanBlocklist.contains(context, ChanBlocklist.BlockType.EMAIL, thread.email)
+                        || ChanBlocklist.contains(context, ChanBlocklist.BlockType.ID, thread.id))
+                {
                     if (DEBUG) Log.i(TAG, "Skipped thread: " + thread.no);
                     continue;
                 }

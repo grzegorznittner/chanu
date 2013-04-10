@@ -74,8 +74,9 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.SLOW)
         {
             if (DEBUG) Log.i(TAG, "fetchAll fetching widgets, watchlists, and uncached boards");
-            if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
-                (new ChanWatchlist.CleanWatchlistTask(context, null, false)).execute();
+            // never clean automatically since it isn't respecting the auto clean time
+            // /if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
+            //    (new ChanWatchlist.CleanWatchlistTask(context, null, false)).execute();
             ChanWatchlist.fetchWatchlistThreads(context);
             BoardWidgetProvider.fetchAllWidgets(context);
             ChanBoard.preloadUncachedBoards(context);
