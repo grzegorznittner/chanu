@@ -452,19 +452,46 @@ public class BoardActivity
         return true;
     }
 
-    protected void setActionBarTitle() {
+    public void setActionBarTitle() {
         final ActionBar a = getActionBar();
         if (a == null)
             return;
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        if (board == null)
+        if (board == null) {
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
+        }
         String title = (board == null ? "Board " + boardCode : board.name);
-        String time = (board != null && board.lastFetched > 0)
-                ? "updated " + DateUtils.getRelativeTimeSpanString(board.lastFetched, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString()
-                : "last update unknown";
         a.setTitle(title);
-        a.setSubtitle(time);
+        
+        StringBuffer msg = new StringBuffer();
+        if (board.newThreads > 0 || board.updatedThreads > 0) {
+			if (board.newThreads > 0) {
+				msg.append("" + board.newThreads + " new ");
+			}
+			if (board.updatedThreads > 0) {
+				if (board.newThreads > 0) {
+					msg.append("and ");
+				}
+				msg.append("" + board.updatedThreads + " updated ");
+			}
+			msg.append("thread");
+			if (board.newThreads + board.updatedThreads > 1) {
+				msg.append("s");
+			}
+			msg.append(", press refresh button.");
+		} else {
+			board.threads = board.loadedThreads;
+    		board.loadedThreads = new ChanThread[0];
+    		if (board.defData || board.lastFetched == 0) {
+    			msg.append("data has not been fetched yet");
+    		} else if (Math.abs(board.lastFetched - new Date().getTime()) < 60000) {
+    			msg.append("data are up to date");
+    		} else {
+    			msg.append("data fetched ").append(DateUtils.getRelativeTimeSpanString(
+    					board.lastFetched, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString());
+    		}
+		}
+        a.setSubtitle(msg.toString());
         a.setDisplayShowTitleEnabled(true);
         a.setDisplayHomeAsUpEnabled(true);
     }

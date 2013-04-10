@@ -1061,7 +1061,7 @@ public class ThreadActivity
     }
 
     @Override
-    protected void setActionBarTitle() {
+    public void setActionBarTitle() {
         final ActionBar a = getActionBar();
         if (a == null)
             return;

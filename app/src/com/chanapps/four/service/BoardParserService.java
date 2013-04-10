@@ -22,10 +22,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanBoard;
@@ -33,6 +36,7 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 import com.chanapps.four.widget.BoardWidgetProvider;
 
@@ -116,6 +120,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
                 ChanFileStorage.storeBoardData(context, board);
             if (DEBUG) Log.i(TAG, "Stored board " + boardCode + (pageNo == -1 ? " catalog" : " page " + pageNo)
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
+            setActionBarSubtitle();
 
             if (!boardCatalog) {
 	            // thread files are stored in separate service call to make board parsing faster
@@ -228,32 +233,10 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 	private void updateBoardData(List<ChanPost> threads) {
 		if (board != null) {
         	synchronized (board) {
-        		boolean oldEnough = Calendar.getInstance().getTimeInMillis() - board.lastFetched > ChanBoard.MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST;
+        		boolean oldEnough = false; //Calendar.getInstance().getTimeInMillis() - board.lastFetched > ChanBoard.MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST;
 	        	if (!force && !board.defData && board.threads.length > 0 && !oldEnough && ChanBoard.REFRESH_THREADS_ON_REQUEST) {
 	        		board.loadedThreads = threads.toArray(new ChanPost[0]);
 	        		board.updateCountersAfterLoad();
-	        		
-	        		if (board.newThreads > 0 || board.updatedThreads > 0) {
-	        			StringBuffer msg = new StringBuffer();
-	        			if (board.newThreads > 0) {
-	        				msg.append("" + board.newThreads + " new ");
-	        			}
-	        			if (board.updatedThreads > 0) {
-	        				if (board.newThreads > 0) {
-	        					msg.append("and ");
-	        				}
-	        				msg.append("" + board.updatedThreads + " updated ");
-	        			}
-	        			msg.append("thread");
-	        			if (board.newThreads + board.updatedThreads > 1) {
-	        				msg.append("s");
-	        			}
-	        			msg.append(", click refresh button.");
-	        			NetworkProfileManager.instance().makeToast(msg.toString(), Toast.LENGTH_LONG);
-	        		} else {
-	        			board.threads = board.loadedThreads;
-		        		board.loadedThreads = new ChanThread[0];
-	        		}
 	        	} else {
 	        		board.threads = threads.toArray(new ChanPost[0]);
 	        		board.loadedThreads = new ChanThread[0];
@@ -262,6 +245,24 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 	        	}
         	}
         }
+	}
+
+	private void setActionBarSubtitle() {
+		final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+		if (activity != null && activity.getChanActivityId() != null) {
+			final ChanActivityId activityId = activity.getChanActivityId();
+			Handler handler = activity.getChanHandler();
+			if (handler != null) {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						if (activityId.activity == LastActivity.BOARD_ACTIVITY && board.link.equals(activityId.boardCode)) {
+							((BoardActivity)activity).setActionBarTitle();
+						}
+					}
+				});
+			}
+		}
 	}
 
 	@Override
