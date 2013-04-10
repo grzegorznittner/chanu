@@ -195,6 +195,7 @@ public class NetworkProfileManager {
 		}
 	}
 	public void finishedImageDownload(ChanIdentifiedService service, int time, int size) {
+		service = checkService(service);
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(service.getApplicationContext());
 		}
@@ -202,6 +203,7 @@ public class NetworkProfileManager {
 	}
 
 	public void finishedFetchingData(ChanIdentifiedService service, int time, int size) {
+		service = checkService(service);
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(service.getApplicationContext());
 		}
@@ -209,6 +211,7 @@ public class NetworkProfileManager {
 	}
 	
 	public void failedFetchingData(ChanIdentifiedService service, Failure failure) {
+		service = checkService(service);
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(service.getApplicationContext());
 		}
@@ -216,6 +219,7 @@ public class NetworkProfileManager {
 	}
 	
 	public void finishedParsingData(ChanIdentifiedService service) {
+		service = checkService(service);
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(service.getApplicationContext());
 		}
@@ -223,10 +227,29 @@ public class NetworkProfileManager {
 	}
 	
 	public void failedParsingData(ChanIdentifiedService service, Failure failure) {
+		service = checkService(service);
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(service.getApplicationContext());
 		}
 		activeProfile.onDataFetchFailure(service, failure);
+	}
+	
+	private ChanIdentifiedService checkService(ChanIdentifiedService service) {
+		if (service == null) {
+			return new ChanIdentifiedService() {
+				@Override
+				public ChanActivityId getChanActivityId() {
+					return getActivity().getChanActivityId();
+				}
+				
+				@Override
+				public Context getApplicationContext() {
+					return getActivity().getBaseContext();
+				}
+			};
+		} else {
+			return service;
+		}
 	}
 	
 	public void changeNetworkProfile(NetworkProfile.Type type) {

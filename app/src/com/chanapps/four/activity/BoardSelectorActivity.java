@@ -131,7 +131,7 @@ public class BoardSelectorActivity
             activeBoardTypes.clear();
             mTabsAdapter = new TabsAdapter(this, getSupportFragmentManager(), mViewPager);
             for (ChanBoard.Type type : ChanBoard.Type.values()) {
-            if (showNSFWBoards || !ChanBoard.isNSFWBoardType(type)) {
+            	if (showNSFWBoards || !ChanBoard.isNSFWBoardType(type)) {
                     addTab(type, -1);
                 }
             }

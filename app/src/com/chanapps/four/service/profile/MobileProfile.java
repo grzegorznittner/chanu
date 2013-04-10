@@ -358,5 +358,4 @@ public class MobileProfile extends AbstractNetworkProfile {
             makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_parse_thread_fail), data.boardCode, data.threadNo));
 		}
 	}
-
 }
