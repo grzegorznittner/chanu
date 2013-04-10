@@ -41,18 +41,9 @@ import android.widget.*;
 
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.*;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.data.ChanThreadStat;
-import com.chanapps.four.data.ChanWatchlist;
-import com.chanapps.four.data.UserStatistics;
-import com.chanapps.four.fragment.DeletePostDialogFragment;
-import com.chanapps.four.fragment.ListOfLinksDialogFragment;
-import com.chanapps.four.fragment.ReportPostDialogFragment;
+import com.chanapps.four.fragment.*;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
@@ -106,6 +97,7 @@ public class ThreadActivity
     protected boolean shouldPlayThread = false;
     protected ShareActionProvider shareActionProvider = null;
     protected Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
+    protected ActionMode actionMode = null;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -169,7 +161,7 @@ public class ThreadActivity
                 ? intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0)
                 : prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
         // backup in case we are missing stuff
-        if (boardCode.isEmpty()) {
+        if (boardCode == null || boardCode.isEmpty()) {
             Intent selectorIntent = new Intent(this, BoardSelectorActivity.class);
             selectorIntent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString());
             selectorIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
@@ -687,6 +679,7 @@ public class ThreadActivity
         }
 
         mode.setTitle(R.string.thread_context_select);
+        actionMode = mode;
         return true;
     }
 
@@ -734,6 +727,7 @@ public class ThreadActivity
                 absListView.setItemChecked(i, false);
             }
         }
+        actionMode = null;
     }
 
     protected String selectText(SparseBooleanArray postPos) {
@@ -959,11 +953,55 @@ public class ThreadActivity
                         .show(getSupportFragmentManager(), ReportPostDialogFragment.TAG);
                 return true;
             case R.id.block_posts_menu:
-                return false;
+                Map<ChanBlocklist.BlockType, List<String>> blocklist = extractBlocklist(postPos);
+                (new BlocklistSelectToAddDialogFragment(this, blocklist)).show(getSupportFragmentManager(), TAG);
+            return true;
 
             default:
                 return false;
         }
+    }
+
+    protected Map<ChanBlocklist.BlockType, List<String>> extractBlocklist(SparseBooleanArray postPos) {
+        Map<ChanBlocklist.BlockType, List<String>> blocklist = new HashMap<ChanBlocklist.BlockType, List<String>>();
+        List<String> tripcodes = new ArrayList<String>();
+        List<String> names = new ArrayList<String>();
+        List<String> emails = new ArrayList<String>();
+        List<String> userIds = new ArrayList<String>();
+        if (adapter == null)
+            return blocklist;
+        Cursor cursor = adapter.getCursor();
+        if (cursor == null)
+            return blocklist;
+        
+        for (int i = 0; i < adapter.getCount(); i++) {
+            if (!postPos.get(i))
+                continue;
+            if (!cursor.moveToPosition(i))
+                continue;
+            String tripcode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TRIPCODE));
+            if (tripcode != null && !tripcode.isEmpty())
+                tripcodes.add(tripcode);
+            String name = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_NAME));
+            if (name != null && !name.isEmpty() && !name.equals("Anonymous"))
+                names.add(name);
+            String email = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EMAIL));
+            if (email != null && !email.isEmpty() && !email.equals("sage"))
+                emails.add(email);
+            String userId = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_USER_ID));
+            if (userId != null && !userId.isEmpty() && !userId.equals("Heaven"))
+                userIds.add(userId);
+        }
+        if (tripcodes.size() > 0)
+            blocklist.put(ChanBlocklist.BlockType.TRIPCODE, tripcodes);
+        if (names.size() > 0)
+            blocklist.put(ChanBlocklist.BlockType.NAME, names);
+        if (emails.size() > 0)
+            blocklist.put(ChanBlocklist.BlockType.EMAIL, emails);
+        if (userIds.size() > 0)
+            blocklist.put(ChanBlocklist.BlockType.ID, userIds);
+        
+        return blocklist;
     }
 
     protected boolean translatePosts(SparseBooleanArray postPos) {
@@ -1162,6 +1200,13 @@ public class ThreadActivity
             uri = Uri.parse(path);
         checkedImageUris.put(path, uri);
         updateSharedIntent();
+    }
+
+    @Override
+    public void refreshActivity() {
+        super.refreshActivity();
+        if (actionMode != null)
+            actionMode.finish();
     }
 
 }

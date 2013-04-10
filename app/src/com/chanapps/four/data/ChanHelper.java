@@ -138,7 +138,10 @@ public class ChanHelper {
     };
 
     public static final String PREF_WIDGET_BOARDS = "prefWidgetBoards";
-    public static final String PREF_BLOCKLIST = "prefBlocklist";
+    public static final String PREF_BLOCKLIST_TRIPCODE = "prefBlocklistTripcode";
+    public static final String PREF_BLOCKLIST_NAME = "prefBlocklistName";
+    public static final String PREF_BLOCKLIST_EMAIL = "prefBlocklistEmail";
+    public static final String PREF_BLOCKLIST_ID = "prefBlocklistId";
 
     public static String join(List<String> list, String delimiter) {
         String text = "";

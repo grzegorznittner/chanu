@@ -682,6 +682,15 @@ public class ChanPost {
     public String formattedUserTrip() {
         if (trip == null)
             return "";
+        else
+            return formattedUserTrip(trip, useFriendlyIds);
+    }
+
+    public static String formattedUserTrip(String trip, boolean useFriendlyIds) {
+        if (trip == null)
+            return "";
+        if (!useFriendlyIds)
+            return trip;
         if (trip.charAt(0) == '!' && trip.charAt(1) == '!')
             return "!!" + formattedUserId(trip.substring(2), useFriendlyIds);
         if (trip.charAt(0) == '!')

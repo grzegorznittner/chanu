@@ -260,6 +260,15 @@ public class BoardActivity
             boardCode = ensurePrefs().getString(ChanHelper.BOARD_CODE, DEFAULT_BOARD_CODE);
             if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from prefs or default");
         }
+        // backup in case we are missing stuff
+        if (boardCode == null || boardCode.isEmpty()) {
+            Intent selectorIntent = new Intent(this, BoardSelectorActivity.class);
+            selectorIntent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString());
+            selectorIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
+            selectorIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(selectorIntent);
+            finish();
+        }
     }
 
     protected void restoreInstanceState() {

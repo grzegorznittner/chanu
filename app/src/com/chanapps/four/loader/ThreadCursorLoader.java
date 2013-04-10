@@ -87,7 +87,10 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             if (board != null && thread != null && thread.posts != null && thread.posts.length > 0) { // show loading for no thread data
                 int adSpace = MINIMUM_AD_SPACING;
                 for (ChanPost post : thread.posts) {
-                    if (ChanBlocklist.contains(context, post.id))
+                    if (ChanBlocklist.contains(context, ChanBlocklist.BlockType.TRIPCODE, post.trip)
+                            || ChanBlocklist.contains(context, ChanBlocklist.BlockType.NAME, post.name)
+                            || ChanBlocklist.contains(context, ChanBlocklist.BlockType.EMAIL, post.email)
+                            || ChanBlocklist.contains(context, ChanBlocklist.BlockType.ID, post.id))
                         continue;
                     post.isDead = thread.isDead; // inherit from parent
                     post.closed = thread.closed; // inherit

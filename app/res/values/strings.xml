@@ -24,11 +24,16 @@
     <!-- blocklist -->
     <string name="blocklist_button">Block Posts With Id</string>
     <string name="blocklist_title">Blocklist</string>
-    <string name="blocklist_title_remove">Click to remove from blocklist</string>
-    <string name="blocklist_message">Click to delete from blocklist</string>
+    <string name="blocklist_title_remove">Select to remove from blocklist</string>
+    <string name="blocklist_message">Select to remove from blocklist</string>
     <string name="blocklist_message_empty">Your blocklist is empty</string>
     <string name="blocklist_removed_id">Removed %1$s from blocklist</string>
-    <string name="blocklist_add_id_confirm">Add %1$s to blocklist?</string>
+    <string name="blocklist_add_id_confirm">Add %1$s%2$s %3$s to blocklist?</string>
+    <string name="blocklist_remove_id_confirm">Remove %1$s%2$s %3$s from blocklist?</string>
+    <string name="blocklist_select_view_type">Select block type</string>
+    <string name="blocklist_select_type">Select block type</string>
+    <string name="blocklist_no_types_found">No blockable tripcode, name, email or id found</string>
+    <string name="blocklist_empty">Blocklist is empty, visit threads to select items to block</string>
 
     <!-- delete post -->
     <string name="delete_button">Delete Post</string>
@@ -140,7 +145,6 @@
     <string name="board_activity_refresh">Refreshing board...</string>
     <string name="board_activity_fresh">Board is current</string>
     <string name="board_refresh_fresh">Board is fresh</string>
-    <string name="board_refresh_no_connection">Network down</string>
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
     <string name="board_end_of_board">End of Board</string>
     <string name="board_click_for_more">(click for more)</string>
@@ -349,7 +353,7 @@
     <string name="pref_automatically_manage_watchlist_summ_on">Add and remove threads automatically</string>
     <string name="pref_automatically_manage_watchlist_summ_off">Manually add and remove threads</string>
     <string name="pref_blocklist_button">Blocklist</string>
-    <string name="pref_blocklist_button_summ">Block all threads and posts from these Ids</string>
+    <string name="pref_blocklist_button_summ">Filter threads and posts</string>
     <string name="pref_cache_category">Cache</string>
     <string name="pref_cache_category_summ">Space to use for storing threads and images</string>
     <string name="pref_clear_cache">Clear Cache</string>

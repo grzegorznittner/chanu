@@ -304,7 +304,7 @@ public class ThreadPostPopup implements Dismissable {
             blockButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    (new BlocklistAddDialogFragment(ThreadPostPopup.this, activity, userId)).show(activity.getSupportFragmentManager(), BoardActivity.TAG);
+                    //(new BlocklistAddDialogFragment(ThreadPostPopup.this, activity, userId)).show(activity.getSupportFragmentManager(), BoardActivity.TAG);
                     dismiss();
                 }
             });

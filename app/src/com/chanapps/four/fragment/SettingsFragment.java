@@ -37,8 +37,8 @@ public class SettingsFragment
         blocklistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                BlocklistDialogFragment dialog = new BlocklistDialogFragment(SettingsFragment.this.getActivity());
-                dialog.show(getFragmentManager(), SettingsFragment.TAG);
+                (new BlocklistSelectToViewDialogFragment(SettingsFragment.this))
+                        .show(getFragmentManager(), SettingsFragment.TAG);
                 return true;
             }
         });
@@ -47,8 +47,8 @@ public class SettingsFragment
         resetPrefsButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                ResetPreferencesDialogFragment dialog = new ResetPreferencesDialogFragment(SettingsFragment.this);
-                dialog.show(getFragmentManager(), SettingsFragment.TAG);
+                (new ResetPreferencesDialogFragment(SettingsFragment.this))
+                        .show(getFragmentManager(), SettingsFragment.TAG);
                 return true;
             }
         });
@@ -57,8 +57,8 @@ public class SettingsFragment
         clearCacheButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                ClearCacheDialogFragment dialog = new ClearCacheDialogFragment(SettingsFragment.this);
-                dialog.show(getFragmentManager(), SettingsFragment.TAG);
+                (new ClearCacheDialogFragment(SettingsFragment.this))
+                        .show(getFragmentManager(), SettingsFragment.TAG);
                 return true;
             }
         });
@@ -67,8 +67,8 @@ public class SettingsFragment
         clearWatchlistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                WatchlistClearDialogFragment clearWatchlistFragment = new WatchlistClearDialogFragment();
-                clearWatchlistFragment.show(getFragmentManager(), clearWatchlistFragment.TAG);
+                (new WatchlistClearDialogFragment())
+                        .show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
                 return true;
             }
         });
@@ -77,8 +77,9 @@ public class SettingsFragment
         aboutButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                RawResourceDialog aboutDialog = new RawResourceDialog(getActivity(), R.layout.about_dialog, R.raw.about_header, R.raw.about_detail);
-                aboutDialog.show();
+                (new RawResourceDialog(
+                        getActivity(), R.layout.about_dialog, R.raw.about_header, R.raw.about_detail))
+                        .show();
                 return true;
             }
         });
