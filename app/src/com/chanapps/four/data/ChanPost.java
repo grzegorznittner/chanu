@@ -171,19 +171,32 @@ public class ChanPost {
     }
 
     public String fullText() {
+        return fullText(false);
+    }
+
+    public String fullText(boolean showSpoiler) {
         List<String> lines = new ArrayList<String>();
         if (resto == 0)
             lines.add(threadInfoLine());
         String missingHeaderLines = missingHeaderLines();
         if (!missingHeaderLines.isEmpty())
             lines.add(missingHeaderLines);
-        String subText = sanitizeText(sub);
+        String subText = sanitizeText(sub, false, showSpoiler);
         if (subText != null && !subText.isEmpty())
             lines.add("<b>" + subText + "</b>");
-        String comText = sanitizeText(com);
+        String comText = sanitizeText(com, false, showSpoiler);
         if (comText != null && !comText.isEmpty())
             lines.add(comText);
         return ChanHelper.join(lines, "<br/>\n");
+    }
+
+
+    public String spoilerText() {
+        if ((sub != null && sub.indexOf("<s>") >= 0)
+            || (com != null && com.indexOf("<s>") >= 0))
+            return fullText(true);
+        else
+            return "";
     }
 
     private static final int MAX_THREAD_SUBJECT_LEN = 100;
@@ -206,7 +219,11 @@ public class ChanPost {
         return sanitizeText(text, false);
     }
 
-    private String sanitizeText(String text, boolean collapseNewlines) {
+    private String sanitizeText(String text, boolean collapseNewLines) {
+        return sanitizeText(text, collapseNewLines, false);
+    }
+
+    private String sanitizeText(String text, boolean collapseNewlines, boolean showSpoiler) {
         if (text == null || text.isEmpty())
             return "";
 
@@ -219,10 +236,12 @@ public class ChanPost {
 
         text = text
                 .replaceAll("<span[^>]*class=\"abbr\"[^>]*>.*</span>", "")    // exif reference
-                .replaceAll("<table[^>]*class=\"exif\"[^>]*>.*</table>", "")  // exif info
-                .replaceAll("<s>[^<]*</s>", "SPOILER");                       // spoiler text
+                .replaceAll("<table[^>]*class=\"exif\"[^>]*>.*</table>", "");  // exif info
+        if (!showSpoiler)
+            text = text.replaceAll("<s>[^<]*</s>", "XXXSPOILERXXX");                       // spoiler text
         text = textViewFilter(text, collapseNewlines);
-
+        if (!showSpoiler)
+            text = text.replaceAll("XXXSPOILERXXX", "<b>spoiler</b>");
         long end = System.currentTimeMillis();
         if (DEBUG) Log.v(TAG, "Regexp: " + (end - start) + "ms");
 
@@ -246,28 +265,6 @@ public class ChanPost {
         String s = g.replaceAll("<tr[^>]*><td colspan=\"2\"[^>]*><b>([^<]*)</b></td></tr>", "$1\n");
         String t = s.replaceAll("<tr[^>]*><td[^>]*>([^<]*)</td><td[^>]*>([^<]*)</td></tr>", "$1: $2\n");
         return textViewFilter(t);
-    }
-
-    public String spoilerText() {
-        return spoilerText(com);
-    }
-
-    private static final String spoilerText(String text) {
-        if (text == null || text.isEmpty())
-            return null;
-        Pattern p = Pattern.compile("<s>([^<]*)</s>");
-        Matcher m = p.matcher(text);
-        int start = 0;
-        String s = "";
-        while (m.find(start)) {
-            String g = m.group(1);
-            if (g != null && !g.isEmpty())
-                s += (s.isEmpty() ? "" : "\n") + g;
-            start = m.end();
-        }
-        if (s.isEmpty())
-            return null;
-        return textViewFilter(s);
     }
 
     private static final String textViewFilter(String s) {

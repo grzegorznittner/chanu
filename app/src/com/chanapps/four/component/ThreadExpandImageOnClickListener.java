@@ -8,10 +8,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanFileStorage;
@@ -49,9 +46,11 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     private TextView itemExpandedSnippet;
     private TextView itemExpandedText;
     private TextView itemExpandedExifText;
+    private Button itemExpandedSpoilerButton;
     private String postText = null;
     private String postImageUrl = null;
     private String postExifText = null;
+    private String postSpoilerText = null;
     int postW = 0;
     int postH = 0;
     int listPosition = 0;
@@ -74,12 +73,14 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         itemExpandedSnippet = (TextView)itemView.findViewById(R.id.list_item_snippet);
         itemExpandedText = (TextView)itemView.findViewById(R.id.list_item_text);
         itemExpandedExifText = (TextView)itemView.findViewById(R.id.list_item_image_exif);
+        itemExpandedSpoilerButton = (Button)itemView.findViewById(R.id.list_item_spoiler_button);
 
         listPosition = cursor.getPosition();
         postW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
         postH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
         postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         postExifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
+        postSpoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
         postImageUrl = postTim > 0 ? ChanPost.imageUrl(boardCode, postTim, postExt) : null;
         fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
     }
@@ -91,8 +92,10 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         itemCollapse.setVisibility(View.GONE);
         itemExpander.setVisibility(View.VISIBLE);
         itemExpandedImage.setVisibility(View.GONE);
+        itemExpandedText.setText("");
         itemExpandedText.setVisibility(View.GONE);
         itemExpandedExifText.setVisibility(View.GONE);
+        itemExpandedSpoilerButton.setVisibility(View.GONE);
         itemExpandedSnippet.setLines(ThreadActivity.SNIPPET_LINES_DEFAULT); // default num lines
         itemExpandedSnippet.setVisibility(View.VISIBLE);
         if (DEBUG) Log.i(TAG, "collapsed pos=" + listPosition);
@@ -131,6 +134,13 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         else {
             itemExpandedText.setVisibility(View.GONE);
             if (DEBUG) Log.i(TAG, "No text to expand, setting text to gone");
+        }
+
+        if ((expandable & ThreadActivity.SPOILER_EXPANDABLE) > 0 && postSpoilerText != null && !postSpoilerText.isEmpty()) {
+            itemExpandedSpoilerButton.setVisibility(View.VISIBLE);
+        }
+        else {
+            itemExpandedSpoilerButton.setVisibility(View.GONE);
         }
 
         if (DEBUG) Log.i(TAG, "Clearing existing image");

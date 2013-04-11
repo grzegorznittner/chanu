@@ -220,7 +220,8 @@
     <string name="download_all_images_info">Download complete</string>
 
     <!-- popup text -->
-    <string name="spoiler">Show Spoiler</string>
+    <string name="spoiler">Show Spoilers</string>
+    <string name="spoiler_show">Show Spoilers</string>
     <string name="spoiler_title">Spoiler</string>
     <string name="exif">Show EXIF Data</string>
     <string name="exif_title">EXIF Data</string>

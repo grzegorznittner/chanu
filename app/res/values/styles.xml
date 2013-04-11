@@ -225,7 +225,7 @@
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingRight">8dp</item>
         <item name="android:paddingBottom">4dp</item>
-        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingTop">8dp</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:contentDescription">@string/thread_post_image_expanded</item>
     </style>
@@ -257,6 +257,28 @@
         <item name="android:layout_below">@+id/list_item_header</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="ThreadListItemSpoilerButton" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/blue_menu_btn</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:text">@string/spoiler_show</item>
+        <item name="android:shadowColor">@color/PaletteBlack</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">4</item>
     </style>
 
     <style name="ThreadListItemExifText" parent="AppTheme">
@@ -496,5 +518,10 @@
     <color name="PaletteTextOverlayBackground">#a0010101</color>
     <color name="PaletteBlackMostlyOpaque">#ec000000</color>
     <color name="popupbackground">#fff0f0f0</color>
+
+    <color name="blue_base">#449def</color>
+    <color name="blue_stroke">#2f6699</color>
+    <color name="blue_gradientS">#00a2e2</color>
+    <color name="blue_gradientE">#0767a4</color>
 
 </resources>

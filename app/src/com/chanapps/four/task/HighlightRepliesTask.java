@@ -7,7 +7,6 @@ import android.widget.AbsListView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
-import com.chanapps.four.component.ThreadPostPopup;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;

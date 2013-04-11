@@ -74,7 +74,7 @@ public class ThreadActivity
         MediaScannerConnection.OnScanCompletedListener
 {
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
     public static final int SNIPPET_LINES_DEFAULT = 3;
@@ -83,6 +83,7 @@ public class ThreadActivity
     public static final int SNIPPET_HEIGHT_DP = ((80 - 8)*3)/4; // three lines used for snippet
     public static final int TEXT_EXPANDABLE = 0x01;
     public static final int IMAGE_EXPANDABLE = 0x02;
+    public static final int SPOILER_EXPANDABLE = 0x04;
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
 
@@ -225,6 +226,7 @@ public class ThreadActivity
                         ChanHelper.POST_DATE_TEXT,
                         ChanHelper.POST_IMAGE_DIMENSIONS,
                         ChanHelper.POST_EXPAND_BUTTON,
+                        ChanHelper.POST_EXPAND_BUTTON,
                         ChanHelper.POST_EXPAND_BUTTON
                 },
                 new int[] {
@@ -237,7 +239,8 @@ public class ThreadActivity
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
                         R.id.list_item_date,
-                        R.id.list_item_image_exif
+                        R.id.list_item_image_exif,
+                        R.id.list_item_spoiler_button
                 });
         absListView.setAdapter(adapter);
     }
@@ -305,6 +308,8 @@ public class ThreadActivity
                 return setItemDateValue((TextView)view, cursor);
             case R.id.list_item_image_exif:
                 return setItemImageExifValue((TextView) view, cursor);
+            case R.id.list_item_spoiler_button:
+                return setItemSpoilerButton((Button) view, cursor);
             default:
                 return false;
         }
@@ -390,15 +395,19 @@ public class ThreadActivity
     private int itemExpandable(Cursor cursor, View itemView) {
         final String postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        final String spoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
         TextView itemHeader = (TextView)itemView.findViewById(R.id.list_item_header);
         Spanned spanned = Html.fromHtml(postText);
         boolean textExpandable = textExpandable(itemHeader.getPaint(), spanned.toString(), imageUrl);
         boolean imageExpandable = imageUrl != null && !imageUrl.isEmpty();
+        boolean spoilerExpandable = spoilerText != null && !spoilerText.isEmpty();
         int expandable = 0;
         if (textExpandable)
             expandable |= TEXT_EXPANDABLE;
         if (imageExpandable)
             expandable |= IMAGE_EXPANDABLE;
+        if (spoilerExpandable)
+            expandable |= SPOILER_EXPANDABLE;
         return expandable;
     }
 
@@ -439,6 +448,7 @@ public class ThreadActivity
     }
 
     private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
+        tv.setText("");
         tv.setVisibility(View.GONE);
         return true;
     }
@@ -452,6 +462,15 @@ public class ThreadActivity
     private boolean setItemImageExifValue(final TextView tv, final Cursor cursor)
     {
         tv.setVisibility(View.GONE);
+        return true;
+    }
+
+    private boolean setItemSpoilerButton(final Button button, final Cursor cursor) {
+        button.setVisibility(View.GONE);
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (adItem > 0)
+            return false;
+        button.setOnClickListener(new ThreadSpoilerOnClickListener(cursor));
         return true;
     }
 

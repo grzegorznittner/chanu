@@ -24,6 +24,8 @@
 
     </RelativeLayout>
 
+    <Button style="@style/ThreadListItemSpoilerButton" android:id="@+id/list_item_spoiler_button"/>
+
     <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_image_exif"/>
 
     <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
