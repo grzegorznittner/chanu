@@ -532,18 +532,19 @@ public class ChanBoard {
             if (boardAsMenu.equals(activity.getString(R.string.board_select_abbrev)))
                 return;
             if (boardAsMenu.equals(activity.getString(R.string.board_watch_abbrev))) {
-                if (ChanBoard.WATCH_BOARD_CODE.equals(createdWithBoardCode)) {
-                    return;
+                if (activity instanceof BoardSelectorActivity
+                        && ChanBoard.WATCH_BOARD_CODE.equals(createdWithBoardCode))
+                { // special case change tab
+                    BoardSelectorActivity bsa = (BoardSelectorActivity)activity;
+                    bsa.ensureTabsAdapter();
+                    if (parent instanceof Spinner) {
+                        Spinner spinner = (Spinner)parent;
+                        spinner.setSelection(0, false);
+                    }
+                    if (bsa.selectedBoardType == Type.WATCHLIST)
+                        return;
                 }
-//                else if (activity instanceof BoardSelectorActivity) { // special case change tab
-//                    BoardSelectorActivity bsa = (BoardSelectorActivity)activity;
-//                    bsa.ensureTabsAdapter();
-//                    bsa.selectedBoardType = Type.WATCHLIST;
-//                    bsa.setTabToSelectedType(false);
-//                }
-                else {
-                    BoardSelectorActivity.startActivity(activity, ChanBoard.Type.WATCHLIST);
-                }
+                BoardSelectorActivity.startActivity(activity, ChanBoard.Type.WATCHLIST);
                 return;
             }
             Pattern p = Pattern.compile("/([^/]*)/.*");

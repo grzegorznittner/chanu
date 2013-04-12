@@ -85,7 +85,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                     adSpace--;
                 }
             }
-            Log.i(TAG, "Loaded " + i + " threads");
+            if (DEBUG) Log.i(TAG, "Loaded " + i + " threads");
         }
         registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;
