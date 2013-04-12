@@ -21,8 +21,8 @@ public class ChanFileStorage {
 	private static final String TAG = ChanFileStorage.class.getSimpleName();
 	private static final boolean DEBUG = false;
 	
-	private static final int MAX_BOARDS_IN_CACHE = 30;
-	private static final int MAX_THREADS_IN_CACHE = 100;
+	private static final int MAX_BOARDS_IN_CACHE = 60;
+	private static final int MAX_THREADS_IN_CACHE = 200;
 	
 	@SuppressWarnings("serial")
 	private static Map<String, ChanBoard> boardCache = new LinkedHashMap<String, ChanBoard>(MAX_BOARDS_IN_CACHE + 1, .75F, true) {
@@ -106,9 +106,15 @@ public class ChanFileStorage {
 
     public static void storeBoardData(Context context, ChanBoard board) throws IOException {
     	if (board.defData) {
+            Log.i(TAG, "Default data found, not storing board=" + board.link);
     		// default data should never be stored
     		return;
     	}
+        ChanBoard cachedBoard = boardCache.get(board.link);
+        if (cachedBoard == null)
+            if (DEBUG) Log.i(TAG, "null board cache for board=" + board.link);
+        else
+            if (DEBUG) Log.i(TAG, "found cached board=" + board.link + " threadCount=" + cachedBoard.threads.length);
 		boardCache.put(board.link, board);
         File boardDir = getBoardCacheDirectory(context, board.link);
 		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
@@ -228,8 +234,18 @@ public class ChanFileStorage {
 			throw new RuntimeException("Null board code was passed!");
 		}
 		if (boardCache.containsKey(boardCode)) {
-			if (DEBUG) Log.i(TAG, "Retruning board " + boardCode + " data from cache");
-			return boardCache.get(boardCode);
+            ChanBoard cachedBoard = boardCache.get(boardCode);
+            if (cachedBoard != null && cachedBoard.threads != null
+                    && cachedBoard.threads.length > 0 && !cachedBoard.defData)
+            {
+                if (DEBUG) Log.i(TAG, "Returning board " + boardCode
+                        + " data from cache threads=" + cachedBoard.threads.length
+                        + " loadedthreads=" + cachedBoard.loadedThreads.length);
+                return cachedBoard;
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "Ignoring cached board=" + boardCode + " missing threads");
+            }
 		}
 		File boardFile = null;
 		try {
@@ -257,6 +273,7 @@ public class ChanFileStorage {
 	}
 	
 	public static ChanBoard loadFreshBoardData(Context context, String boardCode) {
+        if (DEBUG) Log.i(TAG, "loadFreshBoardData code=" + boardCode);
 		ChanBoard board = loadBoardData(context, boardCode);
 		if (board != null && !board.defData && board.loadedThreads != null && board.loadedThreads.length > 0) {
 			synchronized (board) {

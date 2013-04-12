@@ -17,7 +17,7 @@ import com.chanapps.four.data.*;
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = BoardCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     protected static final double AD_PROBABILITY = 0.20;
     protected static final int MINIMUM_AD_SPACING = 4;
@@ -54,6 +54,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     public Cursor loadInBackground() {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
+        if (DEBUG)  {
+            Log.i(TAG, "board threadcount=" + (board.threads != null ? board.threads.length : 0));
+            Log.i(TAG, "board loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0));
+        }
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
         if (board != null && board.threads != null && board.threads.length > 0 && !board.defData) { // show loading
             if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");

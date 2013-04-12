@@ -45,7 +45,7 @@ public class BoardActivity
         implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
     private static final String DEFAULT_BOARD_CODE = "a";
 
@@ -310,17 +310,25 @@ public class BoardActivity
 		handler = null;
 	}
 
+
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+        return setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions);
+    }
+
+    public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
+                                       ImageLoader imageLoader,
+                                       DisplayImageOptions options)
+    {
         switch (view.getId()) {
             case R.id.grid_item_thread_subject:
                 return setThreadSubject((TextView) view, cursor);
             //case R.id.grid_item_thread_info:
             //    return setThreadInfo((TextView) view, cursor);
             case R.id.grid_item_thread_thumb:
-                return setThreadThumb((ImageView) view, cursor);
+                return setThreadThumb((ImageView) view, cursor, imageLoader, options);
             case R.id.grid_item_country_flag:
-                return setCountryFlag((ImageView) view, cursor);
+                return setCountryFlag((ImageView) view, cursor, imageLoader, options);
             case R.id.grid_item_num_replies:
                 return setThreadNumReplies((TextView) view, cursor);
             case R.id.grid_item_num_images:
@@ -329,7 +337,7 @@ public class BoardActivity
         return false;
     }
 
-    protected boolean setThreadSubject(TextView tv, Cursor cursor) {
+    protected static boolean setThreadSubject(TextView tv, Cursor cursor) {
         tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
         return true;
     }
@@ -339,26 +347,25 @@ public class BoardActivity
     //    return true;
     //}
 
-    protected boolean setThreadThumb(ImageView iv, Cursor cursor) {
+    protected static boolean setThreadThumb(ImageView iv, Cursor cursor, ImageLoader imageLoader, DisplayImageOptions options) {
         imageLoader.displayImage(
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
                 iv,
-                displayImageOptions);
+                options);
                 //displayImageOptions.modifyCenterCrop(true)); // load async
         return true;
     }
 
-    protected boolean setCountryFlag(ImageView iv, Cursor cursor) {
+    protected static boolean setCountryFlag(ImageView iv, Cursor cursor, ImageLoader imageLoader, DisplayImageOptions options) {
         imageLoader.displayImage(
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_COUNTRY_FLAG_URL)),
                 iv,
-                displayImageOptions); // load async
+                options); // load async
         return true;
     }
 
-    protected boolean setThreadNumReplies(TextView tv, Cursor cursor) {
+    protected static boolean setThreadNumReplies(TextView tv, Cursor cursor) {
         String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
-        if (DEBUG) Log.i(TAG, "clickUrl=" + clickUrl);
         if (clickUrl == null || clickUrl.isEmpty()) {
             tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_NUM_REPLIES)) + "r"));
             tv.setVisibility(View.VISIBLE);
@@ -370,7 +377,7 @@ public class BoardActivity
         return true;
     }
 
-    protected boolean setThreadNumImages(TextView tv, Cursor cursor) {
+    protected static boolean setThreadNumImages(TextView tv, Cursor cursor) {
         String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
         if (clickUrl == null || clickUrl.isEmpty()) {
             tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES)) + "i"));
@@ -502,6 +509,7 @@ public class BoardActivity
         final ActionBar a = getActionBar();
         if (a == null)
             return;
+        if (DEBUG) Log.i(TAG, "about to load board data for action bar board=" + boardCode);
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board == null) {
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
@@ -518,22 +526,22 @@ public class BoardActivity
 				if (board.newThreads > 0) {
 					msg.append("and ");
 				}
-				msg.append("" + board.updatedThreads + " updated ");
+				msg.append("" + board.updatedThreads + " fetched ");
 			}
 			msg.append("thread");
 			if (board.newThreads + board.updatedThreads > 1) {
 				msg.append("s");
 			}
-			msg.append(", press refresh button.");
+			msg.append(" click refresh");
 		} else {
 			board.threads = board.loadedThreads;
     		board.loadedThreads = new ChanThread[0];
     		if (board.defData || board.lastFetched == 0) {
-    			msg.append("data has not been fetched yet");
+    			msg.append("not yet fetched");
     		} else if (Math.abs(board.lastFetched - new Date().getTime()) < 60000) {
-    			msg.append("data are up to date");
+    			msg.append("fetched just now");
     		} else {
-    			msg.append("data fetched ").append(DateUtils.getRelativeTimeSpanString(
+    			msg.append("fetched ").append(DateUtils.getRelativeTimeSpanString(
     					board.lastFetched, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString());
     		}
 		}

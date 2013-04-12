@@ -74,7 +74,7 @@ public class ThreadActivity
         MediaScannerConnection.OnScanCompletedListener
 {
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
     public static final int SNIPPET_LINES_DEFAULT = 3;
@@ -870,11 +870,16 @@ public class ThreadActivity
             lastFetched = thread.lastFetched;
         else if (board != null && board.lastFetched > 0)
             lastFetched = board.lastFetched;
-        String time = lastFetched > 0
-                ? "updated " + DateUtils.getRelativeTimeSpanString(lastFetched, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString()
-                : "last update unknown";
+        String timeSpan;
+        if (lastFetched <= 0)
+            timeSpan = "last fetch unknown";
+        else if (Math.abs(board.lastFetched - new Date().getTime()) < 60000)
+            timeSpan = "fetched just now";
+        else
+            timeSpan = "fetched " + DateUtils.getRelativeTimeSpanString(lastFetched,
+                    (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString();
         a.setTitle(boardTitle + ": " + threadTitle);
-        a.setSubtitle(time);
+        a.setSubtitle(timeSpan);
         a.setDisplayShowTitleEnabled(true);
         a.setDisplayHomeAsUpEnabled(true);
     }

@@ -175,13 +175,6 @@ public class MobileProfile extends AbstractNetworkProfile {
 		super.onBoardRefreshed(context, handler, board);
 		if (!FetchChanDataService.scheduleBoardFetchWithPriority(context, board)) {
 			onUpdateViewData(context, handler, board);
-            if (handler != null)
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(context, R.string.board_refresh_fresh, Toast.LENGTH_SHORT).show();
-                    }
-                });
 		}
         if (DEBUG) {
 			UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();

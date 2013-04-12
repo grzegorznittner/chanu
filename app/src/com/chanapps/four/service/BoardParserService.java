@@ -51,7 +51,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     private static final boolean DEBUG = false;
 	
 	protected static final long STORE_INTERVAL_MS = 2000;
-    protected static final int MAX_THREAD_RETENTION_PER_BOARD = 100;
+    protected static final int MAX_THREAD_RETENTION_PER_BOARD = 200;
 
     private String boardCode;
     private boolean boardCatalog;
@@ -187,7 +187,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
             }
         }
 
-        board.threads = threads.toArray(new ChanPost[0]);
+        board.threads = threads.toArray(new ChanPost[threads.size()]);
         if (DEBUG) Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
 
@@ -235,7 +235,13 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 		if (board != null) {
         	synchronized (board) {
         		boolean oldEnough = false; //Calendar.getInstance().getTimeInMillis() - board.lastFetched > ChanBoard.MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST;
-	        	if (!force && !board.defData && board.threads.length > 0 && !oldEnough && ChanBoard.REFRESH_THREADS_ON_REQUEST) {
+	        	if (board.threads != null
+                        && board.threads.length > 0
+                        && !force
+                        && !board.defData
+                        && !oldEnough
+                        && ChanBoard.REFRESH_THREADS_ON_REQUEST)
+                {
 	        		board.loadedThreads = threads.toArray(new ChanPost[0]);
 	        		board.updateCountersAfterLoad();
 	        	} else {

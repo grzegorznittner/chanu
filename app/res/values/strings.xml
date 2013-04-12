@@ -142,9 +142,6 @@
     <string name="misc">Misc.</string>
 
     <!-- board activity -->
-    <string name="board_activity_refresh">Refreshing board...</string>
-    <string name="board_activity_fresh">Board is current</string>
-    <string name="board_refresh_fresh">Board is fresh</string>
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
     <string name="board_end_of_board">End of Board</string>
     <string name="board_click_for_more">(click for more)</string>

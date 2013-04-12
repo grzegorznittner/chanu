@@ -139,12 +139,16 @@ public class BoardGroupFragment
                             ChanThread.THREAD_THUMBNAIL_URL,
                             ChanThread.THREAD_SUBJECT,
                             //ChanThread.THREAD_INFO,
-                            ChanThread.THREAD_COUNTRY_FLAG_URL },
+                            ChanThread.THREAD_COUNTRY_FLAG_URL,
+                            ChanThread.THREAD_NUM_REPLIES,
+                            ChanThread.THREAD_NUM_IMAGES},
                     new int[] {
                             R.id.grid_item_thread_thumb,
                             R.id.grid_item_thread_subject,
                             //R.id.grid_item_thread_info,
-                            R.id.grid_item_country_flag},
+                            R.id.grid_item_country_flag,
+                            R.id.grid_item_num_replies,
+                            R.id.grid_item_num_images},
                     columnWidth,
                     columnHeight);
         else
@@ -298,15 +302,20 @@ public class BoardGroupFragment
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        switch (view.getId()) {
-            case R.id.grid_item_thread_subject:
-                return setThreadSubject((TextView) view, cursor);
-            //case R.id.grid_item_thread_info:
-            //    return setThreadInfo((TextView) view, cursor);
-            case R.id.grid_item_thread_thumb:
-                return setThreadThumb((ImageView) view, cursor);
-            case R.id.grid_item_country_flag:
-                return setThreadCountryFlag((ImageView) view, cursor);
+        if (boardType == ChanBoard.Type.WATCHLIST) {
+            return BoardActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions);
+        }
+        else {
+            switch (view.getId()) {
+                case R.id.grid_item_thread_subject:
+                    return setThreadSubject((TextView) view, cursor);
+                //case R.id.grid_item_thread_info:
+                //    return setThreadInfo((TextView) view, cursor);
+                case R.id.grid_item_thread_thumb:
+                    return setThreadThumb((ImageView) view, cursor);
+                case R.id.grid_item_country_flag:
+                    return setThreadCountryFlag((ImageView) view, cursor);
+            }
         }
         return false;
     }
