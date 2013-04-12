@@ -128,8 +128,40 @@
         <item name="android:paddingTop">2dp</item>
         <item name="android:paddingLeft">0dp</item>
         <item name="android:paddingRight">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingBottom">2dp</item>
         <item name="android:gravity">center_horizontal|top</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:background">@color/PaletteTextOverlayBackground</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:lines">2</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="BoardGridNumReplies" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_marginLeft">2dp</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:paddingLeft">2dp</item>
+        <item name="android:paddingRight">2dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:background">@color/PaletteTextOverlayBackground</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:lines">1</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="BoardGridNumImages" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_marginRight">2dp</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:paddingLeft">2dp</item>
+        <item name="android:paddingRight">2dp</item>
         <item name="android:textSize">12sp</item>
         <item name="android:background">@color/PaletteTextOverlayBackground</item>
         <item name="android:textColor">@color/PaletteWhite</item>
@@ -154,31 +186,23 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="BoardGridTextAdImageOverlay" parent="AppTheme">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">36dp</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingLeft">0dp</item>
-        <item name="android:paddingRight">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
-        <item name="android:gravity">center</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:background">@color/PaletteTextOverlayBackground</item>
-        <item name="android:textColor">@color/PaletteBlue</item>
-        <item name="android:text">@string/jlist_ad_message_compact</item>
-        <item name="android:lines">1</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="BoardGridCountryFlag" parent="AppTheme">
+    <style name="BoardSelectorGridCountryFlag" parent="AppTheme">
         <item name="android:layout_width">16dp</item>
         <item name="android:layout_height">11dp</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:scaleType">fitXY</item>
         <item name="android:layout_marginRight">4dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:contentDescription">@string/thread_country_flag</item>
+    </style>
+
+    <style name="BoardGridCountryFlag" parent="AppTheme">
+        <item name="android:layout_width">16dp</item>
+        <item name="android:layout_height">11dp</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:scaleType">fitXY</item>
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:contentDescription">@string/thread_country_flag</item>
     </style>

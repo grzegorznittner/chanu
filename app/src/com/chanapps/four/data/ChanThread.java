@@ -27,6 +27,8 @@ public class ChanThread extends ChanPost {
     public static final String THREAD_THUMBNAIL_URL = "threadThumb";
     public static final String THREAD_COUNTRY_FLAG_URL = "threadFlag";
     public static final String THREAD_CLICK_URL = "threadClick";
+    public static final String THREAD_NUM_REPLIES = "threadNumReplies";
+    public static final String THREAD_NUM_IMAGES = "threadNumImages";
 
     public static final String[] THREAD_COLUMNS = {
             THREAD_COMPOSITE_ID,
@@ -36,7 +38,9 @@ public class ChanThread extends ChanPost {
             THREAD_INFO,
             THREAD_THUMBNAIL_URL,
             THREAD_COUNTRY_FLAG_URL,
-            THREAD_CLICK_URL
+            THREAD_CLICK_URL,
+            THREAD_NUM_REPLIES,
+            THREAD_NUM_IMAGES
     };
 
     public static MatrixCursor buildMatrixCursor() {
@@ -53,7 +57,9 @@ public class ChanThread extends ChanPost {
                 post.threadInfoLine(),
                 post.thumbnailUrl(),
                 post.countryFlagUrl(),
-                ""
+                "",
+                post.replies,
+                post.images
         };
     }
 
@@ -66,7 +72,9 @@ public class ChanThread extends ChanPost {
                 "",
                 "drawable://" + boardImageResourceId,
                 "",
-                ""
+                "",
+                0,
+                0
         };
     }
 
@@ -75,11 +83,13 @@ public class ChanThread extends ChanPost {
                 0,
                 "",
                 0,
-                context.getResources().getString(R.string.board_advert_subject),
+                context.getResources().getString(R.string.board_advert_full),
                 context.getResources().getString(R.string.board_advert_info),
                 imageUrl,
                 "",
-                clickUrl
+                clickUrl,
+                0,
+                0
         };
     }
 

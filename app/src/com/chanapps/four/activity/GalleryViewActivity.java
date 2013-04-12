@@ -610,6 +610,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     private void setActionBarTitle() {
+        if (DEBUG) Log.i(TAG, "setting action bar based on viewType=" + viewType);
         if (getActionBar() != null) {
         	switch(viewType) {
         	case OFFLINE_ALBUMSET_VIEW:

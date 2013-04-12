@@ -7,6 +7,16 @@
             style="@style/BoardGridImage"
             />
 
+    <TextView
+            android:id="@+id/grid_item_num_replies"
+            style="@style/BoardGridNumReplies"
+            />
+
+    <TextView
+            android:id="@+id/grid_item_num_images"
+            style="@style/BoardGridNumImages"
+            />
+
     <RelativeLayout
         style="@style/BoardGridTextImageOverlayWrapper">
 
@@ -14,12 +24,12 @@
                 android:id="@+id/grid_item_thread_subject"
                 style="@style/BoardGridTextImageTopOverlay"
                 />
-
+        <!--
         <TextView
                 android:id="@+id/grid_item_thread_info"
                 style="@style/BoardGridTextImageOverlay"
                 />
-
+        -->
     </RelativeLayout>
 
     <ImageView

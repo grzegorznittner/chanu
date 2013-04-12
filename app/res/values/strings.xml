@@ -418,6 +418,7 @@
     <!-- ads -->
     <string name="board_advert_subject">Advert</string>
     <string name="board_advert_info">Go To J-List</string>
+    <string name="board_advert_full">Advert&lt;br/&gt;Go To J-List</string>
     <string name="advert_header">Advert</string>
     <string name="jlist_ad_message">J-List is a peaceful island of Japanese pop culture for you</string>
     <string name="jlist_ad_message_compact">Advert</string>

@@ -128,13 +128,17 @@ public class BoardActivity
                 new String[] {
                         ChanThread.THREAD_THUMBNAIL_URL,
                         ChanThread.THREAD_SUBJECT,
-                        ChanThread.THREAD_INFO,
-                        ChanThread.THREAD_COUNTRY_FLAG_URL},
+                        //ChanThread.THREAD_INFO,
+                        ChanThread.THREAD_COUNTRY_FLAG_URL,
+                        ChanThread.THREAD_NUM_REPLIES,
+                        ChanThread.THREAD_NUM_IMAGES},
                 new int[] {
                         R.id.grid_item_thread_thumb,
                         R.id.grid_item_thread_subject,
-                        R.id.grid_item_thread_info,
-                        R.id.grid_item_country_flag},
+                        //R.id.grid_item_thread_info,
+                        R.id.grid_item_country_flag,
+                        R.id.grid_item_num_replies,
+                        R.id.grid_item_num_images},
                 columnWidth,
                 columnHeight);
         absListView.setAdapter(adapter);
@@ -215,9 +219,10 @@ public class BoardActivity
         if (lastPosition == 0) {
             lastPosition = ensurePrefs().getInt(intentExtra, 0);
         }
-        if (lastPosition != 0)
+        if (lastPosition != 0) {
             scrollOnNextLoaderFinished = lastPosition;
-        if (DEBUG) Log.v(TAG, "Scrolling to:" + lastPosition);
+            if (DEBUG) Log.v(TAG, "Scrolling to:" + lastPosition);
+        }
     }
 
     @Override
@@ -310,12 +315,16 @@ public class BoardActivity
         switch (view.getId()) {
             case R.id.grid_item_thread_subject:
                 return setThreadSubject((TextView) view, cursor);
-            case R.id.grid_item_thread_info:
-                return setThreadInfo((TextView) view, cursor);
+            //case R.id.grid_item_thread_info:
+            //    return setThreadInfo((TextView) view, cursor);
             case R.id.grid_item_thread_thumb:
                 return setThreadThumb((ImageView) view, cursor);
             case R.id.grid_item_country_flag:
                 return setCountryFlag((ImageView) view, cursor);
+            case R.id.grid_item_num_replies:
+                return setThreadNumReplies((TextView) view, cursor);
+            case R.id.grid_item_num_images:
+                return setThreadNumImages((TextView) view, cursor);
         }
         return false;
     }
@@ -325,10 +334,10 @@ public class BoardActivity
         return true;
     }
 
-    protected boolean setThreadInfo(TextView tv, Cursor cursor) {
-        tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO))));
-        return true;
-    }
+    //protected boolean setThreadInfo(TextView tv, Cursor cursor) {
+    //    tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO))));
+    //    return true;
+    //}
 
     protected boolean setThreadThumb(ImageView iv, Cursor cursor) {
         imageLoader.displayImage(
@@ -347,9 +356,36 @@ public class BoardActivity
         return true;
     }
 
+    protected boolean setThreadNumReplies(TextView tv, Cursor cursor) {
+        String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
+        if (DEBUG) Log.i(TAG, "clickUrl=" + clickUrl);
+        if (clickUrl == null || clickUrl.isEmpty()) {
+            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_NUM_REPLIES)) + "r"));
+            tv.setVisibility(View.VISIBLE);
+        }
+        else {
+            tv.setText("");
+            tv.setVisibility(View.GONE);
+        }
+        return true;
+    }
+
+    protected boolean setThreadNumImages(TextView tv, Cursor cursor) {
+        String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
+        if (clickUrl == null || clickUrl.isEmpty()) {
+            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES)) + "i"));
+            tv.setVisibility(View.VISIBLE);
+        }
+        else {
+            tv.setText("");
+            tv.setVisibility(View.GONE);
+        }
+        return true;
+    }
+
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
+		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader boardCode=" + boardCode);
         setProgressOn(true);
         cursorLoader = new BoardCursorLoader(this, boardCode);
         return cursorLoader;
@@ -357,8 +393,9 @@ public class BoardActivity
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished");
+		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished count=" + data.getCount());
 		adapter.swapCursor(data);
+        if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
         if (absListView != null) {
             if (scrollOnNextLoaderFinished > 0) {
                 absListView.setSelection(scrollOnNextLoaderFinished);

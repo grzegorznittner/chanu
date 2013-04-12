@@ -138,12 +138,12 @@ public class BoardGroupFragment
                     new String[] {
                             ChanThread.THREAD_THUMBNAIL_URL,
                             ChanThread.THREAD_SUBJECT,
-                            ChanThread.THREAD_INFO,
+                            //ChanThread.THREAD_INFO,
                             ChanThread.THREAD_COUNTRY_FLAG_URL },
                     new int[] {
                             R.id.grid_item_thread_thumb,
                             R.id.grid_item_thread_subject,
-                            R.id.grid_item_thread_info,
+                            //R.id.grid_item_thread_info,
                             R.id.grid_item_country_flag},
                     columnWidth,
                     columnHeight);
@@ -301,8 +301,8 @@ public class BoardGroupFragment
         switch (view.getId()) {
             case R.id.grid_item_thread_subject:
                 return setThreadSubject((TextView) view, cursor);
-            case R.id.grid_item_thread_info:
-                return setThreadInfo((TextView) view, cursor);
+            //case R.id.grid_item_thread_info:
+            //    return setThreadInfo((TextView) view, cursor);
             case R.id.grid_item_thread_thumb:
                 return setThreadThumb((ImageView) view, cursor);
             case R.id.grid_item_country_flag:
