@@ -461,25 +461,25 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
             }
         } else {
             inflater.inflate(R.menu.album, menu);
-            if (actionBar != null && actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {
-            	actionBar.setTitle(mMediaSet.getName());
-            }
+            //if (actionBar != null && actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {
+           // 	actionBar.setTitle(mMediaSet.getName());
+            //}
             if (mMediaSet instanceof MtpDevice) {
                 menu.findItem(R.id.action_slideshow).setVisible(false);
             } else {
                 menu.findItem(R.id.action_slideshow).setVisible(true);
             }
 
-            MenuItem groupBy = menu.findItem(R.id.action_group_by);
-            FilterUtils.setupMenuItems(actionBar, mMediaSetPath, true);
+            //MenuItem groupBy = menu.findItem(R.id.action_group_by);
+            //FilterUtils.setupMenuItems(actionBar, mMediaSetPath, true);
 
-            if (groupBy != null) {
-                groupBy.setVisible(mShowClusterMenu);
-            }
+            //if (groupBy != null) {
+            //    groupBy.setVisible(mShowClusterMenu);
+            //}
             
-            if (actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {	
-	            actionBar.setTitle(mMediaSet.getName());
-            }
+            //if (actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {
+	        //    actionBar.setTitle(mMediaSet.getName());
+            //}
         }
         actionBar.setSubtitle(null);
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -491,13 +491,6 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
     protected boolean onItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_cancel) {
             mActivity.getStateManager().finishState(this);
-            return true;
-        } else if (item.getItemId() == R.id.action_select) {
-            mSelectionManager.setAutoLeaveSelectionMode(false);
-            mSelectionManager.enterSelectionMode();
-            return true;
-        } else if (item.getItemId() == R.id.action_group_by) {
-            mActivity.getGalleryActionBar().showClusterDialog(this);
             return true;
         } else if (item.getItemId() == R.id.action_slideshow) {
             Bundle data = new Bundle();

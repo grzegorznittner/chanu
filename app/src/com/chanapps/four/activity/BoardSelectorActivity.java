@@ -117,7 +117,7 @@ public class BoardSelectorActivity
     protected void onStart() {
         super.onStart();
         final ActionBar bar = getActionBar();
-        bar.setTitle(getString(R.string.application_name));
+        bar.setTitle(getString(R.string.application_name) + ": " + getString(R.string.application_tagname));
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(false);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);

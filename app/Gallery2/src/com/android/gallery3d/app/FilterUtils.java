@@ -96,9 +96,6 @@ public class FilterUtils {
 
         model.setClusterItemVisibility(CLUSTER_BY_ALBUM, !inAlbum || ctype == 0);
 
-        setMenuItemApplied(model, R.id.action_cluster_album, ctype == 0,
-                ccurrent == 0);
-
         // A filtering is available if it's not applied, and the old filtering
         // (if any) is not fixed.
         setMenuItemAppliedEnabled(model, R.string.show_images_only,

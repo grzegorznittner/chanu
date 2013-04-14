@@ -396,25 +396,6 @@ public class AlbumSetPage extends ActivityState implements
         } else {
             mShowClusterMenu = !inAlbum;
             inflater.inflate(R.menu.albumset, menu);
-            actionBar.setTitle(null);
-            MenuItem selectItem = menu.findItem(R.id.action_select);
-
-            if (selectItem != null) {
-                boolean selectAlbums = !inAlbum &&
-                        actionBar.getClusterTypeAction() == FilterUtils.CLUSTER_BY_ALBUM;
-                if (selectAlbums) {
-                    selectItem.setTitle(R.string.select_album);
-                } else {
-                    selectItem.setTitle(R.string.select_group);
-                }
-            }
-
-            MenuItem switchCamera = menu.findItem(R.id.action_camera);
-            if (switchCamera != null) {
-                switchCamera.setVisible(GalleryUtils.isCameraAvailable(activity));
-            }
-
-            actionBar.setSubtitle(mSubtitle);
         }
         return true;
     }
@@ -426,10 +407,6 @@ public class AlbumSetPage extends ActivityState implements
             activity.setResult(Activity.RESULT_CANCELED);
             activity.finish();
             return true;
-        } else if (item.getItemId() == R.id.action_select) {
-                mSelectionManager.setAutoLeaveSelectionMode(false);
-                mSelectionManager.enterSelectionMode();
-                return true;
         } else if (item.getItemId() == R.id.action_details) {
             if (mAlbumSetDataAdapter.size() != 0) {
                 if (mShowDetails) {
@@ -442,25 +419,6 @@ public class AlbumSetPage extends ActivityState implements
                         activity.getText(R.string.no_albums_alert),
                         Toast.LENGTH_SHORT).show();
             }
-            return true;
-        } else if (item.getItemId() == R.id.action_camera) {
-            Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA)
-                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    | Intent.FLAG_ACTIVITY_NEW_TASK);
-            activity.startActivity(intent);
-            return true;
-        } else if (item.getItemId() == R.id.action_manage_offline) {
-            Bundle data = new Bundle();
-            String mediaPath = mActivity.getDataManager().getTopSetPath(
-                DataManager.INCLUDE_ALL);
-            data.putString(AlbumSetPage.KEY_MEDIA_PATH, mediaPath);
-            mActivity.getStateManager().startState(ManageCachePage.class, data);
-            return true;
-        } else if (item.getItemId() == R.id.action_sync_picasa_albums) {
-            PicasaSource.requestSync(activity);
-            return true;
-        } else if (item.getItemId() == R.id.action_settings) {
-            activity.startActivity(new Intent(activity, GallerySettings.class));
             return true;
         } else {
         	return false;

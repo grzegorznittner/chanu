@@ -107,6 +107,13 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".AboutActivity" android:label="@string/about_activity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
         <activity android:name=".BoardSelectorActivity" android:label="@string/application_name">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER"/>

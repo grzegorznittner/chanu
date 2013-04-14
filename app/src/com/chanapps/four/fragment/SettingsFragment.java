@@ -1,11 +1,13 @@
 package com.chanapps.four.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.widget.BaseAdapter;
+import com.chanapps.four.activity.AboutActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.RawResourceDialog;
@@ -77,9 +79,12 @@ public class SettingsFragment
         aboutButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                (new RawResourceDialog(
-                        getActivity(), R.layout.about_dialog, R.raw.about_header, R.raw.about_detail))
-                        .show();
+                Intent intent = new Intent(getActivity(), AboutActivity.class);
+                startActivity(intent);
+                //
+                // (new RawResourceDialog(
+                //        getActivity(), R.layout.about_dialog, R.raw.about_header, R.raw.about_detail))
+                //        .show();
                 return true;
             }
         });

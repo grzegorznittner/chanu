@@ -352,7 +352,7 @@ public class BoardActivity
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
                 iv,
                 options);
-                //displayImageOptions.modifyCenterCrop(true)); // load async
+                //options.modifyCenterCrop(true)); // load async
         return true;
     }
 
@@ -514,7 +514,7 @@ public class BoardActivity
         if (board == null) {
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         }
-        String title = (board == null ? "Board " + boardCode : board.name);
+        String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
         a.setTitle(title);
         
         StringBuffer msg = new StringBuffer();

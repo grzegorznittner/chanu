@@ -485,8 +485,8 @@ public class ThreadActivity
                 iv.setLayoutParams(params);
             }
             iv.setVisibility(View.VISIBLE);
-            //imageLoader.displayImage(imageUrl, iv, displayImageOptions.modifyCenterCrop(true));
-            imageLoader.displayImage(imageUrl, iv, displayImageOptions);
+            imageLoader.displayImage(imageUrl, iv, displayImageOptions.modifyCenterCrop(true));
+            //imageLoader.displayImage(imageUrl, iv, displayImageOptions);
         }
         else {
             iv.setImageBitmap(null);
@@ -859,7 +859,7 @@ public class ThreadActivity
         if (board == null)
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
-        String boardTitle = board == null ? "Board " + boardCode : board.name;
+        String boardTitle = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
         String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
                 ? " Thread " + threadNo
                 : thread.posts[0].threadSubject(getApplicationContext())

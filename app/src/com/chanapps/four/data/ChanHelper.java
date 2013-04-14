@@ -179,7 +179,8 @@ public class ChanHelper {
         THREAD_ACTIVITY,
         FULL_SCREEN_IMAGE_ACTIVITY,
         POST_REPLY_ACTIVITY,
-        SETTINGS_ACTIVITY
+        SETTINGS_ACTIVITY,
+        ABOUT_ACTIVITY
     }
 
     public static final Orientation getOrientation(Context context) {

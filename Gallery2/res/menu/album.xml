@@ -18,10 +18,4 @@
             android:icon="@drawable/ic_menu_slideshow_holo_light"
             android:title="@string/slideshow"
             android:showAsAction="ifRoom" />
-    <item android:id="@+id/action_select"
-            android:title="@string/select_item"
-            android:showAsAction="never" />
-    <item android:id="@+id/action_group_by"
-            android:title="@string/group_by"
-            android:showAsAction="never"/>
 </menu>

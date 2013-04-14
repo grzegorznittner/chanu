@@ -2,6 +2,7 @@
     <!-- titles -->
     <string name="app_name">Chanu</string>
     <string name="application_name">Chanu</string>
+    <string name="application_tagname">It\'s what Yotsuba uses</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="title_item_list">Items</string>
     <string name="fragment_layout">2 Pane Layout</string>
@@ -12,6 +13,7 @@
     <string name="post_reply_activity">Post Reply</string>
     <string name="post_reply_share_activity">Chanu</string>
     <string name="settings_activity">Settings</string>
+    <string name="about_activity">About</string>
     <string name="board_image">Board Image</string>
     <string name="thread_post_image">Thread Image</string>
     <string name="thread_post_image_expanded">Expanded Thread Image</string>
@@ -396,6 +398,30 @@
     <string name="pref_pass_enabled_summ_off">Pass logged out</string>
     <string name="pref_pass_purchase">Purchase</string>
     <string name="pref_pass_purchase_hint">Don\'t have a pass? Get one.</string>
+
+    <!-- about preference -->
+    <string name="pref_about_title">Chanu</string>
+    <string name="pref_about_title_sum">It\'s what Yotsuba uses</string>
+    <string name="pref_about_application_category">Application</string>
+    <string name="pref_about_application_version">Version 1.0 beta 4</string>
+    <string name="pref_about_application_version_sum">Released 11 Apr 2013</string>
+    <string name="pref_about_application_rate">Rate</string>
+    <string name="pref_about_application_rate_sum">Visit Chanu on Google Play</string>
+    <string name="pref_about_data_category">Uses</string>
+    <string name="pref_about_data_4chan">4chan API</string>
+    <string name="pref_about_data_4chan_sum">Data sourced live via the 4chan API</string>
+    <string name="pref_about_data_uil">Universal Image Loader</string>
+    <string name="pref_about_data_uil_sum">Courtesy of Sergey Tarasevich</string>
+    <string name="pref_about_developer_category">Developers</string>
+    <string name="pref_about_developer_chanapps">Chanapps Software</string>
+    <string name="pref_about_developer_chanapps_sum">Premium provider of Android applications</string>
+    <string name="pref_about_developer_burns">John Burns</string>
+    <string name="pref_about_developer_burns_sum">johnarleyburns@gmail.com</string>
+    <string name="pref_about_developer_nittner">Grzegorz Nittner</string>
+    <string name="pref_about_developer_nittner_sum">grzegorz.nittner@gmail.com</string>
+    <string name="pref_about_developer_pop">Mircea Pop</string>
+    <string name="pref_about_developer_pop_sum">mircea.pop.ro@gmail.com</string>
+    <string name="pref_about_send_email">Send email</string>
 
     <!-- widgets -->
     <string name="widget_board">Pick Board</string>

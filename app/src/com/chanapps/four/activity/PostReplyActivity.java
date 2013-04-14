@@ -27,8 +27,10 @@ import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.fragment.*;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -959,15 +961,26 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     }
 
     private void setActionBarTitle() {
-        if (getActionBar() != null) {
-            if (threadNo == 0) {
-                getActionBar().setTitle("/" + boardCode + "/ " + getString(R.string.post_reply_thread_title));
-            }
-            else {
-                getActionBar().setTitle("/" + boardCode + "/" + threadNo + " " + getString(R.string.post_reply_title));
-            }
-            getActionBar().setDisplayHomeAsUpEnabled(false);
+        if (getActionBar() == null)
+            return;
+        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+        if (board == null)
+            board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
+        String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
+        int subtitleId = R.string.post_reply_thread_title;
+        if (threadNo > 0) {
+            ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
+            String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
+                    ? " Thread " + threadNo
+                    : thread.posts[0].threadSubject(getApplicationContext())
+                    .replaceAll("<br/?>", " ")
+                    .replaceAll("<[^>]*>", "");
+            title += ": " + threadTitle;
+            subtitleId = R.string.post_reply_title;
         }
+        getActionBar().setDisplayHomeAsUpEnabled(false);
+        getActionBar().setTitle(title);
+        getActionBar().setSubtitle(subtitleId);
     }
 
     @Override

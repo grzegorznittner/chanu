@@ -104,8 +104,8 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
     }
 
     private ClusterRunner mClusterRunner;
-    private CharSequence[] mTitles;
-    private ArrayList<Integer> mActions;
+    //private CharSequence[] mTitles;
+    //private ArrayList<Integer> mActions;
     private Context mContext;
     private LayoutInflater mInflater;
     private GalleryActivity mActivity;
@@ -126,19 +126,20 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
         return actionBar != null ? actionBar.getHeight() : 0;
     }
 
+    /*
     private void createDialogData() {
-        ArrayList<CharSequence> titles = new ArrayList<CharSequence>();
-        mActions = new ArrayList<Integer>();
-        for (ActionItem item : sClusterItems) {
-            if (item.enabled && item.visible) {
-                titles.add(mContext.getString(item.dialogTitle));
-                mActions.add(item.action);
-            }
-        }
-        mTitles = new CharSequence[titles.size()];
-        titles.toArray(mTitles);
+        //ArrayList<CharSequence> titles = new ArrayList<CharSequence>();
+        //mActions = new ArrayList<Integer>();
+        //for (ActionItem item : sClusterItems) {
+        //    if (item.enabled && item.visible) {
+        //        titles.add(mContext.getString(item.dialogTitle));
+        //        mActions.add(item.action);
+        //    }
+        //}
+        //mTitles = new CharSequence[titles.size()];
+        //titles.toArray(mTitles);
     }
-
+    */
     public void setClusterItemEnabled(int id, boolean enabled) {
         for (ActionItem item : sClusterItems) {
             if (item.action == id) {
@@ -180,6 +181,8 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
     }
 
     public void showClusterMenu(int action, ClusterRunner runner) {
+        hideClusterMenu();
+        /*
         Log.v(TAG, "showClusterMenu: runner=" + runner);
         // Don't set cluster runner until action bar is ready.
         mClusterRunner = null;
@@ -187,6 +190,7 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
         mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         setSelectedAction(action);
         mClusterRunner = runner;
+        */
     }
 
     public void hideClusterMenu() {
@@ -195,6 +199,7 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
     }
 
     public void showClusterDialog(final ClusterRunner clusterRunner) {
+        /*
         createDialogData();
         final ArrayList<Integer> actions = mActions;
         new AlertDialog.Builder(mContext).setTitle(R.string.group_by).setItems(
@@ -203,6 +208,7 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
                 clusterRunner.doCluster(actions.get(which).intValue());
             }
         }).create().show();
+        */
     }
 
     public void setTitle(String title) {

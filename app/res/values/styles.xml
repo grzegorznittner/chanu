@@ -224,12 +224,9 @@
         <item name="android:layout_height">80dp</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentLeft">true</item>
-        <!-- <item name="android:layout_marginTop">8dp</item> -->
         <item name="android:layout_marginRight">8dp</item>
-        <!-- <item name="android:layout_marginBottom">8dp</item> -->
-        <!-- <item name="android:paddingBottom">8dp</item> -->
         <item name="android:gravity">top|left</item>
-        <item name="android:scaleType">centerCrop</item>
+        <item name="android:scaleType">center</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
     </style>
 

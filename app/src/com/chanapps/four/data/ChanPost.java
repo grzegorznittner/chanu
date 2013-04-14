@@ -452,14 +452,14 @@ public class ChanPost {
         else {
             if (replies > 0) {
                 text += replies
-                        + " post" + (replies == 1 ? "" : "s")
+                        + (replies == 1 ? "reply" : "replies")
                         + " "
                         + (images > 0 ? images : "no")
-                        + " img"
+                        + " image"
                         + (images == 1 ? "" : "s");
             }
             else {
-                text += "no posts";
+                text += "no replies";
             }
             if (imagelimit == 1)
                 text += " (IL)";
