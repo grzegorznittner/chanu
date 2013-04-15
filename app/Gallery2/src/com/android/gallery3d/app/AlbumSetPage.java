@@ -311,9 +311,7 @@ public class AlbumSetPage extends ActivityState implements
         mEyePosition.resume();
         mActionModeHandler.resume();
         GalleryActionBar actionBar = mActivity.getGalleryActionBar();
-        if (mShowClusterMenu && actionBar != null) {
-            actionBar.showClusterMenu(mSelectedAction, this);
-        }
+        if (actionBar != null) actionBar.hideClusterMenu();
     }
 
     private void initializeData(Bundle data) {
@@ -462,7 +460,6 @@ public class AlbumSetPage extends ActivityState implements
     }
 
     public void onSelectionModeChange(int mode) {
-
         switch (mode) {
             case SelectionManager.ENTER_SELECTION_MODE: {
                 mActivity.getGalleryActionBar().hideClusterMenu();
@@ -472,7 +469,6 @@ public class AlbumSetPage extends ActivityState implements
             }
             case SelectionManager.LEAVE_SELECTION_MODE: {
                 mActionMode.finish();
-                mActivity.getGalleryActionBar().showClusterMenu(mSelectedAction, this);
                 mRootPane.invalidate();
                 break;
             }

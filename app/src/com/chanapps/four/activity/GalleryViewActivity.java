@@ -452,6 +452,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             case R.id.offline_chan_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;
+            /*
             case R.id.download_image_menu:
                 if (checkLocalImage() != null)
                     (new CopyImageToGalleryTask(getApplicationContext())).execute();
@@ -470,6 +471,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 else
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
                 return true;
+            */
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
@@ -576,7 +578,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         inflater.inflate(R.menu.gallery_view_menu, menu);        
         return true;
     }
-
+    /*
     private static final int[] HIDDEN_ALBUM_MENU_ITEMS = {
             R.id.view_image_gallery_menu,
             R.id.download_image_menu,
@@ -608,16 +610,17 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         }
         return true;
     }
+    */
 
     private void setActionBarTitle() {
         if (DEBUG) Log.i(TAG, "setting action bar based on viewType=" + viewType);
         if (getActionBar() != null) {
         	switch(viewType) {
         	case OFFLINE_ALBUMSET_VIEW:
-        		getActionBar().setTitle("Offline view");
+        		getActionBar().setTitle(R.string.offline_chan_view_menu);
         		break;
         	case OFFLINE_ALBUM_VIEW:
-        		getActionBar().setTitle("Offline /" + boardCode);
+        		getActionBar().setTitle(String.format(getString(R.string.offline_board_view_menu), boardCode));
         		break;
         	case PHOTO_VIEW:
         	case ALBUM_VIEW:
@@ -629,11 +632,11 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         if (getGalleryActionBar() != null) {
         	switch(viewType) {
         	case OFFLINE_ALBUMSET_VIEW:
-        		getGalleryActionBar().setTitle("Offline view");
-        		break;
+                getActionBar().setTitle(R.string.offline_chan_view_menu);
+                break;
         	case OFFLINE_ALBUM_VIEW:
-        		getGalleryActionBar().setTitle("Offline /" + boardCode);
-        		break;
+                getActionBar().setTitle(String.format(getString(R.string.offline_board_view_menu), boardCode));
+                break;
         	case PHOTO_VIEW:
         	case ALBUM_VIEW:
         	default:

@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  xmlns:chanapps="http://chanapps.com">
+                  xmlns:chanapps="http://schemas.android.com/apk/res/com.chanapps.four.activity">
 
 <!-- posting -->
 
+    <com.chanapps.four.component.IconPreferenceScreen
+            android:title=""
+            android:summary=""
+            android:key="pref_about_icon"
+            chanapps:icon="@drawable/app_icon_large_with_text"/>
+
+    <!--
     <Preference
             android:key="pref_about_title"
             android:title="@string/pref_about_title"
             android:summary="@string/pref_about_title_sum"
             />
-
+    -->
     <PreferenceCategory
             android:key="pref_about_application_category"
             android:title="@string/pref_about_application_category"

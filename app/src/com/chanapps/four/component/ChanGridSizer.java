@@ -20,7 +20,8 @@ public class ChanGridSizer {
     private static final String TAG = ChanGridSizer.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    private static final int MAX_COLUMN_WIDTH = 110;
+    //private static final int MAX_COLUMN_WIDTH = 110;
+    private static final int MAX_COLUMN_WIDTH = 90;
     private static final int[] MAX_COLUMN_WIDTHS = {
             ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH,
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH,

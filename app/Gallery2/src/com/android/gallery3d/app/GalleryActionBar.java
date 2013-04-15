@@ -180,35 +180,9 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
         return shareActionProvider;
     }
 
-    public void showClusterMenu(int action, ClusterRunner runner) {
-        hideClusterMenu();
-        /*
-        Log.v(TAG, "showClusterMenu: runner=" + runner);
-        // Don't set cluster runner until action bar is ready.
-        mClusterRunner = null;
-        mActionBar.setListNavigationCallbacks(mAdapter, this);
-        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        setSelectedAction(action);
-        mClusterRunner = runner;
-        */
-    }
-
     public void hideClusterMenu() {
         mClusterRunner = null;
         mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-    }
-
-    public void showClusterDialog(final ClusterRunner clusterRunner) {
-        /*
-        createDialogData();
-        final ArrayList<Integer> actions = mActions;
-        new AlertDialog.Builder(mContext).setTitle(R.string.group_by).setItems(
-                mTitles, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                clusterRunner.doCluster(actions.get(which).intValue());
-            }
-        }).create().show();
-        */
     }
 
     public void setTitle(String title) {
@@ -228,24 +202,8 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
         if (mActionBar != null) mActionBar.setSubtitle(title);
     }
 
-    public void setNavigationMode(int mode) {
-        if (mActionBar != null) mActionBar.setNavigationMode(mode);
-    }
-
     public int getHeight() {
         return mActionBar == null ? 0 : mActionBar.getHeight();
-    }
-
-    public boolean setSelectedAction(int type) {
-        for (int i = 0, n = sClusterItems.length; i < n; i++) {
-            ActionItem item = sClusterItems[i];
-            if (item.visible && item.action == type) {
-                mActionBar.setSelectedNavigationItem(i);
-                mCurrentIndex = i;
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import com.chanapps.four.activity.AboutActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.component.IconPreferenceScreen;
 import com.chanapps.four.data.ChanHelper;
 
 
@@ -32,6 +33,7 @@ public class AboutFragment extends PreferenceFragment
 
         addPreferencesFromResource(R.xml.about_preferences);
 
+        linkPreference("pref_about_icon", "market://search?q=pub:Chanapps Software");
         linkPreference("pref_about_application_version", "market://search?q=pub:Chanapps Software");
         linkPreference("pref_about_application_rate", "market://search?q=pub:Chanapps Software");
         linkPreference("pref_about_data_4chan", "https://github.com/4chan/4chan-API");
