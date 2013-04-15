@@ -50,7 +50,7 @@ public class ChanImageLoader {
 		            imageLoader.init(
                             new ImageLoaderConfiguration
                                     .Builder(context)
-                                    .memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
+                                    //.memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
                                     .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
                                     .imageDownloader(new ExtendedImageDownloader(context))
                                     .threadPriority(Thread.MIN_PRIORITY)

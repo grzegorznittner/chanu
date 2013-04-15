@@ -158,10 +158,10 @@ public class BoardActivity
     protected void resetImageOptions(ImageSize imageSize) {
         displayImageOptions = new DisplayImageOptions.Builder()
                 //.imageScaleType(ImageScaleType.POWER_OF_2)
-                .imageScaleType(ImageScaleType.EXACT)
-                .imageSize(imageSize)
+                //.imageScaleType(ImageScaleType.EXACT)
+                //.imageSize(imageSize)
                 .cacheOnDisc()
-                .cacheInMemory()
+                //.cacheInMemory()
                 .resetViewBeforeLoading()
                 .build();
     }
@@ -352,8 +352,8 @@ public class BoardActivity
         imageLoader.displayImage(
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
                 iv,
-                //options);
-                options.modifyCenterCrop(true)); // load async
+                options);
+                //options.modifyCenterCrop(true)); // load async
         return true;
     }
 
