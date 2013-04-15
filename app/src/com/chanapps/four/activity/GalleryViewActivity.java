@@ -332,7 +332,9 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         GLRoot root = getGLRoot();
         root.lockRenderThread();
         try {
-        	if (getStateManager().getStateCount() > 0) {
+        	if (DEBUG) Log.i(TAG, "Gallery state stack: " + getStateManager().getStackDescription());
+        	getStateManager().compactActivityStateStack();
+        	if (getStateManager().getStateCount() > 1) {
         		getStateManager().onBackPressed();
         	} else {
         		navigateUp();
@@ -431,7 +433,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         try {
         switch (item.getItemId()) {
             case android.R.id.home:
-            	Log.i(TAG, "Gallery state stack: " + getStateManager().getStackDescription());
+            	if (DEBUG) Log.i(TAG, "Gallery state stack: " + getStateManager().getStackDescription());
             	getStateManager().compactActivityStateStack();
             	if (getStateManager().getStateCount() > 1) {
             		getStateManager().onBackPressed();
