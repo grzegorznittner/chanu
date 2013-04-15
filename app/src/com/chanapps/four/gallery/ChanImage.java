@@ -257,7 +257,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
             		Options options = getBitmapOptions(localImageFile);
             		bitmap = BitmapFactory.decodeFile(localImageFile.getAbsolutePath(), options);
             	}
-            } catch (Exception e) {
+            } catch (Throwable e) {
         		Log.e(TAG, "Error loading/transforming full image", e);
         	}
 			return bitmap;
