@@ -2,7 +2,7 @@
     <!-- titles -->
     <string name="app_name">Chanu</string>
     <string name="application_name">Chanu</string>
-    <string name="application_tagname">It\'s what Yotsuba uses</string>
+    <string name="application_tagname">4chan Reloaded</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="title_item_list">Items</string>
     <string name="fragment_layout">2 Pane Layout</string>
@@ -132,8 +132,8 @@
     <string name="share_image_menu">Share Image</string>
     <string name="share_text_menu">Share Text</string>
     <string name="post_reply_send_menu">Post Reply</string>
-    <string name="offline_board_view_menu">Cached Images</string>
-    <string name="offline_chan_view_menu">All Cached Images</string>
+    <string name="offline_board_view_menu">Cached Images for /%1$s/</string>
+    <string name="offline_chan_view_menu">Chanu: Cached Images by Board</string>
 
     <!-- board grid tab -->
     <string name="japanese_culture">Japanese Culture</string>
@@ -209,7 +209,7 @@
     <string name="full_screen_wait_until_downloaded">Wait until downloaded</string>
     <string name="full_screen_image_search_error">Couldn\'t search for image</string>
     <string name="fullscreen_image_progress_upper">Loading an Image</string>
-    <string name="fullscreen_image_offline_upper">Off-line mode</string>
+    <string name="fullscreen_image_offline_upper">Offline mode</string>
     <string name="full_screen_cancel_button">Cancel Download</string>
     <string name="full_screen_close_button">Close</string>
     <string name="download_all_images_notice_prefetch">You will be notified when preload finishes</string>
@@ -401,7 +401,7 @@
 
     <!-- about preference -->
     <string name="pref_about_title">Chanu</string>
-    <string name="pref_about_title_sum">It\'s what Yotsuba uses</string>
+    <string name="pref_about_title_sum">4chan Reloaded</string>
     <string name="pref_about_application_category">Application</string>
     <string name="pref_about_application_version">Version 1.0 beta 4</string>
     <string name="pref_about_application_version_sum">Released 11 Apr 2013</string>

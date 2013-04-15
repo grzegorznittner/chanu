@@ -157,7 +157,8 @@ public class BoardActivity
 
     protected void resetImageOptions(ImageSize imageSize) {
         displayImageOptions = new DisplayImageOptions.Builder()
-                .imageScaleType(ImageScaleType.POWER_OF_2)
+                //.imageScaleType(ImageScaleType.POWER_OF_2)
+                .imageScaleType(ImageScaleType.EXACT)
                 .imageSize(imageSize)
                 .cacheOnDisc()
                 .cacheInMemory()
@@ -169,7 +170,7 @@ public class BoardActivity
         if (GridView.class.equals(absListViewClass)) {
             absListView = (GridView)findViewById(R.id.board_grid_view);
             sizeGridToDisplay();
-            resetImageOptions(new ImageSize(columnWidth/2, columnHeight/2));
+            resetImageOptions(new ImageSize(columnWidth, columnHeight));
         }
         else {
             absListView = (ListView)findViewById(R.id.board_list_view);
@@ -351,8 +352,8 @@ public class BoardActivity
         imageLoader.displayImage(
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
                 iv,
-                options);
-                //options.modifyCenterCrop(true)); // load async
+                //options);
+                options.modifyCenterCrop(true)); // load async
         return true;
     }
 
