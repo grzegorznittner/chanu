@@ -49,6 +49,9 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     
     private static final int MIN_DOWNLOAD_PROGRESS_UPDATE = 300;
 	private static final int IMAGE_BUFFER_SIZE = 20480;
+	
+	private static final int THUMBNAIL_TARGET_SIZE = 640;
+    private static final int MICROTHUMBNAIL_TARGET_SIZE = 200;
 
 	private final ChanActivityId activityId;
 	private final String name;
@@ -211,6 +214,13 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
         public Bitmap run(JobContext jc) {
         	try {
+        		Bitmap bitmap = null;
+        		if (type == TYPE_THUMBNAIL) {
+        			bitmap = downloadFullImageAsThumb();
+        			if (bitmap != null) {
+        				return bitmap;
+        			}
+        		}
             	return downloadThumbnail();
         	} catch (Throwable e) {
 				Log.e(TAG, "Bitmap docode error for " + localImagePath, e);
@@ -226,17 +236,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 	            	saveImageOnDisc(thumbFile);
 	            }
 	            
-	            Options options = new Options();
-				options.inPreferredConfig = Config.ARGB_8888;
-				switch (type) {
-	            case TYPE_THUMBNAIL:
-	    			options.inSampleSize = computeImageScale(thumbFile, 200, 200);
-	    			break;
-	            case TYPE_MICROTHUMBNAIL:
-	            default:
-	    			options.inSampleSize = computeImageScale(thumbFile, 100, 100);
-				}
-
+	            Options options = getBitmapOptions(thumbFile);
         		bitmap = BitmapFactory.decodeFile(thumbFile.getAbsolutePath(), options);
             } catch (Exception e) {
         		Log.e(TAG, "Error loading/transforming thumbnail", e);
@@ -244,7 +244,39 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         	}
 			return bitmap;
 		}
+
+        private Bitmap downloadFullImageAsThumb() {
+            Bitmap bitmap = null;
+            try {
+            	File localImageFile = new File(localImagePath);
+            	if (!localImageFile.exists()) {
+            		downloadFullImage();
+            	}
+
+            	if (localImageFile.exists()) {
+            		Options options = getBitmapOptions(localImageFile);
+            		bitmap = BitmapFactory.decodeFile(localImageFile.getAbsolutePath(), options);
+            	}
+            } catch (Throwable e) {
+        		Log.e(TAG, "Error loading/transforming full image", e);
+        	}
+			return bitmap;
+		}
 		
+		private Options getBitmapOptions(File thumbFile) throws IOException {
+			Options options = new Options();
+			options.inPreferredConfig = Config.ARGB_8888;
+			switch (type) {
+			case TYPE_THUMBNAIL:
+				options.inSampleSize = computeImageScale(thumbFile, THUMBNAIL_TARGET_SIZE, THUMBNAIL_TARGET_SIZE);
+				break;
+			case TYPE_MICROTHUMBNAIL:
+			default:
+				options.inSampleSize = computeImageScale(thumbFile, MICROTHUMBNAIL_TARGET_SIZE, MICROTHUMBNAIL_TARGET_SIZE);
+			}
+			return options;
+		}
+        
     	private void saveImageOnDisc(File targetFile) throws URISyntaxException, IOException {
 			FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
 			URLConnectionImageDownloader downloader = new URLConnectionImageDownloader(fetchParams.connectTimeout, fetchParams.readTimeout);
