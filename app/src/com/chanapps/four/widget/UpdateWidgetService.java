@@ -325,7 +325,7 @@ public class UpdateWidgetService extends Service {
             Intent intent = new Intent(context, WidgetConfigureActivity.class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             int uniqueId = 10 * appWidgetId + 2;
-            return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_ONE_SHOT);
+            return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
     }
