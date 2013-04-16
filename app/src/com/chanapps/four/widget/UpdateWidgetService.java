@@ -186,17 +186,9 @@ public class UpdateWidgetService extends Service {
         }
 
         private String getThumbnailUrl(int i) {
-            ChanPost thread;
-            if (threads == null) {
+            if (threads == null || threads.length < (i+1) || threads[i] == null || threads[i].no < 1)
                 return null;
-            }
-            if ((thread = threads[i]) == null) {
-                return null;
-            }
-            if (thread.no < 1) {
-                return null;
-            }
-            return thread.thumbnailUrl();
+            return threads[i].thumbnailUrl();
         }
 
         private Bitmap getWidgetBitmapFromBoardStorage(int i, String thumbnailUrl) {
