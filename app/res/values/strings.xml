@@ -427,6 +427,8 @@
     <string name="widget_board">Pick Board</string>
     <string name="widget_board_summ">Board for widget images</string>
     <string name="widget_board_add_error">Couldn\'t add widget</string>
+    <string name="widget_refresh">Refresh</string>
+    <string name="widget_configure">Configure</string>
 
     <!-- Help and about_dialog -->
     <string name="about_menu">About</string>
@@ -531,6 +533,7 @@
     <string name="board_r">Request</string>
     <string name="board_r9k">ROBOT9001</string>
     <string name="board_pol">Politically Incorrect</string>
+    <string name="board_s4s">Shit 4chan Says</string>
     <string name="board_soc">Social</string>
     <string name="board_watch">Watchlist</string>
     <string name="board_watch_abbrev">Watch</string>
@@ -584,6 +587,7 @@
         <item>/r/</item>
         <item>/r9k/</item>
         <item>/s/</item>
+        <item>/s4s/</item>
         <item>/sci/</item>
         <item>/soc/</item>
         <item>/sp/</item>

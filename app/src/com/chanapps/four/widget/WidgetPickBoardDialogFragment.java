@@ -65,6 +65,11 @@ public class WidgetPickBoardDialogFragment extends DialogFragment {
                     Intent intent = new Intent();
                     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
                     getActivity().setResult(Activity.RESULT_OK, intent);
+                    Intent updateWidget = new Intent(getActivity(), BoardWidgetProvider.class);
+                    updateWidget.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                    int[] ids = { appWidgetId };
+                    updateWidget.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                    getActivity().sendBroadcast(updateWidget);
                 }
                 else {
                     Toast.makeText(getActivity(), R.string.widget_board, Toast.LENGTH_SHORT).show();

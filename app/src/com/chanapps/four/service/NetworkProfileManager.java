@@ -24,6 +24,7 @@ import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 import com.chanapps.four.service.profile.NoConnectionProfile;
 import com.chanapps.four.service.profile.WifiProfile;
+import com.chanapps.four.widget.BoardWidgetProvider;
 
 /**
  * Class manages network profile switching.
@@ -107,19 +108,23 @@ public class NetworkProfileManager {
 			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 		//}
 
-		switch(currentActivityId.activity) {
+
+        switch(currentActivityId.activity) {
 		case BOARD_SELECTOR_ACTIVITY:
-			if (currentActivityId == null) {
+            BoardWidgetProvider.asyncUpdateWidgetsAndWatchlist(newActivity.getBaseContext());
+            if (currentActivityId == null) {
 				activeProfile.onApplicationStart(newActivity.getBaseContext());
 			} else {
 				activeProfile.onBoardSelectorSelected(newActivity.getBaseContext());
 			}
 			break;
 		case BOARD_ACTIVITY:
-			activeProfile.onBoardSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
+            BoardWidgetProvider.asyncUpdateWidgetsAndWatchlist(newActivity.getBaseContext());
+            activeProfile.onBoardSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
 			break;
 		case THREAD_ACTIVITY:
-			activeProfile.onThreadSelected(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo);
+            BoardWidgetProvider.asyncUpdateWidgetsAndWatchlist(newActivity.getBaseContext());
+            activeProfile.onThreadSelected(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo);
 			break;
 		case FULL_SCREEN_IMAGE_ACTIVITY:
 			activeProfile.onFullImageLoading(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo, currentActivityId.postNo);

@@ -37,11 +37,11 @@ public class MobileProfile extends AbstractNetworkProfile {
 		/* Mapping between connection health and fetch params
 		 *               HEALTH  ----->   REFRESH_DELAY, FORCE_REFRESH_DELAY, READ_TIMEOUT, CONNECT_TIMEOUT
 		 */
-		REFRESH_TIME.put(Health.BAD,       new FetchParams(660L, 240L, 20, 15));
-		REFRESH_TIME.put(Health.VERY_SLOW, new FetchParams(600L, 200L, 20, 15));
-		REFRESH_TIME.put(Health.SLOW,      new FetchParams(180L, 120L, 20, 10));
-		REFRESH_TIME.put(Health.GOOD,      new FetchParams(120L,  80L, 12,  8));
-		REFRESH_TIME.put(Health.PERFECT,   new FetchParams( 60L,  40L,  8,  4));
+		REFRESH_TIME.put(Health.BAD,       new FetchParams(660L,  10L, 20, 15));
+		REFRESH_TIME.put(Health.VERY_SLOW, new FetchParams(600L,  10L, 20, 15));
+		REFRESH_TIME.put(Health.SLOW,      new FetchParams(180L,  10L, 20, 10));
+		REFRESH_TIME.put(Health.GOOD,      new FetchParams(120L,  10L, 12,  8));
+		REFRESH_TIME.put(Health.PERFECT,   new FetchParams( 60L,  10L,  8,  4));
 	}
 	
 	@Override

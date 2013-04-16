@@ -7,6 +7,7 @@ import java.util.Set;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -60,10 +61,6 @@ public class BoardSelectorActivity
         if (DEBUG) Log.v(TAG, "onCreate");
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar loader
 
-        NetworkProfileManager.instance().activityChange(this);
-        NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(this); // always check since state may have changed
-        asyncUpdateWidgetsAndWatchlist();
-
         Intent intent = getIntent();
         if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
         	if (DEBUG) Log.i(TAG, "Starting dispatch");
@@ -79,38 +76,6 @@ public class BoardSelectorActivity
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
         setContentView(mViewPager);
-    }
-
-    protected void asyncUpdateWidgetsAndWatchlist() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                boolean hasWidgets = ensurePrefs().getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>()).size() > 0;
-                boolean hasWatchlist = ensurePrefs().getStringSet(ChanHelper.THREAD_WATCHLIST, new HashSet<String>()).size() > 0;
-                if (hasWidgets)
-                    updateWidgets();
-                if (hasWatchlist)
-                    ChanWatchlist.fetchWatchlistThreads(getApplicationContext());
-                if (hasWidgets || hasWatchlist)
-                    scheduleGlobalAlarm();
-            }
-        });
-    }
-
-    protected void scheduleGlobalAlarm() { // will reschedule if not already scheduled
-        Intent intent = new Intent(this, GlobalAlarmReceiver.class);
-        intent.setAction(GlobalAlarmReceiver.GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION);
-        startService(intent);
-        if (DEBUG) Log.i(TAG, "Scheduled global alarm");
-    }
-
-    protected void updateWidgets() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                BoardWidgetProvider.updateAll(getApplicationContext());
-            }
-        }).start();
     }
 
     @Override

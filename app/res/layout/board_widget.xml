@@ -1,47 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:id="@+id/widget_layout"
             android:orientation="horizontal"
             android:padding="0dp"
             android:weightSum="3"
             android:background="@android:color/transparent"
-        >
-<!--
-            android:divider="@android:color/transparent"
-            android:dividerPadding="2dp"
-            android:verticalSpacing="8dp"
-            android:horizontalSpacing="8dp"
--->
-    <ImageView android:id="@+id/image_left"
-               android:layout_height="fill_parent"
-               android:layout_width="0dp"
-               android:contentDescription="Left Thumbnail Image"
-               android:scaleType="centerCrop"
-               android:layout_weight="1"
-               android:src="@drawable/a"
+            >
+        <!--
+                    android:divider="@android:color/transparent"
+                    android:dividerPadding="2dp"
+                    android:verticalSpacing="8dp"
+                    android:horizontalSpacing="8dp"
+        -->
+        <ImageView android:id="@+id/image_left"
+                   android:layout_height="match_parent"
+                   android:layout_width="0dp"
+                   android:contentDescription="Left Thumbnail Image"
+                   android:scaleType="centerCrop"
+                   android:layout_weight="1"
+                   android:src="@drawable/a"
+                />
+
+        <ImageView android:id="@+id/image_center"
+                   android:layout_height="match_parent"
+                   android:layout_width="0dp"
+                   android:layout_marginLeft="2dp"
+                   android:layout_marginRight="2dp"
+                   android:contentDescription="Center Thumbnail Image"
+                   android:scaleType="centerCrop"
+                   android:layout_weight="1"
+                   android:src="@drawable/a_2"
+                />
+
+        <ImageView android:id="@+id/image_right"
+                   android:layout_height="match_parent"
+                   android:layout_width="0dp"
+                   android:contentDescription="Right Thumbnail Image"
+                   android:scaleType="centerCrop"
+                   android:layout_weight="1"
+                   android:src="@drawable/a_3"
+                />
+
+    </LinearLayout>
+
+    <ImageButton
+            android:id="@+id/refresh"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:scaleType="center"
+            android:src="@drawable/navigation_refresh"
+            android:background="@color/PaletteBlackHalfOpacity"
+            android:contentDescription="@string/widget_refresh"
             />
 
-    <ImageView android:id="@+id/image_center"
-               android:layout_height="fill_parent"
-               android:layout_width="0dp"
-               android:layout_marginLeft="2dp"
-               android:layout_marginRight="2dp"
-               android:contentDescription="Center Thumbnail Image"
-               android:scaleType="centerCrop"
-               android:layout_weight="1"
-               android:src="@drawable/a_2"
+    <ImageButton
+            android:id="@+id/configure"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:scaleType="center"
+            android:src="@drawable/action_settings"
+            android:background="@color/PaletteBlackHalfOpacity"
+            android:contentDescription="@string/widget_configure"
             />
 
-    <ImageView android:id="@+id/image_right"
-               android:layout_height="fill_parent"
-               android:layout_width="0dp"
-               android:contentDescription="Right Thumbnail Image"
-               android:scaleType="centerCrop"
-               android:layout_weight="1"
-               android:src="@drawable/a_3"
-            />
-
-</LinearLayout>
+</RelativeLayout>

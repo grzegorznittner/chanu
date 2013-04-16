@@ -332,7 +332,8 @@ public class ChanBoard {
                         "r", ctx.getString(R.string.board_r),
                         "r9k", ctx.getString(R.string.board_r9k),
                         "pol", ctx.getString(R.string.board_pol),
-                        "soc", ctx.getString(R.string.board_soc)
+                        "soc", ctx.getString(R.string.board_soc),
+                        "s4s", ctx.getString(R.string.board_s4s)
                 }
 
         };

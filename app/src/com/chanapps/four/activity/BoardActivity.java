@@ -161,7 +161,7 @@ public class BoardActivity
                 //.imageScaleType(ImageScaleType.EXACT)
                 //.imageSize(imageSize)
                 .cacheOnDisc()
-                //.cacheInMemory()
+                .cacheInMemory()
                 .resetViewBeforeLoading()
                 .build();
     }

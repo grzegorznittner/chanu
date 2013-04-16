@@ -37,25 +37,15 @@ import com.chanapps.four.service.profile.NoConnectionProfile;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
-	protected static final long STORE_INTERVAL_MS = 2000;
-    protected static final int MAX_THREAD_RETENTION_PER_BOARD = 100;
-    
-    protected static final long MIN_BOARD_FORCE_INTERVAL = 10000; // 10 sec
-    protected static final long MIN_BOARD_FETCH_INTERVAL = 300000; // 5 min
-    
-    protected static final long MIN_THREAD_FORCE_INTERVAL = 10000; // 10 sec
-    protected static final long MIN_THREAD_FETCH_INTERVAL = 300000; // 5 min
-    
-    protected static final int DEFAULT_READ_TIMEOUT = 15000; // 15 sec
-    
     private String boardCode;
     private boolean boardCatalog;
     private int pageNo;
     private long threadNo;
     private boolean boardHandling = true;
     private boolean force;
+    private boolean backgroundLoad;
     
     private ChanBoard board;
     private ChanThread thread;
@@ -203,7 +193,8 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		if (!isChanForegroundActivity()) {
+        backgroundLoad = intent.getBooleanExtra(ChanHelper.BACKGROUND_LOAD, false);
+		if (!isChanForegroundActivity() && !backgroundLoad) {
             if (DEBUG)
                 Log.i(TAG, "Not foreground activity, exiting");
 			return;

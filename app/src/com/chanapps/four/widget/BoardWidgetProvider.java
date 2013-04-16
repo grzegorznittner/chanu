@@ -11,6 +11,7 @@ import android.util.Log;
 import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.service.FetchChanDataService;
 
 import java.util.Arrays;
@@ -106,7 +107,8 @@ public class BoardWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        // we handle this ourselves after widget configure
+        for (int i = 0; i < appWidgetIds.length; i++)
+            update(context, appWidgetIds[i]);
     }
 
     @Override
@@ -215,5 +217,37 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         return true;
     }
 
+    public static void asyncUpdateWidgetsAndWatchlist(final Context context) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                boolean hasWidgets = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>()).size() > 0;
+                boolean hasWatchlist = prefs.getStringSet(ChanHelper.THREAD_WATCHLIST, new HashSet<String>()).size() > 0;
+                if (hasWidgets)
+                    updateWidgets(context);
+                if (hasWatchlist)
+                    ChanWatchlist.fetchWatchlistThreads(context);
+                if (hasWidgets || hasWatchlist)
+                    scheduleGlobalAlarm(context);
+            }
+        });
+    }
+
+    private static void scheduleGlobalAlarm(final Context context) { // will reschedule if not already scheduled
+        Intent intent = new Intent(context, GlobalAlarmReceiver.class);
+        intent.setAction(GlobalAlarmReceiver.GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION);
+        context.startService(intent);
+        if (DEBUG) Log.i(TAG, "Scheduled global alarm");
+    }
+
+    private static void updateWidgets(final Context context) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BoardWidgetProvider.updateAll(context);
+            }
+        }).start();
+    }
 
 }

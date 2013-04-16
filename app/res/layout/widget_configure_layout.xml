@@ -13,4 +13,5 @@
             android:textStyle="bold"
             android:text="@string/widget_board_summ"
         ></TextView>
+
 </LinearLayout>

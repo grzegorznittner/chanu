@@ -48,7 +48,7 @@ import com.chanapps.four.widget.BoardWidgetProvider;
 public class BoardParserService extends BaseChanService implements ChanIdentifiedService {
 
     protected static final String TAG = BoardParserService.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 	
 	protected static final long STORE_INTERVAL_MS = 2000;
     protected static final int MAX_THREAD_RETENTION_PER_BOARD = 200;

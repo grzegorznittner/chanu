@@ -18,6 +18,7 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.*;
+import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -41,7 +42,7 @@ public class UpdateWidgetService extends Service {
 
     public static final String TAG = UpdateWidgetService.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -109,28 +110,32 @@ public class UpdateWidgetService extends Service {
 
         @Override
         public void onPostExecute(Void result) {
-            if (firstTimeInit) {
-                initWidgetViews();
+            updateWidgetViews();
+            if (firstTimeInit)
                 (new WidgetUpdateTask(context, appWidgetId, false)).execute();
-            }
-            else {
-                updateWidgetViews(); // run on UI thread since setting views
-            }
         }
 
         private void loadBoard() {
             try {
                 ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-                if (board == null || board.threads == null || board.threads.length == 0) {
-                    if (DEBUG) Log.i(TAG, "Couldn't load board=" + boardCode + " with valid threads for widget");
+                if (board == null) {
+                    Log.e(TAG, "Couldn't load widget null board for boardCode=" + boardCode );
                     return;
                 }
+                ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
+                        ? board.loadedThreads
+                        : board.threads;
+                if (boardThreads == null || boardThreads.length == 0) {
+                    Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode);
+                    return;
+                }
+                threads = boardThreads;
 
                 int threadIndex = 0;
                 for (int i = 0; i < NUM_TOP_THREADS; i++) {
                     ChanPost thread = null;
-                    while (threadIndex < board.threads.length
-                            && ((thread = board.threads[threadIndex]) == null || thread.sticky != 0))
+                    while (threadIndex < threads.length
+                            && ((thread = threads[threadIndex]) == null || thread.sticky != 0))
                         threadIndex++;
                     threads[i] = thread;
                     if (thread != null)
@@ -280,38 +285,23 @@ public class UpdateWidgetService extends Service {
             return BitmapFactory.decodeResource(context.getResources(), imageResourceId);
         }
 
-        private void initWidgetViews() { // do this first time to avoid blank widget on network timeouts
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.board_widget);
-            int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
-            for (int i = 0; i < imageIds.length; i++) {
-                int imageId = imageIds[i];
-                Bitmap b = loadDefaultBoardBitmap(i);
-                views.setImageViewBitmap(imageId, b);
-                PendingIntent pendingIntent = makePendingIntent(null, i); // this will make a board intent
-                views.setOnClickPendingIntent(imageId, pendingIntent);
-            }
-            AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
-            if (DEBUG) Log.i(TAG, "Init completed for widgetId=" + appWidgetId + " for board=" + boardCode);
-        }
-
         private void updateWidgetViews() {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            boolean hidePostNumbers = prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
-            boolean useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.board_widget);
             int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
             for (int i = 0; i < imageIds.length; i++) {
                 int imageId = imageIds[i];
-                Bitmap b = bitmaps.get(i);
+                Bitmap b = bitmaps != null && bitmaps.size() >= i+1 && bitmaps.get(i) != null
+                        ? bitmaps.get(i)
+                        : loadDefaultBoardBitmap(i);
                 views.setImageViewBitmap(imageId, b);
-                ChanPost thread = threads[i];
-                if (thread != null) {
-                    thread.hidePostNumbers = hidePostNumbers;
-                    thread.useFriendlyIds = useFriendlyIds;
-                }
+                ChanPost thread = threads != null && threads.length >= i+1
+                        ? threads[i]
+                        : null;
                 PendingIntent pendingIntent = makePendingIntent(thread, i);
                 views.setOnClickPendingIntent(imageId, pendingIntent);
             }
+            views.setOnClickPendingIntent(R.id.refresh, makeRefreshIntent());
+            views.setOnClickPendingIntent(R.id.configure, makeConfigureIntent());
 
             AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
             if (DEBUG) Log.i(TAG, "Updated widgetId=" + appWidgetId + " for board=" + boardCode);
@@ -324,6 +314,26 @@ public class UpdateWidgetService extends Service {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = 100 * appWidgetId + i;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+
+        private PendingIntent makeRefreshIntent() {
+            Intent intent = new Intent(context, FetchChanDataService.class);
+            intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+            intent.putExtra(ChanHelper.BOARD_CATALOG, 1);
+            intent.putExtra(ChanHelper.PAGE, -1);
+            intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+            intent.putExtra(ChanHelper.FORCE_REFRESH, true);
+            intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
+            int uniqueId = 10 * appWidgetId + 1;
+            return PendingIntent.getService(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+
+
+        private PendingIntent makeConfigureIntent() {
+            Intent intent = new Intent(context, WidgetConfigureActivity.class);
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            int uniqueId = 10 * appWidgetId + 2;
+            return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_ONE_SHOT);
         }
 
     }
