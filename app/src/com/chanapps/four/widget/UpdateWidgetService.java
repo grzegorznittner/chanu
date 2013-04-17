@@ -40,6 +40,8 @@ public class UpdateWidgetService extends Service {
 
     public static final String TAG = UpdateWidgetService.class.getSimpleName();
 
+    public static final int NUM_TOP_THREADS = 3;
+
     private static final boolean DEBUG = true;
 
     @Override
@@ -70,7 +72,6 @@ public class UpdateWidgetService extends Service {
 
     public static class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
 
-        private static final int NUM_TOP_THREADS = 3;
         private static final int BITMAP_BUFFER_SIZE = 8192;
 
         private Context context;
@@ -155,28 +156,21 @@ public class UpdateWidgetService extends Service {
 
         private Bitmap getWidgetBitmap(int i) {
             Bitmap b;
-            String thumbnailUrl = getThumbnailUrl(i);
-            if (thumbnailUrl != null && !thumbnailUrl.isEmpty()
-                    && (b = getWidgetBitmapFromBoardStorage(i, thumbnailUrl)) != null)
-            {
-                if (DEBUG) Log.i(TAG, "Loaded bitmap from board storage for i=" + i + " thumb=" + thumbnailUrl);
-                return b;
-            }
-
-            if (thumbnailUrl != null && !thumbnailUrl.isEmpty()
-                    && (b = downloadWidgetBitmap(i, thumbnailUrl)) != null)
-            {
-                if (DEBUG) Log.i(TAG, "Downloaded bitmap since empty storage for i=" + i + " thumb=" + thumbnailUrl);
-                return b;
-            }
-
             if ((b = ChanFileStorage.getBoardWidgetBitmap(context, widgetConf.boardCode, i)) != null) {
                 if (DEBUG) Log.i(TAG, "Loaded cached bitmap since download failed for i=" + i);
-                return b;
             }
-
-            if (DEBUG) Log.i(TAG, "Returned default bitmap since empty cache for i=" + i);
-            b = loadDefaultBoardBitmap(i);
+            else if ((b = getWidgetBitmapFromBoardStorage(i)) != null)
+            {
+                if (DEBUG) Log.i(TAG, "Loaded bitmap from board storage for i=" + i);
+            }
+            else if ((b = downloadWidgetBitmap(i)) != null)
+            {
+                if (DEBUG) Log.i(TAG, "Downloaded bitmap since empty storage for i=" + i);
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "Returned default bitmap since empty cache for i=" + i);
+                b = loadDefaultBoardBitmap(i);
+            }
             return b;
         }
 
@@ -186,7 +180,8 @@ public class UpdateWidgetService extends Service {
             return threads[i].thumbnailUrl();
         }
 
-        private Bitmap getWidgetBitmapFromBoardStorage(int i, String thumbnailUrl) {
+        private Bitmap getWidgetBitmapFromBoardStorage(int i) {
+            String thumbnailUrl = getThumbnailUrl(i);
             Bitmap b = null;
             File thumbFile = null;
             if (thumbnailUrl != null
@@ -219,7 +214,8 @@ public class UpdateWidgetService extends Service {
             return b;
         }
 
-        private Bitmap downloadWidgetBitmap(int i, String thumbnailUrl) {
+        private Bitmap downloadWidgetBitmap(int i) {
+            String thumbnailUrl = getThumbnailUrl(i);
             Bitmap b = null;
 
             NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();

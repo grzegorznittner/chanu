@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -13,6 +16,7 @@ import android.widget.*;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.mColorPicker.ColorPickerDialog;
 
 import java.util.regex.Matcher;
@@ -54,6 +58,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
         setupCheckboxes();
         addColorClickHandler();
         addDoneClickHandler();
+        initWidgetLayoutState();
         WidgetConfigureActivity.this.setResult(Activity.RESULT_CANCELED);
     }
 
@@ -119,24 +124,28 @@ public class WidgetConfigureActivity extends FragmentActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 widgetConf.roundedCorners = isChecked;
+                updateContainerBackgroundState();
             }
         });
         showBoardButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 widgetConf.showBoardTitle = isChecked;
+                updateBoardTitleState();
             }
         });
         showRefreshButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 widgetConf.showRefreshButton = isChecked;
+                updateRefreshButtonState();
             }
         });
         showConfigureButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 widgetConf.showConfigureButton = isChecked;
+                updateConfigButtonState();
             }
         });
     }
@@ -157,6 +166,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 widgetConf.boardTitleColor = d.getColor();
+                                updateBoardTitleState();
                             }
                         });
                 d.setButton(DialogInterface.BUTTON_NEGATIVE,
@@ -183,6 +193,8 @@ public class WidgetConfigureActivity extends FragmentActivity {
             widgetConf.boardCode = boardCode;
         if (widgetConf.boardCode == null || widgetConf.boardCode.isEmpty())
             widgetConf.boardCode = ChanBoard.DEFAULT_BOARD_CODE;
+        updateBoardTitleState();
+        setBoardImages();
     }
 
     protected void addDoneClickHandler() {
@@ -211,4 +223,82 @@ public class WidgetConfigureActivity extends FragmentActivity {
             }
         });
     }
+    
+    protected void initWidgetLayoutState() {
+        updateContainerBackgroundState();
+        updateBoardTitleState();
+        updateRefreshButtonState();
+        updateConfigButtonState();
+        setBoardImages();
+    }
+
+    protected void updateContainerBackgroundState() {
+        int containerBackground = widgetConf.roundedCorners ? R.drawable.widget_rounded_background : 0;
+        RelativeLayout container = (RelativeLayout)findViewById(R.id.widget_preview);
+        container.setBackgroundResource(containerBackground);
+    }
+
+    protected void updateBoardTitleState() {
+        ChanBoard board = ChanBoard.getBoardByCode(this, widgetConf.boardCode);
+        if (board == null)
+            board = ChanBoard.getBoardByCode(this, ChanBoard.DEFAULT_BOARD_CODE);
+        String boardTitle = board.name + " /" + board.link + "/";
+        int boardTitleColor = widgetConf.boardTitleColor;
+        int boardTitleVisibility = widgetConf.showBoardTitle ? View.VISIBLE : View.GONE;
+        TextView tv = (TextView)findViewById(R.id.board_title);
+        tv.setText(boardTitle);
+        tv.setTextColor(boardTitleColor);
+        tv.setVisibility(boardTitleVisibility);
+    }
+
+    protected void updateRefreshButtonState() {
+        int refreshBackground = widgetConf.showRefreshButton ? R.color.PaletteBlackHalfOpacity : 0;
+        int refreshDrawable = widgetConf.showRefreshButton ? R.drawable.widget_refresh_button_selector : 0;
+        ImageView refresh = (ImageView)findViewById(R.id.refresh);
+        refresh.setBackgroundResource(refreshBackground);
+        refresh.setImageResource(refreshDrawable);
+    }
+
+    protected void updateConfigButtonState() {
+        int configureBackground = widgetConf.showConfigureButton ? R.color.PaletteBlackHalfOpacity : 0;
+        int configureDrawable = widgetConf.showConfigureButton ? R.drawable.widget_configure_button_selector : 0;
+        ImageView configure = (ImageView)findViewById(R.id.configure);
+        configure.setBackgroundResource(configureBackground);
+        configure.setImageResource(configureDrawable);
+    }
+
+    protected void setBoardImages() {
+        final Handler handler = new Handler();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
+                for (int i = 0; i < imageIds.length; i++) {
+                    final int imageResourceId = imageIds[i];
+                    final Bitmap b = loadBoardBitmap(i);
+                    if (b != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                ImageView iv = (ImageView)findViewById(imageResourceId);
+                                iv.setImageBitmap(b);
+                            }
+                        });
+                }
+            }
+        }).start();
+    }
+
+    private Bitmap loadBoardBitmap(int i) {
+        Bitmap b;
+        if ((b = ChanFileStorage.getBoardWidgetBitmap(this, widgetConf.boardCode, i)) != null) {
+            return b;
+        }
+        else {
+            int imageResourceId = ChanBoard.getIndexedImageResourceId(widgetConf.boardCode, i);
+            b = BitmapFactory.decodeResource(getResources(), imageResourceId);
+            return b;
+        }
+    }
+
 }

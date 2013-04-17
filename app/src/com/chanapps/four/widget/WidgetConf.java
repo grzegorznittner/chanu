@@ -1,6 +1,7 @@
 package com.chanapps.four.widget;
 
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanBoard;
 
 import java.io.Serializable;
 
@@ -29,7 +30,7 @@ public class WidgetConf implements Serializable {
     }
 
     public WidgetConf(int appWidgetId) {
-        this(appWidgetId, "", R.color.PaletteWhite, true, true, true, true);
+        this(appWidgetId, ChanBoard.DEFAULT_BOARD_CODE, 0xffffffff, true, true, true, true);
     }
 
     public WidgetConf(int appWidgetId,
