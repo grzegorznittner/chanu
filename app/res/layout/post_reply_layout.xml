@@ -133,7 +133,7 @@
                     style="@style/PostReplyButton"
                     android:contentDescription="@string/post_reply_pass_enable_hint"
                     android:hint="@string/post_reply_pass_enable_hint"
-                    android:src="@drawable/device_access_accounts_enable"
+                    android:src="@drawable/device_access_accounts"
                     android:visibility="gone">
             </ImageButton>
 
@@ -142,7 +142,7 @@
                     style="@style/PostReplyButton"
                     android:contentDescription="@string/post_reply_pass_disable_hint"
                     android:hint="@string/post_reply_pass_disable_hint"
-                    android:src="@drawable/device_access_accounts_disable"
+                    android:src="@drawable/device_access_accounts"
                     android:visibility="gone">
             </ImageButton>
 

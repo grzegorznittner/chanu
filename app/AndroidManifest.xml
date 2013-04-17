@@ -135,7 +135,8 @@
         <!--widgets-->
         <activity android:name="com.chanapps.four.widget.WidgetConfigureActivity"
                 android:excludeFromRecents="true"
-                android:taskAffinity="">
+                android:taskAffinity=""
+                android:label="@string/widget_configure_title">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
@@ -147,7 +148,7 @@
                 <action android:name="android.appwidget.action.APPWIDGET_DISABLED"/>
                 <action android:name="android.appwidget.action.APPWIDGET_DELETED"/>
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/board_widget_info"/>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_board_info"/>
         </receiver>
         <receiver android:name="com.chanapps.four.component.GlobalAlarmReceiver">
             <intent-filter>

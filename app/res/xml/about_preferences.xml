@@ -55,6 +55,12 @@
                 android:summary="@string/pref_about_data_uil_sum"
                 />
 
+        <Preference
+                android:key="pref_about_data_color"
+                android:title="@string/pref_about_data_color"
+                android:summary="@string/pref_about_data_color_sum"
+                />
+
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -5,17 +5,15 @@ import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.*;
 import com.chanapps.four.service.FetchChanDataService;
@@ -42,6 +40,8 @@ public class UpdateWidgetService extends Service {
 
     public static final String TAG = UpdateWidgetService.class.getSimpleName();
 
+    public static final int NUM_TOP_THREADS = 3;
+
     private static final boolean DEBUG = true;
 
     @Override
@@ -53,13 +53,16 @@ public class UpdateWidgetService extends Service {
         else {
             boolean firstTimeInit = intent.getBooleanExtra(ChanHelper.FIRST_TIME_INIT, false);
             if (DEBUG) Log.i(TAG, "starting update widget service for widget=" + appWidgetId + " firstTime=" + firstTimeInit);
-            (new WidgetUpdateTask(getApplicationContext(), appWidgetId, firstTimeInit)).execute();
+            WidgetConf widgetConf = BoardWidgetProvider.loadWidgetConf(this, appWidgetId);
+            if (widgetConf == null)
+                widgetConf = new WidgetConf(appWidgetId); // new widget or no config;
+            (new WidgetUpdateTask(getApplicationContext(), widgetConf, firstTimeInit)).execute();
         }
         return Service.START_NOT_STICKY;
     }
 
-    static public void firstTimeInit(Context context, int appWidgetId, String boardCode) {
-        (new WidgetUpdateTask(context, appWidgetId, true, boardCode)).execute();
+    static public void firstTimeInit(Context context, WidgetConf widgetConf) {
+        (new WidgetUpdateTask(context, widgetConf, true)).execute();
     }
 
     @Override
@@ -69,30 +72,23 @@ public class UpdateWidgetService extends Service {
 
     public static class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
 
-        private static final int NUM_TOP_THREADS = 3;
         private static final int BITMAP_BUFFER_SIZE = 8192;
 
-        private int appWidgetId;
-        private boolean firstTimeInit;
         private Context context;
-        private String boardCode;
+        private WidgetConf widgetConf;
+        private boolean firstTimeInit;
         private ChanPost[] threads = new ChanPost[NUM_TOP_THREADS];
         private List<Bitmap> bitmaps = new ArrayList<Bitmap>(NUM_TOP_THREADS);
 
-        public WidgetUpdateTask(Context context, int appWidgetId, boolean firstTimeInit) {
-            this(context, appWidgetId, firstTimeInit, BoardWidgetProvider.getBoardCodeForWidget(context, appWidgetId));
-        }
-
-        public WidgetUpdateTask(Context context, int appWidgetId, boolean firstTimeInit, String widgetBoardCode) {
-            this.appWidgetId = appWidgetId;
-            this.firstTimeInit = firstTimeInit;
+        public WidgetUpdateTask(Context context, WidgetConf widgetConf, boolean firstTimeInit) {
             this.context = context;
-            boardCode = widgetBoardCode;
-            if (boardCode == null) {
-                Log.e(TAG, "Null board code found for widget=" + appWidgetId + " defaulting to /a");
-                boardCode = "a";
+            this.widgetConf = widgetConf;
+            this.firstTimeInit = firstTimeInit;
+            if (widgetConf.boardCode == null) {
+                Log.e(TAG, "Null board code found for widget=" + widgetConf.appWidgetId + " defaulting to /a");
+                widgetConf.boardCode = "a";
             }
-            if (DEBUG) Log.i(TAG, "Found boardCode=" + boardCode + " for widget=" + appWidgetId + " now updating");
+            if (DEBUG) Log.i(TAG, "Found widgetConf.boardCode=" + widgetConf.boardCode + " for widget=" + widgetConf.appWidgetId + " now updating");
         }
 
         @Override
@@ -100,7 +96,7 @@ public class UpdateWidgetService extends Service {
             if (DEBUG) Log.i(TAG, "Starting background thread for widget update");
             if (!firstTimeInit) {
                 loadBoard();
-                if (boardCode == null) {
+                if (widgetConf.boardCode == null) {
                 	return null;
                 }
                 loadBitmaps();
@@ -112,21 +108,21 @@ public class UpdateWidgetService extends Service {
         public void onPostExecute(Void result) {
             updateWidgetViews();
             if (firstTimeInit)
-                (new WidgetUpdateTask(context, appWidgetId, false)).execute();
+                (new WidgetUpdateTask(context, widgetConf, false)).execute();
         }
 
         private void loadBoard() {
             try {
-                ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+                ChanBoard board = ChanFileStorage.loadBoardData(context, widgetConf.boardCode);
                 if (board == null) {
-                    Log.e(TAG, "Couldn't load widget null board for boardCode=" + boardCode );
+                    Log.e(TAG, "Couldn't load widget null board for widgetConf.boardCode=" + widgetConf.boardCode);
                     return;
                 }
                 ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
                         ? board.loadedThreads
                         : board.threads;
                 if (boardThreads == null || boardThreads.length == 0) {
-                    Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode);
+                    Log.e(TAG, "Couldn't load widget no threads for widgetConf.boardCode=" + widgetConf.boardCode);
                     return;
                 }
                 threads = boardThreads;
@@ -139,15 +135,15 @@ public class UpdateWidgetService extends Service {
                         threadIndex++;
                     threads[i] = thread;
                     if (thread != null)
-                        if (DEBUG) Log.i(TAG, "Loaded board=" + boardCode + "/" + thread.no + " threadIndex=" + threadIndex + " i=" + i + " with widget threads");
+                        if (DEBUG) Log.i(TAG, "Loaded board=" + widgetConf.boardCode + "/" + thread.no + " threadIndex=" + threadIndex + " i=" + i + " with widget threads");
                     else
-                        if (DEBUG) Log.i(TAG, "Loaded board=" + boardCode + " i=" + i + " with null thread");
+                        if (DEBUG) Log.i(TAG, "Loaded board=" + widgetConf.boardCode + " i=" + i + " with null thread");
                     threadIndex++;
                 }
-                if (DEBUG) Log.i(TAG, "Loaded board=" + boardCode + " with widget threads");
+                if (DEBUG) Log.i(TAG, "Loaded board=" + widgetConf.boardCode + " with widget threads");
             }
             catch (Exception e) {
-                Log.e(TAG, "Couldn't load board=" + boardCode + ", defaulting to cached values");
+                Log.e(TAG, "Couldn't load board=" + widgetConf.boardCode + ", defaulting to cached values");
             }
         }
 
@@ -160,28 +156,21 @@ public class UpdateWidgetService extends Service {
 
         private Bitmap getWidgetBitmap(int i) {
             Bitmap b;
-            String thumbnailUrl = getThumbnailUrl(i);
-            if (thumbnailUrl != null && !thumbnailUrl.isEmpty()
-                    && (b = getWidgetBitmapFromBoardStorage(i, thumbnailUrl)) != null)
-            {
-                if (DEBUG) Log.i(TAG, "Loaded bitmap from board storage for i=" + i + " thumb=" + thumbnailUrl);
-                return b;
-            }
-
-            if (thumbnailUrl != null && !thumbnailUrl.isEmpty()
-                    && (b = downloadWidgetBitmap(i, thumbnailUrl)) != null)
-            {
-                if (DEBUG) Log.i(TAG, "Downloaded bitmap since empty storage for i=" + i + " thumb=" + thumbnailUrl);
-                return b;
-            }
-
-            if ((b = ChanFileStorage.getBoardWidgetBitmap(context, boardCode, i)) != null) {
+            if ((b = ChanFileStorage.getBoardWidgetBitmap(context, widgetConf.boardCode, i)) != null) {
                 if (DEBUG) Log.i(TAG, "Loaded cached bitmap since download failed for i=" + i);
-                return b;
             }
-
-            if (DEBUG) Log.i(TAG, "Returned default bitmap since empty cache for i=" + i);
-            b = loadDefaultBoardBitmap(i);
+            else if ((b = getWidgetBitmapFromBoardStorage(i)) != null)
+            {
+                if (DEBUG) Log.i(TAG, "Loaded bitmap from board storage for i=" + i);
+            }
+            else if ((b = downloadWidgetBitmap(i)) != null)
+            {
+                if (DEBUG) Log.i(TAG, "Downloaded bitmap since empty storage for i=" + i);
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "Returned default bitmap since empty cache for i=" + i);
+                b = loadDefaultBoardBitmap(i);
+            }
             return b;
         }
 
@@ -191,7 +180,8 @@ public class UpdateWidgetService extends Service {
             return threads[i].thumbnailUrl();
         }
 
-        private Bitmap getWidgetBitmapFromBoardStorage(int i, String thumbnailUrl) {
+        private Bitmap getWidgetBitmapFromBoardStorage(int i) {
+            String thumbnailUrl = getThumbnailUrl(i);
             Bitmap b = null;
             File thumbFile = null;
             if (thumbnailUrl != null
@@ -208,13 +198,13 @@ public class UpdateWidgetService extends Service {
                     fis = new FileInputStream(thumbFile);
                     bis = new BufferedInputStream(fis);
                     b = BitmapFactory.decodeStream(bis);
-                    ChanFileStorage.storeBoardWidgetBitmap(context, boardCode, i, b);
+                    ChanFileStorage.storeBoardWidgetBitmap(context, widgetConf.boardCode, i, b);
                 }
                 catch (FileNotFoundException e) {
-                    if (DEBUG) Log.i(TAG, "FileNotFound on file load for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
+                    if (DEBUG) Log.i(TAG, "FileNotFound on file load for board=" + widgetConf.boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
                 }
                 catch (IOException e) {
-                    if (DEBUG) Log.i(TAG, "IOException on file load for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
+                    if (DEBUG) Log.i(TAG, "IOException on file load for board=" + widgetConf.boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
                 }
                 finally {
                     IOUtils.closeQuietly(bis);
@@ -224,7 +214,8 @@ public class UpdateWidgetService extends Service {
             return b;
         }
 
-        private Bitmap downloadWidgetBitmap(int i, String thumbnailUrl) {
+        private Bitmap downloadWidgetBitmap(int i) {
+            String thumbnailUrl = getThumbnailUrl(i);
             Bitmap b = null;
 
             NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
@@ -244,7 +235,7 @@ public class UpdateWidgetService extends Service {
                 is = conn.getInputStream();
                 bis = new BufferedInputStream(is, BITMAP_BUFFER_SIZE);
                 b = BitmapFactory.decodeStream(bis);
-                ChanFileStorage.storeBoardWidgetBitmap(context, boardCode, i, b);
+                ChanFileStorage.storeBoardWidgetBitmap(context, widgetConf.boardCode, i, b);
                 if (b != null) {
                     if (DEBUG) Log.i(TAG, "Successfully downloaded and cached bitmap from url=" + thumbnailUrl);
                 }
@@ -253,17 +244,17 @@ public class UpdateWidgetService extends Service {
                 }
             }
             catch (MalformedURLException e) {
-                if (DEBUG) Log.i(TAG, "MalformedURL for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
+                if (DEBUG) Log.i(TAG, "MalformedURL for board=" + widgetConf.boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
             }
             catch (FileNotFoundException e) {
-                if (DEBUG) Log.i(TAG, "FileNotFound on download for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
+                if (DEBUG) Log.i(TAG, "FileNotFound on download for board=" + widgetConf.boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
             }
             catch (IOException e) {
-                if (DEBUG) Log.i(TAG, "IOException on download for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl + " rechecking network", e);
+                if (DEBUG) Log.i(TAG, "IOException on download for board=" + widgetConf.boardCode + " i=" + i + " imageUrl=" + thumbnailUrl + " rechecking network", e);
                 NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
             }
             catch (OutOfMemoryError e) {
-                if (DEBUG) Log.i(TAG, "Out of memory on download for board=" + boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
+                if (DEBUG) Log.i(TAG, "Out of memory on download for board=" + widgetConf.boardCode + " i=" + i + " imageUrl=" + thumbnailUrl, e);
             }
             finally {
                 IOUtils.closeQuietly(bis);
@@ -273,12 +264,36 @@ public class UpdateWidgetService extends Service {
         }
 
         private Bitmap loadDefaultBoardBitmap(int i) {
-            int imageResourceId = ChanBoard.getIndexedImageResourceId(boardCode, i);
+            int imageResourceId = ChanBoard.getIndexedImageResourceId(widgetConf.boardCode, i);
             return BitmapFactory.decodeResource(context.getResources(), imageResourceId);
         }
 
         private void updateWidgetViews() {
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.board_widget);
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_board_layout);
+
+            int containerBackground = widgetConf.roundedCorners ? R.drawable.widget_rounded_background : 0;
+            views.setInt(R.id.widget_board_container, "setBackgroundResource", containerBackground);
+
+            ChanBoard board = ChanBoard.getBoardByCode(context, widgetConf.boardCode);
+            if (board == null)
+                board = ChanBoard.getBoardByCode(context, ChanBoard.DEFAULT_BOARD_CODE);
+            String boardTitle = board.name + " /" + board.link + "/";
+            int boardTitleColor = widgetConf.boardTitleColor;
+            int boardTitleVisibility = widgetConf.showBoardTitle ? View.VISIBLE : View.GONE;
+            views.setTextViewText(R.id.board_title, boardTitle);
+            views.setTextColor(R.id.board_title, boardTitleColor);
+            views.setViewVisibility(R.id.board_title, boardTitleVisibility);
+
+            int refreshBackground = widgetConf.showRefreshButton ? R.color.PaletteBlackHalfOpacity : 0;
+            int refreshDrawable = widgetConf.showRefreshButton ? R.drawable.widget_refresh_button_selector : 0;
+            views.setInt(R.id.refresh, "setBackgroundResource", refreshBackground);
+            views.setInt(R.id.refresh, "setImageResource", refreshDrawable);
+
+            int configureBackground = widgetConf.showConfigureButton ? R.color.PaletteBlackHalfOpacity : 0;
+            int configureDrawable = widgetConf.showConfigureButton ? R.drawable.widget_configure_button_selector : 0;
+            views.setInt(R.id.configure, "setBackgroundResource", configureBackground);
+            views.setInt(R.id.configure, "setImageResource", configureDrawable);
+
             int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
             for (int i = 0; i < imageIds.length; i++) {
                 int imageId = imageIds[i];
@@ -295,36 +310,36 @@ public class UpdateWidgetService extends Service {
             views.setOnClickPendingIntent(R.id.refresh, makeRefreshIntent());
             views.setOnClickPendingIntent(R.id.configure, makeConfigureIntent());
 
-            AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
-            if (DEBUG) Log.i(TAG, "Updated widgetId=" + appWidgetId + " for board=" + boardCode);
+            AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, views);
+            if (DEBUG) Log.i(TAG, "Updated widgetId=" + widgetConf.appWidgetId + " for board=" + widgetConf.boardCode);
         }
 
         private PendingIntent makePendingIntent(ChanPost thread, int i) {
             Intent intent = (thread == null || thread.no < 1)
-                ? BoardActivity.createIntentForActivity(context, new String(boardCode))
+                ? BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode))
                 : ThreadActivity.createIntentForActivity(context, new String(thread.board), thread.no);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            int uniqueId = 100 * appWidgetId + i;
+            int uniqueId = 100 * widgetConf.appWidgetId + i;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         private PendingIntent makeRefreshIntent() {
             Intent intent = new Intent(context, FetchChanDataService.class);
-            intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+            intent.putExtra(ChanHelper.BOARD_CODE, widgetConf.boardCode);
             intent.putExtra(ChanHelper.BOARD_CATALOG, 1);
             intent.putExtra(ChanHelper.PAGE, -1);
             intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
             intent.putExtra(ChanHelper.FORCE_REFRESH, true);
             intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
-            int uniqueId = 10 * appWidgetId + 1;
+            int uniqueId = 10 * widgetConf.appWidgetId + 1;
             return PendingIntent.getService(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
 
         private PendingIntent makeConfigureIntent() {
             Intent intent = new Intent(context, WidgetConfigureActivity.class);
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-            int uniqueId = 10 * appWidgetId + 2;
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
+            int uniqueId = 10 * widgetConf.appWidgetId + 2;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 

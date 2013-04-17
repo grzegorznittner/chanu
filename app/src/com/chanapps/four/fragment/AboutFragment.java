@@ -38,6 +38,7 @@ public class AboutFragment extends PreferenceFragment
         linkPreference("pref_about_application_rate", "market://search?q=pub:Chanapps Software");
         linkPreference("pref_about_data_4chan", "https://github.com/4chan/4chan-API");
         linkPreference("pref_about_data_uil", "https://github.com/nostra13/Android-Universal-Image-Loader");
+        linkPreference("pref_about_data_color", "https://code.google.com/p/color-picker-view/");
         linkPreference("pref_about_developer_chanapps", "market://search?q=pub:Chanapps Software");
 
         emailPreference("pref_about_developer_burns", getString(R.string.pref_about_developer_burns_sum));
