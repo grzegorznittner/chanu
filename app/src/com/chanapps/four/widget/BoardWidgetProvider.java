@@ -31,12 +31,14 @@ public class BoardWidgetProvider extends AppWidgetProvider {
 
     private static final boolean DEBUG = false;
 
+    /*
     public static int[] getAppWidgetIds(Context context) {
         ComponentName widgetProvider = new ComponentName(context, BoardWidgetProvider.class);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widgetProvider);
         return appWidgetIds;
     }
+    */
 
     public static Set<String> getActiveWidgetPref(Context context) {
         ComponentName widgetProvider = new ComponentName(context, BoardWidgetProvider.class);
@@ -53,7 +55,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         Set<String> savedWidgetConf = new HashSet<String>();
         for (String widget : widgetConf) {
             String widgetBoard = new String(widget);
-            String[] components = widgetBoard.split("/");
+            String[] components = widgetBoard.split(WidgetConf.DELIM);
             int widgetId = Integer.valueOf(components[0]);
             if (activeWidgetIds.contains(widgetId))
                 savedWidgetConf.add(widgetBoard);
@@ -69,24 +71,30 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         return savedWidgetConf;
     }
 
-    public static void saveWidgetPref(Context context, Set<String> savedWidgetConf) {
+    public static void saveWidgetBoardPref(Context context, Set<String> savedWidgetConf) {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putStringSet(ChanHelper.PREF_WIDGET_BOARDS, savedWidgetConf)
                 .commit();
     }
 
-    public static String getBoardCodeForWidget(Context context, int appWidgetId) {
+    public static WidgetConf loadWidgetConf(Context context, int appWidgetId) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Set<String> widgetBoards = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
         for (String widgetBoard : widgetBoards) {
-            String[] components = widgetBoard.split("/");
-            int widgetId = Integer.valueOf(components[0]);
-            String widgetBoardCode = components[1];
-            if (widgetId == appWidgetId)
-                return widgetBoardCode;
+            WidgetConf widgetConf = new WidgetConf(widgetBoard);
+            if (widgetConf.appWidgetId == appWidgetId)
+                return widgetConf;
         }
         return null;
+    }
+
+    public static String loadBoardCodeForWidget(Context context, int appWidgetId) {
+        WidgetConf widgetConf = loadWidgetConf(context, appWidgetId);
+        if (widgetConf == null)
+            return null;
+        else
+            return widgetConf.boardCode;
     }
 
     public static void fetchAllWidgets(Context context) {
@@ -95,7 +103,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         Set<String> widgetBoards = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
         Set<String> boardsToFetch = new HashSet<String>();
         for (String widgetBoard : widgetBoards) {
-            String[] components = widgetBoard.split("/");
+            String[] components = widgetBoard.split(WidgetConf.DELIM);
             String widgetBoardCode = components[1];
             boardsToFetch.add(widgetBoardCode);
         }
@@ -121,7 +129,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         Set<String> widgetBoards = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
         Set<String> newWidgetBoards = new HashSet<String>();
         for (String widgetBoard : widgetBoards) {
-            String[] components = widgetBoard.split("/");
+            String[] components = widgetBoard.split(WidgetConf.DELIM);
             int widgetId = Integer.valueOf(components[0]);
             if (!widgetsToDelete.contains(widgetId))
                 newWidgetBoards.add(widgetBoard);
@@ -142,21 +150,17 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         GlobalAlarmReceiver.cancelGlobalAlarm(context);
     }
 
-    public static void update(Context context, int appWidgetId) {
+    private static void update(Context context, int appWidgetId) {
         if (DEBUG) Log.i(TAG, "calling update widget service for widget=" + appWidgetId);
         Intent updateIntent = new Intent(context, UpdateWidgetService.class);
         updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         context.startService(updateIntent);
     }
 
-    public static void updateFirstTime(Context context, int appWidgetId, String boardCode) {
-        if (DEBUG) Log.i(TAG, "calling first time update widget service for widget=" + appWidgetId);
-        //Intent updateIntent = new Intent(context, UpdateWidgetService.class);
-        //updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        //updateIntent.putExtra(ChanHelper.FIRST_TIME_INIT, true);
-        //context.startService(updateIntent);
-        UpdateWidgetService.firstTimeInit(context, appWidgetId, boardCode);
-        FetchChanDataService.scheduleBoardFetch(context, boardCode); // make it fresh
+    private static void updateWithFetch(Context context, WidgetConf widgetConf) {
+        if (DEBUG) Log.i(TAG, "calling first time update widget service for widget=" + widgetConf.appWidgetId);
+        UpdateWidgetService.firstTimeInit(context, widgetConf);
+        FetchChanDataService.scheduleBoardFetch(context, widgetConf.boardCode); // make it fresh
     }
 
     public static void updateAll(Context context) {
@@ -166,8 +170,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         for (String widgetBoard : widgetBoards) {
             String[] components = widgetBoard.split("/");
             int appWidgetId = Integer.valueOf(components[0]);
-            String widgetBoardCode = components[1];
-                update(context, appWidgetId);
+            update(context, appWidgetId);
         }
 
     }
@@ -177,7 +180,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Set<String> widgetBoards = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
         for (String widgetBoard : widgetBoards) {
-            String[] components = widgetBoard.split("/");
+            String[] components = widgetBoard.split(WidgetConf.DELIM);
             int widgetId = Integer.valueOf(components[0]);
             String widgetBoardCode = components[1];
             if (widgetBoardCode.equals(boardCode))
@@ -185,7 +188,9 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    public static boolean initWidget(final Context context, final int appWidgetId, final String boardCode) {
+    public static boolean initOrUpdateWidget(final Context context, final WidgetConf widgetConf) {
+        int appWidgetId = widgetConf.appWidgetId;
+        String boardCode = widgetConf.boardCode;
         if (DEBUG) Log.i(TAG, "Configuring widget=" + appWidgetId + " with board=" + boardCode);
         if (boardCode == null || ChanBoard.getBoardByCode(context, boardCode) == null) {
             Log.e(TAG, "Couldn't find board=" + boardCode + " for widget=" + appWidgetId + " not adding widget");
@@ -194,13 +199,15 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Set<String> widgetBoards = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
         Set<String> newWidgetBoards = new HashSet<String>();
-        String newWidgetBoard = appWidgetId + "/" + boardCode;
+        String newWidgetBoard = widgetConf.serialize();
         boolean found = false;
+        boolean sameBoardCode = false;
         for (String widgetBoard : widgetBoards) {
-            String[] components = widgetBoard.split("/");
-            int widgetId = Integer.valueOf(components[0]);
-            if (widgetId == appWidgetId) {
+            WidgetConf existingWidgetConf = new WidgetConf(widgetBoard);
+            if (appWidgetId == existingWidgetConf.appWidgetId) {
                 found = true;
+                if (widgetConf.boardCode.equals(existingWidgetConf.boardCode))
+                    sameBoardCode = true;
                 newWidgetBoards.add(newWidgetBoard);
             }
             else {
@@ -213,7 +220,10 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet(ChanHelper.PREF_WIDGET_BOARDS, newWidgetBoards);
         editor.commit();
-        updateFirstTime(context, appWidgetId, boardCode);
+        if (found && sameBoardCode)
+            update(context, appWidgetId); // don't need to fetch, same board
+        else
+            updateWithFetch(context, widgetConf); // just added widget
         return true;
     }
 

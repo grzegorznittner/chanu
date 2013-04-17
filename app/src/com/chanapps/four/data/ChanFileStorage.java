@@ -533,7 +533,7 @@ public class ChanFileStorage {
         }
         finally {
             // add back widget conf
-            BoardWidgetProvider.saveWidgetPref(context, savedWidgetConf);
+            BoardWidgetProvider.saveWidgetBoardPref(context, savedWidgetConf);
         }
     }
     

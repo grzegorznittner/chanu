@@ -1,17 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
         >
 
-    <TextView
+    <include
+            android:id="@+id/widget_preview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:textStyle="bold"
-            android:text="@string/widget_board_summ"
-        ></TextView>
+            android:layout_height="128dp"
+            layout="@layout/widget_board_layout"/>
 
-</LinearLayout>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/widget_preview"
+            android:orientation="vertical"
+            >
+
+        <Spinner
+                android:id="@+id/board_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:entries="@array/long_board_array_worksafe"
+                />
+
+        <Spinner
+                android:id="@+id/board_spinner_adult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:entries="@array/long_board_array"
+                android:visibility="gone"
+                />
+
+        <EditText
+                android:id="@+id/board_title_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:paddingLeft="12dp"
+                android:textSize="16dp"
+                android:text="@string/widget_configure_board_title_color"
+                android:editable="false"
+                />
+
+        <CheckBox
+                android:id="@+id/show_board"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/widget_configure_board"
+                />
+
+        <CheckBox
+                android:id="@+id/rounded_corners"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/widget_configure_corners"
+                />
+
+        <CheckBox
+                android:id="@+id/show_refresh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/widget_configure_refresh"
+                />
+
+        <CheckBox
+                android:id="@+id/show_configure"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/widget_configure_config"
+                />
+
+    </LinearLayout>
+
+    <Button
+            android:id="@+id/done"
+            style="@style/WidgetConfigureOkButton"
+            />
+
+</RelativeLayout>

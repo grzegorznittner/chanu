@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/board_jump_spinner_menu"
           android:actionDropDownStyle="@style/BoardJumpDropDown"
-          android:actionLayout="@layout/board_jump_spinner_nsfw"
+          android:actionLayout="@layout/board_jump_spinner_nsfw_long"
           android:showAsAction="ifRoom"
             />
     <item android:id="@+id/offline_chan_view_menu"

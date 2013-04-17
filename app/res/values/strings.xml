@@ -132,7 +132,8 @@
     <string name="share_image_menu">Share Image</string>
     <string name="share_text_menu">Share Text</string>
     <string name="post_reply_send_menu">Post Reply</string>
-    <string name="offline_board_view_menu">Cached Images for /%1$s/</string>
+    <string name="offline_board_view_menu">Cached Board Images</string>
+    <string name="offline_board_view_title">Cached Images for /%1$s/</string>
     <string name="offline_chan_view_menu">Chanu: Cached Images by Board</string>
 
     <!-- board grid tab -->
@@ -412,6 +413,8 @@
     <string name="pref_about_data_4chan_sum">Data sourced live via the 4chan API</string>
     <string name="pref_about_data_uil">Universal Image Loader</string>
     <string name="pref_about_data_uil_sum">Courtesy of Sergey Tarasevich</string>
+    <string name="pref_about_data_color">mColorPicker</string>
+    <string name="pref_about_data_color_sum">Courtesy of Daniel Nilsson</string>
     <string name="pref_about_developer_category">Developers</string>
     <string name="pref_about_developer_chanapps">Chanapps Software</string>
     <string name="pref_about_developer_chanapps_sum">Premium provider of Android applications</string>
@@ -429,6 +432,12 @@
     <string name="widget_board_add_error">Couldn\'t add widget</string>
     <string name="widget_refresh">Refresh</string>
     <string name="widget_configure">Configure</string>
+    <string name="widget_configure_title">Chanu Widget Configuration</string>
+    <string name="widget_configure_board_title_color">Board Title Color</string>
+    <string name="widget_configure_corners">Rounded Corners</string>
+    <string name="widget_configure_board">Show Board Title</string>
+    <string name="widget_configure_refresh">Show Refresh Button</string>
+    <string name="widget_configure_config">Show Configure Button</string>
 
     <!-- Help and about_dialog -->
     <string name="about_menu">About</string>
@@ -608,73 +617,6 @@
         <item>/y/</item>
     </string-array>
 
-    <!--
-    <string-array name="board_array">
-        <item>@string/board_select</item>
-        <item>@string/board_watch</item>
-        <item>/3/ 3DCG</item>
-        <item>/a/ Anime &amp; Manga</item>
-        <item>/adv/ Advice</item>
-        <item>/an/ Animals &amp; Nature</item>
-        <item>/asp/ Alternative Sports</item>
-        <item>/b/ Random</item>
-        <item>/c/ Anime/Cute</item>
-        <item>/cgl/ Cosplay &amp; EGL</item>
-        <item>/ck/ Food &amp; Cooking</item>
-        <item>/cm/ Cute/Male</item>
-        <item>/co/ Comics &amp; Cartoons</item>
-        <item>/d/ Hentai/Alternative</item>
-        <item>/diy/ Do-It-Yourself</item>
-        <item>/e/ Ecchi</item>
-        <item>/fa/ Fashion</item>
-        <item>/fit/ Health &amp; Fitness</item>
-        <item>/g/ Technology</item>
-        <item>/gd/ Graphic Design</item>
-        <item>/gif/ Animated GIF</item>
-        <item>/h/ Hentai</item>
-        <item>/hc/ Hardcore</item>
-        <item>/hm/ Handsome Men</item>
-        <item>/hr/ High Resolution</item>
-        <item>/i/ Oekaki</item>
-        <item>/ic/ Artwork/Critique</item>
-        <item>/int/ International</item>
-        <item>/jp/ Otaku Culture</item>
-        <item>/k/ Weapons</item>
-        <item>/lgbt/ LGBT</item>
-        <item>/lit/ Literature</item>
-        <item>/m/ Mecha</item>
-        <item>/mlp/ Pony</item>
-        <item>/mu/ Music</item>
-        <item>/n/ Transportation</item>
-        <item>/o/ Auto</item>
-        <item>/out/ Outdoors</item>
-        <item>/p/ Photography</item>
-        <item>/po/ Papercraft &amp; Origami</item>
-        <item>/pol/ Politically Incorrect</item>
-        <item>/q/ 4chan Discussion</item>
-        <item>/r/ Request</item>
-        <item>/r9k/ ROBOT9001</item>
-        <item>/s/ Sexy Beautiful Women</item>
-        <item>/sci/ Science &amp; Math</item>
-        <item>/soc/ Social</item>
-        <item>/sp/ Sports</item>
-        <item>/t/ Torrents</item>
-        <item>/tg/ Traditional Games</item>
-        <item>/toy/ Toys</item>
-        <item>/trv/ Travel</item>
-        <item>/tv/ Television &amp; Film</item>
-        <item>/u/ Yuri</item>
-        <item>/v/ Video Games</item>
-        <item>/vg/ Video Game Generals</item>
-        <item>/vp/ Pokemon</item>
-        <item>/vr/ Retro Games</item>
-        <item>/w/ Anime/Wallpapers</item>
-        <item>/wg/ Wallpapers/General</item>
-        <item>/wsg/ Worksafe GIF</item>
-        <item>/x/ Paranormal</item>
-        <item>/y/ Yaoi</item>
-    </string-array>
--->
     <string-array name="board_array_worksafe">
         <item>@string/board_select_abbrev</item>
         <item>@string/board_watch_abbrev</item>
@@ -723,6 +665,123 @@
         <item>/wg/</item>
         <item>/wsg/</item>
         <item>/x/</item>
-   </string-array>
+    </string-array>
+
+    <string-array name="long_board_array">
+        <item>@string/board_select</item>
+        <item>@string/board_watch</item>
+        <item>/3/ 3DCG</item>
+        <item>/a/ Anime &amp; Manga</item>
+        <item>/adv/ Advice</item>
+        <item>/an/ Animals &amp; Nature</item>
+        <item>/asp/ Alternative Sports</item>
+        <item>/b/ Random</item>
+        <item>/c/ Anime/Cute</item>
+        <item>/cgl/ Cosplay &amp; EGL</item>
+        <item>/ck/ Food &amp; Cooking</item>
+        <item>/cm/ Cute/Male</item>
+        <item>/co/ Comics &amp; Cartoons</item>
+        <item>/d/ Hentai/Alternative</item>
+        <item>/diy/ Do-It-Yourself</item>
+        <item>/e/ Ecchi</item>
+        <item>/fa/ Fashion</item>
+        <item>/fit/ Health &amp; Fitness</item>
+        <item>/g/ Technology</item>
+        <item>/gd/ Graphic Design</item>
+        <item>/gif/ Animated GIF</item>
+        <item>/h/ Hentai</item>
+        <item>/hc/ Hardcore</item>
+        <item>/hm/ Handsome Men</item>
+        <item>/hr/ High Resolution</item>
+        <item>/i/ Oekaki</item>
+        <item>/ic/ Artwork/Critique</item>
+        <item>/int/ International</item>
+        <item>/jp/ Otaku Culture</item>
+        <item>/k/ Weapons</item>
+        <item>/lgbt/ LGBT</item>
+        <item>/lit/ Literature</item>
+        <item>/m/ Mecha</item>
+        <item>/mlp/ Pony</item>
+        <item>/mu/ Music</item>
+        <item>/n/ Transportation</item>
+        <item>/o/ Auto</item>
+        <item>/out/ Outdoors</item>
+        <item>/p/ Photography</item>
+        <item>/po/ Papercraft &amp; Origami</item>
+        <item>/pol/ Politically Incorrect</item>
+        <item>/q/ 4chan Discussion</item>
+        <item>/r/ Request</item>
+        <item>/r9k/ ROBOT9001</item>
+        <item>/s/ Sexy Beautiful Women</item>
+        <item>/s4s/ Shit 4chan Says</item>
+        <item>/sci/ Science &amp; Math</item>
+        <item>/soc/ Social</item>
+        <item>/sp/ Sports</item>
+        <item>/t/ Torrents</item>
+        <item>/tg/ Traditional Games</item>
+        <item>/toy/ Toys</item>
+        <item>/trv/ Travel</item>
+        <item>/tv/ Television &amp; Film</item>
+        <item>/u/ Yuri</item>
+        <item>/v/ Video Games</item>
+        <item>/vg/ Video Game Generals</item>
+        <item>/vp/ Pokemon</item>
+        <item>/vr/ Retro Games</item>
+        <item>/w/ Anime/Wallpapers</item>
+        <item>/wg/ Wallpapers/General</item>
+        <item>/wsg/ Worksafe GIF</item>
+        <item>/x/ Paranormal</item>
+        <item>/y/ Yaoi</item>
+    </string-array>
+
+    <string-array name="long_board_array_worksafe">
+        <item>@string/board_select</item>
+        <item>@string/board_watch</item>
+        <item>/3/ 3DCG</item>
+        <item>/a/ Anime &amp; Manga</item>
+        <item>/adv/ Advice</item>
+        <item>/an/ Animals &amp; Nature</item>
+        <item>/asp/ Alternative Sports</item>
+        <item>/c/ Anime/Cute</item>
+        <item>/cgl/ Cosplay &amp; EGL</item>
+        <item>/ck/ Food &amp; Cooking</item>
+        <item>/cm/ Cute/Male</item>
+        <item>/co/ Comics &amp; Cartoons</item>
+        <item>/diy/ Do-It-Yourself</item>
+        <item>/fa/ Fashion</item>
+        <item>/fit/ Health &amp; Fitness</item>
+        <item>/g/ Technology</item>
+        <item>/gd/ Graphic Design</item>
+        <item>/i/ Oekaki</item>
+        <item>/ic/ Artwork/Critique</item>
+        <item>/int/ International</item>
+        <item>/jp/ Otaku Culture</item>
+        <item>/k/ Weapons</item>
+        <item>/lgbt/ LGBT</item>
+        <item>/lit/ Literature</item>
+        <item>/m/ Mecha</item>
+        <item>/mlp/ Pony</item>
+        <item>/mu/ Music</item>
+        <item>/n/ Transportation</item>
+        <item>/o/ Auto</item>
+        <item>/out/ Outdoors</item>
+        <item>/p/ Photography</item>
+        <item>/po/ Papercraft &amp; Origami</item>
+        <item>/q/ 4chan Discussion</item>
+        <item>/sci/ Science &amp; Math</item>
+        <item>/sp/ Sports</item>
+        <item>/tg/ Traditional Games</item>
+        <item>/toy/ Toys</item>
+        <item>/trv/ Travel</item>
+        <item>/tv/ Television &amp; Film</item>
+        <item>/v/ Video Games</item>
+        <item>/vg/ Video Game Generals</item>
+        <item>/vp/ Pokemon</item>
+        <item>/vr/ Retro Games</item>
+        <item>/w/ Anime/Wallpapers</item>
+        <item>/wg/ Wallpapers/General</item>
+        <item>/wsg/ Worksafe GIF</item>
+        <item>/x/ Paranormal</item>
+    </string-array>
 
 </resources>
