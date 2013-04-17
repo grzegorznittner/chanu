@@ -79,6 +79,7 @@ public class BoardActivity
     public static Intent createIntentForActivity(Context context, String boardCode) {
         String intentBoardCode = boardCode == null || boardCode.isEmpty() ? ChanBoard.DEFAULT_BOARD_CODE : boardCode;
         Intent intent = new Intent(context, BoardActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(ChanHelper.BOARD_CODE, intentBoardCode);
         intent.putExtra(ChanHelper.PAGE, 0);
         intent.putExtra(ChanHelper.LAST_BOARD_POSITION, 0);
