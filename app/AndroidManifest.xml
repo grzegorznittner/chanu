@@ -130,6 +130,7 @@
         <service android:name="com.chanapps.four.service.FileSaverService"/>
         <service android:name="com.chanapps.four.service.ImageDownloadService"/>
         <service android:name="com.chanapps.four.service.ThreadImageDownloadService"/>
+        <service android:name="com.chanapps.four.service.FetchPopularThreadsService"/>
 
         <!--widgets-->
         <activity android:name="com.chanapps.four.widget.WidgetConfigureActivity"

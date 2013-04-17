@@ -66,6 +66,7 @@ public class ChanBoard {
 	public enum Type { WATCHLIST, JAPANESE_CULTURE, INTERESTS, CREATIVE, OTHER, ADULT, MISC };
 
     public static final String WATCH_BOARD_CODE = "watch";
+    public static final String POPULAR_BOARD_CODE = "popular";
 
     public static final String DEFAULT_BOARD_CODE = "a";
 
