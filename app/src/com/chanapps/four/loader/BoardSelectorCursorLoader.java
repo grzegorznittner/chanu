@@ -1,11 +1,13 @@
 package com.chanapps.four.loader;
 
+import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.util.Log;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
@@ -25,32 +27,36 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
     protected Cursor mCursor;
     protected Context context;
 
-    protected ChanBoard.Type boardType;
-
-    protected BoardSelectorCursorLoader(Context context) {
+    public BoardSelectorCursorLoader(Context context) {
         super(context);
         mObserver = new ForceLoadContentObserver();
-    }
-
-    public BoardSelectorCursorLoader(Context context, ChanBoard.Type boardType) {
-        this(context);
         this.context = context;
-        this.boardType = boardType;
     }
 
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
-    	if (DEBUG) Log.i(TAG, "loadInBackground");
-        List<ChanBoard> boards = ChanBoard.getBoardsByType(context, boardType);
+        if (DEBUG) Log.i(TAG, "loadInBackground");
+        boolean showNSFWBoards = PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
-        if (boards != null && !boards.isEmpty()) {
-            if (DEBUG) Log.i(TAG, "Loading " + boards.size() + " boards");
-            for (ChanBoard board : boards) {
-                if (DEBUG) Log.i(TAG, "Loading board:" + board.link);
-                Object[] row = board.makeRow();
-                matrixCursor.addRow(row);
-                if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
+        for (ChanBoard.Type boardType : ChanBoard.Type.values()) {
+            if (boardType == ChanBoard.Type.WATCHLIST)
+                continue;
+            if (ChanBoard.isNSFWBoardType(boardType) && !showNSFWBoards)
+                continue;
+            Object[] row = ChanBoard.makeBoardTypeRow(context, boardType);
+            matrixCursor.addRow(row);
+            List<ChanBoard> boards = ChanBoard.getBoardsByType(context, boardType);
+            if (boards != null && !boards.isEmpty()) {
+                if (DEBUG) Log.i(TAG, "Loading " + boards.size() + " boards");
+                for (ChanBoard board : boards) {
+                    if (DEBUG) Log.i(TAG, "Loading board:" + board.link);
+                    row = board.makeRow();
+                    matrixCursor.addRow(row);
+                    if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
+                }
             }
             if (DEBUG) Log.i(TAG, "Loading boards complete");
         }
@@ -141,7 +147,6 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
         super.dump(prefix, fd, writer, args);
-        writer.print(prefix); writer.print("boardType="); writer.println(boardType);
         writer.print(prefix); writer.print("mCursor="); writer.println(mCursor);
     }
 }

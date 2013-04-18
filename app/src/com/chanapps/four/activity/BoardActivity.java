@@ -110,7 +110,7 @@ public class BoardActivity
         getLoaderManager().initLoader(0, null, this);
     }
 
-    protected void setProgressOn(boolean progressOn) {
+    public void setProgressOn(boolean progressOn) {
         setProgressBarIndeterminateVisibility(progressOn);
     }
 
@@ -451,6 +451,7 @@ public class BoardActivity
              //   popup.show();
              //   return true;
             case R.id.refresh_menu:
+                setProgressOn(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.new_thread_menu:
@@ -528,7 +529,7 @@ public class BoardActivity
 				if (board.newThreads > 0) {
 					msg.append("and ");
 				}
-				msg.append("" + board.updatedThreads + " fetched ");
+				msg.append("" + board.updatedThreads + " updated ");
 			}
 			msg.append("thread");
 			if (board.newThreads + board.updatedThreads > 1) {
@@ -536,9 +537,7 @@ public class BoardActivity
 			}
 			msg.append(" click refresh");
 		} else {
-			board.threads = board.loadedThreads;
-    		board.loadedThreads = new ChanThread[0];
-    		if (board.defData || board.lastFetched == 0) {
+			if (board.defData || board.lastFetched == 0) {
     			msg.append("not yet fetched");
     		} else if (Math.abs(board.lastFetched - new Date().getTime()) < 60000) {
     			msg.append("fetched just now");
@@ -563,10 +562,10 @@ public class BoardActivity
 	}
 
     @Override
-    public void refreshActivity() {
+    public void refresh() {
         setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
-        createAbsListView();
+        //createAbsListView();
         if (handler != null)
             handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
     }

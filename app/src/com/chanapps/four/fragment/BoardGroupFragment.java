@@ -43,7 +43,7 @@ public class BoardGroupFragment
     private static final String TAG = BoardGroupFragment.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    private ChanBoard.Type boardType;
+    private BoardSelectorTab boardSelectorTab;
     private ResourceCursorAdapter adapter;
     private AbsListView absListView;
     //private ProgressBar progressBar;
@@ -64,7 +64,7 @@ public class BoardGroupFragment
     }
 
     @Override
-    public void refreshActivity() {
+    public void refresh() {
         // ignored
     }
 
@@ -85,18 +85,15 @@ public class BoardGroupFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        boardType = getArguments() != null
-                ? ChanBoard.Type.valueOf(getArguments().getString(ChanHelper.BOARD_TYPE))
-                : ChanBoard.Type.JAPANESE_CULTURE;
-        if (DEBUG) Log.v(TAG, "BoardGroupFragment " + boardType + " onCreate");
-        if (boardType == ChanBoard.Type.WATCHLIST)
+        boardSelectorTab = getArguments() != null
+                ? BoardSelectorTab.valueOf(getArguments().getString(BoardSelectorActivity.BOARD_SELECTOR_TAB))
+                : BoardSelectorActivity.DEFAULT_BOARD_SELECTOR_TAB;
+        if (DEBUG) Log.v(TAG, "BoardGroupFragment " + boardSelectorTab + " onCreate");
+        if (boardSelectorTab == BoardSelectorTab.WATCHLIST)
             ChanWatchlist.setWatchlistFragment(BoardGroupFragment.this);
     }
 
-    private static final int SELECTOR_WIDTH_PX = 150;
-    private static final int SELECTOR_HEIGHT_PX = 150;
-
-    @Override
+    @Override                                             
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         LoaderManager.enableDebugLogging(true);
@@ -131,47 +128,54 @@ public class BoardGroupFragment
     }
 
     protected void assignCursorAdapter() {
-        if (boardType == ChanBoard.Type.WATCHLIST)
-            adapter = new BoardGridCursorAdapter(getActivity(),
-                    R.layout.board_grid_item,
-                    this,
-                    new String[] {
-                            ChanThread.THREAD_THUMBNAIL_URL,
-                            ChanThread.THREAD_SUBJECT,
-                            //ChanThread.THREAD_INFO,
-                            ChanThread.THREAD_COUNTRY_FLAG_URL,
-                            ChanThread.THREAD_NUM_REPLIES,
-                            ChanThread.THREAD_NUM_IMAGES},
-                    new int[] {
-                            R.id.grid_item_thread_thumb,
-                            R.id.grid_item_thread_subject,
-                            //R.id.grid_item_thread_info,
-                            R.id.grid_item_country_flag,
-                            R.id.grid_item_num_replies,
-                            R.id.grid_item_num_images},
-                    columnWidth,
-                    columnHeight);
-        else
-            adapter = new BoardSelectorGridCursorAdapter(getActivity(),
-                    R.layout.board_selector_grid_item,
-                    this,
-                    new String[] {
-                            ChanThread.THREAD_THUMBNAIL_URL,
-                            ChanThread.THREAD_SUBJECT },
-                    new int[] {
-                            R.id.grid_item_thread_thumb,
-                            R.id.grid_item_thread_subject},
-                    columnWidth,
-                    columnHeight);
+        switch (boardSelectorTab) {
+            case WATCHLIST:
+                adapter = new BoardGridCursorAdapter(getActivity(),
+                        R.layout.board_grid_item,
+                        this,
+                        new String[] {
+                                ChanThread.THREAD_THUMBNAIL_URL,
+                                ChanThread.THREAD_SUBJECT,
+                                //ChanThread.THREAD_INFO,
+                                ChanThread.THREAD_COUNTRY_FLAG_URL,
+                                ChanThread.THREAD_NUM_REPLIES,
+                                ChanThread.THREAD_NUM_IMAGES},
+                        new int[] {
+                                R.id.grid_item_thread_thumb,
+                                R.id.grid_item_thread_subject,
+                                //R.id.grid_item_thread_info,
+                                R.id.grid_item_country_flag,
+                                R.id.grid_item_num_replies,
+                                R.id.grid_item_num_images},
+                        columnWidth,
+                        columnHeight);
+                break;
+            case BOARDLIST:
+            default:
+                adapter = new BoardSelectorGridCursorAdapter(getActivity(),
+                        R.layout.board_selector_grid_item,
+                        this,
+                        new String[] {
+                                ChanThread.THREAD_THUMBNAIL_URL,
+                                ChanThread.THREAD_SUBJECT,
+                                ChanThread.THREAD_INFO
+                        },
+                        new int[] {
+                                R.id.grid_item_thread_thumb,
+                                R.id.grid_item_thread_subject,
+                                R.id.grid_item_board_type_text
+                        },
+                        columnWidth,
+                        columnHeight);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        if (DEBUG) Log.d(TAG, "BoardGroupFragment " + boardType + " onCreateView");
+        if (DEBUG) Log.d(TAG, "BoardGroupFragment " + boardSelectorTab + " onCreateView");
         View layout = inflater.inflate(R.layout.board_selector_grid_layout, container, false);
-        //progressBar = (ProgressBar)layout.findViewById(R.id.board_progress_bar);
-        if (boardType == ChanBoard.Type.WATCHLIST)
+        if (boardSelectorTab == BoardSelectorTab.WATCHLIST)
             emptyWatchlistText = (TextView)layout.findViewById(R.id.board_empty_watchlist);
         createAbsListView(layout);
         return layout;
@@ -181,8 +185,8 @@ public class BoardGroupFragment
     public void onResume() {
         super.onResume();
         handler = new Handler();
-        if (DEBUG) Log.i(TAG, "boardType=" + boardType + " reloadNextTime=" + reloadNextTime);
-        if (boardType == ChanBoard.Type.WATCHLIST && reloadNextTime) {
+        if (DEBUG) Log.i(TAG, "boardSelectorTab=" + boardSelectorTab + " reloadNextTime=" + reloadNextTime);
+        if (boardSelectorTab == BoardSelectorTab.WATCHLIST && reloadNextTime) {
             reloadNextTime = false;
             adapter.notifyDataSetChanged();
         }
@@ -211,31 +215,24 @@ public class BoardGroupFragment
     }
 
     protected Loader<Cursor> createCursorLoader() {
-        if (DEBUG) Log.v(TAG, "createCursorLoader type=" + boardType);
-        if (boardType == ChanBoard.Type.WATCHLIST) {
-            return new BoardSelectorWatchlistCursorLoader(getActivity());
-        }
-        else {
-            return new BoardSelectorCursorLoader(getActivity(), boardType);
+        if (DEBUG) Log.v(TAG, "createCursorLoader boardSelectorType=" + boardSelectorTab);
+        switch (boardSelectorTab) {
+            case WATCHLIST:
+                return new BoardSelectorWatchlistCursorLoader(getActivity());
+            case BOARDLIST:
+            default:
+                return new BoardSelectorCursorLoader(getActivity());
         }
     }
 
     private void setProgressOn(boolean progressOn) {
         if (getActivity() != null)
             getActivity().setProgressBarIndeterminateVisibility(progressOn);
-        /*
-        if (progressBar != null) {
-            if (progressOn)
-                progressBar.setVisibility(View.VISIBLE);
-            else
-                progressBar.setVisibility(View.GONE);
-        }
-        */
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader type=" + boardType);
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader boardSelectorType=" + boardSelectorTab);
         cursorLoader = createCursorLoader();
         setProgressOn(true);
         return cursorLoader;
@@ -243,9 +240,9 @@ public class BoardGroupFragment
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished type=" + boardType);
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished boardSelectorType=" + boardSelectorTab);
         adapter.swapCursor(data);
-        if (boardType == ChanBoard.Type.WATCHLIST)
+        if (boardSelectorTab == BoardSelectorTab.WATCHLIST)
             if (data.getCount() <= 0)
                 emptyWatchlistText.setVisibility(View.VISIBLE);
             else
@@ -255,94 +252,121 @@ public class BoardGroupFragment
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset type=" + boardType);
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset boardSelectorType=" + boardSelectorTab);
         adapter.swapCursor(null);
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        if (DEBUG) Log.i(TAG, "clicked item boardType=" + boardType);
-        final Activity activity = getActivity();
+        if (DEBUG) Log.i(TAG, "clicked item on boardSelectorTab=" + boardSelectorTab);
+
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        String boardTypeText = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO));
+        if (boardTypeText.equals("|||BOARD_TYPE|||"))
+            return;
+
+        final Activity activity = getActivity();
         final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-        if (boardType == ChanBoard.Type.WATCHLIST) {
-            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-            if (DEBUG) Log.i(TAG, "clicked thread " + boardCode + "/" + threadNo);
-            //ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
-            //if (thread != null) {
-            //    ThreadActivity.startActivity(getActivity(), thread, view, threadNo, true);
-            //}
-            //else {
+        switch (boardSelectorTab) {
+            case WATCHLIST:
+                final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+                if (DEBUG) Log.i(TAG, "clicked thread " + boardCode + "/" + threadNo);
                 ThreadActivity.startActivity(getActivity(), boardCode, threadNo);
-            //}
-        }
-        else {
-            if (DEBUG) Log.i(TAG, "clicked board " + boardCode);
-            BoardActivity.startActivity(activity, boardCode);
+                break;
+            case BOARDLIST:
+            default:
+                if (DEBUG) Log.i(TAG, "clicked board " + boardCode);
+                BoardActivity.startActivity(activity, boardCode);
         }
         ChanHelper.simulateClickAnim(activity, view);
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        if (boardType == ChanBoard.Type.WATCHLIST) {
-            Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-            final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-            if (DEBUG) Log.i(TAG, "Long click " + boardType + " /" + boardCode + "/" + threadNo);
-            ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
-            if (thread != null && thread.posts != null && thread.posts[0] != null && thread.posts[0].tim > 0) {
-                WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, thread.posts[0].tim);
-                d.show(getFragmentManager(), WatchlistDeleteDialogFragment.TAG);
-                return true;
-            }
+        switch (boardSelectorTab) {
+            case WATCHLIST:
+                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+                final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+                final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+                if (DEBUG) Log.i(TAG, "Long click " + boardSelectorTab + " /" + boardCode + "/" + threadNo);
+                ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
+                if (thread != null && thread.posts != null && thread.posts[0] != null && thread.posts[0].tim > 0) {
+                    WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, thread.posts[0].tim);
+                    d.show(getFragmentManager(), WatchlistDeleteDialogFragment.TAG);
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            case BOARDLIST:
+            default:
+                return false;
         }
-        return false;
     }
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        if (boardType == ChanBoard.Type.WATCHLIST) {
-            return BoardActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions);
+        switch (boardSelectorTab) {
+            case WATCHLIST:
+                return BoardActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions);
+            case BOARDLIST:
+            default:
+                return setBoardlistViewValue(view, cursor, columnIndex);
         }
-        else {
-            switch (view.getId()) {
-                case R.id.grid_item_thread_subject:
-                    return setThreadSubject((TextView) view, cursor);
-                //case R.id.grid_item_thread_info:
-                //    return setThreadInfo((TextView) view, cursor);
-                case R.id.grid_item_thread_thumb:
-                    return setThreadThumb((ImageView) view, cursor);
-                case R.id.grid_item_country_flag:
-                    return setThreadCountryFlag((ImageView) view, cursor);
-            }
+    }
+
+    protected boolean setBoardlistViewValue(View view, Cursor cursor, int columnIndex) {
+        switch (view.getId()) {
+            case R.id.grid_item_thread_subject:
+                return setThreadSubject((TextView) view, cursor);
+            case R.id.grid_item_board_type_text:
+                return setBoardTypeText((TextView) view, cursor);
+            case R.id.grid_item_thread_thumb:
+                return setThreadThumb((ImageView) view, cursor);
+            case R.id.grid_item_country_flag:
+                return setThreadCountryFlag((ImageView) view, cursor);
         }
         return false;
     }
 
     protected boolean setThreadSubject(TextView tv, Cursor cursor) {
-        tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
+        String boardTypeText = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO));
+        if (boardTypeText.equals("|||BOARD_TYPE|||")) {
+            tv.setVisibility(View.GONE);
+            tv.setText("");
+        }
+        else {
+            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
+            tv.setVisibility(View.VISIBLE);
+        }
         return true;
     }
 
-    protected boolean setThreadInfo(TextView tv, Cursor cursor) {
-        tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO))));
+    protected boolean setBoardTypeText(TextView tv, Cursor cursor) {
+        String boardTypeText = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO));
+        if (boardTypeText.equals("|||BOARD_TYPE|||")) {
+            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
+            tv.setVisibility(View.VISIBLE);
+        }
+        else {
+            tv.setVisibility(View.GONE);
+            tv.setText("");
+        }
         return true;
     }
 
     protected boolean setThreadThumb(ImageView iv, Cursor cursor) {
-        /*
-        ViewGroup.LayoutParams params = iv.getLayoutParams();
-        if (params != null && columnWidth > 0 && columnHeight > 0) {
-            params.width = columnWidth;
-            params.height = columnHeight;
+        String boardTypeText = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO));
+        if (boardTypeText.equals("|||BOARD_TYPE|||")) {
+            iv.setImageBitmap(null);
         }
-        */
-        imageLoader.displayImage(
-                cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
-                iv,
-                //displayImageOptions); // load async
-                displayImageOptions.modifyCenterCrop(true)); // load async
+        else {
+            imageLoader.displayImage(
+                    cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
+                    iv,
+                    //displayImageOptions); // load async
+                    displayImageOptions.modifyCenterCrop(true)); // load async
+            }
         return true;
     }
 

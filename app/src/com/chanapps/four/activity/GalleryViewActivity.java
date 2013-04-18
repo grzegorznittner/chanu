@@ -702,4 +702,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	public Handler getChanHandler() {
 		return handler;
 	}
+
+    @Override
+    public void refresh() {}
+
 }

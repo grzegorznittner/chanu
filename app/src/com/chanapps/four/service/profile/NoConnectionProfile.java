@@ -3,10 +3,9 @@ package com.chanapps.four.service.profile;
 import android.content.Context;
 import android.os.Handler;
 
-import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
-import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.activity.R;
+import android.widget.Toast;
+import com.chanapps.four.activity.*;
+import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -37,7 +36,49 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
 		super.onApplicationStart(context);
 	}
 
-	@Override
+    @Override
+    public void onBoardRefreshed(final Context context, Handler handler, String boardCode) {
+        super.onBoardRefreshed(context, handler, boardCode);
+        if (ChanFileStorage.hasNewBoardData(context, boardCode))
+            onUpdateViewData(context, handler, boardCode);
+        else if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                    if (activity instanceof BoardActivity) {
+                        ((BoardActivity)activity).setProgressOn(false);
+                        Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+    }
+
+    @Override
+    public void onUpdateViewData(Context baseContext, Handler handler, String boardCode) {
+        super.onUpdateViewData(baseContext, handler, boardCode);
+
+        final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
+
+        if (ChanFileStorage.hasNewBoardData(baseContext, boardCode))
+            ChanFileStorage.loadFreshBoardData(baseContext, boardCode);
+
+        boolean boardActivity = currentActivityId != null
+                && currentActivityId.boardCode != null
+                && currentActivityId.boardCode.equals(boardCode);
+
+        if (boardActivity && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY
+                && currentActivityId.threadNo == 0 && handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    activity.refresh();
+                }
+            });
+    }
+
+    @Override
 	public void onBoardSelected(Context context, String board) {
 		super.onBoardSelected(context, board);
 

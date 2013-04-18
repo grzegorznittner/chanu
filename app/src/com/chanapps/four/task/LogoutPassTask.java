@@ -3,12 +3,10 @@ package com.chanapps.four.task;
 import android.content.Context;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.RefreshableActivity;
-import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.LogoutPassResponse;
 import com.chanapps.four.data.PersistentCookieStore;
 import com.chanapps.four.fragment.LogoutPassDialogFragment;
@@ -215,7 +213,7 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
             Toast.makeText(context, R.string.logout_pass_successful, Toast.LENGTH_SHORT).show();
         }
         dialogFragment.dismiss();
-        refreshableActivity.refreshActivity();
+        refreshableActivity.refresh();
     }
 
 }

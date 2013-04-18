@@ -452,6 +452,7 @@ public class ChanPost {
         else {
             if (replies > 0) {
                 text += replies
+                        + " "
                         + (replies == 1 ? "reply" : "replies")
                         + " "
                         + (images > 0 ? images : "no")

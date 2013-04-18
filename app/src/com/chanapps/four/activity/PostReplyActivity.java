@@ -32,10 +32,8 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.fragment.*;
-import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
-import com.chanapps.four.task.AuthorizePassTask;
 import com.chanapps.four.task.LoadCaptchaTask;
 import com.chanapps.four.task.LogoutPassTask;
 import com.chanapps.four.task.PostReplyTask;
@@ -395,14 +393,14 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             loadFromIntent(getIntent());
         else
             loadFromPrefs();
-        refreshActivity();
+        refresh();
     }
 
     private void restoreOnRestart() {
         loadFromPrefs();
     }
 
-    public void refreshActivity() {
+    public void refresh() {
         boolean passEnabled = isPassEnabled();
         if (!passEnabled || !isPassAvailable())
             reloadCaptcha();

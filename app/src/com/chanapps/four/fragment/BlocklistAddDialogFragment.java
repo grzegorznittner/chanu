@@ -86,7 +86,7 @@ public class BlocklistAddDialogFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ChanBlocklist.addAll(activity.getBaseContext(), blockType, blocks);
-                                activity.refreshActivity();
+                                activity.refresh();
                             }
                         })
                 .setNegativeButton(R.string.dialog_cancel,

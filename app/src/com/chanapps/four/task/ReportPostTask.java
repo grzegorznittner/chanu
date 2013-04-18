@@ -212,7 +212,7 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
         else {
             Toast.makeText(context, R.string.report_post_successful, Toast.LENGTH_SHORT).show();
             // actually no reason to refresh when reporting posts, as nothing happens
-            //refreshableActivity.refreshActivity();
+            //refreshableActivity.refresh();
         }
         dialogFragment.dismiss();
     }

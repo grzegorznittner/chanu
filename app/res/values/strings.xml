@@ -136,7 +136,7 @@
     <string name="offline_board_view_title">Cached Images for /%1$s/</string>
     <string name="offline_chan_view_menu">Chanu: Cached Images by Board</string>
 
-    <!-- board grid tab -->
+    <!-- board types tab -->
     <string name="japanese_culture">Japanese Culture</string>
     <string name="interests">Interests</string>
     <string name="creative">Creative</string>
@@ -144,11 +144,18 @@
     <string name="other">Other</string>
     <string name="misc">Misc.</string>
 
+    <!-- Board selector activity -->
+    <string name="board_selector_watchlist_title">Watchlist</string>
+    <string name="board_selector_popular_title">Popular</string>
+    <string name="board_selector_boardlist_title">Board List</string>
+
     <!-- board activity -->
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
     <string name="board_end_of_board">End of Board</string>
     <string name="board_click_for_more">(click for more)</string>
     <string name="board_last_updated">Last updated %s</string>
+    <string name="board_wait_to_refresh">Min 10 sec between refresh</string>
+    <string name="board_offline_refresh">Cannot refresh, network offline</string>
 
     <!-- thread activity -->
     <string name="thread_activity_refresh">Refreshing thread...</string>

@@ -63,6 +63,21 @@ public class ChanThread extends ChanPost {
         };
     }
 
+    public static Object[] makeBoardTypeRow(Context context, ChanBoard.Type boardType) {
+        return new Object[] {
+                0,
+                "",
+                0,
+                context.getString(boardType.displayStringId()),
+                "|||BOARD_TYPE|||",
+                "drawable://" + boardType.drawableId(),
+                "",
+                "",
+                0,
+                0
+        };
+    }
+
     public static Object[] makeBoardRow(String boardCode, String boardName, int boardImageResourceId) {
         return new Object[] {
                 boardCode.hashCode(),
@@ -77,7 +92,6 @@ public class ChanThread extends ChanPost {
                 0
         };
     }
-
     public static Object[] makeAdRow(Context context, String imageUrl, String clickUrl) {
         return new Object[] {
                 0,

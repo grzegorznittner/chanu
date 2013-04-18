@@ -21,7 +21,7 @@ public class ChanFileStorage {
 	private static final String TAG = ChanFileStorage.class.getSimpleName();
 	private static final boolean DEBUG = false;
 	
-	private static final int MAX_BOARDS_IN_CACHE = 60;
+	private static final int MAX_BOARDS_IN_CACHE = 100;
 	private static final int MAX_THREADS_IN_CACHE = 200;
 	
 	@SuppressWarnings("serial")
@@ -111,11 +111,14 @@ public class ChanFileStorage {
     		return;
     	}
         ChanBoard cachedBoard = boardCache.get(board.link);
-        if (cachedBoard == null)
+        if (cachedBoard == null) {
             if (DEBUG) Log.i(TAG, "null board cache for board=" + board.link);
-        else
+            boardCache.put(board.link, board);
+        }
+        else {
+            cachedBoard = board;
             if (DEBUG) Log.i(TAG, "found cached board=" + board.link + " threadCount=" + cachedBoard.threads.length);
-		boardCache.put(board.link, board);
+        }
         File boardDir = getBoardCacheDirectory(context, board.link);
 		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
 			ObjectMapper mapper = ChanHelper.getJsonMapper();
@@ -240,11 +243,19 @@ public class ChanFileStorage {
             {
                 if (DEBUG) Log.i(TAG, "Returning board " + boardCode
                         + " data from cache threads=" + cachedBoard.threads.length
-                        + " loadedthreads=" + cachedBoard.loadedThreads.length);
+                        + " loadedthreads=" + cachedBoard.loadedThreads.length
+                        + " newThreads=" + cachedBoard.newThreads
+                        + " updatedThreads=" + cachedBoard.updatedThreads
+                );
                 return cachedBoard;
             }
             else {
-                if (DEBUG) Log.i(TAG, "Ignoring cached board=" + boardCode + " missing threads");
+                if (DEBUG) Log.i(TAG, "Ignoring missing data cached board " + boardCode
+                        + " data from cache threads=" + cachedBoard.threads.length
+                        + " loadedthreads=" + cachedBoard.loadedThreads.length
+                        + " newThreads=" + cachedBoard.newThreads
+                        + " updatedThreads=" + cachedBoard.updatedThreads
+                        );
             }
 		}
 		File boardFile = null;
@@ -256,7 +267,8 @@ public class ChanFileStorage {
 					ObjectMapper mapper = ChanHelper.getJsonMapper();
 					ChanBoard board = mapper.readValue(boardFile, ChanBoard.class);
 					if (DEBUG) Log.i(TAG, "Loaded " + board.threads.length + " threads for board '" + board.link + "'");
-					return board;
+					boardCache.put(boardCode, board);
+                    return board;
 				} else {
 					if (DEBUG) Log.i(TAG, "File for board '" + boardCode + "' doesn't exist");
 				}
@@ -271,12 +283,21 @@ public class ChanFileStorage {
 		}
 		return prepareDefaultBoardData(context, boardCode);
 	}
-	
+
+    public static boolean hasNewBoardData(Context context, String boardCode) {
+        ChanBoard board = loadBoardData(context, boardCode);
+        return board != null
+                && !board.defData
+                && (board.newThreads > 0 || board.updatedThreads > 0);
+                //&& board.loadedThreads != null
+                //&& board.loadedThreads.length > 0;
+    }
+
 	public static ChanBoard loadFreshBoardData(Context context, String boardCode) {
         if (DEBUG) Log.i(TAG, "loadFreshBoardData code=" + boardCode);
-		ChanBoard board = loadBoardData(context, boardCode);
-		if (board != null && !board.defData && board.loadedThreads != null && board.loadedThreads.length > 0) {
-			synchronized (board) {
+        ChanBoard board = loadBoardData(context, boardCode);
+        if (hasNewBoardData(context, boardCode)) {
+            synchronized (board) {
 				board.threads = board.loadedThreads;
 				board.loadedThreads = new ChanThread[0];
 				board.newThreads = 0;
@@ -284,8 +305,8 @@ public class ChanFileStorage {
 			}
 			FileSaverService.startService(context, FileType.BOARD_SAVE, board.link);
 		}
-		
-		return board;
+
+        return board;
 	}
 	
 	private static ChanBoard prepareDefaultBoardData(Context context, String boardCode) {

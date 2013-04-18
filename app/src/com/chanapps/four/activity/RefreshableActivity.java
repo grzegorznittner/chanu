@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 
 public interface RefreshableActivity {
 
-    public void refreshActivity();
+    public void refresh();
 
     public Context getBaseContext();
 

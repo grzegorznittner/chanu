@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.BoardSelectorTab;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.activity.BoardSelectorActivity;
@@ -132,16 +133,10 @@ public class TabsAdapter extends FragmentPagerAdapter
         selectInSpinnerIfPresent(position, true);
         // following jazz is for watchlist clean/clear menus
         Fragment fragment = getItem(position);
-        //Menu menu = mContext.menu;
-        mContext.selectedBoardType = mContext.activeBoardTypes.get(position);
+        mContext.selectedBoardTab = BoardSelectorTab.values()[position];
         if (DEBUG) Log.d(BoardSelectorActivity.TAG, "TabsAdapter pager set to " + position
                 + " with fragment=" + (fragment != null ? fragment.getTag() : null)
-        //        + " menu=" + menu
-                + " selectedBoardType=" + mContext.selectedBoardType);
-        //if (fragment != null && menu != null) {
-        //    mContext.invalidateOptionsMenu();
-        //    ((BoardGroupFragment)fragment).onPrepareOptionsMenu(menu, mContext, mContext.selectedBoardType);
-        //}
+                + " selectedBoardType=" + mContext.selectedBoardTab);
     }
 
     @Override
