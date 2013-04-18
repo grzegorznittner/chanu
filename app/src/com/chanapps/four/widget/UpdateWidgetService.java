@@ -42,7 +42,7 @@ public class UpdateWidgetService extends Service {
 
     public static final int NUM_TOP_THREADS = 3;
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {

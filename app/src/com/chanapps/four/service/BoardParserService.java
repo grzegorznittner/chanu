@@ -48,7 +48,7 @@ import com.chanapps.four.widget.BoardWidgetProvider;
 public class BoardParserService extends BaseChanService implements ChanIdentifiedService {
 
     protected static final String TAG = BoardParserService.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 	
 	protected static final long STORE_INTERVAL_MS = 2000;
     protected static final int MAX_THREAD_RETENTION_PER_BOARD = 200;
@@ -92,7 +92,8 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
 		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
 		pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
-        force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false);
+        force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false)
+            || (intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0);
 		if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " page=" + pageNo);
 
         if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
@@ -131,10 +132,6 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 	            	BoardThreadsParserService.startService(getBaseContext(), boardCode, pageNo);
 	            }
             }
-            // tell it to refresh widgets for board if any are configured
-            if (DEBUG) Log.i(TAG, "Calling widget provider update for boardCode=" + boardCode);
-            BoardWidgetProvider.updateAll(context, boardCode);
-
             NetworkProfileManager.instance().finishedParsingData(this);
         } catch (Exception e) {
             //toastUI(R.string.board_service_couldnt_read);

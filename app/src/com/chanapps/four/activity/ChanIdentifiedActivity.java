@@ -18,5 +18,9 @@ public interface ChanIdentifiedActivity {
 	/**
 	 * Returns activity's context.
 	 */
-	Context getBaseContext (); 
+	Context getBaseContext ();
+
+    // used for refreshing data
+    void refresh();
+
 }

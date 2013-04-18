@@ -45,4 +45,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity {
         return null;
     }
 
+    @Override
+    public void refresh() {}
+
 }

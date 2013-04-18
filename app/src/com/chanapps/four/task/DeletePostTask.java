@@ -5,22 +5,17 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
-import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.RefreshableActivity;
 import com.chanapps.four.data.*;
-import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.DeletingPostDialogFragment;
 import com.chanapps.four.multipartmime.*;
 import com.chanapps.four.multipartmime.PartBase;
-import com.chanapps.four.service.FetchChanDataService;
-import com.chanapps.four.service.NetworkProfileManager;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -213,7 +208,7 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
         }
         int msgId = imageOnly ? R.string.delete_post_successful_image : R.string.delete_post_successful;
         Toast.makeText(context, msgId, Toast.LENGTH_SHORT).show();
-        refreshableActivity.refreshActivity();
+        refreshableActivity.refresh();
         dialogFragment.dismiss();
     }
 

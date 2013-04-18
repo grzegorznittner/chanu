@@ -319,4 +319,7 @@ public class BoardSelectorActivity
 		return null;
 	}
 
+    @Override
+    public void refresh() {}
+
 }

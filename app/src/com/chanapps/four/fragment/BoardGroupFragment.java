@@ -64,7 +64,7 @@ public class BoardGroupFragment
     }
 
     @Override
-    public void refreshActivity() {
+    public void refresh() {
         // ignored
     }
 

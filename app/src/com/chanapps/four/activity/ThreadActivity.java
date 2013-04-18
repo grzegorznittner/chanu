@@ -1227,8 +1227,8 @@ public class ThreadActivity
     }
 
     @Override
-    public void refreshActivity() {
-        super.refreshActivity();
+    public void refresh() {
+        super.refresh();
         if (actionMode != null)
             actionMode.finish();
     }

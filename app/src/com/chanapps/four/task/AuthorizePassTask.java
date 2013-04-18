@@ -1,7 +1,6 @@
 package com.chanapps.four.task;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -227,7 +226,7 @@ public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, 
             Toast.makeText(context, R.string.authorize_pass_successful, Toast.LENGTH_SHORT).show();
         }
         dialogFragment.dismiss();
-        refreshableActivity.refreshActivity();
+        refreshableActivity.refresh();
     }
 
 }

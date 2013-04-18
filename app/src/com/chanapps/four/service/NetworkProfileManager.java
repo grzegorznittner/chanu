@@ -149,7 +149,7 @@ public class NetworkProfileManager {
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 		}
-
+        if (DEBUG) Log.i(TAG, "EXCEPTION activeProfile=" + activeProfile);
 		switch(currentActivityId.activity) {
 		case BOARD_SELECTOR_ACTIVITY:
 			if (currentActivityId == null) {

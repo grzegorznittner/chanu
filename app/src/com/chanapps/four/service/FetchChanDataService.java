@@ -37,7 +37,7 @@ import com.chanapps.four.service.profile.NoConnectionProfile;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
     private String boardCode;
     private boolean boardCatalog;
@@ -215,7 +215,8 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 		threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
 		boardHandling = threadNo == 0;
 
-		force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false);
+		force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false)
+            || (intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0);
 		if (boardHandling) {
 			if (DEBUG) Log.i(TAG, "Handling board " + boardCode + (boardCatalog ? " catalog" : " page=" + pageNo));
 	        handleBoard();

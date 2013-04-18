@@ -62,5 +62,8 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
 		return null;
 	}
 
+    @Override
+    public void refresh() {}
+
 }
 

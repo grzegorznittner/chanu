@@ -57,7 +57,7 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
             loadFromIntent(getIntent());
         else
             loadFromPrefs();
-        refreshActivity();
+        refresh();
     }
 
     @Override
