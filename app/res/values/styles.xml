@@ -286,20 +286,22 @@
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:layout_marginTop">0dp</item>
         <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:layout_marginLeft">8dp</item>
-        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/blue_menu_btn</item>
+        <item name="android:background">@drawable/black_gradient_bg</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:text">@string/spoiler_show</item>
+<!--
         <item name="android:shadowColor">@color/PaletteBlack</item>
         <item name="android:shadowDx">1</item>
         <item name="android:shadowDy">1</item>
         <item name="android:shadowRadius">4</item>
+        -->
     </style>
 
     <style name="ThreadListItemExifText" parent="AppTheme">
@@ -519,19 +521,21 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_gravity">bottom|center_horizontal</item>
-        <item name="android:layout_margin">8dp</item>
+        <item name="android:layout_margin">0dp</item>
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/blue_menu_btn</item>
+        <item name="android:background">@drawable/black_gradient_bg</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:text">@string/done</item>
+<!--
         <item name="android:shadowColor">@color/PaletteBlack</item>
         <item name="android:shadowDx">1</item>
         <item name="android:shadowDy">1</item>
         <item name="android:shadowRadius">4</item>
+-->
     </style>
 
 

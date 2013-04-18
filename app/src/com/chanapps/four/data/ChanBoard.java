@@ -63,7 +63,32 @@ public class ChanBoard {
 		this.textOnly = textOnly;
 	}
 	
-	public enum Type { WATCHLIST, JAPANESE_CULTURE, INTERESTS, CREATIVE, OTHER, ADULT, MISC };
+	public enum Type {
+        WATCHLIST (R.string.board_watch, R.drawable.watch),
+        JAPANESE_CULTURE (R.string.board_type_japanese_culture, R.drawable.black_gradient_bg),
+        INTERESTS (R.string.board_type_interests, R.drawable.black_gradient_bg),
+        CREATIVE (R.string.board_type_creative, R.drawable.black_gradient_bg),
+        OTHER (R.string.board_type_other, R.drawable.black_gradient_bg),
+        ADULT (R.string.board_type_adult, R.drawable.black_gradient_bg),
+        MISC (R.string.board_type_misc, R.drawable.black_gradient_bg);
+
+        private final int displayStringId;
+        private final int drawableId;
+
+        Type(int displayStringId, int drawableId) {
+            this.displayStringId = displayStringId;
+            this.drawableId = drawableId;
+        }
+
+        public int displayStringId() {
+            return displayStringId;
+        }
+
+        public int drawableId() {
+            return drawableId;
+        }
+
+    };
 
     public static final String WATCH_BOARD_CODE = "watch";
 
@@ -434,6 +459,10 @@ public class ChanBoard {
         return ChanThread.makeBoardRow(link, name, getImageResourceId());
     }
 
+    public static Object[] makeBoardTypeRow(Context context, Type boardType) {
+        return ChanThread.makeBoardTypeRow(context, boardType);
+    }
+
     public Object[] makeThreadAdRow(Context context) {
         int adCode =
                 (!workSafe && generator.nextDouble() < AD_ADULT_PROBABILITY_ON_ADULT_BOARD)
@@ -542,10 +571,10 @@ public class ChanBoard {
                         Spinner spinner = (Spinner)parent;
                         spinner.setSelection(0, false);
                     }
-                    if (bsa.selectedBoardType == Type.WATCHLIST)
+                    if (bsa.selectedBoardTab == BoardSelectorTab.WATCHLIST)
                         return;
                 }
-                BoardSelectorActivity.startActivity(activity, ChanBoard.Type.WATCHLIST);
+                BoardSelectorActivity.startActivity(activity, BoardSelectorTab.WATCHLIST);
                 return;
             }
             Pattern p = Pattern.compile("/([^/]*)/.*");
