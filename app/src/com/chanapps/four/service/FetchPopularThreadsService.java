@@ -4,9 +4,9 @@
 package com.chanapps.four.service;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -19,14 +19,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.profile.NetworkProfile;
@@ -37,23 +35,12 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  *
  */
 public class FetchPopularThreadsService extends BaseChanService implements ChanIdentifiedService {
-	private static final String BOARDS_4CHAN_ORG = "boards.4chan.org/";
-	private static final String DIV_CLASS_BOX_OUTER_RIGHT_BOX = "<div class=\"box-outer right-box\">";
-	private static final String ID_POPULAR_THREADS = "id=\"popular-threads\"";
 	private static final String TAG = FetchPopularThreadsService.class.getSimpleName();
 	private static final boolean DEBUG = true;
 
     private boolean force;
     private boolean backgroundLoad;
     
-    public static void scheduleBoardFetch(Context context) {
-        schedulePopularFetchService(context);
-    }
-    
-    public static boolean schedulePopularFetchWithPriority(Context context) {
-    	return scheduleBoardFetchWithPriority(context);
-    }
-
     public static boolean schedulePopularFetchService(Context context) {
     	if (!boardNeedsRefresh(context, false)) {
         	return false;
@@ -64,7 +51,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
         return true;
     }
 
-    public static boolean scheduleBoardFetchWithPriority(Context context) {
+    public static boolean schedulePopularFetchWithPriority(Context context) {
     	if (!boardNeedsRefresh(context, true)) {
         	return false;
         }
@@ -141,9 +128,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 
 	private void handlePopularThreadsFetch() {
         HttpURLConnection tc = null;
-		try {
-			ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.POPULAR_BOARD_CODE);
-			
+		try {			
 			URL chanApi = new URL("http://www.4chan.org/");
 			
     		long startTime = Calendar.getInstance().getTimeInMillis();
@@ -151,7 +136,8 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
             FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
             tc.setReadTimeout(fetchParams.readTimeout);
             tc.setConnectTimeout(fetchParams.connectTimeout);
-            
+
+			ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.POPULAR_BOARD_CODE);
             if (board != null && board.lastFetched > 0 && !force) {
             	if (DEBUG) Log.i(TAG, "IfModifiedSince set as last fetch happened "
         				+ ((startTime - board.lastFetched) / 1000) + "s ago");
@@ -178,46 +164,210 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
             	int fetchTime = (int)(new Date().getTime() - startTime);
             	
             	parsePopularThreads(board, response);
+            	board.lastFetched = fetchTime;
+            	ChanFileStorage.storeBoardData(getBaseContext(), board);
+            	
+            	ChanBoard latestBoard = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.LATEST_BOARD_CODE);
+            	parseLatestPosts(latestBoard, response);
+            	latestBoard.lastFetched = fetchTime;
+            	ChanFileStorage.storeBoardData(getBaseContext(), latestBoard);
+            	
+            	ChanBoard imagesBoard = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.LATEST_IMAGES_BOARD_CODE);
+            	parseLatestImages(imagesBoard, response);
+            	imagesBoard.lastFetched = fetchTime;
+            	ChanFileStorage.storeBoardData(getBaseContext(), imagesBoard);
                 
                 if (DEBUG) Log.w(TAG, "Fetched and stored " + chanApi + " in " + fetchTime + "ms, size " + response.length());
                 NetworkProfileManager.instance().finishedFetchingData(this, fetchTime, (int)response.length());
+                NetworkProfileManager.instance().finishedParsingData(this);
             }
         } catch (IOException e) {
             //toastUI(R.string.board_service_couldnt_read);
             NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
-            Log.e(TAG, "IO Error fetching Chan board json", e);
+            Log.e(TAG, "IO Error fetching Chan web page", e);
 		} catch (Exception e) {
             //toastUI(R.string.board_service_couldnt_load);
             NetworkProfileManager.instance().failedFetchingData(this, Failure.WRONG_DATA);
-			Log.e(TAG, "Error fetching Chan board json", e);
+			Log.e(TAG, "Error fetching Chan web page", e);
 		} finally {
 			closeConnection(tc);
 		}
 	}
 
-	private void parsePopularThreads(ChanBoard board, String response) {
-		int startIdx = response.indexOf(ID_POPULAR_THREADS);
+	private static final String DIV_CLASS_BOX_OUTER_RIGHT_BOX = "class=\"box-outer right-box\"";
+	private static final String ID_POPULAR_THREADS = "id=\"popular-threads\"";
+
+	private void parseLatestImages(ChanBoard board, String response) {
+		board.defData = false;
+		
+		int startIdx = response.indexOf("id=\"recent-images\"");
 		int endIdx = response.indexOf(DIV_CLASS_BOX_OUTER_RIGHT_BOX, startIdx);
 		
+		List<ChanThread> threads = new ArrayList<ChanThread>();
 		if (startIdx > 0 && endIdx > 0) {
 			String popularThreadsStr = response.substring(startIdx, endIdx);
 			String strings[] = popularThreadsStr.split("<li>");
-			String boardName = null;
-			String thread = null;
-			String name = null;
-			String thumbUrl = null;
-			String tim = null;
 			for (int i = 1; i < strings.length; i++) {
-				int boardStart = strings[i].indexOf(BOARDS_4CHAN_ORG);
-				int boardEnd = strings[i].indexOf("/", boardStart + BOARDS_4CHAN_ORG.length() + 1);
-				boardName = strings[i].substring(BOARDS_4CHAN_ORG.length(), boardEnd);
+				try {
+					threads.add(parseThread(strings[i]));
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("Problem occured for: " + strings[i]);
+				}
+			}
+			board.threads = threads.toArray(new ChanPost[]{});
+		}
+		System.out.println("board " + board.name + " has " + board.threads.length + " threads\n\n");
+	}
+
+	private void parseLatestPosts(ChanBoard board, String response) {
+		board.defData = false;
+		
+		int startIdx = response.indexOf("id=\"recent-threads\"");
+		int endIdx = response.indexOf(DIV_CLASS_BOX_OUTER_RIGHT_BOX, startIdx);
+		
+		List<ChanThread> threads = new ArrayList<ChanThread>();
+		if (startIdx > 0 && endIdx > 0) {
+			String popularThreadsStr = response.substring(startIdx, endIdx);
+			String strings[] = popularThreadsStr.split("<li>");
+			for (int i = 1; i < strings.length; i++) {
+				try {
+					threads.add(parseThread(strings[i]));
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("Problem occured for: " + strings[i]);
+				}
+			}
+			board.threads = threads.toArray(new ChanPost[]{});
+		}
+		System.out.println("board " + board.name + " has " + board.threads.length + " threads\n\n");
+	}
+
+	
+	private void parsePopularThreads(ChanBoard board, String response) {
+		board.defData = false;
+		
+		int startIdx = response.indexOf(ID_POPULAR_THREADS);
+		int endIdx = response.indexOf(DIV_CLASS_BOX_OUTER_RIGHT_BOX, startIdx);
+		
+		List<ChanThread> threads = new ArrayList<ChanThread>();
+		if (startIdx > 0 && endIdx > 0) {
+			String popularThreadsStr = response.substring(startIdx, endIdx);
+			String strings[] = popularThreadsStr.split("<li>");
+			for (int i = 1; i < strings.length; i++) {
+				try {
+					threads.add(parseThread(strings[i]));
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("Problem occured for: " + strings[i]);
+				}
+			}
+			board.threads = threads.toArray(new ChanPost[]{});
+		}
+		System.out.println("board " + board.name + " has " + board.threads.length + " threads\n\n");
+	}
+
+	private ChanThread parseThread(String threadStr) {
+		ChanThread thread = new ChanThread();
+		ParsableString str = new ParsableString();
+		str.str = threadStr;
+		str.pos = threadStr.indexOf("href");
+		
+		thread.board = str.extract(".4chan.org/", "/");
+		thread.no = Long.parseLong(str.extract("res/", "#p"));
+		String image = str.extract("&lt;a href=&quot;#&quot;&gt;", "&lt;/a&gt;");
+		
+		if (str.moveTo(")&lt;")) {
+			String imageDesc = str.extractBefore("(");
+			String parts[] = imageDesc != null ? imageDesc.split(",") : new String[]{};
+			if (parts.length == 3) {
+				try {
+					String sizeStr[] = parts[0].split(" ");
+					thread.fsize = Integer.parseInt(sizeStr[0]);
+					String power = sizeStr.length < 2 || sizeStr[1] == null ? "" : sizeStr[1].toLowerCase();
+					if (power.contains("mb")) {
+						thread.fsize *= 1024 * 1024;
+					} else if (power.contains("kb")) {
+						thread.fsize *= 1024;
+					}
+				} catch (Exception e) {
+					thread.fsize = 0;
+				}
+				try {
+					String dimStr[] = parts[1].trim().split("x");
+					thread.w = Integer.parseInt(dimStr[0]);
+					thread.h = Integer.parseInt(dimStr[1]);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				try {
+					String imgStr[] = parts[2].trim().split("\\.");
+					thread.filename = imgStr[0];
+					thread.ext = "." + imgStr[imgStr.length - 1];
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
+		String thumb = str.extract("thumbs.4chan.org/" + thread.board + "/thumb/", "&quot;");
+		if (thumb != null) {
+			int sIdx = thumb.indexOf("s");
+			if (sIdx > 0) {
+				thread.tim = Long.parseLong(thumb.substring(0, sIdx));
+				thread.tn_w = 250;
+				thread.tn_h = 150;
+			}
+		}
+		if (str.moveTo("</a>")) {
+			thread.sub = str.extractBefore(">");
+		}
+		
+		System.out.println("Board: " + thread.board + ", no: " + thread.no + ", tim: " + thread.tim + ", size: " + thread.fsize + ", " + thread.w + "x" + thread.h
+				+ ",\n     img: " + thread.imageUrl() + ", thumb: " + thread.thumbnailUrl()
+				+ ",\n     topic: " + thread.sub);
+		return thread;
 	}
+
 
 	@Override
 	public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(ChanBoard.POPULAR_BOARD_CODE, -1, force);
 	}
 
+	static class ParsableString {
+		String str;
+		int pos;
+		
+		public String extract(String start, String end) {
+			int startIdx = str.indexOf(start, pos);
+			if (startIdx < 0) {
+				return null;
+			}
+			int endIdx = str.indexOf(end, startIdx + start.length());
+			if (endIdx > -1) {
+				pos = endIdx;
+				return str.substring(startIdx + start.length(), endIdx);
+			}
+			return null;
+		}
+		
+		public String extractBefore(String start) {
+			int startIdx = str.lastIndexOf(start, pos);
+			if (startIdx > -1) {
+				return str.substring(startIdx + start.length(), pos);
+			} else {
+				return null;
+			}
+		}
+		
+		public boolean moveTo(String text) {
+			int moveIdx = str.indexOf(text, pos);
+			if (moveIdx > -1) {
+				pos = moveIdx;
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
 }

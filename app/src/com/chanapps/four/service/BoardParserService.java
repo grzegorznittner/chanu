@@ -12,7 +12,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-import android.os.Handler;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
@@ -25,19 +24,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 import com.chanapps.four.widget.BoardWidgetProvider;
 
@@ -60,6 +57,9 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     private ChanBoard board;
 
     public static void startService(Context context, String boardCode, int pageNo) {
+    	if (!isParsableBoard(boardCode)) {
+    		return;
+    	}
         if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + false );
         Intent intent = new Intent(context, BoardParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
@@ -69,6 +69,9 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     }
 
     public static void startServiceWithPriority(Context context, String boardCode, int pageNo) {
+    	if (!isParsableBoard(boardCode)) {
+    		return;
+    	}
         if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + true );
         Intent intent = new Intent(context, BoardParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
@@ -77,6 +80,11 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         intent.putExtra(ChanHelper.FORCE_REFRESH, true);
         intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
         context.startService(intent);
+    }
+    
+    private static boolean isParsableBoard(String boardCode) {
+    	return !(ChanBoard.POPULAR_BOARD_CODE.equals(boardCode) || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
+    				|| ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode));
     }
 
     public BoardParserService() {

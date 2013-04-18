@@ -67,6 +67,8 @@ public class ChanBoard {
 
     public static final String WATCH_BOARD_CODE = "watch";
     public static final String POPULAR_BOARD_CODE = "popular";
+    public static final String LATEST_BOARD_CODE = "latest";
+    public static final String LATEST_IMAGES_BOARD_CODE = "images";
 
     public static final String DEFAULT_BOARD_CODE = "a";
 
@@ -271,7 +273,10 @@ public class ChanBoard {
                         "cm", ctx.getString(R.string.board_cm),
                         "n", ctx.getString(R.string.board_n),
                         "jp", ctx.getString(R.string.board_jp),
-                        "vp", ctx.getString(R.string.board_vp)
+                        "vp", ctx.getString(R.string.board_vp),
+                        "popular", "Popular",
+                        "latest", "Latest",
+                        "images", "Images"
                 },
                 {   Type.INTERESTS.toString(),
                         "v", ctx.getString(R.string.board_v),

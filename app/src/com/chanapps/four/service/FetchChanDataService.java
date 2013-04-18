@@ -59,6 +59,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     }
 
     public static boolean scheduleBoardFetchService(Context context, String boardCode, int pageNo) {
+    	if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)) {
+    		return FetchPopularThreadsService.schedulePopularFetchService(context);
+    	}
+    	
     	if (!boardNeedsRefresh(context, boardCode, pageNo, false)) {
         	return false;
         }
