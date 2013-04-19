@@ -128,10 +128,10 @@ public class ChanBoard {
 		if (boards == null) {
 			initBoards(context);
 		}
-        if (boardType.isCategory())
+        //if (boardType.isCategory())
             return boardsByType.get(boardType);
-        else
-            return null;
+        //else
+        //    return null;
 	}
 
 	public static ChanBoard getBoardByCode(Context context, String boardCode) {
@@ -240,11 +240,14 @@ public class ChanBoard {
     private static String[][] initBoardCodes(Context ctx) {
         String[][] boardCodesByType = {
 
-                {   BoardType.WATCHLIST.toString()
+                {   BoardType.WATCHLIST.toString(),
+                        WATCH_BOARD_CODE, ctx.getString(R.string.board_watch)
                 },
-                {   BoardType.POPULAR.toString()
+                {   BoardType.POPULAR.toString(),
+                        POPULAR_BOARD_CODE, ctx.getString(R.string.board_popular)
                 },
-                {   BoardType.LATEST.toString()
+                {   BoardType.LATEST.toString(),
+                        LATEST_BOARD_CODE, ctx.getString(R.string.board_latest)
                 },
                 {   BoardType.JAPANESE_CULTURE.toString(),
                         "a", ctx.getString(R.string.board_a),
