@@ -198,9 +198,18 @@ public class BoardSelectorActivity
         menuId = ChanBoard.showNSFW(this) ? R.menu.board_selector_menu_adult : R.menu.board_selector_menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(menuId, menu);
-        String boardCode = selectedBoardTab == BoardSelectorTab.WATCHLIST
-                ? ChanBoard.WATCH_BOARD_CODE
-                : "";
+        String boardCode;
+        switch (selectedBoardTab) {
+            case WATCHLIST:
+                boardCode = ChanBoard.WATCH_BOARD_CODE;
+                break;
+            case POPULAR:
+                boardCode = ChanBoard.POPULAR_BOARD_CODE;
+                break;
+            case BOARDLIST:
+            default:
+                boardCode = "";
+        }
         ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
         return true;
     }

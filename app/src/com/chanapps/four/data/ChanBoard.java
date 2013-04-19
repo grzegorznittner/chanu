@@ -64,13 +64,14 @@ public class ChanBoard {
 	}
 	
 	public enum Type {
-        WATCHLIST (R.string.board_watch, R.drawable.watch),
-        JAPANESE_CULTURE (R.string.board_type_japanese_culture, R.drawable.black_gradient_bg),
-        INTERESTS (R.string.board_type_interests, R.drawable.black_gradient_bg),
-        CREATIVE (R.string.board_type_creative, R.drawable.black_gradient_bg),
-        OTHER (R.string.board_type_other, R.drawable.black_gradient_bg),
-        ADULT (R.string.board_type_adult, R.drawable.black_gradient_bg),
-        MISC (R.string.board_type_misc, R.drawable.black_gradient_bg);
+        WATCHLIST (R.string.board_watch, 0),
+        POPULAR (R.string.board_popular, 0),
+        JAPANESE_CULTURE (R.string.board_type_japanese_culture, 0),
+        INTERESTS (R.string.board_type_interests, 0),
+        CREATIVE (R.string.board_type_creative, 0),
+        OTHER (R.string.board_type_other, 0),
+        ADULT (R.string.board_type_adult, 0),
+        MISC (R.string.board_type_misc, 0);
 
         private final int displayStringId;
         private final int drawableId;
@@ -134,13 +135,14 @@ public class ChanBoard {
 
     public static String getBoardTypeName(Context ctx, Type boardType) {
         switch (boardType) {
-            case JAPANESE_CULTURE: return ctx.getString(R.string.board_type_japanese_culture);
             case INTERESTS: return ctx.getString(R.string.board_type_interests);
             case CREATIVE: return ctx.getString(R.string.board_type_creative);
             case ADULT: return ctx.getString(R.string.board_type_adult);
             case MISC: return ctx.getString(R.string.board_type_misc);
             case OTHER: return ctx.getString(R.string.board_type_other);
             case WATCHLIST: return ctx.getString(R.string.board_watch);
+            case POPULAR: return ctx.getString(R.string.board_popular);
+            case JAPANESE_CULTURE:
             default:
                 return ctx.getString(R.string.board_type_japanese_culture);
         }
@@ -178,7 +180,7 @@ public class ChanBoard {
 		if (boards == null) {
 			initBoards(context);
 		}
-        else if (type == Type.WATCHLIST) { // handled at thread level
+        else if (type == Type.WATCHLIST || type == Type.POPULAR) { // handled at thread level
             return null;
         }
 		return boardsByType.get(type);
@@ -288,6 +290,8 @@ public class ChanBoard {
         String[][] boardCodesByType = {
 
                 {   Type.WATCHLIST.toString()
+                },
+                {   Type.POPULAR.toString()
                 },
                 {   Type.JAPANESE_CULTURE.toString(),
                         "a", ctx.getString(R.string.board_a),
@@ -581,6 +585,22 @@ public class ChanBoard {
                         return;
                 }
                 BoardSelectorActivity.startActivity(activity, BoardSelectorTab.WATCHLIST);
+                return;
+            }
+            if (boardAsMenu.equals(activity.getString(R.string.board_popular_abbrev))) {
+                if (activity instanceof BoardSelectorActivity
+                        && ChanBoard.POPULAR_BOARD_CODE.equals(createdWithBoardCode))
+                { // special case change tab
+                    BoardSelectorActivity bsa = (BoardSelectorActivity)activity;
+                    bsa.ensureTabsAdapter();
+                    if (parent instanceof Spinner) {
+                        Spinner spinner = (Spinner)parent;
+                        spinner.setSelection(0, false);
+                    }
+                    if (bsa.selectedBoardTab == BoardSelectorTab.POPULAR)
+                        return;
+                }
+                BoardSelectorActivity.startActivity(activity, BoardSelectorTab.POPULAR);
                 return;
             }
             Pattern p = Pattern.compile("/([^/]*)/.*");

@@ -12,7 +12,7 @@ import com.chanapps.four.activity.R;
 public enum BoardSelectorTab {
 
     WATCHLIST (R.string.board_selector_watchlist_title),
-    //POPULAR (R.string.board_selector_popular_title),
+    POPULAR (R.string.board_selector_popular_title),
     BOARDLIST (R.string.board_selector_boardlist_title);
 
     private final int displayStringId;

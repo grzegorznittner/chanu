@@ -5,10 +5,10 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.LoaderManager;
+import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
+import android.support.v4.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -107,7 +107,7 @@ public class BoardActivity
         LoaderManager.enableDebugLogging(true);
         if (DEBUG) Log.v(TAG, "onCreate init loader");
         //progressBar = (ProgressBar)findViewById(R.id.board_progress_bar);
-        getLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 
     public void setProgressOn(boolean progressOn) {
@@ -206,9 +206,9 @@ public class BoardActivity
 		if (DEBUG) Log.v(TAG, "onResume");
         restoreInstanceState();
 		NetworkProfileManager.instance().activityChange(this);
-		Loader loader = getLoaderManager().getLoader(0);
+		Loader loader = getSupportLoaderManager().getLoader(0);
 		if (loader == null)
-			getLoaderManager().initLoader(0, null, this);
+			getSupportLoaderManager().initLoader(0, null, this);
 	}
 
     protected String getLastPositionName() {

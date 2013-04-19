@@ -1,6 +1,6 @@
 package com.chanapps.four.activity;
 
-import android.app.LoaderManager;
+import android.support.v4.app.LoaderManager;
 import android.database.Cursor;
 import android.widget.AdapterView;
 
@@ -20,6 +20,6 @@ public interface ClickableLoaderActivity extends
         LoaderManager.LoaderCallbacks<Cursor>,
         AbstractBoardCursorAdapter.ViewBinder {
 
-    public LoaderManager getLoaderManager();
+    public LoaderManager getSupportLoaderManager();
 
 }

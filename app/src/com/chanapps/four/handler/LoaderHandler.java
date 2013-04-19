@@ -30,7 +30,7 @@ public class LoaderHandler extends Handler {
             switch (msg.what) {
                 default:
                     if (DEBUG) Log.i(activity.getClass().getSimpleName(), ">>>>>>>>>>> restart message received restarting loader");
-                    activity.getLoaderManager().restartLoader(0, null, activity);
+                    activity.getSupportLoaderManager().restartLoader(0, null, activity);
             }
         }
         catch (Exception e) {

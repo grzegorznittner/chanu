@@ -42,7 +42,7 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
                 .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
         for (ChanBoard.Type boardType : ChanBoard.Type.values()) {
-            if (boardType == ChanBoard.Type.WATCHLIST)
+            if (boardType == ChanBoard.Type.WATCHLIST || boardType == ChanBoard.Type.POPULAR)
                 continue;
             if (ChanBoard.isNSFWBoardType(boardType) && !showNSFWBoards)
                 continue;
