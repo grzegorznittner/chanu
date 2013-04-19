@@ -8,8 +8,8 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.util.Log;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 
 import java.io.FileDescriptor;
@@ -41,10 +41,10 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
                 .getDefaultSharedPreferences(context)
                 .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
-        for (ChanBoard.Type boardType : ChanBoard.Type.values()) {
-            if (boardType == ChanBoard.Type.WATCHLIST || boardType == ChanBoard.Type.POPULAR)
+        for (BoardType boardType : BoardType.values()) {
+            if (!boardType.isCategory())
                 continue;
-            if (ChanBoard.isNSFWBoardType(boardType) && !showNSFWBoards)
+            if (!boardType.isSFW() && !showNSFWBoards)
                 continue;
             Object[] row = ChanBoard.makeBoardTypeRow(context, boardType);
             matrixCursor.addRow(row);

@@ -134,30 +134,7 @@ public class BoardGroupFragment
 
     protected void assignCursorAdapter() {
         switch (boardSelectorTab) {
-            case WATCHLIST:
-            case POPULAR:
-                adapter = new BoardGridCursorAdapter(getActivity(),
-                        R.layout.board_grid_item,
-                        this,
-                        new String[] {
-                                ChanThread.THREAD_THUMBNAIL_URL,
-                                ChanThread.THREAD_SUBJECT,
-                                //ChanThread.THREAD_INFO,
-                                ChanThread.THREAD_COUNTRY_FLAG_URL,
-                                ChanThread.THREAD_NUM_REPLIES,
-                                ChanThread.THREAD_NUM_IMAGES},
-                        new int[] {
-                                R.id.grid_item_thread_thumb,
-                                R.id.grid_item_thread_subject,
-                                //R.id.grid_item_thread_info,
-                                R.id.grid_item_country_flag,
-                                R.id.grid_item_num_replies,
-                                R.id.grid_item_num_images},
-                        columnWidth,
-                        columnHeight);
-                break;
             case BOARDLIST:
-            default:
                 adapter = new BoardSelectorGridCursorAdapter(getActivity(),
                         R.layout.board_selector_grid_item,
                         this,
@@ -173,6 +150,33 @@ public class BoardGroupFragment
                         },
                         columnWidth,
                         columnHeight);
+                break;
+            case WATCHLIST:
+            case POPULAR:
+            case LATEST:
+            default:
+                adapter = new BoardGridCursorAdapter(getActivity(),
+                        R.layout.board_grid_item,
+                        this,
+                        new String[] {
+                                ChanThread.THREAD_BOARD_CODE,
+                                ChanThread.THREAD_THUMBNAIL_URL,
+                                ChanThread.THREAD_SUBJECT,
+                                //ChanThread.THREAD_INFO,
+                                ChanThread.THREAD_COUNTRY_FLAG_URL,
+                                ChanThread.THREAD_NUM_REPLIES,
+                                ChanThread.THREAD_NUM_IMAGES},
+                        new int[] {
+                                R.id.grid_item_board_abbrev,
+                                R.id.grid_item_thread_thumb,
+                                R.id.grid_item_thread_subject,
+                                //R.id.grid_item_thread_info,
+                                R.id.grid_item_country_flag,
+                                R.id.grid_item_num_replies,
+                                R.id.grid_item_num_images},
+                        columnWidth,
+                        columnHeight);
+                break;
         }
     }
 
@@ -222,13 +226,14 @@ public class BoardGroupFragment
     protected Loader<Cursor> createCursorLoader() {
         if (DEBUG) Log.v(TAG, "createCursorLoader boardSelectorType=" + boardSelectorTab);
         switch (boardSelectorTab) {
+            case BOARDLIST:
+                return new BoardSelectorCursorLoader(getActivity());
             case WATCHLIST:
                 return new BoardSelectorWatchlistCursorLoader(getActivity());
             case POPULAR:
-                return new BoardCursorLoader(getActivity(), ChanBoard.POPULAR_BOARD_CODE);
-            case BOARDLIST:
+            case LATEST:
             default:
-                return new BoardSelectorCursorLoader(getActivity());
+                return new BoardCursorLoader(getActivity(), boardSelectorTab.boardCode());
         }
     }
 
@@ -253,17 +258,7 @@ public class BoardGroupFragment
             emptyText.setVisibility(View.GONE);
         }
         else {
-            switch (boardSelectorTab) {
-                case WATCHLIST:
-                    emptyText.setText(R.string.board_empty_watchlist);
-                    break;
-                case POPULAR:
-                    emptyText.setText(R.string.board_empty_popular);
-                    break;
-                case BOARDLIST:
-                default:
-                    emptyText.setText(R.string.board_empty_default);
-            }
+            emptyText.setText(boardSelectorTab.emptyStringId());
             emptyText.setVisibility(View.VISIBLE);
         }
         setProgressOn(false);
@@ -287,16 +282,18 @@ public class BoardGroupFragment
         final Activity activity = getActivity();
         final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         switch (boardSelectorTab) {
+            case BOARDLIST:
+                if (DEBUG) Log.i(TAG, "clicked board " + boardCode);
+                BoardActivity.startActivity(activity, boardCode);
+                break;
             case WATCHLIST:
             case POPULAR:
+            case LATEST:
+            default:
                 final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
                 if (DEBUG) Log.i(TAG, "clicked thread " + boardCode + "/" + threadNo);
                 ThreadActivity.startActivity(getActivity(), boardCode, threadNo);
                 break;
-            case BOARDLIST:
-            default:
-                if (DEBUG) Log.i(TAG, "clicked board " + boardCode);
-                BoardActivity.startActivity(activity, boardCode);
         }
         ChanHelper.simulateClickAnim(activity, view);
     }
@@ -319,6 +316,7 @@ public class BoardGroupFragment
                     return false;
                 }
             case POPULAR:
+            case LATEST:
             case BOARDLIST:
             default:
                 return false;
@@ -328,12 +326,13 @@ public class BoardGroupFragment
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         switch (boardSelectorTab) {
+            case BOARDLIST:
+                return setBoardlistViewValue(view, cursor, columnIndex);
             case WATCHLIST:
             case POPULAR:
-                return BoardActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions);
-            case BOARDLIST:
+            case LATEST:
             default:
-                return setBoardlistViewValue(view, cursor, columnIndex);
+                return BoardActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions, boardSelectorTab.boardCode());
         }
     }
 

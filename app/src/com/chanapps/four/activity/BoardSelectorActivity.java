@@ -198,18 +198,7 @@ public class BoardSelectorActivity
         menuId = ChanBoard.showNSFW(this) ? R.menu.board_selector_menu_adult : R.menu.board_selector_menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(menuId, menu);
-        String boardCode;
-        switch (selectedBoardTab) {
-            case WATCHLIST:
-                boardCode = ChanBoard.WATCH_BOARD_CODE;
-                break;
-            case POPULAR:
-                boardCode = ChanBoard.POPULAR_BOARD_CODE;
-                break;
-            case BOARDLIST:
-            default:
-                boardCode = "";
-        }
+        String boardCode = selectedBoardTab.boardCode();
         ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
         return true;
     }
@@ -217,12 +206,6 @@ public class BoardSelectorActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            /*
-            case R.id.clean_watchlist_menu:
-                WatchlistCleanDialogFragment cleanWatchlistFragment = new WatchlistCleanDialogFragment(getWatchlistFragment());
-                cleanWatchlistFragment.show(getSupportFragmentManager(), cleanWatchlistFragment.TAG);
-                return true;
-             */
             case R.id.offline_chan_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;

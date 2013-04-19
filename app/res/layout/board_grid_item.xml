@@ -13,6 +13,11 @@
             />
 
     <TextView
+            android:id="@+id/grid_item_board_abbrev"
+            style="@style/BoardGridAbbrev"
+            />
+
+    <TextView
             android:id="@+id/grid_item_num_images"
             style="@style/BoardGridNumImages"
             />

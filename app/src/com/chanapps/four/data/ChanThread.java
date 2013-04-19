@@ -63,14 +63,14 @@ public class ChanThread extends ChanPost {
         };
     }
 
-    public static Object[] makeBoardTypeRow(Context context, ChanBoard.Type boardType) {
+    public static Object[] makeBoardTypeRow(Context context, BoardType boardType) {
         return new Object[] {
                 0,
                 "",
                 0,
                 context.getString(boardType.displayStringId()),
                 "|||BOARD_TYPE|||",
-                "drawable://" + boardType.drawableId(),
+                boardType.drawableId() > 0 ? "drawable://" + boardType.drawableId() : "",
                 "",
                 "",
                 0,

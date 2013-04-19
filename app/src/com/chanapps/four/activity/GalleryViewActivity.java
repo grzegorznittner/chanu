@@ -564,7 +564,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     		upIntent = new Intent(this, BoardSelectorActivity.class);
     		ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
     		if (board != null) {
-    			upIntent.putExtra(ChanHelper.BOARD_TYPE, board.type.toString());
+    			upIntent.putExtra(ChanHelper.BOARD_TYPE, board.boardType.toString());
     		}
     		upIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
             break;

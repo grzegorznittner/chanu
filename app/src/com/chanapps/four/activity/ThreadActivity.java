@@ -164,7 +164,7 @@ public class ThreadActivity
         // backup in case we are missing stuff
         if (boardCode == null || boardCode.isEmpty()) {
             Intent selectorIntent = new Intent(this, BoardSelectorActivity.class);
-            selectorIntent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString());
+            selectorIntent.putExtra(ChanHelper.BOARD_TYPE, BoardType.JAPANESE_CULTURE.toString());
             selectorIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
             selectorIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(selectorIntent);

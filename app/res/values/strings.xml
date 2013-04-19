@@ -147,6 +147,7 @@
     <!-- Board selector activity -->
     <string name="board_selector_watchlist_title">Watchlist</string>
     <string name="board_selector_popular_title">Popular</string>
+    <string name="board_selector_latest_title">Latest</string>
     <string name="board_selector_boardlist_title">Board List</string>
 
     <!-- board activity -->
@@ -181,7 +182,8 @@
     <string name="board_end_of_watchlist">End of Watchlist</string>
     <string name="board_empty_watchlist">There are currently no threads in your watchlist\nSelect a board to find a thread to watch</string>
     <string name="board_empty_popular">Unable to load popular threads</string>
-    <string name="board_empty_default">Unable to load board</string>
+    <string name="board_empty_latest">Unable to load latest posts</string>
+    <string name="board_empty_default">Unable to load board list</string>
     <string name="thread_already_in_watchlist">Thread already in watchlist</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
     <string name="thread_added_to_watchlist_activity_based">Thread auto-added to watchlist</string>
@@ -557,6 +559,8 @@
     <string name="board_watch_abbrev">Watch</string>
     <string name="board_popular">Popular</string>
     <string name="board_popular_abbrev">Popular</string>
+    <string name="board_latest">Latest</string>
+    <string name="board_latest_abbrev">Latest</string>
     <string name="board_select">Select Board</string>
     <string name="board_select_abbrev">Go</string>
 
@@ -565,6 +569,7 @@
         <item>@string/board_select_abbrev</item>
         <item>@string/board_watch_abbrev</item>
         <item>@string/board_popular_abbrev</item>
+        <item>@string/board_latest_abbrev</item>
         <item>/3/</item>
         <item>/a/</item>
         <item>/adv/</item>
@@ -633,6 +638,7 @@
         <item>@string/board_select_abbrev</item>
         <item>@string/board_watch_abbrev</item>
         <item>@string/board_popular_abbrev</item>
+        <item>@string/board_latest_abbrev</item>
         <item>/3/</item>
         <item>/a/</item>
         <item>/adv/</item>
@@ -684,6 +690,7 @@
         <item>@string/board_select</item>
         <item>@string/board_watch</item>
         <item>@string/board_popular</item>
+        <item>@string/board_latest</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -752,6 +759,7 @@
         <item>@string/board_select</item>
         <item>@string/board_watch</item>
         <item>@string/board_popular</item>
+        <item>@string/board_latest</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>

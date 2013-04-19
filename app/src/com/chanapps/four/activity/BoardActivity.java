@@ -26,18 +26,14 @@ import android.widget.*;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.component.*;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 public class BoardActivity
@@ -270,7 +266,7 @@ public class BoardActivity
         // backup in case we are missing stuff
         if (boardCode == null || boardCode.isEmpty()) {
             Intent selectorIntent = new Intent(this, BoardSelectorActivity.class);
-            selectorIntent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.Type.JAPANESE_CULTURE.toString());
+            selectorIntent.putExtra(ChanHelper.BOARD_TYPE, BoardType.JAPANESE_CULTURE.toString());
             selectorIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
             selectorIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(selectorIntent);
@@ -315,14 +311,17 @@ public class BoardActivity
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        return setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions);
+        return setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions, boardCode);
     }
 
     public static boolean setViewValue(View view, Cursor cursor, int columnIndex,
                                        ImageLoader imageLoader,
-                                       DisplayImageOptions options)
+                                       DisplayImageOptions options,
+                                       String groupBoardCode)
     {
         switch (view.getId()) {
+            case R.id.grid_item_board_abbrev:
+                return setThreadBoardAbbrev((TextView) view, cursor, groupBoardCode);
             case R.id.grid_item_thread_subject:
                 return setThreadSubject((TextView) view, cursor);
             //case R.id.grid_item_thread_info:
@@ -339,6 +338,19 @@ public class BoardActivity
         return false;
     }
 
+    protected static boolean setThreadBoardAbbrev(TextView tv, Cursor cursor, String groupBoardCode) {
+        String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+        if (boardCode != null && !boardCode.isEmpty() && !boardCode.equals(groupBoardCode)) {
+            tv.setText("/" + boardCode + "/");
+            tv.setVisibility(View.VISIBLE);
+        }
+        else {
+            tv.setText("");
+            tv.setVisibility(View.GONE);
+        }
+        return true;
+    }
+
     protected static boolean setThreadSubject(TextView tv, Cursor cursor) {
         tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
         return true;
@@ -350,8 +362,15 @@ public class BoardActivity
     //}
 
     protected static boolean setThreadThumb(ImageView iv, Cursor cursor, ImageLoader imageLoader, DisplayImageOptions options) {
+        String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
+        if (url == null || url.isEmpty()) {
+            String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+            int i = (new Long(threadNo % 3)).intValue();
+            url = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
+        }
         imageLoader.displayImage(
-                cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
+                url,
                 iv,
                 options);
                 //options.modifyCenterCrop(true)); // load async
@@ -368,8 +387,9 @@ public class BoardActivity
 
     protected static boolean setThreadNumReplies(TextView tv, Cursor cursor) {
         String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
-        if (clickUrl == null || clickUrl.isEmpty()) {
-            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_NUM_REPLIES)) + "r"));
+        int n = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_REPLIES));
+        if ((clickUrl == null || clickUrl.isEmpty()) && n >= 0) {
+            tv.setText(n + "r");
             tv.setVisibility(View.VISIBLE);
         }
         else {
@@ -381,8 +401,9 @@ public class BoardActivity
 
     protected static boolean setThreadNumImages(TextView tv, Cursor cursor) {
         String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
-        if (clickUrl == null || clickUrl.isEmpty()) {
-            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES)) + "i"));
+        int n = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES));
+        if ((clickUrl == null || clickUrl.isEmpty()) && n >= 0) {
+            tv.setText(n + "i");
             tv.setVisibility(View.VISIBLE);
         }
         else {
@@ -441,7 +462,7 @@ public class BoardActivity
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = new Intent(this, BoardSelectorActivity.class);
-                intent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.getBoardByCode(this, boardCode).type.toString());
+                intent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.getBoardByCode(this, boardCode).boardType.toString());
                 intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
                 NavUtils.navigateUpTo(this, intent);
                 return true;

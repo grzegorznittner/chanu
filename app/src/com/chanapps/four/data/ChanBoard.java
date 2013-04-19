@@ -36,13 +36,13 @@ public class ChanBoard {
 
     private static final boolean DEBUG = false;
     public static final boolean REFRESH_THREADS_ON_REQUEST = true;
-    public static final long MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST = 60 * 60 * 1000;
 
     // AD STUFF
     private static final String JLIST_AD_AFFILIATE_CODE = "4539";
     private static final double AD_ADULT_PROBABILITY_ON_ADULT_BOARD = 1.0;
-    private static final int[] JLIST_AD_CODES = { 118, 113, 68 };
+    private static final int[] JLIST_AD_BIG_CODES = { 118, 113, 68 };
     private static final int[] JLIST_AD_SMALL_CODES = { 21, 97, 104, 121, 120 };
+    private static final int[] JLIST_AD_CODES = { 118, 113, 68, 21, 97, 104, 121, 120 };
     private static final int[] JLIST_AD_ADULT_CODES = { 122, 70 };
     private static final String JLIST_AD_ROOT_URL = "http://anime.jlist.com";
     private static final String JLIST_AD_IMAGE_ROOT_URL = JLIST_AD_ROOT_URL + "/media/" + JLIST_AD_AFFILIATE_CODE;
@@ -52,9 +52,9 @@ public class ChanBoard {
 		// public default constructor for Jackson
 	}
 
-	private ChanBoard(Type type, String name, String link, int iconId,
+	private ChanBoard(BoardType boardType, String name, String link, int iconId,
 			boolean workSafe, boolean classic, boolean textOnly) {
-		this.type = type;
+		this.boardType = boardType;
 		this.name = name;
 		this.link = link;
 		this.iconId = iconId;
@@ -62,34 +62,6 @@ public class ChanBoard {
 		this.classic = classic;
 		this.textOnly = textOnly;
 	}
-	
-	public enum Type {
-        WATCHLIST (R.string.board_watch, 0),
-        POPULAR (R.string.board_popular, 0),
-        JAPANESE_CULTURE (R.string.board_type_japanese_culture, 0),
-        INTERESTS (R.string.board_type_interests, 0),
-        CREATIVE (R.string.board_type_creative, 0),
-        OTHER (R.string.board_type_other, 0),
-        ADULT (R.string.board_type_adult, 0),
-        MISC (R.string.board_type_misc, 0);
-
-        private final int displayStringId;
-        private final int drawableId;
-
-        Type(int displayStringId, int drawableId) {
-            this.displayStringId = displayStringId;
-            this.drawableId = drawableId;
-        }
-
-        public int displayStringId() {
-            return displayStringId;
-        }
-
-        public int drawableId() {
-            return drawableId;
-        }
-
-    };
 
     public static final String WATCH_BOARD_CODE = "watch";
     public static final String POPULAR_BOARD_CODE = "popular";
@@ -103,7 +75,7 @@ public class ChanBoard {
     public String link;
     public int iconId;
     public int no;
-	public Type type;
+	public BoardType boardType;
     public boolean workSafe;
     public boolean classic;
     public boolean textOnly;
@@ -118,7 +90,7 @@ public class ChanBoard {
     private Random generator = new Random();
 	
 	public ChanBoard copy() {
-		ChanBoard copy = new ChanBoard(this.type, this.name, this.link, this.iconId,
+		ChanBoard copy = new ChanBoard(this.boardType, this.name, this.link, this.iconId,
 				this.workSafe, this.classic, this.textOnly);
 		return copy;
 	}
@@ -130,32 +102,8 @@ public class ChanBoard {
 
     private static List<ChanBoard> boards;
     private static List<ChanBoard> safeBoards;
-    private static Map<Type, List<ChanBoard>> boardsByType;
+    private static Map<BoardType, List<ChanBoard>> boardsByType;
     private static Map<String, ChanBoard> boardByCode;
-
-    public static String getBoardTypeName(Context ctx, Type boardType) {
-        switch (boardType) {
-            case INTERESTS: return ctx.getString(R.string.board_type_interests);
-            case CREATIVE: return ctx.getString(R.string.board_type_creative);
-            case ADULT: return ctx.getString(R.string.board_type_adult);
-            case MISC: return ctx.getString(R.string.board_type_misc);
-            case OTHER: return ctx.getString(R.string.board_type_other);
-            case WATCHLIST: return ctx.getString(R.string.board_watch);
-            case POPULAR: return ctx.getString(R.string.board_popular);
-            case JAPANESE_CULTURE:
-            default:
-                return ctx.getString(R.string.board_type_japanese_culture);
-        }
-    }
-
-    public static boolean isNSFWBoardType(Type boardType) {
-        if (boardType == Type.ADULT || boardType == Type.MISC) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
 
 	public static List<ChanBoard> getBoards(Context context) {
 		if (boards == null) {
@@ -176,14 +124,14 @@ public class ChanBoard {
         return prefs.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
     }
 
-	public static List<ChanBoard> getBoardsByType(Context context, Type type) {
+	public static List<ChanBoard> getBoardsByType(Context context, BoardType boardType) {
 		if (boards == null) {
 			initBoards(context);
 		}
-        else if (type == Type.WATCHLIST || type == Type.POPULAR) { // handled at thread level
+        if (boardType.isCategory())
+            return boardsByType.get(boardType);
+        else
             return null;
-        }
-		return boardsByType.get(type);
 	}
 
 	public static ChanBoard getBoardByCode(Context context, String boardCode) {
@@ -196,18 +144,18 @@ public class ChanBoard {
 	private static void initBoards(Context ctx) {
         boards = new ArrayList<ChanBoard>();
         safeBoards = new ArrayList<ChanBoard>();
-        boardsByType = new HashMap<Type, List<ChanBoard>>();
+        boardsByType = new HashMap<BoardType, List<ChanBoard>>();
         boardByCode = new HashMap<String, ChanBoard>();
 
         String[][] boardCodesByType = initBoardCodes(ctx);
 
         for (String[] boardCodesForType : boardCodesByType) {
-            Type boardType = Type.valueOf(boardCodesForType[0]);
+            BoardType boardType = BoardType.valueOf(boardCodesForType[0]);
             List<ChanBoard> boardsForType = new ArrayList<ChanBoard>();
             for (int i = 1; i < boardCodesForType.length; i+=2) {
                 String boardCode = boardCodesForType[i];
                 String boardName = boardCodesForType[i+1];
-                boolean workSafe = !(boardType == Type.ADULT || boardType == Type.MISC);
+                boolean workSafe = !(boardType == BoardType.ADULT || boardType == BoardType.MISC);
                 int iconId = getImageResourceId(boardCode);
                 ChanBoard b = new ChanBoard(boardType, boardName, boardCode, iconId, workSafe, true, false);
                 boardsForType.add(b);
@@ -254,6 +202,9 @@ public class ChanBoard {
         return getImageResourceId(boardCode, 0, index);
     }
 
+    public static String getIndexedImageDrawableUrl(String boardCode, int index) {
+        return "drawable://" + getIndexedImageResourceId(boardCode, index);
+    }
     public static int getImageResourceId(String boardCode, long postNo) {
         return getImageResourceId(boardCode, postNo, -1);
     }
@@ -289,11 +240,13 @@ public class ChanBoard {
     private static String[][] initBoardCodes(Context ctx) {
         String[][] boardCodesByType = {
 
-                {   Type.WATCHLIST.toString()
+                {   BoardType.WATCHLIST.toString()
                 },
-                {   Type.POPULAR.toString()
+                {   BoardType.POPULAR.toString()
                 },
-                {   Type.JAPANESE_CULTURE.toString(),
+                {   BoardType.LATEST.toString()
+                },
+                {   BoardType.JAPANESE_CULTURE.toString(),
                         "a", ctx.getString(R.string.board_a),
                         "c", ctx.getString(R.string.board_c),
                         "w", ctx.getString(R.string.board_w),
@@ -302,12 +255,9 @@ public class ChanBoard {
                         "cm", ctx.getString(R.string.board_cm),
                         "n", ctx.getString(R.string.board_n),
                         "jp", ctx.getString(R.string.board_jp),
-                        "vp", ctx.getString(R.string.board_vp),
-                        "popular", "Popular",
-                        "latest", "Latest",
-                        "images", "Images"
+                        "vp", ctx.getString(R.string.board_vp)
                 },
-                {   Type.INTERESTS.toString(),
+                {   BoardType.INTERESTS.toString(),
                         "v", ctx.getString(R.string.board_v),
                         "vg", ctx.getString(R.string.board_vg),
                         "vr", ctx.getString(R.string.board_vr),
@@ -324,7 +274,7 @@ public class ChanBoard {
                         "int", ctx.getString(R.string.board_int),
                         "out", ctx.getString(R.string.board_out)
                 },
-                {   Type.CREATIVE.toString(),
+                {   BoardType.CREATIVE.toString(),
                         "i", ctx.getString(R.string.board_i),
                         "po", ctx.getString(R.string.board_po),
                         "p", ctx.getString(R.string.board_p),
@@ -339,7 +289,7 @@ public class ChanBoard {
                         "diy", ctx.getString(R.string.board_diy),
                         "wsg", ctx.getString(R.string.board_wsg)
                 },
-                {   Type.OTHER.toString(),
+                {   BoardType.OTHER.toString(),
                         "q", ctx.getString(R.string.board_q),
                         "trv", ctx.getString(R.string.board_trv),
                         "fit", ctx.getString(R.string.board_fit),
@@ -349,7 +299,7 @@ public class ChanBoard {
                         "lgbt", ctx.getString(R.string.board_lgbt),
                         "mlp", ctx.getString(R.string.board_mlp)
                 },
-                {   Type.ADULT.toString(),
+                {   BoardType.ADULT.toString(),
                         "s", ctx.getString(R.string.board_s),
                         "hc", ctx.getString(R.string.board_hc),
                         "hm", ctx.getString(R.string.board_hm),
@@ -362,7 +312,7 @@ public class ChanBoard {
                         "hr", ctx.getString(R.string.board_hr),
                         "gif", ctx.getString(R.string.board_gif)
                 },
-                {   Type.MISC.toString(),
+                {   BoardType.MISC.toString(),
                         "b", ctx.getString(R.string.board_b),
                         "r", ctx.getString(R.string.board_r),
                         "r9k", ctx.getString(R.string.board_r9k),
@@ -469,7 +419,7 @@ public class ChanBoard {
         return ChanThread.makeBoardRow(link, name, getImageResourceId());
     }
 
-    public static Object[] makeBoardTypeRow(Context context, Type boardType) {
+    public static Object[] makeBoardTypeRow(Context context, BoardType boardType) {
         return ChanThread.makeBoardTypeRow(context, boardType);
     }
 
@@ -522,14 +472,8 @@ public class ChanBoard {
         Spinner spinner = (Spinner)item.getActionView();
         spinner.setOnItemSelectedListener(null);
         int position = 0;
-        if (currentBoardCode == null || currentBoardCode.isEmpty()) {
+        if (currentBoardCode == null || currentBoardCode.isEmpty() || activity instanceof BoardSelectorActivity) {
             position = 0;
-        }
-        else if (currentBoardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
-            position = 0; // always move it to "SelectBoard" to overcome view pager action bar bug
-        }
-        else if (activity instanceof BoardSelectorActivity) {
-            position = 0; // always select from board selector
         }
         else {
             SpinnerAdapter spinnerAdapter = spinner.getAdapter();
@@ -561,56 +505,52 @@ public class ChanBoard {
             this.createdWithBoardCode = createdWithBoardCode;
         }
 
+        protected void dispatchToBoardSelector(AdapterView<?> parent, BoardSelectorTab tab) {
+            if (activity instanceof BoardSelectorActivity
+                    && tab.boardCode().equals(createdWithBoardCode))
+            { // special case change tab
+                BoardSelectorActivity bsa = (BoardSelectorActivity)activity;
+                bsa.ensureTabsAdapter();
+                if (parent instanceof Spinner) {
+                    Spinner spinner = (Spinner)parent;
+                    spinner.setSelection(0, false);
+                }
+                if (bsa.selectedBoardTab == tab)
+                    return;
+            }
+            BoardSelectorActivity.startActivity(activity, tab);
+        }
+
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) { // for action bar spinner
             if (position < 0)
                 return;
             String boardAsMenu = (String) parent.getItemAtPosition(position);
             if (DEBUG) Log.i(BoardSelectorActivity.TAG, "onItemSelected boardSelected=" + boardAsMenu + " created with board=" + createdWithBoardCode);
-            if (boardAsMenu == null || boardAsMenu.isEmpty())
+            if (boardAsMenu == null
+                    || boardAsMenu.isEmpty()
+                    || boardAsMenu.equals(activity.getString(R.string.board_select))
+                    || boardAsMenu.equals(activity.getString(R.string.board_select_abbrev)))
                 return;
-            if (boardAsMenu.equals(activity.getString(R.string.board_select_abbrev)))
-                return;
-            if (boardAsMenu.equals(activity.getString(R.string.board_watch_abbrev))) {
-                if (activity instanceof BoardSelectorActivity
-                        && ChanBoard.WATCH_BOARD_CODE.equals(createdWithBoardCode))
-                { // special case change tab
-                    BoardSelectorActivity bsa = (BoardSelectorActivity)activity;
-                    bsa.ensureTabsAdapter();
-                    if (parent instanceof Spinner) {
-                        Spinner spinner = (Spinner)parent;
-                        spinner.setSelection(0, false);
-                    }
-                    if (bsa.selectedBoardTab == BoardSelectorTab.WATCHLIST)
-                        return;
-                }
-                BoardSelectorActivity.startActivity(activity, BoardSelectorTab.WATCHLIST);
-                return;
+            else if (boardAsMenu.equals(activity.getString(R.string.board_watch))
+                    || boardAsMenu.equals(activity.getString(R.string.board_watch_abbrev)))
+                dispatchToBoardSelector(parent, BoardSelectorTab.WATCHLIST);
+            else if (boardAsMenu.equals(activity.getString(R.string.board_popular))
+                    || boardAsMenu.equals(activity.getString(R.string.board_popular_abbrev)))
+                dispatchToBoardSelector(parent, BoardSelectorTab.POPULAR);
+            else if (boardAsMenu.equals(activity.getString(R.string.board_latest))
+                    || boardAsMenu.equals(activity.getString(R.string.board_latest_abbrev)))
+                dispatchToBoardSelector(parent, BoardSelectorTab.LATEST);
+            else {
+                Pattern p = Pattern.compile("/([^/]*)/.*");
+                Matcher m = p.matcher(boardAsMenu);
+                if (!m.matches())
+                    return;
+                String boardCodeForJump = m.group(1);
+                if (boardCodeForJump == null || boardCodeForJump.isEmpty() || boardCodeForJump.equals(createdWithBoardCode))
+                    return;
+                BoardActivity.startActivity(activity, boardCodeForJump);
             }
-            if (boardAsMenu.equals(activity.getString(R.string.board_popular_abbrev))) {
-                if (activity instanceof BoardSelectorActivity
-                        && ChanBoard.POPULAR_BOARD_CODE.equals(createdWithBoardCode))
-                { // special case change tab
-                    BoardSelectorActivity bsa = (BoardSelectorActivity)activity;
-                    bsa.ensureTabsAdapter();
-                    if (parent instanceof Spinner) {
-                        Spinner spinner = (Spinner)parent;
-                        spinner.setSelection(0, false);
-                    }
-                    if (bsa.selectedBoardTab == BoardSelectorTab.POPULAR)
-                        return;
-                }
-                BoardSelectorActivity.startActivity(activity, BoardSelectorTab.POPULAR);
-                return;
-            }
-            Pattern p = Pattern.compile("/([^/]*)/.*");
-            Matcher m = p.matcher(boardAsMenu);
-            if (!m.matches())
-                return;
-            String boardCodeForJump = m.group(1);
-            if (boardCodeForJump == null || boardCodeForJump.isEmpty() || boardCodeForJump.equals(createdWithBoardCode))
-                return;
-            BoardActivity.startActivity(activity, boardCodeForJump);
         }
 
         @Override
