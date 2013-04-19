@@ -39,7 +39,7 @@ public class ChanBoard {
 
     // AD STUFF
     private static final String JLIST_AD_AFFILIATE_CODE = "4539";
-    private static final double AD_ADULT_PROBABILITY_ON_ADULT_BOARD = 1.0;
+    private static final double AD_ADULT_PROBABILITY_ON_ADULT_BOARD = 0.2;
     private static final int[] JLIST_AD_BIG_CODES = { 118, 113, 68 };
     private static final int[] JLIST_AD_SMALL_CODES = { 21, 97, 104, 121, 120 };
     private static final int[] JLIST_AD_CODES = { 118, 113, 68, 21, 97, 104, 121, 120 };
