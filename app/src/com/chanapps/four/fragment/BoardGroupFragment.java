@@ -24,6 +24,8 @@ import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.BoardSelectorCursorLoader;
 import com.chanapps.four.loader.BoardSelectorWatchlistCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
+import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.FetchPopularThreadsService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -89,18 +91,21 @@ public class BoardGroupFragment
                 ? BoardSelectorTab.valueOf(getArguments().getString(BoardSelectorActivity.BOARD_SELECTOR_TAB))
                 : BoardSelectorActivity.DEFAULT_BOARD_SELECTOR_TAB;
         if (DEBUG) Log.v(TAG, "BoardGroupFragment " + boardSelectorTab + " onCreate");
-        switch (boardSelectorTab) {
-            case WATCHLIST:
-                ChanWatchlist.setWatchlistFragment(BoardGroupFragment.this);
-                break;
-            default:
-                break;
-        }
     }
 
     @Override                                             
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        switch (boardSelectorTab) {
+            case WATCHLIST:
+                ChanWatchlist.setWatchlistFragment(this);
+                break;
+            case LATEST:
+            case POPULAR:
+                FetchPopularThreadsService.schedulePopularFetchWithPriority(getActivity().getApplicationContext());
+            default:
+                break;
+        }
         LoaderManager.enableDebugLogging(true);
         getLoaderManager().initLoader(0, null, this);
         if (DEBUG) Log.v(TAG, "onCreate init loader");
