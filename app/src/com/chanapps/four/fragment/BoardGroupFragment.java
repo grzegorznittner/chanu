@@ -289,6 +289,7 @@ public class BoardGroupFragment
         switch (boardSelectorTab) {
             case BOARDLIST:
                 if (DEBUG) Log.i(TAG, "clicked board " + boardCode);
+                FetchChanDataService.scheduleBoardFetchWithPriority(getActivity(), boardCode); // get board ready
                 BoardActivity.startActivity(activity, boardCode);
                 break;
             case WATCHLIST:
@@ -297,6 +298,8 @@ public class BoardGroupFragment
             default:
                 final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
                 if (DEBUG) Log.i(TAG, "clicked thread " + boardCode + "/" + threadNo);
+                FetchChanDataService.scheduleBoardFetchWithPriority(getActivity(), boardCode); // get board ready
+                FetchChanDataService.scheduleThreadFetchWithPriority(getActivity(), boardCode, threadNo); // get board ready
                 ThreadActivity.startActivity(getActivity(), boardCode, threadNo);
                 break;
         }

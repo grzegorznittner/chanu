@@ -434,6 +434,10 @@ public class BoardActivity
         }
         setProgressOn(false);
         setActionBarTitle(); // to reflect updated time
+        if (data.getCount() < 1) { // didn't load yet, retry
+            if (handler != null)
+                handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+        }
     }
 
     @Override
@@ -586,7 +590,8 @@ public class BoardActivity
     public void refresh() {
         setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
-        //createAbsListView();
+        //if (absListView == null || absListView.getCount() < 1)
+        //    createAbsListView();
         if (handler != null)
             handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
     }

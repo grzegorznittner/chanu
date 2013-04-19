@@ -247,7 +247,8 @@ public class ChanBoard {
                         POPULAR_BOARD_CODE, ctx.getString(R.string.board_popular)
                 },
                 {   BoardType.LATEST.toString(),
-                        LATEST_BOARD_CODE, ctx.getString(R.string.board_latest)
+                        LATEST_BOARD_CODE, ctx.getString(R.string.board_latest),
+                        LATEST_IMAGES_BOARD_CODE, ctx.getString(R.string.board_latest_images)
                 },
                 {   BoardType.JAPANESE_CULTURE.toString(),
                         "a", ctx.getString(R.string.board_a),

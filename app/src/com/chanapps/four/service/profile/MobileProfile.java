@@ -3,6 +3,7 @@ package com.chanapps.four.service.profile;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
@@ -334,38 +335,54 @@ public class MobileProfile extends AbstractNetworkProfile {
 	}
 
 	@Override
-	public void onDataFetchFailure(ChanIdentifiedService service, Failure failure) {
+	public void onDataFetchFailure(final ChanIdentifiedService service, Failure failure) {
 		super.onDataFetchFailure(service, failure);
 
-		ChanActivityId data = service.getChanActivityId();
-		if (data.threadNo == 0) {
-			// board fetch failed
-            ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-            if (activity instanceof BoardActivity) {
-                ((BoardActivity)activity).setProgressOn(false);
-                makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_fetch_board_fail), data.boardCode));
-            }
-        } else if (data.postNo == 0) {
-			// thread fetch failed
-            makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_fetch_thread_fail), data.boardCode, data.threadNo));
-		} else {
-			// image fetch failed
-		}
-	}
+		final ChanActivityId data = service.getChanActivityId();
+        final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        Handler handler = activity != null ? activity.getChanHandler() : null;
+        if (handler == null)
+            return;
+        if ((data.threadNo == 0 || data.postNo == 0) && activity instanceof Activity)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Activity a = (Activity)activity;
+                    a.setProgressBarIndeterminateVisibility(false);
+                    String msg = data.threadNo == 0
+                            ? String.format(service.getApplicationContext().getString(
+                                R.string.mobile_profile_fetch_board_fail),
+                                data.boardCode)
+                            : String.format(service.getApplicationContext().getString(
+                                R.string.mobile_profile_fetch_thread_fail),
+                                data.boardCode, data.threadNo);
+                    makeToast(msg);
+                }
+            });
+    }
 
 	@Override
-	public void onDataParseFailure(ChanIdentifiedService service, Failure failure) {
-		ChanActivityId data = service.getChanActivityId();
-		if (data.threadNo == 0) {
-			// board parse failed
-            ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-            if (activity instanceof BoardActivity) {
-                ((BoardActivity)activity).setProgressOn(false);
-                makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_parse_board_fail), data.boardCode));
-            }
-		} else if (data.postNo == 0) {
-			// thread parse failed
-            makeToast(String.format(service.getApplicationContext().getString(R.string.mobile_profile_parse_thread_fail), data.boardCode, data.threadNo));
-		}
+	public void onDataParseFailure(final ChanIdentifiedService service, Failure failure) {
+        final ChanActivityId data = service.getChanActivityId();
+        final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        Handler handler = activity != null ? activity.getChanHandler() : null;
+        if (handler == null)
+            return;
+        if ((data.threadNo == 0 || data.postNo == 0) && activity instanceof Activity)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Activity a = (Activity)activity;
+                    a.setProgressBarIndeterminateVisibility(false);
+                    String msg = data.threadNo == 0
+                            ? String.format(service.getApplicationContext().getString(
+                            R.string.mobile_profile_parse_board_fail),
+                            data.boardCode)
+                            : String.format(service.getApplicationContext().getString(
+                            R.string.mobile_profile_parse_thread_fail),
+                            data.boardCode, data.threadNo);
+                    makeToast(msg);
+                }
+            });
 	}
 }

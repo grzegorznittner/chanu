@@ -561,6 +561,7 @@
     <string name="board_popular_abbrev">Popular</string>
     <string name="board_latest">Latest</string>
     <string name="board_latest_abbrev">Latest</string>
+    <string name="board_latest_images">Latest Images</string>
     <string name="board_select">Select Board</string>
     <string name="board_select_abbrev">Go</string>
 
