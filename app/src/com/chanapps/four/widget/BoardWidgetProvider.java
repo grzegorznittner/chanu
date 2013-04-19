@@ -31,15 +31,6 @@ public class BoardWidgetProvider extends AppWidgetProvider {
 
     private static final boolean DEBUG = false;
 
-    /*
-    public static int[] getAppWidgetIds(Context context) {
-        ComponentName widgetProvider = new ComponentName(context, BoardWidgetProvider.class);
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(widgetProvider);
-        return appWidgetIds;
-    }
-    */
-
     public static Set<String> getActiveWidgetPref(Context context) {
         ComponentName widgetProvider = new ComponentName(context, BoardWidgetProvider.class);
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
@@ -87,14 +78,6 @@ public class BoardWidgetProvider extends AppWidgetProvider {
                 return widgetConf;
         }
         return null;
-    }
-
-    public static String loadBoardCodeForWidget(Context context, int appWidgetId) {
-        WidgetConf widgetConf = loadWidgetConf(context, appWidgetId);
-        if (widgetConf == null)
-            return null;
-        else
-            return widgetConf.boardCode;
     }
 
     public static void fetchAllWidgets(Context context) {
@@ -151,16 +134,16 @@ public class BoardWidgetProvider extends AppWidgetProvider {
     }
 
     private static void update(Context context, int appWidgetId) {
-        if (DEBUG) Log.i(TAG, "calling update widget service for widget=" + appWidgetId);
-        Intent updateIntent = new Intent(context, UpdateWidgetService.class);
-        updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        context.startService(updateIntent);
-    }
-
-    private static void updateWithFetch(Context context, WidgetConf widgetConf) {
-        if (DEBUG) Log.i(TAG, "calling first time update widget service for widget=" + widgetConf.appWidgetId);
-        UpdateWidgetService.firstTimeInit(context, widgetConf);
-        FetchChanDataService.scheduleBoardFetch(context, widgetConf.boardCode); // make it fresh
+        WidgetConf widgetConf = loadWidgetConf(context, appWidgetId);
+        if (widgetConf != null) {
+            if (DEBUG) Log.i(TAG, "calling update widget service for widget=" + appWidgetId);
+            Intent updateIntent = new Intent(context, UpdateWidgetService.class);
+            updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            context.startService(updateIntent);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "widget conf not yet initialized, skipping update for widget=" + appWidgetId);
+        }
     }
 
     public static void updateAll(Context context) {
@@ -188,7 +171,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    public static boolean initOrUpdateWidget(final Context context, final WidgetConf widgetConf) {
+    public static boolean storeWidgetConf(final Context context, final WidgetConf widgetConf) {
         int appWidgetId = widgetConf.appWidgetId;
         String boardCode = widgetConf.boardCode;
         if (DEBUG) Log.i(TAG, "Configuring widget=" + appWidgetId + " with board=" + boardCode);
@@ -201,13 +184,10 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         Set<String> newWidgetBoards = new HashSet<String>();
         String newWidgetBoard = widgetConf.serialize();
         boolean found = false;
-        boolean sameBoardCode = false;
         for (String widgetBoard : widgetBoards) {
             WidgetConf existingWidgetConf = new WidgetConf(widgetBoard);
             if (appWidgetId == existingWidgetConf.appWidgetId) {
                 found = true;
-                if (widgetConf.boardCode.equals(existingWidgetConf.boardCode))
-                    sameBoardCode = true;
                 newWidgetBoards.add(newWidgetBoard);
             }
             else {
@@ -220,10 +200,6 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet(ChanHelper.PREF_WIDGET_BOARDS, newWidgetBoards);
         editor.commit();
-        if (found && sameBoardCode)
-            update(context, appWidgetId); // don't need to fetch, same board
-        else
-            updateWithFetch(context, widgetConf); // just added widget
         return true;
     }
 

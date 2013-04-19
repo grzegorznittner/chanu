@@ -45,18 +45,12 @@ public class ChanFileStorage {
     private static final String WALLPAPER_DIR = "wallpapers";
     private static final String FILE_SEP = "/";
     private static final String CACHE_EXT = ".txt";
-    private static final String BITMAP_CACHE_EXT = ".jpg";
     private static final String WALLPAPER_EXT = ".jpg";
     private static final String USER_STATS_FILENAME = "userstats.txt";
 
     public static boolean isBoardCachedOnDisk(Context context, String boardCode) {
         File boardDir = getBoardCacheDirectory(context, boardCode);
         return boardDir != null && boardDir.exists();
-    }
-
-    public static boolean isUserPreferencesOnDisk(Context context) {
-        File userPrefsFile = getUserStatsFile(context);
-        return userPrefsFile != null && userPrefsFile.exists();
     }
 
     private static String getRootCacheDirectory(Context context) {
@@ -78,16 +72,6 @@ public class ChanFileStorage {
 
     public static File getBoardCacheDirectory(Context context, String boardCode) {
         String cacheDir = getRootCacheDirectory(context) + FILE_SEP + boardCode;
-        File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
-        return boardDir;
-    }
-
-    public static File getBoardWidgetCacheDirectory(Context context, String boardCode) {
-        String cacheDir = getRootCacheDirectory(context)
-                + FILE_SEP
-                + BoardWidgetProvider.WIDGET_CACHE_DIR
-                + FILE_SEP
-                + boardCode;
         File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
         return boardDir;
     }
@@ -210,20 +194,11 @@ public class ChanFileStorage {
 		threadCache.put(thread.board + "/" + thread.no, thread);
         File boardDir = getBoardCacheDirectory(context, thread.board);
 		if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-			//File tempThreadFile = new File(boardDir, "t_" + thread.no + "tmp" + CACHE_EXT);
 			File threadFile = new File(boardDir, "t_" + thread.no + CACHE_EXT);
 			try {
 				ObjectMapper mapper = ChanHelper.getJsonMapper();
 				mapper.writeValue(threadFile, thread);
-				
-//				mapper.writeValue(tempThreadFile, thread);
-//				
-//				ObjectMapper loadMapper = ChanHelper.getJsonMapper();
-//				loadMapper.readValue(tempThreadFile, ChanThread.class);
-//				
-//				FileUtils.copyFile(tempThreadFile, threadFile);
 			} finally {
-//				FileUtils.deleteQuietly(tempThreadFile);
 			}
 			if (DEBUG) Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + FILE_SEP + thread.no + "'");
 		} else {
@@ -461,55 +436,6 @@ public class ChanFileStorage {
 		}
 		return new UserStatistics();
 	}
-
-    public static String getBoardWidgetBitmapPath(Context context, String boardName, int index) {
-        File boardDir = getBoardWidgetCacheDirectory(context, boardName);
-        if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-            File boardFile = new File(boardDir, boardName + "_widgetbitmap_" + index + BITMAP_CACHE_EXT);
-            return boardFile.getAbsolutePath();
-        } else {
-            if (DEBUG) Log.w(TAG, "Board widget bitmap file could not be created: " + boardName);
-            return null;
-        }
-    }
-
-    public static Bitmap getBoardWidgetBitmap(Context context, String boardName, int index) {
-        String boardPath = getBoardWidgetBitmapPath(context, boardName, index);
-        Bitmap b = BitmapFactory.decodeFile(boardPath);
-        if (DEBUG) Log.i(TAG, "For boardPath=" + boardPath + " found bitmap=" + b);
-        return b;
-    }
-
-    public static final int BITMAP_BUFFER_SIZE = 512;
-
-    public static long storeBoardWidgetBitmap(Context context, String boardName, int index, Bitmap b)
-            throws IOException
-    {
-        if (b != null && b.getByteCount() > 0) { // cache for future calls
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            BufferedInputStream bis = new BufferedInputStream(bais);
-            return ChanFileStorage.storeBoardWidgetBitmapFile(context, boardName, index, bis);
-        }
-        return 0;
-    }
-
-    public static long storeBoardWidgetBitmapFile(Context context, String boardName, int index, BufferedInputStream is)
-            throws IOException
-    {
-        long totalBytes = 0;
-        FileOutputStream fos = null;
-        try {
-	        String bitmapPath = getBoardWidgetBitmapPath(context, boardName, index);
-	        fos = new FileOutputStream(bitmapPath, false);
-	        totalBytes = IOUtils.copy(is, fos);
-        } finally {
-        	IOUtils.closeQuietly(fos);
-        }
-        if (DEBUG) Log.i(TAG, "Stored widget bitmap file for board " + boardName + " index " + index + " totalBytes=" + totalBytes);
-        return totalBytes;
-    }
 
     private static final String RM_CMD = "/system/bin/rm -r";
 

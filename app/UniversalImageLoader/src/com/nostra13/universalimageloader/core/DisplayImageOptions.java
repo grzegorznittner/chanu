@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 /**
  * Contains options for image display. Defines:
@@ -21,7 +23,6 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
  * <ul>
  * <li>with {@link Builder}:<br />
  * <b>i.e.</b> :
- * <code>new {@link DisplayImageOptions}.{@link Builder#Builder() Builder()}.{@link Builder#cacheInMemory() cacheInMemory()}.
  * {@link Builder#showStubImage(int) showStubImage()}.{@link Builder#build() build()}</code><br />
  * </li>
  * <li>or by static method: {@link #createSimple()}</li> <br />
@@ -38,6 +39,7 @@ public final class DisplayImageOptions implements Cloneable {
 	private final boolean cacheOnDisc;
 	private final ImageScaleType imageScaleType;
     private final ImageSize imageSize;
+    private final BitmapDisplayer displayer;
     private final String fullSizeImageLocation;
     private boolean centerCrop = false;
 
@@ -50,7 +52,8 @@ public final class DisplayImageOptions implements Cloneable {
 		imageScaleType = builder.imageScaleType;
         imageSize = builder.imageSize;
         fullSizeImageLocation = builder.fullSizeImageLocation;
-	}
+        displayer = builder.displayer;
+    }
 
 	boolean isShowStubImage() {
 		return stubImage != null;
@@ -107,6 +110,10 @@ public final class DisplayImageOptions implements Cloneable {
 		return this;
 	}
 
+    public BitmapDisplayer getDisplayer() {
+        return displayer;
+    }
+
 	/**
 	 * Builder for {@link DisplayImageOptions}
 	 * 
@@ -121,8 +128,9 @@ public final class DisplayImageOptions implements Cloneable {
 		private ImageScaleType imageScaleType = ImageScaleType.POWER_OF_2;
         private ImageSize imageSize = null;
         private String fullSizeImageLocation = null;
+        private BitmapDisplayer displayer = new SimpleBitmapDisplayer();
 
-		/**
+        /**
 		 * Stub image will be displayed in {@link android.widget.ImageView ImageView} during image loading
 		 * 
 		 * @param stubImageRes
@@ -182,7 +190,23 @@ public final class DisplayImageOptions implements Cloneable {
             return this;
         }
 
-		/** Builds configured {@link DisplayImageOptions} object */
+        public Builder displayer(BitmapDisplayer displayer) {
+            this.displayer = displayer;
+            return this;
+        }
+
+        public Builder cloneFrom(DisplayImageOptions options) {
+            stubImage = options.stubImage;
+            imageForEmptyUri = options.imageForEmptyUri;
+            resetViewBeforeLoading = options.resetViewBeforeLoading;
+            cacheInMemory = options.cacheInMemory;
+            cacheOnDisc = options.cacheOnDisc;
+            imageScaleType = options.imageScaleType;
+            displayer = options.displayer;
+            return this;
+        }
+
+        /** Builds configured {@link DisplayImageOptions} object */
 		public DisplayImageOptions build() {
 			return new DisplayImageOptions(this);
 		}

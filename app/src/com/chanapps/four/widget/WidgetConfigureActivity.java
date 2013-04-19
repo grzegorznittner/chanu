@@ -2,10 +2,9 @@ package com.chanapps.four.widget;
 
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -17,7 +16,10 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.mColorPicker.ColorPickerDialog;
+import com.chanapps.four.service.FetchChanDataService;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,8 +34,8 @@ import java.util.regex.Pattern;
 public class WidgetConfigureActivity extends FragmentActivity {
 
     public static final String TAG = WidgetConfigureActivity.class.getSimpleName();
-
     private static final boolean DEBUG = false;
+    private static final long DELAY_BOARD_IMAGE_MS = 5 * 1000; // give board fetch time to finish
 
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     private WidgetConf widgetConf;
@@ -97,11 +99,18 @@ public class WidgetConfigureActivity extends FragmentActivity {
                 }
             }
         }
-        spinner.setSelection(position, false);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 updateWidgetConfWithSelectedBoard((String)parent.getItemAtPosition(position));
+                if (!ChanFileStorage.isBoardCachedOnDisk(WidgetConfigureActivity.this.getApplicationContext(), widgetConf.boardCode)
+                        && FetchChanDataService.scheduleBoardFetchWithPriority(WidgetConfigureActivity.this, widgetConf.boardCode))
+                    (new Handler()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            setBoardImages();
+                        }
+                    }, DELAY_BOARD_IMAGE_MS);
             }
 
             @Override
@@ -109,8 +118,9 @@ public class WidgetConfigureActivity extends FragmentActivity {
                 updateWidgetConfWithSelectedBoard("");
             }
         });
+        spinner.setSelection(position, false);
     }
-    
+
     protected void setupCheckboxes() {
         CheckBox roundedCorners = (CheckBox)findViewById(R.id.rounded_corners);
         CheckBox showBoardButton = (CheckBox)findViewById(R.id.show_board);
@@ -205,20 +215,15 @@ public class WidgetConfigureActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 if (DEBUG) Log.i(TAG, "Configured widget=" + appWidgetId + " configuring for board=" + widgetConf.boardCode);
-                boolean addedWidget = BoardWidgetProvider.initOrUpdateWidget(WidgetConfigureActivity.this, widgetConf);
-                if (addedWidget) {
-                    Intent intent = new Intent();
-                    intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-                    WidgetConfigureActivity.this.setResult(Activity.RESULT_OK, intent);
-                    Intent updateWidget = new Intent(WidgetConfigureActivity.this, BoardWidgetProvider.class);
-                    updateWidget.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-                    int[] ids = { appWidgetId };
-                    updateWidget.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
-                    WidgetConfigureActivity.this.sendBroadcast(updateWidget);
-                }
-                else {
-                    Toast.makeText(WidgetConfigureActivity.this, R.string.widget_board, Toast.LENGTH_SHORT).show();
-                }
+                BoardWidgetProvider.storeWidgetConf(WidgetConfigureActivity.this, widgetConf);
+                Intent intent = new Intent();
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+                WidgetConfigureActivity.this.setResult(Activity.RESULT_OK, intent);
+                Intent updateWidget = new Intent(WidgetConfigureActivity.this, BoardWidgetProvider.class);
+                updateWidget.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                int[] ids = { appWidgetId };
+                updateWidget.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                WidgetConfigureActivity.this.sendBroadcast(updateWidget);
                 WidgetConfigureActivity.this.finish();
             }
         });
@@ -268,37 +273,60 @@ public class WidgetConfigureActivity extends FragmentActivity {
     }
 
     protected void setBoardImages() {
+        final Context context = getApplicationContext();
+        final String boardCode = widgetConf.boardCode;
         final Handler handler = new Handler();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
-                for (int i = 0; i < imageIds.length; i++) {
-                    final int imageResourceId = imageIds[i];
-                    final Bitmap b = loadBoardBitmap(i);
-                    if (b != null)
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                ImageView iv = (ImageView)findViewById(imageResourceId);
-                                iv.setImageBitmap(b);
-                            }
-                        });
-                }
+                final int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
+                final String[] urls = boardThreadUrls(context, boardCode, imageIds.length);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < imageIds.length; i++) {
+                            final int imageResourceId = imageIds[i];
+                            final ImageView iv = (ImageView)findViewById(imageResourceId);
+                            iv.setImageBitmap(null);
+                            if (DEBUG) Log.i(TAG, "Calling displayImage i=" + i + " url=" + urls[i]);
+                            ChanImageLoader.getInstance(context).displayImage(urls[i], iv);
+                        }
+                    }
+                });
             }
         }).start();
     }
 
-    private Bitmap loadBoardBitmap(int i) {
-        Bitmap b;
-        if ((b = ChanFileStorage.getBoardWidgetBitmap(this, widgetConf.boardCode, i)) != null) {
-            return b;
+    protected String[] boardThreadUrls(Context context, String boardCode, int numThreads) {
+        String[] defaultUrls = new String[numThreads];
+        for (int i = 0; i < numThreads; i++)
+            defaultUrls[i] = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        if (board == null)
+            return defaultUrls;
+        ChanPost[] threads = board.threads;
+        if (threads == null || threads.length == 0)
+            threads = board.loadedThreads;
+        if (threads == null || threads.length == 0)
+            return defaultUrls;
+        String urls[] = new String[numThreads];
+        int threadIndex = 0;
+        for (int i = 0; i < numThreads; i++) {
+            ChanPost thread = null;
+            while (threadIndex < threads.length) {
+                ChanPost test = threads[threadIndex];
+                threadIndex++;
+                if (test != null && test.sticky <= 0 && test.tim > 0 && test.no > 0) {
+                    thread = test;
+                    break;
+                }
+            }
+            if (thread != null)
+                if (DEBUG) Log.i(TAG, "i=" + i + " thread=" + thread + " thread.sticky=" + thread.sticky + " thread.del=" + thread.filedeleted);
+            urls[i] = thread != null ? thread.thumbnailUrl() : defaultUrls[i];
+            threadIndex++;
         }
-        else {
-            int imageResourceId = ChanBoard.getIndexedImageResourceId(widgetConf.boardCode, i);
-            b = BitmapFactory.decodeResource(getResources(), imageResourceId);
-            return b;
-        }
+        return urls;
     }
 
 }

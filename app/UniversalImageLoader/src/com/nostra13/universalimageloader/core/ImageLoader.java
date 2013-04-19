@@ -21,6 +21,8 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.MemoryCacheKeyUtil;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
 
 /**
  * Singletone for image loading and displaying at {@link ImageView ImageViews}<br />
@@ -41,9 +43,10 @@ public class ImageLoader {
 	private ImageLoaderConfiguration configuration;
 	private ExecutorService imageLoadingExecutor;
 	private ExecutorService cachedImageLoadingExecutor;
-	private ImageLoadingListener emptyListener;
+    private ImageLoadingListener emptyListener = new SimpleImageLoadingListener();
+    private final BitmapDisplayer fakeBitmapDisplayer = new FakeBitmapDisplayer();
 
-	private Map<ImageView, String> cacheKeyForImageView = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
+    private Map<ImageView, String> cacheKeyForImageView = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
 
 	private volatile static ImageLoader instance;
 
@@ -343,4 +346,27 @@ public class ImageLoader {
 		}
 		return value;
 	}
+
+    public void loadImage(String uri, ImageSize targetImageSize, DisplayImageOptions options, ImageLoadingListener listener) {
+        if (targetImageSize == null) {
+            targetImageSize = new ImageSize(configuration.maxImageWidthForMemoryCache, configuration.maxImageHeightForMemoryCache);
+        }
+        if (options == null) {
+            options = configuration.defaultDisplayImageOptions;
+        }
+
+        DisplayImageOptions optionsWithFakeDisplayer;
+        if (options.getDisplayer() instanceof FakeBitmapDisplayer) {
+            optionsWithFakeDisplayer = options;
+        } else {
+            optionsWithFakeDisplayer = new DisplayImageOptions.Builder().cloneFrom(options).displayer(fakeBitmapDisplayer).build();
+        }
+
+        ImageView fakeImage = new ImageView(configuration.context);
+        fakeImage.setLayoutParams(new LayoutParams(targetImageSize.getWidth(), targetImageSize.getHeight()));
+        fakeImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+        displayImage(uri, fakeImage, optionsWithFakeDisplayer, listener);
+    }
+
 }

@@ -296,8 +296,8 @@
     <string name="post_reply_rotate_right_hint">Rotate Right</string>
     <string name="post_reply_bump_hint">Bump</string>
     <string name="post_reply_sage_hint">Sage</string>
-    <string name="post_reply_pass_enabled_text">Bypassing captcha with Pass</string>
-    <string name="post_reply_pass_enable_text">Click to bypass captcha</string>
+    <string name="post_reply_pass_enabled_text">Bypassing captcha with 4chan Pass</string>
+    <string name="post_reply_pass_enable_text">Bypass captcha with 4chan Pass</string>
     <string name="post_reply_pass_disabled_text">4chan Pass logged out</string>
     <string name="post_reply_pass_mobile_text">4chan Pass unavailable on mobile data</string>
     <string name="post_reply_pass_no_connection_text">Cannot post while connection is down</string>
