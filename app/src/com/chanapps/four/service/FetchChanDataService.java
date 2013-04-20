@@ -37,7 +37,7 @@ import com.chanapps.four.service.profile.NoConnectionProfile;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
     private String boardCode;
     private boolean boardCatalog;

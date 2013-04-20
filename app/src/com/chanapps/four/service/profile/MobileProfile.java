@@ -26,7 +26,7 @@ import com.chanapps.four.widget.BoardWidgetProvider;
 
 public class MobileProfile extends AbstractNetworkProfile {
 	private static final String TAG = MobileProfile.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	private String networkType = "3G";
 	
@@ -320,14 +320,16 @@ public class MobileProfile extends AbstractNetworkProfile {
         if(DEBUG) Log.i(TAG, "Check reload thread " + thread.board + "/" + thread.no
                 + " currentActivityId=" + currentActivityId
                 + " isThreadActivity=" + isThreadActivity
+                + " activityPriority=" + currentActivityId.priority
+                + " dataPriority=" + data.priority
                 + " currentActivity.activity=" + (currentActivityId == null ? "null" : currentActivityId.activity)
                 + " currentActivity.postNo=" + (currentActivityId == null ? "null" : currentActivityId.postNo));
 
         // user is on the board page, we need to be reloaded it
         Handler handler = activity.getChanHandler();
         if (isThreadActivity && currentActivityId.activity == LastActivity.THREAD_ACTIVITY
-                && currentActivityId.postNo == 0 && handler != null
-                && (currentActivityId.priority || data.priority))
+                && currentActivityId.postNo == 0 && handler != null)
+                // && (currentActivityId.priority || data.priority)) // we don't care about priority, we always refresh
             handler.post(new Runnable() {
                 @Override
                 public void run() {
