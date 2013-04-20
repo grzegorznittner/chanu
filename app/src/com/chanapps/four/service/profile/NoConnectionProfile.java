@@ -55,6 +55,22 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
     }
 
     @Override
+    public void onThreadRefreshed(Context context, Handler handler, String boardCode, long threadNo) {
+        super.onThreadRefreshed(context, handler, boardCode, threadNo);
+        if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                    if (activity instanceof ThreadActivity) {
+                        ((ThreadActivity)activity).setProgressOn(false);
+                        Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+    }
+
+    @Override
     public void onUpdateViewData(Context baseContext, Handler handler, String boardCode) {
         super.onUpdateViewData(baseContext, handler, boardCode);
 

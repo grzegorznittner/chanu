@@ -31,6 +31,7 @@ public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
     private String boardCode = null;
     private long threadNo = 0;
     private SearchType searchType = SearchType.PREVIOUS_POSTS;
+    private Set<Long> origSet = new HashSet<Long>();
     private Set<Long> repliesSet = new HashSet<Long>();
 
     public enum SearchType {
@@ -57,6 +58,9 @@ public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
     @Override
     protected String doInBackground(long[]... postNosArgs) {
         long[] postNos = postNosArgs[0];
+        origSet.clear();
+        for (long postNo : postNos)
+            origSet.add(postNo);
         repliesSet.clear();
         try {
             ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
@@ -103,8 +107,6 @@ public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
                 return String.format(context.getString(R.string.thread_next_replies_found), repliesSet.size());
             case SAME_POSTERS:
                 String s = String.format(context.getString(R.string.thread_id_found), repliesSet.size());
-                for (long postNo : postNos)
-                    repliesSet.add(postNo);
                 return s;
         }
     }
@@ -112,8 +114,11 @@ public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
     @Override
     protected void onPostExecute(String result) {
         Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-        for (int pos = 0; pos < absListView.getCount(); pos++)
-            absListView.setItemChecked(pos, repliesSet.contains(absListView.getItemIdAtPosition(pos)));
+        for (int pos = 0; pos < absListView.getCount(); pos++) {
+            Long id = absListView.getItemIdAtPosition(pos);
+            if (!origSet.contains(id))
+                absListView.setItemChecked(pos, repliesSet.contains(id));
+        }
     }
 
 }

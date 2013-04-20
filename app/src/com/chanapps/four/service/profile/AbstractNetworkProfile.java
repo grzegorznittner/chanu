@@ -183,11 +183,13 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 
 	@Override
 	public void onDataFetchSuccess(ChanIdentifiedService service, int time, int size) {
-		if (DEBUG) Log.d(TAG, "finishedFetchingData called for " + service + " " + size + " bytes during " + time + "ms");
+		if (DEBUG) Log.i(TAG, "finishedFetchingData called for " + service + " " + size + " bytes during " + time + "ms");
 		
 		storeDataTransfer(time, size);
 		
 		ChanActivityId data = service.getChanActivityId();
+        if (DEBUG) Log.i(TAG, "fetchData success for /" + data.boardCode + "/" + data.threadNo + "/" + data.postNo + " priority=" + data.priority);
+        if (DEBUG)
 		if (data.threadNo == 0) {
 			// board fetching
 	        if (data.priority) {

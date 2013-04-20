@@ -59,7 +59,9 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     }
 
     public static boolean scheduleBoardFetchService(Context context, String boardCode, int pageNo) {
-    	if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)) {
+    	if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
+                || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
+                || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode)) {
     		return FetchPopularThreadsService.schedulePopularFetchService(context);
     	}
     	
@@ -315,6 +317,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         HttpURLConnection tc = null;
         if (threadNo == 0) {
             Log.e(TAG, "Thread loading must be done via the BoardLoadService");
+            return;
         }
         if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
             Log.e(TAG, "Watching board must use ChanWatchlist instead of service");

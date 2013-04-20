@@ -595,6 +595,7 @@ public class ThreadActivity
             case android.R.id.home:
                 return navigateUp();
             case R.id.refresh_menu:
+                setProgressOn(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.thread_reply_popup_button_menu:
@@ -871,13 +872,14 @@ public class ThreadActivity
         else if (board != null && board.lastFetched > 0)
             lastFetched = board.lastFetched;
         String timeSpan;
+        long now = (new Date()).getTime();
         if (lastFetched <= 0)
             timeSpan = "last fetch unknown";
-        else if (Math.abs(board.lastFetched - new Date().getTime()) < 60000)
+        else if (Math.abs(lastFetched - now) < 60000)
             timeSpan = "fetched just now";
         else
             timeSpan = "fetched " + DateUtils.getRelativeTimeSpanString(lastFetched,
-                    (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString();
+                    now, 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString();
         a.setTitle(boardTitle + ": " + threadTitle);
         a.setSubtitle(timeSpan);
         a.setDisplayShowTitleEnabled(true);
