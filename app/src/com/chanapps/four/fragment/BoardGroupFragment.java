@@ -54,8 +54,6 @@ public class BoardGroupFragment
     private int columnWidth = 0;
     private int columnHeight = 0;
 
-    public boolean reloadNextTime = false;
-
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
 
@@ -205,13 +203,9 @@ public class BoardGroupFragment
     @Override
     public void onResume() {
         super.onResume();
-        if (DEBUG) Log.i(TAG, "onResume boardSelectorTab=" + boardSelectorTab + " reloadNextTime=" + reloadNextTime);
+        if (DEBUG) Log.i(TAG, "onResume boardSelectorTab=" + boardSelectorTab);
         if (handler == null)
             handler = createHandler();
-        if (boardSelectorTab == BoardSelectorTab.WATCHLIST && reloadNextTime) {
-            reloadNextTime = false;
-            adapter.notifyDataSetChanged();
-        }
     }
 
     protected Handler createHandler() {
@@ -281,7 +275,7 @@ public class BoardGroupFragment
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader boardSelectorType=" + boardSelectorTab);
         cursorLoader = createCursorLoader();
-        if (getActivity() != null)
+        if (getActivity() != null && boardSelectorTab != BoardSelectorTab.BOARDLIST)
             getActivity().setProgressBarIndeterminateVisibility(true);
         return cursorLoader;
     }
@@ -297,7 +291,7 @@ public class BoardGroupFragment
             emptyText.setText(boardSelectorTab.emptyStringId());
             emptyText.setVisibility(View.VISIBLE);
         }
-        if (getActivity() != null)
+        if (getActivity() != null && boardSelectorTab != BoardSelectorTab.BOARDLIST)
             getActivity().setProgressBarIndeterminateVisibility(false);
     }
 

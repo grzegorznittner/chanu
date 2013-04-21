@@ -114,7 +114,7 @@ public class ChanWatchlist {
             saveWatchlist(ctx, savedWatchlist);
             if (DEBUG) Log.i(TAG, "watchlistFragment=" + watchlistFragment + " get=" + (watchlistFragment == null ? null : watchlistFragment.get()));
             if (watchlistFragment != null && watchlistFragment.get() != null) {
-                watchlistFragment.get().reloadNextTime = true;
+                //watchlistFragment.get().reloadNextTime = true;
                 if (DEBUG) Log.i(TAG, "set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);
             }
             if (DEBUG) Log.v(TAG, "Thread " + threadPath + " added to watchlist");
@@ -201,15 +201,17 @@ public class ChanWatchlist {
 
     public static class CleanWatchlistTask extends AsyncTask<Void, Void, String> {
         private Context ctx;
-        private BaseAdapter adapter;
         private boolean userInteraction = false;
-        public CleanWatchlistTask(Context ctx, BaseAdapter adapter, boolean userInteraction) {
+        public CleanWatchlistTask(Context ctx, boolean userInteraction) {
             this.ctx = ctx;
-            this.adapter = adapter;
             this.userInteraction = userInteraction;
+            }
+        @Override
+        public void onPreExecute() {
             if (userInteraction)
                 Toast.makeText(ctx, R.string.dialog_cleaning_watchlist, Toast.LENGTH_SHORT).show();
         }
+        @Override
         public String doInBackground(Void... params) {
             boolean cleanAllDeadThreads = userInteraction ? true : false;
             try {
@@ -221,16 +223,16 @@ public class ChanWatchlist {
                 return "Watchlist clean error: " + e.getLocalizedMessage();
             }
         }
+        @Override
         protected void onPostExecute(String result) {
-            if (result == null) {
-                if (userInteraction)
+            if (userInteraction) {
+                if (result == null)
+                    Toast.makeText(ctx, R.string.dialog_cleaned_watchlist, Toast.LENGTH_SHORT).show();
+                else
                     Toast.makeText(ctx, R.string.dialog_watchlist_cleaning_error, Toast.LENGTH_SHORT).show();
-                return;
             }
-            if (adapter != null)
-                adapter.notifyDataSetChanged();
-            if (userInteraction)
-                Toast.makeText(ctx, R.string.dialog_cleaned_watchlist, Toast.LENGTH_SHORT).show();
+            //if (result == null && adapter != null)
+            //    adapter.notifyDataSetChanged();
         }
     }
 
@@ -240,7 +242,7 @@ public class ChanWatchlist {
         editor.remove(ChanHelper.THREAD_WATCHLIST);
         editor.commit();
         if (watchlistFragment != null && watchlistFragment.get() != null) {
-            watchlistFragment.get().reloadNextTime = true;
+            //watchlistFragment.get().reloadNextTime = true;
             if (DEBUG) Log.i(TAG, "set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);
         }
         if (DEBUG) Log.v(TAG, "Watchlist cleared");
@@ -251,7 +253,7 @@ public class ChanWatchlist {
         List<Long> deadTims = getDeadTims(ctx, cleanAllDeadThreads);
         deleteThreadsFromWatchlist(ctx, deadTims);
         if (watchlistFragment != null && watchlistFragment.get() != null) {
-            watchlistFragment.get().reloadNextTime = true;
+            //watchlistFragment.get().reloadNextTime = true;
             if (DEBUG) Log.i(TAG, "set watchlistFragment=" + watchlistFragment + " reloadNextTime=" + true);
         }
         if (DEBUG) Log.i(TAG, "Watchlist cleaned");

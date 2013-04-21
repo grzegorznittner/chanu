@@ -292,10 +292,15 @@ final class LoadAndDisplayImageTask implements Runnable {
 			try {
 				is = imageDownloader.getStream(new URI(imageLoadingInfo.uri));
 				os = new BufferedOutputStream(new FileOutputStream(targetFile));
-				FileUtils.copyStream(is, os);
+				if (is != null && os != null)
+                    FileUtils.copyStream(is, os);
+                else
+                    Log.e(TAG, "Couldn't get is/os streams for image download, is=" + is + " os=" + os);
 			} finally {
-				IOUtils.closeQuietly(os);
-				IOUtils.closeQuietly(is);
+				if (os != null)
+                    IOUtils.closeQuietly(os);
+				if (is != null)
+                    IOUtils.closeQuietly(is);
 			}
 		}
 	}

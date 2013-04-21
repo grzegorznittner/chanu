@@ -27,6 +27,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_AUTOMATICALLY_MANAGE_WATCHLIST = "pref_automatically_manage_watchlist";
     public static final String PREF_CACHE_SIZE = "pref_cache_size";
     public static final String PREF_CLEAR_CACHE = "pref_clear_cache";
+    public static final String PREF_CLEAN_WATCHLIST = "pref_clean_watchlist";
     public static final String PREF_CLEAR_WATCHLIST = "pref_clear_watchlist";
     public static final String PREF_WATCHLIST_RETENTION = "pref_watchlist_retention";
     public static final String PREF_RESET_TO_DEFAULTS = "pref_reset_to_defaults";

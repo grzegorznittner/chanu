@@ -121,7 +121,8 @@ public class MobileProfile extends AbstractNetworkProfile {
 		super.onApplicationStart(context);
         CleanUpService.startService(context);
         Health health = getConnectionHealth();
-		if (health != Health.BAD && health != Health.VERY_SLOW) {
+        BoardWidgetProvider.asyncUpdateWidgetsAndWatchlist(context);
+        if (health != Health.BAD && health != Health.VERY_SLOW) {
             prefetchDefaultBoards(context);
         } else {
             makeHealthStatusToast(context, health);

@@ -244,4 +244,11 @@ public class BoardSelectorActivity
         mViewPager.setCurrentItem(tab.ordinal(), true);
     }
 
+    public void notifyWatchlistChanged() {
+        BoardGroupFragment fragment
+                = (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(BoardSelectorTab.WATCHLIST.ordinal());
+        if (fragment != null && fragment.getAdapter() != null)
+            fragment.getAdapter().notifyDataSetChanged();
+    }
+
 }

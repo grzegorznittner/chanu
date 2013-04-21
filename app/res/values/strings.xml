@@ -343,6 +343,7 @@
     <!-- preferences -->
     <string name="pref_about_category">About</string>
     <string name="pref_advanced_category">Advanced</string>
+    <string name="pref_watchlist_category">Watchlist</string>
     <string name="pref_custom_category">Customize</string>
     <string name="pref_custom_category_summ">Customize appearance and behavior</string>
     <string name="pref_show_nsfw_boards">NSFW Boards</string>
@@ -378,7 +379,9 @@
     <string name="pref_watchlist_retention">Watchlist Retention</string>
     <string name="pref_watchlist_retention_summ">Clear dead threads after</string>
     <string name="pref_watchlist_retention_units">days</string>
-    <string name="pref_clear_watchlist">Clear Watchlist</string>
+    <string name="pref_clean_watchlist">Clean Watchlist</string>
+    <string name="pref_clean_watchlist_summ">Remove dead threads from watchlist</string>
+    <string name="pref_clear_watchlist">Delete Watchlist</string>
     <string name="pref_clear_watchlist_summ">Remove all threads and empty watchlist</string>
     <string name="pref_clear_cache_pre_execute">Clearing cache, you will be notified when complete</string>
     <string name="pref_clear_cache_pre_execute_no_notify">Clearing cache, you will receive a popup message when complete</string>

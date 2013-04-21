@@ -88,6 +88,12 @@
                 android:title="@string/pref_clear_cache"
                 android:summary="@string/pref_clear_cache_summ" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:key="pref_watchlist_category"
+            android:title="@string/pref_watchlist_category">
+
         <com.chanapps.four.component.WatchlistRetentionPreference
                 android:key="pref_watchlist_retention"
                 android:title="@string/pref_watchlist_retention"
@@ -97,6 +103,11 @@
                 chanapps:unitsLeft=""
                 chanapps:unitsRight="days"
                 />
+
+        <Preference
+                android:key="pref_clean_watchlist"
+                android:title="@string/pref_clean_watchlist"
+                android:summary="@string/pref_clean_watchlist_summ" />
 
         <Preference
                 android:key="pref_clear_watchlist"

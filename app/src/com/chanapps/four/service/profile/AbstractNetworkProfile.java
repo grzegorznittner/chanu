@@ -11,14 +11,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
-import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.DataTransfer;
-import com.chanapps.four.data.FetchParams;
+import com.chanapps.four.activity.*;
+import com.chanapps.four.data.*;
 import com.chanapps.four.service.BoardParserService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadParserService;
@@ -134,6 +128,11 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	public void onBoardSelectorSelected(Context context, String boardCode) {
 		if (DEBUG) Log.d(TAG, "onBoardSelectorSelected called");
 		usageCounter++;
+
+        ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        if (activity.getChanActivityId().activity == ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY) {
+            ((BoardSelectorActivity)activity).notifyWatchlistChanged(); // best to do in watchlist itself, don't know how
+        }
 	}
 
 	@Override

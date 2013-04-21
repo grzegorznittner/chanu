@@ -66,7 +66,9 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     	}
     	
     	if (!boardNeedsRefresh(context, boardCode, pageNo, false)) {
-        	return false;
+            if (DEBUG) Log.i(TAG, "Skipping not needing refresh normal board fetch service for "
+                    + boardCode + " page " + pageNo );
+            return false;
         }
         if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + " page " + pageNo );
         if (boardCode == null) {
@@ -87,7 +89,9 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 
     public static boolean scheduleBoardFetchWithPriority(Context context, String boardCode, int pageNo) {
     	if (!boardNeedsRefresh(context, boardCode, pageNo, true)) {
-        	return false;
+            if (DEBUG) Log.i(TAG, "Skipping not needing refresh priority board fetch service for "
+                    + boardCode + " page " + pageNo );
+            return false;
         }
         if (DEBUG) Log.i(TAG, "Start chan priorty fetch service for " + boardCode + " page " + pageNo );
         if (boardCode == null) {
@@ -165,9 +169,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         long now = new Date().getTime();
         if (board != null && !board.defData && pageNo == -1 && board.lastFetched > 0) {
         	long refresh = forceRefresh ? params.forceRefreshDelay : params.refreshDelay;
-        	if (now - board.lastFetched < refresh) {
-        		if (DEBUG) Log.i(TAG, "Skiping board " + boardCode + " fetch as it was fetched "
-        				+ ((now - board.lastFetched) / 1000) + "s ago, refresh delay is " + (refresh / 1000) + "s" );
+            long interval = now - board.lastFetched;
+        	if (interval < refresh) {
+        		if (DEBUG) Log.i(TAG, "Skipping board " + boardCode + " fetch as it was fetched "
+        				+ (interval / 1000) + "s ago, refresh for force=" + forceRefresh + " delay is " + (refresh / 1000) + "s" );
         		return false;
         	}
         }

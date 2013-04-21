@@ -263,9 +263,9 @@ public class ChanFileStorage {
         ChanBoard board = loadBoardData(context, boardCode);
         return board != null
                 && !board.defData
-                && (board.newThreads > 0 || board.updatedThreads > 0);
-                //&& board.loadedThreads != null
-                //&& board.loadedThreads.length > 0;
+                && (board.newThreads > 0
+                    || board.updatedThreads > 0
+                    || (board.loadedThreads != null && board.loadedThreads.length > 0));
     }
 
 	public static ChanBoard loadFreshBoardData(Context context, String boardCode) {

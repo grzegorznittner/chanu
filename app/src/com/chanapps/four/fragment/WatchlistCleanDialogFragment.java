@@ -5,7 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.app.DialogFragment;
 import android.widget.BaseAdapter;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ToastRunnable;
@@ -20,10 +20,8 @@ import com.chanapps.four.data.ChanWatchlist;
 */
 public class WatchlistCleanDialogFragment extends DialogFragment {
     public static final String TAG = WatchlistCleanDialogFragment.class.getSimpleName();
-    private BoardGroupFragment fragment;
-    public WatchlistCleanDialogFragment(BoardGroupFragment fragment) {
+    public WatchlistCleanDialogFragment() {
         super();
-        this.fragment = fragment;
     }
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -33,8 +31,7 @@ public class WatchlistCleanDialogFragment extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                (new ChanWatchlist.CleanWatchlistTask(getActivity(), fragment.getAdapter(), true)).execute();
-                                fragment.invalidate();
+                                (new ChanWatchlist.CleanWatchlistTask(getActivity(), true)).execute();
                                 dismiss();
                             }
                         })

@@ -111,7 +111,6 @@ public class NetworkProfileManager {
 
         switch(currentActivityId.activity) {
 		case BOARD_SELECTOR_ACTIVITY:
-            BoardWidgetProvider.asyncUpdateWidgetsAndWatchlist(newActivity.getBaseContext());
             if (currentActivityId == null) {
 				activeProfile.onApplicationStart(newActivity.getBaseContext());
 			} else {
@@ -119,11 +118,9 @@ public class NetworkProfileManager {
 			}
 			break;
 		case BOARD_ACTIVITY:
-            BoardWidgetProvider.asyncUpdateWidgetsAndWatchlist(newActivity.getBaseContext());
             activeProfile.onBoardSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
 			break;
 		case THREAD_ACTIVITY:
-            BoardWidgetProvider.asyncUpdateWidgetsAndWatchlist(newActivity.getBaseContext());
             activeProfile.onThreadSelected(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo);
 			break;
 		case FULL_SCREEN_IMAGE_ACTIVITY:
