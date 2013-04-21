@@ -1,6 +1,7 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
+import android.os.Message;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -44,7 +45,7 @@ public class BoardGroupFragment
 {
 
     private static final String TAG = BoardGroupFragment.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private BoardSelectorTab boardSelectorTab;
     private ResourceCursorAdapter adapter;
@@ -67,7 +68,10 @@ public class BoardGroupFragment
 
     @Override
     public void refresh() {
-        // ignored
+        //setActionBarTitle(); // for update time
+        //invalidateOptionsMenu(); // in case spinner needs to be reset
+        if (handler != null)
+            handler.sendEmptyMessageDelayed(0, 200);
     }
 
     public void invalidate() {
@@ -87,8 +91,11 @@ public class BoardGroupFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        boardSelectorTab = getArguments() != null
-                ? BoardSelectorTab.valueOf(getArguments().getString(BoardSelectorActivity.BOARD_SELECTOR_TAB))
+        String selectorString = getArguments() != null
+                ? getArguments().getString(BoardSelectorActivity.BOARD_SELECTOR_TAB)
+                : null;
+        boardSelectorTab = (selectorString != null && !selectorString.isEmpty())
+                ? BoardSelectorTab.valueOf(selectorString)
                 : BoardSelectorActivity.DEFAULT_BOARD_SELECTOR_TAB;
         if (DEBUG) Log.v(TAG, "BoardGroupFragment " + boardSelectorTab + " onCreate");
     }
@@ -198,12 +205,37 @@ public class BoardGroupFragment
     @Override
     public void onResume() {
         super.onResume();
-        handler = new Handler();
-        if (DEBUG) Log.i(TAG, "boardSelectorTab=" + boardSelectorTab + " reloadNextTime=" + reloadNextTime);
+        if (DEBUG) Log.i(TAG, "onResume boardSelectorTab=" + boardSelectorTab + " reloadNextTime=" + reloadNextTime);
+        if (handler == null)
+            handler = createHandler();
         if (boardSelectorTab == BoardSelectorTab.WATCHLIST && reloadNextTime) {
             reloadNextTime = false;
             adapter.notifyDataSetChanged();
         }
+    }
+
+    protected Handler createHandler() {
+        if (DEBUG) Log.i(TAG, "creating handler");
+        return new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            try {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    default:
+                        getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
+                }
+            }
+            catch (Exception e) {
+                Log.e(TAG, "Couldn't handle message " + msg, e);
+            }
+        }
+        };
+    }
+
+    public Handler getChanHandler() {
+        if (DEBUG) Log.i(TAG, "for tab=" + boardSelectorTab + " returning handler=" + handler);
+        return handler;
     }
 
     @Override
@@ -214,6 +246,9 @@ public class BoardGroupFragment
     @Override
     public void onStart() {
         super.onStart();
+        if (DEBUG) Log.i(TAG, "onStart");
+        if (handler == null)
+            handler = createHandler();
     }
 
     @Override
@@ -242,16 +277,12 @@ public class BoardGroupFragment
         }
     }
 
-    private void setProgressOn(boolean progressOn) {
-        if (getActivity() != null)
-            getActivity().setProgressBarIndeterminateVisibility(progressOn);
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader boardSelectorType=" + boardSelectorTab);
         cursorLoader = createCursorLoader();
-        setProgressOn(true);
+        if (getActivity() != null)
+            getActivity().setProgressBarIndeterminateVisibility(true);
         return cursorLoader;
     }
 
@@ -266,7 +297,8 @@ public class BoardGroupFragment
             emptyText.setText(boardSelectorTab.emptyStringId());
             emptyText.setVisibility(View.VISIBLE);
         }
-        setProgressOn(false);
+        if (getActivity() != null)
+            getActivity().setProgressBarIndeterminateVisibility(false);
     }
 
     @Override

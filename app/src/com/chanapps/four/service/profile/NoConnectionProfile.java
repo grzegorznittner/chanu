@@ -1,5 +1,6 @@
 package com.chanapps.four.service.profile;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 
@@ -37,6 +38,22 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
 	}
 
     @Override
+    public void onBoardSelectorRefreshed(final Context context, Handler handler, String boardCode) {
+        super.onBoardSelectorRefreshed(context, handler, boardCode);
+        if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                    if (activity instanceof Activity) {
+                        ((Activity)activity).setProgressBarIndeterminateVisibility(false);
+                        Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+    }
+
+    @Override
     public void onBoardRefreshed(final Context context, Handler handler, String boardCode) {
         super.onBoardRefreshed(context, handler, boardCode);
         if (ChanFileStorage.hasNewBoardData(context, boardCode))
@@ -46,8 +63,8 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
                 @Override
                 public void run() {
                     ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    if (activity instanceof BoardActivity) {
-                        ((BoardActivity)activity).setProgressOn(false);
+                    if (activity instanceof Activity) {
+                        ((Activity)activity).setProgressBarIndeterminateVisibility(false);
                         Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -62,8 +79,8 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
                 @Override
                 public void run() {
                     ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    if (activity instanceof ThreadActivity) {
-                        ((ThreadActivity)activity).setProgressOn(false);
+                    if (activity instanceof Activity) {
+                        ((Activity)activity).setProgressBarIndeterminateVisibility(false);
                         Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
                     }
                 }

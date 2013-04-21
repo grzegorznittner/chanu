@@ -5,6 +5,11 @@
           android:actionLayout="@layout/board_jump_spinner_nsfw_long"
           android:showAsAction="ifRoom"
             />
+    <item android:id="@+id/refresh_menu"
+          android:title="@string/refresh_board_menu"
+          android:icon="@drawable/navigation_refresh"
+          android:showAsAction="ifRoom"
+            />
     <item android:id="@+id/offline_chan_view_menu"
           android:title="@string/offline_chan_view_menu"
           android:icon="@drawable/device_access_storage"

@@ -29,7 +29,7 @@ public class BoardSelectorActivity
         implements ChanIdentifiedActivity
 {
     public static final String TAG = "BoardSelectorActivity";
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final String BOARD_SELECTOR_TAB = "boardSelectorTab";
 
     private ViewPager mViewPager;
@@ -37,7 +37,7 @@ public class BoardSelectorActivity
     private SharedPreferences prefs = null;
     private int menuId;
     public static final BoardSelectorTab DEFAULT_BOARD_SELECTOR_TAB = BoardSelectorTab.BOARDLIST;
-    public BoardSelectorTab selectedBoardTab = DEFAULT_BOARD_SELECTOR_TAB;
+    //public BoardSelectorTab selectedBoardTab = DEFAULT_BOARD_SELECTOR_TAB;
 
     public static void startActivity(Activity from, BoardSelectorTab tab) {
         Intent intent = new Intent(from, BoardSelectorActivity.class);
@@ -57,13 +57,14 @@ public class BoardSelectorActivity
         	if (DEBUG) Log.i(TAG, "Starting dispatch");
             DispatcherHelper.dispatchIfNecessaryFromPrefsState(this);
         }
+        /*
         if (intent.hasExtra(BOARD_SELECTOR_TAB)) {
             selectedBoardTab = BoardSelectorTab.valueOf(intent.getStringExtra(BOARD_SELECTOR_TAB));
             SharedPreferences.Editor ed = ensurePrefs().edit();
             ed.putString(BOARD_SELECTOR_TAB, selectedBoardTab.toString());
             ed.commit();
         }
-
+        */
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
         setContentView(mViewPager);
@@ -82,7 +83,8 @@ public class BoardSelectorActivity
 
     public TabsAdapter ensureTabsAdapter() {
         if (mTabsAdapter == null) { // create the board tabs
-            mTabsAdapter = new TabsAdapter(this, getSupportFragmentManager(), mViewPager);
+            mTabsAdapter
+                    = new TabsAdapter(getApplicationContext(), getActionBar(), getSupportFragmentManager(), mViewPager);
             for (BoardSelectorTab tab : BoardSelectorTab.values())
                 addTab(tab, -1);
         }
@@ -97,10 +99,6 @@ public class BoardSelectorActivity
                 BoardGroupFragment.class, bundle, position);
     }
 
-    private int getPositionOfTab(BoardSelectorTab tab) {
-        return tab.ordinal(); 
-    }
-
     private SharedPreferences ensurePrefs() {
         if (prefs == null) {
             synchronized (this) {
@@ -113,32 +111,10 @@ public class BoardSelectorActivity
 
     private void restoreInstanceState() {
         ensureTabsAdapter();
-        selectedBoardTab = BoardSelectorTab.valueOf(
-                ensurePrefs().getString(BOARD_SELECTOR_TAB,
-                        DEFAULT_BOARD_SELECTOR_TAB.toString()));
-        if (getSelectedTabIndex() == -1) { // reset if board is no longer visible
-            selectedBoardTab = DEFAULT_BOARD_SELECTOR_TAB;
-            saveselectedBoardTab();
-        }
-        setTabToSelectedType(false);
-    }
-
-    private int getSelectedTabIndex() {
-        return selectedBoardTab.ordinal();
-    }
-
-    public void setTabToSelectedType(boolean force) {
-        if (DEBUG) Log.i(TAG, "setTabToSelectedType selectedBoardTab: " + selectedBoardTab);
-        int selectedTab = getSelectedTabIndex();
-        getActionBar().setSelectedNavigationItem(selectedTab);
-        if (force) {
-            int beforeTab = (selectedTab + 1) % BoardSelectorTab.values().length;
-            mViewPager.setCurrentItem(beforeTab, false);
-            mViewPager.setCurrentItem(selectedTab, false);
-        }
-        else if (mViewPager.getCurrentItem() != selectedTab) {
-            mViewPager.setCurrentItem(selectedTab, true);
-        }
+        BoardSelectorTab tab = BoardSelectorTab.valueOf(
+                ensurePrefs().getString(BOARD_SELECTOR_TAB, DEFAULT_BOARD_SELECTOR_TAB.toString()));
+        //getActionBar().setSelectedNavigationItem(tab.ordinal());
+        mViewPager.setCurrentItem(tab.ordinal(), true);
     }
 
     protected void onStop() {
@@ -174,15 +150,10 @@ public class BoardSelectorActivity
         saveInstanceState();
     }
 
-    private void saveselectedBoardTab() {
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        editor.putString(BOARD_SELECTOR_TAB, selectedBoardTab.toString());
-        editor.commit();
-        if (DEBUG) Log.i(TAG, "Saved selected board tab=" + selectedBoardTab);
-    }
-
     public void saveInstanceState() {
-        saveselectedBoardTab();
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        editor.putString(BOARD_SELECTOR_TAB, BoardSelectorTab.values()[mViewPager.getCurrentItem()].toString());
+        editor.commit();
         DispatcherHelper.saveActivityToPrefs(this);
     }
 
@@ -191,21 +162,40 @@ public class BoardSelectorActivity
         if (DEBUG) Log.i(TAG, "onDestroy");
     }
 
+    protected String getSelectedBoardCode() {
+        int i = mViewPager.getCurrentItem();
+        BoardSelectorTab tab = BoardSelectorTab.values()[i];
+        return tab.boardCode();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        if (DEBUG) Log.i(TAG, "Activity-level onCreateOptionsMenu called selectedBoardTab="+selectedBoardTab);
         menuId = ChanBoard.showNSFW(this) ? R.menu.board_selector_menu_adult : R.menu.board_selector_menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(menuId, menu);
-        String boardCode = selectedBoardTab.boardCode();
-        ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
+        ChanBoard.setupActionBarBoardSpinner(this, menu, getSelectedBoardCode());
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.refresh_menu:
+                String boardCode = getSelectedBoardCode();
+                if (ChanBoard.WATCH_BOARD_CODE.equals(boardCode)
+                        || ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
+                        || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
+                        || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode))
+                {
+                    if (DEBUG) Log.i(TAG, "Refreshing tab code=" + boardCode);
+                    setProgressBarIndeterminateVisibility(true);
+                    NetworkProfileManager.instance().manualRefresh(this);
+                    return true;
+                }
+                else {
+                    return false;
+                }
             case R.id.offline_chan_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;
@@ -231,15 +221,27 @@ public class BoardSelectorActivity
     }
 
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(LastActivity.BOARD_SELECTOR_ACTIVITY);
+		return new ChanActivityId(LastActivity.BOARD_SELECTOR_ACTIVITY, getSelectedBoardCode());
 	}
 
 	@Override
 	public Handler getChanHandler() {
-		return null;
+        if (DEBUG) Log.i(TAG, "grabbing handler for boardCode=" + getSelectedBoardCode());
+        BoardGroupFragment fragment = (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(mViewPager.getCurrentItem());
+        if (DEBUG) Log.i(TAG, "found fragment=" + fragment + " tab=" + fragment.getArguments().getString(BOARD_SELECTOR_TAB) + " handler=" + fragment.getChanHandler());
+        return fragment.getChanHandler();
 	}
 
     @Override
-    public void refresh() {}
+    public void refresh() {
+        if (DEBUG) Log.i(TAG, "refreshing boardTab=" + getSelectedBoardCode());
+        BoardGroupFragment fragment = (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(mViewPager.getCurrentItem());
+        if (DEBUG) Log.i(TAG, "found fragment=" + fragment + " tab=" + fragment.getArguments().getString(BOARD_SELECTOR_TAB) + " handler=" + fragment.getChanHandler());
+        fragment.refresh();
+    }
+
+    public void selectTab(BoardSelectorTab tab) {
+        mViewPager.setCurrentItem(tab.ordinal(), true);
+    }
 
 }

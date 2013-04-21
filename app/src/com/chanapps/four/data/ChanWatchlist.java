@@ -21,12 +21,15 @@ import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
 
+import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.component.WatchlistRetentionPreference;
 import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.NetworkProfileManager;
 
 /**
  * Created with IntelliJ IDEA.
@@ -332,7 +335,22 @@ public class ChanWatchlist {
         return savedWatchlist;
     }
 
-    public static void fetchWatchlistThreads(Context context) {
+    public static void fetchWatchlistThreads(final Context context) {
+        fetchWatchlistThreads(context, false);
+        NetworkProfileManager.instance().getCurrentProfile().onDataParseSuccess(new ChanIdentifiedService() {
+            @Override
+            public ChanActivityId getChanActivityId() {
+                return new ChanActivityId(ChanBoard.WATCH_BOARD_CODE, -1, true);
+            }
+
+            @Override
+            public Context getApplicationContext() {
+                return context;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
+    }
+
+    public static void fetchWatchlistThreads(Context context, boolean priority) {
         if (DEBUG) Log.i(TAG, "fetchWatchlistThreads");
         Set<String> threadPaths = new HashSet<String>(); // copy so we don't get concurrent exception
         Set<String> origThreadPaths = ChanWatchlist.getWatchlistFromPrefs(context);
@@ -350,7 +368,10 @@ public class ChanWatchlist {
                 long threadNo = ChanWatchlist.getThreadNoFromThreadPath(threadPath);
                 // FIXME should say if !threadIsDead we should store this somewhere
                 if (DEBUG) Log.i(TAG, "Starting load service for watching thread " + boardCode + "/" + threadNo);
-                FetchChanDataService.scheduleThreadFetch(context, boardCode, threadNo);
+                if (priority)
+                    FetchChanDataService.scheduleThreadFetchWithPriority(context, boardCode, threadNo);
+                else
+                    FetchChanDataService.scheduleThreadFetch(context, boardCode, threadNo);
             }
             catch (Exception e) {
                 Log.e(TAG, "Exception parsing watchlist", e);

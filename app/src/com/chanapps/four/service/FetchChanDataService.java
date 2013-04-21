@@ -178,7 +178,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 		FetchParams params = NetworkProfileManager.instance().getFetchParams();
         ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
         long now = new Date().getTime();
-        if (thread != null && !thread.defData && thread.lastFetched > 0) {
+        if (thread != null && !thread.defData && thread.lastFetched > 0 && !thread.isDead && thread.closed <= 0) {
         	long refresh = forceRefresh ? params.forceRefreshDelay : params.refreshDelay;
         	if (now - thread.lastFetched < refresh) {
         		if (DEBUG) Log.i(TAG, "Skiping thread " + boardCode + "/" + threadNo + " fetch as it was fetched "

@@ -85,7 +85,7 @@ public class NetworkProfileManager {
 		return userStats;
 	}
 
-	public void activityChange(ChanIdentifiedActivity newActivity) {
+    public void activityChange(ChanIdentifiedActivity newActivity) {
 		if (DEBUG) Log.i(TAG, "activity change to " + newActivity.getChanActivityId() + " receiver=" + receiver + " activity=" + currentActivity);
 		if (receiver == null) {
 			// we need to register network changes receiver
@@ -115,7 +115,7 @@ public class NetworkProfileManager {
             if (currentActivityId == null) {
 				activeProfile.onApplicationStart(newActivity.getBaseContext());
 			} else {
-				activeProfile.onBoardSelectorSelected(newActivity.getBaseContext());
+				activeProfile.onBoardSelectorSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
 			}
 			break;
 		case BOARD_ACTIVITY:
@@ -152,11 +152,7 @@ public class NetworkProfileManager {
         if (DEBUG) Log.i(TAG, "EXCEPTION activeProfile=" + activeProfile);
 		switch(currentActivityId.activity) {
 		case BOARD_SELECTOR_ACTIVITY:
-			if (currentActivityId == null) {
-				activeProfile.onApplicationStart(newActivity.getBaseContext());
-			} else {
-				activeProfile.onBoardSelectorSelected(newActivity.getBaseContext());
-			}
+            activeProfile.onBoardSelectorRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
 			break;
 		case BOARD_ACTIVITY:
 			activeProfile.onBoardRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);

@@ -106,10 +106,6 @@ public class BoardActivity
         getSupportLoaderManager().initLoader(0, null, this);
     }
 
-    public void setProgressOn(boolean progressOn) {
-        setProgressBarIndeterminateVisibility(progressOn);
-    }
-
     protected void sizeGridToDisplay() {
         Display display = getWindowManager().getDefaultDisplay();
         ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.BOARD);
@@ -416,7 +412,7 @@ public class BoardActivity
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader boardCode=" + boardCode);
-        setProgressOn(true);
+        setProgressBarIndeterminateVisibility(true);
         cursorLoader = new BoardCursorLoader(this, boardCode);
         return cursorLoader;
 	}
@@ -432,7 +428,7 @@ public class BoardActivity
                 scrollOnNextLoaderFinished = 0;
             }
         }
-        setProgressOn(false);
+        setProgressBarIndeterminateVisibility(false);
         setActionBarTitle(); // to reflect updated time
         if (data.getCount() < 1) { // didn't load yet, retry
             if (handler != null)
@@ -443,7 +439,6 @@ public class BoardActivity
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
-        //setProgressOn(true);
 		adapter.swapCursor(null);
 	}
 
@@ -476,7 +471,7 @@ public class BoardActivity
              //   popup.show();
              //   return true;
             case R.id.refresh_menu:
-                setProgressOn(true);
+                setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.new_thread_menu:

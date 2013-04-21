@@ -510,19 +510,19 @@ public class ChanBoard {
         }
 
         protected void dispatchToBoardSelector(AdapterView<?> parent, BoardSelectorTab tab) {
-            if (activity instanceof BoardSelectorActivity
-                    && tab.boardCode().equals(createdWithBoardCode))
+            if (activity instanceof BoardSelectorActivity)
             { // special case change tab
-                BoardSelectorActivity bsa = (BoardSelectorActivity)activity;
-                bsa.ensureTabsAdapter();
+                /*
                 if (parent instanceof Spinner) {
                     Spinner spinner = (Spinner)parent;
                     spinner.setSelection(0, false);
                 }
-                if (bsa.selectedBoardTab == tab)
-                    return;
+                */
+                ((BoardSelectorActivity)activity).selectTab(tab);
             }
-            BoardSelectorActivity.startActivity(activity, tab);
+            else {
+                BoardSelectorActivity.startActivity(activity, tab);
+            }
         }
 
         @Override
@@ -563,4 +563,14 @@ public class ChanBoard {
 
     }
 
+    public boolean isVirtualBoard() {
+        return isVirtualBoard(link);
+    }
+
+    public static boolean isVirtualBoard(String boardCode) {
+        return WATCH_BOARD_CODE.equals(boardCode)
+                || POPULAR_BOARD_CODE.equals(boardCode)
+                || LATEST_BOARD_CODE.equals(boardCode)
+                || LATEST_IMAGES_BOARD_CODE.equals(boardCode);
+    }
 }

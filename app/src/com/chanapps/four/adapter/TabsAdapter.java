@@ -1,6 +1,7 @@
 package com.chanapps.four.adapter;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.nfc.Tag;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
@@ -41,9 +42,9 @@ import java.util.ArrayList;
 public class TabsAdapter extends FragmentPagerAdapter
         implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
 
-    private final static boolean DEBUG = false;
+    private final static boolean DEBUG = true;
 
-    private final BoardSelectorActivity mContext;
+    private final Context mContext;
     private final ActionBar mActionBar;
     private final ViewPager mViewPager;
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
@@ -58,10 +59,10 @@ public class TabsAdapter extends FragmentPagerAdapter
         }
     }
 
-    public TabsAdapter(BoardSelectorActivity activity, FragmentManager fm, ViewPager pager) {
+    public TabsAdapter(Context context, ActionBar actionBar, FragmentManager fm, ViewPager pager) {
         super(fm);
-        mContext = activity;
-        mActionBar = activity.getActionBar();
+        mContext = context;
+        mActionBar = actionBar;
         mViewPager = pager;
         mViewPager.setAdapter(this);
         mViewPager.setOnPageChangeListener(this);
@@ -83,10 +84,6 @@ public class TabsAdapter extends FragmentPagerAdapter
         //}
     }
 
-    public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args) {
-        addTab(tab, clss, args, -1);
-    }
-
     public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args, int position) {
         TabInfo info = new TabInfo(clss, args);
         tab.setTag(info);
@@ -102,23 +99,23 @@ public class TabsAdapter extends FragmentPagerAdapter
         notifyDataSetChanged();
     }
 
-    public void removeTab(int position) {
-        mTabs.remove(position);
-        mActionBar.removeTabAt(position);
-        notifyDataSetChanged();
-    }
-
     @Override
     public int getCount() {
         return mTabs.size();
     }
 
     @Override
+    // DANGER WILL ROBINSON!!! DANGER!!!
+    // This method doesn't do what you think it does.  It does *not* get the item at the position.
+    // What it does is *create* a new unattached fragment.  You never want to call this manually.
+    // Instead, call getFragmentAtPosition(int position)
     public Fragment getItem(int position) {
         TabInfo info = mTabs.get(position);
-        String selectedType = info.args.getString(ChanHelper.BOARD_TYPE);
-        if (DEBUG) Log.d(BoardSelectorActivity.TAG, "TabsAdapter " + selectedType + " instantiating Fragment");
-        return Fragment.instantiate(mContext, info.clss.getName(), info.args);
+        String selectedTab = info.args.getString(BoardSelectorActivity.BOARD_SELECTOR_TAB);
+        if (DEBUG) Log.i(BoardSelectorActivity.TAG, "TabsAdapter tab=" + selectedTab + " instantiating Fragment");
+        Fragment fragment = Fragment.instantiate(mContext, info.clss.getName(), info.args);
+        if (DEBUG) Log.i(BoardSelectorActivity.TAG, "returning fragment tag=" + fragment.getTag());
+        return fragment;
     }
 
     @Override
@@ -129,14 +126,16 @@ public class TabsAdapter extends FragmentPagerAdapter
 
     @Override
     public void onPageSelected(int position) {
-        mActionBar.setSelectedNavigationItem(position);
-        selectInSpinnerIfPresent(position, true);
+        if (mActionBar != null) {
+            mActionBar.setSelectedNavigationItem(position);
+            selectInSpinnerIfPresent(position, true);
+        }
         // following jazz is for watchlist clean/clear menus
-        Fragment fragment = getItem(position);
-        mContext.selectedBoardTab = BoardSelectorTab.values()[position];
-        if (DEBUG) Log.d(BoardSelectorActivity.TAG, "TabsAdapter pager set to " + position
-                + " with fragment=" + (fragment != null ? fragment.getTag() : null)
-                + " selectedBoardType=" + mContext.selectedBoardTab);
+        //Fragment fragment = getItem(position);
+        //mContext.selectedBoardTab = BoardSelectorTab.values()[position];
+        //if (DEBUG) Log.d(BoardSelectorActivity.TAG, "TabsAdapter pager set to " + position
+        //        + " with fragment=" + (fragment != null ? fragment.getTag() : null)
+        //        + " selectedBoardType=" + mContext.selectedBoardTab);
     }
 
     @Override
@@ -198,8 +197,10 @@ public class TabsAdapter extends FragmentPagerAdapter
             View actionBarView = null;
             if (actionBarView == null) {
                 int id = mContext.getResources().getIdentifier("action_bar", "id", "android");
-                actionBarView = mContext.findViewById(id);
+                actionBarView = mViewPager.findViewById(id);
             }
+            if (actionBarView == null)
+                return;
 
             Class<?> actionBarViewClass = actionBarView.getClass();
             Field mTabScrollViewField = actionBarViewClass.getDeclaredField("mTabScrollView");
@@ -235,4 +236,13 @@ public class TabsAdapter extends FragmentPagerAdapter
             e.printStackTrace();
         }
     }
+
+    public Fragment getFragmentAtPosition(int pos) {
+        Object fragment = instantiateItem(mViewPager, pos);
+        if (fragment instanceof Fragment)
+            return (Fragment)fragment;
+        else
+            return null;
+    }
+
 }

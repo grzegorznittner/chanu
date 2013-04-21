@@ -63,9 +63,14 @@ public interface NetworkProfile {
 	/**
 	 * Called when user goes to board selector page (except when application starts)
 	 */
-	void onBoardSelectorSelected(Context context);
+	void onBoardSelectorSelected(Context context, String boardCode);
 
-	/**
+    /**
+     * Called when user manually refreshes board selector page
+     */
+    void onBoardSelectorRefreshed(Context context, Handler handler, String boardCode);
+
+    /**
 	 * Called when user opened board page.
 	 * @param board Board name
 	 */

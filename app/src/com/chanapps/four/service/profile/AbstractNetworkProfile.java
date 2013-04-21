@@ -15,6 +15,8 @@ import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.DataTransfer;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.BoardParserService;
@@ -129,8 +131,14 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	}
 
 	@Override
-	public void onBoardSelectorSelected(Context context) {
+	public void onBoardSelectorSelected(Context context, String boardCode) {
 		if (DEBUG) Log.d(TAG, "onBoardSelectorSelected called");
+		usageCounter++;
+	}
+
+	@Override
+	public void onBoardSelectorRefreshed(Context context, Handler handler, String boardCode) {
+		if (DEBUG) Log.d(TAG, "onBoardSelectorRefreshed called");
 		usageCounter++;
 	}
 
@@ -190,7 +198,10 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 		ChanActivityId data = service.getChanActivityId();
         if (DEBUG) Log.i(TAG, "fetchData success for /" + data.boardCode + "/" + data.threadNo + "/" + data.postNo + " priority=" + data.priority);
         if (DEBUG)
-		if (data.threadNo == 0) {
+        if (ChanBoard.isVirtualBoard(data.boardCode)) {
+            // skip since fetch&parse steps happen together for virtual boards
+        }
+		else if (data.threadNo == 0) {
 			// board fetching
 	        if (data.priority) {
 	        	BoardParserService.startServiceWithPriority(service.getApplicationContext(), data.boardCode, data.pageNo);

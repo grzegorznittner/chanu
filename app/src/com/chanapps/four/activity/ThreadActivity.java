@@ -106,11 +106,11 @@ public class ThreadActivity
         if (threadNo > 0) {
         	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, absListView);
             if (DEBUG) Log.i(TAG, "Started loader for " + boardCode + "/" + threadNo);
-            setProgressOn(true);
+            setProgressBarIndeterminateVisibility(true);
         }
         else {
             cursorLoader = null;
-            setProgressOn(false);
+            setProgressBarIndeterminateVisibility(false);
         }
         return cursorLoader;
     }
@@ -595,7 +595,7 @@ public class ThreadActivity
             case android.R.id.home:
                 return navigateUp();
             case R.id.refresh_menu:
-                setProgressOn(true);
+                setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.thread_reply_popup_button_menu:

@@ -3,7 +3,12 @@
     <item android:id="@+id/board_jump_spinner_menu"
           android:actionDropDownStyle="@style/BoardJumpDropDown"
           android:actionLayout="@layout/board_jump_spinner_long"
-          android:showAsAction="always"
+          android:showAsAction="ifRoom"
+            />
+    <item android:id="@+id/refresh_menu"
+          android:title="@string/refresh_board_menu"
+          android:icon="@drawable/navigation_refresh"
+          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/offline_chan_view_menu"
           android:title="@string/offline_chan_view_menu"
