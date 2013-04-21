@@ -245,6 +245,9 @@
     <string name="dismiss">Close</string>
     <string name="dead_thread_reply">Dead Thread No Reply</string>
     <string name="closed_thread_reply">Closed Thread No Reply</string>
+    <string name="dead_thread_abbrev">D</string>
+    <string name="closed_thread_abbrev">C</string>
+    <string name="sticky_thread_abbrev">S</string>
     <string name="thread_replies">Thread Replies</string>
     <string name="thread_info">Thread Info</string>
     <string name="highlight_replies">Highlight Replies</string>

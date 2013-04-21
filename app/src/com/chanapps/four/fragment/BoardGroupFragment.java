@@ -45,7 +45,7 @@ public class BoardGroupFragment
 {
 
     private static final String TAG = BoardGroupFragment.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private BoardSelectorTab boardSelectorTab;
     private ResourceCursorAdapter adapter;
@@ -312,8 +312,8 @@ public class BoardGroupFragment
         if (DEBUG) Log.i(TAG, "clicked item on boardSelectorTab=" + boardSelectorTab);
 
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        String boardTypeText = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO));
-        if (boardTypeText.equals("|||BOARD_TYPE|||"))
+        int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+        if ((threadFlags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0)
             return;
 
         final Activity activity = getActivity();
@@ -391,8 +391,8 @@ public class BoardGroupFragment
     }
 
     protected boolean setThreadSubject(TextView tv, Cursor cursor) {
-        String boardTypeText = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO));
-        if (boardTypeText.equals("|||BOARD_TYPE|||")) {
+        int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+        if ((threadFlags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0) {
             tv.setVisibility(View.GONE);
             tv.setText("");
         }
@@ -404,8 +404,8 @@ public class BoardGroupFragment
     }
 
     protected boolean setBoardTypeText(TextView tv, Cursor cursor) {
-        String boardTypeText = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO));
-        if (boardTypeText.equals("|||BOARD_TYPE|||")) {
+        int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+        if ((threadFlags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0) {
             tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
             tv.setVisibility(View.VISIBLE);
         }
@@ -417,8 +417,8 @@ public class BoardGroupFragment
     }
 
     protected boolean setThreadThumb(ImageView iv, Cursor cursor) {
-        String boardTypeText = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO));
-        if (boardTypeText.equals("|||BOARD_TYPE|||")) {
+        int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+        if ((threadFlags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0) {
             iv.setImageBitmap(null);
         }
         else {

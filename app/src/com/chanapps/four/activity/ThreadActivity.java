@@ -469,7 +469,7 @@ public class ThreadActivity
         button.setVisibility(View.GONE);
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0)
-            return false;
+            return true;
         button.setOnClickListener(new ThreadSpoilerOnClickListener(cursor));
         return true;
     }
@@ -504,7 +504,7 @@ public class ThreadActivity
         iv.setVisibility(View.GONE);
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0)
-            return false;
+            return true;
         iv.setOnClickListener(new ThreadImageOnClickListener(this, cursor));
         return true;
     }
@@ -513,7 +513,7 @@ public class ThreadActivity
         progressBar.setVisibility(View.GONE);
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0)
-            return false;
+            return true;
         return true;
     }
 

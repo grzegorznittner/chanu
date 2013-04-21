@@ -21,7 +21,7 @@ import com.chanapps.four.widget.BoardWidgetProvider;
 
 public class MobileProfile extends AbstractNetworkProfile {
 	private static final String TAG = MobileProfile.class.getSimpleName();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	
 	private String networkType = "3G";
 	

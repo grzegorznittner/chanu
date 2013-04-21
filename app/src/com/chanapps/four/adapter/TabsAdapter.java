@@ -42,7 +42,7 @@ import java.util.ArrayList;
 public class TabsAdapter extends FragmentPagerAdapter
         implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
 
-    private final static boolean DEBUG = true;
+    private final static boolean DEBUG = false;
 
     private final Context mContext;
     private final ActionBar mActionBar;

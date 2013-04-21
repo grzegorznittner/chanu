@@ -29,6 +29,14 @@ public class ChanThread extends ChanPost {
     public static final String THREAD_CLICK_URL = "threadClick";
     public static final String THREAD_NUM_REPLIES = "threadNumReplies";
     public static final String THREAD_NUM_IMAGES = "threadNumImages";
+    public static final String THREAD_FLAGS = "threadFlags";
+
+    public static final int THREAD_FLAG_DEAD = 0x01;
+    public static final int THREAD_FLAG_CLOSED = 0x02;
+    public static final int THREAD_FLAG_STICKY = 0x04;
+    public static final int THREAD_FLAG_AD = 0x08;
+    public static final int THREAD_FLAG_BOARD_TYPE = 0x10;
+    public static final int THREAD_FLAG_BOARD = 0x20;
 
     public static final String[] THREAD_COLUMNS = {
             THREAD_COMPOSITE_ID,
@@ -40,11 +48,23 @@ public class ChanThread extends ChanPost {
             THREAD_COUNTRY_FLAG_URL,
             THREAD_CLICK_URL,
             THREAD_NUM_REPLIES,
-            THREAD_NUM_IMAGES
+            THREAD_NUM_IMAGES,
+            THREAD_FLAGS
     };
 
     public static MatrixCursor buildMatrixCursor() {
         return new MatrixCursor(THREAD_COLUMNS);
+    }
+
+    private static int threadFlags(ChanPost post) {
+        int flags = 0;
+        if (post.isDead)
+            flags |= THREAD_FLAG_DEAD;
+        if (post.closed > 0)
+            flags |= THREAD_FLAG_CLOSED;
+        if (post.sticky > 0)
+            flags |= THREAD_FLAG_STICKY;
+        return flags;
     }
 
     public static Object[] makeRow(Context context, ChanPost post) {
@@ -59,7 +79,8 @@ public class ChanThread extends ChanPost {
                 post.countryFlagUrl(),
                 "",
                 post.replies,
-                post.images
+                post.images,
+                threadFlags(post)
         };
     }
 
@@ -69,12 +90,13 @@ public class ChanThread extends ChanPost {
                 "",
                 0,
                 context.getString(boardType.displayStringId()),
-                "|||BOARD_TYPE|||",
+                "",
                 boardType.drawableId() > 0 ? "drawable://" + boardType.drawableId() : "",
                 "",
                 "",
                 0,
-                0
+                0,
+                THREAD_FLAG_BOARD_TYPE
         };
     }
 
@@ -89,7 +111,8 @@ public class ChanThread extends ChanPost {
                 "",
                 "",
                 0,
-                0
+                0,
+                THREAD_FLAG_BOARD
         };
     }
     public static Object[] makeAdRow(Context context, String imageUrl, String clickUrl) {
@@ -103,7 +126,8 @@ public class ChanThread extends ChanPost {
                 "",
                 clickUrl,
                 0,
-                0
+                0,
+                THREAD_FLAG_AD
         };
     }
 
@@ -143,6 +167,7 @@ public class ChanThread extends ChanPost {
         this.posts = mergedPosts.toArray(new ChanPost[0]);
     }
 
+    /*
     public ChanPost[] getPrevNextPosts(long postNo) {
         ChanPost prevPost = null;
         ChanPost nextPost = null;
@@ -167,6 +192,7 @@ public class ChanThread extends ChanPost {
         ChanPost[] posts = { prevPost, nextPost };
         return posts;
     }
+    */
 
     public ChanPost getPost(long sourcePostNo) {
         ChanPost sourcePost = null;

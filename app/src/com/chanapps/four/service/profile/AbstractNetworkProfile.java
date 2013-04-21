@@ -29,7 +29,7 @@ import com.chanapps.four.service.ThreadParserService;
  */
 public abstract class AbstractNetworkProfile implements NetworkProfile {
 	private static final String TAG = "AbstractNetworkProfile";
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	
 	protected int usageCounter = 0;
 	

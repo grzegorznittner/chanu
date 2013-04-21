@@ -335,15 +335,22 @@ public class BoardActivity
     }
 
     protected static boolean setThreadBoardAbbrev(TextView tv, Cursor cursor, String groupBoardCode) {
+        String threadAbbrev = "";
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-        if (boardCode != null && !boardCode.isEmpty() && !boardCode.equals(groupBoardCode)) {
-            tv.setText("/" + boardCode + "/");
+        if (boardCode != null && !boardCode.isEmpty() && !boardCode.equals(groupBoardCode))
+            threadAbbrev += "/" + boardCode + "/";
+        int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+        if ((threadFlags & ChanThread.THREAD_FLAG_DEAD) > 0)
+            threadAbbrev += (threadAbbrev.isEmpty()?"":" ") + tv.getContext().getString(R.string.dead_thread_abbrev);
+        if ((threadFlags & ChanThread.THREAD_FLAG_CLOSED) > 0)
+            threadAbbrev += (threadAbbrev.isEmpty()?"":" ") + tv.getContext().getString(R.string.closed_thread_abbrev);
+        if ((threadFlags & ChanThread.THREAD_FLAG_STICKY) > 0)
+            threadAbbrev += (threadAbbrev.isEmpty()?"":" ") + tv.getContext().getString(R.string.sticky_thread_abbrev);
+        tv.setText(threadAbbrev);
+        if (!threadAbbrev.isEmpty())
             tv.setVisibility(View.VISIBLE);
-        }
-        else {
-            tv.setText("");
+        else
             tv.setVisibility(View.GONE);
-        }
         return true;
     }
 
@@ -351,11 +358,6 @@ public class BoardActivity
         tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
         return true;
     }
-
-    //protected boolean setThreadInfo(TextView tv, Cursor cursor) {
-    //    tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_INFO))));
-    //    return true;
-    //}
 
     protected static boolean setThreadThumb(ImageView iv, Cursor cursor, ImageLoader imageLoader, DisplayImageOptions options) {
         String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
@@ -382,9 +384,9 @@ public class BoardActivity
     }
 
     protected static boolean setThreadNumReplies(TextView tv, Cursor cursor) {
-        String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
+        int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         int n = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_REPLIES));
-        if ((clickUrl == null || clickUrl.isEmpty()) && n >= 0) {
+        if ((flags & ChanThread.THREAD_FLAG_AD) == 0 && n >= 0) {
             tv.setText(n + "r");
             tv.setVisibility(View.VISIBLE);
         }
@@ -396,9 +398,9 @@ public class BoardActivity
     }
 
     protected static boolean setThreadNumImages(TextView tv, Cursor cursor) {
-        String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
+        int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         int n = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES));
-        if ((clickUrl == null || clickUrl.isEmpty()) && n >= 0) {
+        if ((flags & ChanThread.THREAD_FLAG_AD) == 0 && n >= 0) {
             tv.setText(n + "i");
             tv.setVisibility(View.VISIBLE);
         }
@@ -445,13 +447,14 @@ public class BoardActivity
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
+        int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         ChanHelper.simulateClickAnim(this, view);
-        if (clickUrl == null || clickUrl.isEmpty()) {
+        if ((flags & ChanThread.THREAD_FLAG_AD) == 0) {
             final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
             ThreadActivity.startActivity(this, boardCode, threadNo);
         }
         else {
+            final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
             ChanHelper.launchUrlInBrowser(this, clickUrl);
         }
     }
@@ -465,11 +468,6 @@ public class BoardActivity
                 intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
                 NavUtils.navigateUpTo(this, intent);
                 return true;
-            //case R.id.board_spinner_popup_menu:
-            //    PopupMenu popup = new PopupMenu(this, absListView);
-             //   popup.inflate(R.menu.board_spinner_menu_adult);
-             //   popup.show();
-             //   return true;
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
