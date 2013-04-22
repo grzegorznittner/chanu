@@ -40,24 +40,30 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 
     private boolean force;
     private boolean backgroundLoad;
-    
+
+    public static boolean scheduleBackgroundPopularFetchService(Context context) {
+        return schedulePopularFetchService(context, false, true);
+    }
+
     public static boolean schedulePopularFetchService(Context context) {
-    	if (!boardNeedsRefresh(context, false)) {
-        	return false;
-        }
-    	if (DEBUG) Log.i(TAG, "Start popular threads fetch service");
-        Intent intent = new Intent(context, FetchPopularThreadsService.class);
-        context.startService(intent);
-        return true;
+        return schedulePopularFetchService(context, false, false);
     }
 
     public static boolean schedulePopularFetchWithPriority(Context context) {
-    	if (!boardNeedsRefresh(context, true)) {
-        	return false;
+        return schedulePopularFetchService(context, true, false);
+    }
+
+    public static boolean schedulePopularFetchService(Context context, boolean priority, boolean backgroundLoad) {
+        if (!boardNeedsRefresh(context, priority)) {
+            if (DEBUG) Log.i(TAG, "Skipping priority popular threads fetch service refresh unneeded");
+            return false;
         }
-        if (DEBUG) Log.i(TAG, "Start priority popular threads fetch service");
+        if (DEBUG) Log.i(TAG, "Start popular threads fetch service priority=" + priority + " background=" + backgroundLoad);
         Intent intent = new Intent(context, FetchPopularThreadsService.class);
-        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+        if (priority)
+            intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+        if (backgroundLoad)
+            intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
         context.startService(intent);
         return true;
     }
@@ -311,7 +317,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 			int sIdx = thumb.indexOf("s");
 			if (sIdx > 0) {
 				thread.tim = Long.parseLong(thumb.substring(0, sIdx));
-				thread.tn_w = 250;
+				thread.tn_w = 150;
 				thread.tn_h = 150;
 			}
 		}

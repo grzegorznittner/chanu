@@ -77,7 +77,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
             // never clean automatically since it isn't respecting the auto clean time
             // /if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
             //    (new ChanWatchlist.CleanWatchlistTask(context, null, false)).execute();
-            ChanWatchlist.fetchWatchlistThreads(context);
+            //ChanWatchlist.fetchWatchlistThreads(context);
             BoardWidgetProvider.fetchAllWidgets(context);
             ChanBoard.preloadUncachedBoards(context);
         }
