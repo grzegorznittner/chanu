@@ -325,7 +325,7 @@ public class BoardGroupFragment
                 final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
                 if (DEBUG) Log.i(TAG, "clicked thread " + boardCode + "/" + threadNo);
                 FetchChanDataService.scheduleBoardFetchWithPriority(getActivity(), boardCode); // get board ready
-                FetchChanDataService.scheduleThreadFetchWithPriority(getActivity(), boardCode, threadNo); // get board ready
+                FetchChanDataService.scheduleThreadFetchWithPriority(getActivity(), boardCode, threadNo);
                 ThreadActivity.startActivity(getActivity(), boardCode, threadNo);
                 break;
         }

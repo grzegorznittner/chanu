@@ -41,12 +41,12 @@ public class BoardActivity
         implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
     private static final String DEFAULT_BOARD_CODE = "a";
 
     public static final int LOADER_RESTART_INTERVAL_MED_MS = 2000;
-    public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 1000;
+    public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
     public static final int LOADER_RESTART_INTERVAL_MICRO_MS = 100;
     private static final int THUMB_WIDTH_PX = 150;
     private static final int THUMB_HEIGHT_PX = 150;
@@ -189,6 +189,7 @@ public class BoardActivity
     @Override
     protected void onStart() {
         super.onStart();
+        ensureHandler();
 		if (DEBUG) Log.v(TAG, "onStart");
     }
 
@@ -196,6 +197,7 @@ public class BoardActivity
 	protected void onResume() {
 		super.onResume();
 		if (DEBUG) Log.v(TAG, "onResume");
+        ensureHandler();
         restoreInstanceState();
 		NetworkProfileManager.instance().activityChange(this);
 		Loader loader = getSupportLoaderManager().getLoader(0);
@@ -229,6 +231,7 @@ public class BoardActivity
         super.onPause();
         if (DEBUG) Log.v(TAG, "onPause");
         saveInstanceState();
+        handler = null;
     }
 
     protected SharedPreferences ensurePrefs() {

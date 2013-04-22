@@ -22,7 +22,7 @@ public interface NetworkProfile {
 	 * MISSING_DATA - requested resource is not available (eg. board page doesn't exist)
 	 * WRONG_DATA - data parse error
 	 */
-	enum Failure {NETWORK, MISSING_DATA, WRONG_DATA};
+	enum Failure {NETWORK, MISSING_DATA, WRONG_DATA, CORRUPT_DATA, THREAD_UNMODIFIED, DEAD_THREAD};
 	/**
 	 * NO_CONNECTION - phisical connection not established
 	 * BAD - connection established but non of recent request worked

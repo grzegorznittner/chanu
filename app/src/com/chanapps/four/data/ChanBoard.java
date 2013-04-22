@@ -334,7 +334,7 @@ public class ChanBoard {
         for (ChanBoard board : boards) {
             if (!ChanFileStorage.isBoardCachedOnDisk(context, board.link)) { // if user never visited board before
                 if (DEBUG) Log.i(TAG, "Starting load service for uncached board " + board.link);
-                FetchChanDataService.scheduleBoardFetch(context, board.link);
+                FetchChanDataService.scheduleBackgroundBoardFetch(context, board.link);
                 break; // don't schedule more than one per call to avoid overloading
             }
         }

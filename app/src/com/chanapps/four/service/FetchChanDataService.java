@@ -17,11 +17,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
@@ -29,7 +26,6 @@ import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
-import com.chanapps.four.service.profile.NoConnectionProfile;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -37,7 +33,7 @@ import com.chanapps.four.service.profile.NoConnectionProfile;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
     private String boardCode;
     private boolean boardCatalog;
@@ -50,88 +46,61 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     private ChanBoard board;
     private ChanThread thread;
 
-    public static void scheduleBoardFetch(Context context, String boardCode) {
-        scheduleBoardFetchService(context, boardCode, -1);
+    public static boolean scheduleBoardFetch(Context context, String boardCode) {
+        return scheduleBoardFetchService(context, boardCode, false, false);
     }
     
     public static boolean scheduleBoardFetchWithPriority(Context context, String boardCode) {
-    	return scheduleBoardFetchWithPriority(context, boardCode, -1);
+    	return scheduleBoardFetchService(context, boardCode, true, false);
     }
 
-    public static boolean scheduleBoardFetchService(Context context, String boardCode, int pageNo) {
+    public static boolean scheduleBackgroundBoardFetch(Context context, String boardCode) {
+        return scheduleBoardFetchService(context, boardCode, false, true);
+    }
+
+    private static boolean scheduleBoardFetchService(Context context, String boardCode, boolean priority, boolean backgroundLoad) {
     	if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode)) {
     		return FetchPopularThreadsService.schedulePopularFetchService(context);
     	}
     	
-    	if (!boardNeedsRefresh(context, boardCode, pageNo, false)) {
+    	if (!boardNeedsRefresh(context, boardCode, priority)) {
             if (DEBUG) Log.i(TAG, "Skipping not needing refresh normal board fetch service for "
-                    + boardCode + " page " + pageNo );
+                    + boardCode + " priority=" + priority);
             return false;
         }
-        if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + " page " + pageNo );
-        if (boardCode == null) {
-        	Log.e(TAG, "Wrong params passed, boardCode: " + boardCode,
-        			new Exception("Locate caller and fix issue!"));
-        }
+        if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + " priority=" + priority);
         Intent intent = new Intent(context, FetchChanDataService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        if (pageNo == -1) {
+        intent.putExtra(ChanHelper.PAGE, -1);
         	intent.putExtra(ChanHelper.BOARD_CATALOG, 1);
-            intent.putExtra(ChanHelper.PAGE, -1);
-        } else {
-        	intent.putExtra(ChanHelper.PAGE, pageNo);
-        }
+        if (priority)
+            intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+        if (backgroundLoad)
+            intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
         context.startService(intent);
         return true;
     }
 
-    public static boolean scheduleBoardFetchWithPriority(Context context, String boardCode, int pageNo) {
-    	if (!boardNeedsRefresh(context, boardCode, pageNo, true)) {
-            if (DEBUG) Log.i(TAG, "Skipping not needing refresh priority board fetch service for "
-                    + boardCode + " page " + pageNo );
-            return false;
-        }
-        if (DEBUG) Log.i(TAG, "Start chan priorty fetch service for " + boardCode + " page " + pageNo );
-        if (boardCode == null) {
-        	Log.e(TAG, "Wrong params passed, boardCode: " + boardCode,
-        			new Exception("Locate caller and fix issue!"));
-        }
-        Intent intent = new Intent(context, FetchChanDataService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        if (pageNo == -1) {
-        	intent.putExtra(ChanHelper.BOARD_CATALOG, 1);
-            intent.putExtra(ChanHelper.PAGE, -1);
-        } else {
-        	intent.putExtra(ChanHelper.PAGE, pageNo);
-        }
-        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
-        context.startService(intent);
-        return true;
+    public static boolean scheduleBackgroundThreadFetch(Context context, String boardCode, long threadNo, boolean priority) {
+        return scheduleThreadFetch(context, boardCode, threadNo, priority, true);
     }
-    
+
     public static boolean scheduleThreadFetch(Context context, String boardCode, long threadNo) {
-    	if (!threadNeedsRefresh(context, boardCode, threadNo, false)) {
-        	return false;
-        }
-        if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + "/" + threadNo );
-        if (boardCode == null || threadNo == 0) {
-        	Log.e(TAG, "Wrong params passed, boardCode: " + boardCode + " threadNo: " + threadNo,
-        			new Exception("Locate caller and fix issue!"));
-        }
-        Intent intent = new Intent(context, FetchChanDataService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        context.startService(intent);
-        return true;
+        return scheduleThreadFetch(context, boardCode, threadNo, false, false);
     }
 
     public static boolean scheduleThreadFetchWithPriority(Context context, String boardCode, long threadNo) {
+        return scheduleThreadFetch(context, boardCode, threadNo, true, false);
+    }
+
+    private static boolean scheduleThreadFetch(Context context, String boardCode, long threadNo, boolean priority, boolean backgroundLoad) {
     	if (!threadNeedsRefresh(context, boardCode, threadNo, true)) {
         	return false;
         }
-        if (DEBUG) Log.i(TAG, "Start chan priority fetch service for " + boardCode + "/" + threadNo );
+        if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + "/" + threadNo
+                + " priority=" + priority + " background=" + backgroundLoad);
         if (boardCode == null || threadNo == 0) {
         	Log.e(TAG, "Wrong params passed, boardCode: " + boardCode + " threadNo: " + threadNo,
         			new Exception("Locate caller and fix issue!"));
@@ -139,19 +108,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         Intent intent = new Intent(context, FetchChanDataService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
-        context.startService(intent);
-        return true;
-    }
-
-    public static boolean scheduleThreadFetchAfterPost(Context context, String boardCode, long threadNo) {
-        // after successful post, we should always fetch fresh
-        if (DEBUG) Log.i(TAG, "Start chan after post fetch service for " + boardCode + "/" + threadNo );
-        Intent intent = new Intent(context, FetchChanDataService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
-        intent.putExtra(ChanHelper.FORCE_REFRESH, true);
+        if (priority)
+            intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+        if (backgroundLoad)
+            intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
         context.startService(intent);
         return true;
     }
@@ -163,11 +123,11 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         context.startService(intent);
     }
 
-	private static boolean boardNeedsRefresh(Context context, String boardCode, int pageNo, boolean forceRefresh) {
+	private static boolean boardNeedsRefresh(Context context, String boardCode, boolean forceRefresh) {
 		FetchParams params = NetworkProfileManager.instance().getFetchParams();
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
         long now = new Date().getTime();
-        if (board != null && !board.defData && pageNo == -1 && board.lastFetched > 0) {
+        if (board != null && !board.defData && board.lastFetched > 0) {
         	long refresh = forceRefresh ? params.forceRefreshDelay : params.refreshDelay;
             long interval = now - board.lastFetched;
         	if (interval < refresh) {
@@ -286,7 +246,9 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             		+ " code=" + tc.getResponseCode() + " type=" + contentType);
             if (tc.getResponseCode() == 304) {
             	if (DEBUG) Log.i(TAG, "Got 304 for " + chanApi + " so was not modified since " + board.lastFetched);
-            	return;
+                int fetchTime = (int)(new Date().getTime() - startTime);
+                NetworkProfileManager.instance().finishedFetchingData(this, fetchTime, 0);
+                return;
             }
 
             if (pageNo > 0 && tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
@@ -362,7 +324,8 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             		+ " code=" + tc.getResponseCode() + " type=" + contentType);
             if (tc.getResponseCode() == 304) {
             	if (DEBUG) Log.i(TAG, "Got 304 for " + chanApi + " so was not modified since " + thread.lastFetched);
-            	return;
+                NetworkProfileManager.instance().failedFetchingData(this, Failure.THREAD_UNMODIFIED);
+                return;
             }
 
             thread.lastFetched = now;
@@ -370,17 +333,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 if (DEBUG) Log.i(TAG, "Got 404 on thread, thread no longer exists");
                 thread.isDead = true;
                 ChanFileStorage.storeThreadData(getBaseContext(), thread);
-                // now refresh if we marked the current thread as dead
-                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                if (activity == null)
-                    return;
-                ChanActivityId id = activity.getChanActivityId();
-                if (id == null)
-                    return;
-                if (boardCode.equals(id.boardCode) && threadNo == id.threadNo) {
-                    activity.getChanHandler().sendEmptyMessageDelayed(0, BoardActivity.LOADER_RESTART_INTERVAL_SHORT_MS);
-                    NetworkProfileManager.instance().makeToast(getString(R.string.mark_dead_thread));
-                }
+                NetworkProfileManager.instance().failedFetchingData(this, Failure.DEAD_THREAD);
                 return;
             } else if (contentType == null || !contentType.contains("json")) {
                 NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);

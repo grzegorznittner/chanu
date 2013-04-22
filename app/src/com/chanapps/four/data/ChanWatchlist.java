@@ -347,12 +347,12 @@ public class ChanWatchlist {
 
             @Override
             public Context getApplicationContext() {
-                return context;  //To change body of implemented methods use File | Settings | File Templates.
+                return context;
             }
         });
     }
 
-    public static void fetchWatchlistThreads(Context context, boolean priority) {
+    private static void fetchWatchlistThreads(Context context, boolean priority) {
         if (DEBUG) Log.i(TAG, "fetchWatchlistThreads");
         Set<String> threadPaths = new HashSet<String>(); // copy so we don't get concurrent exception
         Set<String> origThreadPaths = ChanWatchlist.getWatchlistFromPrefs(context);
@@ -370,10 +370,7 @@ public class ChanWatchlist {
                 long threadNo = ChanWatchlist.getThreadNoFromThreadPath(threadPath);
                 // FIXME should say if !threadIsDead we should store this somewhere
                 if (DEBUG) Log.i(TAG, "Starting load service for watching thread " + boardCode + "/" + threadNo);
-                if (priority)
-                    FetchChanDataService.scheduleThreadFetchWithPriority(context, boardCode, threadNo);
-                else
-                    FetchChanDataService.scheduleThreadFetch(context, boardCode, threadNo);
+                FetchChanDataService.scheduleBackgroundThreadFetch(context, boardCode, threadNo, priority);
             }
             catch (Exception e) {
                 Log.e(TAG, "Exception parsing watchlist", e);

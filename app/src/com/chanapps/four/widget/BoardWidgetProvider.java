@@ -92,7 +92,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         }
         for (String boardCode : boardsToFetch) {
             if (DEBUG) Log.i(TAG, "fetchAllWidgets board=" + boardCode + " scheduling fetch");
-            FetchChanDataService.scheduleBoardFetch(context, boardCode);
+            FetchChanDataService.scheduleBackgroundBoardFetch(context, boardCode);
         }
     }
 
@@ -211,7 +211,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
                 boolean hasWidgets = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>()).size() > 0;
                 boolean hasWatchlist = prefs.getStringSet(ChanHelper.THREAD_WATCHLIST, new HashSet<String>()).size() > 0;
                 if (hasWidgets)
-                    updateWidgets(context);
+                    fetchAllWidgets(context);
                 if (hasWatchlist)
                     ChanWatchlist.fetchWatchlistThreads(context);
                 if (hasWidgets || hasWatchlist)
@@ -225,15 +225,6 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         intent.setAction(GlobalAlarmReceiver.GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION);
         context.startService(intent);
         if (DEBUG) Log.i(TAG, "Scheduled global alarm");
-    }
-
-    private static void updateWidgets(final Context context) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                BoardWidgetProvider.updateAll(context);
-            }
-        }).start();
     }
 
 }

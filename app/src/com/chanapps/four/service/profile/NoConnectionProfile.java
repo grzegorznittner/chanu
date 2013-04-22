@@ -114,15 +114,11 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
     @Override
 	public void onBoardSelected(Context context, String board) {
 		super.onBoardSelected(context, board);
-
-        makeToast(R.string.no_connection_profile);
     }
 
 	@Override
 	public void onThreadSelected(Context context, String board, long threadId) {
 		super.onThreadSelected(context, board, threadId);
-
-        makeToast(R.string.no_connection_profile);
     }
 
 	@Override

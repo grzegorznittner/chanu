@@ -46,22 +46,24 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
     private long threadFetchTime;
 
     public static void startService(Context context, String boardCode, long threadNo) {
-        if (DEBUG) Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
-        Intent intent = new Intent(context, ThreadParserService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(ChanHelper.THREAD_FETCH_TIME, new Date().getTime());
-        context.startService(intent);
+        startService(context, boardCode, threadNo, false);
     }
 
     public static void startServiceWithPriority(Context context, String boardCode, long threadNo) {
-        if (DEBUG) Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo );
+        startService(context, boardCode, threadNo, true);
+    }
+
+    public static void startService(Context context, String boardCode, long threadNo, boolean priority) {
+        if (DEBUG) Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo
+                + " priority=" + priority);
         Intent intent = new Intent(context, ThreadParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(ChanHelper.FORCE_REFRESH, true);
-        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
         intent.putExtra(ChanHelper.THREAD_FETCH_TIME, new Date().getTime());
+        if (priority) {
+            intent.putExtra(ChanHelper.FORCE_REFRESH, true);
+            intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+        }
         context.startService(intent);
     }
 
@@ -110,6 +112,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
 			File threadFile = ChanFileStorage.getThreadFile(getBaseContext(), boardCode, threadNo);
 			if (threadFile == null || !threadFile.exists()) {
                 if (DEBUG) Log.i(TAG, "Thread file " + threadFile.getAbsolutePath() + " was deleted, probably already parsed.");
+                NetworkProfileManager.instance().failedParsingData(this, Failure.MISSING_DATA);
 				return;
 			}
 			parseThread(new BufferedReader(new FileReader(threadFile)));

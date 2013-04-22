@@ -36,7 +36,6 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
-import com.chanapps.four.widget.BoardWidgetProvider;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -53,26 +52,21 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     private String boardCode;
     private boolean boardCatalog;
     private int pageNo;
-    private boolean force;
+    private boolean priority;
     private ChanBoard board;
 
     public static void startService(Context context, String boardCode, int pageNo) {
-    	if (!isParsableBoard(boardCode)) {
-    		return;
-    	}
-        if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + false );
-        Intent intent = new Intent(context, BoardParserService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
-        intent.putExtra(ChanHelper.PAGE, pageNo);
-        context.startService(intent);
+        startService(context, boardCode, pageNo, false);
     }
 
     public static void startServiceWithPriority(Context context, String boardCode, int pageNo) {
-    	if (!isParsableBoard(boardCode)) {
+        startService(context, boardCode, pageNo, true);
+    }
+    public static void startService(Context context, String boardCode, int pageNo, boolean priority) {
+    	if (ChanBoard.isVirtualBoard(boardCode)) {
     		return;
     	}
-        if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + true );
+        if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " priority=" + priority );
         Intent intent = new Intent(context, BoardParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
@@ -82,11 +76,6 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         context.startService(intent);
     }
     
-    private static boolean isParsableBoard(String boardCode) {
-    	return !(ChanBoard.POPULAR_BOARD_CODE.equals(boardCode) || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
-    				|| ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode));
-    }
-
     public BoardParserService() {
    		super("board");
    	}
@@ -100,9 +89,9 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
 		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
 		pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
-        force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false)
+        priority = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false)
             || (intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0);
-		if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " page=" + pageNo);
+		if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " priority=" + priority);
 
         if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
             Log.e(TAG, "Watching board must use ChanWatchlist instead of service");
@@ -134,7 +123,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 
             if (!boardCatalog) {
 	            // thread files are stored in separate service call to make board parsing faster
-	            if (force) {
+	            if (priority) {
 	            	BoardThreadsParserService.startServiceWithPriority(getBaseContext(), boardCode, pageNo);
 	            } else {
 	            	BoardThreadsParserService.startService(getBaseContext(), boardCode, pageNo);
@@ -242,7 +231,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         		boolean oldEnough = false; //Calendar.getInstance().getTimeInMillis() - board.lastFetched > ChanBoard.MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST;
 	        	if (board.threads != null
                         && board.threads.length > 0
-                        && !force
+                        && !priority
                         && !board.defData
                         && !oldEnough
                         && ChanBoard.REFRESH_THREADS_ON_REQUEST)
@@ -279,6 +268,6 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 
 	@Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(boardCode, pageNo, force);
+		return new ChanActivityId(boardCode, pageNo, priority);
 	}	
 }
