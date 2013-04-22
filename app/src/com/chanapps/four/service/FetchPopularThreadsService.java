@@ -211,13 +211,12 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 				try {
 					threads.add(parseThread(strings[i]));
 				} catch (Exception e) {
-					e.printStackTrace();
-					System.out.println("Problem occured for: " + strings[i]);
+					Log.e(TAG, "Problem occured for: " + strings[i], e);
 				}
 			}
 			board.threads = threads.toArray(new ChanPost[]{});
 		}
-		System.out.println("board " + board.name + " has " + board.threads.length + " threads\n\n");
+		if (DEBUG) Log.i(TAG, "board " + board.name + " has " + board.threads.length + " threads\n\n");
 	}
 
 	private void parseLatestPosts(ChanBoard board, String response) {
@@ -234,13 +233,12 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 				try {
 					threads.add(parseThread(strings[i]));
 				} catch (Exception e) {
-					e.printStackTrace();
-					System.out.println("Problem occured for: " + strings[i]);
+					Log.e(TAG, "Problem occured for: " + strings[i], e);
 				}
 			}
 			board.threads = threads.toArray(new ChanPost[]{});
 		}
-		System.out.println("board " + board.name + " has " + board.threads.length + " threads\n\n");
+		if (DEBUG) Log.i(TAG, "board " + board.name + " has " + board.threads.length + " threads\n\n");
 	}
 
 	
@@ -258,13 +256,12 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 				try {
 					threads.add(parseThread(strings[i]));
 				} catch (Exception e) {
-					e.printStackTrace();
-					System.out.println("Problem occured for: " + strings[i]);
+					Log.e(TAG, "Problem occured for: " + strings[i], e);
 				}
 			}
 			board.threads = threads.toArray(new ChanPost[]{});
 		}
-		System.out.println("board " + board.name + " has " + board.threads.length + " threads\n\n");
+		if (DEBUG) Log.i(TAG, "board " + board.name + " has " + board.threads.length + " threads\n\n");
 	}
 
 	private ChanThread parseThread(String threadStr) {
@@ -322,7 +319,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 			thread.sub = str.extractBefore(">");
 		}
 		
-		System.out.println("Board: " + thread.board + ", no: " + thread.no + ", tim: " + thread.tim + ", size: " + thread.fsize + ", " + thread.w + "x" + thread.h
+		if (DEBUG) Log.i(TAG, "Board: " + thread.board + ", no: " + thread.no + ", tim: " + thread.tim + ", size: " + thread.fsize + ", " + thread.w + "x" + thread.h
 				+ ",\n     img: " + thread.imageUrl() + ", thumb: " + thread.thumbnailUrl()
 				+ ",\n     topic: " + thread.sub);
 		return thread;
