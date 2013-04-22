@@ -307,7 +307,7 @@ public class BoardGroupFragment
 
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((threadFlags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0)
+        if ((threadFlags & ChanThread.THREAD_FLAG_AD) > 0)
             return;
 
         final Activity activity = getActivity();
