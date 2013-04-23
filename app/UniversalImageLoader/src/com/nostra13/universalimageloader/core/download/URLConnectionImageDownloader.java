@@ -4,13 +4,12 @@ import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
+import java.net.URL;
 import java.net.URLConnection;
 
-import android.nfc.Tag;
+import android.content.Context;
+
 import com.android.gallery3d.ui.Log;
-import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
@@ -20,7 +19,7 @@ import com.nostra13.universalimageloader.core.assist.FlushedInputStream;
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
  */
-public class URLConnectionImageDownloader extends ImageDownloader {
+public class URLConnectionImageDownloader extends BaseImageDownloader {
 
     public static final String TAG = URLConnectionImageDownloader.class.getSimpleName();
 
@@ -32,17 +31,18 @@ public class URLConnectionImageDownloader extends ImageDownloader {
 	private int connectTimeout;
 	private int readTimeout;
 
-	public URLConnectionImageDownloader() {
-		this(DEFAULT_HTTP_CONNECT_TIMEOUT, DEFAULT_HTTP_READ_TIMEOUT);
+	public URLConnectionImageDownloader(Context context) {
+		this(context, DEFAULT_HTTP_CONNECT_TIMEOUT, DEFAULT_HTTP_READ_TIMEOUT);
 	}
 
-	public URLConnectionImageDownloader(int connectTimeout, int readTimeout) {
+	public URLConnectionImageDownloader(Context context, int connectTimeout, int readTimeout) {
+		super(context, connectTimeout, readTimeout);
 		this.connectTimeout = connectTimeout;
 		this.readTimeout = readTimeout;
 	}
 
 	@Override
-	public InputStream getStreamFromNetwork(URI imageUri) throws IOException {
+	public InputStream getStreamFromNetwork(String imageUri, Object extra) throws IOException {
         NetworkProfile activeProfile = NetworkProfileManager.instance().getCurrentProfile();
         if (activeProfile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION
                 || activeProfile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION) {
@@ -50,7 +50,7 @@ public class URLConnectionImageDownloader extends ImageDownloader {
             return null;
         }
         else {
-            URLConnection conn = imageUri.toURL().openConnection();
+            URLConnection conn = new URL(imageUri).openConnection();
             conn.setConnectTimeout(connectTimeout);
             conn.setReadTimeout(readTimeout);
             FlushedInputStream fis;

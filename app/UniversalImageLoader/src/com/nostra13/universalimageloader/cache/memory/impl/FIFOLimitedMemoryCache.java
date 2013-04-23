@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2011-2013 Sergey Tarasevich
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package com.nostra13.universalimageloader.cache.memory.impl;
 
 import java.lang.ref.Reference;
@@ -12,9 +27,13 @@ import com.nostra13.universalimageloader.cache.memory.LimitedMemoryCache;
 
 /**
  * Limited {@link Bitmap bitmap} cache. Provides {@link Bitmap bitmaps} storing. Size of all stored bitmaps will not to
- * exceed size limit. When cache reaches limit size then cache clearing is processed by FIFO principle.
+ * exceed size limit. When cache reaches limit size then cache clearing is processed by FIFO principle.<br />
+ * <br />
+ * <b>NOTE:</b> This cache uses strong and weak references for stored Bitmaps. Strong references - for limited count of
+ * Bitmaps (depends on cache size), weak references - for all other cached Bitmaps.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  */
 public class FIFOLimitedMemoryCache extends LimitedMemoryCache<String, Bitmap> {
 

@@ -1,8 +1,22 @@
+/*******************************************************************************
+ * Copyright 2011-2013 Sergey Tarasevich
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package com.nostra13.universalimageloader.cache.memory.impl;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
 
 import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
 
@@ -13,6 +27,7 @@ import com.nostra13.universalimageloader.cache.memory.MemoryCacheAware;
  * <b>NOTE:</b> Used for internal needs. Normally you don't need to use this class.
  * 
  * @author Sergey Tarasevich (nostra13[at]gmail[dot]com)
+ * @since 1.0.0
  */
 public class FuzzyKeyMemoryCache<K, V> implements MemoryCacheAware<K, V> {
 
@@ -25,37 +40,40 @@ public class FuzzyKeyMemoryCache<K, V> implements MemoryCacheAware<K, V> {
 	}
 
 	@Override
-	public synchronized boolean put(K key, V value) {
+	public boolean put(K key, V value) {
 		// Search equal key and remove this entry
-		K keyToRemove = null;
-		for (Iterator<K> it = cache.keys().iterator(); it.hasNext();) {
-			K cacheKey = it.next();
-			if (keyComparator.compare(key, cacheKey) == 0) {
-				keyToRemove = cacheKey;
+		synchronized (cache) {
+			K keyToRemove = null;
+			for (K cacheKey : cache.keys()) {
+				if (keyComparator.compare(key, cacheKey) == 0) {
+					keyToRemove = cacheKey;
+					break;
+				}
+			}
+			if (keyToRemove != null) {
+				cache.remove(keyToRemove);
 			}
 		}
-		cache.remove(keyToRemove);
-
 		return cache.put(key, value);
 	}
 
 	@Override
-	public synchronized V get(K key) {
+	public V get(K key) {
 		return cache.get(key);
 	}
 
 	@Override
-	public synchronized void remove(K key) {
+	public void remove(K key) {
 		cache.remove(key);
 	}
 
 	@Override
-	public synchronized void clear() {
+	public void clear() {
 		cache.clear();
 	}
 
 	@Override
-	public synchronized Collection<K> keys() {
+	public Collection<K> keys() {
 		return cache.keys();
 	}
 }

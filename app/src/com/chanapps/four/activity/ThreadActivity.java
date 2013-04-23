@@ -204,7 +204,7 @@ public class ThreadActivity
         imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisc()
-                .imageScaleType(ImageScaleType.POWER_OF_2)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                 .resetViewBeforeLoading()
                 .build();
     }

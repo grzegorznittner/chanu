@@ -127,7 +127,7 @@ public class BoardGroupFragment
         ImageSize imageSize = new ImageSize(columnWidth, columnHeight); // view pager needs micro images
         imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
-                .imageScaleType(ImageScaleType.POWER_OF_2)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                 .imageSize(imageSize)
                 .cacheOnDisc()
                 .cacheInMemory()

@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -41,7 +42,6 @@ import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader;
-import com.nostra13.universalimageloader.utils.FileUtils;
 
 public class ChanImage extends MediaItem implements ChanIdentifiedService {
     private static final String TAG = "ChanImage";
@@ -279,13 +279,13 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         
     	private void saveImageOnDisc(File targetFile) throws URISyntaxException, IOException {
 			FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
-			URLConnectionImageDownloader downloader = new URLConnectionImageDownloader(fetchParams.connectTimeout, fetchParams.readTimeout);
+			URLConnectionImageDownloader downloader = new URLConnectionImageDownloader(mApplication.getAndroidContext(), fetchParams.connectTimeout, fetchParams.readTimeout);
     		InputStream is = null;
     		OutputStream os = null;
     		try {
-    			is = downloader.getStreamFromNetwork(new URI(thumbUrl));
+    			is = downloader.getStreamFromNetwork(thumbUrl, null);
     			os = new BufferedOutputStream(new FileOutputStream(targetFile));
-				FileUtils.copyStream(is, os);
+				IOUtils.copy(is, os);
     		} finally {
 				IOUtils.closeQuietly(os);
     			IOUtils.closeQuietly(is);

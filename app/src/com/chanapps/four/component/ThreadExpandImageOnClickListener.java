@@ -215,9 +215,8 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
         ImageSize imageSize = new ImageSize(width, height);
         DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
-                .imageScaleType(ImageScaleType.EXACT)
+                .imageScaleType(ImageScaleType.EXACTLY)
                 .cacheOnDisc()
-                .imageSize(imageSize)
                 .fullSizeImageLocation(fullImagePath)
                 .resetViewBeforeLoading()
                 .build();
@@ -225,11 +224,11 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         // display image async
         ChanImageLoader.getInstance(threadActivity).displayImage(postImageUrl, itemExpandedImage, expandedDisplayImageOptions, new ImageLoadingListener() {
             @Override
-            public void onLoadingStarted() {
+            public void onLoadingStarted(String imageUri, View view) {
             }
 
             @Override
-            public void onLoadingFailed(FailReason failReason) {
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
                 collapseView();
                 String reason = failReason.toString();
                 String msg;
@@ -247,13 +246,13 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
             }
 
             @Override
-            public void onLoadingComplete(Bitmap loadedImage) {
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 if (itemExpandedProgressBar != null)
                     itemExpandedProgressBar.setVisibility(View.GONE);
             }
 
             @Override
-            public void onLoadingCancelled() {
+            public void onLoadingCancelled(String imageUri, View view) {
                 collapseView();
                 Toast.makeText(threadActivity, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
             }
