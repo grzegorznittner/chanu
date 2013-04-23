@@ -54,7 +54,6 @@
         <item name="android:layout_marginRight">0dp</item>
         <item name="android:padding">0dp</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:background">@drawable/board_type_gradient_bg</item>
     </style>
 
     <!--
@@ -85,6 +84,7 @@
         <item name="android:smoothScrollbar">true</item>
         <item name="android:cacheColorHint">#00000000</item>
         <item name="android:fastScrollEnabled">true</item>
+        <item name="android:background">@drawable/board_view_gradient_bg</item>
     </style>
 
     <style name="BoardGridImage" parent="AppTheme">
@@ -107,6 +107,7 @@
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:background">@drawable/board_type_gradient_bg</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:visibility">gone</item>
     </style>
 
     <style name="BoardSelectorGridTextImageOverlay" parent="AppTheme">
@@ -555,7 +556,7 @@
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/widget_title_gradient_bg</item>
+        <item name="android:background">@drawable/widget_configure_btn_gradient_bg</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteWhite</item>
@@ -592,6 +593,7 @@
     <color name="PaletteLightestGray">#eee</color>
     <color name="PaletteLighterGray">#ddd</color>
     <color name="PaletteLightGray">#ccc</color>
+    <color name="PaletteMedGray">#888</color>
     <color name="PaletteLighterGrayHalfOpacity">#80dddddd</color>
     <color name="PaletteLightBlack">#ff030303</color>
     <color name="PaletteBlack">#ff010101</color>
