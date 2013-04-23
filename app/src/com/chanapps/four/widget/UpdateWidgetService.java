@@ -17,10 +17,14 @@ import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.FetchPopularThreadsService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -91,35 +95,14 @@ public class UpdateWidgetService extends Service {
             updateWidgetViews();
         }
 
-        private void loadBoard() {
+       private void loadBoard() {
             try {
-                ChanBoard board = ChanFileStorage.loadBoardData(context, widgetConf.boardCode);
-                if (board == null) {
-                    Log.e(TAG, "Couldn't load widget null board for widgetConf.boardCode=" + widgetConf.boardCode);
+                if (ChanBoard.WATCH_BOARD_CODE.equals(widgetConf.boardCode)) {
+                    Log.e(TAG, "UnsupportedException: watch board code not yet supported for widgets");
                     return;
                 }
-                ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
-                        ? board.loadedThreads
-                        : board.threads;
-                if (boardThreads == null || boardThreads.length == 0) {
-                    Log.e(TAG, "Couldn't load widget no threads for widgetConf.boardCode=" + widgetConf.boardCode);
-                    return;
-                }
+                threads = loadBestWidgetThreads(context, widgetConf.boardCode, NUM_TOP_THREADS);
 
-                int threadIndex = 0;
-                for (int i = 0; i < NUM_TOP_THREADS; i++) {
-                    ChanPost thread = null;
-                    while (threadIndex < boardThreads.length) {
-                        ChanPost test = boardThreads[threadIndex];
-                        threadIndex++;
-                        if (test != null && test.sticky <= 0 && test.tim > 0 && test.no > 0) {
-                            thread = test;
-                            break;
-                        }
-                    }
-                    if (thread != null)
-                        threads[i] = thread;
-                }
                 if (DEBUG) Log.i(TAG, "Loaded board=" + widgetConf.boardCode + " with widget threads");
             }
             catch (Exception e) {
@@ -136,7 +119,14 @@ public class UpdateWidgetService extends Service {
             ChanBoard board = ChanBoard.getBoardByCode(context, widgetConf.boardCode);
             if (board == null)
                 board = ChanBoard.getBoardByCode(context, ChanBoard.DEFAULT_BOARD_CODE);
-            String boardTitle = board.name + " /" + board.link + "/";
+            if (board == null) {
+                Log.e(TAG, "EXCEPTION something very bad happened null board code=" + widgetConf.boardCode);
+                return;
+            }
+
+            String boardTitle = ChanBoard.isVirtualBoard(board.link)
+                    ? board.name
+                    : board.name + " /" + board.link + "/";
             int boardTitleColor = widgetConf.boardTitleColor;
             int boardTitleVisibility = widgetConf.showBoardTitle ? View.VISIBLE : View.GONE;
             views.setTextViewText(R.id.board_title, boardTitle);
@@ -166,9 +156,8 @@ public class UpdateWidgetService extends Service {
 
             for (int i = 0; i < imageIds.length; i++) {
                 int imageId = imageIds[i];
-                String url = threads[i] != null
-                        ? threads[i].thumbnailUrl()
-                        : ChanBoard.getIndexedImageDrawableUrl(widgetConf.boardCode, i);
+                ChanPost thread = threads[i];
+                String url = ChanBoard.getBestWidgetImageUrl(thread, widgetConf.boardCode, i);
                 asyncUpdateWidgetImageView(views, imageId, url);
             }
 
@@ -201,10 +190,20 @@ public class UpdateWidgetService extends Service {
         }
 
         private PendingIntent makeRefreshIntent() {
-            Intent intent = new Intent(context, FetchChanDataService.class);
-            intent.putExtra(ChanHelper.BOARD_CODE, widgetConf.boardCode);
-            intent.putExtra(ChanHelper.BOARD_CATALOG, 1);
-            intent.putExtra(ChanHelper.PAGE, -1);
+            Intent intent;
+            if (ChanBoard.WATCH_BOARD_CODE.equals(widgetConf.boardCode)) {
+                return null;
+            }
+            else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
+                intent = new Intent(context, FetchPopularThreadsService.class);
+            }
+            else {
+                intent = new Intent(context, FetchChanDataService.class);
+                intent.putExtra(ChanHelper.BOARD_CODE, widgetConf.boardCode);
+                intent.putExtra(ChanHelper.BOARD_CATALOG, 1);
+                intent.putExtra(ChanHelper.PAGE, -1);
+
+            }
             intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
             intent.putExtra(ChanHelper.FORCE_REFRESH, true);
             intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
@@ -220,4 +219,68 @@ public class UpdateWidgetService extends Service {
         }
 
     }
+
+    public static ChanPost[] loadBestWidgetThreads(Context context, String boardCode, int numThreads) {
+        ChanPost[] widgetThreads = new ChanPost[numThreads];
+
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        if (board == null) {
+            Log.e(TAG, "Couldn't load widget null board for boardCode=" + boardCode);
+            return widgetThreads;
+        }
+
+        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
+                ? board.loadedThreads
+                : board.threads;
+        if (boardThreads == null || boardThreads.length == 0) {
+            Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode);
+            return widgetThreads;
+        }
+
+        // try to load what we can
+        int threadIndex = 0;
+        int filledCount = 0;
+        Set<Integer> threadsUsed = new HashSet<Integer>(numThreads);
+        for (int i = 0; i < numThreads; i++) {
+            ChanPost thread = null;
+            while (threadIndex < boardThreads.length) {
+                ChanPost test = boardThreads[threadIndex];
+                threadIndex++;
+                if (test != null && test.sticky <= 0 && test.tim > 0 && test.no > 0) {
+                    thread = test;
+                    break;
+                }
+            }
+            if (thread != null) {
+                widgetThreads[i] = thread;
+                threadsUsed.add(threadIndex - 1);
+                filledCount = i + 1;
+            }
+        }
+
+        // what if we are missing threads? for instance no images with latest threads
+        threadIndex = 0;
+        if (filledCount < numThreads) {
+            for (int i = 0; i < numThreads; i++) {
+                if (widgetThreads[i] != null)
+                    continue;
+                ChanPost thread = null;
+                while (threadIndex < boardThreads.length) {
+                    ChanPost test = boardThreads[threadIndex];
+                    threadIndex++;
+                    if (test != null && !threadsUsed.contains(threadIndex) && test.sticky <= 0 && test.no > 0) {
+                        thread = test;
+                        break;
+                    }
+                }
+                if (thread != null) {
+                    widgetThreads[i] = thread;
+                    threadsUsed.add(threadIndex - 1);
+                }
+            }
+        }
+
+        return widgetThreads;
+    }
+
 }

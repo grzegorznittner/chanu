@@ -24,7 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:entries="@array/long_board_array_worksafe"
+                android:entries="@array/widget_board_array_worksafe"
                 />
 
         <Spinner
@@ -32,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:entries="@array/long_board_array"
+                android:entries="@array/widget_board_array"
                 android:visibility="gone"
                 />
 

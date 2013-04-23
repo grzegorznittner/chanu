@@ -573,4 +573,13 @@ public class ChanBoard {
                 || LATEST_BOARD_CODE.equals(boardCode)
                 || LATEST_IMAGES_BOARD_CODE.equals(boardCode);
     }
+
+    public static String getBestWidgetImageUrl(ChanPost thread, String backupBoardCode, int i) {
+        return (thread != null && thread.tim > 0)
+                ? thread.thumbnailUrl()
+                : ChanBoard.getIndexedImageDrawableUrl(
+                thread != null ? thread.board : backupBoardCode,
+                i);
+    }
+
 }

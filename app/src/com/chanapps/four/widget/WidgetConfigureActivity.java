@@ -20,7 +20,10 @@ import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.mColorPicker.ColorPickerDialog;
 import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.FetchPopularThreadsService;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,25 +89,69 @@ public class WidgetConfigureActivity extends FragmentActivity {
         if (widgetConf.boardCode == null || widgetConf.boardCode.isEmpty()) {
             position = 0;
         }
-        else if (widgetConf.boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
-            position = 0; // always move it to "SelectBoard" to overcome view pager action bar bug
-        }
         else {
             SpinnerAdapter spinnerAdapter = spinner.getAdapter();
             for (int i = 0; i < spinnerAdapter.getCount(); i++) {
                 String boardText = (String)spinnerAdapter.getItem(i);
-                if (boardText.matches("/" + widgetConf.boardCode + "/.*")) {
+                if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
+                    && ChanBoard.WATCH_BOARD_CODE.equals(widgetConf.boardCode)
+                    && boardText.matches(getString(R.string.board_watch)))
+                {
+                    position = i;
+                    break;
+                }
+                if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
+                    && ChanBoard.POPULAR_BOARD_CODE.equals(widgetConf.boardCode)
+                    && boardText.matches(getString(R.string.board_popular)))
+                {
+                    position = i;
+                    break;
+                }
+                if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
+                    && ChanBoard.LATEST_BOARD_CODE.equals(widgetConf.boardCode)
+                    && boardText.matches(getString(R.string.board_latest)))
+                {
+                    position = i;
+                    break;
+                }
+                if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
+                    && ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(widgetConf.boardCode)
+                    && boardText.matches(getString(R.string.board_latest_images)))
+                {
+                    position = i;
+                    break;
+                }
+                else if (!ChanBoard.isVirtualBoard(widgetConf.boardCode)
+                        && boardText.matches("/" + widgetConf.boardCode + "/.*"))
+                {
                     position = i;
                     break;
                 }
             }
         }
+        spinner.setSelection(position, false);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                final Context context = WidgetConfigureActivity.this.getApplicationContext();
                 updateWidgetConfWithSelectedBoard((String)parent.getItemAtPosition(position));
-                if (!ChanFileStorage.isBoardCachedOnDisk(WidgetConfigureActivity.this.getApplicationContext(), widgetConf.boardCode)
-                        && FetchChanDataService.scheduleBoardFetchWithPriority(WidgetConfigureActivity.this, widgetConf.boardCode))
+                boolean onDisk = ChanFileStorage.isBoardCachedOnDisk(context, widgetConf.boardCode);
+                boolean freshFetch;
+                if (onDisk) {
+                    freshFetch = false;
+                }
+                else {
+                    if (ChanBoard.WATCH_BOARD_CODE.equals(widgetConf.boardCode)) {
+                        freshFetch = false;
+                    }
+                    else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
+                        freshFetch = FetchPopularThreadsService.schedulePopularFetchWithPriority(context);
+                    }
+                    else {
+                        freshFetch = FetchChanDataService.scheduleBoardFetchWithPriority(context, widgetConf.boardCode);
+                    }
+                }
+                if (freshFetch)
                     (new Handler()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -118,7 +165,6 @@ public class WidgetConfigureActivity extends FragmentActivity {
                 updateWidgetConfWithSelectedBoard("");
             }
         });
-        spinner.setSelection(position, false);
     }
 
     protected void setupCheckboxes() {
@@ -194,15 +240,28 @@ public class WidgetConfigureActivity extends FragmentActivity {
     protected void updateWidgetConfWithSelectedBoard(String boardSpinnerLine) {
         if (boardSpinnerLine == null || boardSpinnerLine.isEmpty())
             boardSpinnerLine = "";
-        String boardCode = null;
-        Pattern p = Pattern.compile("/([^/]*)/.*");
-        Matcher m = p.matcher(boardSpinnerLine);
-        if (m.matches())
-            boardCode = m.group(1);
-        if (boardCode != null && !boardCode.isEmpty())
-            widgetConf.boardCode = boardCode;
-        if (widgetConf.boardCode == null || widgetConf.boardCode.isEmpty())
-            widgetConf.boardCode = ChanBoard.DEFAULT_BOARD_CODE;
+        String boardCode;
+        if (getString(R.string.board_watch).equals(boardSpinnerLine)) {
+            boardCode = ChanBoard.WATCH_BOARD_CODE;
+        }
+        else if (getString(R.string.board_popular).equals(boardSpinnerLine)) {
+            boardCode = ChanBoard.POPULAR_BOARD_CODE;
+        }
+        else if (getString(R.string.board_latest).equals(boardSpinnerLine)) {
+            boardCode = ChanBoard.LATEST_BOARD_CODE;
+        }
+        else if (getString(R.string.board_latest_images).equals(boardSpinnerLine)) {
+            boardCode = ChanBoard.LATEST_IMAGES_BOARD_CODE;
+        }
+        else {
+            Pattern p = Pattern.compile("/([^/]*)/.*");
+            Matcher m = p.matcher(boardSpinnerLine);
+            if (m.matches())
+                boardCode = m.group(1);
+            else
+                boardCode = ChanBoard.DEFAULT_BOARD_CODE;
+        }
+        widgetConf.boardCode = boardCode;
         updateBoardTitleState();
         setBoardImages();
     }
@@ -247,7 +306,9 @@ public class WidgetConfigureActivity extends FragmentActivity {
         ChanBoard board = ChanBoard.getBoardByCode(this, widgetConf.boardCode);
         if (board == null)
             board = ChanBoard.getBoardByCode(this, ChanBoard.DEFAULT_BOARD_CODE);
-        String boardTitle = board.name + " /" + board.link + "/";
+        String boardTitle = ChanBoard.isVirtualBoard(widgetConf.boardCode)
+                ? board.name
+                : board.name + " /" + board.link + "/";
         int boardTitleColor = widgetConf.boardTitleColor;
         int boardTitleVisibility = widgetConf.showBoardTitle ? View.VISIBLE : View.GONE;
         TextView tv = (TextView)findViewById(R.id.board_title);
@@ -298,33 +359,12 @@ public class WidgetConfigureActivity extends FragmentActivity {
     }
 
     protected String[] boardThreadUrls(Context context, String boardCode, int numThreads) {
-        String[] defaultUrls = new String[numThreads];
-        for (int i = 0; i < numThreads; i++)
-            defaultUrls[i] = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
-        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        if (board == null)
-            return defaultUrls;
-        ChanPost[] threads = board.threads;
-        if (threads == null || threads.length == 0)
-            threads = board.loadedThreads;
-        if (threads == null || threads.length == 0)
-            return defaultUrls;
-        String urls[] = new String[numThreads];
-        int threadIndex = 0;
+        String[] urls = new String[numThreads];
+        ChanPost[] threads = UpdateWidgetService.loadBestWidgetThreads(this, boardCode, numThreads);
         for (int i = 0; i < numThreads; i++) {
-            ChanPost thread = null;
-            while (threadIndex < threads.length) {
-                ChanPost test = threads[threadIndex];
-                threadIndex++;
-                if (test != null && test.sticky <= 0 && test.tim > 0 && test.no > 0) {
-                    thread = test;
-                    break;
-                }
-            }
-            if (thread != null)
-                if (DEBUG) Log.i(TAG, "i=" + i + " thread=" + thread + " thread.sticky=" + thread.sticky + " thread.del=" + thread.filedeleted);
-            urls[i] = thread != null ? thread.thumbnailUrl() : defaultUrls[i];
-            threadIndex++;
+            ChanPost thread = threads[i];
+            String url = ChanBoard.getBestWidgetImageUrl(thread, boardCode, i);
+            urls[i] = url;
         }
         return urls;
     }

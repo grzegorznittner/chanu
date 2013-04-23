@@ -13,6 +13,7 @@ import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.FetchPopularThreadsService;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -92,7 +93,12 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         }
         for (String boardCode : boardsToFetch) {
             if (DEBUG) Log.i(TAG, "fetchAllWidgets board=" + boardCode + " scheduling fetch");
-            FetchChanDataService.scheduleBackgroundBoardFetch(context, boardCode);
+            if (ChanBoard.WATCH_BOARD_CODE.equals(boardCode))
+                ChanWatchlist.fetchWatchlistThreads(context);
+            else if (ChanBoard.isVirtualBoard(boardCode))
+                FetchPopularThreadsService.scheduleBackgroundPopularFetchService(context);
+            else
+                FetchChanDataService.scheduleBackgroundBoardFetch(context, boardCode);
         }
     }
 
