@@ -2,6 +2,7 @@ package com.chanapps.four.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -40,10 +41,14 @@ public class BoardSelectorActivity
     //public BoardSelectorTab selectedBoardTab = DEFAULT_BOARD_SELECTOR_TAB;
 
     public static void startActivity(Activity from, BoardSelectorTab tab) {
-        Intent intent = new Intent(from, BoardSelectorActivity.class);
+        from.startActivity(createIntentForActivity(from, tab));
+    }
+
+    public static Intent createIntentForActivity(Context context, BoardSelectorTab tab) {
+        Intent intent = new Intent(context, BoardSelectorActivity.class);
         intent.putExtra(BOARD_SELECTOR_TAB, tab != null ? tab.toString() : DEFAULT_BOARD_SELECTOR_TAB);
         intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
-        from.startActivity(intent);
+        return intent;
     }
 
     @Override
@@ -111,8 +116,10 @@ public class BoardSelectorActivity
 
     private void restoreInstanceState() {
         ensureTabsAdapter();
-        BoardSelectorTab tab = BoardSelectorTab.valueOf(
-                ensurePrefs().getString(BOARD_SELECTOR_TAB, DEFAULT_BOARD_SELECTOR_TAB.toString()));
+        String tabVal = getIntent().hasExtra(BOARD_SELECTOR_TAB)
+                ? getIntent().getStringExtra(BOARD_SELECTOR_TAB)
+                : ensurePrefs().getString(BOARD_SELECTOR_TAB, DEFAULT_BOARD_SELECTOR_TAB.toString());
+        BoardSelectorTab tab = BoardSelectorTab.valueOf(tabVal);
         //getActionBar().setSelectedNavigationItem(tab.ordinal());
         mViewPager.setCurrentItem(tab.ordinal(), true);
     }

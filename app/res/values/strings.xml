@@ -454,7 +454,7 @@
     <string name="widget_configure">Configure</string>
     <string name="widget_configure_title">Chanu Widget Configuration</string>
     <string name="widget_configure_board_title_color">Board Title Color</string>
-    <string name="widget_configure_corners">Rounded Corners</string>
+    <string name="widget_configure_corners">Show Border</string>
     <string name="widget_configure_board">Show Board Title</string>
     <string name="widget_configure_refresh">Show Refresh Button</string>
     <string name="widget_configure_config">Show Configure Button</string>
