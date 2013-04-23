@@ -35,6 +35,7 @@ import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class BoardActivity
         extends FragmentActivity
@@ -124,14 +125,18 @@ public class BoardActivity
                         //ChanThread.THREAD_INFO,
                         ChanThread.THREAD_COUNTRY_FLAG_URL,
                         ChanThread.THREAD_NUM_REPLIES,
-                        ChanThread.THREAD_NUM_IMAGES},
+                        ChanThread.THREAD_NUM_IMAGES,
+                        ChanThread.THREAD_INFO
+                },
                 new int[] {
                         R.id.grid_item_thread_thumb,
                         R.id.grid_item_thread_subject,
                         //R.id.grid_item_thread_info,
                         R.id.grid_item_country_flag,
                         R.id.grid_item_num_replies,
-                        R.id.grid_item_num_images},
+                        R.id.grid_item_num_images,
+                        R.id.grid_item_board_type_text
+                },
                 columnWidth,
                 columnHeight);
         absListView.setAdapter(adapter);
@@ -178,6 +183,7 @@ public class BoardActivity
         absListView.setClickable(true);
         absListView.setOnItemClickListener(this);
         absListView.setLongClickable(false);
+        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
     }
 
     protected synchronized Handler ensureHandler() {

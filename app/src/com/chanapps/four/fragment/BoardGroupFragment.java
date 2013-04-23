@@ -28,6 +28,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 /**
 * User: arley
@@ -136,6 +137,7 @@ public class BoardGroupFragment
         absListView.setOnItemClickListener(this);
         absListView.setLongClickable(true);
         absListView.setOnItemLongClickListener(this);
+        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
     }
 
     protected void assignCursorAdapter() {

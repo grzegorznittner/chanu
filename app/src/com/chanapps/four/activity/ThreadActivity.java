@@ -52,6 +52,7 @@ import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.task.HighlightRepliesTask;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 import java.io.File;
 import java.net.URI;
@@ -270,6 +271,7 @@ public class ThreadActivity
         initAdapter();
         setupContextMenu();
         absListView.setOnItemClickListener(this);
+        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
     }
 
     protected void setupContextMenu() {
