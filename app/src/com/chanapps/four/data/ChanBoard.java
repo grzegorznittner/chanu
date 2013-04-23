@@ -247,7 +247,9 @@ public class ChanBoard {
                         POPULAR_BOARD_CODE, ctx.getString(R.string.board_popular)
                 },
                 {   BoardType.LATEST.toString(),
-                        LATEST_BOARD_CODE, ctx.getString(R.string.board_latest),
+                        LATEST_BOARD_CODE, ctx.getString(R.string.board_latest)
+                },
+                {   BoardType.LATEST_IMAGES.toString(),
                         LATEST_IMAGES_BOARD_CODE, ctx.getString(R.string.board_latest_images)
                 },
                 {   BoardType.JAPANESE_CULTURE.toString(),
@@ -539,12 +541,9 @@ public class ChanBoard {
             else if (boardAsMenu.equals(activity.getString(R.string.board_watch))
                     || boardAsMenu.equals(activity.getString(R.string.board_watch_abbrev)))
                 dispatchToBoardSelector(parent, BoardSelectorTab.WATCHLIST);
-            else if (boardAsMenu.equals(activity.getString(R.string.board_popular))
-                    || boardAsMenu.equals(activity.getString(R.string.board_popular_abbrev)))
-                dispatchToBoardSelector(parent, BoardSelectorTab.POPULAR);
-            else if (boardAsMenu.equals(activity.getString(R.string.board_latest))
-                    || boardAsMenu.equals(activity.getString(R.string.board_latest_abbrev)))
-                dispatchToBoardSelector(parent, BoardSelectorTab.LATEST);
+            else if (boardAsMenu.equals(activity.getString(R.string.board_type_recent))
+                    || boardAsMenu.equals(activity.getString(R.string.board_type_recent_abbrev)))
+                dispatchToBoardSelector(parent, BoardSelectorTab.RECENT);
             else {
                 Pattern p = Pattern.compile("/([^/]*)/.*");
                 Matcher m = p.matcher(boardAsMenu);
