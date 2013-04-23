@@ -348,7 +348,7 @@ public class ManageCachePage extends ActivityState implements
         if (mAlbumCountToMakeAvailableOffline > 0) {
             Activity activity = (Activity) mActivity;
             Toast.makeText(activity, activity.getResources().getQuantityString(
-                    R.plurals.make_albums_available_offline,
+                    R.string.make_available_offline,
                     mAlbumCountToMakeAvailableOffline),
                     Toast.LENGTH_SHORT).show();
         }
