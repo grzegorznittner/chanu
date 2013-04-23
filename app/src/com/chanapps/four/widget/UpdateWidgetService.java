@@ -171,7 +171,7 @@ public class UpdateWidgetService extends Service {
                     .loadImage(url, minImageSize, optionsWithFakeDisplayer,
                             new SimpleImageLoadingListener() {
                                 @Override
-                                public void onLoadingComplete(Bitmap loadedImage) {
+                                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                                     views.setImageViewBitmap(imageId, loadedImage);
                                     AppWidgetManager
                                             .getInstance(context)

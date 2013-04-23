@@ -5,14 +5,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
-
-import android.nfc.Tag;
 import android.util.Log;
+
 import com.chanapps.four.activity.BoardSelectorActivity;
 import com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader;
 
@@ -32,18 +32,26 @@ public class ExtendedImageDownloader extends URLConnectionImageDownloader {
     private Context context;
 
     public ExtendedImageDownloader(Context context) {
+    	super(context);
         this.context = context;
     }
 
     @Override
-    protected InputStream getStreamFromOtherSource(URI imageUri) throws IOException {
-        String protocol = imageUri.getScheme();
+    protected InputStream getStreamFromOtherSource(String imageUri, Object extra) throws IOException {
+    	URI imageUrl = null;
+		try {
+			imageUrl = new URI(imageUri);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        String protocol = imageUrl.getScheme();
         if (PROTOCOL_ASSETS.equals(protocol)) {
-            return getStreamFromAssets(imageUri);
+            return getStreamFromAssets(imageUrl);
         } else if (PROTOCOL_DRAWABLE.equals(protocol)) {
-            return getStreamFromDrawable(imageUri);
+            return getStreamFromDrawable(imageUrl);
         } else {
-            return super.getStreamFromOtherSource(imageUri);
+            return super.getStreamFromOtherSource(imageUri, extra);
         }
     }
 
