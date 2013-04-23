@@ -21,7 +21,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 
 /**
  * Effects menu that contains toggles mapping to corresponding groups of effects.

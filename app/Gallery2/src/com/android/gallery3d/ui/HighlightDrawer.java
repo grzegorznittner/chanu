@@ -15,7 +15,7 @@
  */
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.data.Path;
 
 import android.content.Context;

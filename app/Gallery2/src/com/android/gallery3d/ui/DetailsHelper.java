@@ -15,7 +15,7 @@
  */
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.data.MediaDetails;
 import com.android.gallery3d.ui.DetailsAddressResolver.AddressResolvingListener;

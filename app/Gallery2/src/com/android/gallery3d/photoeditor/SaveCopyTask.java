@@ -29,7 +29,7 @@ import android.provider.MediaStore.Images.ImageColumns;
 import android.view.Gravity;
 import android.widget.Toast;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 
 import java.io.File;
 import java.sql.Date;

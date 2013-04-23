@@ -157,6 +157,54 @@
             </intent-filter>
         </receiver>
         <service android:name="com.chanapps.four.widget.UpdateWidgetService"/>
+        
+        <!-- Gallery Photo widget -->
+        <!-- 
+        <activity android:name="com.chanapps.four.widget.PhotoAppWidgetConfigure"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:theme="@style/android:Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <receiver android:name="com.chanapps.four.widget.PhotoAppWidgetProvider"
+                android:label="@string/appwidget_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                    android:resource="@xml/widget_photoapp_info" />
+        </receiver>
+        <receiver android:name="com.android.gallery3d.app.PackagesMonitor">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
+        <service android:name="com.android.gallery3d.gadget.WidgetService"
+                android:permission="android.permission.BIND_REMOTEVIEWS"
+                android:exported="false"/>
+        <provider android:name="com.android.gallery3d.provider.GalleryProvider"
+                android:syncable="false"
+                android:grantUriPermissions="true"
+                android:authorities="com.android.gallery3d.provider"
+                android:exported="false"/>
+        <activity android:name="com.android.gallery3d.gadget.WidgetClickHandler"
+            	android:exported="false"/>
+        <activity android:name="com.android.gallery3d.app.DialogPicker"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:theme="@style/DialogPickerTheme"
+                android:exported="false"/>
+        <activity android:name="com.android.gallery3d.app.AlbumPicker"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:theme="@style/DialogPickerTheme"
+                android:exported="false"/>
+        <activity android:name="com.android.gallery3d.gadget.WidgetTypeChooser"
+                android:configChanges="keyboardHidden|orientation|screenSize"
+                android:theme="@style/DialogPickerTheme"
+                android:exported="false"/>
+                -->
 
         <!-- advertising -->
         <activity android:name="com.google.ads.AdActivity"

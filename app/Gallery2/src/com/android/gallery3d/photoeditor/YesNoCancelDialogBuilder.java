@@ -4,7 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 
 /**
  * Alert dialog builder that builds a simple Yes/No/Cancel dialog.

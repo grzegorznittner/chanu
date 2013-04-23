@@ -23,7 +23,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.ViewGroup;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 
 /**
  * Main activity of the photo editor that opens a photo and prepares tools for photo editing.

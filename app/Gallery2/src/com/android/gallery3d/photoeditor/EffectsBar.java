@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.photoeditor.actions.EffectAction;
 import com.android.gallery3d.photoeditor.actions.EffectToolFactory;
 

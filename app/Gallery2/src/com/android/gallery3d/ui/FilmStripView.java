@@ -16,7 +16,7 @@
 
 package com.android.gallery3d.ui;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.anim.AlphaAnimation;
 import com.android.gallery3d.app.AlbumDataAdapter;
 import com.android.gallery3d.app.GalleryActivity;

@@ -16,7 +16,8 @@
 
 package com.android.gallery3d.gadget;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
+import com.chanapps.four.widget.WidgetDatabaseHelper;
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.data.ContentListener;
 import com.android.gallery3d.data.DataManager;

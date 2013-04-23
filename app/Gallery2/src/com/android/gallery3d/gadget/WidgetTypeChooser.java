@@ -16,7 +16,8 @@
 
 package com.android.gallery3d.gadget;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
+import com.chanapps.four.widget.PhotoAppWidgetConfigure;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -33,7 +34,7 @@ public class WidgetTypeChooser extends Activity {
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
             Intent data = new Intent()
-                    .putExtra(WidgetConfigure.KEY_WIDGET_TYPE, checkedId);
+                    .putExtra(PhotoAppWidgetConfigure.KEY_WIDGET_TYPE, checkedId);
             setResult(RESULT_OK, data);
             finish();
         }

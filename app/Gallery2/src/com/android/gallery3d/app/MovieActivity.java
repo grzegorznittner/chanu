@@ -16,7 +16,7 @@
 
 package com.android.gallery3d.app;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 
 import android.app.ActionBar;
 import android.app.Activity;

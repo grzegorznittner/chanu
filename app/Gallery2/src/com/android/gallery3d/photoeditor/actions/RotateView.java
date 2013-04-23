@@ -24,7 +24,7 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 
 /**
  * View that shows grids and handles touch-events to adjust angle of rotation.

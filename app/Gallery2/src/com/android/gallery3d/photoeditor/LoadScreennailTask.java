@@ -23,7 +23,7 @@ import android.os.AsyncTask;
 import android.view.Gravity;
 import android.widget.Toast;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 
 /**
  * Asynchronous task for loading source photo screennail.
