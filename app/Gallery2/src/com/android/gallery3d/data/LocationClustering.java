@@ -16,7 +16,7 @@
 
 package com.android.gallery3d.data;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.util.ReverseGeocoder;
 import com.android.gallery3d.util.GalleryUtils;
 

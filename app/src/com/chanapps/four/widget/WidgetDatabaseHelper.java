@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.gallery3d.gadget;
+package com.chanapps.four.widget;
 
 import com.android.gallery3d.common.Utils;
 
@@ -33,7 +33,7 @@ import java.util.ArrayList;
 
 public class WidgetDatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "PhotoDatabaseHelper";
-    private static final String DATABASE_NAME = "launcher.db";
+    private static final String DATABASE_NAME = "photoapp-widget.db";
 
     private static final int DATABASE_VERSION = 4;
 
@@ -215,7 +215,7 @@ public class WidgetDatabaseHelper extends SQLiteOpenHelper {
                     WHERE_CLAUSE, new String[] {String.valueOf(appWidgetId)},
                     null, null, null);
             if (cursor == null || !cursor.moveToNext()) {
-                Log.e(TAG, "query fail: empty cursor: " + cursor);
+                Log.e(TAG, "query fail: empty cursor: " + cursor, new Exception("location"));
                 return null;
             }
             return new Entry(appWidgetId, cursor);

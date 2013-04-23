@@ -2,7 +2,7 @@
 
 <resources>
   <string name="app_name">Gallery</string>
-  <string name="gadget_title">Picture frame</string>
+  <string name="gadget_title">Chanu Picture Frame</string>
   <string name="details_ms">%1$02d:%2$02d</string>
   <string name="details_hms">%1$d:%2$02d:%3$02d</string>
   <string name="movie_view_label">Video player</string>
@@ -65,7 +65,7 @@
   <string name="show_images_only">Images only</string>
   <string name="show_videos_only">Videos only</string>
   <string name="show_all">Images and videos</string>
-  <string name="appwidget_title">Chan Image Gallery</string>
+  <string name="appwidget_title">Chanu Image Gallery</string>
   <string name="appwidget_empty_text">No images.</string>
   <string name="crop_saved">Cropped image saved to Downloads.</string>
   <string name="crop_not_saved">Cropped image wasn\'t saved.</string>

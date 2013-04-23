@@ -21,7 +21,7 @@ import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.widget.ViewSwitcher;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 
 /**
  * Action bar that contains buttons such as undo, redo, save, etc.

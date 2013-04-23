@@ -16,7 +16,7 @@
 
 package com.android.gallery3d.util;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.app.PackagesMonitor;
 import com.android.gallery3d.data.DataManager;
 import com.android.gallery3d.data.MediaItem;

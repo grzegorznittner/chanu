@@ -3,7 +3,7 @@
 <manifest android:versionCode="30682"
         android:versionName="1.1.30682"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.android.gallery3d">
+        package="com.chanapps.four.gallery3d">
 
     <original-package android:name="com.android.gallery3d" />
 

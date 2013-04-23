@@ -19,7 +19,7 @@ package com.android.gallery3d.photoeditor.actions;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.photoeditor.PhotoView;
 import com.android.gallery3d.photoeditor.filters.FlipFilter;
 

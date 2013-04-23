@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package com.android.gallery3d.gadget;
+package com.chanapps.four.widget;
 
-import com.android.gallery3d.R;
-import com.android.gallery3d.gadget.WidgetDatabaseHelper.Entry;
+import com.chanapps.four.gallery3d.R;
+import com.chanapps.four.widget.WidgetDatabaseHelper.Entry;
+import com.android.gallery3d.gadget.WidgetClickHandler;
+import com.android.gallery3d.gadget.WidgetService;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;

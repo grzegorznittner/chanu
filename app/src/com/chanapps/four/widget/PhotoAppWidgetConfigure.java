@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.gallery3d.gadget;
-
-import com.android.gallery3d.R;
-import com.android.gallery3d.app.AlbumPicker;
-import com.android.gallery3d.app.CropImage;
-import com.android.gallery3d.app.DialogPicker;
+package com.chanapps.four.widget;
 
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
@@ -28,11 +23,18 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.RemoteViews;
 
-public class WidgetConfigure extends Activity {
+import com.android.gallery3d.app.AlbumPicker;
+import com.android.gallery3d.app.CropImage;
+import com.android.gallery3d.app.DialogPicker;
+import com.android.gallery3d.gadget.WidgetTypeChooser;
+import com.chanapps.four.gallery3d.R;
+
+public class PhotoAppWidgetConfigure extends Activity {
     @SuppressWarnings("unused")
-    private static final String TAG = "WidgetConfigure";
+    private static final String TAG = "PhotoAppWidgetConfigure";
 
     public static final String KEY_WIDGET_TYPE = "widget-type";
 
@@ -56,6 +58,7 @@ public class WidgetConfigure extends Activity {
 
     @Override
     protected void onCreate(Bundle bundle) {
+    	Log.i(TAG, "onCreate called");
         super.onCreate(bundle);
         mAppWidgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
 
@@ -72,6 +75,7 @@ public class WidgetConfigure extends Activity {
     }
 
     private void updateWidgetAndFinish(WidgetDatabaseHelper.Entry entry) {
+    	Log.i(TAG, "updateWidgetAndFinish called");
         AppWidgetManager manager = AppWidgetManager.getInstance(this);
         RemoteViews views = PhotoAppWidgetProvider.buildWidget(this, mAppWidgetId, entry);
         manager.updateAppWidget(mAppWidgetId, views);

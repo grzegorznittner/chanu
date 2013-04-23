@@ -20,7 +20,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Message;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.MediaItem;

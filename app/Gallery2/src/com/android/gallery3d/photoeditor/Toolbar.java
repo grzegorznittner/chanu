@@ -26,7 +26,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 
-import com.android.gallery3d.R;
+import com.chanapps.four.gallery3d.R;
 
 import java.util.ArrayList;
 import java.util.List;
