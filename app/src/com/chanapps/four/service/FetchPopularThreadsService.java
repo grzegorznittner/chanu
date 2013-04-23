@@ -278,7 +278,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 		
 		thread.board = str.extract(".4chan.org/", "/");
 		thread.no = Long.parseLong(str.extract("res/", "#p"));
-		String image = str.extract("&lt;a href=&quot;#&quot;&gt;", "&lt;/a&gt;");
+        String image = str.extract("&lt;a href=&quot;#&quot;&gt;", "&lt;/a&gt;");
 		
 		if (str.moveTo(")&lt;")) {
 			String imageDesc = str.extractBefore("(");
@@ -294,22 +294,23 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 						thread.fsize *= 1024;
 					}
 				} catch (Exception e) {
-					thread.fsize = 0;
+                    if (DEBUG) Log.i(TAG, "Exception parsing popular thread filesize", e);
+                    thread.fsize = 0;
 				}
 				try {
 					String dimStr[] = parts[1].trim().split("x");
 					thread.w = Integer.parseInt(dimStr[0]);
 					thread.h = Integer.parseInt(dimStr[1]);
 				} catch (Exception e) {
-					e.printStackTrace();
+					if (DEBUG) Log.i(TAG, "Exception parsing popular thread dimensions", e);
 				}
 				try {
 					String imgStr[] = parts[2].trim().split("\\.");
 					thread.filename = imgStr[0];
 					thread.ext = "." + imgStr[imgStr.length - 1];
 				} catch (Exception e) {
-					e.printStackTrace();
-				}
+                    if (DEBUG) Log.i(TAG, "Exception parsing popular thread filename", e);
+                }
 			}
 		}
 		String thumb = str.extract("thumbs.4chan.org/" + thread.board + "/thumb/", "&quot;");
@@ -324,8 +325,10 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 		if (str.moveTo("</a>")) {
 			thread.sub = str.extractBefore(">");
 		}
-		
-		if (DEBUG) Log.i(TAG, "Board: " + thread.board + ", no: " + thread.no + ", tim: " + thread.tim + ", size: " + thread.fsize + ", " + thread.w + "x" + thread.h
+        if (str.moveTo("<blockquote>"))
+            thread.com = str.extractBefore("</blockquote>");
+
+        if (DEBUG) Log.i(TAG, "Board: " + thread.board + ", no: " + thread.no + ", tim: " + thread.tim + ", size: " + thread.fsize + ", " + thread.w + "x" + thread.h
 				+ ",\n     img: " + thread.imageUrl() + ", thumb: " + thread.thumbnailUrl()
 				+ ",\n     topic: " + thread.sub);
 		return thread;

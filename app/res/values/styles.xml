@@ -96,6 +96,18 @@
         <item name="android:adjustViewBounds">false</item>
     </style>
 
+    <style name="BoardTypeText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:background">@drawable/black_gradient_bg</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="BoardSelectorGridTextImageOverlay" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

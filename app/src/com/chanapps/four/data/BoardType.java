@@ -12,8 +12,9 @@ import com.chanapps.four.activity.R;
 public enum BoardType {
 
     WATCHLIST (R.string.board_watch, 0, false, true),
-    POPULAR (R.string.board_popular, 0, false, true),
-    LATEST (R.string.board_latest, 0, false, true),
+    POPULAR (R.string.board_selector_popular_title, 0, false, true),
+    LATEST (R.string.board_selector_latest_title, 0, false, true),
+    LATEST_IMAGES (R.string.board_selector_latest_images_title, 0, false, true),
     JAPANESE_CULTURE (R.string.board_type_japanese_culture, 0, true, true),
     INTERESTS (R.string.board_type_interests, 0, true, true),
     CREATIVE (R.string.board_type_creative, 0, true, true),

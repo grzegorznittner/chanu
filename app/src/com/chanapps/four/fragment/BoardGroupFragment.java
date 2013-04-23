@@ -21,10 +21,7 @@ import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.BoardSelectorGridCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.data.*;
-import com.chanapps.four.loader.BoardCursorLoader;
-import com.chanapps.four.loader.BoardSelectorCursorLoader;
-import com.chanapps.four.loader.BoardSelectorWatchlistCursorLoader;
-import com.chanapps.four.loader.ChanImageLoader;
+import com.chanapps.four.loader.*;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -105,8 +102,7 @@ public class BoardGroupFragment
             case WATCHLIST:
                 ChanWatchlist.setWatchlistFragment(this);
                 break;
-            case LATEST:
-            case POPULAR:
+            case RECENT:
                 FetchPopularThreadsService.schedulePopularFetchWithPriority(getActivity().getApplicationContext());
             default:
                 break;
@@ -162,8 +158,7 @@ public class BoardGroupFragment
                         columnHeight);
                 break;
             case WATCHLIST:
-            case POPULAR:
-            case LATEST:
+            case RECENT:
             default:
                 adapter = new BoardGridCursorAdapter(getActivity(),
                         R.layout.board_grid_item,
@@ -175,7 +170,9 @@ public class BoardGroupFragment
                                 //ChanThread.THREAD_INFO,
                                 ChanThread.THREAD_COUNTRY_FLAG_URL,
                                 ChanThread.THREAD_NUM_REPLIES,
-                                ChanThread.THREAD_NUM_IMAGES},
+                                ChanThread.THREAD_NUM_IMAGES,
+                                ChanThread.THREAD_INFO
+                        },
                         new int[] {
                                 R.id.grid_item_board_abbrev,
                                 R.id.grid_item_thread_thumb,
@@ -183,7 +180,9 @@ public class BoardGroupFragment
                                 //R.id.grid_item_thread_info,
                                 R.id.grid_item_country_flag,
                                 R.id.grid_item_num_replies,
-                                R.id.grid_item_num_images},
+                                R.id.grid_item_num_images,
+                                R.id.grid_item_board_type_text
+                        },
                         columnWidth,
                         columnHeight);
                 break;
@@ -264,10 +263,9 @@ public class BoardGroupFragment
                 return new BoardSelectorCursorLoader(getActivity());
             case WATCHLIST:
                 return new BoardSelectorWatchlistCursorLoader(getActivity());
-            case POPULAR:
-            case LATEST:
+            case RECENT:
             default:
-                return new BoardCursorLoader(getActivity(), boardSelectorTab.boardCode());
+                return new BoardTypeRecentCursorLoader(getActivity());
         }
     }
 
@@ -320,13 +318,12 @@ public class BoardGroupFragment
                 BoardActivity.startActivity(activity, boardCode);
                 break;
             case WATCHLIST:
-            case POPULAR:
-            case LATEST:
+            case RECENT:
             default:
                 final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
                 if (DEBUG) Log.i(TAG, "clicked thread " + boardCode + "/" + threadNo);
-                FetchChanDataService.scheduleBoardFetchWithPriority(getActivity(), boardCode); // get board ready
                 FetchChanDataService.scheduleThreadFetchWithPriority(getActivity(), boardCode, threadNo);
+                FetchChanDataService.scheduleBoardFetchWithPriority(getActivity(), boardCode); // get board ready
                 ThreadActivity.startActivity(getActivity(), boardCode, threadNo);
                 break;
         }
@@ -350,8 +347,7 @@ public class BoardGroupFragment
                 else {
                     return false;
                 }
-            case POPULAR:
-            case LATEST:
+            case RECENT:
             case BOARDLIST:
             default:
                 return false;
@@ -364,8 +360,7 @@ public class BoardGroupFragment
             case BOARDLIST:
                 return setBoardlistViewValue(view, cursor, columnIndex);
             case WATCHLIST:
-            case POPULAR:
-            case LATEST:
+            case RECENT:
             default:
                 return BoardActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions, boardSelectorTab.boardCode());
         }

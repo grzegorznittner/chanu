@@ -42,4 +42,9 @@
             style="@style/BoardGridCountryFlag"
             />
 
+    <TextView
+            android:id="@+id/grid_item_board_type_text"
+            style="@style/BoardTypeText"
+            />
+
 </RelativeLayout>

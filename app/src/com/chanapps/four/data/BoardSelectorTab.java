@@ -12,8 +12,7 @@ import com.chanapps.four.activity.R;
 public enum BoardSelectorTab {
 
     BOARDLIST (R.string.board_selector_boardlist_title, "", R.string.board_empty_default),
-    POPULAR (R.string.board_selector_popular_title, ChanBoard.POPULAR_BOARD_CODE, R.string.board_empty_popular),
-    LATEST (R.string.board_selector_latest_title, ChanBoard.LATEST_BOARD_CODE, R.string.board_empty_latest),
+    RECENT (R.string.board_selector_recent_title, ChanBoard.POPULAR_BOARD_CODE, R.string.board_empty_recent),
     WATCHLIST (R.string.board_selector_watchlist_title, ChanBoard.WATCH_BOARD_CODE, R.string.board_empty_watchlist);
 
     private final int displayStringId;

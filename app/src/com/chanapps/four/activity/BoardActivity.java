@@ -333,6 +333,8 @@ public class BoardActivity
                 return setThreadNumReplies((TextView) view, cursor);
             case R.id.grid_item_num_images:
                 return setThreadNumImages((TextView) view, cursor);
+            case R.id.grid_item_board_type_text:
+                return setBoardTypeText((TextView) view, cursor);
         }
         return false;
     }
@@ -363,18 +365,24 @@ public class BoardActivity
     }
 
     protected static boolean setThreadThumb(ImageView iv, Cursor cursor, ImageLoader imageLoader, DisplayImageOptions options) {
-        String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
-        if (url == null || url.isEmpty()) {
-            String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-            long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-            int i = (new Long(threadNo % 3)).intValue();
-            url = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
+        int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+        if ((threadFlags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0) {
+            iv.setImageBitmap(null);
         }
-        imageLoader.displayImage(
-                url,
-                iv,
-                options);
-                //options.modifyCenterCrop(true)); // load async
+        else {
+            String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
+            if (url == null || url.isEmpty()) {
+                String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+                long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+                int i = (new Long(threadNo % 3)).intValue();
+                url = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
+            }
+            imageLoader.displayImage(
+                    url,
+                    iv,
+                    options);
+            //options.modifyCenterCrop(true)); // load async
+        }
         return true;
     }
 
@@ -389,7 +397,10 @@ public class BoardActivity
     protected static boolean setThreadNumReplies(TextView tv, Cursor cursor) {
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         int n = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_REPLIES));
-        if ((flags & ChanThread.THREAD_FLAG_AD) == 0 && n >= 0) {
+        if ((flags & ChanThread.THREAD_FLAG_AD) == 0
+                && (flags & ChanThread.THREAD_FLAG_BOARD_TYPE) == 0
+                && n >= 0)
+        {
             tv.setText(n + "r");
             tv.setVisibility(View.VISIBLE);
         }
@@ -403,13 +414,29 @@ public class BoardActivity
     protected static boolean setThreadNumImages(TextView tv, Cursor cursor) {
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         int n = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES));
-        if ((flags & ChanThread.THREAD_FLAG_AD) == 0 && n >= 0) {
+        if ((flags & ChanThread.THREAD_FLAG_AD) == 0
+                && (flags & ChanThread.THREAD_FLAG_BOARD_TYPE) == 0
+                && n >= 0)
+        {
             tv.setText(n + "i");
             tv.setVisibility(View.VISIBLE);
         }
         else {
             tv.setText("");
             tv.setVisibility(View.GONE);
+        }
+        return true;
+    }
+
+    protected static boolean setBoardTypeText(TextView tv, Cursor cursor) {
+        int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+        if ((threadFlags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0) {
+            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
+            tv.setVisibility(View.VISIBLE);
+        }
+        else {
+            tv.setVisibility(View.GONE);
+            tv.setText("");
         }
         return true;
     }
