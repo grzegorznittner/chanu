@@ -21,9 +21,6 @@ import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.mColorPicker.ColorPickerDialog;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
-
-import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -318,7 +315,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
     }
 
     protected void updateRefreshButtonState() {
-        int refreshBackground = widgetConf.showRefreshButton ? R.color.PaletteBlackHalfOpacity : 0;
+        int refreshBackground = widgetConf.showRefreshButton ? R.drawable.widget_refresh_gradient_bg : 0;
         int refreshDrawable = widgetConf.showRefreshButton ? R.drawable.widget_refresh_button_selector : 0;
         ImageView refresh = (ImageView)findViewById(R.id.refresh);
         refresh.setBackgroundResource(refreshBackground);
@@ -326,7 +323,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
     }
 
     protected void updateConfigButtonState() {
-        int configureBackground = widgetConf.showConfigureButton ? R.color.PaletteBlackHalfOpacity : 0;
+        int configureBackground = widgetConf.showConfigureButton ? R.drawable.widget_configure_gradient_bg : 0;
         int configureDrawable = widgetConf.showConfigureButton ? R.drawable.widget_configure_button_selector : 0;
         ImageView configure = (ImageView)findViewById(R.id.configure);
         configure.setBackgroundResource(configureBackground);

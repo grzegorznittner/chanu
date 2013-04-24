@@ -84,6 +84,7 @@
         <item name="android:smoothScrollbar">true</item>
         <item name="android:cacheColorHint">#00000000</item>
         <item name="android:fastScrollEnabled">true</item>
+        <item name="android:background">@drawable/board_view_gradient_bg</item>
     </style>
 
     <style name="BoardGridImage" parent="AppTheme">
@@ -104,8 +105,9 @@
         <item name="android:gravity">center</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:background">@drawable/black_gradient_bg</item>
+        <item name="android:background">@drawable/board_type_gradient_bg</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:visibility">gone</item>
     </style>
 
     <style name="BoardSelectorGridTextImageOverlay" parent="AppTheme">
@@ -119,7 +121,7 @@
         <item name="android:paddingBottom">4dp</item>
         <item name="android:gravity">center_horizontal|center_vertical</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:background">@color/PaletteTextOverlayBackground</item>
+        <item name="android:background">@drawable/board_subject_gradient_bg</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:lines">1</item>
         <item name="android:textStyle">bold</item>
@@ -141,9 +143,9 @@
         <item name="android:paddingLeft">0dp</item>
         <item name="android:paddingRight">0dp</item>
         <item name="android:paddingBottom">2dp</item>
-        <item name="android:gravity">center_horizontal|top</item>
+        <item name="android:gravity">center_horizontal|center_vertical</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:background">@color/PaletteTextOverlayBackground</item>
+        <item name="android:background">@drawable/board_subject_gradient_bg</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:lines">2</item>
         <item name="android:textStyle">bold</item>
@@ -154,12 +156,12 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_marginLeft">2dp</item>
-        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginTop">0dp</item>
         <item name="android:paddingLeft">2dp</item>
         <item name="android:paddingRight">2dp</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:background">@color/PaletteTextOverlayBackground</item>
+        <item name="android:background">@drawable/board_num_replies_gradient_bg</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:lines">1</item>
         <item name="android:textStyle">bold</item>
@@ -170,11 +172,11 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerHorizontal">true</item>
         <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_marginTop">2dp</item>
-        <item name="android:paddingLeft">2dp</item>
-        <item name="android:paddingRight">2dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:background">@color/PaletteTextOverlayBackground</item>
+        <item name="android:background">@drawable/board_abbrev_gradient_bg</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:lines">1</item>
         <item name="android:textStyle">bold</item>
@@ -186,12 +188,12 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_marginRight">2dp</item>
-        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_marginTop">0dp</item>
         <item name="android:paddingLeft">2dp</item>
         <item name="android:paddingRight">2dp</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:background">@color/PaletteTextOverlayBackground</item>
+        <item name="android:background">@drawable/board_num_images_gradient_bg</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:lines">1</item>
         <item name="android:textStyle">bold</item>
@@ -320,7 +322,7 @@
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/black_gradient_bg</item>
+        <item name="android:background">@drawable/widget_title_gradient_bg</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteWhite</item>
@@ -554,7 +556,7 @@
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/black_gradient_bg</item>
+        <item name="android:background">@drawable/widget_configure_btn_gradient_bg</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteWhite</item>
@@ -590,7 +592,10 @@
     <color name="PaletteTransparent">#00000000</color>
     <color name="PaletteLightestGray">#eee</color>
     <color name="PaletteLighterGray">#ddd</color>
+    <color name="PaletteLightGray">#ccc</color>
+    <color name="PaletteMedGray">#888</color>
     <color name="PaletteLighterGrayHalfOpacity">#80dddddd</color>
+    <color name="PaletteLightBlack">#ff030303</color>
     <color name="PaletteBlack">#ff010101</color>
     <color name="PaletteBlackHalfOpacity">#80010101</color>
     <color name="PaletteTextOverlayBackground">#a0010101</color>

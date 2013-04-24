@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 import com.chanapps.four.activity.BoardActivity;
+import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.*;
@@ -132,25 +133,27 @@ public class UpdateWidgetService extends Service {
             views.setTextViewText(R.id.board_title, boardTitle);
             views.setTextColor(R.id.board_title, boardTitleColor);
             views.setViewVisibility(R.id.board_title, boardTitleVisibility);
+            if (widgetConf.showBoardTitle)
+                views.setOnClickPendingIntent(R.id.board_title, makeBoardIntent());
 
-            int refreshBackground = widgetConf.showRefreshButton ? R.color.PaletteBlackHalfOpacity : 0;
+            int refreshBackground = widgetConf.showRefreshButton ? R.drawable.widget_refresh_gradient_bg : 0;
             int refreshDrawable = widgetConf.showRefreshButton ? R.drawable.widget_refresh_button_selector : 0;
             views.setInt(R.id.refresh, "setBackgroundResource", refreshBackground);
             views.setInt(R.id.refresh, "setImageResource", refreshDrawable);
+            views.setOnClickPendingIntent(R.id.refresh, makeRefreshIntent());
 
-            int configureBackground = widgetConf.showConfigureButton ? R.color.PaletteBlackHalfOpacity : 0;
+            int configureBackground = widgetConf.showConfigureButton ? R.drawable.widget_configure_gradient_bg : 0;
             int configureDrawable = widgetConf.showConfigureButton ? R.drawable.widget_configure_button_selector : 0;
             views.setInt(R.id.configure, "setBackgroundResource", configureBackground);
             views.setInt(R.id.configure, "setImageResource", configureDrawable);
+            views.setOnClickPendingIntent(R.id.configure, makeConfigureIntent());
 
             int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
             for (int i = 0; i < imageIds.length; i++) {
                 int imageId = imageIds[i];
-                PendingIntent pendingIntent = makePendingIntent(threads[i], i);
+                PendingIntent pendingIntent = makeThreadIntent(threads[i], i);
                 views.setOnClickPendingIntent(imageId, pendingIntent);
             }
-            views.setOnClickPendingIntent(R.id.refresh, makeRefreshIntent());
-            views.setOnClickPendingIntent(R.id.configure, makeConfigureIntent());
 
             AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, views);
 
@@ -180,12 +183,28 @@ public class UpdateWidgetService extends Service {
                             });
         }
 
-        private PendingIntent makePendingIntent(ChanPost thread, int i) {
+        private PendingIntent makeThreadIntent(ChanPost thread, int i) {
             Intent intent = (thread == null || thread.no < 1)
                 ? BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode))
                 : ThreadActivity.createIntentForActivity(context, new String(thread.board), thread.no);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            int uniqueId = 100 * widgetConf.appWidgetId + i;
+            int uniqueId = 10 * widgetConf.appWidgetId + i + 1;
+            return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+
+        private PendingIntent makeBoardIntent() {
+            Intent intent;
+            if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
+                BoardSelectorTab tab = ChanBoard.WATCH_BOARD_CODE.equals(widgetConf.boardCode)
+                        ? BoardSelectorTab.WATCHLIST
+                        : BoardSelectorTab.RECENT;
+                intent = BoardSelectorActivity.createIntentForActivity(context, tab);
+            }
+            else {
+                intent = BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode));
+            }
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            int uniqueId = 10 * widgetConf.appWidgetId;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
@@ -207,14 +226,14 @@ public class UpdateWidgetService extends Service {
             intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
             intent.putExtra(ChanHelper.FORCE_REFRESH, true);
             intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
-            int uniqueId = 10 * widgetConf.appWidgetId + 1;
+            int uniqueId = 100 * widgetConf.appWidgetId + 1;
             return PendingIntent.getService(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         private PendingIntent makeConfigureIntent() {
             Intent intent = new Intent(context, WidgetConfigureActivity.class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
-            int uniqueId = 10 * widgetConf.appWidgetId + 2;
+            int uniqueId = 1000 * widgetConf.appWidgetId + 2;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
