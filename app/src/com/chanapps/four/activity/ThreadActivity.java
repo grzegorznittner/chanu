@@ -863,6 +863,7 @@ public class ThreadActivity
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
         String boardTitle = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
+        /*
         String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
                 ? " Thread " + threadNo
                 : thread.posts[0].threadSubject(getApplicationContext())
@@ -884,6 +885,8 @@ public class ThreadActivity
                     now, 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString();
         a.setTitle(boardTitle + ": " + threadTitle);
         a.setSubtitle(timeSpan);
+        */
+        a.setTitle(boardTitle);
         a.setDisplayShowTitleEnabled(true);
         a.setDisplayHomeAsUpEnabled(true);
     }

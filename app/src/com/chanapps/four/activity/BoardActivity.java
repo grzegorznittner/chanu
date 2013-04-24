@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -32,6 +33,7 @@ import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
+import com.chanapps.four.service.profile.NetworkProfile;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -468,9 +470,22 @@ public class BoardActivity
         }
         setProgressBarIndeterminateVisibility(false);
         setActionBarTitle(); // to reflect updated time
-        if (data.getCount() < 1) { // didn't load yet, retry
-            if (handler != null)
+
+        // retry load if maybe data wasn't there yet
+        NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
+        if (data.getCount() < 1
+                && handler != null)
+        {
+            if (health == NetworkProfile.Health.NO_CONNECTION
+                    || health == NetworkProfile.Health.BAD) {
+                setProgressBarIndeterminateVisibility(false);
+                String msg = String.format(getString(R.string.mobile_profile_health_status),
+                        health.toString().toLowerCase().replaceAll("_", " "));
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            }
+            else {
                 handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+            }
         }
     }
 
@@ -502,7 +517,13 @@ public class BoardActivity
                 Intent intent = new Intent(this, BoardSelectorActivity.class);
                 intent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.getBoardByCode(this, boardCode).boardType.toString());
                 intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
-                NavUtils.navigateUpTo(this, intent);
+                if (!NavUtils.shouldUpRecreateTask(this, intent)) {
+                    NavUtils.navigateUpTo(this, intent);
+                }
+                else         {
+                    finish();
+                    TaskStackBuilder.create(this).addParentStack(BoardSelectorActivity.class).startActivities();
+                }
                 return true;
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
@@ -573,7 +594,8 @@ public class BoardActivity
         }
         String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
         a.setTitle(title);
-        
+
+        /*
         StringBuffer msg = new StringBuffer();
         if (board.newThreads > 0 || board.updatedThreads > 0) {
 			if (board.newThreads > 0) {
@@ -601,6 +623,7 @@ public class BoardActivity
     		}
 		}
         a.setSubtitle(msg.toString());
+        */
         a.setDisplayShowTitleEnabled(true);
         a.setDisplayHomeAsUpEnabled(true);
     }

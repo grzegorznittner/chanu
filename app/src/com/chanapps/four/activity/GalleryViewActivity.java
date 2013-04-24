@@ -616,33 +616,39 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     private void setActionBarTitle() {
         if (DEBUG) Log.i(TAG, "setting action bar based on viewType=" + viewType);
+        if (DEBUG) Log.i(TAG, "about to load board data for action bar board=" + boardCode);
+        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+        if (board == null) {
+            board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
+        }
+        String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
         if (getActionBar() != null) {
         	switch(viewType) {
         	case OFFLINE_ALBUMSET_VIEW:
         		getActionBar().setTitle(R.string.offline_chan_view_menu);
         		break;
         	case OFFLINE_ALBUM_VIEW:
-        		getActionBar().setTitle(String.format(getString(R.string.offline_board_view_title), boardCode));
+        		getActionBar().setTitle(String.format(getString(R.string.offline_board_view_title), title));
         		break;
         	case PHOTO_VIEW:
         	case ALBUM_VIEW:
         	default:
-                getActionBar().setTitle("/" + boardCode + "/" + threadNo + (threadNo == postNo ? "" : ":" + postNo));
+                getActionBar().setTitle(title);
         	}
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
         if (getGalleryActionBar() != null) {
         	switch(viewType) {
         	case OFFLINE_ALBUMSET_VIEW:
-                getActionBar().setTitle(R.string.offline_chan_view_menu);
+                getGalleryActionBar().setTitle(R.string.offline_chan_view_menu);
                 break;
         	case OFFLINE_ALBUM_VIEW:
-                getActionBar().setTitle(String.format(getString(R.string.offline_board_view_title), boardCode));
+                getGalleryActionBar().setTitle(String.format(getString(R.string.offline_board_view_title), title));
                 break;
         	case PHOTO_VIEW:
         	case ALBUM_VIEW:
         	default:
-                getGalleryActionBar().setTitle("/" + boardCode + "/" + threadNo + (threadNo == postNo ? "" : ":" + postNo));
+                getGalleryActionBar().setTitle(title);
         	}
             getGalleryActionBar().setDisplayHomeAsUpEnabled(true);
         }

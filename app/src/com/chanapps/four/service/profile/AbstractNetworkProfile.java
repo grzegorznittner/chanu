@@ -6,6 +6,7 @@ package com.chanapps.four.service.profile;
 import java.util.Date;
 import java.util.Stack;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
@@ -128,7 +129,6 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	public void onBoardSelectorSelected(Context context, String boardCode) {
 		if (DEBUG) Log.d(TAG, "onBoardSelectorSelected called");
 		usageCounter++;
-
         ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         if (activity.getChanActivityId().activity == ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY) {
             ((BoardSelectorActivity)activity).notifyWatchlistChanged(); // best to do in watchlist itself, don't know how
@@ -180,7 +180,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	@Override
 	public void onProfileActivated(Context context) {
 		if (DEBUG) Log.d(TAG, "onProfileActivated called");
-		checkDataTransfer();
+        checkDataTransfer();
 	}
 
 	@Override
@@ -224,7 +224,32 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	public void onDataFetchFailure(ChanIdentifiedService service, Failure failure) {
 		if (DEBUG) Log.d(TAG, "failedFetchingData called for " + service);
 		storeFailedDataTransfer();
-	}
+        final ChanActivityId data = service.getChanActivityId();
+        if (data == null || (data.threadNo > 0 && data.postNo > 0)) // ignore post/image fetch failures
+            return;
+        final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        if (activity == null || activity.getChanActivityId().activity != data.activity)
+            return;
+        Handler handler = activity.getChanHandler();
+        if (handler == null)
+            return;
+        int msgId;
+        switch (failure) {
+            case DEAD_THREAD:
+                msgId = R.string.mobile_profile_fetch_dead_thread;
+                break;
+            case THREAD_UNMODIFIED:
+                msgId = R.string.mobile_profile_fetch_unmodified;
+                break;
+            case NETWORK:
+            case MISSING_DATA:
+            case WRONG_DATA:
+            case CORRUPT_DATA:
+            default:
+                msgId = R.string.mobile_profile_fetch_failure;
+        }
+        postStopMessage(handler, msgId);
+    }
 
 	@Override
 	public void onDataParseSuccess(ChanIdentifiedService service) {
@@ -234,7 +259,8 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	@Override
 	public void onDataParseFailure(ChanIdentifiedService service, Failure failure) {
 		if (DEBUG) Log.d(TAG, "failedParsingData called for " + service);
-	}
+	    onDataFetchFailure(service, failure);
+    }
 	
 	@Override
 	public void onImageDownloadSuccess(Context context, int time, int size) {
@@ -248,5 +274,37 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	protected void makeToast(final int id) {
         NetworkProfileManager.instance().makeToast(id);
 	}
+
+    protected void postStopMessage(Handler handler, final String string) {
+        if (handler == null)
+            return;
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                if (activity instanceof Activity) {
+                    ((Activity)activity).setProgressBarIndeterminateVisibility(false);
+                    if (string != null && !string.isEmpty())
+                        Toast.makeText(activity.getBaseContext(), string, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    protected void postStopMessage(Handler handler, final int stringId) {
+        if (handler == null)
+            return;
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                if (activity instanceof Activity) {
+                    ((Activity)activity).setProgressBarIndeterminateVisibility(false);
+                    if (stringId > 0)
+                        Toast.makeText(activity.getBaseContext(), stringId, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
 }

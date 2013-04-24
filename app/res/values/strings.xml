@@ -133,8 +133,8 @@
     <string name="share_text_menu">Share Text</string>
     <string name="post_reply_send_menu">Post Reply</string>
     <string name="offline_board_view_menu">Cached Board Images</string>
-    <string name="offline_board_view_title">Cached Images for /%1$s/</string>
-    <string name="offline_chan_view_menu">Chanu: Cached Images by Board</string>
+    <string name="offline_board_view_title">%1$s: Cached Images</string>
+    <string name="offline_chan_view_menu">Chanu: All Cached Images</string>
 
     <!-- board types tab -->
     <string name="japanese_culture">Japanese Culture</string>
@@ -484,7 +484,7 @@
     <string name="mobile_profile_loading_thread">Loading thread</string>
     <string name="mobile_profile_loading_image">Loading image</string>
     <string name="mobile_profile_preloading_defaults">Preloading boards /a/, /b/, /v/, /vg/ and /s/</string>
-    <string name="mobile_profile_health_status">Health %1$s skipping preloading</string>
+    <string name="mobile_profile_health_status">Health %1$s couldn\'t load</string>
     <string name="mobile_profile_no_auto_refresh">Auto refresh disabled</string>
     <string name="mobile_profile_loaded_board">Loaded /%1$s/</string>
     <string name="mobile_profile_loaded_thread">Loaded /%1$s/%2$d</string>

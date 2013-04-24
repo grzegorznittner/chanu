@@ -177,6 +177,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 || profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION
                 || profile.getConnectionHealth() == NetworkProfile.Health.BAD) {
             if (DEBUG) Log.i(TAG, "No network connection, exiting");
+            profile.onDataFetchFailure(this, Failure.NETWORK);
             return;
         }
 

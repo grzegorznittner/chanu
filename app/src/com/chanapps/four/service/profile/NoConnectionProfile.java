@@ -121,7 +121,17 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
 		super.onThreadSelected(context, board, threadId);
     }
 
-	@Override
+    @Override
+    public void onDataFetchFailure(ChanIdentifiedService service, Failure failure) {
+        super.onDataFetchFailure(service, failure);
+    }
+
+    @Override
+    public void onDataParseFailure(ChanIdentifiedService service, Failure failure) {
+        super.onDataParseFailure(service, failure);
+    }
+
+    @Override
 	public void onDataParseSuccess(ChanIdentifiedService service) {
 		ChanActivityId data = service.getChanActivityId();
 		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();

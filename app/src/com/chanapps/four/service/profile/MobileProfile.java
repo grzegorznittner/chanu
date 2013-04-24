@@ -66,7 +66,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 		super.onProfileActivated(context);
 		
 		Health health = getConnectionHealth();
-		if (health != Health.BAD) {
+		if (health != Health.BAD && health != Health.NO_CONNECTION) {
 			ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
 			ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
 			if (activityId != null) {
@@ -96,7 +96,9 @@ public class MobileProfile extends AbstractNetworkProfile {
 	}
 
     private void makeHealthStatusToast(Context context, Health health) {
-        makeToast(String.format(context.getString(R.string.mobile_profile_health_status), health.toString().toLowerCase().replaceAll("_", " ")));
+        postStopMessage(NetworkProfileManager.instance().getActivity().getChanHandler(),
+                String.format(context.getString(R.string.mobile_profile_health_status),
+                        health.toString().toLowerCase().replaceAll("_", " ")));
     }
 
     private void prefetchDefaultBoards(Context context) {
@@ -149,6 +151,11 @@ public class MobileProfile extends AbstractNetworkProfile {
     @Override
     public void onBoardSelectorRefreshed(Context context, Handler handler, String boardCode) {
         super.onBoardSelectorRefreshed(context, handler, boardCode);
+        Health health = getConnectionHealth();
+        if (health == Health.BAD || health == Health.NO_CONNECTION) {
+            makeHealthStatusToast(context, health);
+            return;
+        }
         if (DEBUG) Log.i(TAG, "Manual refresh board=" + boardCode);
         if (ChanBoard.WATCH_BOARD_CODE.equals(boardCode)) {
             ChanWatchlist.fetchWatchlistThreads(context);
@@ -162,25 +169,14 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
     }
 
-    protected void postStopMessage(Handler handler, final int stringId) {
-        if (handler == null)
-            return;
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                if (activity instanceof Activity) {
-                    ((Activity)activity).setProgressBarIndeterminateVisibility(false);
-                    if (stringId > 0)
-                        Toast.makeText(activity.getBaseContext(), stringId, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
     @Override
 	public void onBoardSelected(Context context, String boardCode) {
 		super.onBoardSelected(context, boardCode);
+        Health health = getConnectionHealth();
+        if (health == Health.BAD || health == Health.NO_CONNECTION) {
+            makeHealthStatusToast(context, health);
+            return;
+        }
         boolean canFetch = FetchChanDataService.scheduleBoardFetch(context, boardCode);
         if (canFetch)
             if (DEBUG) Log.i(TAG, "auto-fetching selected board=" + boardCode);
@@ -208,8 +204,13 @@ public class MobileProfile extends AbstractNetworkProfile {
 	@Override
 	public void onBoardRefreshed(final Context context, Handler handler, String boardCode) {
 		super.onBoardRefreshed(context, handler, boardCode);
+        Health health = getConnectionHealth();
         if (ChanFileStorage.hasNewBoardData(context, boardCode)) {
             onUpdateViewData(context, handler, boardCode);
+        }
+        else if (health == Health.BAD || health == Health.NO_CONNECTION) {
+            makeHealthStatusToast(context, health);
+            return;
         }
         else {
             boolean canFetch = FetchChanDataService.scheduleBoardFetchWithPriority(context, boardCode);
@@ -257,8 +258,12 @@ public class MobileProfile extends AbstractNetworkProfile {
 	public void onThreadSelected(Context context, String board, long threadId) {
 		if(DEBUG) Log.d(TAG, "onThreadSelected");
 		super.onThreadSelected(context, board, threadId);
-		
-		if (board != null || threadId > 0) {
+        Health health = getConnectionHealth();
+        if (health == Health.BAD || health == Health.NO_CONNECTION) {
+            makeHealthStatusToast(context, health);
+            return;
+        }
+        if (board != null || threadId > 0) {
 			FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId);
 		}
 	}
@@ -266,7 +271,12 @@ public class MobileProfile extends AbstractNetworkProfile {
 	@Override
 	public void onThreadRefreshed(Context context, Handler handler, String board, long threadId) {
 		super.onThreadRefreshed(context, handler, board, threadId);
-		boolean canFetch = FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId);
+        Health health = getConnectionHealth();
+        if (health == Health.BAD || health == Health.NO_CONNECTION) {
+            makeHealthStatusToast(context, health);
+            return;
+        }
+        boolean canFetch = FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId);
         if (DEBUG) Log.i(TAG, "onThreadRefreshed canFetch=" + canFetch + " handler=" + handler);
         if (!canFetch)
             postStopMessage(handler, R.string.board_wait_to_refresh);
@@ -406,36 +416,10 @@ public class MobileProfile extends AbstractNetworkProfile {
 	@Override
 	public void onDataFetchFailure(final ChanIdentifiedService service, Failure failure) {
 		super.onDataFetchFailure(service, failure);
-
-		final ChanActivityId data = service.getChanActivityId();
-        if (data == null || (data.threadNo > 0 && data.postNo > 0)) // ignore post/image fetch failures
-            return;
-        final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-        if (activity == null || activity.getChanActivityId().activity != data.activity)
-            return;
-        Handler handler = activity.getChanHandler();
-        if (handler == null)
-            return;
-        int msgId;
-        switch (failure) {
-            case DEAD_THREAD:
-                msgId = R.string.mobile_profile_fetch_dead_thread;
-                break;
-            case THREAD_UNMODIFIED:
-                msgId = R.string.mobile_profile_fetch_unmodified;
-                break;
-            case NETWORK:
-            case MISSING_DATA:
-            case WRONG_DATA:
-            case CORRUPT_DATA:
-            default:
-                msgId = R.string.mobile_profile_fetch_failure;
-        }
-        postStopMessage(handler, msgId);
     }
 
 	@Override
 	public void onDataParseFailure(final ChanIdentifiedService service, Failure failure) {
-        onDataFetchFailure(service, failure);
+        super.onDataFetchFailure(service, failure);
 	}
 }
