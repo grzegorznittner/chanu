@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,6 +12,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v4.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -26,7 +26,6 @@ import android.text.Layout;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -219,7 +218,6 @@ public class ThreadActivity
                         ChanHelper.POST_IMAGE_URL,
                         ChanHelper.POST_IMAGE_URL,
                         ChanHelper.POST_IMAGE_URL,
-                        ChanHelper.POST_IMAGE_URL,
                         ChanHelper.POST_SHORT_TEXT,
                         ChanHelper.POST_TEXT,
                         ChanHelper.POST_TEXT,
@@ -231,7 +229,6 @@ public class ThreadActivity
                         ChanHelper.POST_EXPAND_BUTTON
                 },
                 new int[] {
-                        R.id.list_item_header_bar,
                         R.id.list_item_expanded_progress_bar,
                         R.id.list_item_image_expanded,
                         R.id.list_item_image,
@@ -290,8 +287,6 @@ public class ThreadActivity
         switch (view.getId()) {
             case R.id.list_item :
                 return setItem((ViewGroup)view, cursor);
-            case R.id.list_item_header_bar:
-                return setItemHeaderBar(view, cursor);
             case R.id.list_item_image_expanded:
                 return setItemImageExpanded((ImageView) view, cursor);
             case R.id.list_item_expanded_progress_bar:
@@ -305,7 +300,7 @@ public class ThreadActivity
             case R.id.list_item_snippet:
                 return setItemSnippetValue((TextView) view, cursor);
             case R.id.list_item_text:
-                return setItemMessageValue((TextView)view, cursor);
+                return setItemTextValue((TextView) view, cursor);
             case R.id.list_item_date:
                 return setItemDateValue((TextView)view, cursor);
             case R.id.list_item_image_exif:
@@ -326,7 +321,7 @@ public class ThreadActivity
         ImageView collapse = (ImageView)item.findViewById(R.id.list_item_collapse);
         //if (DEBUG) Log.i(TAG, "pos=" + cursor.getPosition() + " expandable=" + expandable);
         if (adItem > 0) {
-            item.setBackgroundColor(getResources().getColor(R.color.PaletteLighterGray));
+            item.setBackgroundResource(R.color.PaletteBlue);
             if (expander != null)
                 expander.setVisibility(View.GONE);
         }
@@ -342,14 +337,6 @@ public class ThreadActivity
         }
         if (collapse != null)
             collapse.setVisibility(View.GONE);
-        return true;
-    }
-
-    protected boolean setItemHeaderBar(View view, Cursor cursor) {
-        if (cursor.getPosition() == 0)
-            view.setVisibility(View.VISIBLE);
-        else
-            view.setVisibility(View.GONE);
         return true;
     }
 
@@ -371,6 +358,9 @@ public class ThreadActivity
         public void onClick(View v) {
             int pos = absListView.getPositionForView(v);
             if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
+            if (pos == 0) // we auto-expand thread header image
+                return;
+
             View itemView = null;
             for (int i = 0; i < absListView.getChildCount(); i++) {
                 View child = absListView.getChildAt(i);
@@ -395,13 +385,14 @@ public class ThreadActivity
     };
 
     private int itemExpandable(Cursor cursor, View itemView) {
+        final boolean isFirst = cursor.getPosition() == 0;
         final String postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         final String spoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
         TextView itemHeader = (TextView)itemView.findViewById(R.id.list_item_header);
         Spanned spanned = Html.fromHtml(postText);
-        boolean textExpandable = textExpandable(itemHeader.getPaint(), spanned.toString(), imageUrl);
-        boolean imageExpandable = imageUrl != null && !imageUrl.isEmpty();
+        boolean textExpandable = isFirst ? false : textExpandable(itemHeader.getPaint(), spanned.toString(), imageUrl);
+        boolean imageExpandable = isFirst ? false : imageUrl != null && !imageUrl.isEmpty();
         boolean spoilerExpandable = spoilerText != null && !spoilerText.isEmpty();
         int expandable = 0;
         if (textExpandable)
@@ -414,22 +405,45 @@ public class ThreadActivity
     }
 
     private boolean setItemHeaderValue(final TextView tv, final Cursor cursor) {
+/*
+        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (adItem > 0)
+            tv.setTextColor(R.color.PaletteBlue);
+        else
+            tv.setTextColor(R.color.PaletteWhite);
+*/
         String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SHORT_TEXT));
         Spanned spanned = Html.fromHtml(text);
         tv.setText(spanned);
         return true;
     }
 
+
+
     private boolean setItemSnippetValue(final TextView tv, final Cursor cursor) {
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0) {
             tv.setVisibility(View.INVISIBLE);
         }
+        else if (cursor.getPosition() == 0) { // thread header
+            Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Condensed.ttf");
+            String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_DATE_TEXT));
+            if (text != null && !text.isEmpty()) {
+                Spanned spanned = Html.fromHtml(text);
+                tv.setTypeface(tf);
+                tv.setText(spanned);
+                tv.setVisibility(View.VISIBLE);
+            }
+            else {
+                tv.setVisibility(View.GONE);
+            }
+        }
         else {
             String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
             Spanned spanned = Html.fromHtml(text);
+            tv.setTypeface(Typeface.DEFAULT);
             tv.setText(spanned);
-            tv.setLines(SNIPPET_LINES_DEFAULT); // default num lines
+            //tv.setLines(SNIPPET_LINES_DEFAULT); // default num lines
             tv.setVisibility(View.VISIBLE);
         }
         return true;
@@ -449,9 +463,15 @@ public class ThreadActivity
         return textExpandable;
     }
 
-    private boolean setItemMessageValue(final TextView tv, final Cursor cursor) {
-        tv.setText("");
-        tv.setVisibility(View.GONE);
+    private boolean setItemTextValue(final TextView tv, final Cursor cursor) {
+        if (cursor.getPosition() == 0) {
+            final String postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+            tv.setText(Html.fromHtml(postText));
+        }
+        else {
+            tv.setText("");
+            tv.setVisibility(View.GONE);
+        }
         return true;
     }
 
@@ -461,9 +481,14 @@ public class ThreadActivity
         return true;
     }
 
-    private boolean setItemImageExifValue(final TextView tv, final Cursor cursor)
-    {
-        tv.setVisibility(View.GONE);
+    private boolean setItemImageExifValue(final TextView tv, final Cursor cursor) {
+        if (cursor.getPosition() == 0) {
+            final String postExifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
+            tv.setText(postExifText);
+        }
+        else {
+            tv.setVisibility(View.GONE);
+        }
         return true;
     }
 
@@ -478,17 +503,27 @@ public class ThreadActivity
 
     private boolean setItemImage(final ImageView iv, final Cursor cursor)
     {
+        boolean isFirst = cursor.getPosition() == 0;
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         if (imageUrl != null && !imageUrl.isEmpty()) {
             ViewGroup.LayoutParams params = iv.getLayoutParams();
             if (params != null) {
-                int px = ChanGridSizer.dpToPx(getResources().getDisplayMetrics(), 80);
-                params.width = px;
+                DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+                if (isFirst) {
+                    int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
+                    int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
+                    if (tn_h > tn_w) // tall image, restrict by height
+                        params.height = displayMetrics.heightPixels / 2;
+                    else
+                        params.width = displayMetrics.widthPixels; // restrict by width normally
+                }
+                else {
+                    params.width = ChanGridSizer.dpToPx(displayMetrics, 80);
+                }
                 iv.setLayoutParams(params);
             }
             iv.setVisibility(View.VISIBLE);
-            imageLoader.displayImage(imageUrl, iv, displayImageOptions.modifyCenterCrop(true));
-            //imageLoader.displayImage(imageUrl, iv, displayImageOptions);
+            imageLoader.displayImage(imageUrl, iv, displayImageOptions);
         }
         else {
             iv.setImageBitmap(null);
@@ -532,10 +567,15 @@ public class ThreadActivity
 
     private boolean setItemCountryFlag(final ImageView iv, final Cursor cursor) {
         String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_COUNTRY_URL));
-        if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty())
-            imageLoader.displayImage(countryFlagImageUrl, iv, displayImageOptions);
-        else
+        if (countryFlagImageUrl != null && !countryFlagImageUrl.isEmpty()) {
             iv.setImageBitmap(null);
+            iv.setVisibility(View.VISIBLE);
+            imageLoader.displayImage(countryFlagImageUrl, iv, displayImageOptions);
+        }
+        else {
+            iv.setVisibility(View.GONE);
+            iv.setImageBitmap(null);
+        }
         return true;
     }
 

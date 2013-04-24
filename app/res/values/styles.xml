@@ -245,17 +245,105 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginLeft">0dp</item>
         <item name="android:layout_marginRight">0dp</item>
-        <item name="android:orientation">vertical</item>
         <item name="android:padding">0dp</item>
+        <item name="android:orientation">vertical</item>
         <item name="android:textSize">14sp</item>
     </style>
+
+    <!-- THREAD LIST HEADER -->
+
+    <style name="ThreadListHeaderImage" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:contentDescription">@string/thread_post_image</item>
+    </style>
+
+    <style name="ThreadListHeaderSubject" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="ThreadListHeaderHeadWrapper" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">8dp</item>
+    </style>
+
+    <style name="ThreadListHeaderCountryFlag" parent="AppTheme">
+        <item name="android:layout_width">18dp</item>
+        <item name="android:layout_height">12dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:contentDescription">@string/popup_country_flag</item>
+    </style>
+
+    <style name="ThreadListHeaderHead" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_toRightOf">@+id/list_item_country_flag</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
+    </style>
+
+    <style name="ThreadListHeaderExifText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="ThreadListHeaderFullText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">14sp</item>
+        <!-- <item name="android:textIsSelectable">true</item>  -->
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">false</item>
+        <!-- <item name="android:focusable">false</item> -->
+        <!-- <item name="android:focusableInTouchMode">true</item> -->
+    </style>
+
+    <style name="ThreadListHeaderBar" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">2dp</item>
+        <item name="android:background">@color/PaletteBlue</item>
+    </style>
+
+    <!-- THREAD LIST ITEM -->
 
     <style name="ThreadListItemImage" parent="AppTheme">
         <item name="android:layout_width">80dp</item>
         <item name="android:layout_height">80dp</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_marginRight">16dp</item>
         <item name="android:gravity">top|left</item>
         <item name="android:scaleType">centerCrop</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
@@ -274,10 +362,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:paddingLeft">8dp</item>
-        <item name="android:paddingRight">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
-        <item name="android:paddingTop">8dp</item>
+        <item name="android:padding">16dp</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:contentDescription">@string/thread_post_image_expanded</item>
     </style>
@@ -286,24 +371,24 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:lines">1</item>
-        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingTop">16dp</item>
         <item name="android:paddingBottom">0dp</item>
         <item name="android:paddingRight">28dp</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_toRightOf">@+id/list_item_image</item>
         <item name="android:gravity">top|left</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
     </style>
 
     <style name="ThreadListItemSnippetText" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:lines">3</item>
+        <!-- <item name="android:lines">3</item> -->
         <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">4dp</item>
-        <item name="android:paddingRight">28dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingRight">16dp</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_toRightOf">@+id/list_item_image</item>
         <item name="android:layout_below">@+id/list_item_header</item>
@@ -338,19 +423,20 @@
     <style name="ThreadListItemExifText" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingLeft">8dp</item>
-        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:visibility">gone</item>
     </style>
 
     <style name="ThreadListItemFullText" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingLeft">8dp</item>
-        <item name="android:paddingRight">8dp</item>
-        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingBottom">8dp</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">14sp</item>
         <!-- <item name="android:textIsSelectable">true</item>  -->
@@ -366,19 +452,19 @@
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:minLines">1</item>
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingRight">16dp</item>
         <item name="android:gravity">top|right</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:text">10:12 AM</item>
     </style>
 
     <style name="ThreadListItemCountryFlag" parent="AppTheme">
-        <item name="android:layout_width">16dp</item>
-        <item name="android:layout_height">11dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_width">18dp</item>
+        <item name="android:layout_height">12dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
         <item name="android:layout_below">@+id/list_item_date</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:gravity">right</item>
@@ -389,8 +475,8 @@
     <style name="ThreadListItemExpander" parent="AppTheme">
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
-        <item name="android:layout_marginBottom">0dp</item>
-        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:gravity">right</item>
@@ -404,8 +490,8 @@
     <style name="ThreadListItemCollapse" parent="AppTheme">
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
-        <item name="android:layout_marginBottom">0dp</item>
-        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:gravity">right</item>
@@ -414,15 +500,6 @@
         <item name="android:background">@color/PaletteTransparent</item>
         <item name="android:contentDescription">@string/thread_post_collapse_button</item>
         <item name="android:visibility">gone</item>
-    </style>
-
-    <style name="ThreadListItemHeaderBar" parent="AppTheme">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">2dp</item>
-        <!--
-        <item name="android:layout_alignParentBottom">true</item>
-        -->
-        <item name="android:background">@color/PaletteBlue</item>
     </style>
 
     <!-- POST REPLY STYLES -->

@@ -153,10 +153,10 @@ public class ChanPost {
         return o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
     }
 
-    private String missingHeaderLines() {
+    private List<String> missingHeaderElements() {
         List<String> lines = new ArrayList<String>();
         if ((headerComponents & CHAN_HEADER_SET) == 0)
-            headerLine(); // side effect sets headerComponents
+            headline(); // side effect sets headerComponents
         if ((headerComponents & CHAN_ID) == 0 && id != null && !id.isEmpty() && !id.equalsIgnoreCase("heaven"))
             lines.add(formattedUserId());
         if ((headerComponents & CHAN_NAME) == 0 && name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
@@ -167,17 +167,24 @@ public class ChanPost {
             lines.add(email.equalsIgnoreCase("sage") ? "sage" : email);
         if (country_name != null && !country_name.isEmpty())
             lines.add(country_name);
+        return lines;
+    }
+
+    private String missingHeaderLines() {
+        List<String> lines = missingHeaderElements();
         return ChanHelper.join(lines, "<br/>\n");
     }
 
-    public String fullText() {
-        return fullText(false);
+    public String threadFullText(boolean showSpoiler) {
+        String comText = sanitizeText(com, false, showSpoiler);
+        if (comText != null)
+            return comText;
+        else
+            return "";
     }
 
     public String fullText(boolean showSpoiler) {
         List<String> lines = new ArrayList<String>();
-        if (resto == 0)
-            lines.add(threadInfoLine());
         String missingHeaderLines = missingHeaderLines();
         if (!missingHeaderLines.isEmpty())
             lines.add(missingHeaderLines);
@@ -200,6 +207,14 @@ public class ChanPost {
     }
 
     private static final int MAX_THREAD_SUBJECT_LEN = 100;
+
+    public String threadHeaderSubject() {
+        String subText = sanitizeText(sub);
+        if (subText != null)
+            return subText;
+        else
+            return "";
+    }
 
     public String threadSubject(Context context) {
         String subText = sanitizeText(sub);
@@ -406,7 +421,8 @@ public class ChanPost {
         return "";
     }
 
-    public String headerLine() { // as side effect, set headerComponents
+    public String headline() { // as side effect, set headerComponents
+        boolean fullHeader = resto == 0;
         List<String> items = new ArrayList<String>();
         String info = "";
         if (!hidePostNumbers)
@@ -422,26 +438,35 @@ public class ChanPost {
             headerComponents |= CHAN_EMAIL;
         }
         else if (id != null && !id.isEmpty()
-                && (info = formattedUserId()).length() < MAX_HEADER_NAME_LEN) {
+                && ((info = formattedUserId()).length() < MAX_HEADER_NAME_LEN || fullHeader)) {
             items.add(info);
             headerComponents |= CHAN_ID;
         }
         else if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous")
-                && name.length() < MAX_HEADER_NAME_LEN) {
+                && (name.length() < MAX_HEADER_NAME_LEN || fullHeader)) {
             items.add(name);
             headerComponents |= CHAN_NAME;
         }
         else if (trip != null && !trip.isEmpty()
-                && (info = formattedUserTrip()).length() < MAX_HEADER_NAME_LEN) {
+                && ((info = formattedUserTrip()).length() < MAX_HEADER_NAME_LEN || fullHeader)) {
             items.add(info);
             headerComponents |= CHAN_TRIP;
         }
         else if (email != null && !email.isEmpty() && !email.equalsIgnoreCase("sage")
-                && email.length() < MAX_HEADER_NAME_LEN) {
+                && (email.length() < MAX_HEADER_NAME_LEN || fullHeader)) {
             items.add(email);
             headerComponents |= CHAN_EMAIL;
         }
-        return ChanHelper.join(items, " ");
+        headerComponents |= CHAN_HEADER_SET;
+        String delim = " ";
+        if (fullHeader) {
+            items.addAll(missingHeaderElements());
+            items.add(threadInfoLine());
+            items.add(dateText());
+            delim = " <b>&middot;</b> ";
+        }
+        String line = ChanHelper.join(items, delim);
+        return line;
     }
 
     public String threadInfoLine() {
@@ -738,9 +763,9 @@ public class ChanPost {
                 resto,
                 thumbnailUrl(),
                 countryFlagUrl(),
-                headerLine(),
-                dateText(),
-                fullText(),
+                headline(),
+                resto == 0 ? threadHeaderSubject() : dateText(),
+                resto == 0 ? threadFullText(false) : fullText(false),
                 tn_w,
                 tn_h,
                 w,
