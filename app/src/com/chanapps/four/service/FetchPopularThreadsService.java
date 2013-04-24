@@ -36,7 +36,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class FetchPopularThreadsService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchPopularThreadsService.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
     private boolean force;
     private boolean backgroundLoad;
@@ -278,7 +278,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 		
 		thread.board = str.extract(".4chan.org/", "/");
 		thread.no = Long.parseLong(str.extract("res/", "#p"));
-        String image = str.extract("&lt;a href=&quot;#&quot;&gt;", "&lt;/a&gt;");
+        //String image = str.extract("&lt;a href=&quot;#&quot;&gt;", "&lt;/a&gt;");
 		
 		if (str.moveTo(")&lt;")) {
 			String imageDesc = str.extractBefore("(");
@@ -325,12 +325,14 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 		if (str.moveTo("</a>")) {
 			thread.sub = str.extractBefore(">");
 		}
-        if (str.moveTo("<blockquote>"))
-            thread.com = str.extractBefore("</blockquote>");
+		str.pos = 0;
+		thread.com = str.extract("<blockquote>", "</blockquote>");
 
-        if (DEBUG) Log.i(TAG, "Board: " + thread.board + ", no: " + thread.no + ", tim: " + thread.tim + ", size: " + thread.fsize + ", " + thread.w + "x" + thread.h
-				+ ",\n     img: " + thread.imageUrl() + ", thumb: " + thread.thumbnailUrl()
-				+ ",\n     topic: " + thread.sub);
+        if (DEBUG) Log.i(TAG, "Board: " + thread.board + ", no: " + thread.no + ", tim: " + thread.tim
+        		+ ", sub: " + thread.sub + ", com: " + thread.com
+        		+ ", size: " + thread.fsize + ", " + thread.w + "x" + thread.h
+				+ ", img: " + thread.imageUrl() + ", thumb: " + thread.thumbnailUrl()
+				+ ", topic: " + thread.sub);
 		return thread;
 	}
 

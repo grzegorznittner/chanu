@@ -132,7 +132,8 @@ public class ChanThread extends ChanPost {
     }
 
     public String toString() {
-		return "Thread " + no + " " + com + ", posts: " + posts.length 
+		return "Thread " + no + ", com: " + com + ", sub:" + sub + ", posts: " + posts.length
+				+ (posts.length > 0 ? ", posts[0].no: " + posts[0].no : "")
 				+ ", thumb: " + thumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
 	}
 	

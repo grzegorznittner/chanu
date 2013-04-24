@@ -1,15 +1,25 @@
 package com.chanapps.four.data;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
-import android.net.Uri;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Log;
 
 import com.chanapps.four.service.FileSaverService;
@@ -31,6 +41,7 @@ public class ChanFileStorage {
 	        return size() > MAX_BOARDS_IN_CACHE;
 	    }
 	};
+	
 	@SuppressWarnings("serial")
 	private static Map<String, ChanThread> threadCache = new LinkedHashMap<String, ChanThread>(MAX_THREADS_IN_CACHE + 1, .75F, true) {
 	    // This method is called just after a new entry has been added
@@ -338,6 +349,24 @@ public class ChanFileStorage {
 	}
 	
 	private static ChanThread getThreadFromBoard(Context context, String boardCode, long threadNo) {
+		ChanThread thread = makeFirstThreadFromBoard(context, boardCode, threadNo);
+		if (thread == null) {
+			thread = makeFirstThreadFromBoard(context, ChanBoard.POPULAR_BOARD_CODE, threadNo);
+		}
+		if (thread == null) {
+			thread = makeFirstThreadFromSpecialBoard(context, ChanBoard.LATEST_BOARD_CODE, threadNo);
+		}
+		if (thread == null) {
+			thread = makeFirstThreadFromSpecialBoard(context, ChanBoard.LATEST_IMAGES_BOARD_CODE, threadNo);
+		}
+		if (thread == null) {
+			thread = prepareDefaultThreadData(context, boardCode, threadNo);
+		}
+        thread.loadedFromBoard = true;
+        return thread;
+	}
+
+	private static ChanThread makeFirstThreadFromBoard(Context context, String boardCode, long threadNo) {
 		ChanBoard board = loadBoardData(context, boardCode);
 		if (board != null && !board.defData && board.threads != null) {
 			for (ChanPost post : board.threads) {
@@ -353,12 +382,30 @@ public class ChanFileStorage {
 				}
 			}
 		}
-		
-		ChanThread thread = prepareDefaultThreadData(context, boardCode, threadNo);
-        thread.loadedFromBoard = true;
-        return thread;
+		return null;
 	}
-	
+
+	private static ChanThread makeFirstThreadFromSpecialBoard(Context context, String boardCode, long threadNo) {
+		ChanBoard board = loadBoardData(context, boardCode);
+		if (board != null && !board.defData && board.threads != null) {
+			for (ChanPost post : board.threads) {
+				if (post.no == threadNo) {
+					ChanThread thread = new ChanThread();
+					thread.board = boardCode;
+					thread.tim = post.tim;
+					thread.ext = post.ext;
+					thread.no = threadNo;
+					thread.lastFetched = 0;
+					thread.posts = new ChanPost[]{post};
+                    thread.closed = post.closed;
+                    thread.loadedFromBoard = true;
+                    return thread;
+				}
+			}
+		}
+		return null;
+	}
+
 	private static ChanThread prepareDefaultThreadData(Context context, String boardCode, long threadNo) {
 		ChanThread thread = new ChanThread();
 		thread.board = boardCode;
