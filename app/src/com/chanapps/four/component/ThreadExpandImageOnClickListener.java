@@ -86,19 +86,23 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     }
 
     private void collapseView() {
-        ChanHelper.clearBigImageView(itemExpandedImage);
-        if (itemExpandedProgressBar != null)
-            itemExpandedProgressBar.setVisibility(View.GONE);
+        collapseImageView();
         itemCollapse.setVisibility(View.GONE);
         itemExpander.setVisibility(View.VISIBLE);
-        itemExpandedImage.setVisibility(View.GONE);
         itemExpandedText.setText("");
         itemExpandedText.setVisibility(View.GONE);
-        itemExpandedExifText.setVisibility(View.GONE);
         itemExpandedSpoilerButton.setVisibility(View.GONE);
         itemExpandedSnippet.setLines(ThreadActivity.SNIPPET_LINES_DEFAULT); // default num lines
         itemExpandedSnippet.setVisibility(View.VISIBLE);
         if (DEBUG) Log.i(TAG, "collapsed pos=" + listPosition);
+    }
+
+    private void collapseImageView() {
+        ChanHelper.clearBigImageView(itemExpandedImage);
+        if (itemExpandedProgressBar != null)
+            itemExpandedProgressBar.setVisibility(View.GONE);
+        itemExpandedImage.setVisibility(View.GONE);
+        itemExpandedExifText.setVisibility(View.GONE);
     }
 
     @Override
@@ -229,7 +233,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                collapseView();
+                collapseImageView();
                 String reason = failReason.toString();
                 String msg;
                 NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
@@ -253,7 +257,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
-                collapseView();
+                collapseImageView();
                 Toast.makeText(threadActivity, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
             }
         }); // load async
