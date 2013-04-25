@@ -77,11 +77,11 @@ public class ThreadActivity
     public static final boolean DEBUG = false;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
-    public static final int SNIPPET_LINES_DEFAULT = 3;
+    protected static final int ITEM_THUMB_WIDTH_DP = 80;
+    protected static final int ITEM_THUMB_EMPTY_DP = 8;
     public static final int TEXT_HORIZ_PADDING_DP = 8 + 28;
     public static final int IMAGE_WIDTH_DP = 80;
     public static final int SNIPPET_HEIGHT_DP = ((80 - 8)*3)/4; // three lines used for snippet
-    public static final int TEXT_EXPANDABLE = 0x01;
     public static final int IMAGE_EXPANDABLE = 0x02;
     public static final int SPOILER_EXPANDABLE = 0x04;
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
@@ -219,6 +219,7 @@ public class ThreadActivity
                         ChanHelper.POST_IMAGE_URL,
                         ChanHelper.POST_IMAGE_URL,
                         ChanHelper.POST_IMAGE_URL,
+                        ChanHelper.POST_IMAGE_URL,
                         ChanHelper.POST_SHORT_TEXT,
                         ChanHelper.POST_TEXT,
                         ChanHelper.POST_TEXT,
@@ -230,6 +231,7 @@ public class ThreadActivity
                 new int[] {
                         R.id.list_item_expanded_progress_bar,
                         R.id.list_item_image_expanded,
+                        R.id.list_item_image_wrapper,
                         R.id.list_item_image,
                         R.id.list_item_header,
                         R.id.list_item_subject,
@@ -294,6 +296,8 @@ public class ThreadActivity
                 return setItemImageExpanded((ImageView) view, cursor);
             case R.id.list_item_expanded_progress_bar:
                 return setItemImageExpandedProgressBar((ProgressBar) view, cursor);
+            case R.id.list_item_image_wrapper:
+                return setItemImageWrapper((ViewGroup)view, cursor);
             case R.id.list_item_image:
                 return setItemImage((ImageView) view, cursor);
             case R.id.list_item_country_flag:
@@ -304,8 +308,6 @@ public class ThreadActivity
                 return setItemSubject((TextView) view, cursor);
             case R.id.list_item_text:
                 return setItemTextValue((TextView) view, cursor);
-            //case R.id.list_item_date:
-            //    return setItemDateValue((TextView)view, cursor);
             case R.id.list_item_image_exif:
                 return setItemImageExifValue((TextView) view, cursor);
             //case R.id.list_item_exif_button:
@@ -381,14 +383,10 @@ public class ThreadActivity
         final String postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
         final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         final String spoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
-        TextView itemHeader = (TextView)itemView.findViewById(R.id.list_item_header);
         Spanned spanned = Html.fromHtml(postText);
-        boolean textExpandable = isFirst ? false : textExpandable(itemHeader.getPaint(), spanned.toString(), imageUrl);
         boolean imageExpandable = isFirst ? false : imageUrl != null && !imageUrl.isEmpty();
         boolean spoilerExpandable = spoilerText != null && !spoilerText.isEmpty();
         int expandable = 0;
-        if (textExpandable)
-            expandable |= TEXT_EXPANDABLE;
         if (imageExpandable)
             expandable |= IMAGE_EXPANDABLE;
         if (spoilerExpandable)
@@ -414,41 +412,23 @@ public class ThreadActivity
 
     private boolean setItemSubject(final TextView tv, final Cursor cursor) {
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
-        if (adItem > 0) {
-            tv.setVisibility(View.INVISIBLE);
+        String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_DATE_TEXT));
+        if (adItem < 1 && text != null && !text.isEmpty()) {
+            Spanned spanned = Html.fromHtml(text);
+            tv.setTypeface(subjectTypeface);
+            tv.setText(spanned);
+            tv.setVisibility(View.VISIBLE);
         }
         else {
-            String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_DATE_TEXT));
-            if (text != null && !text.isEmpty()) {
-                Spanned spanned = Html.fromHtml(text);
-                tv.setTypeface(subjectTypeface);
-                tv.setText(spanned);
-                tv.setVisibility(View.VISIBLE);
-            }
-            else {
-                tv.setVisibility(View.GONE);
-            }
+            tv.setVisibility(View.GONE);
         }
         return true;
     }
 
-    private boolean textExpandable(TextPaint tp, String text, String imageUrl) {
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        int screenWidth = metrics.widthPixels;
-        int paddingWidth = ChanGridSizer.dpToPx(metrics, TEXT_HORIZ_PADDING_DP);
-        int imageWidth = (imageUrl == null || imageUrl.isEmpty()) ? 0 : ChanGridSizer.dpToPx(metrics, IMAGE_WIDTH_DP);
-        int textWidth = screenWidth - paddingWidth - imageWidth;
-        int actualHeight = ChanGridSizer.dpToPx(metrics, SNIPPET_HEIGHT_DP);
-        StaticLayout sl = new StaticLayout(text, tp, textWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-        int fullHeight = sl.getHeight();
-        boolean textExpandable = fullHeight > actualHeight;
-        if (DEBUG) Log.v(TAG, "Header height actual=" + actualHeight + " full=" + fullHeight);
-        return textExpandable;
-    }
-
     private boolean setItemTextValue(final TextView tv, final Cursor cursor) {
+        int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         final String postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        if (postText != null && !postText.isEmpty()) {
+        if (adItem < 1 && postText != null && !postText.isEmpty()) {
             tv.setText(Html.fromHtml(postText));
             tv.setVisibility(View.VISIBLE);
         }
@@ -456,12 +436,6 @@ public class ThreadActivity
             tv.setText("");
             tv.setVisibility(View.GONE);
         }
-        return true;
-    }
-
-    private boolean setItemDateValue(final TextView tv, final Cursor cursor) {
-        String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_DATE_TEXT));
-        tv.setText(text);
         return true;
     }
 
@@ -503,7 +477,14 @@ public class ThreadActivity
     }
     */
 
-    protected static final int ITEM_THUMB_WIDTH_DP = 80;
+    private boolean setItemImageWrapper(final ViewGroup layout, final Cursor cursor) {
+        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
+        ViewGroup.LayoutParams params = layout.getLayoutParams();
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int widthDp =  (imageUrl != null && !imageUrl.isEmpty()) ? ITEM_THUMB_WIDTH_DP : ITEM_THUMB_EMPTY_DP;
+        params.width = ChanGridSizer.dpToPx(displayMetrics, widthDp);
+        return true;
+    }
 
     private boolean setItemImage(final ImageView iv, final Cursor cursor) {
         boolean isFirst = cursor.getPosition() == 0;
@@ -772,7 +753,6 @@ public class ThreadActivity
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         long[] postNos = absListView.getCheckedItemIds();
-        //SparseBooleanArray postPos = absListView.getCheckedItemPositions();
         if (postNos.length == 0) {
             Toast.makeText(getApplicationContext(), R.string.thread_no_posts_selected, Toast.LENGTH_SHORT).show();
             return false;
