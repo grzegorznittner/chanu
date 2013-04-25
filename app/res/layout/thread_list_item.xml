@@ -11,6 +11,10 @@
             <com.chanapps.four.component.StretchyImageView
                     style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
         </RelativeLayout>
+        <View
+            android:id="@+id/list_item_top_spacer"
+            android:layout_width="wrap_content"
+            android:layout_height="4dp"/>
         <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"/>
         <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
         <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"/>

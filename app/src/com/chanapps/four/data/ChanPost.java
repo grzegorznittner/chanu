@@ -161,7 +161,7 @@ public class ChanPost {
     }
 
     private static final int MAX_THREAD_SUBJECT_LEN = 100;
-    private static final int MIN_SUBJECT_LEN = 10;
+    private static final int MIN_SUBJECT_LEN = 2;
     private static final int MAX_SUBJECT_LEN = 100;
 
     private String[] textComponents() {
@@ -176,13 +176,19 @@ public class ChanPost {
         }
 
         // start subject extraction process
-        String[] terminators = { ".", "!", "?", "\r", "\n", "<br/>", "<br>", ";", ":", " " };
+        String[] terminators = { "\r", "\n", "<br/>", "<br>", ".", "!", "?", ";", ":", ",", " " };
+        message = message
+                .replaceAll("(<br/?>)+", "<br/>")
+                .trim()
+                .replaceFirst("^(<br/?>)+", "")
+                .replaceFirst("(<br/?>)+$", "")
+                .trim();
         for (String terminator : terminators) {
             int i = message.indexOf(terminator);
             if (i > MIN_SUBJECT_LEN && i < MAX_SUBJECT_LEN) { // extract the subject
                 int len = terminator.length();
-                subject = message.substring(0, i + len).trim().replaceFirst("<br/?>$", "");
-                message = message.substring(i + len);
+                subject = message.substring(0, i + len).trim().replaceFirst("(<br/?>)+$", "").trim();
+                message = message.substring(i + len).trim().replaceFirst("^(<br/?>)+", "").trim();
                 Log.e(TAG, "Exception: extracted subject=" + subject + " message=" + message);
                 return new String[]{ subject, message };
             }
@@ -756,7 +762,7 @@ public class ChanPost {
                 0,
                 imageUrl,
                 "",
-                context.getString(R.string.board_advert_info),
+                context.getString(R.string.board_advert_full),
                 context.getString(R.string.advert_header),
                 clickUrl,
                 176,

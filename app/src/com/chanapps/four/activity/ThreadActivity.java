@@ -307,7 +307,7 @@ public class ThreadActivity
             case R.id.list_item_subject:
                 return setItemSubject((TextView) view, cursor);
             case R.id.list_item_text:
-                return setItemTextValue((TextView) view, cursor);
+                return setItemText((TextView) view, cursor);
             case R.id.list_item_image_exif:
                 return setItemImageExifValue((TextView) view, cursor);
             //case R.id.list_item_exif_button:
@@ -425,11 +425,20 @@ public class ThreadActivity
         return true;
     }
 
-    private boolean setItemTextValue(final TextView tv, final Cursor cursor) {
+    private int padding8DP = 0;
+
+    private boolean setItemText(final TextView tv, final Cursor cursor) {
+        if (padding8DP == 0)
+            padding8DP = ChanGridSizer.dpToPx(getResources().getDisplayMetrics(), 8);
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         final String postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        final String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         if (adItem < 1 && postText != null && !postText.isEmpty()) {
             tv.setText(Html.fromHtml(postText));
+            if (cursor.getPosition() != 0 && imageUrl != null && !imageUrl.isEmpty()) // has image
+                tv.setPadding(0, padding8DP, 0, padding8DP);
+            else
+                tv.setPadding(0, 0, 0, padding8DP);
             tv.setVisibility(View.VISIBLE);
         }
         else {
