@@ -28,8 +28,6 @@ public class ChanPost {
     private static final int CHAN_EMAIL = 0x08;
     private static final int CHAN_HEADER_SET = 0x10;
 
-    private int headerComponents = 0;
-
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingStringDeserializer.class)
     public String board;
 
@@ -153,67 +151,53 @@ public class ChanPost {
         return o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
     }
 
-    private List<String> missingHeaderElements() {
-        List<String> lines = new ArrayList<String>();
-        if ((headerComponents & CHAN_HEADER_SET) == 0)
-            headline(); // side effect sets headerComponents
-        if ((headerComponents & CHAN_ID) == 0 && id != null && !id.isEmpty() && !id.equalsIgnoreCase("heaven"))
-            lines.add(formattedUserId());
-        if ((headerComponents & CHAN_NAME) == 0 && name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous"))
-            lines.add(name);
-        if ((headerComponents & CHAN_TRIP) == 0 && trip != null && !trip.isEmpty())
-            lines.add(formattedUserTrip());
-        if ((headerComponents & CHAN_EMAIL) == 0 && email != null && !email.isEmpty())
-            lines.add(email.equalsIgnoreCase("sage") ? "sage" : email);
-        if (country_name != null && !country_name.isEmpty())
-            lines.add(country_name);
-        return lines;
-    }
-
-    private String missingHeaderLines() {
-        List<String> lines = missingHeaderElements();
-        return ChanHelper.join(lines, "<br/>\n");
-    }
-
-    public String threadFullText(boolean showSpoiler) {
-        String comText = sanitizeText(com, false, showSpoiler);
-        if (comText != null)
-            return comText;
-        else
-            return "";
-    }
-
-    public String fullText(boolean showSpoiler) {
-        List<String> lines = new ArrayList<String>();
-        String missingHeaderLines = missingHeaderLines();
-        if (!missingHeaderLines.isEmpty())
-            lines.add(missingHeaderLines);
-        String subText = sanitizeText(sub, false, showSpoiler);
-        if (subText != null && !subText.isEmpty())
-            lines.add("<b>" + subText + "</b>");
-        String comText = sanitizeText(com, false, showSpoiler);
-        if (comText != null && !comText.isEmpty())
-            lines.add(comText);
-        return ChanHelper.join(lines, "<br/>\n");
-    }
-
-
     public String spoilerText() {
-        if ((sub != null && sub.indexOf("<s>") >= 0)
-            || (com != null && com.indexOf("<s>") >= 0))
-            return fullText(true);
-        else
-            return "";
+        if (com != null && com.indexOf("<s>") >= 0) {
+            String comText = sanitizeText(com, false, true);
+            if (comText != null)
+                return comText;
+        }
+        return "";
     }
 
     private static final int MAX_THREAD_SUBJECT_LEN = 100;
+    private static final int MIN_SUBJECT_LEN = 10;
+    private static final int MAX_SUBJECT_LEN = 100;
 
-    public String threadHeaderSubject() {
+    private String[] textComponents() {
         String subText = sanitizeText(sub);
-        if (subText != null)
-            return subText;
-        else
-            return "";
+        String comText = sanitizeText(com, false, false);
+        String subject = subText != null ? subText : "";
+        String message = comText != null ? comText : "";
+
+        if (!subject.isEmpty() || message.isEmpty()) { // we have a subject or can't extract from message
+            Log.e(TAG, "Exception: provided subject=" + subject + " message=" + message);
+            return new String[] { subject, message };
+        }
+
+        // start subject extraction process
+        String[] terminators = { ".", "!", "?", "\r", "\n", "<br/>", "<br>", ";", ":", " " };
+        for (String terminator : terminators) {
+            int i = message.indexOf(terminator);
+            if (i > MIN_SUBJECT_LEN && i < MAX_SUBJECT_LEN) { // extract the subject
+                int len = terminator.length();
+                subject = message.substring(0, i + len).trim().replaceFirst("<br/?>$", "");
+                message = message.substring(i + len);
+                Log.e(TAG, "Exception: extracted subject=" + subject + " message=" + message);
+                return new String[]{ subject, message };
+            }
+        }
+
+        if (comText.length() <= MAX_SUBJECT_LEN) { // just make message the subject
+            subject = message;
+            message = "";
+            Log.e(TAG, "Exception: replaced subject=" + subject + " message=" + message);
+            return new String[] { subject, message };
+        }
+
+        // default
+        Log.e(TAG, "Exception: default subject=" + subject + " message=" + message);
+        return new String[]{ subject, message };
     }
 
     public String threadSubject(Context context) {
@@ -421,52 +405,28 @@ public class ChanPost {
         return "";
     }
 
-    public String headline() { // as side effect, set headerComponents
-        boolean fullHeader = resto == 0;
+    public String headline() {
         List<String> items = new ArrayList<String>();
-        String info = "";
         if (!hidePostNumbers)
             items.add(Long.toString(no));
-        if (email != null && !email.isEmpty() && email.equals("sage")) {
+        if (email != null && !email.isEmpty() && email.equals("sage"))
             items.add("<b>sage</b>");
-            headerComponents |= CHAN_ID;
-            headerComponents |= CHAN_EMAIL;
-        }
-        else if (id != null && !id.isEmpty() && id.equalsIgnoreCase("heaven")) {
+        if (id != null && !id.isEmpty() && id.equals("Heaven"))
             items.add("<b>sage</b>");
-            headerComponents |= CHAN_ID;
-            headerComponents |= CHAN_EMAIL;
-        }
-        else if (id != null && !id.isEmpty()
-                && ((info = formattedUserId()).length() < MAX_HEADER_NAME_LEN || fullHeader)) {
-            items.add(info);
-            headerComponents |= CHAN_ID;
-        }
-        else if (name != null && !name.isEmpty() && !name.equalsIgnoreCase("anonymous")
-                && (name.length() < MAX_HEADER_NAME_LEN || fullHeader)) {
+        if (id != null && !id.isEmpty())
+            items.add(formattedUserId());
+        if (name != null && !name.isEmpty() && !name.equals("Anonymous"))
             items.add(name);
-            headerComponents |= CHAN_NAME;
-        }
-        else if (trip != null && !trip.isEmpty()
-                && ((info = formattedUserTrip()).length() < MAX_HEADER_NAME_LEN || fullHeader)) {
-            items.add(info);
-            headerComponents |= CHAN_TRIP;
-        }
-        else if (email != null && !email.isEmpty() && !email.equalsIgnoreCase("sage")
-                && (email.length() < MAX_HEADER_NAME_LEN || fullHeader)) {
+        if (trip != null && !trip.isEmpty())
+            items.add(formattedUserTrip());
+        if (email != null && !email.isEmpty() && !email.equals("sage"))
             items.add(email);
-            headerComponents |= CHAN_EMAIL;
-        }
-        headerComponents |= CHAN_HEADER_SET;
-        String delim = " ";
-        if (fullHeader) {
-            items.addAll(missingHeaderElements());
+        if (country_name != null && !country_name.isEmpty())
+            items.add(country_name);
+        if (resto == 0)
             items.add(threadInfoLine());
-            items.add(dateText());
-            delim = " <b>&middot;</b> ";
-        }
-        String line = ChanHelper.join(items, delim);
-        return line;
+        items.add(dateText());
+        return ChanHelper.join(items, " <b>&middot;</b> ");
     }
 
     public String threadInfoLine() {
@@ -757,6 +717,7 @@ public class ChanPost {
     }
 
     public Object[] makeRow() {
+        String[] textComponents = textComponents();
         return new Object[] {
                 no,
                 board,
@@ -764,8 +725,8 @@ public class ChanPost {
                 thumbnailUrl(),
                 countryFlagUrl(),
                 headline(),
-                resto == 0 ? threadHeaderSubject() : dateText(),
-                resto == 0 ? threadFullText(false) : fullText(false),
+                textComponents[0],
+                textComponents[1],
                 tn_w,
                 tn_h,
                 w,

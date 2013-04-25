@@ -39,18 +39,9 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     private static final boolean DEBUG = false;
 
     private int expandable = 0;
-    private ImageView itemExpander;
-    private ImageView itemCollapse;
     private ImageView itemExpandedImage;
     private ProgressBar itemExpandedProgressBar;
-    private TextView itemExpandedSnippet;
-    private TextView itemExpandedText;
-    private TextView itemExpandedExifText;
-    private Button itemExpandedSpoilerButton;
-    private String postText = null;
     private String postImageUrl = null;
-    private String postExifText = null;
-    private String postSpoilerText = null;
     int postW = 0;
     int postH = 0;
     int listPosition = 0;
@@ -66,86 +57,27 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         Uri uri = ChanFileStorage.getLocalImageUri(threadActivity.getApplicationContext(), boardCode, postId, postExt);
 
         this.expandable = expandable;
-        itemExpander = (ImageView)itemView.findViewById(R.id.list_item_expander);
-        itemCollapse = (ImageView)itemView.findViewById(R.id.list_item_collapse);
         itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
         itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
-        itemExpandedSnippet = (TextView)itemView.findViewById(R.id.list_item_snippet);
-        itemExpandedText = (TextView)itemView.findViewById(R.id.list_item_text);
-        itemExpandedExifText = (TextView)itemView.findViewById(R.id.list_item_image_exif);
-        itemExpandedSpoilerButton = (Button)itemView.findViewById(R.id.list_item_spoiler_button);
 
         listPosition = cursor.getPosition();
         postW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
         postH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
-        postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-        postExifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
-        postSpoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
         postImageUrl = postTim > 0 ? ChanPost.imageUrl(boardCode, postTim, postExt) : null;
         fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
     }
 
-    private void collapseView() {
-        collapseImageView();
-        itemCollapse.setVisibility(View.GONE);
-        itemExpander.setVisibility(View.VISIBLE);
-        itemExpandedText.setText("");
-        itemExpandedText.setVisibility(View.GONE);
-        itemExpandedSpoilerButton.setVisibility(View.GONE);
-        itemExpandedSnippet.setLines(ThreadActivity.SNIPPET_LINES_DEFAULT); // default num lines
-        itemExpandedSnippet.setVisibility(View.VISIBLE);
-        if (DEBUG) Log.i(TAG, "collapsed pos=" + listPosition);
-    }
-
     private void collapseImageView() {
+        if (DEBUG) Log.i(TAG, "collapsed pos=" + listPosition);
         ChanHelper.clearBigImageView(itemExpandedImage);
         if (itemExpandedProgressBar != null)
             itemExpandedProgressBar.setVisibility(View.GONE);
         itemExpandedImage.setVisibility(View.GONE);
-        itemExpandedExifText.setVisibility(View.GONE);
     }
 
     @Override
     public void onClick(View v) {
-        if (DEBUG) Log.i(TAG, "handling click for pos=" + listPosition);
-        if (itemCollapse.getVisibility() == View.VISIBLE || expandable == 0) { // toggle expansion
-            collapseView();
-            return;
-        }
-
         if (DEBUG) Log.i(TAG, "expanding pos=" + listPosition);
-        // show that we can collapse view
-        itemExpander.setVisibility(View.GONE);
-        itemCollapse.setVisibility(View.VISIBLE);
-
-        // set text visibility
-        if (DEBUG) Log.i(TAG, "Setting post text len=" + (postText == null ? 0 : postText.length()));
-        if ((expandable & ThreadActivity.TEXT_EXPANDABLE) > 0 && postText != null && !postText.isEmpty()) {
-            if ((expandable & ThreadActivity.IMAGE_EXPANDABLE) > 0) { // image visible, remove the duplicate top text
-                itemExpandedSnippet.setVisibility(View.INVISIBLE);
-                itemExpandedText.setText(Html.fromHtml(postText));
-                itemExpandedText.setVisibility(View.VISIBLE);
-                if (DEBUG) Log.i(TAG, "Set image expand to visible, text to bottom");
-            }
-            else { // no image, so just expand to fill rest of space
-                int lc = itemExpandedSnippet.getLineCount();
-                itemExpandedSnippet.setLines(Math.max(lc, ThreadActivity.SNIPPET_LINES_DEFAULT));
-                itemExpandedSnippet.setVisibility(View.VISIBLE);
-                itemExpandedText.setVisibility(View.GONE);
-                if (DEBUG) Log.i(TAG, "No image to expand, set text to full height");
-            }
-        }
-        else {
-            itemExpandedText.setVisibility(View.GONE);
-            if (DEBUG) Log.i(TAG, "No text to expand, setting text to gone");
-        }
-
-        if ((expandable & ThreadActivity.SPOILER_EXPANDABLE) > 0 && postSpoilerText != null && !postSpoilerText.isEmpty()) {
-            itemExpandedSpoilerButton.setVisibility(View.VISIBLE);
-        }
-        else {
-            itemExpandedSpoilerButton.setVisibility(View.GONE);
-        }
 
         if (DEBUG) Log.i(TAG, "Clearing existing image");
         ChanHelper.clearBigImageView(itemExpandedImage); // clear old image
@@ -155,17 +87,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         if ((expandable & ThreadActivity.IMAGE_EXPANDABLE) == 0 || postImageUrl == null || postImageUrl.isEmpty()) {// no image to display
             if (DEBUG) Log.i(TAG, "No image found to expand, hiding image and exiting");
             itemExpandedImage.setVisibility(View.GONE);
-            itemExpandedExifText.setVisibility(View.GONE);
             return;
-        }
-
-        if (DEBUG) Log.i(TAG, "Post exif text len=" + (postExifText == null ? 0 : postExifText.length()));
-        if (postExifText != null && !postExifText.isEmpty()) {
-            itemExpandedExifText.setText(Html.fromHtml(postExifText));
-            itemExpandedExifText.setVisibility(View.VISIBLE);
-        }
-        else {
-            itemExpandedExifText.setVisibility(View.GONE);
         }
 
         // calculate image dimensions

@@ -59,7 +59,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:paddingTop="4dp"
-            android:paddingBottom="4dp"
+            android:paddingBottom="8dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:textColor="@color/PaletteWhite"
@@ -85,10 +85,12 @@
 
     <ImageButton
             android:id="@+id/refresh"
-            android:layout_height="24dp"
-            android:layout_width="24dp"
+            android:layout_height="28dp"
+            android:layout_width="28dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
+            android:paddingRight="4dp"
+            android:paddingBottom="4dp"
             android:scaleType="centerCrop"
             android:src="@drawable/widget_refresh_button_selector"
             android:background="@drawable/widget_refresh_gradient_bg"
@@ -97,10 +99,12 @@
 
     <ImageButton
             android:id="@+id/configure"
-            android:layout_height="24dp"
-            android:layout_width="24dp"
+            android:layout_height="28dp"
+            android:layout_width="28dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
+            android:paddingRight="4dp"
+            android:paddingTop="4dp"
             android:scaleType="centerCrop"
             android:src="@drawable/widget_configure_button_selector"
             android:background="@drawable/widget_configure_gradient_bg"

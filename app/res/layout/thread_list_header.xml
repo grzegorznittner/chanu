@@ -3,7 +3,7 @@
 
     <com.chanapps.four.component.StretchyImageView style="@style/ThreadListHeaderImage" android:id="@+id/list_item_image"/>
 
-    <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_snippet"/>
+    <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
 
     <RelativeLayout style="@style/ThreadListHeaderHeadWrapper">
         <ImageView style="@style/ThreadListHeaderCountryFlag" android:id="@+id/list_item_country_flag"/>
@@ -13,8 +13,6 @@
     <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
 
     <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_image_exif"/>
-
-    <Button style="@style/ThreadListItemSpoilerButton" android:id="@+id/list_item_spoiler_button"/>
 
     <View style="@style/ThreadListHeaderBar" android:id="@+id/list_item_header_bar"/>
 

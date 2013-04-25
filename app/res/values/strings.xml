@@ -238,6 +238,7 @@
     <string name="spoiler_show">Show Spoilers</string>
     <string name="spoiler_title">Spoiler</string>
     <string name="exif">Show EXIF Data</string>
+    <string name="exif_show">Show EXIF Data</string>
     <string name="exif_title">EXIF Data</string>
     <string name="copy_text">Copy Text</string>
     <string name="copy_text_complete">Copied text</string>
@@ -484,7 +485,7 @@
     <string name="mobile_profile_loading_thread">Loading thread</string>
     <string name="mobile_profile_loading_image">Loading image</string>
     <string name="mobile_profile_preloading_defaults">Preloading boards /a/, /b/, /v/, /vg/ and /s/</string>
-    <string name="mobile_profile_health_status">Health %1$s couldn\'t load</string>
+    <string name="mobile_profile_health_status">Network %1$s couldn\'t load</string>
     <string name="mobile_profile_no_auto_refresh">Auto refresh disabled</string>
     <string name="mobile_profile_loaded_board">Loaded /%1$s/</string>
     <string name="mobile_profile_loaded_thread">Loaded /%1$s/%2$d</string>

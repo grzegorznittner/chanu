@@ -15,12 +15,12 @@ import com.chanapps.four.data.ChanHelper;
 * Time: 10:59 AM
 * To change this template use File | Settings | File Templates.
 */
-public class ThreadSpoilerOnClickListener implements View.OnClickListener {
+public class ThreadExifOnClickListener implements View.OnClickListener {
 
-    String spoilerText = "";
+    String exifText = "";
 
-    public ThreadSpoilerOnClickListener(Cursor cursor) {
-        spoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
+    public ThreadExifOnClickListener(Cursor cursor) {
+        exifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
     }
 
     @Override
@@ -29,8 +29,8 @@ public class ThreadSpoilerOnClickListener implements View.OnClickListener {
         if (parent == null || !(parent instanceof CheckableLinearLayout))
             return;
         CheckableLinearLayout layout = (CheckableLinearLayout)parent;
-        TextView listItemText = (TextView)layout.findViewById(R.id.list_item_text);
-        listItemText.setText(Html.fromHtml(spoilerText));
+        TextView listItemText = (TextView)layout.findViewById(R.id.list_item_image_exif);
+        listItemText.setText(Html.fromHtml(exifText));
         listItemText.setVisibility(View.VISIBLE);
         v.setVisibility(View.GONE);
     }

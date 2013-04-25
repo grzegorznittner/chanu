@@ -99,6 +99,7 @@ public class ThreadActivity
     protected ShareActionProvider shareActionProvider = null;
     protected Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
     protected ActionMode actionMode = null;
+    protected Typeface subjectTypeface = null;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -222,9 +223,7 @@ public class ThreadActivity
                         ChanHelper.POST_TEXT,
                         ChanHelper.POST_TEXT,
                         ChanHelper.POST_COUNTRY_URL,
-                        ChanHelper.POST_DATE_TEXT,
                         ChanHelper.POST_IMAGE_DIMENSIONS,
-                        ChanHelper.POST_EXPAND_BUTTON,
                         ChanHelper.POST_EXPAND_BUTTON,
                         ChanHelper.POST_EXPAND_BUTTON
                 },
@@ -233,12 +232,10 @@ public class ThreadActivity
                         R.id.list_item_image_expanded,
                         R.id.list_item_image,
                         R.id.list_item_header,
-                        R.id.list_item_snippet,
+                        R.id.list_item_subject,
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
-                        R.id.list_item_date,
-                        R.id.list_item_image_exif,
-                        R.id.list_item_spoiler_button
+                        R.id.list_item_image_exif
                 });
         absListView.setAdapter(adapter);
     }
@@ -277,6 +274,12 @@ public class ThreadActivity
         absListView.setOnCreateContextMenuListener(this);
     }
 
+    protected Typeface ensureSubjectTypeface() {
+        if (subjectTypeface == null)
+            subjectTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Condensed.ttf");
+        return subjectTypeface;
+    }
+
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
         if (DEBUG) Log.v(TAG, "setViewValue for  position=" + cursor.getPosition());
@@ -297,16 +300,18 @@ public class ThreadActivity
                 return setItemCountryFlag((ImageView) view, cursor);
             case R.id.list_item_header:
                 return setItemHeaderValue((TextView) view, cursor);
-            case R.id.list_item_snippet:
-                return setItemSnippetValue((TextView) view, cursor);
+            case R.id.list_item_subject:
+                return setItemSubject((TextView) view, cursor);
             case R.id.list_item_text:
                 return setItemTextValue((TextView) view, cursor);
-            case R.id.list_item_date:
-                return setItemDateValue((TextView)view, cursor);
+            //case R.id.list_item_date:
+            //    return setItemDateValue((TextView)view, cursor);
             case R.id.list_item_image_exif:
                 return setItemImageExifValue((TextView) view, cursor);
-            case R.id.list_item_spoiler_button:
-                return setItemSpoilerButton((Button) view, cursor);
+            //case R.id.list_item_exif_button:
+            //    return setItemExifButton((Button) view, cursor);
+            //case R.id.list_item_spoiler_button:
+            //    return setItemSpoilerButton((Button) view, cursor);
             default:
                 return false;
         }
@@ -317,26 +322,13 @@ public class ThreadActivity
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         item.setTag(adItem > 0 ? null : postId);
         int expandable = itemExpandable(cursor, item);
-        ImageView expander = (ImageView)item.findViewById(R.id.list_item_expander);
-        ImageView collapse = (ImageView)item.findViewById(R.id.list_item_collapse);
         //if (DEBUG) Log.i(TAG, "pos=" + cursor.getPosition() + " expandable=" + expandable);
         if (adItem > 0) {
             item.setBackgroundResource(R.color.PaletteBlue);
-            if (expander != null)
-                expander.setVisibility(View.GONE);
-        }
-        else if (expandable > 0) {
-            item.setBackgroundDrawable(null);
-            if (expander != null)
-                expander.setVisibility(View.VISIBLE);
         }
         else {
             item.setBackgroundDrawable(null);
-            if (expander != null)
-                expander.setVisibility(View.GONE);
         }
-        if (collapse != null)
-            collapse.setVisibility(View.GONE);
         return true;
     }
 
@@ -420,31 +412,22 @@ public class ThreadActivity
 
 
 
-    private boolean setItemSnippetValue(final TextView tv, final Cursor cursor) {
+    private boolean setItemSubject(final TextView tv, final Cursor cursor) {
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0) {
             tv.setVisibility(View.INVISIBLE);
         }
-        else if (cursor.getPosition() == 0) { // thread header
-            Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Condensed.ttf");
+        else {
             String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_DATE_TEXT));
             if (text != null && !text.isEmpty()) {
                 Spanned spanned = Html.fromHtml(text);
-                tv.setTypeface(tf);
+                tv.setTypeface(subjectTypeface);
                 tv.setText(spanned);
                 tv.setVisibility(View.VISIBLE);
             }
             else {
                 tv.setVisibility(View.GONE);
             }
-        }
-        else {
-            String text = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
-            Spanned spanned = Html.fromHtml(text);
-            tv.setTypeface(Typeface.DEFAULT);
-            tv.setText(spanned);
-            //tv.setLines(SNIPPET_LINES_DEFAULT); // default num lines
-            tv.setVisibility(View.VISIBLE);
         }
         return true;
     }
@@ -464,9 +447,10 @@ public class ThreadActivity
     }
 
     private boolean setItemTextValue(final TextView tv, final Cursor cursor) {
-        if (cursor.getPosition() == 0) {
-            final String postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        final String postText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_TEXT));
+        if (postText != null && !postText.isEmpty()) {
             tv.setText(Html.fromHtml(postText));
+            tv.setVisibility(View.VISIBLE);
         }
         else {
             tv.setText("");
@@ -482,43 +466,71 @@ public class ThreadActivity
     }
 
     private boolean setItemImageExifValue(final TextView tv, final Cursor cursor) {
-        if (cursor.getPosition() == 0) {
-            final String postExifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
-            tv.setText(postExifText);
-        }
-        else {
-            tv.setVisibility(View.GONE);
-        }
+        tv.setVisibility(View.GONE);
         return true;
     }
-
-    private boolean setItemSpoilerButton(final Button button, final Cursor cursor) {
-        button.setVisibility(View.GONE);
+    /*
+    private boolean setItemExifButton(final Button button, final Cursor cursor) {
+        final String exifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
         final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         if (adItem > 0)
             return true;
-        button.setOnClickListener(new ThreadSpoilerOnClickListener(cursor));
+        if (exifText != null && !exifText.isEmpty()) {
+            button.setOnClickListener(new ThreadExifOnClickListener(cursor));
+            button.setVisibility(View.VISIBLE);
+        }
+        else {
+            button.setVisibility(View.GONE);
+
+        }
         return true;
     }
+    /*
+    private boolean setItemSpoilerButton(final Button button, final Cursor cursor) {
+        final int spoiler = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_SPOILER));
+        final int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
+        if (adItem > 0)
+            return true;
+        if (spoiler > 0) {
+            button.setOnClickListener(new ThreadSpoilerOnClickListener(cursor));
+            button.setVisibility(View.VISIBLE);
+        }
+        else {
+            button.setVisibility(View.GONE);
 
-    private boolean setItemImage(final ImageView iv, final Cursor cursor)
-    {
+        }
+        return true;
+    }
+    */
+
+    protected static final int ITEM_THUMB_WIDTH_DP = 80;
+
+    private boolean setItemImage(final ImageView iv, final Cursor cursor) {
         boolean isFirst = cursor.getPosition() == 0;
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         if (imageUrl != null && !imageUrl.isEmpty()) {
             ViewGroup.LayoutParams params = iv.getLayoutParams();
             if (params != null) {
                 DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                if (isFirst) {
-                    int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
-                    int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
-                    if (tn_h > tn_w) // tall image, restrict by height
-                        params.height = displayMetrics.heightPixels / 2;
-                    else
-                        params.width = displayMetrics.widthPixels; // restrict by width normally
+                int desiredHeight = isFirst
+                        ? displayMetrics.heightPixels / 2
+                        : 2 * ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
+                int desiredWidth = isFirst
+                        ? displayMetrics.widthPixels
+                        : ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
+                int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
+                int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
+                if (isFirst && tn_h > tn_w) { // tall image, restrict by height
+                    params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    params.height = desiredHeight;
+                }
+                else if (!isFirst && tn_h > 2 * tn_w) { // tall image, restrict by height
+                    params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    params.height = desiredHeight;
                 }
                 else {
-                    params.width = ChanGridSizer.dpToPx(displayMetrics, 80);
+                    params.width = desiredWidth; // restrict by width normally
+                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 }
                 iv.setLayoutParams(params);
             }
@@ -1138,12 +1150,13 @@ public class ThreadActivity
                                 public void run() {
                                     if (absListView == null || adapter == null)
                                         return;
-                                    int first = absListView.getFirstVisiblePosition();
-                                    int last = absListView.getLastVisiblePosition();
-                                    for (int pos = first; pos <= last; pos++)
-                                        expandVisibleItem(first, pos);
+                                    //int first = absListView.getFirstVisiblePosition();
+                                    //int last = absListView.getLastVisiblePosition();
+                                    //for (int pos = first; pos <= last; pos++)
+                                    //    expandVisibleItem(first, pos);
                                     absListView.smoothScrollBy(2, 25);
                                 }
+                                /*
                                 private void expandVisibleItem(int first, int pos) {
                                     View listItem = absListView.getChildAt(pos - first);
                                     View expandButton = listItem == null ? null : listItem.findViewById(R.id.list_item_expander);
@@ -1158,6 +1171,7 @@ public class ThreadActivity
                                         absListView.performItemClick(expandButton, pos, id);
                                     }
                                 }
+                                */
                             });
                         }
                         try {
