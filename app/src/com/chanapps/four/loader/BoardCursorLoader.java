@@ -62,7 +62,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
         if (board != null && board.threads != null && board.threads.length > 0 && !board.defData) { // show loading
             if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
-            int adSpace = MINIMUM_AD_SPACING;
+            //int adSpace = MINIMUM_AD_SPACING;
             int i = 0;
             for (ChanPost thread : board.threads) {
                 if (DEBUG) Log.i(TAG, "Loading thread:" + thread.no);
@@ -78,6 +78,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 matrixCursor.addRow(row);
                 i++;
                 if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
+                /*
                 if (generator.nextDouble() < AD_PROBABILITY && !(adSpace > 0)) {
                     matrixCursor.addRow(board.makeThreadAdRow(context));
                     adSpace = MINIMUM_AD_SPACING;
@@ -85,6 +86,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 else {
                     adSpace--;
                 }
+                */
             }
             if (DEBUG) Log.i(TAG, "Loaded " + i + " threads");
         }
