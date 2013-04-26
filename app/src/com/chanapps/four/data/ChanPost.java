@@ -17,16 +17,97 @@ public class ChanPost {
 	public static final String TAG = ChanPost.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    private static final int MAX_HEADER_NAME_LEN = 15;
     public static final int MAX_SINGLELINE_TEXT_LEN = 20;
     private static final int MIN_LINE = 30;
     private static final int MAX_LINE = 40;
+    private static final int MAX_THREAD_SUBJECT_LEN = 100;
+    private static final int MIN_SUBJECT_LEN = 2;
+    private static final int MAX_SUBJECT_LEN = 100;
 
-    private static final int CHAN_ID = 0x01;
-    private static final int CHAN_NAME = 0x02;
-    private static final int CHAN_TRIP = 0x04;
-    private static final int CHAN_EMAIL = 0x08;
-    private static final int CHAN_HEADER_SET = 0x10;
+    public static final String POST_NO = "postNo";
+    public static final String POST_ID = "_id";
+    public static final String POST_BOARD_CODE = "boardCode";
+    public static final String POST_NAME = "name";
+    public static final String POST_EMAIL = "email";
+    public static final String POST_TIM = "tim";
+    public static final String POST_EXT = "ext";
+    public static final String POST_W = "w";
+    public static final String POST_H = "h";
+    public static final String POST_TN_W = "tn_w";
+    public static final String POST_TN_H = "tn_h";
+    public static final String POST_RESTO = "resto";
+    public static final String POST_HEADLINE_TEXT = "headlineText"; // we construct and filter this
+    public static final String POST_SUBJECT_TEXT = "subjectText"; // we construct and filter this // NOT USED
+    public static final String POST_TEXT = "text"; // we construct and filter this
+    public static final String POST_IMAGE_URL = "imageUrl"; // we construct this from board and tim
+    public static final String POST_FULL_IMAGE_URL = "fullImageUrlrl"; // we construct this from board and tim
+    public static final String POST_COUNTRY_URL = "countryUrl"; // we construct this from the country code
+    public static final String POST_SPOILER_SUBJECT = "spoilerSubject";
+    public static final String POST_SPOILER_TEXT = "spoilerText";
+    public static final String POST_EXIF_TEXT = "exifText";
+    public static final String POST_USER_ID = "id";
+    public static final String POST_TRIPCODE = "trip";
+    public static final String POST_THUMBNAIL_ID = "postThumbnailId";
+    public static final String POST_FLAGS = "postFlags";
+    public static final int FLAG_HAS_IMAGE = 0x001;
+    public static final int FLAG_HAS_SUBJECT = 0x002;
+    public static final int FLAG_HAS_TEXT = 0x004;
+    public static final int FLAG_HAS_SPOILER = 0x008;
+    public static final int FLAG_HAS_EXIF = 0x010;
+    public static final int FLAG_HAS_COUNTRY = 0x020;
+    public static final int FLAG_IS_DEAD = 0x040;
+    public static final int FLAG_IS_CLOSED = 0x080;
+    public static final int FLAG_IS_AD = 0x100;
+
+    private int postFlags(boolean isAd, String subject, String text, String exifText) {
+        int flags = 0;
+        if (tim > 0)
+            flags |= FLAG_HAS_IMAGE;
+        if (subject != null && !subject.isEmpty())
+            flags |= FLAG_HAS_SUBJECT;
+        if (text != null && !text.isEmpty())
+            flags |= FLAG_HAS_TEXT;
+        if (hasSpoiler())
+            flags |= FLAG_HAS_SPOILER;
+        if (exifText != null && !exifText.isEmpty())
+            flags |= FLAG_HAS_EXIF;
+        if (country != null && !country.isEmpty())
+            flags |= FLAG_HAS_COUNTRY;
+        if (isDead)
+            flags |= FLAG_IS_DEAD;
+        if (closed > 0)
+            flags |= FLAG_IS_CLOSED;
+        if (isAd)
+            flags |= FLAG_IS_AD;
+        return flags;
+    }
+
+    public static final String[] POST_COLUMNS = {
+            POST_ID,
+            POST_BOARD_CODE,
+            POST_RESTO,
+            POST_IMAGE_URL,
+            POST_FULL_IMAGE_URL,
+            POST_COUNTRY_URL,
+            POST_HEADLINE_TEXT,
+            POST_SUBJECT_TEXT,
+            POST_TEXT,
+            POST_TN_W,
+            POST_TN_H,
+            POST_W,
+            POST_H,
+            POST_TIM,
+            POST_SPOILER_SUBJECT,
+            POST_SPOILER_TEXT,
+            POST_EXIF_TEXT,
+            POST_USER_ID,
+            POST_TRIPCODE,
+            POST_NAME,
+            POST_EMAIL,
+            POST_THUMBNAIL_ID,
+            POST_EXT,
+            POST_FLAGS
+    };
 
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingStringDeserializer.class)
     public String board;
@@ -119,6 +200,16 @@ public class ChanPost {
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingBooleanDeserializer.class)
     public boolean useFriendlyIds = true;
 
+    private boolean hasSpoiler() {
+        if (spoiler > 0)
+            return true;
+        if (sub != null && sub.matches(".*<s>.*</s>.*"))
+            return true;
+        if (com != null && com.matches(".*<s>.*</s>.*"))
+            return true;
+        return false;
+    }
+
     public static final String quoteText(String in) {
         if (in == null || in.isEmpty())
             return "";
@@ -151,22 +242,17 @@ public class ChanPost {
         return o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
     }
 
-    public String spoilerText() {
-        if (com != null && com.indexOf("<s>") >= 0) {
-            String comText = sanitizeText(com, false, true);
-            if (comText != null)
-                return comText;
-        }
-        return "";
+    private String[] textComponents() {
+        return textComponents(false);
     }
 
-    private static final int MAX_THREAD_SUBJECT_LEN = 100;
-    private static final int MIN_SUBJECT_LEN = 2;
-    private static final int MAX_SUBJECT_LEN = 100;
+    private String[] spoilerComponents() {
+        return textComponents(true);
+    }
 
-    private String[] textComponents() {
-        String subText = sanitizeText(sub);
-        String comText = sanitizeText(com, false, false);
+    private String[] textComponents(boolean showSpoiler) {
+        String subText = sanitizeText(sub, false, showSpoiler);
+        String comText = sanitizeText(com, false, showSpoiler);
         String subject = subText != null ? subText : "";
         String message = comText != null ? comText : "";
 
@@ -296,49 +382,9 @@ public class ChanPost {
         return t.trim();
     }
 
-    private static final String collapseNewlines(String s) {
-        return s.replaceAll("(\\s*\\n)+", "\n");
-    }
-
-    private static String clickForMore = null;
-
-    public static void initClickForMore(Context c) {
-        clickForMore = c.getString(R.string.board_click_for_more);
-    }
-
-    public static String abbreviate(String s, int maxLen) {
-        return abbreviate(s, maxLen, maxLen - 3, false);
-    }
-
-    private static String abbreviate(String s, int maxLen, int maxAbbrLen) {
-        return abbreviate(s, maxLen, maxAbbrLen, false);
-    }
-
-    private static String abbreviate(String s, int maxLen, int maxAbbrLen, boolean longtext) {
-        if (s == null || s.isEmpty())
-            return "";
-        return
-            (s.length() <= maxLen)
-            ? s
-            : s.substring(0, maxLen)
-                    .replaceAll("\\s+", " ")
-                    .replaceFirst("\\s+\\S+$", "")
-                    .replaceFirst("\\s+$", "")
-                    + (longtext && clickForMore != null ? "\n" + clickForMore : "");
-/*
-            : s.substring(0, maxAbbrLen)
-                    .replaceAll("\\s+", " ")
-                    .replaceFirst("\\s+\\S+$", "")
-                    .replaceFirst("\\s+$", "")
-                    + "..."
-                    + (longtext && clickForMore != null ? "\n" + clickForMore : "");
-*/
-    }
-
     public String toString() {
 		return "Post " + no + " " + com + ", thumb: " + thumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
 	}
-
 
     public String thumbnailUrl() { // thumbnail with fallback
         if (ChanBoard.isImagelessSticky(board, no))
@@ -429,6 +475,8 @@ public class ChanPost {
             items.add(email);
         if (country_name != null && !country_name.isEmpty())
             items.add(country_name);
+        if (fsize > 0)
+            items.add(imageDimensions());
         if (resto == 0)
             items.add(threadInfoLine());
         items.add(dateText());
@@ -719,16 +767,19 @@ public class ChanPost {
     }
 
     public static MatrixCursor buildMatrixCursor() {
-        return new MatrixCursor(ChanHelper.POST_COLUMNS);
+        return new MatrixCursor(POST_COLUMNS);
     }
 
     public Object[] makeRow() {
         String[] textComponents = textComponents();
+        String[] spoilerComponents = spoilerComponents();
+        String exifText = exifText();
         return new Object[] {
                 no,
                 board,
                 resto,
                 thumbnailUrl(),
+                imageUrl(),
                 countryFlagUrl(),
                 headline(),
                 textComponents[0],
@@ -738,39 +789,36 @@ public class ChanPost {
                 w,
                 h,
                 tim,
-                spoiler,
-                spoilerText(),
+                spoilerComponents[0],
+                spoilerComponents[1],
                 exifText(),
                 id,
                 trip,
                 name,
                 email,
-                imageDimensions(),
-                isDead ? 1 : 0,
-                closed,
-                0,
-                0,
                 thumbnailId(),
-                ext
+                ext,
+                postFlags(false, textComponents[0], textComponents[1], exifText)
         };
     }
 
     public static Object[] makeAdRow(Context context, String boardCode, ChanAd ad) {
+        String subject = context.getString(R.string.advert_header);
         return new Object[] {
                 2,
                 boardCode,
                 0,
                 ad.imageUrl(),
                 "",
+                "",
                 context.getString(R.string.board_advert_full),
-                context.getString(R.string.advert_header),
+                subject,
                 ad.clickUrl(),
                 ad.tn_w(),
                 ad.tn_h(),
                 -1,
                 -1,
                 0,
-                0,
                 "",
                 "",
                 "",
@@ -778,12 +826,9 @@ public class ChanPost {
                 "",
                 "",
                 "",
-                0,
-                0,
-                0,
-                1,
-                0,
-                ""
+                "",
+                "",
+                FLAG_HAS_IMAGE | FLAG_HAS_SUBJECT | FLAG_IS_AD
         };
     }
 

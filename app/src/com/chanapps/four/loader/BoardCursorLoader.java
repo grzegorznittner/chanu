@@ -60,7 +60,9 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             Log.i(TAG, "board loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0));
         }
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
-        if (board != null && board.threads != null && board.threads.length > 0 && !board.defData) { // show loading
+        if (!board.isVirtualBoard())
+            matrixCursor.addRow(ChanBoard.makeBoardTitleRow(context, boardName));
+        if (board.threads != null && board.threads.length > 0 && !board.defData) { // show loading
             if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
             //int adSpace = MINIMUM_AD_SPACING;
             int i = 0;

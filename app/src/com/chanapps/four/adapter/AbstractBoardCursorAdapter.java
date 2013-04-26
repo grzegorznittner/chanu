@@ -9,11 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ResourceCursorAdapter;
 
-import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanPost;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -94,7 +92,7 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         Object tag = view.getTag();
         if (tag != null && tag instanceof Long) {
             long viewPostId = (Long)tag;
-            long cursorPostId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
+            long cursorPostId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
             if (viewPostId == cursorPostId) {
                 if (DEBUG) Log.i(TAG, "view already set, bypassing pos=" + cursor.getPosition());
                 return;

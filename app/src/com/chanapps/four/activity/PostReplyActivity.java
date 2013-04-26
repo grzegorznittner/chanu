@@ -26,11 +26,8 @@ import android.widget.*;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.fragment.*;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
@@ -452,7 +449,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     protected void loadFromIntentWithBoardCode(Intent intent, String boardCode, String imageUrl) {
         this.boardCode = boardCode;
         threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-        postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
+        postNo = intent.getLongExtra(ChanPost.POST_NO, 0);
         tim = intent.getLongExtra(ChanHelper.TIM, 0);
         imagePath = null;
         contentType = null;
@@ -489,7 +486,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         ensurePrefs();
         boardCode = prefs.getString(ChanHelper.BOARD_CODE, null);
         threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
-        postNo = prefs.getLong(ChanHelper.POST_NO, 0);
+        postNo = prefs.getLong(ChanPost.POST_NO, 0);
         tim = prefs.getLong(ChanHelper.TIM, 0);
         imagePath = prefs.getString(ChanHelper.IMAGE_PATH, null);
         contentType = prefs.getString(ChanHelper.CONTENT_TYPE, null);
@@ -583,7 +580,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         SharedPreferences.Editor ed = ensurePrefs().edit();
         ed.putString(ChanHelper.BOARD_CODE, boardCode);
         ed.putLong(ChanHelper.THREAD_NO, threadNo);
-        ed.putLong(ChanHelper.POST_NO, postNo);
+        ed.putLong(ChanPost.POST_NO, postNo);
         ed.putString(ChanHelper.TEXT, messageText.getText().toString());
         ed.putString(ChanHelper.SUBJECT, subjectText.getText().toString());
         ed.putBoolean(ChanHelper.SPOILER, spoilerCheckbox.isChecked());

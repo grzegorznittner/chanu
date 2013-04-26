@@ -1,11 +1,9 @@
 package com.chanapps.four.activity;
 
-import java.util.Date;
 import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.res.ColorStateList;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +18,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
@@ -406,8 +403,9 @@ public class BoardActivity
     protected static boolean setThreadNumReplies(TextView tv, Cursor cursor) {
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         int n = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_REPLIES));
-        if ((flags & ChanThread.THREAD_FLAG_AD) == 0
-                && (flags & ChanThread.THREAD_FLAG_BOARD_TYPE) == 0
+        if ((flags & (ChanThread.THREAD_FLAG_AD
+                | ChanThread.THREAD_FLAG_BOARD_TYPE
+                | ChanThread.THREAD_FLAG_BOARD_TITLE)) == 0
                 && n >= 0)
         {
             tv.setText(n + "r");
@@ -423,8 +421,9 @@ public class BoardActivity
     protected static boolean setThreadNumImages(TextView tv, Cursor cursor) {
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         int n = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES));
-        if ((flags & ChanThread.THREAD_FLAG_AD) == 0
-                && (flags & ChanThread.THREAD_FLAG_BOARD_TYPE) == 0
+        if ((flags & (ChanThread.THREAD_FLAG_AD
+                | ChanThread.THREAD_FLAG_BOARD_TYPE
+                | ChanThread.THREAD_FLAG_BOARD_TITLE)) == 0
                 && n >= 0)
         {
             tv.setText(n + "i");
@@ -439,7 +438,7 @@ public class BoardActivity
 
     protected static boolean setBoardTypeText(TextView tv, Cursor cursor) {
         int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((threadFlags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0) {
+        if ((threadFlags & (ChanThread.THREAD_FLAG_BOARD_TYPE | ChanThread.THREAD_FLAG_BOARD_TITLE)) > 0) {
             tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
             tv.setVisibility(View.VISIBLE);
         }
@@ -533,7 +532,7 @@ public class BoardActivity
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
                 replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
                 replyIntent.putExtra(ChanHelper.THREAD_NO, 0);
-                replyIntent.putExtra(ChanHelper.POST_NO, 0);
+                replyIntent.putExtra(ChanPost.POST_NO, 0);
                 replyIntent.putExtra(ChanHelper.TIM, 0);
                 replyIntent.putExtra(ChanHelper.TEXT, "");
                 startActivity(replyIntent);

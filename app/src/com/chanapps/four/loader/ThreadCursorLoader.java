@@ -52,7 +52,6 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         if (threadNo == 0) {
             throw new ExceptionInInitializerError("Can't have zero threadNo in a thread cursor loader");
         }
-        ChanPost.initClickForMore(context);
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 

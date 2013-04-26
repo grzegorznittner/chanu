@@ -1,3 +1,4 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <item name="THREAD_VIEW_TYPE" type="id">2</item>
+    <item name="THREAD_VIEW_IS_EXPANDED" type="id">3</item>
 </resources>

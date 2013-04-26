@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewParent;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanPost;
 
 /**
 * Created with IntelliJ IDEA.
@@ -20,7 +20,7 @@ public class ThreadExifOnClickListener implements View.OnClickListener {
     String exifText = "";
 
     public ThreadExifOnClickListener(Cursor cursor) {
-        exifText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXIF_TEXT));
+        exifText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXIF_TEXT));
     }
 
     @Override

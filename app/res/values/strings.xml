@@ -169,7 +169,7 @@
     <string name="thread_couldnt_load">Couldn\'t load thread</string>
     <string name="thread_couldnt_load_image_cancelled">Couldn\'t load image, cancelled</string>
     <string name="thread_couldnt_load_image">Couldn\'t load image: %1$s</string>
-    <string name="thread_couldnt_download_image_down">Network down, can\'t download image</string>
+    <string name="thread_couldnt_download_image_down">Network issue, can\'t download image</string>
     <string name="thread_couldnt_download_image">Couldn\'t download image</string>
     <string name="thread_no_replies_found">No posts found</string>
     <string name="thread_prev_replies_found">Found %1$d previous</string>

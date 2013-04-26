@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewParent;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanPost;
 
 /**
 * Created with IntelliJ IDEA.
@@ -20,7 +20,7 @@ public class ThreadSpoilerOnClickListener implements View.OnClickListener {
     String spoilerText = "";
 
     public ThreadSpoilerOnClickListener(Cursor cursor) {
-        spoilerText = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_SPOILER_TEXT));
+        spoilerText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_TEXT));
     }
 
     @Override

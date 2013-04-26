@@ -412,6 +412,10 @@ public class ChanBoard {
         return ChanThread.makeBoardRow(link, name, getImageResourceId());
     }
 
+    public static Object[] makeBoardTitleRow(Context context, String boardCode) {
+        return ChanThread.makeBoardTitleRow(context, boardCode);
+    }
+
     public static Object[] makeBoardTypeRow(Context context, BoardType boardType) {
         return ChanThread.makeBoardTypeRow(context, boardType);
     }

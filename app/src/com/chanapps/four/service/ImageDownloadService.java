@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Calendar;
 
+import com.chanapps.four.data.ChanPost;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -44,7 +45,7 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
         Intent intent = new Intent(context, ImageDownloadService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, board);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(ChanHelper.POST_NO, postNo);
+        intent.putExtra(ChanPost.POST_NO, postNo);
         intent.putExtra(ChanHelper.IMAGE_URL, url);
         intent.putExtra(ChanHelper.IMAGE_PATH, targetFile);
         context.startService(intent);
@@ -83,7 +84,7 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 			stopDownload = false;
 			board = intent.getStringExtra(ChanHelper.BOARD_CODE);
 			threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-			postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
+			postNo = intent.getLongExtra(ChanPost.POST_NO, 0);
 			imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
 			targetImagePath = intent.getStringExtra(ChanHelper.IMAGE_PATH);
 			if (DEBUG) Log.i(TAG, "Handling image download service for " + imageUrl);

@@ -35,8 +35,9 @@ public class ChanThread extends ChanPost {
     public static final int THREAD_FLAG_CLOSED = 0x02;
     public static final int THREAD_FLAG_STICKY = 0x04;
     public static final int THREAD_FLAG_AD = 0x08;
-    public static final int THREAD_FLAG_BOARD_TYPE = 0x10;
-    public static final int THREAD_FLAG_BOARD = 0x20;
+    public static final int THREAD_FLAG_BOARD = 0x10;
+    public static final int THREAD_FLAG_BOARD_TYPE = 0x20;
+    public static final int THREAD_FLAG_BOARD_TITLE = 0x40;
 
     public static final String[] THREAD_COLUMNS = {
             THREAD_COMPOSITE_ID,
@@ -81,6 +82,23 @@ public class ChanThread extends ChanPost {
                 post.replies,
                 post.images,
                 threadFlags(post)
+        };
+    }
+
+    public static Object[] makeBoardTitleRow(Context context, String boardCode) {
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        return new Object[] {
+                0,
+                "",
+                0,
+                board.name,
+                "",
+                ChanBoard.getIndexedImageDrawableUrl(boardCode, 0),
+                "",
+                "",
+                0,
+                0,
+                THREAD_FLAG_BOARD_TITLE
         };
     }
 

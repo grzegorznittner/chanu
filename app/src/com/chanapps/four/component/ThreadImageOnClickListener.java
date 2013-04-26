@@ -5,6 +5,7 @@ import android.view.View;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanPost;
 
 /**
 * Created with IntelliJ IDEA.
@@ -26,12 +27,12 @@ public class ThreadImageOnClickListener implements View.OnClickListener {
 
     public ThreadImageOnClickListener(ThreadActivity activity, Cursor cursor) {
         threadActivity = activity;
-        postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-        boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE));
-        resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+        postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+        boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+        resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
         threadNo = resto != 0 ? resto : postId;
-        w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
-        h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
+        w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_W));
+        h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_H));
         position = cursor.getPosition();
     }
 

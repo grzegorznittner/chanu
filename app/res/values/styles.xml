@@ -102,6 +102,7 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_centerInParent">true</item>
         <item name="android:layout_gravity">center</item>
+        <item name="android:padding">8dp</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/PaletteWhite</item>
@@ -320,7 +321,7 @@
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:gravity">top|left</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">16sp</item>
         <!-- <item name="android:textIsSelectable">true</item>  -->
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">false</item>
@@ -367,6 +368,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:contentDescription">@string/thread_post_image_expanded</item>
@@ -467,7 +469,7 @@
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:gravity">top|left</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">16sp</item>
         <!-- <item name="android:textIsSelectable">true</item>  -->
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">false</item>

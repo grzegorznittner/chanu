@@ -39,7 +39,6 @@ public class ChanHelper {
     public static final String THREAD_NO = "threadNo";
     public static final String FORCE_REFRESH = "forceRefresh";
     public static final String BACKGROUND_LOAD = "backgroundLoad";
-    public static final String POST_NO = "postNo";
     public static final String TIM = "tim";
     public static final String TEXT = "text";
     //public static final String QUOTE_TEXT = "quoteText";
@@ -57,44 +56,6 @@ public class ChanHelper {
     public static final String CONTENT_TYPE = "contentType";
     public static final String ORIENTATION = "orientation";
     public static final String THREAD_WATCHLIST = "threadWatchlist";
-    public static final String POST_ID = "_id";
-    public static final String POST_BOARD_CODE = "board_name";
-    public static final String POST_NOW = "now";
-    public static final String POST_TIME = "time";
-    public static final String POST_NAME = "name";
-    public static final String POST_EMAIL = "email";
-    public static final String POST_SUB = "sub";
-    public static final String POST_COM = "com";
-    public static final String POST_COUNTRY = "country";
-    public static final String POST_TIM = "tim";
-    public static final String POST_FILENAME = "filename";
-    public static final String POST_EXT = "ext";
-    public static final String POST_W = "w";
-    public static final String POST_H = "h";
-    public static final String POST_TN_W = "tn_w";
-    public static final String POST_TN_H = "tn_h";
-    public static final String POST_FSIZE = "fsize";
-    public static final String POST_RESTO = "resto";
-    public static final String POST_LAST_UPDATE = "last_update";
-    public static final String POST_STICKY = "sticky";
-    public static final String POST_CLOSED = "closed";
-    public static final String POST_OMITTED_POSTS = "omitted_posts";
-    public static final String POST_OMITTED_IMAGES = "omitted_images";
-    public static final String POST_DATE_TEXT = "headerText"; // we construct and filter this // NOT USED
-    public static final String POST_SHORT_TEXT = "shortText"; // we construct and filter this
-    public static final String POST_TEXT = "text"; // we construct and filter this
-    public static final String POST_IMAGE_URL = "image_url"; // we construct this from board and tim
-    public static final String POST_COUNTRY_URL = "country_url"; // we construct this from the country code
-    public static final String POST_SPOILER = "spoiler";
-    public static final String POST_SPOILER_TEXT = "spoilerText";
-    public static final String POST_EXIF_TEXT = "exifText";
-    public static final String POST_USER_ID = "id";
-    public static final String POST_TRIPCODE = "trip";
-    public static final String POST_IS_DEAD = "isDead";
-    public static final String POST_IMAGE_DIMENSIONS = "imageDim";
-    public static final String POST_EXPAND_BUTTON = "expandButton";
-    public static final String AD_ITEM = "adItem";
-    public static final String POST_THUMBNAIL_ID = "postThumbnailId";
 
     public static final String LAST_BOARD_POSITION = "lastBoardPosition";
     public static final String LAST_THREAD_POSITION = "lastThreadPosition";
@@ -107,36 +68,6 @@ public class ChanHelper {
     public static final String TRIGGER_BOARD_REFRESH = "triggerBoardRefresh";
 
     public static final String USER_POSTS = "userPosts";
-
-    public static final String[] POST_COLUMNS = {
-            POST_ID,
-            POST_BOARD_CODE,
-            POST_RESTO,
-            POST_IMAGE_URL,
-            POST_COUNTRY_URL,
-            POST_SHORT_TEXT,
-            POST_DATE_TEXT,
-            POST_TEXT,
-            POST_TN_W,
-            POST_TN_H,
-            POST_W,
-            POST_H,
-            POST_TIM,
-            POST_SPOILER,
-            POST_SPOILER_TEXT,
-            POST_EXIF_TEXT,
-            POST_USER_ID,
-            POST_TRIPCODE,
-            POST_NAME,
-            POST_EMAIL,
-            POST_IMAGE_DIMENSIONS,
-            POST_IS_DEAD,
-            POST_CLOSED,
-            POST_EXPAND_BUTTON,
-            AD_ITEM,
-            POST_THUMBNAIL_ID,
-            POST_EXT
-    };
 
     public static final String PREF_WIDGET_BOARDS = "prefWidgetBoards";
     public static final String PREF_BLOCKLIST_TRIPCODE = "prefBlocklistTripcode";

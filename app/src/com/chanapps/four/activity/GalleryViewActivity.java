@@ -99,9 +99,9 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     public static void startActivity(Context from, AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        final long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-        final String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE));
-        final long resto = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_RESTO));
+        final long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+        final String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+        final long resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
         final long threadNo = resto == 0 ? postId : resto;
         startActivity(from, boardCode, threadNo, postId, adapterView.getFirstVisiblePosition());
     }
@@ -111,7 +111,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         intent.putExtra(VIEW_TYPE, ViewType.PHOTO_VIEW.toString());
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(ChanHelper.POST_NO, postId);
+        intent.putExtra(ChanPost.POST_NO, postId);
         intent.putExtra(ChanHelper.LAST_THREAD_POSITION, position);
         if (DEBUG) Log.i(TAG, "Starting full screen image viewer for: " + boardCode + "/" + threadNo + "/" + postId);
         from.startActivity(intent);
@@ -248,7 +248,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             if (intent.hasExtra(ChanHelper.BOARD_CODE) && intent.hasExtra(ChanHelper.THREAD_NO)) {
                 boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
                 threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-                postNo = intent.getLongExtra(ChanHelper.POST_NO, 0);
+                postNo = intent.getLongExtra(ChanPost.POST_NO, 0);
                 if (postNo == 0) {
                     postNo = threadNo; // for calls from null thread grid items used in header
                 }
@@ -262,7 +262,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             viewType = ViewType.valueOf(prefs.getString(VIEW_TYPE, ViewType.PHOTO_VIEW.toString()));
             boardCode = prefs.getString(ChanHelper.BOARD_CODE, "");
             threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
-            postNo = prefs.getLong(ChanHelper.POST_NO, 0);
+            postNo = prefs.getLong(ChanPost.POST_NO, 0);
             imageUrl = prefs.getString(ChanHelper.IMAGE_URL, "");
             if (DEBUG) Log.i(TAG, "Post no " + postNo + " laoded from preferences viewType=" + viewType);
         }
@@ -286,7 +286,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         ed.putString(VIEW_TYPE, viewType.toString());
         ed.putString(ChanHelper.BOARD_CODE, boardCode);
         ed.putLong(ChanHelper.THREAD_NO, threadNo);
-        ed.putLong(ChanHelper.POST_NO, postNo);
+        ed.putLong(ChanPost.POST_NO, postNo);
         ed.putString(ChanHelper.IMAGE_URL, imageUrl);
         if (DEBUG) Log.i(TAG, "Stored in prefs, post no: " + postNo);
         ed.commit();
@@ -544,7 +544,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     		upIntent = new Intent(this, ThreadActivity.class);
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
             upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
-            upIntent.putExtra(ChanHelper.POST_NO, postNo);
+            upIntent.putExtra(ChanPost.POST_NO, postNo);
             upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
             upIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_THREAD_POSITION, 0));
     		break;

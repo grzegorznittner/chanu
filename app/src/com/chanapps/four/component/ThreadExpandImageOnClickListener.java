@@ -36,35 +36,52 @@ import java.net.URI;
 public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
     private static final String TAG = ThreadExpandImageOnClickListener.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
+    private static final int NO_TEXT_PADDING_TOP_DP = 8;
 
-    private int expandable = 0;
+    private ImageView itemThumbnailImage;
     private ImageView itemExpandedImage;
     private ProgressBar itemExpandedProgressBar;
+    private TextView itemExifView;
+    private TextView itemSubjectView;
+    private TextView itemTextView;
     private String postImageUrl = null;
-    int postW = 0;
-    int postH = 0;
-    int listPosition = 0;
-    String fullImagePath = null;
+    private int postW = 0;
+    private int postH = 0;
+    private int listPosition = 0;
+    private String fullImagePath = null;
+    private int padding8Dp;
+    private int flags;
+    private String spoilerSubject;
+    private String spoilerText;
+    private String exifText;
     private ThreadActivity threadActivity;
 
-    public ThreadExpandImageOnClickListener(ThreadActivity threadActivity, final Cursor cursor, final int expandable, final View itemView) {
+    public ThreadExpandImageOnClickListener(ThreadActivity threadActivity, final Cursor cursor, final View itemView) {
         this.threadActivity = threadActivity;
-        long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
-        String boardCode = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_BOARD_CODE));
-        long postTim = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_TIM));
-        String postExt = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_EXT));
+        long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+        String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+        String postExt = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXT));
         Uri uri = ChanFileStorage.getLocalImageUri(threadActivity.getApplicationContext(), boardCode, postId, postExt);
+        spoilerSubject = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_SUBJECT));
+        spoilerText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_TEXT));
+        exifText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXIF_TEXT));
 
-        this.expandable = expandable;
+        itemThumbnailImage = (ImageView)itemView.findViewById(R.id.list_item_image);
         itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
         itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
+        itemExifView = (TextView)itemView.findViewById(R.id.list_item_image_exif);
+        itemSubjectView = (TextView)itemView.findViewById(R.id.list_item_subject);
+        itemTextView = (TextView)itemView.findViewById(R.id.list_item_text);
+
+        padding8Dp = ChanGridSizer.dpToPx(itemExpandedImage.getResources().getDisplayMetrics(), NO_TEXT_PADDING_TOP_DP);
 
         listPosition = cursor.getPosition();
-        postW = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_W));
-        postH = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_H));
-        postImageUrl = postTim > 0 ? ChanPost.imageUrl(boardCode, postTim, postExt) : null;
+        postW = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_W));
+        postH = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_H));
+        postImageUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_FULL_IMAGE_URL));
         fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
+        flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
     }
 
     private void collapseImageView() {
@@ -79,14 +96,23 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     public void onClick(View v) {
         if (DEBUG) Log.i(TAG, "expanding pos=" + listPosition);
 
+        if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
+            expandImage();
+        if ((flags & ChanPost.FLAG_HAS_EXIF) > 0)
+            expandExif();
+        if ((flags & ChanPost.FLAG_HAS_SPOILER) > 0)
+            expandSpoiler();
+    }
+
+    private void expandImage() {
         if (DEBUG) Log.i(TAG, "Clearing existing image");
         ChanHelper.clearBigImageView(itemExpandedImage); // clear old image
         if (DEBUG) Log.i(TAG, "Existing image cleared");
 
-        if (DEBUG) Log.i(TAG, "Found postImageUrl=" + postImageUrl);
-        if ((expandable & ThreadActivity.IMAGE_EXPANDABLE) == 0 || postImageUrl == null || postImageUrl.isEmpty()) {// no image to display
-            if (DEBUG) Log.i(TAG, "No image found to expand, hiding image and exiting");
-            itemExpandedImage.setVisibility(View.GONE);
+        if (itemExpandedImage != null
+                && itemExpandedImage.getVisibility() != View.GONE
+                && itemExpandedImage.getHeight() > 0) {
+            if (DEBUG) Log.i(TAG, "Image already expanded, skipping");
             return;
         }
 
@@ -121,6 +147,10 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
             params.height = height;
             if (DEBUG) Log.i(TAG, "set expanded image size=" + width + "x" + height);
         }
+
+        int paddingTop = (flags & ChanPost.FLAG_HAS_TEXT) > 0 ? 0 : padding8Dp;
+        int paddingBottom = padding8Dp;
+        itemExpandedImage.setPadding(0, paddingTop, 0, paddingBottom);
         itemExpandedImage.setVisibility(View.VISIBLE);
         if (DEBUG) Log.i(TAG, "Set expanded image to visible");
 
@@ -158,15 +188,15 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
                 collapseImageView();
                 String reason = failReason.toString();
                 String msg;
-                NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
-                if (profile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION
-                        || profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION
-                        || profile.getConnectionHealth() == NetworkProfile.Health.BAD)
+                NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
+                if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD)
                     msg = threadActivity.getString(R.string.thread_couldnt_download_image_down);
-                else if (reason.equalsIgnoreCase("io_error"))
+                else if (failReason.getType() == FailReason.FailType.NETWORK_DENIED
+                        || failReason.getType() == FailReason.FailType.IO_ERROR
+                        || reason.equalsIgnoreCase("io_error"))
                     msg = threadActivity.getString(R.string.thread_couldnt_download_image);
                 else
-                    msg = String.format(threadActivity.getString(R.string.thread_couldnt_load_image), failReason.toString().toLowerCase().replaceAll("_", " "));
+                    msg = String.format(threadActivity.getString(R.string.thread_couldnt_load_image), failReason.getType().toString().toLowerCase().replaceAll("_", " "));
                 if (DEBUG) Log.e(TAG, "Failed to download " + postImageUrl + " to file=" + fullImagePath + " reason=" + reason);
                 Toast.makeText(threadActivity, msg, Toast.LENGTH_SHORT).show();
             }
@@ -175,6 +205,8 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 if (itemExpandedProgressBar != null)
                     itemExpandedProgressBar.setVisibility(View.GONE);
+                if (itemThumbnailImage != null && listPosition == 0) // thread header loads image over thumbnail
+                    itemThumbnailImage.setImageDrawable(null);
             }
 
             @Override
@@ -184,4 +216,25 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
             }
         }); // load async
     }
+
+    private void expandExif() {
+        if (DEBUG) Log.i(TAG, "Expanding exifText=" + exifText);
+        if (itemExifView != null && exifText != null && !exifText.isEmpty()) {
+            itemExifView.setText(Html.fromHtml(exifText));
+            itemExifView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void expandSpoiler() {
+        if (DEBUG) Log.i(TAG, "Expanding spoiler subject=" + spoilerSubject + " text=" + spoilerText);
+        if (itemSubjectView != null && spoilerSubject != null && !spoilerSubject.isEmpty()) {
+            itemSubjectView.setText(Html.fromHtml(spoilerSubject));
+            itemSubjectView.setVisibility(View.VISIBLE);
+        }
+        if (itemTextView != null && spoilerText != null && !spoilerText.isEmpty()) {
+            itemTextView.setText(Html.fromHtml(spoilerText));
+            itemTextView.setVisibility(View.VISIBLE);
+        }
+    }
+
 }
