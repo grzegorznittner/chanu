@@ -78,10 +78,8 @@ public class ThreadActivity
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
     protected static final int ITEM_THUMB_WIDTH_DP = 80;
+    protected static final int ITEM_THUMB_MAXHEIGHT_DP = ITEM_THUMB_WIDTH_DP;
     protected static final int ITEM_THUMB_EMPTY_DP = 8;
-    public static final int TEXT_HORIZ_PADDING_DP = 8 + 28;
-    public static final int IMAGE_WIDTH_DP = 80;
-    public static final int SNIPPET_HEIGHT_DP = ((80 - 8)*3)/4; // three lines used for snippet
     public static final int IMAGE_EXPANDABLE = 0x02;
     public static final int SPOILER_EXPANDABLE = 0x04;
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
@@ -490,52 +488,64 @@ public class ThreadActivity
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
         ViewGroup.LayoutParams params = layout.getLayoutParams();
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-        int widthDp =  (imageUrl != null && !imageUrl.isEmpty()) ? ITEM_THUMB_WIDTH_DP : ITEM_THUMB_EMPTY_DP;
+        int widthDp = ITEM_THUMB_EMPTY_DP;
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            widthDp = ITEM_THUMB_WIDTH_DP;
+            // calculate height
+        }
         params.width = ChanGridSizer.dpToPx(displayMetrics, widthDp);
         return true;
     }
 
     private boolean setItemImage(final ImageView iv, final Cursor cursor) {
-        boolean isFirst = cursor.getPosition() == 0;
+        ViewGroup.LayoutParams params = iv.getLayoutParams();
+        if (params == null) { // something wrong in layout
+            iv.setVisibility(View.GONE);
+            return true;
+        }
         String imageUrl = cursor.getString(cursor.getColumnIndex(ChanHelper.POST_IMAGE_URL));
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            ViewGroup.LayoutParams params = iv.getLayoutParams();
-            if (params != null) {
-                DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                int desiredHeight = isFirst
-                        ? displayMetrics.heightPixels / 2
-                        : 2 * ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
-                int desiredWidth = isFirst
-                        ? displayMetrics.widthPixels
-                        : ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
-                int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
-                int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
-                if (isFirst && tn_h > tn_w) { // tall image, restrict by height
-                    params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    params.height = desiredHeight;
-                }
-                else if (!isFirst && tn_h > 2 * tn_w) { // tall image, restrict by height
-                    params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    params.height = desiredHeight;
-                }
-                else {
-                    params.width = desiredWidth; // restrict by width normally
-                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                }
-                iv.setLayoutParams(params);
-            }
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            iv.setImageBitmap(null);
+            params.width = 0;
+            iv.setLayoutParams(params);
+            iv.setVisibility(View.VISIBLE);
+            return true;
+        }
+        int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
+        int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        if (tn_w == 0 || tn_h == 0) { // we don't have height and width, so just show unscaled image
+            params.width = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
+            params.height = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_MAXHEIGHT_DP);
+            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
             iv.setVisibility(View.VISIBLE);
             imageLoader.displayImage(imageUrl, iv, displayImageOptions);
+            return true;
+        }
+
+        // scale image
+        boolean isFirst = cursor.getPosition() == 0;
+        double scaleFactor = (double)tn_w / (double)tn_h;
+        if (scaleFactor < 0.5 || (isFirst && scaleFactor < 1)) { // tall image, restrict by height
+            //params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            int desiredHeight = isFirst
+                    ? getResources().getDisplayMetrics().heightPixels / 2
+                    : ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_MAXHEIGHT_DP);
+            params.width = (int)(scaleFactor * (double)desiredHeight);
+            params.height = desiredHeight;
         }
         else {
-            iv.setImageBitmap(null);
-            ViewGroup.LayoutParams params = iv.getLayoutParams();
-            if (params != null) {
-                params.width = 0;
-                iv.setLayoutParams(params);
-            }
-            iv.setVisibility(View.VISIBLE);
+            int desiredWidth = isFirst
+                    ? displayMetrics.widthPixels
+                    : ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
+            params.width = desiredWidth; // restrict by width normally
+            params.height = (int)((double)desiredWidth / scaleFactor);
+            //params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
+        iv.setLayoutParams(params);
+        iv.setScaleType(ImageView.ScaleType.FIT_XY);
+        iv.setVisibility(View.VISIBLE);
+        imageLoader.displayImage(imageUrl, iv, displayImageOptions);
         return true;
     }
 
