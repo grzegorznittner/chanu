@@ -66,34 +66,42 @@ public class MobileProfile extends AbstractNetworkProfile {
 		super.onProfileActivated(context);
 		
 		Health health = getConnectionHealth();
-		if (health != Health.BAD && health != Health.NO_CONNECTION) {
-			ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-			ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
-			if (activityId != null) {
-				if (activityId.activity == LastActivity.THREAD_ACTIVITY) {
-					makeToast(R.string.mobile_profile_loading_thread);
-					FetchChanDataService.scheduleThreadFetch(context, activityId.boardCode, activityId.threadNo);
-				} else if (activityId.activity == LastActivity.BOARD_ACTIVITY) {
-					makeToast(R.string.mobile_profile_loading_board);
-					FetchChanDataService.scheduleBoardFetch(context, activityId.boardCode);
-				} else if (activityId.activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
-					Handler handler = activity.getChanHandler();
-					if (handler != null) {
-						makeToast(R.string.mobile_profile_loading_image);
-						handler.sendEmptyMessageDelayed(GalleryViewActivity.START_DOWNLOAD_MSG, 100);
-					}
-				} else if (activityId.activity == ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY) {
-					if (health != Health.VERY_SLOW) {
-                        prefetchDefaultBoards(context);
-					} else {
-                        makeHealthStatusToast(context, health);
-					}
-				}
-			}
-		} else {
-			makeToast(R.string.mobile_profile_no_auto_refresh);
-		}
-	}
+        if (health == Health.NO_CONNECTION)
+            return;
+
+        ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
+        if (activityId == null)
+            return;
+
+        switch (activityId.activity) {
+            case THREAD_ACTIVITY:
+                ChanThread thread = ChanFileStorage.loadThreadData(context, activityId.boardCode, activityId.threadNo);
+                if (thread == null || thread.posts == null || thread.posts.length < 2) {
+                    makeToast(R.string.mobile_profile_loading_thread);
+                    FetchChanDataService.scheduleThreadFetch(context, activityId.boardCode, activityId.threadNo);
+                }
+                break;
+            case BOARD_ACTIVITY:
+                ChanBoard board = ChanFileStorage.loadBoardData(context, activityId.boardCode);
+                if (board == null || board.threads == null || board.threads.length == 0) {
+                    makeToast(R.string.mobile_profile_loading_board);
+                    FetchChanDataService.scheduleBoardFetch(context, activityId.boardCode);
+                }
+                break;
+            case FULL_SCREEN_IMAGE_ACTIVITY:
+                Handler handler = activity.getChanHandler();
+                if (handler != null) {
+                    makeToast(R.string.mobile_profile_loading_image);
+                    handler.sendEmptyMessageDelayed(GalleryViewActivity.START_DOWNLOAD_MSG, 100);
+                }
+                break;
+            case BOARD_SELECTOR_ACTIVITY:
+                onBoardSelectorSelected(context, activityId.boardCode);
+                break;
+            default:
+        }
+    }
 
     private void makeHealthStatusToast(Context context, Health health) {
         postStopMessage(NetworkProfileManager.instance().getActivity().getChanHandler(),
@@ -134,17 +142,22 @@ public class MobileProfile extends AbstractNetworkProfile {
 	@Override
 	public void onBoardSelectorSelected(Context context, String boardCode) {
 		super.onBoardSelectorSelected(context, boardCode);
-		Health health = getConnectionHealth();
-        if (health == Health.BAD || health == Health.VERY_SLOW || health == Health.NO_CONNECTION)
-            makeHealthStatusToast(context, health);
-        else if (ChanBoard.WATCH_BOARD_CODE.equals(boardCode))
-            ChanWatchlist.fetchWatchlistThreads(context);
-        else if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
+        if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
-                || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode))
+                || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode)) {
+            Health health = getConnectionHealth();
+            if (health == Health.NO_CONNECTION) {
+                makeHealthStatusToast(context, health);
+                return;
+            }
+            ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+            if (board != null && board.threads != null && board.threads.length > 0) {
+                if (DEBUG) Log.i(TAG, "skipping preload board " + boardCode + " as already have data");
+                return;
+            }
+
             FetchPopularThreadsService.schedulePopularFetchWithPriority(context);
-        else
-            prefetchDefaultBoards(context);
+        }
 	}
 
 
@@ -152,7 +165,7 @@ public class MobileProfile extends AbstractNetworkProfile {
     public void onBoardSelectorRefreshed(Context context, Handler handler, String boardCode) {
         super.onBoardSelectorRefreshed(context, handler, boardCode);
         Health health = getConnectionHealth();
-        if (health == Health.BAD || health == Health.NO_CONNECTION) {
+        if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
         }
@@ -172,9 +185,15 @@ public class MobileProfile extends AbstractNetworkProfile {
     @Override
 	public void onBoardSelected(Context context, String boardCode) {
 		super.onBoardSelected(context, boardCode);
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        if (board != null && board.threads != null && board.threads.length > 0) {
+            if (DEBUG) Log.i(TAG, "skipping preload board as already have data");
+            return;
+        }
         Health health = getConnectionHealth();
-        if (health == Health.BAD || health == Health.NO_CONNECTION) {
+        if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
+            if (DEBUG) Log.i(TAG, "skipping preload board as there is no network connection");
             return;
         }
         boolean canFetch = FetchChanDataService.scheduleBoardFetch(context, boardCode);
@@ -208,7 +227,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         if (ChanFileStorage.hasNewBoardData(context, boardCode)) {
             onUpdateViewData(context, handler, boardCode);
         }
-        else if (health == Health.BAD || health == Health.NO_CONNECTION) {
+        else if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
         }
@@ -255,24 +274,27 @@ public class MobileProfile extends AbstractNetworkProfile {
     }
 
 	@Override
-	public void onThreadSelected(Context context, String board, long threadId) {
+	public void onThreadSelected(Context context, String boardCode, long threadId) {
 		if(DEBUG) Log.d(TAG, "onThreadSelected");
-		super.onThreadSelected(context, board, threadId);
+		super.onThreadSelected(context, boardCode, threadId);
+        ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadId);
+        if (thread != null && thread.posts != null && thread.posts.length > 1) {
+            if (DEBUG) Log.i(TAG, "thread already loading, skipping load");
+            return;
+        }
         Health health = getConnectionHealth();
-        if (health == Health.BAD || health == Health.NO_CONNECTION) {
+        if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
         }
-        if (board != null || threadId > 0) {
-			FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId);
-		}
+        FetchChanDataService.scheduleThreadFetchWithPriority(context, boardCode, threadId);
 	}
 	
 	@Override
 	public void onThreadRefreshed(Context context, Handler handler, String board, long threadId) {
 		super.onThreadRefreshed(context, handler, board, threadId);
         Health health = getConnectionHealth();
-        if (health == Health.BAD || health == Health.NO_CONNECTION) {
+        if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
         }

@@ -477,8 +477,7 @@ public class BoardActivity
         if (data.getCount() < 1
                 && handler != null)
         {
-            if (health == NetworkProfile.Health.NO_CONNECTION
-                    || health == NetworkProfile.Health.BAD) {
+            if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
                 setProgressBarIndeterminateVisibility(false);
                 String msg = String.format(getString(R.string.mobile_profile_health_status),
                         health.toString().toLowerCase().replaceAll("_", " "));

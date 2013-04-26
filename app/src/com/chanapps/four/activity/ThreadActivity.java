@@ -22,10 +22,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.Html;
-import android.text.Layout;
 import android.text.Spanned;
-import android.text.StaticLayout;
-import android.text.TextPaint;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -321,14 +318,12 @@ public class ThreadActivity
         long postId = cursor.getLong(cursor.getColumnIndex(ChanHelper.POST_ID));
         int adItem = cursor.getInt(cursor.getColumnIndex(ChanHelper.AD_ITEM));
         item.setTag(adItem > 0 ? null : postId);
-        int expandable = itemExpandable(cursor, item);
+        //int expandable = itemExpandable(cursor, item);
         //if (DEBUG) Log.i(TAG, "pos=" + cursor.getPosition() + " expandable=" + expandable);
-        if (adItem > 0) {
+        if (adItem > 0)
             item.setBackgroundResource(R.color.PaletteBlue);
-        }
-        else {
+        else
             item.setBackgroundDrawable(null);
-        }
         return true;
     }
 
@@ -500,6 +495,7 @@ public class ThreadActivity
     private boolean setItemImage(final ImageView iv, final Cursor cursor) {
         ViewGroup.LayoutParams params = iv.getLayoutParams();
         if (params == null) { // something wrong in layout
+            iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
             return true;
         }
@@ -507,10 +503,12 @@ public class ThreadActivity
         if (imageUrl == null || imageUrl.isEmpty()) {
             iv.setImageBitmap(null);
             params.width = 0;
+            params.height = 0;
             iv.setLayoutParams(params);
             iv.setVisibility(View.VISIBLE);
             return true;
         }
+
         int tn_w = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_W));
         int tn_h = cursor.getInt(cursor.getColumnIndex(ChanHelper.POST_TN_H));
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();

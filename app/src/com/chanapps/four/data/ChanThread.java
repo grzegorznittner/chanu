@@ -115,16 +115,17 @@ public class ChanThread extends ChanPost {
                 THREAD_FLAG_BOARD
         };
     }
-    public static Object[] makeAdRow(Context context, String imageUrl, String clickUrl) {
+
+    public static Object[] makeAdRow(Context context, ChanAd ad) {
         return new Object[] {
                 0,
                 "",
                 0,
                 context.getResources().getString(R.string.board_advert_full),
                 context.getResources().getString(R.string.board_advert_info),
-                imageUrl,
+                ad.imageUrl(),
                 "",
-                clickUrl,
+                ad.clickUrl(),
                 0,
                 0,
                 THREAD_FLAG_AD

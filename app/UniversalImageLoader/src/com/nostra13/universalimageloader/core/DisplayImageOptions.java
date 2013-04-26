@@ -41,7 +41,7 @@ import com.nostra13.universalimageloader.core.process.BitmapProcessor;
  * <li>image scale type</li>
  * <li>decoding options (including bitmap decoding configuration)</li>
  * <li>delay before loading of image</li>
- * <li>auxiliary object which will be passed to {@link ImageDownloader#getStream(java.net.URI, Object) ImageDownloader}</li>
+ * <li>auxiliary object which will be passed to {@link ImageDownloader# ImageDownloader}</li>
  * <li>pre-processor for image Bitmap (before caching in memory)</li>
  * <li>post-processor for image Bitmap (after caching in memory, before displaying)</li>
  * <li>how decoded {@link Bitmap} will be displayed</li>
@@ -66,8 +66,8 @@ public final class DisplayImageOptions implements Cloneable {
 	private final int imageForEmptyUri;
 	private final int imageOnFail;
 	private final boolean resetViewBeforeLoading;
-	private final boolean cacheInMemory;
-	private final boolean cacheOnDisc;
+	private boolean cacheInMemory;
+	private boolean cacheOnDisc;
 	private final ImageScaleType imageScaleType;
 	private final ImageSize imageSize;
 	private final Options decodingOptions;
@@ -194,7 +194,19 @@ public final class DisplayImageOptions implements Cloneable {
 		return this;
 	}
 
-	public BitmapDisplayer getDisplayer() {
+    public DisplayImageOptions noCache() {
+        try {
+            DisplayImageOptions options = (DisplayImageOptions)clone();
+            options.cacheOnDisc = false;
+            options.cacheInMemory = false;
+            return options;
+        } catch (CloneNotSupportedException e) {
+            Log.e(TAG, "Clone error", e);
+        }
+        return this;
+    }
+
+    public BitmapDisplayer getDisplayer() {
 		return displayer;
 	}
 
@@ -324,7 +336,7 @@ public final class DisplayImageOptions implements Cloneable {
 			return this;
 		}
 
-		/** Sets auxiliary object which will be passed to {@link ImageDownloader#getStream(java.net.URI, Object)} */
+		/** Sets auxiliary object which will be passed to {@link ImageDownloader#} */
 		public Builder extraForDownloader(Object extra) {
 			this.extraForDownloader = extra;
 			return this;

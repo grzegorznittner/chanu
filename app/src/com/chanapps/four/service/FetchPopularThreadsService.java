@@ -110,8 +110,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(this.getBaseContext());
         NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
         if (profile.getConnectionType() == NetworkProfile.Type.NO_CONNECTION
-                || profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION
-                || profile.getConnectionHealth() == NetworkProfile.Health.BAD) {
+                || profile.getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION) {
             if (DEBUG) Log.i(TAG, "No network connection, exiting");
             return;
         }

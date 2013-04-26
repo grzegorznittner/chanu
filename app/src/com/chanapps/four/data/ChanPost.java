@@ -755,18 +755,18 @@ public class ChanPost {
         };
     }
 
-    public static Object[] makeAdRow(Context context, String boardCode, String imageUrl, String clickUrl) {
+    public static Object[] makeAdRow(Context context, String boardCode, ChanAd ad) {
         return new Object[] {
                 2,
                 boardCode,
                 0,
-                imageUrl,
+                ad.imageUrl(),
                 "",
                 context.getString(R.string.board_advert_full),
                 context.getString(R.string.advert_header),
-                clickUrl,
-                176,
-                0,
+                ad.clickUrl(),
+                ad.tn_w(),
+                ad.tn_h(),
                 -1,
                 -1,
                 0,

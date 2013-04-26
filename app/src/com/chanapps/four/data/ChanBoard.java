@@ -37,17 +37,6 @@ public class ChanBoard {
     private static final boolean DEBUG = false;
     public static final boolean REFRESH_THREADS_ON_REQUEST = true;
 
-    // AD STUFF
-    private static final String JLIST_AD_AFFILIATE_CODE = "4539";
-    private static final double AD_ADULT_PROBABILITY_ON_ADULT_BOARD = 0.2;
-    private static final int[] JLIST_AD_BIG_CODES = { 118, 113, 68 };
-    private static final int[] JLIST_AD_SMALL_CODES = { 21, 97, 104, 121, 120 };
-    private static final int[] JLIST_AD_CODES = { 118, 113, 68, 21, 97, 104, 121, 120 };
-    private static final int[] JLIST_AD_ADULT_CODES = { 122, 70 };
-    private static final String JLIST_AD_ROOT_URL = "http://anime.jlist.com";
-    private static final String JLIST_AD_IMAGE_ROOT_URL = JLIST_AD_ROOT_URL + "/media/" + JLIST_AD_AFFILIATE_CODE;
-    private static final String JLIST_AD_CLICK_ROOT_URL = JLIST_AD_ROOT_URL + "/click/" + JLIST_AD_AFFILIATE_CODE;
-
     public ChanBoard() {
 		// public default constructor for Jackson
 	}
@@ -87,8 +76,6 @@ public class ChanBoard {
     public long lastFetched;
     public boolean defData = false;
 
-    private Random generator = new Random();
-	
 	public ChanBoard copy() {
 		ChanBoard copy = new ChanBoard(this.boardType, this.name, this.link, this.iconId,
 				this.workSafe, this.classic, this.textOnly);
@@ -430,23 +417,13 @@ public class ChanBoard {
     }
 
     public Object[] makeThreadAdRow(Context context) {
-        int adCode =
-                (!workSafe && generator.nextDouble() < AD_ADULT_PROBABILITY_ON_ADULT_BOARD)
-                        ? JLIST_AD_ADULT_CODES[generator.nextInt(JLIST_AD_ADULT_CODES.length)]
-                        : JLIST_AD_CODES[generator.nextInt(JLIST_AD_CODES.length)];
-        String imageUrl = JLIST_AD_IMAGE_ROOT_URL + "/" + adCode;
-        String clickUrl = JLIST_AD_CLICK_ROOT_URL + "/" + adCode;
-        return ChanThread.makeAdRow(context, imageUrl, clickUrl);
+        ChanAd ad = ChanAd.randomAd(workSafe);
+        return ChanThread.makeAdRow(context, ad);
     }
 
     public Object[] makePostAdRow(Context context) {
-        int adCode =
-                (!workSafe && generator.nextDouble() < AD_ADULT_PROBABILITY_ON_ADULT_BOARD)
-                        ? JLIST_AD_ADULT_CODES[generator.nextInt(JLIST_AD_ADULT_CODES.length)]
-                        : JLIST_AD_CODES[generator.nextInt(JLIST_AD_CODES.length)];
-        String imageUrl = JLIST_AD_IMAGE_ROOT_URL + "/" + adCode;
-        String clickUrl = JLIST_AD_CLICK_ROOT_URL + "/" + adCode;
-        return ChanPost.makeAdRow(context, link, imageUrl, clickUrl);
+        ChanAd ad = ChanAd.randomAd(workSafe);
+        return ChanPost.makeAdRow(context, link, ad);
     }
     
     public void updateCountersAfterLoad() {
