@@ -136,6 +136,9 @@ public class UpdateWidgetService extends Service {
             if (widgetConf.showBoardTitle)
                 views.setOnClickPendingIntent(R.id.board_title, makeBoardIntent());
 
+            views.setInt(R.id.home_button, "setImageResource", R.drawable.app_icon);
+            views.setOnClickPendingIntent(R.id.refresh, makeHomeIntent());
+
             int refreshBackground = widgetConf.showRefreshButton ? R.drawable.widget_refresh_gradient_bg : 0;
             int refreshDrawable = widgetConf.showRefreshButton ? R.drawable.widget_refresh_button_selector : 0;
             views.setInt(R.id.refresh, "setBackgroundResource", refreshBackground);
@@ -188,7 +191,14 @@ public class UpdateWidgetService extends Service {
                 ? BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode))
                 : ThreadActivity.createIntentForActivity(context, new String(thread.board), thread.no);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            int uniqueId = 10 * widgetConf.appWidgetId + i + 1;
+            int uniqueId = (100 * widgetConf.appWidgetId) + 5 + i;
+            return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+
+        private PendingIntent makeHomeIntent() {
+            Intent intent = BoardSelectorActivity.createIntentForActivity(context, BoardSelectorTab.BOARDLIST);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            int uniqueId = (100 * widgetConf.appWidgetId) + 1;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
@@ -204,7 +214,7 @@ public class UpdateWidgetService extends Service {
                 intent = BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode));
             }
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            int uniqueId = 10 * widgetConf.appWidgetId;
+            int uniqueId = (100 * widgetConf.appWidgetId) + 2;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
@@ -226,14 +236,14 @@ public class UpdateWidgetService extends Service {
             intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
             intent.putExtra(ChanHelper.FORCE_REFRESH, true);
             intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
-            int uniqueId = 100 * widgetConf.appWidgetId + 1;
+            int uniqueId = (100 * widgetConf.appWidgetId) + 3;
             return PendingIntent.getService(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         private PendingIntent makeConfigureIntent() {
             Intent intent = new Intent(context, WidgetConfigureActivity.class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
-            int uniqueId = 1000 * widgetConf.appWidgetId + 2;
+            int uniqueId = (100 * widgetConf.appWidgetId) + 4;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 

@@ -69,19 +69,19 @@
             android:text="@string/board_a"
             />
 
-    <!--
     <ImageButton
-            android:id="@+id/board_button"
-            android:layout_height="24dp"
-            android:layout_width="24dp"
+            android:id="@+id/home_button"
+            android:layout_height="28dp"
+            android:layout_width="28dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
+            android:paddingLeft="4dp"
+            android:paddingTop="4dp"
             android:scaleType="fitXY"
             android:src="@drawable/app_icon"
             android:background="@color/PaletteTransparent"
             android:contentDescription="@string/app_name"
             />
-     -->
 
     <ImageButton
             android:id="@+id/refresh"
