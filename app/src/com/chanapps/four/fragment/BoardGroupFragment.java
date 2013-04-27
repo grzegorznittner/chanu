@@ -66,12 +66,12 @@ public class BoardGroupFragment
     public void refresh() {
         //setActionBarTitle(); // for update time
         //invalidateOptionsMenu(); // in case spinner needs to be reset
+        /*
         if (adapter != null)
             adapter.notifyDataSetChanged();
-        /*
+        */
         if (handler != null)
             handler.sendEmptyMessageDelayed(0, 200);
-        */
     }
 
     public void invalidate() {
