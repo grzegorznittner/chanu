@@ -172,6 +172,8 @@ public class MobileProfile extends AbstractNetworkProfile {
         if (DEBUG) Log.i(TAG, "Manual refresh board=" + boardCode);
         if (ChanBoard.WATCH_BOARD_CODE.equals(boardCode)) {
             ChanWatchlist.fetchWatchlistThreads(context);
+            //ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+            //activity.refresh();
         }
         else if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
@@ -291,17 +293,26 @@ public class MobileProfile extends AbstractNetworkProfile {
 	}
 	
 	@Override
-	public void onThreadRefreshed(Context context, Handler handler, String board, long threadId) {
-		super.onThreadRefreshed(context, handler, board, threadId);
+	public void onThreadRefreshed(Context context, Handler handler, String board, long threadNo) {
+		super.onThreadRefreshed(context, handler, board, threadNo);
         Health health = getConnectionHealth();
         if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
         }
-        boolean canFetch = FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadId);
+        boolean canFetch = FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadNo);
         if (DEBUG) Log.i(TAG, "onThreadRefreshed canFetch=" + canFetch + " handler=" + handler);
-        if (!canFetch)
-            postStopMessage(handler, R.string.board_wait_to_refresh);
+        if (!canFetch) {
+            ChanThread thread = ChanFileStorage.loadThreadData(context, board, threadNo);
+            int msgId;
+            if (thread != null && thread.isDead)
+                msgId = R.string.thread_dead;
+            else if (thread != null && thread.closed > 0)
+                msgId = R.string.thread_closed;
+            else
+                msgId = R.string.board_wait_to_refresh;
+            postStopMessage(handler, msgId);
+        }
     }
 
 	@Override

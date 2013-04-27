@@ -66,8 +66,12 @@ public class BoardGroupFragment
     public void refresh() {
         //setActionBarTitle(); // for update time
         //invalidateOptionsMenu(); // in case spinner needs to be reset
+        if (adapter != null)
+            adapter.notifyDataSetChanged();
+        /*
         if (handler != null)
             handler.sendEmptyMessageDelayed(0, 200);
+        */
     }
 
     public void invalidate() {
@@ -207,6 +211,13 @@ public class BoardGroupFragment
         if (DEBUG) Log.i(TAG, "onResume boardSelectorTab=" + boardSelectorTab);
         if (handler == null)
             handler = createHandler();
+        if (boardSelectorTab == BoardSelectorTab.WATCHLIST)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
+                }
+            });
     }
 
     protected Handler createHandler() {

@@ -20,8 +20,14 @@ import com.chanapps.four.data.ChanWatchlist;
 */
 public class WatchlistCleanDialogFragment extends DialogFragment {
     public static final String TAG = WatchlistCleanDialogFragment.class.getSimpleName();
+    final private BoardGroupFragment fragment;
     public WatchlistCleanDialogFragment() {
         super();
+        this.fragment = null;
+    }
+    public WatchlistCleanDialogFragment(BoardGroupFragment fragment) {
+        super();
+        this.fragment = fragment;
     }
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -31,7 +37,7 @@ public class WatchlistCleanDialogFragment extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                (new ChanWatchlist.CleanWatchlistTask(getActivity(), true)).execute();
+                                (new ChanWatchlist.CleanWatchlistTask(getActivity(), true, fragment)).execute();
                                 dismiss();
                             }
                         })

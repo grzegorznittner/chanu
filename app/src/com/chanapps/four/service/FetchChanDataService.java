@@ -19,6 +19,7 @@ import android.util.Log;
 
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
@@ -143,13 +144,17 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 		FetchParams params = NetworkProfileManager.instance().getFetchParams();
         ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
         long now = new Date().getTime();
-        if (thread != null && !thread.defData && thread.lastFetched > 0 && !thread.isDead && thread.closed <= 0) {
-        	long refresh = forceRefresh ? params.forceRefreshDelay : params.refreshDelay;
-        	if (now - thread.lastFetched < refresh) {
-        		if (DEBUG) Log.i(TAG, "Skiping thread " + boardCode + "/" + threadNo + " fetch as it was fetched "
-        				+ ((now - thread.lastFetched) / 1000) + "s ago, refresh delay is " + (refresh / 1000) + "s" );
-        		return false;
-        	}
+        if (thread == null || thread.defData) {
+            return true;
+        }
+        if (thread.isDead || thread.closed > 0) {
+            return false;
+        }
+        long refresh = forceRefresh ? params.forceRefreshDelay : params.refreshDelay;
+        if (now - thread.lastFetched < refresh) {
+            if (DEBUG) Log.i(TAG, "Skiping thread " + boardCode + "/" + threadNo + " fetch as it was fetched "
+                    + ((now - thread.lastFetched) / 1000) + "s ago, refresh delay is " + (refresh / 1000) + "s" );
+            return false;
         }
         return true;
 	}

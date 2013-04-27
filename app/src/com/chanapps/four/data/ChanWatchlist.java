@@ -41,11 +41,9 @@ import com.chanapps.four.service.NetworkProfileManager;
 public class ChanWatchlist {
     
     public static final String TAG = ChanWatchlist.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     
     public static final String DEFAULT_WATCHTEXT = "new thread";
-
-    public static final long MAX_DEAD_THREAD_RETENTION_DEFAULT_MS = 1000 * 60 * 60 * 24 * 30; // one month
 
     private static final String FIELD_SEPARATOR = "\t";
     private static final String FIELD_SEPARATOR_REGEX = "\\t";
@@ -202,10 +200,15 @@ public class ChanWatchlist {
     public static class CleanWatchlistTask extends AsyncTask<Void, Void, String> {
         private Context ctx;
         private boolean userInteraction = false;
+        final private BoardGroupFragment fragment;
         public CleanWatchlistTask(Context ctx, boolean userInteraction) {
+            this(ctx, userInteraction, null);
+        }
+        public CleanWatchlistTask(Context ctx, boolean userInteraction, BoardGroupFragment fragment) {
             this.ctx = ctx;
             this.userInteraction = userInteraction;
-            }
+            this.fragment = fragment;
+        }
         @Override
         public void onPreExecute() {
             if (userInteraction)
@@ -213,9 +216,8 @@ public class ChanWatchlist {
         }
         @Override
         public String doInBackground(Void... params) {
-            boolean cleanAllDeadThreads = userInteraction ? true : false;
             try {
-                cleanWatchlistSynchronous(ctx, cleanAllDeadThreads);
+                cleanWatchlistSynchronous(ctx, userInteraction);
                 return null;
             }
             catch (Exception e) {
@@ -226,10 +228,14 @@ public class ChanWatchlist {
         @Override
         protected void onPostExecute(String result) {
             if (userInteraction) {
-                if (result == null)
+                if (result == null) {
                     Toast.makeText(ctx, R.string.dialog_cleaned_watchlist, Toast.LENGTH_SHORT).show();
-                else
+                    if (fragment != null && fragment.getAdapter() != null)
+                        fragment.getAdapter().notifyDataSetInvalidated();
+                }
+                else {
                     Toast.makeText(ctx, R.string.dialog_watchlist_cleaning_error, Toast.LENGTH_SHORT).show();
+                }
             }
             //if (result == null && adapter != null)
             //    adapter.notifyDataSetChanged();
@@ -270,21 +276,20 @@ public class ChanWatchlist {
 
     private static void deleteThreadsFromWatchlist(Context ctx, List<Long> tims) {
         Set<String> savedWatchlist = getWatchlistFromPrefs(ctx);
-        Set<String> toDelete = new HashSet<String>();
+        Set<String> newWatchlist = new HashSet<String>(savedWatchlist.size());
+        for (String s : savedWatchlist)
+            newWatchlist.add(s);
+        Set<String> delete = new HashSet<String>();
         for (String s : savedWatchlist) {
             for (long tim : tims) { // order n^2, my CS prof would kill me
                 if (s.startsWith(tim + FIELD_SEPARATOR)) {
-                    toDelete.add(s);
-                    if (DEBUG) Log.i(TAG, "Thread " + s + " deleted from watchlist");
+                    delete.add(s);
                     break;
                 }
             }
         }
-        savedWatchlist.removeAll(toDelete);
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(ctx).edit();
-        editor.putStringSet(ChanHelper.THREAD_WATCHLIST, savedWatchlist);
-        editor.commit();
-        if (DEBUG) Log.v(TAG, "Put watchlist to prefs: " + Arrays.toString(savedWatchlist.toArray()));
+        newWatchlist.removeAll(delete);
+        saveWatchlist(ctx, newWatchlist);
     }
 
     public static List<String> getSortedWatchlistFromPrefs(Context ctx) {
@@ -304,7 +309,8 @@ public class ChanWatchlist {
         return ms;
     }
 
-    public static List<Long> getDeadTims(Context ctx, boolean cleanAllDeadThreads) {
+    public static List<Long> getDeadTims(Context ctx, boolean cleanDeadThreads) {
+        if (DEBUG) Log.i(TAG, "getDeadTimes cleanDead=" + cleanDeadThreads);
         Set<String> threadPaths = new HashSet<String>();
         threadPaths.addAll(getWatchlistFromPrefs(ctx));
         List<Long> deadTims = new ArrayList<Long>();
@@ -317,15 +323,17 @@ public class ChanWatchlist {
             long threadNo = Long.valueOf(threadComponents[2]);
             try {
                 ChanThread thread = ChanFileStorage.loadThreadData(ctx, boardCode, threadNo);
+                if (DEBUG) Log.i(TAG, "Loaded thread " + boardCode + "/" + threadNo + " lastFetched=" + thread.lastFetched + " dead=" + thread.isDead);
                 long interval = now - thread.lastFetched;
                 boolean threadIsOld = interval > deadThreadRetentionMs;
-                if (thread.isDead && (cleanAllDeadThreads || threadIsOld))
+                if (thread.isDead && (cleanDeadThreads || threadIsOld))
                     deadTims.add(tim);
             }
             catch (Exception e) {
                 if (DEBUG) Log.d(TAG, "Couldn't load thread to determine dead status " + boardCode + "/" + threadNo, e);
             }
         }
+        if (DEBUG) Log.i(TAG, "Found dead threads: " + Arrays.toString(deadTims.toArray()));
         return deadTims;
     }
 

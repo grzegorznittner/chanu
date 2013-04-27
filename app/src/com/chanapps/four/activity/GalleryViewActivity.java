@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URLEncoder;
 
+import com.chanapps.four.data.*;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -47,12 +48,7 @@ import com.android.gallery3d.ui.GLRootView;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.component.ToastRunnable;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
@@ -244,7 +240,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             } else {
             	viewType = ViewType.OFFLINE_ALBUMSET_VIEW;
             }
-            boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+
             if (intent.hasExtra(ChanHelper.BOARD_CODE) && intent.hasExtra(ChanHelper.THREAD_NO)) {
                 boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
                 threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
@@ -254,8 +250,17 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 }
                 imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
                 if (DEBUG) Log.i(TAG, "Loaded from intent, viewType: " + viewType.toString() + " boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
-            } else {
+            }
+            else if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
+                boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+            }
+            else {
+                // no intent given, go back to board selector
                 if (DEBUG) Log.i(TAG, "Intent received without postno");
+                Intent intent = BoardSelectorActivity.createIntentForActivity(this, BoardSelectorTab.BOARDLIST);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
             }
         }
         if (viewType != ViewType.OFFLINE_ALBUMSET_VIEW && viewType != ViewType.OFFLINE_ALBUM_VIEW && postNo == 0) {

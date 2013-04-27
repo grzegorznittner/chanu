@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -23,6 +24,8 @@ import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.BoardGroupFragment;
+import com.chanapps.four.fragment.WatchlistCleanDialogFragment;
+import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.chanapps.four.service.NetworkProfileManager;
 
 public class BoardSelectorActivity
@@ -205,6 +208,18 @@ public class BoardSelectorActivity
                 }
             case R.id.offline_chan_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
+                return true;
+            case R.id.clean_watchlist_menu:
+                final BoardGroupFragment fragment =
+                        (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(BoardSelectorTab.WATCHLIST.ordinal());
+                (new WatchlistCleanDialogFragment(fragment))
+                        .show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
+                return true;
+            case R.id.clear_watchlist_menu:
+                final BoardGroupFragment fragment2 =
+                        (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(BoardSelectorTab.WATCHLIST.ordinal());
+                (new WatchlistClearDialogFragment(fragment2))
+                        .show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
                 return true;
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");

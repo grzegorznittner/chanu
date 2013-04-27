@@ -257,7 +257,7 @@ public class ChanPost {
         String message = comText != null ? comText : "";
 
         if (!subject.isEmpty() || message.isEmpty()) { // we have a subject or can't extract from message
-            Log.e(TAG, "Exception: provided subject=" + subject + " message=" + message);
+            if (DEBUG) Log.v(TAG, "Exception: provided subject=" + subject + " message=" + message);
             return new String[] { subject, message };
         }
 
@@ -275,7 +275,7 @@ public class ChanPost {
                 int len = terminator.length();
                 subject = message.substring(0, i + len).trim().replaceFirst("(<br/?>)+$", "").trim();
                 message = message.substring(i + len).trim().replaceFirst("^(<br/?>)+", "").trim();
-                Log.e(TAG, "Exception: extracted subject=" + subject + " message=" + message);
+                if (DEBUG) Log.v(TAG, "Exception: extracted subject=" + subject + " message=" + message);
                 return new String[]{ subject, message };
             }
         }
@@ -283,12 +283,12 @@ public class ChanPost {
         if (comText.length() <= MAX_SUBJECT_LEN) { // just make message the subject
             subject = message;
             message = "";
-            Log.e(TAG, "Exception: replaced subject=" + subject + " message=" + message);
+            if (DEBUG) Log.v(TAG, "Exception: replaced subject=" + subject + " message=" + message);
             return new String[] { subject, message };
         }
 
         // default
-        Log.e(TAG, "Exception: default subject=" + subject + " message=" + message);
+        if (DEBUG) Log.v(TAG, "Exception: default subject=" + subject + " message=" + message);
         return new String[]{ subject, message };
     }
 

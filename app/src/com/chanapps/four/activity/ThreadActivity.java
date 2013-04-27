@@ -372,8 +372,13 @@ public class ThreadActivity
         if ((flags & ChanPost.FLAG_IS_AD) == 0  && (flags & ChanPost.FLAG_HAS_SUBJECT) > 0) {
             String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
             Spanned spanned = Html.fromHtml(text);
-            ensureSubjectTypeface();
-            tv.setTypeface(subjectTypeface);
+            if (cursor.getPosition() == 0) {
+                ensureSubjectTypeface();
+                tv.setTypeface(subjectTypeface);
+            }
+            else {
+                tv.setTypeface(Typeface.DEFAULT);
+            }
             tv.setText(spanned);
             tv.setVisibility(View.VISIBLE);
         }
@@ -419,7 +424,6 @@ public class ThreadActivity
         ViewGroup.LayoutParams params = iv.getLayoutParams();
         if (params == null) { // something wrong in layout
             iv.setImageBitmap(null);
-            iv.setVisibility(View.GONE);
             return true;
         }
         if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0) {
@@ -427,7 +431,6 @@ public class ThreadActivity
             params.width = 0;
             params.height = 0;
             iv.setLayoutParams(params);
-            iv.setVisibility(View.VISIBLE);
             return true;
         }
 
@@ -439,7 +442,6 @@ public class ThreadActivity
             params.width = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
             params.height = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_MAXHEIGHT_DP);
             iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            iv.setVisibility(View.VISIBLE);
             imageLoader.displayImage(imageUrl, iv, displayImageOptions);
             return true;
         }
@@ -465,7 +467,6 @@ public class ThreadActivity
         }
         iv.setLayoutParams(params);
         iv.setScaleType(ImageView.ScaleType.FIT_XY);
-        iv.setVisibility(View.VISIBLE);
         imageLoader.displayImage(imageUrl, iv, displayImageOptions);
         return true;
     }
@@ -568,10 +569,43 @@ public class ThreadActivity
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
+            // thread_reply_popup_menu
+            case R.id.post_reply_menu:
+                postReply("");
+                return true;
+            /*
+            case R.id.post_reply_quote_menu:
+                SparseBooleanArray pos = new SparseBooleanArray();
+                pos.append(0, true);
+                String quoteText = selectQuoteText(pos);
+                postReply(quoteText);
+                return true;
+            */
+            case R.id.watch_thread_menu:
+                addToWatchlist();
+                return true;
+
+            // thread_image_popup_menu
+            case R.id.view_image_gallery_menu:
+                GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
+                addToWatchlistIfNotAlreadyIn();
+                return true;
+            case R.id.download_all_images_menu:
+                ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
+                Toast.makeText(this, R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
+                addToWatchlistIfNotAlreadyIn();
+                return true;
+            case R.id.download_all_images_to_gallery_menu:
+                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo);
+                Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
+                addToWatchlistIfNotAlreadyIn();
+                return true;
+            /*
             case R.id.thread_reply_popup_button_menu:
                 return showPopupMenu(R.id.thread_list_layout, R.id.thread_reply_popup_button_menu, R.menu.thread_reply_popup_menu);
             case R.id.thread_image_popup_button_menu:
                 return showPopupMenu(R.id.thread_list_layout, R.id.thread_image_popup_button_menu, R.menu.thread_image_popup_menu);
+            */
             case R.id.play_thread_menu:
                 return playThreadMenu();
             case R.id.settings_menu:
@@ -688,20 +722,77 @@ public class ThreadActivity
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         long[] postNos = absListView.getCheckedItemIds();
+        SparseBooleanArray postPos = absListView.getCheckedItemPositions();
         if (postNos.length == 0) {
             Toast.makeText(getApplicationContext(), R.string.thread_no_posts_selected, Toast.LENGTH_SHORT).show();
             return false;
         }
 
         switch (item.getItemId()) {
-            case R.id.thread_context_reply_popup_button_menu:
-                return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_reply_popup_button_menu, R.menu.thread_context_reply_popup_menu);
-            case R.id.thread_context_replies_popup_button_menu:
-                return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_replies_popup_button_menu, R.menu.thread_context_replies_popup_menu);
-            case R.id.thread_context_info_popup_button_menu:
-                return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_info_popup_button_menu, R.menu.thread_context_info_popup_menu);
-            case R.id.thread_context_delete_report_popup_button_menu:
-                return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_delete_report_popup_button_menu, R.menu.thread_context_delete_report_popup_menu);
+
+            case R.id.post_reply_all_menu:
+                if (DEBUG) Log.i(TAG, "Post nos: " + Arrays.toString(postNos));
+                postReply(postNos);
+                return true;
+            case R.id.post_reply_all_quote_menu:
+                String quotesText = selectQuoteText(postPos);
+                postReply(quotesText);
+                return true;
+
+            case R.id.highlight_replies_menu:
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.POST_REPLIES))
+                        .execute(postNos);
+                return true;
+            case R.id.highlight_previous_menu:
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.PREVIOUS_POSTS))
+                        .execute(postNos);
+                return true;
+            case R.id.highlight_ids_menu:
+                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.SAME_POSTERS))
+                        .execute(postNos);
+                return true;
+            case R.id.copy_text_menu:
+                String selectText = selectText(postPos);
+                copyToClipboard(selectText);
+                //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
+                return true;
+
+            case R.id.download_images_to_gallery_menu:
+                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);
+                Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
+                addToWatchlistIfNotAlreadyIn();
+                return true;
+            case R.id.go_to_link_menu:
+                String[] urls = extractUrlsFromPosts(postPos);
+                if (urls != null && urls.length > 0)
+                    (new ListOfLinksDialogFragment(urls)).show(getSupportFragmentManager(), ListOfLinksDialogFragment.TAG);
+                else
+                    Toast.makeText(getApplicationContext(), R.string.go_to_link_not_found, Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.translate_posts_menu:
+                return translatePosts(postPos);
+
+            case R.id.delete_posts_menu:
+                (new DeletePostDialogFragment(this, boardCode, threadNo, postNos))
+                        .show(getSupportFragmentManager(), DeletePostDialogFragment.TAG);
+                return true;
+            case R.id.report_posts_menu:
+                (new ReportPostDialogFragment(this, boardCode, threadNo, postNos))
+                        .show(getSupportFragmentManager(), ReportPostDialogFragment.TAG);
+                return true;
+            case R.id.block_posts_menu:
+                Map<ChanBlocklist.BlockType, List<String>> blocklist = extractBlocklist(postPos);
+                (new BlocklistSelectToAddDialogFragment(this, blocklist)).show(getSupportFragmentManager(), TAG);
+                return true;
+
+            //case R.id.thread_context_reply_popup_button_menu:
+            //    return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_reply_popup_button_menu, R.menu.thread_context_reply_popup_menu);
+            //case R.id.thread_context_replies_popup_button_menu:
+            //    return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_replies_popup_button_menu, R.menu.thread_context_replies_popup_menu);
+            //case R.id.thread_context_info_popup_button_menu:
+            //    return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_info_popup_button_menu, R.menu.thread_context_info_popup_menu);
+            //case R.id.thread_context_delete_report_popup_button_menu:
+            //    return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_delete_report_popup_button_menu, R.menu.thread_context_delete_report_popup_menu);
             default:
                 return false;
         }
@@ -775,7 +866,8 @@ public class ThreadActivity
             Cursor cursor = (Cursor)adapter.getItem(i);
             if (cursor == null)
                 continue;
-            String itemText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+            String itemText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_HEADLINE_TEXT))
+                + " " + cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
             if (itemText == null)
                 itemText = "";
             text += (text.isEmpty() ? "" : "\n") + itemText;
@@ -865,95 +957,7 @@ public class ThreadActivity
         long[] postNos = absListView.getCheckedItemIds();
         SparseBooleanArray postPos = absListView.getCheckedItemPositions();
         switch (item.getItemId()) {
-
-            // thread_reply_popup_menu
-            case R.id.post_reply_menu:
-                postReply("");
-                return true;
-            case R.id.post_reply_quote_menu:
-                SparseBooleanArray pos = new SparseBooleanArray();
-                pos.append(0, true);
-                String quoteText = selectQuoteText(pos);
-                postReply(quoteText);
-                return true;
-            case R.id.watch_thread_menu:
-                addToWatchlist();
-                return true;
-
-            // thread_image_popup_menu
-            case R.id.view_image_gallery_menu:
-                GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
-                addToWatchlistIfNotAlreadyIn();
-                return true;
-            case R.id.download_all_images_menu:
-                ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
-                Toast.makeText(this, R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
-                addToWatchlistIfNotAlreadyIn();
-                return true;
-            case R.id.download_all_images_to_gallery_menu:
-                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo);
-                Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
-                addToWatchlistIfNotAlreadyIn();
-                return true;
-
-            // thread_context_reply_popup_menu
-            case R.id.post_reply_all_menu:
-                if (DEBUG) Log.i(TAG, "Post nos: " + Arrays.toString(postNos));
-                postReply(postNos);
-                return true;
-            case R.id.post_reply_all_quote_menu:
-                String quotesText = selectQuoteText(postPos);
-                postReply(quotesText);
-                return true;
-
-            // thread_context_replies_popup_menu
-            case R.id.highlight_replies_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.POST_REPLIES))
-                        .execute(postNos);
-                return true;
-            case R.id.highlight_previous_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.PREVIOUS_POSTS))
-                        .execute(postNos);
-                return true;
-            case R.id.highlight_ids_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.SAME_POSTERS))
-                        .execute(postNos);
-                return true;
-            case R.id.copy_text_menu:
-                String selectText = selectText(postPos);
-                copyToClipboard(selectText);
-                //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
-                return true;
-
             // thread context info popup menu
-            case R.id.download_images_to_gallery_menu:
-                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);
-                Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
-                addToWatchlistIfNotAlreadyIn();
-                return true;
-            case R.id.go_to_link_menu:
-                String[] urls = extractUrlsFromPosts(postPos);
-                if (urls != null && urls.length > 0)
-                    (new ListOfLinksDialogFragment(urls)).show(getSupportFragmentManager(), ListOfLinksDialogFragment.TAG);
-                else
-                    Toast.makeText(getApplicationContext(), R.string.go_to_link_not_found, Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.translate_posts_menu:
-                return translatePosts(postPos);
-
-            // thread context delete report popup menu
-            case R.id.delete_posts_menu:
-                (new DeletePostDialogFragment(this, boardCode, threadNo, postNos))
-                        .show(getSupportFragmentManager(), DeletePostDialogFragment.TAG);
-                return true;
-            case R.id.report_posts_menu:
-                (new ReportPostDialogFragment(this, boardCode, threadNo, postNos))
-                        .show(getSupportFragmentManager(), ReportPostDialogFragment.TAG);
-                return true;
-            case R.id.block_posts_menu:
-                Map<ChanBlocklist.BlockType, List<String>> blocklist = extractBlocklist(postPos);
-                (new BlocklistSelectToAddDialogFragment(this, blocklist)).show(getSupportFragmentManager(), TAG);
-            return true;
 
             default:
                 return false;

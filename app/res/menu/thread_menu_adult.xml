@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item android:id="@+id/board_jump_spinner_menu"
           android:title="@string/board_select"
           android:icon="@drawable/collections_view_as_list"
@@ -7,10 +8,23 @@
           android:actionLayout="@layout/board_jump_spinner_nsfw"
           android:showAsAction="ifRoom"
             />
+
     <item android:id="@+id/refresh_menu"
           android:title="@string/refresh_thread_menu"
           android:icon="@drawable/navigation_refresh"
           android:showAsAction="ifRoom"
+            />
+
+    <item android:id="@+id/post_reply_menu"
+          android:title="@string/post_reply_menu"
+          android:icon="@drawable/social_reply"
+          android:showAsAction="ifRoom"
+            />
+
+    <!--
+    <item android:id="@+id/post_reply_quote_menu"
+          android:title="@string/post_reply_quote_menu"
+          android:icon="@drawable/social_reply_all"
             />
 
     <item android:id="@+id/thread_reply_popup_button_menu"
@@ -18,12 +32,34 @@
           android:icon="@drawable/social_reply"
           android:showAsAction="ifRoom"
             />
-
     <item android:id="@+id/thread_image_popup_button_menu"
           android:title="@string/thread_image_popup_menu"
           android:icon="@drawable/content_picture"
           android:showAsAction="ifRoom"
-          />
+            />
+
+    -->
+
+    <item android:id="@+id/view_image_gallery_menu"
+          android:title="@string/view_image_gallery_menu"
+          android:icon="@drawable/content_picture"
+          android:showAsAction="ifRoom"
+            />
+
+    <item android:id="@+id/watch_thread_menu"
+          android:title="@string/watch_thread_menu"
+          android:icon="@drawable/rating_important"
+            />
+
+    <item android:id="@+id/download_all_images_menu"
+          android:title="@string/download_all_images_menu"
+          android:icon="@drawable/av_add_to_queue"
+            />
+
+    <item android:id="@+id/download_all_images_to_gallery_menu"
+          android:title="@string/download_all_images_to_gallery_menu"
+          android:icon="@drawable/av_download"
+            />
 
     <item android:id="@+id/play_thread_menu"
           android:title="@string/play_thread_menu"
@@ -38,9 +74,10 @@
     <item android:id="@+id/help_menu"
           android:title="@string/help_menu"
           android:icon="@drawable/action_help"
-          />
+            />
     <item android:id="@+id/exit_menu"
           android:title="@string/exit_menu"
           android:icon="@drawable/navigation_cancel"
             />
+
 </menu>

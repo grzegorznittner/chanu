@@ -70,7 +70,7 @@ public class SettingsFragment
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 (new WatchlistCleanDialogFragment())
-                        .show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
+                        .show(getFragmentManager(), WatchlistCleanDialogFragment.TAG);
                 return true;
             }
         });

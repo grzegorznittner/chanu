@@ -122,7 +122,7 @@
     <string name="prev_image_menu">Prev Image</string>
     <string name="next_image_menu">Next Image</string>
     <string name="download_all_images_menu">Preload All Images</string>
-    <string name="download_all_images_to_gallery_menu">Download To Gallery</string>
+    <string name="download_all_images_to_gallery_menu">Download All To Gallery</string>
     <string name="download_images_to_gallery_menu">Download To Gallery</string>
     <string name="download_image_menu">Save to Gallery</string>
     <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
@@ -134,7 +134,7 @@
     <string name="post_reply_send_menu">Post Reply</string>
     <string name="offline_board_view_menu">Cached Board Images</string>
     <string name="offline_board_view_title">%1$s: Cached Images</string>
-    <string name="offline_chan_view_menu">Chanu: All Cached Images</string>
+    <string name="offline_chan_view_menu">View Cached Images</string>
 
     <!-- board types tab -->
     <string name="japanese_culture">Japanese Culture</string>
@@ -163,6 +163,9 @@
     <!-- thread activity -->
     <string name="thread_activity_refresh">Refreshing thread...</string>
     <string name="thread_activity_fresh">Thread is current</string>
+    <string name="thread_dead">Can\'t refresh, thread is dead</string>
+    <string name="thread_closed">Can\'t refresh, thread is closed</string>
+    <string name="thread_wait_to_refresh">Min 10 sec between refresh</string>
     <string name="thread_end_of_thread">End of Thread</string>
     <string name="thread_context_select">Select Posts</string>
     <string name="thread_no_posts_selected">No Posts Selected</string>
@@ -171,8 +174,10 @@
     <string name="thread_couldnt_load_image">Couldn\'t load image: %1$s</string>
     <string name="thread_couldnt_download_image_down">Network issue, can\'t download image</string>
     <string name="thread_couldnt_download_image">Couldn\'t download image</string>
-    <string name="thread_no_replies_found">No posts found</string>
-    <string name="thread_prev_replies_found">Found %1$d previous</string>
+    <string name="thread_no_prev_posts_found">No referenced posts found</string>
+    <string name="thread_no_replies_found">No replies found</string>
+    <string name="thread_no_same_poster_found">No posts found with same poster</string>
+    <string name="thread_prev_replies_found">Found %1$d references</string>
     <string name="thread_next_replies_found">Found %1$d replies</string>
     <string name="thread_no_id_found">No other posts found for %1$s</string>
     <string name="thread_id_found">Found %1$d other posts for same posters</string>
@@ -268,7 +273,7 @@
     <string name="dialog_authorizing_pass">Authorizing Pass...</string>
     <string name="dialog_posting_reply">Posting Reply...</string>
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
-    <string name="dialog_clear_watchlist">Clear watchlist?</string>
+    <string name="dialog_clear_watchlist">Delete watchlist?</string>
     <string name="dialog_clean_watchlist">Clean dead threads?</string>
     <string name="dialog_set_wallpaper">Set as wallpaper?</string>
     <string name="dialog_clear_cache_confirm">Clear all cached data?  This may take several minutes.</string>

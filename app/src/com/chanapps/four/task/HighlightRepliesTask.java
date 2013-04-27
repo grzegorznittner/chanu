@@ -97,7 +97,15 @@ public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
         if (DEBUG) Log.i(ThreadActivity.TAG, "Set highlight posts=" + Arrays.toString(repliesSet.toArray()));
 
         if (repliesSet.size() == 0)
-            return context.getString(R.string.thread_no_replies_found);
+            switch (searchType) {
+                case PREVIOUS_POSTS:
+                    return context.getString(R.string.thread_no_prev_posts_found);
+                case POST_REPLIES:
+                default:
+                    return context.getString(R.string.thread_no_replies_found);
+                case SAME_POSTERS:
+                    return context.getString(R.string.thread_no_same_poster_found);
+            }
 
         switch (searchType) {
             case PREVIOUS_POSTS:
@@ -106,8 +114,7 @@ public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
             default:
                 return String.format(context.getString(R.string.thread_next_replies_found), repliesSet.size());
             case SAME_POSTERS:
-                String s = String.format(context.getString(R.string.thread_id_found), repliesSet.size());
-                return s;
+                return String.format(context.getString(R.string.thread_id_found), repliesSet.size());
         }
     }
 

@@ -123,6 +123,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         //int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
         int maxWidth = displayMetrics.widthPixels;
         int maxHeight = maxWidth; // to avoid excessively big images
+        //int maxHeight = displayMetrics.heightPixels; // to avoid excessively big images
         itemExpandedImage.setMaxWidth(maxWidth);
         itemExpandedImage.setMaxHeight(maxHeight);
         if (DEBUG) Log.i(TAG, "max size " + maxWidth + "x" + maxHeight);
@@ -141,16 +142,17 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         int height = Math.round(scaleFactor * (float)postH);
         if (DEBUG) Log.i(TAG, "target size " + width + "x" + height);
         // set layout dimensions
-        ViewGroup.LayoutParams params = itemExpandedImage.getLayoutParams();
-        if (params != null) {
-            params.width = width;
-            params.height = height;
-            if (DEBUG) Log.i(TAG, "set expanded image size=" + width + "x" + height);
-        }
-
-        int paddingTop = (flags & ChanPost.FLAG_HAS_TEXT) > 0 ? 0 : padding8Dp;
-        int paddingBottom = padding8Dp;
-        itemExpandedImage.setPadding(0, paddingTop, 0, paddingBottom);
+        //if (listPosition > 0) {
+            ViewGroup.LayoutParams params = itemExpandedImage.getLayoutParams();
+            if (params != null) {
+                params.width = listPosition == 0 ? ViewGroup.LayoutParams.MATCH_PARENT : width;
+                params.height = listPosition == 0 ? ViewGroup.LayoutParams.WRAP_CONTENT : height;
+                if (DEBUG) Log.i(TAG, "set expanded image size=" + width + "x" + height);
+            }
+            int paddingTop = (flags & ChanPost.FLAG_HAS_TEXT) > 0 ? 0 : padding8Dp;
+            int paddingBottom = padding8Dp;
+            itemExpandedImage.setPadding(0, paddingTop, 0, paddingBottom);
+        //}
         itemExpandedImage.setVisibility(View.VISIBLE);
         if (DEBUG) Log.i(TAG, "Set expanded image to visible");
 

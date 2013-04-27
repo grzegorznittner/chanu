@@ -33,7 +33,7 @@ public class WatchlistClearDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return (new AlertDialog.Builder(getActivity()))
                 .setMessage(R.string.dialog_clear_watchlist)
-                .setPositiveButton(R.string.dialog_clear,
+                .setPositiveButton(R.string.dialog_delete,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

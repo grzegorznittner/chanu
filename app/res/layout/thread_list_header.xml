@@ -10,7 +10,7 @@
 
         <com.chanapps.four.component.StretchyImageView style="@style/ThreadListHeaderImage" android:id="@+id/list_item_image"/>
 
-        <ImageView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded"/>
+        <com.chanapps.four.component.StretchyImageView style="@style/ThreadListHeaderImage" android:id="@+id/list_item_image_expanded"/>
 
         <ProgressBar style="@style/ThreadListItemExpandedProgressBar"
                      android:layout_centerInParent="true"
