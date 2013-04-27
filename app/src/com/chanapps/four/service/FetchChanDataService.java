@@ -147,7 +147,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         if (thread == null || thread.defData) {
             return true;
         }
-        if (thread.isDead || thread.closed > 0) {
+        if (thread.posts != null && thread.posts.length > 1 && (thread.isDead || thread.closed > 0)) {
             return false;
         }
         long refresh = forceRefresh ? params.forceRefreshDelay : params.refreshDelay;
