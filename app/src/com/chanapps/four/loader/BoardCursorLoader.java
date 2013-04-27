@@ -82,7 +82,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
                 /*
                 if (generator.nextDouble() < AD_PROBABILITY && !(adSpace > 0)) {
-                    matrixCursor.addRow(board.makeThreadAdRow(context));
+                    matrixCursor.addRow(board.makeThreadAdRow(context, i));
                     adSpace = MINIMUM_AD_SPACING;
                 }
                 else {

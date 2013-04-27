@@ -12,6 +12,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.support.v4.content.Loader;
 import android.content.SharedPreferences;
@@ -47,6 +48,8 @@ import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.task.HighlightRepliesTask;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
@@ -420,6 +423,21 @@ public class ThreadActivity
         return true;
     }
 
+    private ImageLoadingListener adImageLoadingListener = new ImageLoadingListener() {
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {}
+        @Override
+        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            if (view instanceof ImageView) {
+                imageLoader.displayImage(ChanAd.defaultImageUrl(), (ImageView)view, displayImageOptions);
+            }
+        }
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {}
+        @Override
+        public void onLoadingCancelled(String imageUri, View view) {}
+    };
+
     private boolean setItemImage(final ImageView iv, final Cursor cursor, int flags) {
         ViewGroup.LayoutParams params = iv.getLayoutParams();
         if (params == null) { // something wrong in layout
@@ -467,7 +485,11 @@ public class ThreadActivity
         }
         iv.setLayoutParams(params);
         iv.setScaleType(ImageView.ScaleType.FIT_XY);
-        imageLoader.displayImage(imageUrl, iv, displayImageOptions);
+        if ((flags & ChanPost.FLAG_IS_AD) > 0)
+            imageLoader.displayImage(imageUrl, iv, displayImageOptions, adImageLoadingListener);
+        else
+            imageLoader.displayImage(imageUrl, iv, displayImageOptions);
+
         return true;
     }
 

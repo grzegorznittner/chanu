@@ -420,13 +420,13 @@ public class ChanBoard {
         return ChanThread.makeBoardTypeRow(context, boardType);
     }
 
-    public Object[] makeThreadAdRow(Context context) {
-        ChanAd ad = ChanAd.randomAd(workSafe);
+    public Object[] makeThreadAdRow(Context context, int pos) {
+        ChanAd ad = ChanAd.randomAd(workSafe, pos);
         return ChanThread.makeAdRow(context, ad);
     }
 
-    public Object[] makePostAdRow(Context context) {
-        ChanAd ad = ChanAd.randomAd(workSafe);
+    public Object[] makePostAdRow(Context context, int pos) {
+        ChanAd ad = ChanAd.randomAd(workSafe, pos);
         return ChanPost.makeAdRow(context, link, ad);
     }
     

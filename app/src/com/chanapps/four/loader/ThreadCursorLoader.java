@@ -85,6 +85,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
 
             if (board != null && thread != null && thread.posts != null && thread.posts.length > 0) { // show loading for no thread data
                 int adSpace = MINIMUM_AD_SPACING;
+                int i = 0;
                 for (ChanPost post : thread.posts) {
                     if (ChanBlocklist.contains(context, ChanBlocklist.BlockType.TRIPCODE, post.trip)
                             || ChanBlocklist.contains(context, ChanBlocklist.BlockType.NAME, post.name)
@@ -97,12 +98,13 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                     post.useFriendlyIds = useFriendlyIds;
                     matrixCursor.addRow(post.makeRow());
                     if (generator.nextDouble() < AD_PROBABILITY && !(adSpace > 0)) {
-                        matrixCursor.addRow(board.makePostAdRow(getContext()));
+                        matrixCursor.addRow(board.makePostAdRow(getContext(), i));
                         adSpace = MINIMUM_AD_SPACING;
                     }
                     else {
                         adSpace--;
                     }
+                    i++;
                 }
                 int remainingToLoad = thread.posts[0].replies - thread.posts.length;
                 if (DEBUG) Log.i(TAG, "Remaining to load:" + remainingToLoad);
