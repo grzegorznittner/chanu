@@ -161,20 +161,21 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         itemExpandedImage.setVisibility(View.VISIBLE);
         if (DEBUG) Log.i(TAG, "Set expanded image to visible");
 
-        int lastPosition = threadActivity.getAbsListView().getLastVisiblePosition();
-        boolean shouldMove = listPosition >= lastPosition - 1;
-        final int parentOffset = shouldMove ? 100 : 0; // allow for margin
-
         // set visibility delayed
         if (itemExpandedProgressBar != null)
             itemExpandedProgressBar.setVisibility(View.VISIBLE);
-        if (threadActivity.getChanHandler() != null)
+
+        int lastPosition = threadActivity.getAbsListView().getLastVisiblePosition();
+        boolean shouldMove = listPosition > 0 && listPosition >= lastPosition - 1;
+        if (shouldMove && threadActivity.getChanHandler() != null) {
+            final int scrollDistance = height;
             threadActivity.getChanHandler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    threadActivity.getAbsListView().smoothScrollBy(parentOffset, 250);
+                    threadActivity.getAbsListView().smoothScrollBy(scrollDistance, 250);
                 }
             }, 250);
+        }
 
         DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
                 .imageScaleType(ImageScaleType.EXACTLY)
