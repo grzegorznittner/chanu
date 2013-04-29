@@ -468,8 +468,6 @@ public class BoardActivity
                 scrollOnNextLoaderFinished = 0;
             }
         }
-        setProgressBarIndeterminateVisibility(false);
-        setActionBarTitle(); // to reflect updated time
 
         // retry load if maybe data wasn't there yet
         NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
@@ -485,6 +483,10 @@ public class BoardActivity
             else {
                 handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
             }
+        }
+        else {
+            setActionBarTitle(); // to reflect updated time
+            setProgressBarIndeterminateVisibility(false);
         }
     }
 

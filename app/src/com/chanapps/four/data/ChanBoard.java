@@ -36,6 +36,7 @@ public class ChanBoard {
 
     private static final boolean DEBUG = false;
     public static final boolean REFRESH_THREADS_ON_REQUEST = true;
+    private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
 
     public ChanBoard() {
 		// public default constructor for Jackson
@@ -123,12 +124,12 @@ public class ChanBoard {
 
 	public static ChanBoard getBoardByCode(Context context, String boardCode) {
         if (boards == null) {
-   			initBoards(context);
+            initBoards(context);
    		}
         return boardByCode.get(boardCode);
 	}
 	
-	private static void initBoards(Context ctx) {
+	public static synchronized void initBoards(Context ctx) {
         boards = new ArrayList<ChanBoard>();
         safeBoards = new ArrayList<ChanBoard>();
         boardsByType = new HashMap<BoardType, List<ChanBoard>>();
@@ -196,8 +197,12 @@ public class ChanBoard {
         return getImageResourceId(boardCode, postNo, -1);
     }
 
+    public static int getRandomImageResourceId(String boardCode, long postNo) {
+        return ChanBoard.getImageResourceId(boardCode, postNo, (int)(Math.random() * NUM_DEFAULT_IMAGES_PER_BOARD));
+    }
+
     public static int getImageResourceId(String boardCode, long postNo, int index) { // allows special-casing first (usually sticky) and multiple
-        int imageId = 0;
+        int imageId;
         String fileRoot;
         if (index == 0)
             fileRoot = boardCode;

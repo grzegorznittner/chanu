@@ -296,7 +296,14 @@ public class ChanFileStorage {
 	}
 	
 	private static ChanBoard prepareDefaultBoardData(Context context, String boardCode) {
-		ChanBoard board = ChanBoard.getBoardByCode(context, boardCode).copy();
+		ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
+        if (board == null) {
+            ChanBoard.initBoards(context);
+            board = ChanBoard.getBoardByCode(context, boardCode);
+        }
+        if (board == null)
+            return null;
+        board = board.copy();
 		ChanThread thread = new ChanThread();
 		thread.board = boardCode;
 		thread.closed = 0;

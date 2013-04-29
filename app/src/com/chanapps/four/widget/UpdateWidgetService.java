@@ -137,7 +137,7 @@ public class UpdateWidgetService extends Service {
                 views.setOnClickPendingIntent(R.id.board_title, makeBoardIntent());
 
             views.setInt(R.id.home_button, "setImageResource", R.drawable.app_icon);
-            views.setOnClickPendingIntent(R.id.refresh, makeHomeIntent());
+            views.setOnClickPendingIntent(R.id.home_button, makeHomeIntent());
 
             int refreshBackground = widgetConf.showRefreshButton ? R.drawable.widget_refresh_gradient_bg : 0;
             int refreshDrawable = widgetConf.showRefreshButton ? R.drawable.widget_refresh_button_selector : 0;

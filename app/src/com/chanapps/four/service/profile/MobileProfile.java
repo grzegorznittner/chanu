@@ -142,10 +142,13 @@ public class MobileProfile extends AbstractNetworkProfile {
 	@Override
 	public void onBoardSelectorSelected(Context context, String boardCode) {
 		super.onBoardSelectorSelected(context, boardCode);
+        // prefetch popular in the background if we haven't loaded it yet
+        /*
         if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode)) {
-            Health health = getConnectionHealth();
+        */
+        Health health = getConnectionHealth();
             if (health == Health.NO_CONNECTION) {
                 makeHealthStatusToast(context, health);
                 return;
@@ -157,7 +160,7 @@ public class MobileProfile extends AbstractNetworkProfile {
             }
 
             FetchPopularThreadsService.schedulePopularFetchWithPriority(context);
-        }
+        //}
 	}
 
 

@@ -483,8 +483,9 @@ public class ThreadActivity
             params.height = (int)((double)desiredWidth / scaleFactor);
             //params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
+        if (DEBUG) Log.i(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + params.width + "x" + params.height);
         iv.setLayoutParams(params);
-        iv.setScaleType(ImageView.ScaleType.FIT_XY);
+        //iv.setScaleType(ImageView.ScaleType.FIT_XY);
         if ((flags & ChanPost.FLAG_IS_AD) > 0)
             imageLoader.displayImage(imageUrl, iv, displayImageOptions, adImageLoadingListener);
         else

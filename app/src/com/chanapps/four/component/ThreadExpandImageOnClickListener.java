@@ -142,17 +142,22 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         int height = Math.round(scaleFactor * (float)postH);
         if (DEBUG) Log.i(TAG, "target size " + width + "x" + height);
         // set layout dimensions
-        //if (listPosition > 0) {
-            ViewGroup.LayoutParams params = itemExpandedImage.getLayoutParams();
-            if (params != null) {
-                params.width = listPosition == 0 ? ViewGroup.LayoutParams.MATCH_PARENT : width;
-                params.height = listPosition == 0 ? ViewGroup.LayoutParams.WRAP_CONTENT : height;
-                if (DEBUG) Log.i(TAG, "set expanded image size=" + width + "x" + height);
+        ViewGroup.LayoutParams params = itemExpandedImage.getLayoutParams();
+        if (params != null) {
+            if (listPosition == 0 && itemThumbnailImage != null && itemThumbnailImage.getLayoutParams() != null) { // for thread header use existing params
+                ViewGroup.LayoutParams thumbParams = itemThumbnailImage.getLayoutParams();
+                params.width = thumbParams.width;
+                params.height = thumbParams.height;
             }
-            int paddingTop = (flags & ChanPost.FLAG_HAS_TEXT) > 0 ? 0 : padding8Dp;
-            int paddingBottom = padding8Dp;
-            itemExpandedImage.setPadding(0, paddingTop, 0, paddingBottom);
-        //}
+            else {
+                int paddingTop = (flags & ChanPost.FLAG_HAS_TEXT) > 0 ? 0 : padding8Dp;
+                int paddingBottom = padding8Dp;
+                itemExpandedImage.setPadding(0, paddingTop, 0, paddingBottom);
+                params.width = width;
+                params.height = height + paddingTop + paddingBottom;
+            }
+            if (DEBUG) Log.i(TAG, "set expanded image size=" + width + "x" + height);
+        }
         itemExpandedImage.setVisibility(View.VISIBLE);
         if (DEBUG) Log.i(TAG, "Set expanded image to visible");
 
@@ -171,7 +176,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
                 }
             }, 250);
 
-        ImageSize imageSize = new ImageSize(width, height);
         DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .cacheOnDisc()

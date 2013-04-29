@@ -270,6 +270,12 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             postNo = prefs.getLong(ChanPost.POST_NO, 0);
             imageUrl = prefs.getString(ChanHelper.IMAGE_URL, "");
             if (DEBUG) Log.i(TAG, "Post no " + postNo + " laoded from preferences viewType=" + viewType);
+            if (!boardCode.isEmpty() && threadNo == 0) {
+                viewType = ViewType.OFFLINE_ALBUM_VIEW;
+            }
+            else if (boardCode.isEmpty()) {
+                viewType = ViewType.OFFLINE_ALBUMSET_VIEW;
+            }
         }
         if (!loadChanPostData()) { // fill in the best we can
             post = new ChanPost();

@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 public class WidgetConfigureActivity extends FragmentActivity {
 
     public static final String TAG = WidgetConfigureActivity.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final long DELAY_BOARD_IMAGE_MS = 5 * 1000; // give board fetch time to finish
 
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;

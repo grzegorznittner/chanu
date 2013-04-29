@@ -10,6 +10,7 @@ import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaSet;
 import com.android.gallery3d.data.Path;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
@@ -27,6 +28,14 @@ public class ChanAlbum extends MediaSet {
 	
 	public ChanAlbum(Path path, GalleryApp application, ChanThread thread) {
 		super(path, nextVersionNumber());
+        if (thread == null) { // in case something went wrong
+            this.board = ChanBoard.DEFAULT_BOARD_CODE;
+            ChanBoard board = ChanBoard.getBoardByCode(application.getAndroidContext(), this.board);
+            this.name = (board == null ? "" : board.name + " ")
+                    + "/" + this.board + "/";
+            this.threadNo = 0;
+            return;
+        }
 		this.application = application;
 		this.board = thread.board;
 		this.name = "/" + board + "/" + thread.no;

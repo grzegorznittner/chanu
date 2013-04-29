@@ -150,7 +150,7 @@
     <string name="board_selector_popular_title">Popular&lt;br/&gt;Threads</string>
     <string name="board_selector_latest_title">Latest&lt;br/&gt;Posts</string>
     <string name="board_selector_latest_images_title">Recent&lt;br/&gt;Images</string>
-    <string name="board_selector_boardlist_title">Board List</string>
+    <string name="board_selector_boardlist_title">Boards</string>
 
     <!-- board activity -->
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
@@ -181,7 +181,7 @@
     <string name="thread_next_replies_found">Found %1$d replies</string>
     <string name="thread_no_id_found">No other posts found for %1$s</string>
     <string name="thread_id_found">Found %1$d other posts for same posters</string>
-    <string name="thread_no_text_subject">New Thread</string>
+    <string name="thread_no_text_subject"></string>
     <string name="thread_go_to_link">Go To Link</string>
     <string name="thread_image_download_error">Error downloading thread images</string>
 

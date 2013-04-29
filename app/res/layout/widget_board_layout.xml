@@ -71,12 +71,10 @@
 
     <ImageButton
             android:id="@+id/home_button"
-            android:layout_height="28dp"
-            android:layout_width="28dp"
+            android:layout_height="32dp"
+            android:layout_width="32dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:paddingLeft="4dp"
-            android:paddingTop="4dp"
             android:scaleType="fitXY"
             android:src="@drawable/app_icon"
             android:background="@color/PaletteTransparent"
@@ -85,8 +83,8 @@
 
     <ImageButton
             android:id="@+id/refresh"
-            android:layout_height="28dp"
-            android:layout_width="28dp"
+            android:layout_height="32dp"
+            android:layout_width="32dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:scaleType="centerCrop"
@@ -97,8 +95,8 @@
 
     <ImageButton
             android:id="@+id/configure"
-            android:layout_height="28dp"
-            android:layout_width="28dp"
+            android:layout_height="32dp"
+            android:layout_width="32dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:scaleType="centerCrop"

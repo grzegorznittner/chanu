@@ -211,6 +211,7 @@ public class BoardGroupFragment
         if (DEBUG) Log.i(TAG, "onResume boardSelectorTab=" + boardSelectorTab);
         if (handler == null)
             handler = createHandler();
+        /*
         if (boardSelectorTab == BoardSelectorTab.WATCHLIST)
             handler.post(new Runnable() {
                 @Override
@@ -218,6 +219,7 @@ public class BoardGroupFragment
                     getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
                 }
             });
+            */
     }
 
     protected Handler createHandler() {
