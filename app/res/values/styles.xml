@@ -703,6 +703,7 @@
     <color name="PaletteLighterGray">#ddd</color>
     <color name="PaletteLightGray">#ccc</color>
     <color name="PaletteMedGray">#888</color>
+    <color name="PaletteDarkGray">#333</color>
     <color name="PaletteLighterGrayHalfOpacity">#80dddddd</color>
     <color name="PaletteLightBlack">#ff030303</color>
     <color name="PaletteBlack">#ff010101</color>
