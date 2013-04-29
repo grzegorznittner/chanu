@@ -184,6 +184,7 @@
     <string name="thread_no_text_subject"></string>
     <string name="thread_go_to_link">Go To Link</string>
     <string name="thread_image_download_error">Error downloading thread images</string>
+    <string name="thread_no_start_play">Can\'t start play, already at end</string>
 
     <!-- watchlist -->
     <string name="board_end_of_watchlist">End of Watchlist</string>

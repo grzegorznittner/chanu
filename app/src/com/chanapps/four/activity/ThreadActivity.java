@@ -279,11 +279,12 @@ public class ThreadActivity
 
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
+        /*
         if (DEBUG) Log.v(TAG, "setViewValue for  position=" + cursor.getPosition());
         if (DEBUG) Log.v(TAG, "                 boardCode=" + cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE)));
         if (DEBUG) Log.v(TAG, "                    postId=" + cursor.getString(cursor.getColumnIndex(ChanPost.POST_ID)));
         if (DEBUG) Log.v(TAG, "                      text=" + cursor.getString(cursor.getColumnIndex(ChanPost.POST_HEADLINE_TEXT)));
-
+        */
         int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
         switch (view.getId()) {
             case R.id.list_item :
@@ -1055,17 +1056,13 @@ public class ThreadActivity
 
     protected boolean playThreadMenu() {
         synchronized (this) {
-            if (shouldPlayThread) {
+            shouldPlayThread = true;
+            if (!canPlayThread()) {
                 shouldPlayThread = false;
                 invalidateOptionsMenu();
-                return true;
-            }
-            if (absListView == null || absListView.getAdapter() == null || absListView.getAdapter().getCount() <= 0) {
-                shouldPlayThread = false;
-                invalidateOptionsMenu();
+                Toast.makeText(this, R.string.thread_no_start_play, Toast.LENGTH_SHORT).show();
                 return false;
             }
-            shouldPlayThread = true;
             invalidateOptionsMenu();
             new Thread(new Runnable() {
                 @Override
@@ -1079,13 +1076,7 @@ public class ThreadActivity
                         });
                     while (true) {
                         synchronized (this) {
-                            if (shouldPlayThread == false)
-                                break;
-                            if (absListView == null || adapter == null || adapter.getCount() <= 0)
-                                break;
-                            if (absListView.getLastVisiblePosition() == adapter.getCount() - 1)
-                                break; // stop
-                            if (handler == null)
+                            if (!canPlayThread())
                                 break;
                             handler.post(new Runnable() {
                                 @Override
@@ -1134,11 +1125,29 @@ public class ThreadActivity
                             @Override
                             public void run() {
                                 absListView.setFastScrollEnabled(true);
+                                invalidateOptionsMenu();
                             }
                         });
                 }
             }).start();
         }
+        return true;
+    }
+
+    protected boolean canPlayThread() {
+        if (shouldPlayThread == false)
+            return false;
+        if (absListView == null || adapter == null || adapter.getCount() <= 0)
+            return false;
+        //if (absListView.getLastVisiblePosition() == adapter.getCount() - 1)
+        //    return false; // stop
+        //It is scrolled all the way down here
+        if (absListView.getLastVisiblePosition() == absListView.getAdapter().getCount() -1
+                && absListView.getChildAt(absListView.getLastVisiblePosition()) != null
+                && absListView.getChildAt(absListView.getLastVisiblePosition()).getBottom() >= absListView.getHeight())
+            return false;
+        if (handler == null)
+            return false;
         return true;
     }
 
