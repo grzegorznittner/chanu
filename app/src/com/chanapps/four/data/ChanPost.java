@@ -393,7 +393,7 @@ public class ChanPost {
             return ChanBoard.spoilerThumbnailUrl(board);
         else if (tim > 0 && filedeleted == 0 && tn_w > 2 && tn_h > 2)
             return "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg";
-        else if (resto == 0) // thread default
+        else if (resto <= 0) // thread default
             return "drawable://" + ChanBoard.getRandomImageResourceId(board, no);
         else
             return "";
@@ -406,7 +406,7 @@ public class ChanPost {
             return 0;
         else if (tim > 0 && filedeleted == 0 && tn_w > 2 && tn_h > 2)
             return 0;
-        else if (resto == 0) // thread default
+        else if (resto <= 0) // thread default
             return ChanBoard.getRandomImageResourceId(board, no);
         else
             return 0;
@@ -477,7 +477,7 @@ public class ChanPost {
             items.add(country_name);
         if (fsize > 0)
             items.add(imageDimensions());
-        if (resto == 0)
+        if (resto <= 0)
             items.add(threadInfoLine());
         items.add(dateText());
         return ChanHelper.join(items, " <b>&middot;</b> ");
