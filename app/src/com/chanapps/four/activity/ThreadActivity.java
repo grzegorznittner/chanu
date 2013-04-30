@@ -1056,14 +1056,16 @@ public class ThreadActivity
 
     protected boolean playThreadMenu() {
         synchronized (this) {
-            shouldPlayThread = true;
+            shouldPlayThread = !shouldPlayThread; // user clicked, invert play status
+            invalidateOptionsMenu();
+            if (!shouldPlayThread) {
+                return false;
+            }
             if (!canPlayThread()) {
                 shouldPlayThread = false;
-                invalidateOptionsMenu();
                 Toast.makeText(this, R.string.thread_no_start_play, Toast.LENGTH_SHORT).show();
                 return false;
             }
-            invalidateOptionsMenu();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -1142,9 +1144,7 @@ public class ThreadActivity
         //if (absListView.getLastVisiblePosition() == adapter.getCount() - 1)
         //    return false; // stop
         //It is scrolled all the way down here
-        if (absListView.getLastVisiblePosition() == absListView.getAdapter().getCount() -1
-                && absListView.getChildAt(absListView.getLastVisiblePosition()) != null
-                && absListView.getChildAt(absListView.getLastVisiblePosition()).getBottom() >= absListView.getHeight())
+        if (absListView.getLastVisiblePosition() >= absListView.getAdapter().getCount() -1)
             return false;
         if (handler == null)
             return false;
