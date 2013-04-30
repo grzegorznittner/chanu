@@ -37,6 +37,8 @@ public class ChanBoard {
     private static final boolean DEBUG = false;
     public static final boolean REFRESH_THREADS_ON_REQUEST = true;
     private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
+    private static final int NUM_RELATED_THREADS = 3;
+
 
     public ChanBoard() {
 		// public default constructor for Jackson
@@ -434,7 +436,48 @@ public class ChanBoard {
         ChanAd ad = ChanAd.randomAd(workSafe, pos);
         return ChanPost.makeAdRow(context, link, ad);
     }
-    
+
+    public Object[] makePostRelatedThreadsHeaderRow(Context context) {
+        return ChanPost.makeTitleRow(link, context.getString(R.string.thread_related_threads_title));
+    }
+
+    public List<Object[]> makePostRelatedThreadsRows(Context context, long threadNo, String searchText) {
+        List<Object[]> rows = new ArrayList<Object[]>();
+        if (threadNo == 0 || threads == null)
+            return rows;
+        synchronized (threads) {
+            if (threads.length == 0)
+                return rows;
+            return makePostNextThreadRows(context, threadNo, NUM_RELATED_THREADS);
+        }
+    }
+
+    private List<Object[]> makePostNextThreadRows(Context context, long threadNo, int numThreads) {
+        List<Object[]> rows = new ArrayList<Object[]>();
+        // find position of thread in list
+        int threadPos = -1;
+        for (int i = 0; i < threads.length; i++) {
+            ChanPost thread = threads[i];
+            if (thread != null && thread.no == threadNo) {
+                threadPos = i;
+                break;
+            }
+        }
+        if (threadPos == -1) // didn't find it
+            return rows;
+        // find prev and next if any
+        for (int i = threadPos + 1; i < threads.length && i < threadPos + numThreads + 1; i++) {
+            ChanPost nextThread = threads[i];
+            Log.e(TAG, "Exception found thread=" + nextThread);
+            rows.add(nextThread.makeThreadLinkRow());
+        }
+        return rows;
+    }
+
+    public Object[] makePostBoardLinkRow(Context context) {
+        return null;
+    }
+
     public void updateCountersAfterLoad() {
     	if (loadedThreads.length == 0) {
     		return;

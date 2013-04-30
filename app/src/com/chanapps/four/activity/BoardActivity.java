@@ -57,7 +57,7 @@ public class BoardActivity
     protected Class absListViewClass = GridView.class;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
-    protected int scrollOnNextLoaderFinished = 0;
+    protected int scrollOnNextLoaderFinished = -1;
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
     //protected ProgressBar progressBar;
@@ -97,14 +97,10 @@ public class BoardActivity
 		if (DEBUG) Log.v(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        loadFromIntentOrPrefs();
         initImageLoader();
         createAbsListView();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
-        if (DEBUG) Log.v(TAG, "onCreate init loader");
-        //progressBar = (ProgressBar)findViewById(R.id.board_progress_bar);
-        getSupportLoaderManager().initLoader(0, null, this);
     }
 
     protected void sizeGridToDisplay() {
@@ -206,9 +202,7 @@ public class BoardActivity
         ensureHandler();
         restoreInstanceState();
 		NetworkProfileManager.instance().activityChange(this);
-		Loader loader = getSupportLoaderManager().getLoader(0);
-		if (loader == null)
-			getSupportLoaderManager().initLoader(0, null, this);
+		getSupportLoaderManager().restartLoader(0, null, this);
 	}
 
     protected String getLastPositionName() {
@@ -217,14 +211,22 @@ public class BoardActivity
 
     protected void scrollToLastPosition() {
         String intentExtra = getLastPositionName();
-        int lastPosition = getIntent().getIntExtra(intentExtra, 0);
-        if (lastPosition == 0) {
-            lastPosition = ensurePrefs().getInt(intentExtra, 0);
+        int lastPosition = getIntent().getIntExtra(intentExtra, -1);
+        if (lastPosition == -1) {
+            lastPosition = ensurePrefs().getInt(intentExtra, -1);
         }
-        if (lastPosition != 0) {
+        if (lastPosition == -1) {
+            lastPosition = 0;
+        }
+        if (lastPosition <= absListView.getCount()) { // we can scroll now
+            absListView.smoothScrollToPosition(lastPosition);
+            absListView.smoothScrollToPosition(0);
+            scrollOnNextLoaderFinished = -1;
+        }
+        else { // scroll next time when list is loaded
             scrollOnNextLoaderFinished = lastPosition;
-            if (DEBUG) Log.v(TAG, "Scrolling to:" + lastPosition);
         }
+        if (DEBUG) Log.v(TAG, "Scrolling to:" + lastPosition);
     }
 
     @Override
@@ -283,7 +285,7 @@ public class BoardActivity
         if (DEBUG) Log.i(TAG, "Restoring instance state...");
         loadFromIntentOrPrefs();
         setActionBarTitle();
-        scrollToLastPosition();
+        //scrollToLastPosition();
         invalidateOptionsMenu(); // for correct spinner display
     }
 
@@ -459,21 +461,19 @@ public class BoardActivity
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished count=" + data.getCount());
+		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished count=" + (data == null ? 0 : data.getCount()));
 		adapter.swapCursor(data);
         if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
         if (absListView != null) {
-            if (scrollOnNextLoaderFinished > 0) {
+            if (scrollOnNextLoaderFinished > -1) {
                 absListView.setSelection(scrollOnNextLoaderFinished);
-                scrollOnNextLoaderFinished = 0;
+                scrollOnNextLoaderFinished = -1;
             }
         }
 
         // retry load if maybe data wasn't there yet
-        NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
-        if (data.getCount() < 1
-                && handler != null)
-        {
+        if (data != null && data.getCount() < 1 && handler != null) {
+            NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
             if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
                 setProgressBarIndeterminateVisibility(false);
                 String msg = String.format(getString(R.string.mobile_profile_health_status),

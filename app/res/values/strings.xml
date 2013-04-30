@@ -22,6 +22,7 @@
     <string name="thread_post_collapse_button">Collapse</string>
     <string name="thread_country_flag">Country Flag</string>
     <string name="not_implemented">Not yet implemented</string>
+    <string name="thread_related_threads_title">related threads</string>
 
     <!-- blocklist -->
     <string name="blocklist_button">Block Posts With Id</string>

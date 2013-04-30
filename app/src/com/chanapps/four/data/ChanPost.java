@@ -58,8 +58,10 @@ public class ChanPost {
     public static final int FLAG_IS_DEAD = 0x040;
     public static final int FLAG_IS_CLOSED = 0x080;
     public static final int FLAG_IS_AD = 0x100;
+    public static final int FLAG_IS_TITLE = 0x200;
+    public static final int FLAG_IS_THREADLINK = 0x400;
 
-    private int postFlags(boolean isAd, String subject, String text, String exifText) {
+    private int postFlags(boolean isAd, boolean isThreadLink, String subject, String text, String exifText) {
         int flags = 0;
         if (tim > 0)
             flags |= FLAG_HAS_IMAGE;
@@ -67,9 +69,9 @@ public class ChanPost {
             flags |= FLAG_HAS_SUBJECT;
         if (text != null && !text.isEmpty())
             flags |= FLAG_HAS_TEXT;
-        if (hasSpoiler())
+        if (!isThreadLink && hasSpoiler())
             flags |= FLAG_HAS_SPOILER;
-        if (exifText != null && !exifText.isEmpty())
+        if (!isThreadLink && exifText != null && !exifText.isEmpty())
             flags |= FLAG_HAS_EXIF;
         if (country != null && !country.isEmpty())
             flags |= FLAG_HAS_COUNTRY;
@@ -79,6 +81,8 @@ public class ChanPost {
             flags |= FLAG_IS_CLOSED;
         if (isAd)
             flags |= FLAG_IS_AD;
+        if (isThreadLink)
+            flags |= FLAG_IS_THREADLINK;
         return flags;
     }
 
@@ -798,7 +802,37 @@ public class ChanPost {
                 email,
                 thumbnailId(),
                 ext,
-                postFlags(false, textComponents[0], textComponents[1], exifText)
+                postFlags(false, false, textComponents[0], textComponents[1], exifText)
+        };
+    }
+
+    public Object[] makeThreadLinkRow() {
+        String[] textComponents = textComponents();
+        return new Object[] {
+                no,
+                board,
+                resto,
+                thumbnailUrl(),
+                "",
+                countryFlagUrl(),
+                headline(),
+                textComponents[0],
+                "",
+                tn_w,
+                tn_h,
+                w,
+                h,
+                tim,
+                "",
+                "",
+                "",
+                id,
+                trip,
+                name,
+                email,
+                thumbnailId(),
+                ext,
+                postFlags(false, true, textComponents[0], "", "")
         };
     }
 
@@ -829,6 +863,36 @@ public class ChanPost {
                 "",
                 "",
                 FLAG_HAS_IMAGE | FLAG_HAS_SUBJECT | FLAG_IS_AD
+        };
+    }
+
+    public static Object[] makeTitleRow(String boardCode, String title) {
+        String subject = title;
+        return new Object[] {
+                3,
+                boardCode,
+                0,
+                "",
+                "",
+                "",
+                "",
+                subject,
+                "",
+                "",
+                "",
+                -1,
+                -1,
+                0,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                FLAG_HAS_SUBJECT | FLAG_IS_TITLE
         };
     }
 

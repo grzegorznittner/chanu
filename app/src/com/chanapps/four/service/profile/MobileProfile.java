@@ -384,7 +384,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         // user is on the board page, we need to be reloaded it
         Handler handler = activity.getChanHandler();
         if (isBoardActivity && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY
-                && currentActivityId.threadNo == 0 && handler != null
+                && handler != null
                 && (currentActivityId.priority || data.priority))
             handler.post(new Runnable() {
             @Override
