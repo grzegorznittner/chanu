@@ -122,7 +122,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         }
 
         // always put an ad at the bottom
-        matrixCursor.addRow(board.makePostAdRow(getContext(), i));
+        if (i > 1 || thread.replies == 0)
+            matrixCursor.addRow(board.makePostAdRow(getContext(), i));
 
         // put related threads at the bottom
         List<Object[]> rows = board.makePostRelatedThreadsRows(getContext(), threadNo, thread.sub + " " + thread.com);

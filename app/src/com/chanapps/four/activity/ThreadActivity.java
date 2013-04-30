@@ -12,6 +12,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.support.v4.content.Loader;
@@ -217,6 +218,7 @@ public class ThreadActivity
                         ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_IMAGE_URL,
+                        ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_HEADLINE_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_TEXT,
@@ -224,6 +226,7 @@ public class ThreadActivity
                         ChanPost.POST_IMAGE_URL
                 },
                 new int[] {
+                        R.id.list_item_header_wrapper,
                         R.id.list_item_expanded_progress_bar,
                         R.id.list_item_image_expanded,
                         R.id.list_item_image_wrapper,
@@ -289,6 +292,8 @@ public class ThreadActivity
         switch (view.getId()) {
             case R.id.list_item :
                 return setItem((ViewGroup)view, cursor, flags);
+            case R.id.list_item_header_wrapper:
+                return setItemHeaderWrapper((ViewGroup)view, flags);
             case R.id.list_item_image_expanded:
                 return setItemImageExpanded((ImageView) view, cursor, flags);
             case R.id.list_item_expanded_progress_bar:
@@ -316,7 +321,7 @@ public class ThreadActivity
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         item.setTag((flags | ChanPost.FLAG_IS_AD) > 0 ? null : postId);
         item.setTag(R.id.THREAD_VIEW_IS_EXPANDED, new Boolean(false));
-        item.setBackgroundColor(R.color.blue_base);
+        /*
         boolean clickable = (flags & (
                         ChanPost.FLAG_IS_AD |
                         ChanPost.FLAG_IS_THREADLINK |
@@ -326,6 +331,17 @@ public class ThreadActivity
                         > 0;
         //item.setClickable(clickable);
         Log.e(TAG, "Exception postId=" + postId + " isClickable=" + clickable + " flags=" + flags);
+        */
+        return true;
+    }
+
+    protected boolean setItemHeaderWrapper(ViewGroup wrapper, int flags) {
+        if ((flags & ChanPost.FLAG_IS_AD) > 0)
+            wrapper.setBackgroundResource(R.drawable.thread_ad_bg_gradient);
+        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
+            wrapper.setBackgroundResource(R.drawable.thread_button_gradient_bg);
+        else
+            wrapper.setBackgroundResource(0);
         return true;
     }
 
@@ -335,13 +351,9 @@ public class ThreadActivity
             int pos = absListView.getPositionForView(v);
             Cursor cursor = adapter.getCursor();
             cursor.moveToPosition(pos);
-            //final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-            //if ((flags & ChanPost.FLAG_IS_AD) > 0) {
-                String adUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
-            Log.e(TAG, "Exception adUrl=" + adUrl);
-                if (adUrl != null && !adUrl.isEmpty())
-                    ChanHelper.launchUrlInBrowser(ThreadActivity.this, adUrl);
-            //}
+            String adUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+            if (adUrl != null && !adUrl.isEmpty())
+                ChanHelper.launchUrlInBrowser(ThreadActivity.this, adUrl);
         }
     };
 
@@ -353,7 +365,6 @@ public class ThreadActivity
             cursor.moveToPosition(pos);
             String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
             long linkedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-            Log.e(TAG, "clicked threadlink /" + linkedBoardCode + "/" + linkedThreadNo);
             if (linkedBoardCode != null && !linkedBoardCode.isEmpty() && linkedThreadNo > 0)
                 ThreadActivity.startActivity(ThreadActivity.this, linkedBoardCode, linkedThreadNo);
         }
@@ -406,15 +417,18 @@ public class ThreadActivity
         Spanned spanned = Html.fromHtml(text);
         if ((flags & ChanPost.FLAG_IS_TITLE) > 0) {
             tv.setAllCaps(true);
+            //tv.setTextColor(R.color.PaletteWhite);
         }
         else if (cursor.getPosition() == 0) {
             ensureSubjectTypeface();
             tv.setTypeface(subjectTypeface);
             tv.setAllCaps(false);
+            //tv.setTextColor(R.color.PaletteBlack);
         }
         else {
             tv.setTypeface(Typeface.DEFAULT);
             tv.setAllCaps(false);
+            //tv.setTextColor(R.color.PaletteBlack);
         }
         tv.setText(spanned);
         tv.setVisibility(View.VISIBLE);
@@ -959,7 +973,6 @@ public class ThreadActivity
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-        Log.e(TAG, "Exception clicked flags=" + flags);
         if ((flags & ChanPost.FLAG_IS_AD) > 0)
             itemAdListener.onClick(view);
         else if ((flags & ChanPost.FLAG_IS_THREADLINK) > 0)
