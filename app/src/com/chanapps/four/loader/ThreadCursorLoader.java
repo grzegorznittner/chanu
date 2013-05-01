@@ -34,11 +34,12 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         super(context);
     }
 
-    public ThreadCursorLoader(Context context, String boardName, long threadNo, AbsListView absListView) {
+    public ThreadCursorLoader(Context context, String boardName, long threadNo, String query, AbsListView absListView) {
         this(context);
         this.context = context;
         this.boardName = boardName;
         this.threadNo = threadNo;
+        this.query = query.toLowerCase().trim();
         initRandomGenerator();
         ChanHelper.Orientation orientation = ChanHelper.getOrientation(context);
         int defaultNumColumns = (orientation == ChanHelper.Orientation.PORTRAIT) ? DEFAULT_NUM_GRID_COLUMNS_PORTRAIT : DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE;
@@ -103,6 +104,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         for (ChanPost post : thread.posts) {
             if (ChanBlocklist.isBlocked(context, post))
                 continue;
+            if (!matchesQuery(post))
+                continue;
             post.isDead = thread.isDead; // inherit from parent
             post.closed = thread.closed; // inherit
             post.hidePostNumbers = hidePostNumbers;
@@ -137,6 +140,18 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             if (boardRow != null)
                 matrixCursor.addRow(boardRow);
         }
+    }
+
+    private boolean matchesQuery(ChanPost post) {
+        if (query == null || query.isEmpty())
+            return true;
+        // should use StringUtils.containsIgnoreCase
+        if (post.sub != null && post.sub.toLowerCase().contains(query))
+            return true;
+        if (post.com != null && post.com.toLowerCase().contains(query))
+            return true;
+        if (DEBUG) Log.i(TAG, "skipping post not matching query: " + post.sub + " " + post.com);
+        return false;
     }
 
     @Override

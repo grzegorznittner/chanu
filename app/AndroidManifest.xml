@@ -98,6 +98,19 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".BoardActivity"
                     />
+            <meta-data
+                    android:name="android.app.default_searchable"
+                    android:value=".ThreadSearchActivity"/>
+        </activity>
+
+        <activity android:name=".ThreadSearchActivity" android:label="@string/thread_search">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
+            <meta-data
+                    android:name="android.app.searchable"
+                    android:resource="@xml/searchable"
+                    />
         </activity>
 
         <activity android:name=".SettingsActivity" android:label="@string/settings_activity">
@@ -207,8 +220,10 @@
                 -->
 
         <!-- advertising -->
+        <!--
         <activity android:name="com.google.ads.AdActivity"
                   android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+        -->
 
         <!-- camera -->
         <activity android:name=".CameraActivity"

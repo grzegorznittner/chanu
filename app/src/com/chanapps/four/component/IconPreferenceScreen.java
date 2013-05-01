@@ -32,7 +32,6 @@ public class IconPreferenceScreen extends Preference {
         TypedArray a = context.obtainStyledAttributes(attrs,
                 R.styleable.IconPreferenceScreen, defStyle, 0);
         mIcon = a.getDrawable(R.styleable.IconPreferenceScreen_icon);
-        Log.e("FOO", "Exception mIcon=" + mIcon);
     }
 
     @Override

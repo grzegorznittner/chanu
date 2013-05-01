@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -102,7 +103,7 @@ public class ThreadActivity
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         if (threadNo > 0) {
-        	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, absListView);
+        	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, query, absListView);
             if (DEBUG) Log.i(TAG, "Started loader for " + boardCode + "/" + threadNo);
             setProgressBarIndeterminateVisibility(true);
         }
@@ -117,7 +118,11 @@ public class ThreadActivity
         if (threadNo <= 0)
             startActivity(from, boardCode);
 	    else
-            from.startActivity(createIntentForActivity(from, boardCode, threadNo));
+            from.startActivity(createIntentForActivity(from, boardCode, threadNo, ""));
+    }
+
+    public static void startActivityForSearch(Activity from, String boardCode, long threadNo, String query) {
+        from.startActivity(createIntentForActivity(from, boardCode, threadNo, query));
     }
 
     public AbsListView getAbsListView() {
@@ -125,9 +130,14 @@ public class ThreadActivity
     }
 
     public static Intent createIntentForActivity(Context context, final String boardCode, final long threadNo) {
+        return createIntentForActivity(context, boardCode, threadNo, "");
+    }
+
+    public static Intent createIntentForActivity(Context context, final String boardCode, final long threadNo, String query) {
         Intent intent = new Intent(context, ThreadActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(SearchManager.QUERY, query);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putInt(ChanHelper.LAST_THREAD_POSITION, 0); // reset it
         editor.commit();
@@ -144,6 +154,9 @@ public class ThreadActivity
         threadNo = intent.hasExtra(ChanHelper.THREAD_NO)
                 ? intent.getLongExtra(ChanHelper.THREAD_NO, 0)
                 : prefs.getLong(ChanHelper.THREAD_NO, 0);
+        query = intent.hasExtra(SearchManager.QUERY)
+                ? intent.getStringExtra(SearchManager.QUERY)
+                : prefs.getString(SearchManager.QUERY, "");
         tim = intent.hasExtra(ChanHelper.TIM)
                 ? intent.getLongExtra(ChanHelper.TIM, 0)
                 : prefs.getLong(ChanHelper.TIM, 0);
@@ -333,7 +346,7 @@ public class ThreadActivity
                         ChanPost.FLAG_HAS_SPOILER))
                         > 0;
         //item.setClickable(clickable);
-        Log.e(TAG, "Exception postId=" + postId + " isClickable=" + clickable + " flags=" + flags);
+        if (DEBUG) Log.i(TAG, "Exception postId=" + postId + " isClickable=" + clickable + " flags=" + flags);
         */
         return true;
     }
@@ -722,8 +735,15 @@ public class ThreadActivity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(menuId, menu);
         ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
+        setupSearch(menu);
         this.menu = menu;
         return true;
+    }
+
+    private void setupSearch(Menu menu) {
+        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView)menu.findItem(R.id.thread_search_menu).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
     }
 
     protected UserStatistics ensureUserStats() {

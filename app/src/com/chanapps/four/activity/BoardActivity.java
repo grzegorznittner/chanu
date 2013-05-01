@@ -46,9 +46,7 @@ public class BoardActivity
 
     private static final String DEFAULT_BOARD_CODE = "a";
 
-    public static final int LOADER_RESTART_INTERVAL_MED_MS = 2000;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
-    public static final int LOADER_RESTART_INTERVAL_MICRO_MS = 100;
     private static final int THUMB_WIDTH_PX = 150;
     private static final int THUMB_HEIGHT_PX = 150;
 
@@ -60,11 +58,11 @@ public class BoardActivity
     protected int scrollOnNextLoaderFinished = -1;
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
-    //protected ProgressBar progressBar;
     protected Menu menu;
     protected SharedPreferences prefs;
     protected long tim;
     protected String boardCode;
+    protected String query = "";
     protected int columnWidth = 0;
     protected int columnHeight = 0;
 
@@ -118,7 +116,6 @@ public class BoardActivity
                 new String[] {
                         ChanThread.THREAD_THUMBNAIL_URL,
                         ChanThread.THREAD_SUBJECT,
-                        //ChanThread.THREAD_INFO,
                         ChanThread.THREAD_COUNTRY_FLAG_URL,
                         ChanThread.THREAD_NUM_REPLIES,
                         ChanThread.THREAD_NUM_IMAGES,
@@ -127,7 +124,6 @@ public class BoardActivity
                 new int[] {
                         R.id.grid_item_thread_thumb,
                         R.id.grid_item_thread_subject,
-                        //R.id.grid_item_thread_info,
                         R.id.grid_item_country_flag,
                         R.id.grid_item_num_replies,
                         R.id.grid_item_num_images,
@@ -151,9 +147,6 @@ public class BoardActivity
 
     protected void resetImageOptions(ImageSize imageSize) {
         displayImageOptions = new DisplayImageOptions.Builder()
-                //.imageScaleType(ImageScaleType.POWER_OF_2)
-                //.imageScaleType(ImageScaleType.EXACT)
-                //.imageSize(imageSize)
                 .cacheOnDisc()
                 .cacheInMemory()
                 .resetViewBeforeLoading()
@@ -331,8 +324,6 @@ public class BoardActivity
                 return setThreadBoardAbbrev((TextView) view, cursor, groupBoardCode);
             case R.id.grid_item_thread_subject:
                 return setThreadSubject((TextView) view, cursor);
-            //case R.id.grid_item_thread_info:
-            //    return setThreadInfo((TextView) view, cursor);
             case R.id.grid_item_thread_thumb:
                 return setThreadThumb((ImageView) view, cursor, imageLoader, options);
             case R.id.grid_item_country_flag:
@@ -455,14 +446,14 @@ public class BoardActivity
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader boardCode=" + boardCode);
         setProgressBarIndeterminateVisibility(true);
-        cursorLoader = new BoardCursorLoader(this, boardCode);
+        cursorLoader = new BoardCursorLoader(this, boardCode, query);
         return cursorLoader;
 	}
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished count=" + (data == null ? 0 : data.getCount()));
-		adapter.swapCursor(data);
+        adapter.swapCursor(data);
         if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
         if (absListView != null) {
             if (scrollOnNextLoaderFinished > -1) {

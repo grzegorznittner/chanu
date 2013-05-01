@@ -468,7 +468,6 @@ public class ChanBoard {
         // find prev and next if any
         for (int i = threadPos + 1; i < threads.length && i < threadPos + numThreads + 1; i++) {
             ChanPost nextThread = threads[i];
-            Log.e(TAG, "Exception found thread=" + nextThread);
             rows.add(nextThread.makeThreadLinkRow());
         }
         return rows;
