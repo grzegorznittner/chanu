@@ -266,7 +266,7 @@ public class ChanPost {
         }
 
         // start subject extraction process
-        String[] terminators = { "\r", "\n", "<br/>", "<br>", ".", "!", "?", ";", ":", "," };
+        String[] terminators = { "\r", "\n", "<br/>", "<br>", ". ", "! ", "? ", "; ", ": ", ", " };
         message = message
                 .replaceAll("(<br/?>)+", "<br/>")
                 .trim()

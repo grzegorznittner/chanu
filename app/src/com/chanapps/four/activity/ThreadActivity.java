@@ -12,7 +12,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.support.v4.content.Loader;
@@ -221,6 +220,7 @@ public class ThreadActivity
                         ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_HEADLINE_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
+                        ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_TEXT,
                         ChanPost.POST_COUNTRY_URL,
                         ChanPost.POST_IMAGE_URL
@@ -233,6 +233,7 @@ public class ThreadActivity
                         R.id.list_item_image,
                         R.id.list_item_header,
                         R.id.list_item_subject,
+                        R.id.list_item_title,
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
                         R.id.list_item_image_exif
@@ -308,6 +309,8 @@ public class ThreadActivity
                 return setItemHeaderValue((TextView) view, cursor);
             case R.id.list_item_subject:
                 return setItemSubject((TextView) view, cursor, flags);
+            case R.id.list_item_title:
+                return setItemTitle((TextView) view, cursor, flags);
             case R.id.list_item_text:
                 return setItemText((TextView) view, cursor, flags);
             case R.id.list_item_image_exif:
@@ -409,27 +412,32 @@ public class ThreadActivity
     }
 
     private boolean setItemSubject(final TextView tv, final Cursor cursor, int flags) {
-        if ((flags & ChanPost.FLAG_HAS_SUBJECT) == 0 || (flags & ChanPost.FLAG_IS_AD) > 0) {
+        if ((flags & ChanPost.FLAG_HAS_SUBJECT) == 0
+                || (flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE)) > 0) {
             tv.setVisibility(View.GONE);
             return true;
         }
         String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
         Spanned spanned = Html.fromHtml(text);
-        if ((flags & ChanPost.FLAG_IS_TITLE) > 0) {
-            tv.setAllCaps(true);
-            //tv.setTextColor(R.color.PaletteWhite);
-        }
-        else if (cursor.getPosition() == 0) {
+        if (cursor.getPosition() == 0) {
             ensureSubjectTypeface();
             tv.setTypeface(subjectTypeface);
-            tv.setAllCaps(false);
-            //tv.setTextColor(R.color.PaletteBlack);
         }
         else {
             tv.setTypeface(Typeface.DEFAULT);
-            tv.setAllCaps(false);
-            //tv.setTextColor(R.color.PaletteBlack);
         }
+        tv.setText(spanned);
+        tv.setVisibility(View.VISIBLE);
+        return true;
+    }
+
+    private boolean setItemTitle(final TextView tv, final Cursor cursor, int flags) {
+        if ((flags & ChanPost.FLAG_IS_TITLE) == 0) {
+            tv.setVisibility(View.GONE);
+            return true;
+        }
+        String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+        Spanned spanned = Html.fromHtml(text);
         tv.setText(spanned);
         tv.setVisibility(View.VISIBLE);
         return true;
