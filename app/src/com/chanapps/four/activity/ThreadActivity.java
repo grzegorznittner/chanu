@@ -98,6 +98,7 @@ public class ThreadActivity
     protected ActionMode actionMode = null;
     protected Typeface subjectTypeface = null;
     protected int padding8DP = 0;
+    protected MenuItem searchMenuItem;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -742,7 +743,8 @@ public class ThreadActivity
 
     private void setupSearch(Menu menu) {
         SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView)menu.findItem(R.id.thread_search_menu).getActionView();
+        searchMenuItem = menu.findItem(R.id.thread_search_menu);
+        SearchView searchView = (SearchView)searchMenuItem.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
     }
 
@@ -1319,6 +1321,11 @@ public class ThreadActivity
         super.refresh();
         if (actionMode != null)
             actionMode.finish();
+    }
+
+    public void closeSearch() {
+        if (searchMenuItem != null)
+            searchMenuItem.collapseActionView();
     }
 
 }

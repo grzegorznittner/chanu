@@ -20,10 +20,12 @@
 
     <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
 
-    <RelativeLayout style="@style/ThreadListHeaderHeadWrapper">
+    <RelativeLayout style="@style/ThreadListHeaderHeadWrapper" android:id="@+id/list_item_header_wrapper">
         <ImageView style="@style/ThreadListHeaderCountryFlag" android:id="@+id/list_item_country_flag"/>
         <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"/>
+        <TextView style="@style/ThreadListHeaderTitle" android:id="@+id/list_item_title"/>
     </RelativeLayout>
+
 
     <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
 

@@ -463,8 +463,10 @@ public class ChanBoard {
                 break;
             }
         }
-        if (threadPos == -1) // didn't find it
-            return rows;
+        if (threadPos == -1) { // didn't find it
+            threadPos = 0;
+        }
+
         // find prev and next if any
         for (int i = threadPos + 1; i < threads.length && i < threadPos + numThreads + 1; i++) {
             ChanPost nextThread = threads[i];

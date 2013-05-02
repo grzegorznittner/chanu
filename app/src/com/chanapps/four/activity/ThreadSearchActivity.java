@@ -45,6 +45,8 @@ public class ThreadSearchActivity extends Activity {
             finish();
             return;
         }
+        if (activity instanceof ThreadActivity)
+            ((ThreadActivity)activity).closeSearch();
         String boardCode = activity.getChanActivityId().boardCode;
         long threadNo = activity.getChanActivityId().threadNo;
         if (boardCode == null || boardCode.isEmpty() || threadNo <= 0) {

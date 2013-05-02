@@ -246,15 +246,15 @@ public class ChanPost {
         return o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
     }
 
-    private String[] textComponents() {
-        return textComponents(false);
+    private String[] textComponents(String query) {
+        return textComponents(query, false);
     }
 
-    private String[] spoilerComponents() {
-        return textComponents(true);
+    private String[] spoilerComponents(String query) {
+        return textComponents(query, true);
     }
 
-    private String[] textComponents(boolean showSpoiler) {
+    private String[] textComponents(String query, boolean showSpoiler) {
         String subText = sanitizeText(sub, false, showSpoiler);
         String comText = sanitizeText(com, false, showSpoiler);
         String subject = subText != null ? subText : "";
@@ -262,7 +262,7 @@ public class ChanPost {
 
         if (!subject.isEmpty() || message.isEmpty()) { // we have a subject or can't extract from message
             if (DEBUG) Log.v(TAG, "Exception: provided subject=" + subject + " message=" + message);
-            return new String[] { subject, message };
+            return highlightComponents(subject, message, query);
         }
 
         // start subject extraction process
@@ -280,7 +280,7 @@ public class ChanPost {
                 subject = message.substring(0, i + len).trim().replaceFirst("(<br/?>)+$", "").trim();
                 message = message.substring(i + len).trim().replaceFirst("^(<br/?>)+", "").trim();
                 if (DEBUG) Log.v(TAG, "Exception: extracted subject=" + subject + " message=" + message);
-                return new String[]{ subject, message };
+                return highlightComponents(subject, message, query);
             }
         }
 
@@ -288,12 +288,26 @@ public class ChanPost {
             subject = message;
             message = "";
             if (DEBUG) Log.v(TAG, "Exception: replaced subject=" + subject + " message=" + message);
-            return new String[] { subject, message };
+            return highlightComponents(subject, message, query);
         }
 
         // default
         if (DEBUG) Log.v(TAG, "Exception: default subject=" + subject + " message=" + message);
-        return new String[]{ subject, message };
+        return highlightComponents(subject, message, query);
+    }
+
+    private String[] highlightComponents(String subject, String message, String query) {
+        return new String[] { highlightComponent(subject, query), highlightComponent(message, query) };
+    }
+
+    private static final String HIGHLIGHT_COLOR = "#aaa268";
+
+    private String highlightComponent(String component, String query) {
+        if (query.isEmpty())
+            return component;
+        String regex = "(?i)(" + query + ")";
+        String replace = "<b><font color=\"" + HIGHLIGHT_COLOR + "\">$1</font></b>";
+        return component.replaceAll(regex, replace);
     }
 
     public String threadSubject(Context context) {
@@ -461,7 +475,7 @@ public class ChanPost {
         return "";
     }
 
-    public String headline() {
+    public String headline(String query) {
         List<String> items = new ArrayList<String>();
         if (!hidePostNumbers)
             items.add(Long.toString(no));
@@ -484,7 +498,8 @@ public class ChanPost {
         if (resto <= 0)
             items.add(threadInfoLine());
         items.add(dateText());
-        return ChanHelper.join(items, " <b>&middot;</b> ");
+        String component = ChanHelper.join(items, " <b>&middot;</b> ");
+        return highlightComponent(component, query);
     }
 
     public String threadInfoLine() {
@@ -770,13 +785,37 @@ public class ChanPost {
         ext = null;
     }
 
+    public boolean matchesQuery(String query) {
+        if (query == null || query.isEmpty())
+            return true;
+        // should use StringUtils.containsIgnoreCase
+        if (no != 0 && Long.toString(no).contains(query))
+            return true;
+        if (id != null && id.toLowerCase().contains(query))
+            return true;
+        if (name != null && name.toLowerCase().contains(query))
+            return true;
+        if (trip != null && trip.toLowerCase().contains(query))
+            return true;
+        if (email != null && email.toLowerCase().contains(query))
+            return true;
+        if (country_name != null && country_name.toLowerCase().contains(query))
+            return true;
+        if (sub != null && sub.toLowerCase().contains(query))
+            return true;
+        if (com != null && com.toLowerCase().contains(query))
+            return true;
+        if (DEBUG) Log.i(TAG, "skipping post not matching query: " + no + " " + sub + " " + com);
+        return false;
+    }
+
     public static MatrixCursor buildMatrixCursor() {
         return new MatrixCursor(POST_COLUMNS);
     }
 
-    public Object[] makeRow() {
-        String[] textComponents = textComponents();
-        String[] spoilerComponents = spoilerComponents();
+    public Object[] makeRow(String query) {
+        String[] textComponents = textComponents(query);
+        String[] spoilerComponents = spoilerComponents(query);
         String exifText = exifText();
         return new Object[] {
                 no,
@@ -785,7 +824,7 @@ public class ChanPost {
                 thumbnailUrl(),
                 imageUrl(),
                 countryFlagUrl(),
-                headline(),
+                headline(query),
                 textComponents[0],
                 textComponents[1],
                 tn_w,
@@ -807,7 +846,7 @@ public class ChanPost {
     }
 
     public Object[] makeThreadLinkRow() {
-        String[] textComponents = textComponents();
+        String[] textComponents = textComponents("");
         return new Object[] {
                 no,
                 board,
@@ -815,7 +854,7 @@ public class ChanPost {
                 thumbnailUrl(),
                 "",
                 countryFlagUrl(),
-                headline(),
+                headline(""),
                 textComponents[0],
                 "",
                 tn_w,

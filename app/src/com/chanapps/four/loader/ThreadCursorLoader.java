@@ -14,6 +14,7 @@ import android.util.Log;
 
 import android.widget.AbsListView;
 import android.widget.GridView;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
 
@@ -85,6 +86,10 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             if (DEBUG) Log.i(TAG, "Thread closed status for " + boardName + "/" + threadNo + " is closed=" + thread.closed);
             MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
 
+            if (!query.isEmpty()) {
+                String title = String.format(context.getString(R.string.thread_search_results), "<i>" + query + "</i>");
+                matrixCursor.addRow(ChanPost.makeTitleRow(boardName, title));
+            }
             if (board != null && thread != null && thread.posts != null && thread.posts.length > 0) { // show loading for no thread data
                 loadMatrixCursor(matrixCursor, board, thread);
                 if (DEBUG) Log.i(TAG, "Remaining to load:" + (thread.posts[0].replies - thread.posts.length));
@@ -104,13 +109,13 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         for (ChanPost post : thread.posts) {
             if (ChanBlocklist.isBlocked(context, post))
                 continue;
-            if (!matchesQuery(post))
+            if (!post.matchesQuery(query))
                 continue;
             post.isDead = thread.isDead; // inherit from parent
             post.closed = thread.closed; // inherit
             post.hidePostNumbers = hidePostNumbers;
             post.useFriendlyIds = useFriendlyIds;
-            matrixCursor.addRow(post.makeRow());
+            matrixCursor.addRow(post.makeRow(query));
             // randomly distribute ads
             if (generator.nextDouble() < AD_PROBABILITY
                     && !(adSpace > 0)
@@ -129,7 +134,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             matrixCursor.addRow(board.makePostAdRow(getContext(), i));
 
         // put related threads at the bottom
-        List<Object[]> rows = board.makePostRelatedThreadsRows(getContext(), threadNo, thread.sub + " " + thread.com);
+        String searchText = !query.isEmpty() ? query : thread.sub + " " + thread.com;
+        List<Object[]> rows = board.makePostRelatedThreadsRows(getContext(), threadNo, searchText);
         if (rows.size() > 0) {
             matrixCursor.addRow(board.makePostRelatedThreadsHeaderRow(getContext()));
             for (Object[] row : rows)
@@ -140,18 +146,6 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             if (boardRow != null)
                 matrixCursor.addRow(boardRow);
         }
-    }
-
-    private boolean matchesQuery(ChanPost post) {
-        if (query == null || query.isEmpty())
-            return true;
-        // should use StringUtils.containsIgnoreCase
-        if (post.sub != null && post.sub.toLowerCase().contains(query))
-            return true;
-        if (post.com != null && post.com.toLowerCase().contains(query))
-            return true;
-        if (DEBUG) Log.i(TAG, "skipping post not matching query: " + post.sub + " " + post.com);
-        return false;
     }
 
     @Override
