@@ -98,7 +98,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         final long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         final String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
         final long resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
-        final long threadNo = resto == 0 ? postId : resto;
+        final long threadNo = resto <= 0 ? postId : resto;
         startActivity(from, boardCode, threadNo, postId, adapterView.getFirstVisiblePosition());
     }
 

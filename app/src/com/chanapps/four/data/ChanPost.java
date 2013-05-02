@@ -58,8 +58,10 @@ public class ChanPost {
     public static final int FLAG_IS_DEAD = 0x040;
     public static final int FLAG_IS_CLOSED = 0x080;
     public static final int FLAG_IS_AD = 0x100;
+    public static final int FLAG_IS_TITLE = 0x200;
+    public static final int FLAG_IS_THREADLINK = 0x400;
 
-    private int postFlags(boolean isAd, String subject, String text, String exifText) {
+    private int postFlags(boolean isAd, boolean isThreadLink, String subject, String text, String exifText) {
         int flags = 0;
         if (tim > 0)
             flags |= FLAG_HAS_IMAGE;
@@ -67,9 +69,9 @@ public class ChanPost {
             flags |= FLAG_HAS_SUBJECT;
         if (text != null && !text.isEmpty())
             flags |= FLAG_HAS_TEXT;
-        if (hasSpoiler())
+        if (!isThreadLink && hasSpoiler())
             flags |= FLAG_HAS_SPOILER;
-        if (exifText != null && !exifText.isEmpty())
+        if (!isThreadLink && exifText != null && !exifText.isEmpty())
             flags |= FLAG_HAS_EXIF;
         if (country != null && !country.isEmpty())
             flags |= FLAG_HAS_COUNTRY;
@@ -79,6 +81,8 @@ public class ChanPost {
             flags |= FLAG_IS_CLOSED;
         if (isAd)
             flags |= FLAG_IS_AD;
+        if (isThreadLink)
+            flags |= FLAG_IS_THREADLINK;
         return flags;
     }
 
@@ -242,15 +246,15 @@ public class ChanPost {
         return o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
     }
 
-    private String[] textComponents() {
-        return textComponents(false);
+    private String[] textComponents(String query) {
+        return textComponents(query, false);
     }
 
-    private String[] spoilerComponents() {
-        return textComponents(true);
+    private String[] spoilerComponents(String query) {
+        return textComponents(query, true);
     }
 
-    private String[] textComponents(boolean showSpoiler) {
+    private String[] textComponents(String query, boolean showSpoiler) {
         String subText = sanitizeText(sub, false, showSpoiler);
         String comText = sanitizeText(com, false, showSpoiler);
         String subject = subText != null ? subText : "";
@@ -258,11 +262,11 @@ public class ChanPost {
 
         if (!subject.isEmpty() || message.isEmpty()) { // we have a subject or can't extract from message
             if (DEBUG) Log.v(TAG, "Exception: provided subject=" + subject + " message=" + message);
-            return new String[] { subject, message };
+            return highlightComponents(subject, message, query);
         }
 
         // start subject extraction process
-        String[] terminators = { "\r", "\n", "<br/>", "<br>", ".", "!", "?", ";", ":", ",", " " };
+        String[] terminators = { "\r", "\n", "<br/>", "<br>", ". ", "! ", "? ", "; ", ": ", ", " };
         message = message
                 .replaceAll("(<br/?>)+", "<br/>")
                 .trim()
@@ -276,7 +280,7 @@ public class ChanPost {
                 subject = message.substring(0, i + len).trim().replaceFirst("(<br/?>)+$", "").trim();
                 message = message.substring(i + len).trim().replaceFirst("^(<br/?>)+", "").trim();
                 if (DEBUG) Log.v(TAG, "Exception: extracted subject=" + subject + " message=" + message);
-                return new String[]{ subject, message };
+                return highlightComponents(subject, message, query);
             }
         }
 
@@ -284,12 +288,26 @@ public class ChanPost {
             subject = message;
             message = "";
             if (DEBUG) Log.v(TAG, "Exception: replaced subject=" + subject + " message=" + message);
-            return new String[] { subject, message };
+            return highlightComponents(subject, message, query);
         }
 
         // default
         if (DEBUG) Log.v(TAG, "Exception: default subject=" + subject + " message=" + message);
-        return new String[]{ subject, message };
+        return highlightComponents(subject, message, query);
+    }
+
+    private String[] highlightComponents(String subject, String message, String query) {
+        return new String[] { highlightComponent(subject, query), highlightComponent(message, query) };
+    }
+
+    private static final String HIGHLIGHT_COLOR = "#aaa268";
+
+    private String highlightComponent(String component, String query) {
+        if (query.isEmpty())
+            return component;
+        String regex = "(?i)(" + query + ")";
+        String replace = "<b><font color=\"" + HIGHLIGHT_COLOR + "\">$1</font></b>";
+        return component.replaceAll(regex, replace);
     }
 
     public String threadSubject(Context context) {
@@ -393,7 +411,7 @@ public class ChanPost {
             return ChanBoard.spoilerThumbnailUrl(board);
         else if (tim > 0 && filedeleted == 0 && tn_w > 2 && tn_h > 2)
             return "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg";
-        else if (resto == 0) // thread default
+        else if (resto <= 0) // thread default
             return "drawable://" + ChanBoard.getRandomImageResourceId(board, no);
         else
             return "";
@@ -406,7 +424,7 @@ public class ChanPost {
             return 0;
         else if (tim > 0 && filedeleted == 0 && tn_w > 2 && tn_h > 2)
             return 0;
-        else if (resto == 0) // thread default
+        else if (resto <= 0) // thread default
             return ChanBoard.getRandomImageResourceId(board, no);
         else
             return 0;
@@ -457,7 +475,7 @@ public class ChanPost {
         return "";
     }
 
-    public String headline() {
+    public String headline(String query) {
         List<String> items = new ArrayList<String>();
         if (!hidePostNumbers)
             items.add(Long.toString(no));
@@ -477,10 +495,11 @@ public class ChanPost {
             items.add(country_name);
         if (fsize > 0)
             items.add(imageDimensions());
-        if (resto == 0)
+        if (resto <= 0)
             items.add(threadInfoLine());
         items.add(dateText());
-        return ChanHelper.join(items, " <b>&middot;</b> ");
+        String component = ChanHelper.join(items, " <b>&middot;</b> ");
+        return highlightComponent(component, query);
     }
 
     public String threadInfoLine() {
@@ -766,13 +785,37 @@ public class ChanPost {
         ext = null;
     }
 
+    public boolean matchesQuery(String query) {
+        if (query == null || query.isEmpty())
+            return true;
+        // should use StringUtils.containsIgnoreCase
+        if (no != 0 && Long.toString(no).contains(query))
+            return true;
+        if (id != null && id.toLowerCase().contains(query))
+            return true;
+        if (name != null && name.toLowerCase().contains(query))
+            return true;
+        if (trip != null && trip.toLowerCase().contains(query))
+            return true;
+        if (email != null && email.toLowerCase().contains(query))
+            return true;
+        if (country_name != null && country_name.toLowerCase().contains(query))
+            return true;
+        if (sub != null && sub.toLowerCase().contains(query))
+            return true;
+        if (com != null && com.toLowerCase().contains(query))
+            return true;
+        if (DEBUG) Log.i(TAG, "skipping post not matching query: " + no + " " + sub + " " + com);
+        return false;
+    }
+
     public static MatrixCursor buildMatrixCursor() {
         return new MatrixCursor(POST_COLUMNS);
     }
 
-    public Object[] makeRow() {
-        String[] textComponents = textComponents();
-        String[] spoilerComponents = spoilerComponents();
+    public Object[] makeRow(String query) {
+        String[] textComponents = textComponents(query);
+        String[] spoilerComponents = spoilerComponents(query);
         String exifText = exifText();
         return new Object[] {
                 no,
@@ -781,7 +824,7 @@ public class ChanPost {
                 thumbnailUrl(),
                 imageUrl(),
                 countryFlagUrl(),
-                headline(),
+                headline(query),
                 textComponents[0],
                 textComponents[1],
                 tn_w,
@@ -798,7 +841,37 @@ public class ChanPost {
                 email,
                 thumbnailId(),
                 ext,
-                postFlags(false, textComponents[0], textComponents[1], exifText)
+                postFlags(false, false, textComponents[0], textComponents[1], exifText)
+        };
+    }
+
+    public Object[] makeThreadLinkRow() {
+        String[] textComponents = textComponents("");
+        return new Object[] {
+                no,
+                board,
+                resto,
+                thumbnailUrl(),
+                "",
+                countryFlagUrl(),
+                headline(""),
+                textComponents[0],
+                "",
+                tn_w,
+                tn_h,
+                w,
+                h,
+                tim,
+                "",
+                "",
+                "",
+                id,
+                trip,
+                name,
+                email,
+                thumbnailId(),
+                ext,
+                postFlags(false, true, textComponents[0], "", "")
         };
     }
 
@@ -829,6 +902,36 @@ public class ChanPost {
                 "",
                 "",
                 FLAG_HAS_IMAGE | FLAG_HAS_SUBJECT | FLAG_IS_AD
+        };
+    }
+
+    public static Object[] makeTitleRow(String boardCode, String title) {
+        String subject = title;
+        return new Object[] {
+                3,
+                boardCode,
+                0,
+                "",
+                "",
+                "",
+                "",
+                subject,
+                "",
+                "",
+                "",
+                -1,
+                -1,
+                0,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                FLAG_HAS_SUBJECT | FLAG_IS_TITLE
         };
     }
 

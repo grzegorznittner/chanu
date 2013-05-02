@@ -18,7 +18,8 @@ import java.util.regex.Pattern;
  */
 public class ChanPostResponse {
 
-    private static final boolean DEBUG = false;
+    private static final String TAG = ChanPostResponse.class.getSimpleName();
+    private static final boolean DEBUG = true;
 
     private Context ctx = null;
     private String response = null;
@@ -41,8 +42,10 @@ public class ChanPostResponse {
         isPosted = false;
         try {
             error = ctx.getString(R.string.post_reply_response_error);
-
+            if (DEBUG) Log.i(TAG, "Received response: " + response);
             Matcher successMatch = SUCCESS_REG.matcher(response);
+            Matcher banMatch = BAN_REG.matcher(response);
+            Matcher errorMatch = ERROR_REG.matcher(response);
             if (successMatch.find()) {
                 isPosted = true;
                 error = null;
@@ -63,12 +66,10 @@ public class ChanPostResponse {
                     postNo = 0;
                 }
             }
-            else {
-                Matcher banMatch = BAN_REG.matcher(response);
-                Matcher errorMatch = ERROR_REG.matcher(response);
-                if (banMatch.find())
+            else if (banMatch.find()) {
                     error = banMatch.group(1) + " " + banMatch.group(2) + " " + banMatch.group(3);
-                else if (errorMatch.find())
+            }
+            else if (errorMatch.find()) {
                     error = errorMatch.group(2).replaceFirst("Error: ", "");
             }
         }

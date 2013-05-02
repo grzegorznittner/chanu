@@ -340,6 +340,20 @@
         <!-- <item name="android:focusableInTouchMode">true</item> -->
     </style>
 
+    <style name="ThreadListHeaderTitle" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+    </style>
+
     <style name="ThreadListHeaderBar" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">2dp</item>
@@ -388,9 +402,10 @@
     <style name="ThreadListItemSubject" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginRight">16dp</item>
+        <!-- <item name="android:layout_marginRight">16dp</item> -->
         <item name="android:layout_marginTop">0dp</item>
         <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:paddingRight">16dp</item>
         <item name="android:layout_below">@+id/list_item_top_spacer</item>
         <item name="android:layout_toRightOf">@+id/list_item_image_wrapper</item>
         <item name="android:gravity">top|left</item>
@@ -403,8 +418,6 @@
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:layout_marginLeft">8dp</item>
         <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_alignParentLeft">true</item>
         <item name="android:layout_toRightOf">@+id/list_item_image_wrapper</item>
         <item name="android:layout_below">@+id/list_item_subject</item>
         <item name="android:gravity">top|left</item>
@@ -423,6 +436,22 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
+    </style>
+
+    <style name="ThreadListItemTitle" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_below">@+id/list_item_top_spacer</item>
+        <item name="android:layout_toRightOf">@+id/list_item_image_wrapper</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
     </style>
 
     <!--
@@ -702,7 +731,9 @@
     <color name="PaletteLightestGray">#eee</color>
     <color name="PaletteLighterGray">#ddd</color>
     <color name="PaletteLightGray">#ccc</color>
+    <color name="PaletteMedLightGray">#aaa</color>
     <color name="PaletteMedGray">#888</color>
+    <color name="PaletteDarkGray">#444</color>
     <color name="PaletteLighterGrayHalfOpacity">#80dddddd</color>
     <color name="PaletteLightBlack">#ff030303</color>
     <color name="PaletteBlack">#ff010101</color>

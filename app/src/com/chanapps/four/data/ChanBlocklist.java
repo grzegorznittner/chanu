@@ -82,6 +82,13 @@ public class ChanBlocklist {
         return blocklist.get(blockType).contains(block);
     }
 
+    public static boolean isBlocked(Context context, ChanPost post) {
+        return ChanBlocklist.contains(context, ChanBlocklist.BlockType.TRIPCODE, post.trip)
+                || ChanBlocklist.contains(context, ChanBlocklist.BlockType.NAME, post.name)
+                || ChanBlocklist.contains(context, ChanBlocklist.BlockType.EMAIL, post.email)
+                || ChanBlocklist.contains(context, ChanBlocklist.BlockType.ID, post.id);
+    }
+
     private static void saveBlocklist(Context context) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         for (int i = 0; i < BlockType.values().length; i++) {

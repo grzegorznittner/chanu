@@ -22,6 +22,11 @@
     <string name="thread_post_collapse_button">Collapse</string>
     <string name="thread_country_flag">Country Flag</string>
     <string name="not_implemented">Not yet implemented</string>
+    <string name="thread_related_threads_title">RELATED THREADS</string>
+    <string name="thread_search">Search</string>
+    <string name="thread_search_results">MATCHING POSTS FOR %1$s</string>
+    <string name="thread_search_no_results">&lt;i&gt;no matches&lt;/i&gt;</string>
+    <string name="search_hint">Enter text</string>
 
     <!-- blocklist -->
     <string name="blocklist_button">Block Posts With Id</string>
@@ -186,6 +191,7 @@
     <string name="thread_no_text_subject"></string>
     <string name="thread_go_to_link">Go To Link</string>
     <string name="thread_image_download_error">Error downloading thread images</string>
+    <string name="thread_no_start_play">Can\'t start play, already at end</string>
 
     <!-- watchlist -->
     <string name="board_end_of_watchlist">End of Watchlist</string>

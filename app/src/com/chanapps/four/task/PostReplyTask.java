@@ -1,13 +1,17 @@
 package com.chanapps.four.task;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 
 import android.os.Message;
 import com.chanapps.four.data.*;
 import com.chanapps.four.multipartmime.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 
 import android.content.Context;
@@ -28,7 +32,9 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.PostingReplyDialogFragment;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
+import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
@@ -45,7 +51,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
     public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final String MAX_FILE_SIZE = "3145728";
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private PostReplyActivity activity = null;
     private boolean usePass = false;
@@ -196,6 +202,9 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
     protected String executePostReply(MultipartEntity entity) {
         String url = POST_URL_ROOT + activity.boardCode + "/post";
         AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
+        HttpParams params = client.getParams();
+        if (params != null)
+            HttpClientParams.setRedirecting(params, true); // handle 302s from 4chan
         try {
             // setup post
             HttpPost request = new HttpPost(url);
@@ -219,14 +228,15 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
                 if (DEBUG) Log.i(TAG, "Not using 4chan pass, executing with captcha");
                 httpResponse = client.execute(request);
             }
-            if (DEBUG) Log.i(TAG, "Response: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
-
+            if (DEBUG) Log.i(TAG, "Response Headers: " + (httpResponse == null ? "null" : Arrays.toString(httpResponse.getAllHeaders())));
+            if (DEBUG) Log.i(TAG, "Response Body: " + (httpResponse == null ? "null" : "length: " + httpResponse.toString().length()));
             // check if response
             if (httpResponse == null) {
                 Log.e(TAG, context.getString(R.string.post_reply_no_response));
                 return null;
             }
-
+            int statusCode = httpResponse.getStatusLine().getStatusCode();
+            if (DEBUG) Log.i(TAG, "Response statusCode=" + statusCode);
             // process response
             BufferedReader r = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
             StringBuilder s = new StringBuilder();

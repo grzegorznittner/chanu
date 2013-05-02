@@ -29,6 +29,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     protected Context context;
 
     protected String boardName;
+    protected String query;
 
     protected long generatorSeed;
     protected Random generator;
@@ -38,10 +39,11 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         mObserver = new ForceLoadContentObserver();
     }
 
-    public BoardCursorLoader(Context context, String boardName) {
+    public BoardCursorLoader(Context context, String boardName, String query) {
         this(context);
         this.context = context;
         this.boardName = boardName;
+        this.query = query;
         initRandomGenerator();
     }
 

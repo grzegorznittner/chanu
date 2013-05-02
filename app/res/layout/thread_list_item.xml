@@ -2,11 +2,13 @@
 <com.chanapps.four.component.CheckableLinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         style="@style/ThreadListLayout"
-        android:id="@+id/list_item">
+        android:id="@+id/list_item"
+        >
 
     <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/list_item_header_wrapper">
         <RelativeLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper">
             <com.chanapps.four.component.StretchyImageView
                     style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
@@ -18,6 +20,7 @@
         <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"/>
         <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
         <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"/>
+        <TextView style="@style/ThreadListItemTitle" android:id="@+id/list_item_title"/>
     </RelativeLayout>
 
     <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>

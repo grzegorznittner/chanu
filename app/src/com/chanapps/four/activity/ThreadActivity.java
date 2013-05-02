@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -97,12 +98,13 @@ public class ThreadActivity
     protected ActionMode actionMode = null;
     protected Typeface subjectTypeface = null;
     protected int padding8DP = 0;
+    protected MenuItem searchMenuItem;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         if (threadNo > 0) {
-        	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, absListView);
+        	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, query, absListView);
             if (DEBUG) Log.i(TAG, "Started loader for " + boardCode + "/" + threadNo);
             setProgressBarIndeterminateVisibility(true);
         }
@@ -117,7 +119,11 @@ public class ThreadActivity
         if (threadNo <= 0)
             startActivity(from, boardCode);
 	    else
-            from.startActivity(createIntentForActivity(from, boardCode, threadNo));
+            from.startActivity(createIntentForActivity(from, boardCode, threadNo, ""));
+    }
+
+    public static void startActivityForSearch(Activity from, String boardCode, long threadNo, String query) {
+        from.startActivity(createIntentForActivity(from, boardCode, threadNo, query));
     }
 
     public AbsListView getAbsListView() {
@@ -125,9 +131,14 @@ public class ThreadActivity
     }
 
     public static Intent createIntentForActivity(Context context, final String boardCode, final long threadNo) {
+        return createIntentForActivity(context, boardCode, threadNo, "");
+    }
+
+    public static Intent createIntentForActivity(Context context, final String boardCode, final long threadNo, String query) {
         Intent intent = new Intent(context, ThreadActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(SearchManager.QUERY, query);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putInt(ChanHelper.LAST_THREAD_POSITION, 0); // reset it
         editor.commit();
@@ -144,6 +155,9 @@ public class ThreadActivity
         threadNo = intent.hasExtra(ChanHelper.THREAD_NO)
                 ? intent.getLongExtra(ChanHelper.THREAD_NO, 0)
                 : prefs.getLong(ChanHelper.THREAD_NO, 0);
+        query = intent.hasExtra(SearchManager.QUERY)
+                ? intent.getStringExtra(SearchManager.QUERY)
+                : prefs.getString(SearchManager.QUERY, "");
         tim = intent.hasExtra(ChanHelper.TIM)
                 ? intent.getLongExtra(ChanHelper.TIM, 0)
                 : prefs.getLong(ChanHelper.TIM, 0);
@@ -217,19 +231,23 @@ public class ThreadActivity
                         ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_IMAGE_URL,
+                        ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_HEADLINE_TEXT,
+                        ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_TEXT,
                         ChanPost.POST_COUNTRY_URL,
                         ChanPost.POST_IMAGE_URL
                 },
                 new int[] {
+                        R.id.list_item_header_wrapper,
                         R.id.list_item_expanded_progress_bar,
                         R.id.list_item_image_expanded,
                         R.id.list_item_image_wrapper,
                         R.id.list_item_image,
                         R.id.list_item_header,
                         R.id.list_item_subject,
+                        R.id.list_item_title,
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
                         R.id.list_item_image_exif
@@ -279,15 +297,18 @@ public class ThreadActivity
 
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
+        /*
         if (DEBUG) Log.v(TAG, "setViewValue for  position=" + cursor.getPosition());
         if (DEBUG) Log.v(TAG, "                 boardCode=" + cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE)));
         if (DEBUG) Log.v(TAG, "                    postId=" + cursor.getString(cursor.getColumnIndex(ChanPost.POST_ID)));
         if (DEBUG) Log.v(TAG, "                      text=" + cursor.getString(cursor.getColumnIndex(ChanPost.POST_HEADLINE_TEXT)));
-
+        */
         int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
         switch (view.getId()) {
             case R.id.list_item :
                 return setItem((ViewGroup)view, cursor, flags);
+            case R.id.list_item_header_wrapper:
+                return setItemHeaderWrapper((ViewGroup)view, flags);
             case R.id.list_item_image_expanded:
                 return setItemImageExpanded((ImageView) view, cursor, flags);
             case R.id.list_item_expanded_progress_bar:
@@ -302,6 +323,8 @@ public class ThreadActivity
                 return setItemHeaderValue((TextView) view, cursor);
             case R.id.list_item_subject:
                 return setItemSubject((TextView) view, cursor, flags);
+            case R.id.list_item_title:
+                return setItemTitle((TextView) view, cursor, flags);
             case R.id.list_item_text:
                 return setItemText((TextView) view, cursor, flags);
             case R.id.list_item_image_exif:
@@ -315,6 +338,27 @@ public class ThreadActivity
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         item.setTag((flags | ChanPost.FLAG_IS_AD) > 0 ? null : postId);
         item.setTag(R.id.THREAD_VIEW_IS_EXPANDED, new Boolean(false));
+        /*
+        boolean clickable = (flags & (
+                        ChanPost.FLAG_IS_AD |
+                        ChanPost.FLAG_IS_THREADLINK |
+                        ChanPost.FLAG_HAS_IMAGE |
+                        ChanPost.FLAG_HAS_EXIF |
+                        ChanPost.FLAG_HAS_SPOILER))
+                        > 0;
+        //item.setClickable(clickable);
+        if (DEBUG) Log.i(TAG, "Exception postId=" + postId + " isClickable=" + clickable + " flags=" + flags);
+        */
+        return true;
+    }
+
+    protected boolean setItemHeaderWrapper(ViewGroup wrapper, int flags) {
+        if ((flags & ChanPost.FLAG_IS_AD) > 0)
+            wrapper.setBackgroundResource(R.drawable.thread_ad_bg_gradient);
+        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
+            wrapper.setBackgroundResource(R.drawable.thread_button_gradient_bg);
+        else
+            wrapper.setBackgroundResource(0);
         return true;
     }
 
@@ -324,12 +368,22 @@ public class ThreadActivity
             int pos = absListView.getPositionForView(v);
             Cursor cursor = adapter.getCursor();
             cursor.moveToPosition(pos);
-            final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-            if ((flags & ChanPost.FLAG_IS_AD) > 0) {
-                String adUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
-                if (adUrl != null && !adUrl.isEmpty())
-                    ChanHelper.launchUrlInBrowser(ThreadActivity.this, adUrl);
-            }
+            String adUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+            if (adUrl != null && !adUrl.isEmpty())
+                ChanHelper.launchUrlInBrowser(ThreadActivity.this, adUrl);
+        }
+    };
+
+    protected View.OnClickListener itemThreadLinkListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = absListView.getPositionForView(v);
+            Cursor cursor = adapter.getCursor();
+            cursor.moveToPosition(pos);
+            String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+            long linkedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+            if (linkedBoardCode != null && !linkedBoardCode.isEmpty() && linkedThreadNo > 0)
+                ThreadActivity.startActivity(ThreadActivity.this, linkedBoardCode, linkedThreadNo);
         }
     };
 
@@ -372,22 +426,34 @@ public class ThreadActivity
     }
 
     private boolean setItemSubject(final TextView tv, final Cursor cursor, int flags) {
-        if ((flags & ChanPost.FLAG_IS_AD) == 0  && (flags & ChanPost.FLAG_HAS_SUBJECT) > 0) {
-            String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-            Spanned spanned = Html.fromHtml(text);
-            if (cursor.getPosition() == 0) {
-                ensureSubjectTypeface();
-                tv.setTypeface(subjectTypeface);
-            }
-            else {
-                tv.setTypeface(Typeface.DEFAULT);
-            }
-            tv.setText(spanned);
-            tv.setVisibility(View.VISIBLE);
+        if ((flags & ChanPost.FLAG_HAS_SUBJECT) == 0
+                || (flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE)) > 0) {
+            tv.setVisibility(View.GONE);
+            return true;
+        }
+        String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+        Spanned spanned = Html.fromHtml(text);
+        if (cursor.getPosition() == 0) {
+            ensureSubjectTypeface();
+            tv.setTypeface(subjectTypeface);
         }
         else {
-            tv.setVisibility(View.GONE);
+            tv.setTypeface(Typeface.DEFAULT);
         }
+        tv.setText(spanned);
+        tv.setVisibility(View.VISIBLE);
+        return true;
+    }
+
+    private boolean setItemTitle(final TextView tv, final Cursor cursor, int flags) {
+        if ((flags & ChanPost.FLAG_IS_TITLE) == 0) {
+            tv.setVisibility(View.GONE);
+            return true;
+        }
+        String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+        Spanned spanned = Html.fromHtml(text);
+        tv.setText(spanned);
+        tv.setVisibility(View.VISIBLE);
         return true;
     }
 
@@ -496,7 +562,7 @@ public class ThreadActivity
 
     private boolean setItemImageExpanded(final ImageView iv, final Cursor cursor, int flags) {
         iv.setVisibility(View.GONE);
-        if ((flags & ChanPost.FLAG_IS_AD) == 0)
+        if ((flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE | ChanPost.FLAG_IS_THREADLINK)) == 0)
             iv.setOnClickListener(new ThreadImageOnClickListener(this, cursor));
         return true;
     }
@@ -670,8 +736,16 @@ public class ThreadActivity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(menuId, menu);
         ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
+        setupSearch(menu);
         this.menu = menu;
         return true;
+    }
+
+    private void setupSearch(Menu menu) {
+        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+        searchMenuItem = menu.findItem(R.id.thread_search_menu);
+        SearchView searchView = (SearchView)searchMenuItem.getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
     }
 
     protected UserStatistics ensureUserStats() {
@@ -889,7 +963,7 @@ public class ThreadActivity
             Cursor cursor = (Cursor)adapter.getItem(i);
             if (cursor == null)
                 continue;
-            String itemText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_HEADLINE_TEXT))
+            String itemText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT))
                 + " " + cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
             if (itemText == null)
                 itemText = "";
@@ -931,6 +1005,8 @@ public class ThreadActivity
         int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
         if ((flags & ChanPost.FLAG_IS_AD) > 0)
             itemAdListener.onClick(view);
+        else if ((flags & ChanPost.FLAG_IS_THREADLINK) > 0)
+            itemThreadLinkListener.onClick(view);
         else if ((flags & (ChanPost.FLAG_HAS_IMAGE | ChanPost.FLAG_HAS_EXIF | ChanPost.FLAG_HAS_SPOILER)) > 0)
             itemExpandListener.onClick(view);
     }
@@ -1055,18 +1131,16 @@ public class ThreadActivity
 
     protected boolean playThreadMenu() {
         synchronized (this) {
-            if (shouldPlayThread) {
-                shouldPlayThread = false;
-                invalidateOptionsMenu();
-                return true;
-            }
-            if (absListView == null || absListView.getAdapter() == null || absListView.getAdapter().getCount() <= 0) {
-                shouldPlayThread = false;
-                invalidateOptionsMenu();
+            shouldPlayThread = !shouldPlayThread; // user clicked, invert play status
+            invalidateOptionsMenu();
+            if (!shouldPlayThread) {
                 return false;
             }
-            shouldPlayThread = true;
-            invalidateOptionsMenu();
+            if (!canPlayThread()) {
+                shouldPlayThread = false;
+                Toast.makeText(this, R.string.thread_no_start_play, Toast.LENGTH_SHORT).show();
+                return false;
+            }
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -1079,13 +1153,7 @@ public class ThreadActivity
                         });
                     while (true) {
                         synchronized (this) {
-                            if (shouldPlayThread == false)
-                                break;
-                            if (absListView == null || adapter == null || adapter.getCount() <= 0)
-                                break;
-                            if (absListView.getLastVisiblePosition() == adapter.getCount() - 1)
-                                break; // stop
-                            if (handler == null)
+                            if (!canPlayThread())
                                 break;
                             handler.post(new Runnable() {
                                 @Override
@@ -1134,11 +1202,27 @@ public class ThreadActivity
                             @Override
                             public void run() {
                                 absListView.setFastScrollEnabled(true);
+                                invalidateOptionsMenu();
                             }
                         });
                 }
             }).start();
         }
+        return true;
+    }
+
+    protected boolean canPlayThread() {
+        if (shouldPlayThread == false)
+            return false;
+        if (absListView == null || adapter == null || adapter.getCount() <= 0)
+            return false;
+        //if (absListView.getLastVisiblePosition() == adapter.getCount() - 1)
+        //    return false; // stop
+        //It is scrolled all the way down here
+        if (absListView.getLastVisiblePosition() >= absListView.getAdapter().getCount() -1)
+            return false;
+        if (handler == null)
+            return false;
         return true;
     }
 
@@ -1237,6 +1321,11 @@ public class ThreadActivity
         super.refresh();
         if (actionMode != null)
             actionMode.finish();
+    }
+
+    public void closeSearch() {
+        if (searchMenuItem != null)
+            searchMenuItem.collapseActionView();
     }
 
 }

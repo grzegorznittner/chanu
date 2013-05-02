@@ -9,6 +9,12 @@
           android:showAsAction="ifRoom"
             />
 
+    <item android:id="@+id/thread_search_menu"
+          android:title="@string/thread_search"
+          android:icon="@drawable/action_search"
+          android:showAsAction="collapseActionView|ifRoom"
+          android:actionViewClass="android.widget.SearchView"/>
+
     <item android:id="@+id/refresh_menu"
           android:title="@string/refresh_thread_menu"
           android:icon="@drawable/navigation_refresh"

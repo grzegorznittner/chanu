@@ -2,6 +2,7 @@ package com.chanapps.four.loader;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Random;
 
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.util.Log;
 
 import android.widget.AbsListView;
 import android.widget.GridView;
+import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
 
@@ -33,11 +35,12 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         super(context);
     }
 
-    public ThreadCursorLoader(Context context, String boardName, long threadNo, AbsListView absListView) {
+    public ThreadCursorLoader(Context context, String boardName, long threadNo, String query, AbsListView absListView) {
         this(context);
         this.context = context;
         this.boardName = boardName;
         this.threadNo = threadNo;
+        this.query = query.toLowerCase().trim();
         initRandomGenerator();
         ChanHelper.Orientation orientation = ChanHelper.getOrientation(context);
         int defaultNumColumns = (orientation == ChanHelper.Orientation.PORTRAIT) ? DEFAULT_NUM_GRID_COLUMNS_PORTRAIT : DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE;
@@ -83,31 +86,13 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             if (DEBUG) Log.i(TAG, "Thread closed status for " + boardName + "/" + threadNo + " is closed=" + thread.closed);
             MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
 
+            if (!query.isEmpty()) {
+                String title = String.format(context.getString(R.string.thread_search_results), "<i>" + query + "</i>");
+                matrixCursor.addRow(ChanPost.makeTitleRow(boardName, title));
+            }
             if (board != null && thread != null && thread.posts != null && thread.posts.length > 0) { // show loading for no thread data
-                int adSpace = MINIMUM_AD_SPACING;
-                int i = 0;
-                for (ChanPost post : thread.posts) {
-                    if (ChanBlocklist.contains(context, ChanBlocklist.BlockType.TRIPCODE, post.trip)
-                            || ChanBlocklist.contains(context, ChanBlocklist.BlockType.NAME, post.name)
-                            || ChanBlocklist.contains(context, ChanBlocklist.BlockType.EMAIL, post.email)
-                            || ChanBlocklist.contains(context, ChanBlocklist.BlockType.ID, post.id))
-                        continue;
-                    post.isDead = thread.isDead; // inherit from parent
-                    post.closed = thread.closed; // inherit
-                    post.hidePostNumbers = hidePostNumbers;
-                    post.useFriendlyIds = useFriendlyIds;
-                    matrixCursor.addRow(post.makeRow());
-                    if (generator.nextDouble() < AD_PROBABILITY && !(adSpace > 0)) {
-                        matrixCursor.addRow(board.makePostAdRow(getContext(), i));
-                        adSpace = MINIMUM_AD_SPACING;
-                    }
-                    else {
-                        adSpace--;
-                    }
-                    i++;
-                }
-                int remainingToLoad = thread.posts[0].replies - thread.posts.length;
-                if (DEBUG) Log.i(TAG, "Remaining to load:" + remainingToLoad);
+                loadMatrixCursor(matrixCursor, board, thread);
+                if (DEBUG) Log.i(TAG, "Remaining to load:" + (thread.posts[0].replies - thread.posts.length));
             }
             registerContentObserver(matrixCursor, mObserver);
             return matrixCursor;
@@ -117,7 +102,60 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     	}
     }
 
-   @Override
+    private void loadMatrixCursor(MatrixCursor matrixCursor, ChanBoard board, ChanThread thread) {
+        int adSpace = MINIMUM_AD_SPACING;
+        int i = 0;
+        int numQueryMatches = 0;
+        int numPosts = thread.posts.length;
+        for (ChanPost post : thread.posts) {
+            if (ChanBlocklist.isBlocked(context, post))
+                continue;
+            if (!post.matchesQuery(query))
+                continue;
+            if (!query.isEmpty())
+                numQueryMatches++;
+            post.isDead = thread.isDead; // inherit from parent
+            post.closed = thread.closed; // inherit
+            post.hidePostNumbers = hidePostNumbers;
+            post.useFriendlyIds = useFriendlyIds;
+            matrixCursor.addRow(post.makeRow(query));
+            // randomly distribute ads
+            if (generator.nextDouble() < AD_PROBABILITY
+                    && !(adSpace > 0)
+                    && i < (numPosts - MINIMUM_AD_SPACING)) {
+                matrixCursor.addRow(board.makePostAdRow(getContext(), i));
+                adSpace = MINIMUM_AD_SPACING;
+            }
+            else {
+                adSpace--;
+            }
+            i++;
+        }
+
+        // no search results marker
+        if (!query.isEmpty() && numQueryMatches == 0)
+            matrixCursor.addRow(ChanPost.makeTitleRow(boardName, context.getString(R.string.thread_search_no_results)));
+
+        // always put an ad at the bottom
+        if (i > 1 || thread.replies == 0)
+            matrixCursor.addRow(board.makePostAdRow(getContext(), i));
+
+        // put related threads at the bottom
+        String searchText = !query.isEmpty() ? query : thread.sub + " " + thread.com;
+        List<Object[]> rows = board.makePostRelatedThreadsRows(getContext(), threadNo, searchText);
+        if (rows.size() > 0) {
+            matrixCursor.addRow(board.makePostRelatedThreadsHeaderRow(getContext()));
+            for (Object[] row : rows)
+                matrixCursor.addRow(row);
+        }
+        else {
+            Object[] boardRow = board.makePostBoardLinkRow(getContext());
+            if (boardRow != null)
+                matrixCursor.addRow(boardRow);
+        }
+    }
+
+    @Override
     public void dump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
         super.dump(prefix, fd, writer, args);
         writer.print(prefix); writer.print("boardName="); writer.println(boardName);
