@@ -3,6 +3,7 @@
  */
 package com.chanapps.four.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -19,7 +20,6 @@ import android.util.Log;
 
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
@@ -34,7 +34,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
     private String boardCode;
     private boolean boardCatalog;
@@ -195,7 +195,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             || (intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0);
 		if (boardHandling) {
 			if (DEBUG) Log.i(TAG, "Handling board " + boardCode + (boardCatalog ? " catalog" : " page=" + pageNo));
-	        handleBoard();
+			handleBoard();
 		} else {
 			if (DEBUG) Log.i(TAG, "Handling thread " + boardCode + "/" + threadNo);
 			handleThread();
@@ -218,7 +218,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             Log.e(TAG, "Watching board must use ChanWatchlist instead of service");
             return;
         }
-
+        
         HttpURLConnection tc = null;
 		try {
 			board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
@@ -226,6 +226,12 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 				board = ChanBoard.getBoardByCode(getBaseContext(), boardCode);
 				board.lastFetched = 0;
 			}
+	        File boardFile = ChanFileStorage.getBoardFile(getBaseContext(), boardCode, pageNo);
+			if (boardFile != null && boardFile.exists()) {
+				Log.e(TAG, "Board file exists, quiting fetch");
+				return;
+			}
+			
 			URL chanApi = null;
 			if (boardCatalog) {
 				chanApi = new URL("http://api.4chan.org/" + boardCode + "/catalog.json");

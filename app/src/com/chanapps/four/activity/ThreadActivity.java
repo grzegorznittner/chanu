@@ -74,7 +74,7 @@ public class ThreadActivity
         MediaScannerConnection.OnScanCompletedListener
 {
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
     protected static final int ITEM_THUMB_WIDTH_DP = 80;

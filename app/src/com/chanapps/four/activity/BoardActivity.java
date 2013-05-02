@@ -45,7 +45,7 @@ public class BoardActivity
         implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity, OnClickListener
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
     private static final String DEFAULT_BOARD_CODE = "a";
 
@@ -452,7 +452,7 @@ public class BoardActivity
 
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader boardCode=" + boardCode);
+		if (DEBUG) Log.d(TAG, ">>>>>>>>>>> onCreateLoader boardCode=" + boardCode);
         setProgressBarIndeterminateVisibility(true);
         cursorLoader = new BoardCursorLoader(this, boardCode);
         return cursorLoader;
@@ -460,9 +460,9 @@ public class BoardActivity
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished count=" + data.getCount());
+		if (DEBUG) Log.d(TAG, ">>>>>>>>>>> onLoadFinished count=" + data.getCount());
 		adapter.swapCursor(data);
-        if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
+        if (DEBUG) Log.d(TAG, "listview count=" + absListView.getCount());
         if (absListView != null) {
             if (scrollOnNextLoaderFinished > 0) {
                 absListView.setSelection(scrollOnNextLoaderFinished);

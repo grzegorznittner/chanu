@@ -14,24 +14,43 @@
 
 	<LinearLayout android:id="@+id/board_refresh_bar"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal" >
+        android:layout_height="48dp"
+        android:gravity="right"
+        android:orientation="horizontal"
+        android:background="#bb004400">
 
-        <Button
-            android:id="@+id/board_refresh_button"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:text="@string/board_refresh_button_text"
-            android:background="#121212"/>
-
-        <TextView
+	    <TextView
             android:id="@+id/board_refresh_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#121212"/>
-
-    </LinearLayout>
+            android:textColor="#ffffffff"
+            android:background="#00000000"
+            android:layout_marginRight="10dp"/>
+	    <Button
+            android:id="@+id/board_refresh_button"
+            android:layout_width="48dp"
+            android:layout_height="fill_parent"
+            android:textColor="#ff00cc00"
+            android:drawableLeft="@drawable/navigation_refresh"
+            android:background="#00000000"
+            />
+        <Button
+            android:id="@+id/board_ignore_button"
+            android:layout_width="48dp"
+            android:layout_height="fill_parent"
+            android:textColor="#ff00cc00"
+            android:drawableLeft="@drawable/navigation_cancel"
+            android:background="#00000000"
+            />
+<!-- 	    <LinearLayout android:id="@+id/board_refresh_buttons_bar"
+	        android:layout_width="match_parent"
+	        android:layout_height="48dp"
+	        android:gravity="center_horizontal"
+	        android:orientation="horizontal"
+	        android:background="#00000000">
+	        
+	     </LinearLayout> -->
+	</LinearLayout>
     
 	
     <!--
