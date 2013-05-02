@@ -25,6 +25,7 @@
     <string name="thread_related_threads_title">RELATED THREADS</string>
     <string name="thread_search">Search</string>
     <string name="thread_search_results">MATCHING POSTS FOR %1$s</string>
+    <string name="thread_search_no_results">&lt;i&gt;no matches&lt;/i&gt;</string>
     <string name="search_hint">Enter text</string>
 
     <!-- blocklist -->

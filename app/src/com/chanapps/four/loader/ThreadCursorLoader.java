@@ -105,12 +105,15 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     private void loadMatrixCursor(MatrixCursor matrixCursor, ChanBoard board, ChanThread thread) {
         int adSpace = MINIMUM_AD_SPACING;
         int i = 0;
+        int numQueryMatches = 0;
         int numPosts = thread.posts.length;
         for (ChanPost post : thread.posts) {
             if (ChanBlocklist.isBlocked(context, post))
                 continue;
             if (!post.matchesQuery(query))
                 continue;
+            if (!query.isEmpty())
+                numQueryMatches++;
             post.isDead = thread.isDead; // inherit from parent
             post.closed = thread.closed; // inherit
             post.hidePostNumbers = hidePostNumbers;
@@ -128,6 +131,10 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             }
             i++;
         }
+
+        // no search results marker
+        if (!query.isEmpty() && numQueryMatches == 0)
+            matrixCursor.addRow(ChanPost.makeTitleRow(boardName, context.getString(R.string.thread_search_no_results)));
 
         // always put an ad at the bottom
         if (i > 1 || thread.replies == 0)
