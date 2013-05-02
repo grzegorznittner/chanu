@@ -3,6 +3,10 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="Gallery2/src"/>
+	<classpathentry kind="src" path="Gallery2/src_pd"/>
+	<classpathentry kind="src" path="UniversalImageLoader/src"/>
+	<classpathentry kind="src" path="Gallery2/gallerycommon/src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

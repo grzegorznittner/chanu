@@ -19,7 +19,7 @@ import com.chanapps.four.data.*;
 public class ThreadCursorLoader extends BoardCursorLoader {
 
     private static final String TAG = ThreadCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final int DEFAULT_NUM_GRID_COLUMNS_PORTRAIT = 2;
     private static final int DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE = 3;
 
