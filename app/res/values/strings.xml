@@ -159,7 +159,8 @@
     <string name="board_last_updated">Last updated %s</string>
     <string name="board_wait_to_refresh">Min 10 sec between refresh</string>
     <string name="board_offline_refresh">Cannot refresh, network offline</string>
-    <string name="board_refresh_button_text">Press to refresh</string>
+    <string name="board_refresh_button_text">Refresh</string>
+    <string name="board_ignore_button_text">Ignore</string>
 
     <!-- thread activity -->
     <string name="thread_activity_refresh">Refreshing thread...</string>
