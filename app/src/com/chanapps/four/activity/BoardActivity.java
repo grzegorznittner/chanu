@@ -45,7 +45,7 @@ public class BoardActivity
         implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity, OnClickListener
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
     private static final String DEFAULT_BOARD_CODE = "a";
 
@@ -183,8 +183,9 @@ public class BoardActivity
     }
 
     protected synchronized Handler ensureHandler() {
-        if (handler == null && ChanHelper.onUIThread())
-                handler = new LoaderHandler(this);
+        if (handler == null && ChanHelper.onUIThread()) {
+        	handler = new LoaderHandler(this);
+        }
         return handler;
     }
 
@@ -460,7 +461,7 @@ public class BoardActivity
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished count=" + (data == null ? 0 : data.getCount()));
-        adapter.swapCursor(data);
+		adapter.swapCursor(data);
         if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
         if (absListView != null) {
             if (scrollOnNextLoaderFinished > -1) {
@@ -597,15 +598,15 @@ public class BoardActivity
         StringBuffer msg = new StringBuffer();
         if (board.newThreads > 0 || board.updatedThreads > 0) {
 			if (board.newThreads > 0) {
-				msg.append("" + board.newThreads + " new ");
+				msg.append("" + board.newThreads + " new");
 			}
 			if (board.updatedThreads > 0) {
 				if (board.newThreads > 0) {
 					msg.append(", ");
 				}
-				msg.append("" + board.updatedThreads + " updated ");
+				msg.append("" + board.updatedThreads + " updated");
 			}
-			msg.append("thread");
+			msg.append(" thread");
 			if (board.newThreads + board.updatedThreads > 1) {
 				msg.append("s");
 			}
@@ -659,8 +660,15 @@ public class BoardActivity
         invalidateOptionsMenu(); // in case spinner needs to be reset
         //if (absListView == null || absListView.getCount() < 1)
         //    createAbsListView();
-        if (handler != null)
-            handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+        if (board == null) {
+            board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
+        }
+        if (board.newThreads == 0 && board.updatedThreads == 0) {
+	        if (handler != null) {
+	        	handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+	        }
+        }
     }
 
 	@Override

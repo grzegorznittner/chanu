@@ -1318,7 +1318,12 @@ public class ThreadActivity
 
     @Override
     public void refresh() {
-        super.refresh();
+        setActionBarTitle(); // for update time
+        invalidateOptionsMenu(); // in case spinner needs to be reset
+        if (handler != null) {
+        	handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+        }
+
         if (actionMode != null)
             actionMode.finish();
     }
