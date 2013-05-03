@@ -75,7 +75,9 @@
                     />
         </activity>
 
-        <activity android:name=".BoardActivity" android:label="@string/board_activity">
+        <activity android:name=".BoardActivity" android:label="@string/board_activity"
+                  android:taskAffinity=".BoardActivity"
+                >
             <intent-filter android:priority="100">
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
@@ -87,9 +89,14 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value=".BoardSelectorActivity"
                     />
+            <meta-data
+                    android:name="android.app.default_searchable"
+                    android:value=".SearchActivity"/>
         </activity>
 
-        <activity android:name=".ThreadActivity" android:label="@string/thread_activity">
+        <activity android:name=".ThreadActivity" android:label="@string/thread_activity"
+                  android:taskAffinity=".ThreadActivity"
+                >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
@@ -100,10 +107,10 @@
                     />
             <meta-data
                     android:name="android.app.default_searchable"
-                    android:value=".ThreadSearchActivity"/>
+                    android:value=".SearchActivity"/>
         </activity>
 
-        <activity android:name=".ThreadSearchActivity" android:label="@string/thread_search">
+        <activity android:name=".SearchActivity" android:label="@string/thread_search">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
@@ -127,7 +134,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".BoardSelectorActivity" android:label="@string/application_name">
+        <activity android:name=".BoardSelectorActivity" android:label="@string/application_name"
+                  android:taskAffinity=".BoardSelectorActivity"
+                >
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER"/>
                 <action android:name="android.intent.action.VIEW"/>

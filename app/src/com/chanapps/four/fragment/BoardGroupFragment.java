@@ -153,7 +153,7 @@ public class BoardGroupFragment
                         new String[] {
                                 ChanThread.THREAD_THUMBNAIL_URL,
                                 ChanThread.THREAD_SUBJECT,
-                                ChanThread.THREAD_INFO
+                                ChanThread.THREAD_TEXT
                         },
                         new int[] {
                                 R.id.grid_item_thread_thumb,
@@ -173,11 +173,11 @@ public class BoardGroupFragment
                                 ChanThread.THREAD_BOARD_CODE,
                                 ChanThread.THREAD_THUMBNAIL_URL,
                                 ChanThread.THREAD_SUBJECT,
-                                //ChanThread.THREAD_INFO,
+                                //ChanThread.THREAD_TEXT,
                                 ChanThread.THREAD_COUNTRY_FLAG_URL,
                                 ChanThread.THREAD_NUM_REPLIES,
                                 ChanThread.THREAD_NUM_IMAGES,
-                                ChanThread.THREAD_INFO
+                                ChanThread.THREAD_TEXT
                         },
                         new int[] {
                                 R.id.grid_item_board_abbrev,
@@ -377,7 +377,8 @@ public class BoardGroupFragment
             case WATCHLIST:
             case RECENT:
             default:
-                return BoardActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions, boardSelectorTab.boardCode());
+                return BoardActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions,
+                        boardSelectorTab.boardCode(), BoardActivity.ViewType.AS_GRID, null, 0);
         }
     }
 

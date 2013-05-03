@@ -723,4 +723,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     @Override
     public void refresh() {}
 
+    @Override
+    public void closeSearch() {}
+
 }

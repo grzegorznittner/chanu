@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.service.NetworkProfileManager;
 
@@ -15,9 +14,9 @@ import com.chanapps.four.service.NetworkProfileManager;
  * Time: 12:19 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ThreadSearchActivity extends Activity {
+public class SearchActivity extends Activity {
 
-    private static final String TAG = ThreadSearchActivity.class.getSimpleName();
+    private static final String TAG = SearchActivity.class.getSimpleName();
     private static final boolean DEBUG = true;
 
     @Override
@@ -45,16 +44,18 @@ public class ThreadSearchActivity extends Activity {
             finish();
             return;
         }
-        if (activity instanceof ThreadActivity)
-            ((ThreadActivity)activity).closeSearch();
+        activity.closeSearch();
         String boardCode = activity.getChanActivityId().boardCode;
-        long threadNo = activity.getChanActivityId().threadNo;
-        if (boardCode == null || boardCode.isEmpty() || threadNo <= 0) {
-            Log.e(TAG, "BoardCode and threadNo not supplied with activity id, exiting search");
+        if (boardCode == null || boardCode.isEmpty()) {
+            Log.e(TAG, "No boardCode supplied with activity id, exiting search");
             finish();
             return;
         }
-        ThreadActivity.startActivityForSearch(this, boardCode, threadNo, query);
+        long threadNo = activity.getChanActivityId().threadNo;
+        if (threadNo > 0)
+            ThreadActivity.startActivityForSearch(this, boardCode, threadNo, query);
+        else
+            BoardActivity.startActivityForSearch(this, boardCode, query);
         finish();
     }
 }

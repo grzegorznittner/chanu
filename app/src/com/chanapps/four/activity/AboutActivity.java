@@ -48,4 +48,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity {
     @Override
     public void refresh() {}
 
+    @Override
+    public void closeSearch() {}
+
 }

@@ -273,4 +273,7 @@ public class BoardSelectorActivity
             fragment.getAdapter().notifyDataSetChanged();
     }
 
+    @Override
+    public void closeSearch() {}
+
 }

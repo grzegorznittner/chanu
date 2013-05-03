@@ -505,6 +505,8 @@ public class ChanBoard {
     public static void setupActionBarBoardSpinner(final Activity activity, final Menu menu, final String currentBoardCode) {
         if (DEBUG) Log.i(BoardSelectorActivity.TAG, "setupActionBarSpinner " + activity + " " + menu + " boardCode=" + currentBoardCode);
         MenuItem item = menu.findItem(R.id.board_jump_spinner_menu);
+        if (item == null)
+            return;
         Spinner spinner = (Spinner)item.getActionView();
         spinner.setOnItemSelectedListener(null);
         int position = 0;

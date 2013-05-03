@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ResourceCursorAdapter;
 
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -117,7 +118,7 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-    	Cursor cursor = getCursor();
+        Cursor cursor = getCursor();
         if (cursor == null) {
             throw new IllegalStateException("this should only be called when the cursor is valid");
         }

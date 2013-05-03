@@ -62,7 +62,7 @@ public class BoardTypeRecentCursorLoader extends BoardCursorLoader {
                 if (DEBUG) Log.i(TAG, "Skipped thread: " + thread.no);
                 continue;
             }
-            Object[] row = ChanThread.makeRow(context, thread);
+            Object[] row = ChanThread.makeRow(context, thread, "");
             matrixCursor.addRow(row);
             i++;
             if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));

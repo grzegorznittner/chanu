@@ -22,7 +22,7 @@ public class ChanPost {
     private static final int MAX_LINE = 40;
     private static final int MAX_THREAD_SUBJECT_LEN = 100;
     private static final int MIN_SUBJECT_LEN = 2;
-    private static final int MAX_SUBJECT_LEN = 100;
+    private static final int MAX_SUBJECT_LEN = 100; // 4chan enforces 100
 
     public static final String POST_NO = "postNo";
     public static final String POST_ID = "_id";
@@ -246,7 +246,7 @@ public class ChanPost {
         return o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
     }
 
-    private String[] textComponents(String query) {
+    protected String[] textComponents(String query) {
         return textComponents(query, false);
     }
 
@@ -265,6 +265,13 @@ public class ChanPost {
             return highlightComponents(subject, message, query);
         }
 
+        if (comText.length() <= MAX_SUBJECT_LEN) { // just make message the subject
+            subject = message;
+            message = "";
+            if (DEBUG) Log.v(TAG, "made message the subject=" + subject + " message=" + message);
+            return highlightComponents(subject, message, query);
+        }
+
         // start subject extraction process
         String[] terminators = { "\r", "\n", "<br/>", "<br>", ". ", "! ", "? ", "; ", ": ", ", " };
         message = message
@@ -279,20 +286,24 @@ public class ChanPost {
                 int len = terminator.length();
                 subject = message.substring(0, i + len).trim().replaceFirst("(<br/?>)+$", "").trim();
                 message = message.substring(i + len).trim().replaceFirst("^(<br/?>)+", "").trim();
-                if (DEBUG) Log.v(TAG, "Exception: extracted subject=" + subject + " message=" + message);
+                if (DEBUG) Log.v(TAG, "extracted subject=" + subject + " message=" + message);
                 return highlightComponents(subject, message, query);
             }
         }
 
-        if (comText.length() <= MAX_SUBJECT_LEN) { // just make message the subject
-            subject = message;
-            message = "";
-            if (DEBUG) Log.v(TAG, "Exception: replaced subject=" + subject + " message=" + message);
-            return highlightComponents(subject, message, query);
+        // cutoff
+        int i = MAX_SUBJECT_LEN - 1; // start cut at max len
+        char c;
+        while (!Character.isWhitespace(c = comText.charAt(i)) && i > 0)
+            i--; // rewind until we reach a whitespace character
+        if (i > MIN_SUBJECT_LEN) { // we found a suitable cutoff point
+            subject = comText.substring(0, i).trim().replaceFirst("(<br/?>)+$", "").trim();
+            message = comText.substring(i + 1).trim().replaceFirst("^(<br/?>)+", "").trim();
+            if (DEBUG) Log.v(TAG, "cutoff subject=" + subject + " message=" + message);
         }
 
         // default
-        if (DEBUG) Log.v(TAG, "Exception: default subject=" + subject + " message=" + message);
+        if (DEBUG) Log.v(TAG, "default subject=" + subject + " message=" + message);
         return highlightComponents(subject, message, query);
     }
 
@@ -475,9 +486,9 @@ public class ChanPost {
         return "";
     }
 
-    public String headline(String query) {
+    public String headline(String query, boolean boardLevel) {
         List<String> items = new ArrayList<String>();
-        if (!hidePostNumbers)
+        if (!boardLevel && !hidePostNumbers)
             items.add(Long.toString(no));
         if (email != null && !email.isEmpty() && email.equals("sage"))
             items.add("<b>sage</b>");
@@ -493,7 +504,7 @@ public class ChanPost {
             items.add(email);
         if (country_name != null && !country_name.isEmpty())
             items.add(country_name);
-        if (fsize > 0)
+        if (!boardLevel && fsize > 0)
             items.add(imageDimensions());
         if (resto <= 0)
             items.add(threadInfoLine());
@@ -824,7 +835,7 @@ public class ChanPost {
                 thumbnailUrl(),
                 imageUrl(),
                 countryFlagUrl(),
-                headline(query),
+                headline(query, false),
                 textComponents[0],
                 textComponents[1],
                 tn_w,
@@ -854,7 +865,7 @@ public class ChanPost {
                 thumbnailUrl(),
                 "",
                 countryFlagUrl(),
-                headline(""),
+                headline("", false),
                 textComponents[0],
                 "",
                 tn_w,

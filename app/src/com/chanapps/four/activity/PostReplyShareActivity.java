@@ -115,4 +115,7 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
         }
     }
 
+    @Override
+    public void closeSearch() {}
+
 }
