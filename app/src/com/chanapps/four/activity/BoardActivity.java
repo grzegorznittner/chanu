@@ -1,5 +1,6 @@
 package com.chanapps.four.activity;
 
+import java.util.Date;
 import java.util.List;
 
 import android.app.ActionBar;
@@ -21,8 +22,10 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.text.Html;
 import android.util.DisplayMetrics;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.*;
+import android.view.View.OnClickListener;
 import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
@@ -43,10 +46,10 @@ import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class BoardActivity
         extends FragmentActivity
-        implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity
+        implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity, OnClickListener
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
     private static final String DEFAULT_BOARD_CODE = "a";
 
@@ -120,12 +123,16 @@ public class BoardActivity
         query = getIntent().hasExtra(SearchManager.QUERY)
                 ? getIntent().getStringExtra(SearchManager.QUERY)
                 : "";
+        //loadFromIntentOrPrefs();
         initImageLoader();
         createAbsListView();
         ensureHandler();
         ensureSubjectTypeface();
         initPaddings();
         LoaderManager.enableDebugLogging(true);
+        //getSupportLoaderManager().restartLoader(0, null, this);
+        if (DEBUG) Log.v(TAG, "onCreate init loader");
+        //progressBar = (ProgressBar)findViewById(R.id.board_progress_bar);
     }
 
     protected void initPaddings() {
@@ -603,7 +610,7 @@ public class BoardActivity
 
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader boardCode=" + boardCode);
+		if (DEBUG) Log.d(TAG, ">>>>>>>>>>> onCreateLoader boardCode=" + boardCode);
         setProgressBarIndeterminateVisibility(true);
         cursorLoader = new BoardCursorLoader(this, boardCode, query);
         return cursorLoader;
@@ -771,7 +778,6 @@ public class BoardActivity
         String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
         a.setTitle(title);
 
-        /*
         StringBuffer msg = new StringBuffer();
         if (board.newThreads > 0 || board.updatedThreads > 0) {
 			if (board.newThreads > 0) {
@@ -779,7 +785,7 @@ public class BoardActivity
 			}
 			if (board.updatedThreads > 0) {
 				if (board.newThreads > 0) {
-					msg.append("and ");
+					msg.append(", ");
 				}
 				msg.append("" + board.updatedThreads + " updated ");
 			}
@@ -787,7 +793,20 @@ public class BoardActivity
 			if (board.newThreads + board.updatedThreads > 1) {
 				msg.append("s");
 			}
-			msg.append(" click refresh");
+			msg.append(" available");
+
+			TextView refreshText = (TextView)findViewById(R.id.board_refresh_text);
+	        refreshText.setText(msg.toString());
+	        
+	        LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
+	        refreshLayout.setVisibility(LinearLayout.VISIBLE);
+	        
+	        Button refreshButton = (Button)findViewById(R.id.board_refresh_button);
+	        refreshButton.setClickable(true);
+	        refreshButton.setOnClickListener(this);
+	        Button ignoreButton = (Button)findViewById(R.id.board_ignore_button);
+	        ignoreButton.setClickable(true);
+	        ignoreButton.setOnClickListener(this);
 		} else {
 			if (board.defData || board.lastFetched == 0) {
     			msg.append("not yet fetched");
@@ -797,9 +816,13 @@ public class BoardActivity
     			msg.append("fetched ").append(DateUtils.getRelativeTimeSpanString(
     					board.lastFetched, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString());
     		}
+			TextView refreshText = (TextView)findViewById(R.id.board_refresh_text);
+	        refreshText.setText("Board is up to date");
+	        
+	        LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
+	        refreshLayout.setVisibility(LinearLayout.GONE);
 		}
-        a.setSubtitle(msg.toString());
-        */
+        
         a.setDisplayShowTitleEnabled(true);
         a.setDisplayHomeAsUpEnabled(true);
     }
@@ -835,4 +858,19 @@ public class BoardActivity
             subjectTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Condensed.ttf");
         return subjectTypeface;
     }
+
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.board_refresh_button) {
+			setProgressBarIndeterminateVisibility(true);
+            NetworkProfileManager.instance().manualRefresh(this);
+		} else if (v.getId() == R.id.board_ignore_button) {
+			TextView refreshText = (TextView)findViewById(R.id.board_refresh_text);
+	        refreshText.setText("Board is up to date");
+	        
+	        LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
+	        refreshLayout.setVisibility(LinearLayout.GONE);
+		}
+	}
+
 }

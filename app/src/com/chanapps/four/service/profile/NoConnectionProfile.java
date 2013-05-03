@@ -94,9 +94,9 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
         final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
 
-        if (ChanFileStorage.hasNewBoardData(baseContext, boardCode))
+        /*if (ChanFileStorage.hasNewBoardData(baseContext, boardCode))
             ChanFileStorage.loadFreshBoardData(baseContext, boardCode);
-
+*/
         boolean boardActivity = currentActivityId != null
                 && currentActivityId.boardCode != null
                 && currentActivityId.boardCode.equals(boardCode);

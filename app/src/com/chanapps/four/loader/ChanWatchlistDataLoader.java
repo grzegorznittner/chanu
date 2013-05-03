@@ -19,7 +19,7 @@ import com.chanapps.four.data.ChanWatchlist;
 public class ChanWatchlistDataLoader {
 
     private static final String TAG = ChanWatchlistDataLoader.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     protected Context context;
 

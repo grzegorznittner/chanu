@@ -36,7 +36,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class FetchPopularThreadsService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchPopularThreadsService.class.getSimpleName();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
     private boolean force;
     private boolean backgroundLoad;
@@ -220,6 +220,11 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 				}
 			}
 			board.threads = threads.toArray(new ChanPost[]{});
+			for (ChanPost post : board.threads) {
+				if (post.com == null || post.com.trim().length() == 0) {
+					post.com = (post.ext != null ? post.ext.substring(1) : "") + " " + post.w + "x" + post.h;
+				}
+			}
 		}
 		if (DEBUG) Log.i(TAG, "board " + board.name + " has " + board.threads.length + " threads\n\n");
 	}

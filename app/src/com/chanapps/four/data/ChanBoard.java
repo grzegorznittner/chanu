@@ -499,7 +499,7 @@ public class ChanBoard {
     			newThreads++;
     		}
     	}
-    	Log.i(TAG, "Updated board " + name + ", " + newThreads + " new threads, " + updatedThreads + " updated threads.");
+    	Log.e(TAG, "Updated board " + name + ", " + newThreads + " new threads, " + updatedThreads + " updated threads.");
     }
 
     public static void setupActionBarBoardSpinner(final Activity activity, final Menu menu, final String currentBoardCode) {

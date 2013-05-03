@@ -17,7 +17,7 @@ import com.chanapps.four.activity.R;
 public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
 
     protected static final String TAG = ThreadListCursorAdapter.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
 
     protected static final int TYPE = R.id.THREAD_VIEW_TYPE;
     protected static final String HEADER = "header";

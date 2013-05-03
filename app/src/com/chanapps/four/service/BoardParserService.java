@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
@@ -34,7 +35,6 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
 /**
@@ -62,6 +62,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     public static void startServiceWithPriority(Context context, String boardCode, int pageNo) {
         startService(context, boardCode, pageNo, true);
     }
+    
     public static void startService(Context context, String boardCode, int pageNo, boolean priority) {
     	if (ChanBoard.isVirtualBoard(boardCode)) {
     		return;
@@ -71,8 +72,10 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
         intent.putExtra(ChanHelper.PAGE, pageNo);
-        intent.putExtra(ChanHelper.FORCE_REFRESH, true);
-        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+        if (priority) {
+	        intent.putExtra(ChanHelper.FORCE_REFRESH, true);
+	        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+        }
         context.startService(intent);
     }
     
@@ -188,9 +191,11 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     private void parseBoardCatalog(BufferedReader in) throws IOException {
     	List<ChanPost> threads = new ArrayList<ChanPost>();
     	board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
+    	boolean firstLoad = false;
     	if (board != null && board.defData) {
     		// default board we should not use it
     		board = ChanBoard.getBoardByCode(getBaseContext(), boardCode);
+    		firstLoad = true;
     	}
 
     	try {
@@ -219,31 +224,27 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 			if (threads.size() == 0) {
 				throw new JsonParseException("Board catalog parse error", null, e);
 			}
+		} finally {
+			File boardFile = ChanFileStorage.getBoardFile(getBaseContext(), boardCode, pageNo);
+			if (boardFile != null && boardFile.exists()) {
+				FileUtils.deleteQuietly(boardFile);
+			}
 		}
 
-        updateBoardData(threads);
+        updateBoardData(threads, firstLoad);
         if (DEBUG) Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
 
-	private void updateBoardData(List<ChanPost> threads) {
+	private void updateBoardData(List<ChanPost> threads, boolean firstLoad) {
 		if (board != null) {
         	synchronized (board) {
-        		boolean oldEnough = false; //Calendar.getInstance().getTimeInMillis() - board.lastFetched > ChanBoard.MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST;
-	        	if (board.threads != null
-                        && board.threads.length > 0
-                        && !priority
-                        && !board.defData
-                        && !oldEnough
-                        && ChanBoard.REFRESH_THREADS_ON_REQUEST)
-                {
-	        		board.loadedThreads = threads.toArray(new ChanPost[0]);
-	        		board.updateCountersAfterLoad();
-	        	} else {
-	        		board.threads = threads.toArray(new ChanPost[0]);
-	        		board.loadedThreads = new ChanThread[0];
-	        		board.newThreads = 0;
-	        		board.updatedThreads = 0;
-	        	}
+        		board.defData = false;
+        		if (firstLoad) {
+        			board.threads = threads.toArray(new ChanPost[0]);
+        		} else {
+        			board.loadedThreads = threads.toArray(new ChanPost[0]);
+        		}
+        		board.updateCountersAfterLoad();
         	}
         }
 	}
