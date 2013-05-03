@@ -1,0 +1,94 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/list_item"
+              style="@style/BoardListLayout"
+              android:orientation="vertical"
+        >
+
+    <TextView android:id="@+id/grid_item_thread_title"
+              style="@style/BoardListTitle"/>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10"
+            android:orientation="horizontal"
+            >
+
+        <RelativeLayout
+                android:id="@+id/grid_item_thread_image_wrapper"
+                android:layout_width="0dp"
+                android:layout_weight="4"
+                android:layout_height="wrap_content">
+
+            <com.chanapps.four.component.StretchyImageView
+                    android:id="@+id/grid_item_thread_thumb"
+                    style="@style/BoardGridImage"
+                    android:layout_height="140dp"
+                    />
+
+            <TextView
+                    android:id="@+id/grid_item_num_replies"
+                    style="@style/BoardGridNumReplies"
+                    android:visibility="gone"
+                    />
+
+            <TextView
+                    android:id="@+id/grid_item_board_abbrev"
+                    style="@style/BoardGridAbbrev"
+                    android:visibility="gone"
+                    />
+
+            <TextView
+                    android:id="@+id/grid_item_num_images"
+                    style="@style/BoardGridNumImages"
+                    android:visibility="gone"
+                    />
+
+            <TextView
+                    android:id="@+id/grid_item_board_type_text"
+                    style="@style/BoardTypeText"
+                    />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="6"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <TextView
+                    android:id="@+id/grid_item_thread_subject"
+                    style="@style/BoardListSubject"
+                    />
+
+            <ImageView
+                    android:id="@+id/grid_item_country_flag"
+                    style="@style/ThreadListItemCountryFlag"
+                    android:layout_below="@+id/grid_item_thread_subject"
+                    />
+
+            <TextView
+                    android:id="@+id/grid_item_thread_headline"
+                    style="@style/BoardListHeadline"
+                    android:layout_below="@+id/grid_item_thread_subject"
+                    android:layout_toRightOf="@+id/grid_item_country_flag"
+                    />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <TextView
+            android:id="@+id/grid_item_thread_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Full text goes here"
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingRight="16dp"
+            android:textSize="16dp"
+            />
+
+</LinearLayout>

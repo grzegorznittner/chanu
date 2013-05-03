@@ -20,9 +20,12 @@ public class ChanGridSizer {
     private static final String TAG = ChanGridSizer.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    //private static final int MAX_COLUMN_WIDTH = 150;
-    private static final int MAX_COLUMN_WIDTH = 110;
     //private static final int MAX_COLUMN_WIDTH = 90;
+    private static final int MAX_COLUMN_WIDTH = 110;
+    private static final int MAX_COLUMN_WIDTH_LARGE = 140;
+    //private static final int MAX_COLUMN_WIDTH = 150;
+    private static final int MAX_COLUMN_WIDTH_XLARGE = 200;
+
     private static final int[] MAX_COLUMN_WIDTHS = {
             ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH,
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH,
@@ -30,7 +33,6 @@ public class ChanGridSizer {
             ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH
     };
 
-    private static final int MAX_COLUMN_WIDTH_LARGE = 140;
     private static final int[] MAX_COLUMN_WIDTHS_LARGE = {
             ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH_LARGE,
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
@@ -38,7 +40,6 @@ public class ChanGridSizer {
             ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_LARGE
     };
 
-    private static final int MAX_COLUMN_WIDTH_XLARGE = 200;
     private static final int[] MAX_COLUMN_WIDTHS_XLARGE = {
             ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,

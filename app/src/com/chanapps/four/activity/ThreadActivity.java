@@ -96,9 +96,6 @@ public class ThreadActivity
     protected ShareActionProvider shareActionProvider = null;
     protected Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
     protected ActionMode actionMode = null;
-    protected Typeface subjectTypeface = null;
-    protected int padding8DP = 0;
-    protected MenuItem searchMenuItem;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -183,7 +180,7 @@ public class ThreadActivity
             finish();
         }
         if (threadNo == 0) {
-            Intent boardIntent = createIntentForActivity(this, boardCode);
+            Intent boardIntent = createIntentForActivity(this, boardCode, "");
             boardIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(boardIntent);
             finish();
@@ -287,12 +284,6 @@ public class ThreadActivity
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
         absListView.setMultiChoiceModeListener(this);
         absListView.setOnCreateContextMenuListener(this);
-    }
-
-    protected Typeface ensureSubjectTypeface() {
-        if (subjectTypeface == null)
-            subjectTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Condensed.ttf");
-        return subjectTypeface;
     }
 
     @Override
@@ -458,8 +449,6 @@ public class ThreadActivity
     }
 
     private boolean setItemText(final TextView tv, final Cursor cursor, int flags) {
-        if (padding8DP == 0)
-            padding8DP = ChanGridSizer.dpToPx(getResources().getDisplayMetrics(), 8);
         if ((flags & ChanPost.FLAG_IS_AD) == 0 && (flags & ChanPost.FLAG_HAS_TEXT) > 0) {
             String postText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
             tv.setText(Html.fromHtml(postText));
@@ -741,13 +730,6 @@ public class ThreadActivity
         return true;
     }
 
-    private void setupSearch(Menu menu) {
-        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
-        searchMenuItem = menu.findItem(R.id.thread_search_menu);
-        SearchView searchView = (SearchView)searchMenuItem.getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-    }
-
     protected UserStatistics ensureUserStats() {
         if (userStats == null) {
             userStats = ChanFileStorage.loadUserStats(getBaseContext());
@@ -1020,13 +1002,15 @@ public class ThreadActivity
         if (board == null)
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         String boardTitle = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
-        /*
+
         ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
         String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
                 ? " Thread " + threadNo
                 : thread.posts[0].threadSubject(getApplicationContext())
                     .replaceAll("<br/?>", " ")
                     .replaceAll("<[^>]*>", "");
+        a.setTitle(boardTitle + ": " + threadTitle);
+        /*
         long lastFetched = 0;
         if (thread != null && thread.lastFetched > 0)
             lastFetched = thread.lastFetched;
@@ -1041,10 +1025,9 @@ public class ThreadActivity
         else
             timeSpan = "fetched " + DateUtils.getRelativeTimeSpanString(lastFetched,
                     now, 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString();
-        a.setTitle(boardTitle + ": " + threadTitle);
         a.setSubtitle(timeSpan);
         */
-        a.setTitle(boardTitle);
+        //a.setTitle(boardTitle);
         a.setDisplayShowTitleEnabled(true);
         a.setDisplayHomeAsUpEnabled(true);
     }
@@ -1326,11 +1309,6 @@ public class ThreadActivity
 
         if (actionMode != null)
             actionMode.finish();
-    }
-
-    public void closeSearch() {
-        if (searchMenuItem != null)
-            searchMenuItem.collapseActionView();
     }
 
 }

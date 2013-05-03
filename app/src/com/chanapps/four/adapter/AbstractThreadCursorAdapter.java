@@ -10,6 +10,7 @@ import android.widget.*;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
 
 import java.util.ArrayList;
 import java.util.HashSet;

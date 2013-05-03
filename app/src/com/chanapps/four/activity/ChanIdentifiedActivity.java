@@ -18,7 +18,10 @@ public interface ChanIdentifiedActivity {
 	/**
 	 * Returns activity's context.
 	 */
-	Context getBaseContext ();
+	Context getBaseContext();
+
+    // tell the search-launching activity to close the search action bar
+    void closeSearch();
 
     // used for refreshing data
     void refresh();

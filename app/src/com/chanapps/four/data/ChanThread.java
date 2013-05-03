@@ -22,8 +22,10 @@ public class ChanThread extends ChanPost {
     public static final String THREAD_COMPOSITE_ID = "_id";
     public static final String THREAD_BOARD_CODE = "threadBoardCode";
     public static final String THREAD_NO = "threadNo";
+    public static final String THREAD_TITLE = "threadTitle";
     public static final String THREAD_SUBJECT = "threadSub";
-    public static final String THREAD_INFO = "threadInfo";
+    public static final String THREAD_HEADLINE = "threadHeadline";
+    public static final String THREAD_TEXT = "threadText";
     public static final String THREAD_THUMBNAIL_URL = "threadThumb";
     public static final String THREAD_COUNTRY_FLAG_URL = "threadFlag";
     public static final String THREAD_CLICK_URL = "threadClick";
@@ -38,13 +40,16 @@ public class ChanThread extends ChanPost {
     public static final int THREAD_FLAG_BOARD = 0x10;
     public static final int THREAD_FLAG_BOARD_TYPE = 0x20;
     public static final int THREAD_FLAG_BOARD_TITLE = 0x40;
+    public static final int THREAD_FLAG_TITLE = 0x80;
 
     public static final String[] THREAD_COLUMNS = {
             THREAD_COMPOSITE_ID,
             THREAD_BOARD_CODE,
             THREAD_NO,
+            THREAD_TITLE,
             THREAD_SUBJECT,
-            THREAD_INFO,
+            THREAD_HEADLINE,
+            THREAD_TEXT,
             THREAD_THUMBNAIL_URL,
             THREAD_COUNTRY_FLAG_URL,
             THREAD_CLICK_URL,
@@ -68,14 +73,17 @@ public class ChanThread extends ChanPost {
         return flags;
     }
 
-    public static Object[] makeRow(Context context, ChanPost post) {
+    public static Object[] makeRow(Context context, ChanPost post, String query) {
         String id = post.board + "/" + post.no;
+        String[] textComponents = post.textComponents(query);
         return new Object[] {
                 id.hashCode(),
                 post.board,
                 post.no,
-                post.threadSubject(context),
-                post.threadInfoLine(),
+                "",
+                textComponents[0],
+                post.headline(query, true),
+                textComponents[1],
                 post.thumbnailUrl(),
                 post.countryFlagUrl(),
                 "",
@@ -91,7 +99,9 @@ public class ChanThread extends ChanPost {
                 0,
                 "",
                 0,
+                "",
                 board.name,
+                "",
                 "",
                 ChanBoard.getIndexedImageDrawableUrl(boardCode, 0),
                 "",
@@ -107,7 +117,9 @@ public class ChanThread extends ChanPost {
                 0,
                 "",
                 0,
+                "",
                 context.getString(boardType.displayStringId()),
+                "",
                 "",
                 boardType.drawableId() > 0 ? "drawable://" + boardType.drawableId() : "",
                 "",
@@ -123,7 +135,9 @@ public class ChanThread extends ChanPost {
                 boardCode.hashCode(),
                 boardCode,
                 0,
+                "",
                 boardName,
+                "",
                 "",
                 "drawable://" + boardImageResourceId,
                 "",
@@ -134,12 +148,32 @@ public class ChanThread extends ChanPost {
         };
     }
 
+    public static Object[] makeTitleRow(String boardCode, String title) {
+        return new Object[] {
+                title.hashCode(),
+                boardCode,
+                0,
+                title,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                0,
+                0,
+                THREAD_FLAG_TITLE
+        };
+    }
+
     public static Object[] makeAdRow(Context context, ChanAd ad) {
         return new Object[] {
                 0,
                 "",
                 0,
+                "",
                 context.getResources().getString(R.string.board_advert_full),
+                "",
                 context.getResources().getString(R.string.board_advert_info),
                 ad.imageUrl(),
                 "",

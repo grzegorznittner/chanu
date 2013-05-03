@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.util.Log;
 
+import com.chanapps.four.activity.R;
 import com.chanapps.four.data.*;
 
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
@@ -43,7 +44,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         this(context);
         this.context = context;
         this.boardName = boardName;
-        this.query = query;
+        this.query = query.toLowerCase().trim();
         initRandomGenerator();
     }
 
@@ -64,21 +65,26 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
         //if (!board.isVirtualBoard())
         //    matrixCursor.addRow(ChanBoard.makeBoardTitleRow(context, boardName));
+        if (!query.isEmpty()) {
+            String title = String.format(context.getString(R.string.board_search_results), "<i>" + query + "</i>");
+            matrixCursor.addRow(ChanThread.makeTitleRow(boardName, title));
+        }
         if (board.threads != null && board.threads.length > 0 && !board.defData) { // show loading
             if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
             //int adSpace = MINIMUM_AD_SPACING;
+            int numQueryMatches = 0;
             int i = 0;
             for (ChanPost thread : board.threads) {
                 if (DEBUG) Log.i(TAG, "Loading thread:" + thread.no);
-                if (ChanBlocklist.contains(context, ChanBlocklist.BlockType.TRIPCODE, thread.trip)
-                        || ChanBlocklist.contains(context, ChanBlocklist.BlockType.NAME, thread.name)
-                        || ChanBlocklist.contains(context, ChanBlocklist.BlockType.EMAIL, thread.email)
-                        || ChanBlocklist.contains(context, ChanBlocklist.BlockType.ID, thread.id))
-                {
+                if (ChanBlocklist.isBlocked(context, thread)) {
                     if (DEBUG) Log.i(TAG, "Skipped thread: " + thread.no);
                     continue;
                 }
-                Object[] row = ChanThread.makeRow(context, thread);
+                if (!thread.matchesQuery(query))
+                    continue;
+                if (!query.isEmpty())
+                    numQueryMatches++;
+                Object[] row = ChanThread.makeRow(context, thread, query);
                 matrixCursor.addRow(row);
                 i++;
                 if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
@@ -93,6 +99,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 */
             }
             if (DEBUG) Log.i(TAG, "Loaded " + i + " threads");
+
+            // no search results marker
+            if (!query.isEmpty() && numQueryMatches == 0)
+                matrixCursor.addRow(ChanThread.makeTitleRow(boardName, context.getString(R.string.thread_search_no_results)));
         }
         registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;

@@ -66,5 +66,8 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     @Override
     public void refresh() {}
 
+    @Override
+    public void closeSearch() {}
+
 }
 
