@@ -17,39 +17,33 @@
         android:layout_height="48dp"
         android:gravity="right"
         android:orientation="horizontal"
-        android:background="#bb004400">
+        android:background="@color/PaletteSemiOpaqueMedGray">
 
 	    <TextView
             android:id="@+id/board_refresh_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#ffffffff"
-            android:background="#00000000"
-            android:layout_marginRight="10dp"/>
+            android:textColor="@color/PaletteBlack"
+            android:textStyle="bold"
+            android:background="@color/PaletteTransparent"
+            android:textIsSelectable="false"/>
 	    <Button
             android:id="@+id/board_refresh_button"
             android:layout_width="48dp"
             android:layout_height="fill_parent"
-            android:textColor="#ff00cc00"
-            android:drawableLeft="@drawable/navigation_refresh"
-            android:background="#00000000"
+            android:textColor="@color/PaletteBlack"
+            android:layout_marginLeft="10dp"
+            android:paddingLeft="8dp"
+            android:drawableLeft="@drawable/board_refresh_button_selector"
             />
         <Button
             android:id="@+id/board_ignore_button"
             android:layout_width="48dp"
             android:layout_height="fill_parent"
-            android:textColor="#ff00cc00"
-            android:drawableLeft="@drawable/navigation_cancel"
-            android:background="#00000000"
+            android:paddingLeft="8dp"
+            android:textColor="@color/PaletteBlack"
+            android:drawableLeft="@drawable/board_ignore_button_selector"
             />
-<!-- 	    <LinearLayout android:id="@+id/board_refresh_buttons_bar"
-	        android:layout_width="match_parent"
-	        android:layout_height="48dp"
-	        android:gravity="center_horizontal"
-	        android:orientation="horizontal"
-	        android:background="#00000000">
-	        
-	     </LinearLayout> -->
 	</LinearLayout>
     
 	

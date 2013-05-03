@@ -728,6 +728,9 @@
     <color name="PaletteOffWhiteHalfOpacity">#80ddd9d7</color>
     <color name="PaletteWhite">#fefefe</color>
     <color name="PaletteTransparent">#00000000</color>
+    <color name="PaletteSemiOpaqueMedGray">#aa666666</color>
+    <color name="PaletteSemiOpaqueDarkGray">#aa444444</color>
+    <color name="PaletteSemiOpaqueDarkerGray">#aa222222</color>
     <color name="PaletteLightestGray">#eee</color>
     <color name="PaletteLighterGray">#ddd</color>
     <color name="PaletteLightGray">#ccc</color>
