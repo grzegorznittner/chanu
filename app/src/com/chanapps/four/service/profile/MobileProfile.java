@@ -397,18 +397,18 @@ public class MobileProfile extends AbstractNetworkProfile {
     		board.loadedThreads = new ChanThread[0];
     		board.newThreads = 0;
     		board.updatedThreads = 0;
-    	}
 
-        // user is on the board page, we need to be reloaded it
-        Handler handler = activity.getChanHandler();
-        if (isBoardActivity && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY && handler != null) {        	
-            handler.post(new Runnable() {
-	            @Override
-	            public void run() {
-	                activity.refresh();
-	            }
-	        });
-        }
+    		// user is on the board page, we need to be reloaded it
+	        Handler handler = activity.getChanHandler();
+	        if (isBoardActivity && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY && handler != null) {        	
+	            handler.post(new Runnable() {
+		            @Override
+		            public void run() {
+		                activity.refresh();
+		            }
+		        });
+	        }
+    	}
 
         // tell it to refresh widgets for board if any are configured
         if (DEBUG) Log.i(TAG, "Calling widget provider update for boardCode=" + data.boardCode);

@@ -11,8 +11,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.util.Log;
-
 import android.widget.Toast;
+
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
@@ -24,7 +24,6 @@ import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 import com.chanapps.four.service.profile.NoConnectionProfile;
 import com.chanapps.four.service.profile.WifiProfile;
-import com.chanapps.four.widget.BoardWidgetProvider;
 
 /**
  * Class manages network profile switching.
