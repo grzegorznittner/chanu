@@ -227,7 +227,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 				board.lastFetched = 0;
 			}
 	        File boardFile = ChanFileStorage.getBoardFile(getBaseContext(), boardCode, pageNo);
-			if (boardFile != null && boardFile.exists()) {
+			if (boardFile != null && boardFile.exists() && (new Date().getTime() - boardFile.lastModified() < 10000) ) {
 				Log.e(TAG, "Board file exists, quiting fetch");
 				return;
 			}

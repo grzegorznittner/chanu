@@ -98,12 +98,12 @@ public class BoardActivity
 		if (DEBUG) Log.v(TAG, "************ onCreate");
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        loadFromIntentOrPrefs();
+        //loadFromIntentOrPrefs();
         initImageLoader();
         createAbsListView();
         ensureHandler();
         LoaderManager.enableDebugLogging(true);
-        getSupportLoaderManager().restartLoader(0, null, this);
+        //getSupportLoaderManager().restartLoader(0, null, this);
         if (DEBUG) Log.v(TAG, "onCreate init loader");
         //progressBar = (ProgressBar)findViewById(R.id.board_progress_bar);
     }
