@@ -38,9 +38,7 @@ public class ChanThread extends ChanPost {
     public static final int THREAD_FLAG_STICKY = 0x04;
     public static final int THREAD_FLAG_AD = 0x08;
     public static final int THREAD_FLAG_BOARD = 0x10;
-    public static final int THREAD_FLAG_BOARD_TYPE = 0x20;
-    public static final int THREAD_FLAG_BOARD_TITLE = 0x40;
-    public static final int THREAD_FLAG_TITLE = 0x80;
+    public static final int THREAD_FLAG_TITLE = 0x20;
 
     public static final String[] THREAD_COLUMNS = {
             THREAD_COMPOSITE_ID,
@@ -93,43 +91,6 @@ public class ChanThread extends ChanPost {
         };
     }
 
-    public static Object[] makeBoardTitleRow(Context context, String boardCode) {
-        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        return new Object[] {
-                0,
-                "",
-                0,
-                "",
-                board.name,
-                "",
-                "",
-                ChanBoard.getIndexedImageDrawableUrl(boardCode, 0),
-                "",
-                "",
-                0,
-                0,
-                THREAD_FLAG_BOARD_TITLE
-        };
-    }
-
-    public static Object[] makeBoardTypeRow(Context context, BoardType boardType) {
-        return new Object[] {
-                0,
-                "",
-                0,
-                "",
-                context.getString(boardType.displayStringId()),
-                "",
-                "",
-                boardType.drawableId() > 0 ? "drawable://" + boardType.drawableId() : "",
-                "",
-                "",
-                0,
-                0,
-                THREAD_FLAG_BOARD_TYPE
-        };
-    }
-
     public static Object[] makeBoardRow(String boardCode, String boardName, int boardImageResourceId) {
         return new Object[] {
                 boardCode.hashCode(),
@@ -146,6 +107,11 @@ public class ChanThread extends ChanPost {
                 0,
                 THREAD_FLAG_BOARD
         };
+    }
+
+
+    public static Object[] makeBoardTypeRow(Context context, BoardType boardType) {
+        return makeTitleRow("", context.getString(boardType.displayStringId()));
     }
 
     public static Object[] makeTitleRow(String boardCode, String title) {
@@ -166,6 +132,7 @@ public class ChanThread extends ChanPost {
         };
     }
 
+    /*
     public static Object[] makeAdRow(Context context, ChanAd ad) {
         return new Object[] {
                 0,
@@ -183,6 +150,7 @@ public class ChanThread extends ChanPost {
                 THREAD_FLAG_AD
         };
     }
+    */
 
     public String toString() {
 		return "Thread " + no + ", com: " + com + ", sub:" + sub + ", posts: " + posts.length

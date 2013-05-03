@@ -46,7 +46,7 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
                 continue;
             if (!boardType.isSFW() && !showNSFWBoards)
                 continue;
-            Object[] row = ChanBoard.makeBoardTypeRow(context, boardType);
+            Object[] row = ChanThread.makeBoardTypeRow(context, boardType);
             matrixCursor.addRow(row);
             List<ChanBoard> boards = ChanBoard.getBoardsByType(context, boardType);
             if (boards != null && !boards.isEmpty()) {

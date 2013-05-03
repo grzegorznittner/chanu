@@ -3,6 +3,8 @@ package com.chanapps.four.loader;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 //import android.content.AsyncTaskLoader;
@@ -101,8 +103,27 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             if (DEBUG) Log.i(TAG, "Loaded " + i + " threads");
 
             // no search results marker
-            if (!query.isEmpty() && numQueryMatches == 0)
-                matrixCursor.addRow(ChanThread.makeTitleRow(boardName, context.getString(R.string.thread_search_no_results)));
+            if (!query.isEmpty() && numQueryMatches == 0) {
+                matrixCursor.addRow(ChanThread.makeTitleRow(boardName,
+                        context.getString(R.string.thread_search_no_results)));
+            }
+
+            if (!board.isVirtualBoard()) { // add related boards
+                matrixCursor.addRow(ChanThread.makeTitleRow(boardName,
+                        context.getString(R.string.board_related_boards_title)));
+
+                List<ChanBoard> relatedBoards = ChanBoard.getBoardsByType(context, board.boardType);
+                Collections.shuffle(relatedBoards);
+                int j = 0;
+                for (ChanBoard relatedBoard : relatedBoards) {
+                    if (j >= ChanBoard.NUM_RELATED_BOARDS)
+                        break;
+                    if (!board.link.equals(relatedBoard.link)) {
+                        matrixCursor.addRow(relatedBoard.makeRow());
+                        j++;
+                    }
+                }
+            }
         }
         registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;

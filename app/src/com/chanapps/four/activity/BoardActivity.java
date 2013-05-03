@@ -49,9 +49,7 @@ public class BoardActivity
         implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity, OnClickListener
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
-
-    private static final String DEFAULT_BOARD_CODE = "a";
+	public static final boolean DEBUG = true;
 
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
     private static final int THUMB_WIDTH_PX = 150;
@@ -162,8 +160,7 @@ public class BoardActivity
                         ChanThread.THREAD_TEXT,
                         ChanThread.THREAD_COUNTRY_FLAG_URL,
                         ChanThread.THREAD_NUM_REPLIES,
-                        ChanThread.THREAD_NUM_IMAGES,
-                        ChanThread.THREAD_TEXT
+                        ChanThread.THREAD_NUM_IMAGES
                 },
                 new int[] {
                         R.id.grid_item_thread_thumb,
@@ -173,8 +170,7 @@ public class BoardActivity
                         R.id.grid_item_thread_text,
                         R.id.grid_item_country_flag,
                         R.id.grid_item_num_replies,
-                        R.id.grid_item_num_images,
-                        R.id.grid_item_board_type_text
+                        R.id.grid_item_num_images
                 },
                 columnWidth,
                 columnHeight);
@@ -188,10 +184,7 @@ public class BoardActivity
                             ChanThread.THREAD_SUBJECT,
                             ChanThread.THREAD_HEADLINE,
                             ChanThread.THREAD_TEXT,
-                            ChanThread.THREAD_COUNTRY_FLAG_URL,
-                            //ChanThread.THREAD_NUM_REPLIES,
-                            //ChanThread.THREAD_NUM_IMAGES,
-                            ChanThread.THREAD_TEXT
+                            ChanThread.THREAD_COUNTRY_FLAG_URL
                     },
                     new int[] {
                             R.id.grid_item_thread_thumb,
@@ -199,10 +192,7 @@ public class BoardActivity
                             R.id.grid_item_thread_subject,
                             R.id.grid_item_thread_headline,
                             R.id.grid_item_thread_text,
-                            R.id.grid_item_country_flag,
-                            //R.id.grid_item_num_replies,
-                            //R.id.grid_item_num_images,
-                            R.id.grid_item_board_type_text
+                            R.id.grid_item_country_flag
                     });
         absListView.setAdapter(adapter);
     }
@@ -339,7 +329,7 @@ public class BoardActivity
             if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from board code intent");
         }
         else {
-            boardCode = ensurePrefs().getString(ChanHelper.BOARD_CODE, DEFAULT_BOARD_CODE);
+            boardCode = ensurePrefs().getString(ChanHelper.BOARD_CODE, ChanBoard.DEFAULT_BOARD_CODE);
             if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from prefs or default");
         }
         query = intent.hasExtra(SearchManager.QUERY)
@@ -408,21 +398,8 @@ public class BoardActivity
                                        int padding4DP)
     {
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
-            if (view.getId() == R.id.grid_item_thread_title) {
-                setThreadTitle((TextView) view, cursor, flags);
-                view.setVisibility(View.VISIBLE);
-            }
-            else if (view.getId() == R.id.list_item) {
-                view.setVisibility(View.VISIBLE);
-                View v = view.findViewById(R.id.grid_item_thread_image_wrapper);
-                if (v != null)
-                    v.setVisibility(View.GONE);
-            }
-            else {
-                view.setVisibility(View.GONE);
-            }
-            return true;
+        if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) { // special case it to avoid needing a separate item layout
+            return setThreadTitleView(view, cursor, flags, viewType);
         }
         view.setVisibility(View.VISIBLE);
         switch (view.getId()) {
@@ -431,7 +408,7 @@ public class BoardActivity
             case R.id.grid_item_board_abbrev:
                 return setThreadBoardAbbrev((TextView) view, cursor, groupBoardCode, flags);
             case R.id.grid_item_thread_title:
-                return setThreadTitle((TextView) view, cursor, flags);
+                return setThreadTitle((TextView) view, cursor, flags, viewType);
             case R.id.grid_item_thread_subject:
                 return setThreadSubject((TextView) view, cursor, viewType, subjectTypeface);
             case R.id.grid_item_thread_headline:
@@ -446,10 +423,28 @@ public class BoardActivity
                 return setThreadNumReplies((TextView) view, cursor, flags);
             case R.id.grid_item_num_images:
                 return setThreadNumImages((TextView) view, cursor, flags);
-            case R.id.grid_item_board_type_text:
-                return setBoardTypeText((TextView) view, cursor, flags);
         }
         return false;
+    }
+
+    protected static boolean setThreadTitleView(View view, Cursor cursor, int flags, ViewType viewType) {
+        if (view.getId() == R.id.grid_item_thread_title) {
+            setThreadTitle((TextView) view, cursor, flags, viewType);
+            view.setVisibility(View.VISIBLE);
+        }
+        else if (view.getId() == R.id.grid_item) {
+            view.setVisibility(View.VISIBLE);
+        }
+        else if (view.getId() == R.id.list_item) {
+            view.setVisibility(View.VISIBLE);
+            View v = view.findViewById(R.id.grid_item_thread_image_wrapper);
+            if (v != null)
+                v.setVisibility(View.GONE);
+        }
+        else {
+            view.setVisibility(View.GONE);
+        }
+        return true;
     }
 
     protected static boolean setThreadItem(View view) {
@@ -478,9 +473,13 @@ public class BoardActivity
         return true;
     }
 
-    protected static boolean setThreadTitle(TextView tv, Cursor cursor, int flags) {
+    protected static boolean setThreadTitle(TextView tv, Cursor cursor, int flags, ViewType viewType) {
         if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
-            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE))));
+            String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
+            if (viewType == ViewType.AS_LIST) {
+                text = text.toUpperCase();
+            }
+            tv.setText(Html.fromHtml(text));
             tv.setVisibility(View.VISIBLE);
         }
         else {
@@ -529,7 +528,7 @@ public class BoardActivity
 
     protected static boolean setThreadThumb(ImageView iv, Cursor cursor, ImageLoader imageLoader,
                                             DisplayImageOptions options, int flags) {
-        if ((flags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0) {
+        if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
             iv.setImageBitmap(null);
         }
         else {
@@ -565,8 +564,8 @@ public class BoardActivity
     protected static boolean setThreadNumReplies(TextView tv, Cursor cursor, int flags) {
         int n = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_REPLIES));
         if ((flags & (ChanThread.THREAD_FLAG_AD
-                | ChanThread.THREAD_FLAG_BOARD_TYPE
-                | ChanThread.THREAD_FLAG_BOARD_TITLE)) == 0
+                | ChanThread.THREAD_FLAG_BOARD
+                | ChanThread.THREAD_FLAG_TITLE)) == 0
                 && n >= 0)
         {
             tv.setText(n + "r");
@@ -582,8 +581,8 @@ public class BoardActivity
     protected static boolean setThreadNumImages(TextView tv, Cursor cursor, int flags) {
         int n = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES));
         if ((flags & (ChanThread.THREAD_FLAG_AD
-                | ChanThread.THREAD_FLAG_BOARD_TYPE
-                | ChanThread.THREAD_FLAG_BOARD_TITLE)) == 0
+                | ChanThread.THREAD_FLAG_BOARD
+                | ChanThread.THREAD_FLAG_TITLE)) == 0
                 && n >= 0)
         {
             tv.setText(n + "i");
@@ -592,18 +591,6 @@ public class BoardActivity
         else {
             tv.setText("");
             tv.setVisibility(View.GONE);
-        }
-        return true;
-    }
-
-    protected static boolean setBoardTypeText(TextView tv, Cursor cursor, int flags) {
-        if ((flags & (ChanThread.THREAD_FLAG_BOARD_TYPE | ChanThread.THREAD_FLAG_BOARD_TITLE)) > 0) {
-            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
-            tv.setVisibility(View.VISIBLE);
-        }
-        else {
-            tv.setVisibility(View.GONE);
-            tv.setText("");
         }
         return true;
     }
@@ -677,10 +664,6 @@ public class BoardActivity
                 intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
                 if (!NavUtils.shouldUpRecreateTask(this, intent)) {
                     NavUtils.navigateUpTo(this, intent);
-                }
-                else         {
-                    finish();
-                    TaskStackBuilder.create(this).addParentStack(BoardSelectorActivity.class).startActivities();
                 }
                 return true;
             case R.id.refresh_menu:

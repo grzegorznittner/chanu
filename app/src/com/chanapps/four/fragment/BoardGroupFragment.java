@@ -152,13 +152,13 @@ public class BoardGroupFragment
                         this,
                         new String[] {
                                 ChanThread.THREAD_THUMBNAIL_URL,
-                                ChanThread.THREAD_SUBJECT,
-                                ChanThread.THREAD_TEXT
+                                ChanThread.THREAD_TITLE,
+                                ChanThread.THREAD_SUBJECT
                         },
                         new int[] {
                                 R.id.grid_item_thread_thumb,
-                                R.id.grid_item_thread_subject,
-                                R.id.grid_item_board_type_text
+                                R.id.grid_item_thread_title,
+                                R.id.grid_item_thread_subject
                         },
                         columnWidth,
                         columnHeight);
@@ -172,22 +172,20 @@ public class BoardGroupFragment
                         new String[] {
                                 ChanThread.THREAD_BOARD_CODE,
                                 ChanThread.THREAD_THUMBNAIL_URL,
+                                ChanThread.THREAD_TITLE,
                                 ChanThread.THREAD_SUBJECT,
-                                //ChanThread.THREAD_TEXT,
                                 ChanThread.THREAD_COUNTRY_FLAG_URL,
                                 ChanThread.THREAD_NUM_REPLIES,
-                                ChanThread.THREAD_NUM_IMAGES,
-                                ChanThread.THREAD_TEXT
+                                ChanThread.THREAD_NUM_IMAGES
                         },
                         new int[] {
                                 R.id.grid_item_board_abbrev,
                                 R.id.grid_item_thread_thumb,
+                                R.id.grid_item_thread_title,
                                 R.id.grid_item_thread_subject,
-                                //R.id.grid_item_thread_info,
                                 R.id.grid_item_country_flag,
                                 R.id.grid_item_num_replies,
-                                R.id.grid_item_num_images,
-                                R.id.grid_item_board_type_text
+                                R.id.grid_item_num_images
                         },
                         columnWidth,
                         columnHeight);
@@ -320,9 +318,9 @@ public class BoardGroupFragment
 
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((threadFlags & ChanThread.THREAD_FLAG_AD) > 0
-                || (threadFlags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0)
+        if ((threadFlags & (ChanThread.THREAD_FLAG_AD | ChanThread.THREAD_FLAG_TITLE)) > 0) {
             return;
+        }
 
         final Activity activity = getActivity();
         final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
@@ -386,8 +384,8 @@ public class BoardGroupFragment
         switch (view.getId()) {
             case R.id.grid_item_thread_subject:
                 return setThreadSubject((TextView) view, cursor);
-            case R.id.grid_item_board_type_text:
-                return setBoardTypeText((TextView) view, cursor);
+            case R.id.grid_item_thread_title:
+                return setThreadTitle((TextView) view, cursor);
             case R.id.grid_item_thread_thumb:
                 return setThreadThumb((ImageView) view, cursor);
             case R.id.grid_item_country_flag:
@@ -398,7 +396,7 @@ public class BoardGroupFragment
 
     protected boolean setThreadSubject(TextView tv, Cursor cursor) {
         int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((threadFlags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0) {
+        if ((threadFlags & ChanThread.THREAD_FLAG_TITLE) > 0) {
             tv.setVisibility(View.GONE);
             tv.setText("");
         }
@@ -409,10 +407,10 @@ public class BoardGroupFragment
         return true;
     }
 
-    protected boolean setBoardTypeText(TextView tv, Cursor cursor) {
+    protected boolean setThreadTitle(TextView tv, Cursor cursor) {
         int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((threadFlags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0) {
-            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
+        if ((threadFlags & ChanThread.THREAD_FLAG_TITLE) > 0) {
+            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE))));
             tv.setVisibility(View.VISIBLE);
         }
         else {
@@ -424,7 +422,7 @@ public class BoardGroupFragment
 
     protected boolean setThreadThumb(ImageView iv, Cursor cursor) {
         int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((threadFlags & ChanThread.THREAD_FLAG_BOARD_TYPE) > 0) {
+        if ((threadFlags & ChanThread.THREAD_FLAG_TITLE) > 0) {
             iv.setImageBitmap(null);
         }
         else {
