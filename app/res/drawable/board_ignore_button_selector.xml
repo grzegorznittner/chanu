@@ -4,12 +4,10 @@
 
         <item
                 android:state_pressed="true"
-                android:drawable="@drawable/navigation_cancel"
-                android:background="@color/blue_base_half"
+                android:drawable="@color/PaletteSemiOpaqueDarkerGray"
                 />
         <item
                 android:state_pressed="false"
                 android:drawable="@drawable/navigation_cancel"
-                android:background="@color/PaletteSemiOpaqueDarkerGray"
                 />
 </selector>

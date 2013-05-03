@@ -35,6 +35,7 @@
             android:layout_marginLeft="10dp"
             android:paddingLeft="8dp"
             android:drawableLeft="@drawable/board_refresh_button_selector"
+            android:background="@color/PaletteSemiOpaqueDarkGray"
             />
         <Button
             android:id="@+id/board_ignore_button"
@@ -43,6 +44,7 @@
             android:paddingLeft="8dp"
             android:textColor="@color/PaletteBlack"
             android:drawableLeft="@drawable/board_ignore_button_selector"
+            android:background="@color/PaletteSemiOpaqueDarkGray"
             />
 	</LinearLayout>
     
