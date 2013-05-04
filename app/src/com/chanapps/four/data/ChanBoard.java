@@ -35,9 +35,9 @@ public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();
 
     private static final boolean DEBUG = false;
-    public static final boolean REFRESH_THREADS_ON_REQUEST = true;
-    private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
-    private static final int NUM_RELATED_THREADS = 3;
+    public static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
+    public static final int NUM_RELATED_BOARDS = 3;
+    public static final int NUM_RELATED_THREADS = 3;
 
 
     public ChanBoard() {
@@ -419,18 +419,12 @@ public class ChanBoard {
         return ChanThread.makeBoardRow(link, name, getImageResourceId());
     }
 
-    public static Object[] makeBoardTitleRow(Context context, String boardCode) {
-        return ChanThread.makeBoardTitleRow(context, boardCode);
-    }
-
-    public static Object[] makeBoardTypeRow(Context context, BoardType boardType) {
-        return ChanThread.makeBoardTypeRow(context, boardType);
-    }
-
+    /*
     public Object[] makeThreadAdRow(Context context, int pos) {
         ChanAd ad = ChanAd.randomAd(workSafe, pos);
         return ChanThread.makeAdRow(context, ad);
     }
+    */
 
     public Object[] makePostAdRow(Context context, int pos) {
         ChanAd ad = ChanAd.randomAd(workSafe, pos);

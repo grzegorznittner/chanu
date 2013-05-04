@@ -44,11 +44,6 @@
                     android:visibility="gone"
                     />
 
-            <TextView
-                    android:id="@+id/grid_item_board_type_text"
-                    style="@style/BoardTypeText"
-                    />
-
         </RelativeLayout>
 
         <RelativeLayout

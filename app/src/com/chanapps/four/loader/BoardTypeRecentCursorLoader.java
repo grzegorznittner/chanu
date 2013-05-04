@@ -31,11 +31,11 @@ public class BoardTypeRecentCursorLoader extends BoardCursorLoader {
     public Cursor loadInBackground() {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
-        matrixCursor.addRow(ChanBoard.makeBoardTypeRow(context, BoardType.POPULAR));
+        matrixCursor.addRow(ChanThread.makeBoardTypeRow(context, BoardType.POPULAR));
         loadBoard(matrixCursor, ChanBoard.POPULAR_BOARD_CODE);
-        matrixCursor.addRow(ChanBoard.makeBoardTypeRow(context, BoardType.LATEST));
+        matrixCursor.addRow(ChanThread.makeBoardTypeRow(context, BoardType.LATEST));
         loadBoard(matrixCursor, ChanBoard.LATEST_BOARD_CODE);
-        matrixCursor.addRow(ChanBoard.makeBoardTypeRow(context, BoardType.LATEST_IMAGES));
+        matrixCursor.addRow(ChanThread.makeBoardTypeRow(context, BoardType.LATEST_IMAGES));
         loadBoard(matrixCursor, ChanBoard.LATEST_IMAGES_BOARD_CODE);
         registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;

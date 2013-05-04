@@ -18,7 +18,7 @@
             />
 
     <TextView
-            android:id="@+id/grid_item_board_type_text"
+            android:id="@+id/grid_item_thread_title"
             style="@style/BoardTypeText"
             />
 
