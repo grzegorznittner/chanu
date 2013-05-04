@@ -24,7 +24,7 @@ import com.chanapps.four.service.ThreadParserService;
  */
 public abstract class AbstractNetworkProfile implements NetworkProfile {
 	private static final String TAG = "AbstractNetworkProfile";
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	protected int usageCounter = 0;
 	
@@ -196,10 +196,10 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 		
 		ChanActivityId data = service.getChanActivityId();
         if (DEBUG) Log.i(TAG, "fetchData success for /" + data.boardCode + "/" + data.threadNo + "/" + data.postNo + " priority=" + data.priority);
+        
         if (ChanBoard.isVirtualBoard(data.boardCode)) {
             // skip since fetch&parse steps happen together for virtual boards
-        }
-		else if (data.threadNo == 0) {
+        } else if (data.threadNo == 0) {
 			// board fetching
 	        if (data.priority) {
 	        	BoardParserService.startServiceWithPriority(service.getApplicationContext(), data.boardCode, data.pageNo);

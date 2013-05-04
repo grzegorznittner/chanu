@@ -14,10 +14,10 @@ public class WifiProfile extends MobileProfile {
 		 *               HEALTH  ----->   REFRESH_DELAY, FORCE_REFRESH_DELAY, READ_TIMEOUT, CONNECT_TIMEOUT
 		 */
 		REFRESH_TIME.put(Health.BAD,       new FetchParams(300L,  10L, 15, 10));
-		REFRESH_TIME.put(Health.VERY_SLOW, new FetchParams(600L,  10L, 15, 10));
-		REFRESH_TIME.put(Health.SLOW,      new FetchParams(480L,  10L, 15,  7));
-		REFRESH_TIME.put(Health.GOOD,      new FetchParams(300L,  10L, 10,  4));
-		REFRESH_TIME.put(Health.PERFECT,   new FetchParams(180L,  10L,  6,  3));
+		REFRESH_TIME.put(Health.VERY_SLOW, new FetchParams(240L,  10L, 15, 10));
+		REFRESH_TIME.put(Health.SLOW,      new FetchParams(180L,  10L, 15,  7));
+		REFRESH_TIME.put(Health.GOOD,      new FetchParams( 60L,  10L, 10,  4));
+		REFRESH_TIME.put(Health.PERFECT,   new FetchParams( 45L,  10L,  6,  3));
 	}
 	
 	@Override

@@ -34,7 +34,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
     private String boardCode;
     private boolean boardCatalog;
@@ -75,11 +75,13 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         Intent intent = new Intent(context, FetchChanDataService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.PAGE, -1);
-        	intent.putExtra(ChanHelper.BOARD_CATALOG, 1);
-        if (priority)
+        intent.putExtra(ChanHelper.BOARD_CATALOG, 1);
+        if (priority) {
             intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
-        if (backgroundLoad)
+        }
+        if (backgroundLoad) {
             intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
+        }
         context.startService(intent);
         return true;
     }
@@ -109,10 +111,12 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         Intent intent = new Intent(context, FetchChanDataService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        if (priority)
+        if (priority) {
             intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
-        if (backgroundLoad)
+        }
+        if (backgroundLoad) {
             intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
+        }
         context.startService(intent);
         return true;
     }
@@ -191,8 +195,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 		threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
 		boardHandling = threadNo == 0;
 
-		force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false)
-            || (intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0);
+		force = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
 		if (boardHandling) {
 			if (DEBUG) Log.i(TAG, "Handling board " + boardCode + (boardCatalog ? " catalog" : " page=" + pageNo));
 			handleBoard();
