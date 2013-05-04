@@ -451,7 +451,7 @@
     <string name="pref_about_data_uil_sum">Courtesy of Sergey Tarasevich</string>
     <string name="pref_about_data_color">mColorPicker</string>
     <string name="pref_about_data_color_sum">Courtesy of Daniel Nilsson</string>
-    <string name="pref_about_developer_category">Developers</string>
+    <string name="pref_about_developer_category">Team</string>
     <string name="pref_about_developer_chanapps">Chanapps Software</string>
     <string name="pref_about_developer_chanapps_sum">Premium provider of Android applications</string>
     <string name="pref_about_developer_burns">John Burns</string>
@@ -460,6 +460,8 @@
     <string name="pref_about_developer_nittner_sum">grzegorz.nittner@gmail.com</string>
     <string name="pref_about_developer_pop">Mircea Pop</string>
     <string name="pref_about_developer_pop_sum">mircea.pop.ro@gmail.com</string>
+    <string name="pref_about_developer_milas">Dimitris Milas</string>
+    <string name="pref_about_developer_milas_sum">dimitris.leonida.milas@gmail.com</string>
     <string name="pref_about_send_email">Send email</string>
 
     <!-- widgets -->

@@ -120,10 +120,8 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         if (DEBUG) Log.i(TAG, "post size " + postW + "x" + postH);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         threadActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        //int padding = ChanGridSizer.dpToPx(displayMetrics, 16);
-        int maxWidth = displayMetrics.widthPixels;
+        int maxWidth = Math.min(displayMetrics.widthPixels, displayMetrics.heightPixels);
         int maxHeight = maxWidth; // to avoid excessively big images
-        //int maxHeight = displayMetrics.heightPixels; // to avoid excessively big images
         itemExpandedImage.setMaxWidth(maxWidth);
         itemExpandedImage.setMaxHeight(maxHeight);
         if (DEBUG) Log.i(TAG, "max size " + maxWidth + "x" + maxHeight);
@@ -178,7 +176,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         }
 
         DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
-                .imageScaleType(ImageScaleType.EXACTLY)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                 .cacheOnDisc()
                 .fullSizeImageLocation(fullImagePath)
                 .resetViewBeforeLoading()

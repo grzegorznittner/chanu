@@ -23,10 +23,6 @@
         <TextView style="@style/ThreadListItemTitle" android:id="@+id/list_item_title"/>
     </RelativeLayout>
 
-    <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
-
-    <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_image_exif"/>
-
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -37,5 +33,9 @@
                      android:id="@+id/list_item_expanded_progress_bar"/>
 
     </RelativeLayout>
+
+    <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
+
+    <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_image_exif"/>
 
 </com.chanapps.four.component.CheckableLinearLayout>

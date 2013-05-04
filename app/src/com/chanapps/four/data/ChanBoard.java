@@ -35,10 +35,9 @@ public class ChanBoard {
 	public static final String TAG = ChanBoard.class.getSimpleName();
 
     private static final boolean DEBUG = false;
-    public static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
-    public static final int NUM_RELATED_BOARDS = 3;
-    public static final int NUM_RELATED_THREADS = 3;
-
+    private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
+    private static final int NUM_RELATED_BOARDS = 3;
+    private static final int NUM_RELATED_THREADS = 3;
 
     public ChanBoard() {
 		// public default constructor for Jackson
@@ -118,10 +117,7 @@ public class ChanBoard {
 		if (boards == null) {
 			initBoards(context);
 		}
-        //if (boardType.isCategory())
-            return boardsByType.get(boardType);
-        //else
-        //    return null;
+        return boardsByType.get(boardType);
 	}
 
 	public static ChanBoard getBoardByCode(Context context, String boardCode) {
@@ -201,6 +197,10 @@ public class ChanBoard {
 
     public static int getRandomImageResourceId(String boardCode, long postNo) {
         return ChanBoard.getImageResourceId(boardCode, postNo, (int)(Math.random() * NUM_DEFAULT_IMAGES_PER_BOARD));
+    }
+
+    public int getRandomImageResourceId() {
+        return ChanBoard.getRandomImageResourceId(link, 0);
     }
 
     public static int getImageResourceId(String boardCode, long postNo, int index) { // allows special-casing first (usually sticky) and multiple
@@ -416,7 +416,7 @@ public class ChanBoard {
     }
 
     public Object[] makeRow() { // for board selector
-        return ChanThread.makeBoardRow(link, name, getImageResourceId());
+        return ChanThread.makeBoardRow(link, name, getRandomImageResourceId());
     }
 
     /*
@@ -607,4 +607,19 @@ public class ChanBoard {
                 i);
     }
 
+    public List<ChanBoard> relatedBoards(Context context) {
+        List<ChanBoard> boardList = new ArrayList<ChanBoard>(NUM_RELATED_BOARDS);
+        List<ChanBoard> relatedBoards = ChanBoard.getBoardsByType(context, boardType);
+        Collections.shuffle(relatedBoards);
+        int j = 0;
+        for (ChanBoard relatedBoard : relatedBoards) {
+            if (j >= NUM_RELATED_BOARDS)
+                break;
+            if (!link.equals(relatedBoard.link)) {
+                boardList.add(relatedBoard);
+                j++;
+            }
+        }
+        return boardList;
+    }
 }
