@@ -136,8 +136,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
                 boolean freshFetch;
                 if (onDisk) {
                     freshFetch = false;
-                }
-                else {
+                } else {
                     if (ChanBoard.WATCH_BOARD_CODE.equals(widgetConf.boardCode)) {
                         freshFetch = false;
                     }
@@ -148,13 +147,15 @@ public class WidgetConfigureActivity extends FragmentActivity {
                         freshFetch = FetchChanDataService.scheduleBoardFetchWithPriority(context, widgetConf.boardCode);
                     }
                 }
-                if (freshFetch)
+                
+                if (freshFetch) {
                     (new Handler()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             setBoardImages();
                         }
                     }, DELAY_BOARD_IMAGE_MS);
+                }
             }
 
             @Override

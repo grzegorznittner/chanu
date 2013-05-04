@@ -30,7 +30,7 @@ import com.chanapps.four.widget.BoardWidgetProvider;
 
 public class MobileProfile extends AbstractNetworkProfile {
 	private static final String TAG = MobileProfile.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	private String networkType = "3G";
 	
@@ -367,14 +367,8 @@ public class MobileProfile extends AbstractNetworkProfile {
 
     private void handleBoardParseSuccess(ChanIdentifiedService service) {
         ChanActivityId data = service.getChanActivityId();
-        final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-        ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
 
-        boolean isBoardActivity = currentActivityId != null
-                && currentActivityId.boardCode != null
-                && currentActivityId.boardCode.equals(data.boardCode);
-        ChanBoard board;
-
+        ChanBoard board = null;
         if (data.priority) {
             board = ChanFileStorage.loadFreshBoardData(service.getApplicationContext(), data.boardCode);
         } else {
@@ -389,18 +383,26 @@ public class MobileProfile extends AbstractNetworkProfile {
             return;
         }
 
-    	boolean priority = currentActivityId.priority || data.priority;
-    	Log.e(TAG,  "updateBoardData " + board.loadedThreads.length + ", priority: " + priority + ", defData: " + board.defData);
+    	Log.e(TAG,  "updateBoardData " + board.loadedThreads.length + ", priority: " + data.priority + ", defData: " + board.defData);
 		boolean oldEnough = false; //Calendar.getInstance().getTimeInMillis() - board.lastFetched > ChanBoard.MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST;
-    	if (priority || board.defData || oldEnough) {
-    		board.threads = board.loadedThreads;
-    		board.loadedThreads = new ChanThread[0];
-    		board.newThreads = 0;
-    		board.updatedThreads = 0;
+    	if (data.priority || board.defData || oldEnough) {
+    		if (!data.priority) {
+    			// priority requests do this above (see call to ChanFileStorage.loadFreshBoardData)
+	    		board.threads = board.loadedThreads;
+	    		board.loadedThreads = new ChanThread[0];
+	    		board.newThreads = 0;
+	    		board.updatedThreads = 0;
+    		}
 
+            final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+            ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
+            boolean isBoardActivity = currentActivityId != null
+                    && currentActivityId.boardCode != null
+                    && currentActivityId.boardCode.equals(data.boardCode)
+                    && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY;
     		// user is on the board page, we need to be reloaded it
 	        Handler handler = activity.getChanHandler();
-	        if (isBoardActivity && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY && handler != null) {        	
+	        if (isBoardActivity && handler != null) {        	
 	            handler.post(new Runnable() {
 		            @Override
 		            public void run() {
@@ -412,7 +414,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 
         // tell it to refresh widgets for board if any are configured
         if (DEBUG) Log.i(TAG, "Calling widget provider update for boardCode=" + data.boardCode);
-        BoardWidgetProvider.updateAll(activity.getBaseContext(), data.boardCode);
+        BoardWidgetProvider.updateAll(service.getApplicationContext(), data.boardCode);
     }
 
     private void handleThreadParseSuccess(ChanIdentifiedService service) {
