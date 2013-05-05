@@ -39,21 +39,6 @@ public class ChanBoard {
     private static final int NUM_RELATED_BOARDS = 3;
     private static final int NUM_RELATED_THREADS = 3;
 
-    public ChanBoard() {
-		// public default constructor for Jackson
-	}
-
-	private ChanBoard(BoardType boardType, String name, String link, int iconId,
-			boolean workSafe, boolean classic, boolean textOnly) {
-		this.boardType = boardType;
-		this.name = name;
-		this.link = link;
-		this.iconId = iconId;
-		this.workSafe = workSafe;
-		this.classic = classic;
-		this.textOnly = textOnly;
-	}
-
     public static final String WATCH_BOARD_CODE = "watch";
     public static final String POPULAR_BOARD_CODE = "popular";
     public static final String LATEST_BOARD_CODE = "latest";
@@ -78,23 +63,39 @@ public class ChanBoard {
     public long lastFetched;
     public boolean defData = false;
 
-	public ChanBoard copy() {
-		ChanBoard copy = new ChanBoard(this.boardType, this.name, this.link, this.iconId,
-				this.workSafe, this.classic, this.textOnly);
-		return copy;
-	}
+    private static List<ChanBoard> boards = new ArrayList<ChanBoard>();
+    private static List<ChanBoard> safeBoards = new ArrayList<ChanBoard>();
+    private static Map<BoardType, List<ChanBoard>> boardsByType = new HashMap<BoardType, List<ChanBoard>>();
+    private static Map<String, ChanBoard> boardByCode = new HashMap<String, ChanBoard>();
+    private static Map<String, List<ChanBoard>> relatedBoards = new HashMap<String, List<ChanBoard>>();
 
-	public String toString() {
-        return "Board " + link + " page: " + no + ", stickyPosts: " + stickyPosts.length
-        		+ ", threads: " + threads.length + ", newThreads: " + loadedThreads.length;
+    public ChanBoard() {
+        // public default constructor for Jackson
     }
 
-    private static List<ChanBoard> boards;
-    private static List<ChanBoard> safeBoards;
-    private static Map<BoardType, List<ChanBoard>> boardsByType;
-    private static Map<String, ChanBoard> boardByCode;
+    private ChanBoard(BoardType boardType, String name, String link, int iconId,
+                      boolean workSafe, boolean classic, boolean textOnly) {
+        this.boardType = boardType;
+        this.name = name;
+        this.link = link;
+        this.iconId = iconId;
+        this.workSafe = workSafe;
+        this.classic = classic;
+        this.textOnly = textOnly;
+    }
 
-	public static List<ChanBoard> getBoards(Context context) {
+    public ChanBoard copy() {
+        ChanBoard copy = new ChanBoard(this.boardType, this.name, this.link, this.iconId,
+                this.workSafe, this.classic, this.textOnly);
+        return copy;
+    }
+
+    public String toString() {
+        return "Board " + link + " page: " + no + ", stickyPosts: " + stickyPosts.length
+                + ", threads: " + threads.length + ", newThreads: " + loadedThreads.length;
+    }
+
+    public static List<ChanBoard> getBoards(Context context) {
 		if (boards == null) {
 			initBoards(context);
 		}
@@ -132,6 +133,7 @@ public class ChanBoard {
         safeBoards = new ArrayList<ChanBoard>();
         boardsByType = new HashMap<BoardType, List<ChanBoard>>();
         boardByCode = new HashMap<String, ChanBoard>();
+        relatedBoards = new HashMap<String, List<ChanBoard>>();
 
         String[][] boardCodesByType = initBoardCodes(ctx);
 
@@ -165,6 +167,18 @@ public class ChanBoard {
                 return lhs.link.compareToIgnoreCase(rhs.link);
             }
         });
+
+        String[][] relatedBoardCodes = initRelatedBoards(ctx);
+        for (String[] relatedBoardCodeArray : relatedBoardCodes) {
+            String boardCode = relatedBoardCodeArray[0];
+            List<ChanBoard> relatedBoardList = new ArrayList<ChanBoard>();
+            for (int i = 1; i < relatedBoardCodeArray.length; i++) {
+                String relatedBoardCode = relatedBoardCodeArray[i];
+                ChanBoard relatedBoard = boardByCode.get(relatedBoardCode);
+                relatedBoardList.add(relatedBoard);
+            }
+            relatedBoards.put(boardCode, relatedBoardList);
+        }
 
     }
 
@@ -229,6 +243,72 @@ public class ChanBoard {
             }
         }
         return imageId;
+    }
+
+    private static String[][] initRelatedBoards(Context ctx) {
+        String[][] relatedBoardCodes = {
+                { "a", "c", "w", "m", "cgl", "cm", "jp", "vp", "co", "tv", "h", "d", "e", "y", "u", "d", "t" },
+                { "c", "a", "w", "cm", "vp", "mlp", "e", "u" },
+                { "w", "a", "wg", "p" },
+                { "m", "a", "n", "o", "k", "tg", "toy" },
+                { "cgl", "fa", "jp", "tv", "co" },
+                { "cm", "a", "c", "fit", "hm", "y" },
+                { "n", "o", "trv", "g" },
+                { "jp", "cgl", "a", "co", "i", "h" },
+                { "vp", "mlp", "co", "tv", "toy" },
+                { "v", "vg", "vr", "g", "o", "k", "sp" },
+                { "vg", "v", "vr", "g", "o", "k", "sp" },
+                { "vr", "vg", "v", "g", "diy", "tg" },
+                { "co", "a", "cgl", "vp", "tv", "t" },
+                { "g", "sci", "o", "k", "diy", "v", "n" },
+                { "tv", "co", "a", "lit", "wsg", "t" },
+                { "k", "m", "o", "toy", "g", "out" },
+                { "o", "g", "k", "out", "n" },
+                { "an", "toy", "p", "vp" },
+                { "tg", "vr", "toy", "diy", "po" },
+                { "sp", "asp", "out", "v", "vg", "fit", "k" },
+                { "asp", "sp", "out", "fit", "p", "n" },
+                { "int", "trv", "jp", "adv", "pol", "q", "b" },
+                { "out", "o", "fit", "k", "n", "p", "trv" },
+                { "i", "po", "p", "ic", "3", "gd", "jp", "e" },
+                { "po", "jp", "tg", "diy", "i", "ic", "3", "gd" },
+                { "p", "out", "tv", "an", "ic", "wg", "s", "hr" },
+                { "ck", "jp", "adv", "fit", "int", "trv" },
+                { "ic", "i", "po", "adv", "gd", "3", "diy" },
+                { "wg", "w", "p", "ic", "gd", "3" },
+                { "mu", "lit", "tv", "p", "ic" },
+                { "fa", "cgl", "p", "ic", "adv", "diy" },
+                { "toy", "an", "jp", "vp", "co" },
+                { "3", "i", "ic", "po", "gd" },
+                { "gd", "i", "ic", "p", "po" },
+                { "diy", "n", "o", "k", "po", "gd", "toy" },
+                { "wsg", "tv", "co", "wg", "gif", "b" },
+                { "q", "adv", "lgbt", "wsg", "pol", "r9k", "soc", "r", "b" },
+                { "trv", "int", "pol", "p", "wg", "soc", "x" },
+                { "fit", "cm", "c", "ck", "out", "sp", "asp", "hm", "s", "hc" },
+                { "x", "p", "int", "trv", "lit", "adv" },
+                { "adv", "q", "trv", "x", "ic", "soc", "r9k", "s4s", "pol", "b" },
+                { "lgbt", "c", "cm", "adv", "s", "hm", "y", "u", "q", "soc", "s4s", "pol" },
+                { "mlp", "vp", "co", "tv", "toy", "d", "b" },
+                { "s", "hc", "e", "hr", "h", "t", "u", "gif", "fa", "fit", "r", "b" },
+                { "hc", "s", "h", "d", "gif", "r", "b", "t", "b" },
+                { "hm", "cm", "y", "fit", "lgbt", "fa", "b" },
+                { "h", "d", "e", "y", "u", "a", "c", "t" },
+                { "e", "h", "c", "s", "u", "d" },
+                { "u", "e", "c", "s", "lgbt", "h", "d" },
+                { "d", "h", "hc", "t", "mlp" },
+                { "y", "hm", "cm", "h", "hd", "lgbt", "fit", "fa" },
+                { "t", "tv", "co", "a", "hc", "h", "hd", "r" },
+                { "hr", "p", "gif", "s", "hc" },
+                { "gif", "wsg", "hc", "s", "hr", "tv", "b" },
+                { "b", "pol", "int", "hc", "s", "q", "soc", "s4s", "r9k", "adv", "a", "v", "tg" },
+                { "r", "r9k", "t", "hc", "soc", "b", "s" },
+                { "r9k", "b", "s4s", "q", "soc", "adv" },
+                { "pol", "int", "b", "s4s", "q" },
+                { "soc", "adv", "r9k", "b", "trv" },
+                { "s4s", "pol", "b", "q" }
+        };
+        return relatedBoardCodes;
     }
 
     private static String[][] initBoardCodes(Context ctx) {
@@ -470,6 +550,8 @@ public class ChanBoard {
     }
 
     public Object[] makePostBoardLinkRow(Context context) {
+        //List<ChanBoard> related = relatedBoards(context);
+
         return null;
     }
 
@@ -608,11 +690,23 @@ public class ChanBoard {
     }
 
     public List<ChanBoard> relatedBoards(Context context) {
+        if (boards == null)
+            initBoards(context);
+        List<ChanBoard> boards = relatedBoards.get(link);
+
+        boolean showAdult = PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
+        List<ChanBoard> filteredBoards = new ArrayList<ChanBoard>();
+        for (ChanBoard board : boards) {
+            if (board.workSafe || showAdult)
+                filteredBoards.add(board);
+        }
+
+        Collections.shuffle(filteredBoards);
         List<ChanBoard> boardList = new ArrayList<ChanBoard>(NUM_RELATED_BOARDS);
-        List<ChanBoard> relatedBoards = ChanBoard.getBoardsByType(context, boardType);
-        Collections.shuffle(relatedBoards);
         int j = 0;
-        for (ChanBoard relatedBoard : relatedBoards) {
+        for (ChanBoard relatedBoard : filteredBoards) {
             if (j >= NUM_RELATED_BOARDS)
                 break;
             if (!link.equals(relatedBoard.link)) {
@@ -622,4 +716,5 @@ public class ChanBoard {
         }
         return boardList;
     }
+
 }
