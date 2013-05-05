@@ -49,7 +49,7 @@ public class BoardActivity
         implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity, OnClickListener
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
     private static final int THUMB_WIDTH_PX = 150;
     private static final int THUMB_HEIGHT_PX = 150;

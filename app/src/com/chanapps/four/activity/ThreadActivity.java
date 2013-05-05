@@ -78,9 +78,9 @@ public class ThreadActivity
     public static final boolean DEBUG = false;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
-    protected static final int ITEM_THUMB_WIDTH_DP = 80;
-    protected static final int ITEM_THUMB_MAXHEIGHT_DP = ITEM_THUMB_WIDTH_DP;
-    protected static final int ITEM_THUMB_EMPTY_DP = 8;
+    public static final int ITEM_THUMB_WIDTH_DP = 96;
+    public static final int ITEM_THUMB_MAXHEIGHT_DP = ITEM_THUMB_WIDTH_DP;
+    public static final int ITEM_THUMB_EMPTY_DP = 8;
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
 
@@ -329,7 +329,10 @@ public class ThreadActivity
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         item.setTag((flags | ChanPost.FLAG_IS_AD) > 0 ? null : postId);
         item.setTag(R.id.THREAD_VIEW_IS_EXPANDED, new Boolean(false));
-        /*
+        ViewGroup itemHeaderWrapper = (ViewGroup)item.findViewById(R.id.list_item_header_wrapper);
+        ViewGroup.LayoutParams params = itemHeaderWrapper.getLayoutParams();
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+/*
         boolean clickable = (flags & (
                         ChanPost.FLAG_IS_AD |
                         ChanPost.FLAG_IS_THREADLINK |
@@ -403,7 +406,7 @@ public class ThreadActivity
             final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
             if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
             if ((flags & (ChanPost.FLAG_HAS_IMAGE | ChanPost.FLAG_HAS_EXIF | ChanPost.FLAG_HAS_SPOILER)) > 0) {
-                (new ThreadExpandImageOnClickListener(ThreadActivity.this, cursor, itemView)).onClick(itemView);
+                (new ThreadExpandImageOnClickListener(getApplicationContext(), cursor, itemView)).onClick(itemView);
                 itemView.setTag(R.id.THREAD_VIEW_IS_EXPANDED, new Boolean(true));
             }
         }
@@ -419,6 +422,7 @@ public class ThreadActivity
     private boolean setItemSubject(final TextView tv, final Cursor cursor, int flags) {
         if ((flags & ChanPost.FLAG_HAS_SUBJECT) == 0
                 || (flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE)) > 0) {
+            tv.setText("");
             tv.setVisibility(View.GONE);
             return true;
         }
@@ -438,6 +442,7 @@ public class ThreadActivity
 
     private boolean setItemTitle(final TextView tv, final Cursor cursor, int flags) {
         if ((flags & ChanPost.FLAG_IS_TITLE) == 0) {
+            tv.setText("");
             tv.setVisibility(View.GONE);
             return true;
         }
@@ -452,10 +457,12 @@ public class ThreadActivity
         if ((flags & ChanPost.FLAG_IS_AD) == 0 && (flags & ChanPost.FLAG_HAS_TEXT) > 0) {
             String postText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
             tv.setText(Html.fromHtml(postText));
+            /*
             if (cursor.getPosition() != 0 && (flags & ChanPost.FLAG_HAS_IMAGE) > 0) // has image
                 tv.setPadding(0, padding8DP, 0, padding8DP);
             else
                 tv.setPadding(0, 0, 0, padding8DP);
+            */
             tv.setVisibility(View.VISIBLE);
         }
         else {
@@ -466,6 +473,7 @@ public class ThreadActivity
     }
 
     private boolean setItemImageExifValue(final TextView tv) {
+        tv.setText("");
         tv.setVisibility(View.GONE);
         return true;
     }
@@ -550,6 +558,7 @@ public class ThreadActivity
     }
 
     private boolean setItemImageExpanded(final ImageView iv, final Cursor cursor, int flags) {
+        ChanHelper.clearBigImageView(iv);
         iv.setVisibility(View.GONE);
         if ((flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE | ChanPost.FLAG_IS_THREADLINK)) == 0)
             iv.setOnClickListener(new ThreadImageOnClickListener(this, cursor));
@@ -569,8 +578,8 @@ public class ThreadActivity
             imageLoader.displayImage(countryFlagImageUrl, iv, displayImageOptions);
         }
         else {
-            iv.setVisibility(View.GONE);
             iv.setImageBitmap(null);
+            iv.setVisibility(View.GONE);
         }
         return true;
     }

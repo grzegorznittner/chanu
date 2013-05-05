@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class ChanPostResponse {
 
     private static final String TAG = ChanPostResponse.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private Context ctx = null;
     private String response = null;
