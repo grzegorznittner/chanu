@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -211,6 +212,7 @@ public class ChanFileStorage {
 				mapper.writeValue(threadFile, thread);
 			} finally {
 			}
+			updateWatchedThread(context, thread);
 			if (DEBUG) Log.i(TAG, "Stored " + thread.posts.length + " posts for thread '" + thread.board + FILE_SEP + thread.no + "'");
 		} else {
 			Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
@@ -313,11 +315,10 @@ public class ChanFileStorage {
 		thread.tim = thread.created.getTime() * 1000;
 		thread.tn_w = 240;
 		thread.tn_h = 240;
-		thread.defData = true;
+		thread.defData = !ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode);
 		
 		board.threads = new ChanThread[] { thread };
 		board.lastFetched = 0;
-		board.defData = true;
 		
 		return board;
 	}
@@ -600,4 +601,57 @@ public class ChanFileStorage {
         return 0;
     }
 
+    public static void addWatchedThread(Context context, ChanThread thread) throws IOException {
+    	ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+    	if (isThreadWatched(board, thread)) {
+    		return;
+    	}
+    	List<ChanPost> newThreads = new ArrayList<ChanPost>(Arrays.asList(board.threads));
+    	newThreads.add(thread);
+    	board.threads = newThreads.toArray(new ChanPost[]{});
+    	
+    	storeBoardData(context, board);
+    }
+    
+    public static void deleteWatchedThread(Context context, ChanThread thread) throws IOException {
+    	ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+    	List<ChanPost> newThreads = new ArrayList<ChanPost>(Arrays.asList(board.threads));
+    	for (ChanPost post : board.threads) {
+    		if (post.no == thread.no) {
+    			newThreads.remove(post);
+    		}
+    	}
+    	board.threads = newThreads.toArray(new ChanPost[]{});
+    	
+    	storeBoardData(context, board);
+    }
+
+    public static void clearWatchedThreads(Context context) throws IOException {
+    	ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+    	board.threads = new ChanPost[]{};
+    	
+    	storeBoardData(context, board);
+    }
+    
+    private static void updateWatchedThread(Context context, ChanThread watchedThread) throws IOException {
+    	ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+    	ChanThread thread = null;
+    	for (int i = 0; i < board.threads.length; i++) {
+    		thread = (ChanThread)board.threads[i];
+    		if (thread.no == watchedThread.no) {
+    			board.threads[i] = watchedThread;
+    			
+    	    	storeBoardData(context, board);
+    		}
+    	}
+    }
+    
+	private static boolean isThreadWatched(ChanBoard board, ChanThread thread) {
+		for (ChanPost post : board.threads) {
+			if (post.no == thread.no) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
