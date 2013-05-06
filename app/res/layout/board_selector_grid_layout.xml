@@ -48,4 +48,6 @@
     </LinearLayout>
         -->
 
+    <include layout="@layout/tutorial_overlay"/>
+
 </RelativeLayout>

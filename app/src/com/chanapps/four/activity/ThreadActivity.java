@@ -272,7 +272,9 @@ public class ThreadActivity
     @Override
     protected void createAbsListView() {
         setAbsListViewClass();
-        setContentView(getLayoutId());
+        View layout = View.inflate(getApplicationContext(), getLayoutId(), null);
+        setContentView(layout);
+        tutorialOverlay = new TutorialOverlay(layout, TutorialOverlay.Page.THREAD);
         initAbsListView();
         initAdapter();
         setupContextMenu();

@@ -722,8 +722,9 @@
     <color name="PaletteLightBlack">#ff030303</color>
     <color name="PaletteBlack">#ff010101</color>
     <color name="PaletteBlackHalfOpacity">#80010101</color>
-    <color name="PaletteTextOverlayBackground">#a0010101</color>
+    <color name="PaletteBlack34Opacity">#d0010101</color>
     <color name="PaletteBlackMostlyOpaque">#ec000000</color>
+    <color name="PaletteTextOverlayBackground">#a0010101</color>
     <color name="popupbackground">#fff0f0f0</color>
 
     <color name="blue_base">#449def</color>

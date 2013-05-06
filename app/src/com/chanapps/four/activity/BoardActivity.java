@@ -57,6 +57,7 @@ public class BoardActivity
     protected AbstractBoardCursorAdapter adapter;
     protected AbsListView absListView;
     protected Class absListViewClass = GridView.class;
+    protected TutorialOverlay tutorialOverlay;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
     protected int scrollOnNextLoaderFinished = -1;
@@ -120,16 +121,12 @@ public class BoardActivity
         query = getIntent().hasExtra(SearchManager.QUERY)
                 ? getIntent().getStringExtra(SearchManager.QUERY)
                 : "";
-        //loadFromIntentOrPrefs();
         initImageLoader();
         createAbsListView();
         ensureHandler();
         ensureSubjectTypeface();
         initPaddings();
         LoaderManager.enableDebugLogging(true);
-        //getSupportLoaderManager().restartLoader(0, null, this);
-        if (DEBUG) Log.v(TAG, "onCreate init loader");
-        //progressBar = (ProgressBar)findViewById(R.id.board_progress_bar);
     }
 
     protected void initPaddings() {
@@ -234,7 +231,9 @@ public class BoardActivity
 
     protected void createAbsListView() {
         setAbsListViewClass();
-        setContentView(getLayoutId());
+        View layout = View.inflate(getApplicationContext(), getLayoutId(), null);
+        setContentView(layout);
+        tutorialOverlay = new TutorialOverlay(layout, TutorialOverlay.Page.BOARD);
         initAbsListView();
         initAdapter();
         absListView.setClickable(true);
@@ -667,9 +666,9 @@ public class BoardActivity
                 Intent intent = new Intent(this, BoardSelectorActivity.class);
                 intent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.getBoardByCode(this, boardCode).boardType.toString());
                 intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
-                if (!NavUtils.shouldUpRecreateTask(this, intent)) {
+                //if (!NavUtils.shouldUpRecreateTask(this, intent)) {
                     NavUtils.navigateUpTo(this, intent);
-                }
+                //}
                 return true;
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);

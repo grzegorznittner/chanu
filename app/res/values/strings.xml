@@ -1,4 +1,5 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
+
     <!-- titles -->
     <string name="app_name">Chanu</string>
     <string name="application_name">Chanu</string>
@@ -513,6 +514,20 @@
     <string name="mobile_profile_parse_board_fail">Couldn\'t parse /%1$s/</string>
     <string name="mobile_profile_parse_thread_fail">Couldn\'t parse /%1$s/%2$d</string>
     <string name="no_connection_profile">Offline mode</string>
+
+    <!-- tutorial -->
+    <string name="tutorial_overlay_button">Got It</string>
+    <string name="tutorial_overlay_button_description">Dismiss tutorial</string>
+    <string name="tutorial_overlay_subject_boardlist">Welcome to the Boards</string>
+    <string name="tutorial_overlay_detail_boardlist">On Chanu, people post images on boards and discuss them.  Click a board to see its posts.</string>
+    <string name="tutorial_overlay_subject_recent">Popular Threads</string>
+    <string name="tutorial_overlay_detail_recent">Browse popular threads, visit recent posts, and view the latest images</string>
+    <string name="tutorial_overlay_subject_watchlist">Watchlist</string>
+    <string name="tutorial_overlay_detail_watchlist">Keep track of threads with the watchlist.</string>
+    <string name="tutorial_overlay_subject_board">Board View</string>
+    <string name="tutorial_overlay_detail_board">Browse uploaded images organized into thread topics.  Click a thread to see the discussion.</string>
+    <string name="tutorial_overlay_subject_thread">Thread View</string>
+    <string name="tutorial_overlay_detail_thread">The first image starts the discussion, text and image replies follow.</string>
 
     <!-- board names -->
     <string name="board_type_worksafe">Worksafe</string>
