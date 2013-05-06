@@ -381,6 +381,18 @@ public class ThreadActivity
         }
     };
 
+    protected View.OnClickListener itemBoardLinkListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = absListView.getPositionForView(v);
+            Cursor cursor = adapter.getCursor();
+            cursor.moveToPosition(pos);
+            String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+            if (linkedBoardCode != null && !linkedBoardCode.isEmpty())
+                BoardActivity.startActivity(ThreadActivity.this, linkedBoardCode);
+        }
+    };
+
     protected View.OnClickListener itemExpandListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -560,7 +572,10 @@ public class ThreadActivity
     private boolean setItemImageExpanded(final ImageView iv, final Cursor cursor, int flags) {
         ChanHelper.clearBigImageView(iv);
         iv.setVisibility(View.GONE);
-        if ((flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE | ChanPost.FLAG_IS_THREADLINK)) == 0)
+        if ((flags & (ChanPost.FLAG_IS_AD
+                | ChanPost.FLAG_IS_TITLE
+                | ChanPost.FLAG_IS_THREADLINK
+                | ChanPost.FLAG_IS_BOARDLINK)) == 0)
             iv.setOnClickListener(new ThreadImageOnClickListener(this, cursor));
         return true;
     }
@@ -998,6 +1013,8 @@ public class ThreadActivity
             itemAdListener.onClick(view);
         else if ((flags & ChanPost.FLAG_IS_THREADLINK) > 0)
             itemThreadLinkListener.onClick(view);
+        else if ((flags & ChanPost.FLAG_IS_BOARDLINK) > 0)
+            itemBoardLinkListener.onClick(view);
         else if ((flags & (ChanPost.FLAG_HAS_IMAGE | ChanPost.FLAG_HAS_EXIF | ChanPost.FLAG_HAS_SPOILER)) > 0)
             itemExpandListener.onClick(view);
     }

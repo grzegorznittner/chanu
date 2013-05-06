@@ -60,6 +60,7 @@ public class ChanPost {
     public static final int FLAG_IS_AD = 0x100;
     public static final int FLAG_IS_TITLE = 0x200;
     public static final int FLAG_IS_THREADLINK = 0x400;
+    public static final int FLAG_IS_BOARDLINK = 0x800;
 
     private int postFlags(boolean isAd, boolean isThreadLink, String subject, String text, String exifText) {
         int flags = 0;
@@ -883,6 +884,36 @@ public class ChanPost {
                 thumbnailId(),
                 ext,
                 postFlags(false, true, textComponents[0], "", "")
+        };
+    }
+
+    public static Object[] makeBoardLinkRow(ChanBoard board) {
+        int drawableId = board.getRandomImageResourceId();
+        return new Object[] {
+                board.link.hashCode(),
+                board.link,
+                0,
+                "drawable://" + drawableId,
+                "",
+                "",
+                "",
+                board.name,
+                "",
+                250,
+                250,
+                -1,
+                -1,
+                0,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                drawableId,
+                "",
+                FLAG_HAS_IMAGE | FLAG_HAS_SUBJECT | FLAG_IS_BOARDLINK
         };
     }
 

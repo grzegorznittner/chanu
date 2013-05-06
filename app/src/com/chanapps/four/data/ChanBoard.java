@@ -34,7 +34,7 @@ public class ChanBoard {
 
 	public static final String TAG = ChanBoard.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
     private static final int NUM_RELATED_BOARDS = 3;
     private static final int NUM_RELATED_THREADS = 3;
@@ -96,16 +96,12 @@ public class ChanBoard {
     }
 
     public static List<ChanBoard> getBoards(Context context) {
-		if (boards == null) {
-			initBoards(context);
-		}
+        initBoards(context);
 		return boards;
 	}
 
     public static List<ChanBoard> getBoardsRespectingNSFW(Context context) {
-        if (boards == null) {
-            initBoards(context);
-        }
+        initBoards(context);
         return showNSFW(context) ? boards : safeBoards;
     }
 
@@ -114,21 +110,22 @@ public class ChanBoard {
         return prefs.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
     }
 
-	public static List<ChanBoard> getBoardsByType(Context context, BoardType boardType) {
-		if (boards == null) {
-			initBoards(context);
-		}
+    public static List<ChanBoard> getBoardsByType(Context context, BoardType boardType) {
+        initBoards(context);
         return boardsByType.get(boardType);
 	}
 
 	public static ChanBoard getBoardByCode(Context context, String boardCode) {
-        if (boards == null) {
-            initBoards(context);
-   		}
+        initBoards(context);
         return boardByCode.get(boardCode);
 	}
 	
 	public static synchronized void initBoards(Context ctx) {
+        if (boards != null && boards.size() > 0) {
+            return;
+        }
+
+        if (DEBUG) Log.i(TAG, "Initializing boards");
         boards = new ArrayList<ChanBoard>();
         safeBoards = new ArrayList<ChanBoard>();
         boardsByType = new HashMap<BoardType, List<ChanBoard>>();
@@ -168,7 +165,7 @@ public class ChanBoard {
             }
         });
 
-        String[][] relatedBoardCodes = initRelatedBoards(ctx);
+        String[][] relatedBoardCodes = initRelatedBoards();
         for (String[] relatedBoardCodeArray : relatedBoardCodes) {
             String boardCode = relatedBoardCodeArray[0];
             List<ChanBoard> relatedBoardList = new ArrayList<ChanBoard>();
@@ -178,6 +175,7 @@ public class ChanBoard {
                 relatedBoardList.add(relatedBoard);
             }
             relatedBoards.put(boardCode, relatedBoardList);
+            if (DEBUG) Log.i(TAG, "Initialized /" + boardCode + "/ with " + relatedBoardList.size() + " related boards");
         }
 
     }
@@ -245,7 +243,7 @@ public class ChanBoard {
         return imageId;
     }
 
-    private static String[][] initRelatedBoards(Context ctx) {
+    private static String[][] initRelatedBoards() {
         String[][] relatedBoardCodes = {
                 { "a", "c", "w", "m", "cgl", "cm", "jp", "vp", "co", "tv", "h", "d", "e", "y", "u", "d", "t" },
                 { "c", "a", "w", "cm", "vp", "mlp", "e", "u" },
@@ -515,6 +513,10 @@ public class ChanBoard {
         return ChanPost.makeTitleRow(link, context.getString(R.string.thread_related_threads_title));
     }
 
+    public Object[] makePostRelatedBoardsHeaderRow(Context context) {
+        return ChanPost.makeTitleRow(link, context.getString(R.string.board_related_boards_title).toUpperCase());
+    }
+
     public List<Object[]> makePostRelatedThreadsRows(Context context, long threadNo, String searchText) {
         List<Object[]> rows = new ArrayList<Object[]>();
         if (threadNo == 0 || threads == null)
@@ -550,9 +552,7 @@ public class ChanBoard {
     }
 
     public Object[] makePostBoardLinkRow(Context context) {
-        //List<ChanBoard> related = relatedBoards(context);
-
-        return null;
+        return ChanPost.makeBoardLinkRow(this);
     }
 
     public void updateCountersAfterLoad() {
@@ -575,7 +575,7 @@ public class ChanBoard {
     			newThreads++;
     		}
     	}
-    	Log.e(TAG, "Updated board " + name + ", " + newThreads + " new threads, " + updatedThreads + " updated threads.");
+    	if (DEBUG) Log.i(TAG, "Updated board " + name + ", " + newThreads + " new threads, " + updatedThreads + " updated threads.");
     }
 
     public static void setupActionBarBoardSpinner(final Activity activity, final Menu menu, final String currentBoardCode) {
@@ -690,16 +690,21 @@ public class ChanBoard {
     }
 
     public List<ChanBoard> relatedBoards(Context context) {
-        if (boards == null)
-            initBoards(context);
+        initBoards(context);
+        if (isVirtualBoard())
+            return new ArrayList<ChanBoard>();
+
         List<ChanBoard> boards = relatedBoards.get(link);
+        if (DEBUG) Log.i(TAG, "Found " + (boards == null ? 0 : boards.size()) + " related boards for /" + link + "/");
+        if (boards == null)
+            return new ArrayList<ChanBoard>();
 
         boolean showAdult = PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
         List<ChanBoard> filteredBoards = new ArrayList<ChanBoard>();
         for (ChanBoard board : boards) {
-            if (board.workSafe || showAdult)
+            if (board != null && (board.workSafe || showAdult))
                 filteredBoards.add(board);
         }
 
