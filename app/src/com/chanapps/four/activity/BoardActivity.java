@@ -645,13 +645,18 @@ public class BoardActivity
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         ChanHelper.simulateClickAnim(this, view);
-        if ((flags & ChanThread.THREAD_FLAG_AD) == 0) {
-            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-            ThreadActivity.startActivity(this, boardCode, threadNo);
-        }
-        else {
+        if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
             final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
             ChanHelper.launchUrlInBrowser(this, clickUrl);
+        }
+        else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
+            final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            ThreadActivity.startActivity(this, boardLink);
+        }
+        else {
+            final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+            ThreadActivity.startActivity(this, boardLink, threadNo);
         }
     }
 
