@@ -17,10 +17,12 @@ import android.view.View;
 import android.widget.ImageView;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.loader.ChanImageLoader;
 
 public class IconPreferenceScreen extends Preference {
 
-    private Drawable mIcon;
+    private Context context;
+    private TypedArray typedArray;
 
     public IconPreferenceScreen(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -28,29 +30,29 @@ public class IconPreferenceScreen extends Preference {
 
     public IconPreferenceScreen(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.context = context;
         setLayoutResource(R.layout.preference_icon);
-        TypedArray a = context.obtainStyledAttributes(attrs,
+        typedArray = context.obtainStyledAttributes(attrs,
                 R.styleable.IconPreferenceScreen, defStyle, 0);
-        mIcon = a.getDrawable(R.styleable.IconPreferenceScreen_icon);
     }
 
     @Override
     public void onBindView(View view) {
         super.onBindView(view);
         ImageView imageView = (ImageView) view.findViewById(R.id.icon);
-        if (imageView != null && mIcon != null) {
-            imageView.setImageDrawable(mIcon);
+        int resourceId = typedArray.getResourceId(R.styleable.IconPreferenceScreen_icon, 0);
+        if (imageView != null && resourceId > 0) {
+            String uri = "drawable://" + resourceId;
+            ChanImageLoader.getInstance(context).displayImage(uri, imageView);
         }
     }
 
     public void setIcon(Drawable icon) {
-        if ((icon == null && mIcon != null) || (icon != null && !icon.equals(mIcon))) {
-            mIcon = icon;
-            notifyChanged();
-        }
+        // ignore
     }
 
     public Drawable getIcon() {
-        return mIcon;
+        // ignore
+        return null;
     }
 }

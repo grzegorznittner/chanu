@@ -51,7 +51,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
     public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final String MAX_FILE_SIZE = "3145728";
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private PostReplyActivity activity = null;
     private boolean usePass = false;

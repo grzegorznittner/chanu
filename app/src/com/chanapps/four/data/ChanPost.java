@@ -60,6 +60,7 @@ public class ChanPost {
     public static final int FLAG_IS_AD = 0x100;
     public static final int FLAG_IS_TITLE = 0x200;
     public static final int FLAG_IS_THREADLINK = 0x400;
+    public static final int FLAG_IS_BOARDLINK = 0x800;
 
     private int postFlags(boolean isAd, boolean isThreadLink, String subject, String text, String exifText) {
         int flags = 0;
@@ -886,6 +887,36 @@ public class ChanPost {
         };
     }
 
+    public static Object[] makeBoardLinkRow(ChanBoard board) {
+        int drawableId = board.getRandomImageResourceId();
+        return new Object[] {
+                board.link.hashCode(),
+                board.link,
+                0,
+                "drawable://" + drawableId,
+                "",
+                "",
+                "",
+                board.name,
+                "",
+                250,
+                250,
+                -1,
+                -1,
+                0,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                drawableId,
+                "",
+                FLAG_HAS_IMAGE | FLAG_HAS_SUBJECT | FLAG_IS_BOARDLINK
+        };
+    }
+
     public static Object[] makeAdRow(Context context, String boardCode, ChanAd ad) {
         String subject = context.getString(R.string.advert_header);
         return new Object[] {
@@ -944,6 +975,30 @@ public class ChanPost {
                 "",
                 FLAG_HAS_SUBJECT | FLAG_IS_TITLE
         };
+    }
+
+    public static final int MIN_TOKEN_LENGTH = 5;
+
+    public Set<String> keywords() {
+        String text = (sub == null ? "" : sub) + (com == null ? "" : com) + headline("", false);
+        String stripped = text.replaceAll("<[^>]*>|\\W+", " ");
+        String[] tokens = stripped.split("\\s+");
+        if (DEBUG) Log.v(TAG, "threadNo=" + no + " tokens=" + Arrays.toString(tokens));
+        Set<String> tokenSet = new HashSet<String>();
+        for (String token : tokens) {
+            if (token.length() > MIN_TOKEN_LENGTH || token.matches("[A-Z]+")) // all uppercase abbreviations
+                tokenSet.add(token.toLowerCase());
+        }
+        if (DEBUG) Log.v(TAG, "threadNo=" + no + " keywords=" + tokenSet);
+        return tokenSet;
+    }
+
+    public int keywordRelevance(Set<String> keywords) {
+        Set<String> tokenSet = keywords();
+        tokenSet.retainAll(keywords);
+        int relevancy = tokenSet.size();
+        if (DEBUG && relevancy > 0) Log.v(TAG, "relevancy=" + relevancy + " matching keywords=" + tokenSet);
+        return relevancy;
     }
 
 }

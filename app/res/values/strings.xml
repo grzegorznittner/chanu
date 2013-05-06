@@ -1,4 +1,5 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
+
     <!-- titles -->
     <string name="app_name">Chanu</string>
     <string name="application_name">Chanu</string>
@@ -22,7 +23,7 @@
     <string name="thread_post_collapse_button">Collapse</string>
     <string name="thread_country_flag">Country Flag</string>
     <string name="not_implemented">Not yet implemented</string>
-    <string name="thread_related_threads_title">RELATED THREADS</string>
+    <string name="thread_related_threads_title">Related Threads</string>
     <string name="thread_search">Search</string>
     <string name="thread_search_results">MATCHING POSTS FOR %1$s</string>
     <string name="thread_search_no_results">&lt;i&gt;no matches&lt;/i&gt;</string>
@@ -451,7 +452,7 @@
     <string name="pref_about_data_uil_sum">Courtesy of Sergey Tarasevich</string>
     <string name="pref_about_data_color">mColorPicker</string>
     <string name="pref_about_data_color_sum">Courtesy of Daniel Nilsson</string>
-    <string name="pref_about_developer_category">Developers</string>
+    <string name="pref_about_developer_category">Team</string>
     <string name="pref_about_developer_chanapps">Chanapps Software</string>
     <string name="pref_about_developer_chanapps_sum">Premium provider of Android applications</string>
     <string name="pref_about_developer_burns">John Burns</string>
@@ -460,6 +461,8 @@
     <string name="pref_about_developer_nittner_sum">grzegorz.nittner@gmail.com</string>
     <string name="pref_about_developer_pop">Mircea Pop</string>
     <string name="pref_about_developer_pop_sum">mircea.pop.ro@gmail.com</string>
+    <string name="pref_about_developer_milas">Dimitris Milas</string>
+    <string name="pref_about_developer_milas_sum">dimitris.leonida.milas@gmail.com</string>
     <string name="pref_about_send_email">Send email</string>
 
     <!-- widgets -->
@@ -511,6 +514,20 @@
     <string name="mobile_profile_parse_board_fail">Couldn\'t parse /%1$s/</string>
     <string name="mobile_profile_parse_thread_fail">Couldn\'t parse /%1$s/%2$d</string>
     <string name="no_connection_profile">Offline mode</string>
+
+    <!-- tutorial -->
+    <string name="tutorial_overlay_button">Got It</string>
+    <string name="tutorial_overlay_button_description">Dismiss tutorial</string>
+    <string name="tutorial_overlay_subject_boardlist">Welcome to the Boards</string>
+    <string name="tutorial_overlay_detail_boardlist">On Chanu, people post images on boards and discuss them.  Click a board to see its posts.</string>
+    <string name="tutorial_overlay_subject_recent">Popular Threads</string>
+    <string name="tutorial_overlay_detail_recent">Browse popular threads, visit recent posts, and view the latest images</string>
+    <string name="tutorial_overlay_subject_watchlist">Watchlist</string>
+    <string name="tutorial_overlay_detail_watchlist">Keep track of threads with the watchlist.</string>
+    <string name="tutorial_overlay_subject_board">Board View</string>
+    <string name="tutorial_overlay_detail_board">Browse uploaded images organized into thread topics.  Click a thread to see the discussion.</string>
+    <string name="tutorial_overlay_subject_thread">Thread View</string>
+    <string name="tutorial_overlay_detail_thread">The first image starts the discussion, text and image replies follow.</string>
 
     <!-- board names -->
     <string name="board_type_worksafe">Worksafe</string>

@@ -16,7 +16,7 @@ public class LoaderHandler extends Handler {
 
     private ClickableLoaderActivity activity;
     private static final String TAG = LoaderHandler.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public LoaderHandler() {}
     public LoaderHandler(ClickableLoaderActivity activity) {

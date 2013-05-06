@@ -93,6 +93,12 @@
                 android:summary="@string/pref_about_developer_pop_sum"
                 />
 
+        <Preference
+                android:key="pref_about_developer_milas"
+                android:title="@string/pref_about_developer_milas"
+                android:summary="@string/pref_about_developer_milas_sum"
+                />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

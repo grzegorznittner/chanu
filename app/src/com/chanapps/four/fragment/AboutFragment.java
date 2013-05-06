@@ -44,6 +44,7 @@ public class AboutFragment extends PreferenceFragment
         emailPreference("pref_about_developer_burns", getString(R.string.pref_about_developer_burns_sum));
         emailPreference("pref_about_developer_nittner", getString(R.string.pref_about_developer_nittner_sum));
         emailPreference("pref_about_developer_pop", getString(R.string.pref_about_developer_pop_sum));
+        emailPreference("pref_about_developer_milas", getString(R.string.pref_about_developer_milas_sum));
 
     }
 

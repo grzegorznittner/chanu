@@ -30,7 +30,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanFileStorage {
 	private static final String TAG = ChanFileStorage.class.getSimpleName();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	
 	private static final int MAX_BOARDS_IN_CACHE = 100;
 	private static final int MAX_THREADS_IN_CACHE = 200;

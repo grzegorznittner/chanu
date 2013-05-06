@@ -17,7 +17,7 @@ import com.chanapps.four.service.NetworkProfileManager;
 public class SearchActivity extends Activity {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

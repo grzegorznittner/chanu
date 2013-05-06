@@ -49,7 +49,7 @@ public class BoardActivity
         implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity, OnClickListener
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
     private static final int THUMB_WIDTH_PX = 150;
     private static final int THUMB_HEIGHT_PX = 150;
@@ -57,6 +57,7 @@ public class BoardActivity
     protected AbstractBoardCursorAdapter adapter;
     protected AbsListView absListView;
     protected Class absListViewClass = GridView.class;
+    protected TutorialOverlay tutorialOverlay;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
     protected int scrollOnNextLoaderFinished = -1;
@@ -120,16 +121,12 @@ public class BoardActivity
         query = getIntent().hasExtra(SearchManager.QUERY)
                 ? getIntent().getStringExtra(SearchManager.QUERY)
                 : "";
-        //loadFromIntentOrPrefs();
         initImageLoader();
         createAbsListView();
         ensureHandler();
         ensureSubjectTypeface();
         initPaddings();
         LoaderManager.enableDebugLogging(true);
-        //getSupportLoaderManager().restartLoader(0, null, this);
-        if (DEBUG) Log.v(TAG, "onCreate init loader");
-        //progressBar = (ProgressBar)findViewById(R.id.board_progress_bar);
     }
 
     protected void initPaddings() {
@@ -234,7 +231,9 @@ public class BoardActivity
 
     protected void createAbsListView() {
         setAbsListViewClass();
-        setContentView(getLayoutId());
+        View layout = View.inflate(getApplicationContext(), getLayoutId(), null);
+        setContentView(layout);
+        tutorialOverlay = new TutorialOverlay(layout, TutorialOverlay.Page.BOARD);
         initAbsListView();
         initAdapter();
         absListView.setClickable(true);
@@ -645,13 +644,18 @@ public class BoardActivity
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         ChanHelper.simulateClickAnim(this, view);
-        if ((flags & ChanThread.THREAD_FLAG_AD) == 0) {
-            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-            ThreadActivity.startActivity(this, boardCode, threadNo);
-        }
-        else {
+        if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
             final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
             ChanHelper.launchUrlInBrowser(this, clickUrl);
+        }
+        else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
+            final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            ThreadActivity.startActivity(this, boardLink);
+        }
+        else {
+            final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+            ThreadActivity.startActivity(this, boardLink, threadNo);
         }
     }
 
@@ -662,9 +666,9 @@ public class BoardActivity
                 Intent intent = new Intent(this, BoardSelectorActivity.class);
                 intent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.getBoardByCode(this, boardCode).boardType.toString());
                 intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
-                if (!NavUtils.shouldUpRecreateTask(this, intent)) {
+                //if (!NavUtils.shouldUpRecreateTask(this, intent)) {
                     NavUtils.navigateUpTo(this, intent);
-                }
+                //}
                 return true;
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
@@ -762,7 +766,7 @@ public class BoardActivity
         a.setTitle(title);
 
         StringBuffer msg = new StringBuffer();
-        if (board.newThreads > 0 || board.updatedThreads > 0) {
+        if ((board.newThreads > 0 || board.updatedThreads > 0) && (query == null || query.isEmpty())) {
 			if (board.newThreads > 0) {
 				msg.append("" + board.newThreads + " new");
 			}

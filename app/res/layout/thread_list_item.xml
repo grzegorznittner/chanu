@@ -8,10 +8,20 @@
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            >
+        <ImageView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/list_item_header_wrapper">
         <RelativeLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper">
             <com.chanapps.four.component.StretchyImageView
                     style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
+            <ProgressBar style="@style/ThreadListItemExpandedProgressBar"
+                         android:layout_centerInParent="true"
+                         android:id="@+id/list_item_expanded_progress_bar"/>
         </RelativeLayout>
         <View
             android:id="@+id/list_item_top_spacer"
@@ -26,16 +36,5 @@
     <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
 
     <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_image_exif"/>
-
-    <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        <ImageView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded"/>
-
-        <ProgressBar style="@style/ThreadListItemExpandedProgressBar"
-                     android:layout_centerInParent="true"
-                     android:id="@+id/list_item_expanded_progress_bar"/>
-
-    </RelativeLayout>
 
 </com.chanapps.four.component.CheckableLinearLayout>

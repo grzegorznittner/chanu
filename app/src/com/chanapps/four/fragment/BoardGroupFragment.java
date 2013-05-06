@@ -20,6 +20,7 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.BoardSelectorGridCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
+import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.*;
 import com.chanapps.four.service.FetchChanDataService;
@@ -48,6 +49,7 @@ public class BoardGroupFragment
     private BoardSelectorTab boardSelectorTab;
     private ResourceCursorAdapter adapter;
     private AbsListView absListView;
+    protected TutorialOverlay tutorialOverlay;
     private TextView emptyText;
     private int columnWidth = 0;
     private int columnHeight = 0;
@@ -199,9 +201,12 @@ public class BoardGroupFragment
         if (DEBUG) Log.d(TAG, "BoardGroupFragment " + boardSelectorTab + " onCreateView");
         View layout = inflater.inflate(R.layout.board_selector_grid_layout, container, false);
         emptyText = (TextView)layout.findViewById(R.id.board_empty_text);
+        tutorialOverlay = new TutorialOverlay(layout, boardSelectorTab.tutorialPage());
         createAbsListView(layout);
         return layout;
     }
+
+
 
     @Override
     public void onResume() {

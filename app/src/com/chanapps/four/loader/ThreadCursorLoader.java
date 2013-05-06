@@ -141,17 +141,19 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             matrixCursor.addRow(board.makePostAdRow(getContext(), i));
 
         // put related threads at the bottom
-        String searchText = !query.isEmpty() ? query : thread.sub + " " + thread.com;
-        List<Object[]> rows = board.makePostRelatedThreadsRows(getContext(), threadNo, searchText);
+        List<Object[]> rows = board.makePostRelatedThreadsRows(threadNo);
         if (rows.size() > 0) {
             matrixCursor.addRow(board.makePostRelatedThreadsHeaderRow(getContext()));
             for (Object[] row : rows)
                 matrixCursor.addRow(row);
         }
-        else {
-            Object[] boardRow = board.makePostBoardLinkRow(getContext());
-            if (boardRow != null)
-                matrixCursor.addRow(boardRow);
+
+        // put related boards at the bottom
+        List<ChanBoard> boardRows = board.relatedBoards(context);
+        if (boardRows.size() > 0) {
+            matrixCursor.addRow(board.makePostRelatedBoardsHeaderRow(context));
+            for (ChanBoard relatedBoard : boardRows)
+                matrixCursor.addRow(relatedBoard.makePostBoardLinkRow());
         }
     }
 
