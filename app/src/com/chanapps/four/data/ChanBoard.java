@@ -34,7 +34,7 @@ public class ChanBoard {
 
 	public static final String TAG = ChanBoard.class.getSimpleName();
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
     private static final int NUM_RELATED_BOARDS = 3;
     private static final int NUM_RELATED_THREADS = 3;
@@ -510,26 +510,69 @@ public class ChanBoard {
     }
 
     public Object[] makePostRelatedThreadsHeaderRow(Context context) {
-        return ChanPost.makeTitleRow(link, context.getString(R.string.thread_related_threads_title));
+        return ChanPost.makeTitleRow(link, context.getString(R.string.thread_related_threads_title).toUpperCase());
     }
 
     public Object[] makePostRelatedBoardsHeaderRow(Context context) {
         return ChanPost.makeTitleRow(link, context.getString(R.string.board_related_boards_title).toUpperCase());
     }
 
-    public List<Object[]> makePostRelatedThreadsRows(Context context, long threadNo, String searchText) {
+    public List<Object[]> makePostRelatedThreadsRows(long threadNo) {
         List<Object[]> rows = new ArrayList<Object[]>();
         if (threadNo == 0 || threads == null)
             return rows;
         synchronized (threads) {
             if (threads.length == 0)
                 return rows;
-            return makePostNextThreadRows(context, threadNo, NUM_RELATED_THREADS);
+            rows = makePostRelatedThreadRows(threadNo, NUM_RELATED_THREADS);
+            if (rows.size() == 0)
+                rows = makePostNextThreadRows(threadNo, NUM_RELATED_THREADS);
+            return rows;
         }
     }
 
-    private List<Object[]> makePostNextThreadRows(Context context, long threadNo, int numThreads) {
-        List<Object[]> rows = new ArrayList<Object[]>();
+    private List<Object[]> makePostRelatedThreadRows(long threadNo, int numThreads) {
+        final List<Object[]> rows = new ArrayList<Object[]>();
+
+        // first find the thread
+        int threadPos = findThreadPos(threadNo);
+        if (threadPos == -1)
+            return rows;
+        final ChanPost thread = threads[threadPos];
+
+        // count thread relevance, relevance = number of keywords in common
+        final List<ChanPost> relatedList = new ArrayList<ChanPost>();
+        final Map<ChanPost, Integer> relatedMap = new HashMap<ChanPost, Integer>();
+        final Set<String> keywords = thread.keywords();
+        for (int i = 0; i < threads.length; i++) {
+            ChanPost relatedThread = threads[i];
+            if (thread.no == relatedThread.no)
+                continue; // it's me!
+            if (relatedThread.sticky > 0)
+                continue;
+            int relatedCount = relatedThread.keywordRelevance(keywords);
+            if (relatedCount > 0) {
+                relatedList.add(relatedThread);
+                relatedMap.put(relatedThread, relatedCount);
+            }
+        }
+
+        // order by relevance, most relevant first
+        Collections.sort(relatedList, new Comparator<ChanPost>() {
+            @Override
+            public int compare(ChanPost lhs, ChanPost rhs) {
+                return relatedMap.get(rhs) - relatedMap.get(lhs);
+            }
+        });
+
+        // finally make the thread-cursor-usable list
+        for (int i = 0; i < relatedList.size() && i < numThreads; i++) {
+            rows.add(relatedList.get(i).makeThreadLinkRow());
+        }
+        return rows;
+    }
+
+    private int findThreadPos(long threadNo) {
         // find position of thread in list
         int threadPos = -1;
         for (int i = 0; i < threads.length; i++) {
@@ -539,7 +582,13 @@ public class ChanBoard {
                 break;
             }
         }
-        if (threadPos == -1) { // didn't find it
+        return threadPos;
+    }
+
+    private List<Object[]> makePostNextThreadRows(long threadNo, int numThreads) {
+        List<Object[]> rows = new ArrayList<Object[]>();
+        int threadPos = findThreadPos(threadNo);
+        if (threadPos == -1) { // didn't find it, default to first item
             threadPos = 0;
         }
 
@@ -551,7 +600,7 @@ public class ChanBoard {
         return rows;
     }
 
-    public Object[] makePostBoardLinkRow(Context context) {
+    public Object[] makePostBoardLinkRow() {
         return ChanPost.makeBoardLinkRow(this);
     }
 

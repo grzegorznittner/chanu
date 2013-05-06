@@ -977,4 +977,28 @@ public class ChanPost {
         };
     }
 
+    public static final int MIN_TOKEN_LENGTH = 5;
+
+    public Set<String> keywords() {
+        String text = (sub == null ? "" : sub) + (com == null ? "" : com) + headline("", false);
+        String stripped = text.replaceAll("<[^>]*>|\\W+", " ");
+        String[] tokens = stripped.split("\\s+");
+        if (DEBUG) Log.v(TAG, "threadNo=" + no + " tokens=" + Arrays.toString(tokens));
+        Set<String> tokenSet = new HashSet<String>();
+        for (String token : tokens) {
+            if (token.length() > MIN_TOKEN_LENGTH || token.matches("[A-Z]+")) // all uppercase abbreviations
+                tokenSet.add(token.toLowerCase());
+        }
+        if (DEBUG) Log.v(TAG, "threadNo=" + no + " keywords=" + tokenSet);
+        return tokenSet;
+    }
+
+    public int keywordRelevance(Set<String> keywords) {
+        Set<String> tokenSet = keywords();
+        tokenSet.retainAll(keywords);
+        int relevancy = tokenSet.size();
+        if (DEBUG && relevancy > 0) Log.v(TAG, "relevancy=" + relevancy + " matching keywords=" + tokenSet);
+        return relevancy;
+    }
+
 }

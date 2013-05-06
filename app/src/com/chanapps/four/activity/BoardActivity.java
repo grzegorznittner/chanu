@@ -767,7 +767,7 @@ public class BoardActivity
         a.setTitle(title);
 
         StringBuffer msg = new StringBuffer();
-        if (board.newThreads > 0 || board.updatedThreads > 0) {
+        if ((board.newThreads > 0 || board.updatedThreads > 0) && (query == null || query.isEmpty())) {
 			if (board.newThreads > 0) {
 				msg.append("" + board.newThreads + " new");
 			}
