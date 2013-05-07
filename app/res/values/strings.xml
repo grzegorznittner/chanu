@@ -308,7 +308,7 @@
     <string name="dialog_reset_preferences">Preferences reset to defaults</string>
 
     <!-- post reply activity -->
-    <string name="post_reply_title">Reply</string>
+    <string name="post_reply_title">Post Reply</string>
     <string name="post_reply_thread_title">New Thread</string>
     <string name="post_reply_text_hint">Comment (Optional)</string>
     <string name="post_reply_text_hint_required">Comment (Required)</string>
@@ -528,6 +528,29 @@
     <string name="tutorial_overlay_detail_board">Browse uploaded images organized into thread topics.  Click a thread to see the discussion.</string>
     <string name="tutorial_overlay_subject_thread">Thread View</string>
     <string name="tutorial_overlay_detail_thread">The first image starts the discussion, text and image replies follow.</string>
+
+    <string name="tutorial_overlay_subject_boardspinner">Board Jump</string>
+    <string name="tutorial_overlay_detail_boardspinner">Use the Select Board spinner to quickly jump to a board</string>
+    <string name="tutorial_overlay_subject_recent_refresh">Popular Refresh</string>
+    <string name="tutorial_overlay_detail_recent_refresh">Click the refresh button to fetch the most recent popular threads</string>
+
+    <string name="tutorial_overlay_subject_board_search">Board Search</string>
+    <string name="tutorial_overlay_detail_board_search">Click the search button to find matching threads</string>
+    <string name="tutorial_overlay_subject_board_refresh">Board Refresh</string>
+    <string name="tutorial_overlay_detail_board_refresh">Click the refresh button to fetch the latest threads</string>
+    <string name="tutorial_overlay_subject_board_list">View as List</string>
+    <string name="tutorial_overlay_detail_board_list">Click the list button to view threads as a list</string>
+    <string name="tutorial_overlay_subject_board_new">New Thread</string>
+    <string name="tutorial_overlay_detail_board_new">Click the add button to post a new thread</string>
+
+    <string name="tutorial_overlay_subject_thread_search">Thread Search</string>
+    <string name="tutorial_overlay_detail_thread_search">Click the search button to find matching posts</string>
+    <string name="tutorial_overlay_subject_thread_refresh">Thread Refresh</string>
+    <string name="tutorial_overlay_detail_thread_refresh">Click the refresh button to fetch the latest posts</string>
+    <string name="tutorial_overlay_subject_thread_new">New Reply</string>
+    <string name="tutorial_overlay_detail_thread_new">Click the reply button to post a new reply</string>
+    <string name="tutorial_overlay_subject_thread_gallery">Gallery View</string>
+    <string name="tutorial_overlay_detail_thread_gallery">Click the image button to go to the thread gallery view</string>
 
     <!-- board names -->
     <string name="board_type_worksafe">Worksafe</string>

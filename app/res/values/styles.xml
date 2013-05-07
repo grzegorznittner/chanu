@@ -83,7 +83,7 @@
         <item name="android:smoothScrollbar">true</item>
         <item name="android:cacheColorHint">#00000000</item>
         <item name="android:fastScrollEnabled">true</item>
-        <item name="android:background">@drawable/board_view_gradient_bg</item>
+        <!-- <item name="android:background">@drawable/board_view_gradient_bg</item>  -->
     </style>
 
     <style name="BoardGridImage" parent="AppTheme">

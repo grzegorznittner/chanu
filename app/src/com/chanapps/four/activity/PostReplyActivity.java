@@ -961,7 +961,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board == null)
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
-        String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
+        String replyTitle = threadNo > 0
+                ? getString(R.string.post_reply_thread_title)
+                : getString(R.string.post_reply_title);
+        String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/: " + replyTitle;
         /*
         int subtitleId = R.string.post_reply_thread_title;
         if (threadNo > 0) {

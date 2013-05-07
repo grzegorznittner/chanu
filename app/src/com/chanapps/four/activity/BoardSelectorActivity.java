@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -75,6 +74,7 @@ public class BoardSelectorActivity
         */
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
+        mViewPager.setOffscreenPageLimit(2); // keep all three tabs available
         setContentView(mViewPager);
     }
 
@@ -173,9 +173,13 @@ public class BoardSelectorActivity
     }
 
     protected String getSelectedBoardCode() {
+        return getSelectedTab().boardCode();
+    }
+
+    protected BoardSelectorTab getSelectedTab() {
         int i = mViewPager.getCurrentItem();
         BoardSelectorTab tab = BoardSelectorTab.values()[i];
-        return tab.boardCode();
+        return tab;
     }
 
     @Override
