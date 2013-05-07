@@ -1,5 +1,0 @@
-<p>You are viewing this image post in full screen mode.</p>
-<p>Use pinch, zoom, and scroll to move and resize the image.</p>
-<p>Select Download from the menu to save the image.</p>
-<p>Select Share from the menu to share the image to your friends.</p>
-<p>Select Wallpaper to set the image as your screen wallpaper.</p>

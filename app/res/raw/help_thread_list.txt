@@ -1,6 +1,0 @@
-<p>You are viewing the list of latest replies to this thread.</p>
-<p>You will see each post in order of its date, oldest first.</p>
-<p>Scroll down to see more posts.</p>
-<p>If the post has an image, you will see its thumbnail.</p>
-<p>Click on this thumbnail for larger image, then click to visit the gallery</p>
-<p>Click the menu Download All to save all the images from thread.</p>

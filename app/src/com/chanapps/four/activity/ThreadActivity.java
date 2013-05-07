@@ -717,10 +717,6 @@ public class ThreadActivity
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
-            case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_thread_list);
-                rawResourceDialog.show();
-                return true;
             case R.id.board_rules_menu:
                 displayBoardRules();
                 return true;

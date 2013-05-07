@@ -490,10 +490,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
-            case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_full_screen);
-                rawResourceDialog.show();
-                return true;
             case R.id.exit_menu:
                 ChanHelper.exitApplication(this);
                 return true;

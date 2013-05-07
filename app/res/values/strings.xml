@@ -87,10 +87,8 @@
     <string name="logout_pass_error">Couldn\'t logout</string>
     <string name="logout_pass_no_response">Couldn\'t logout, no response</string>
 
-
     <!-- menus -->
     <string name="settings_menu">Settings</string>
-    <string name="help_menu">Help</string>
     <string name="global_rules_menu">Global Rules</string>
     <string name="board_rules_menu">Board Rules</string>
     <string name="go_to_top_position_menu">Go to Top</string>
