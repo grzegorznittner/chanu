@@ -74,6 +74,7 @@ public class BoardGroupFragment
         */
         if (handler != null)
             handler.sendEmptyMessageDelayed(0, 200);
+        getActivity().invalidateOptionsMenu();
     }
 
     public void invalidate() {
@@ -99,6 +100,7 @@ public class BoardGroupFragment
         boardSelectorTab = (selectorString != null && !selectorString.isEmpty())
                 ? BoardSelectorTab.valueOf(selectorString)
                 : BoardSelectorActivity.DEFAULT_BOARD_SELECTOR_TAB;
+        setHasOptionsMenu(true);
         if (DEBUG) Log.v(TAG, "BoardGroupFragment " + boardSelectorTab + " onCreate");
     }
 
@@ -206,7 +208,36 @@ public class BoardGroupFragment
         return layout;
     }
 
-
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        if (DEBUG) Log.i(TAG, "onPrepareOptionsMenu tab=" + boardSelectorTab);
+        MenuItem rules = menu.findItem(R.id.global_rules_menu);
+        MenuItem refresh = menu.findItem(R.id.refresh_menu);
+        MenuItem clean = menu.findItem(R.id.clean_watchlist_menu);
+        MenuItem clear = menu.findItem(R.id.clear_watchlist_menu);
+        switch (boardSelectorTab) {
+            default:
+            case BOARDLIST:
+                rules.setVisible(true);
+                refresh.setVisible(false);
+                clean.setVisible(false);
+                clear.setVisible(false);
+                break;
+            case RECENT:
+                rules.setVisible(false);
+                refresh.setVisible(true);
+                clean.setVisible(false);
+                clear.setVisible(false);
+                break;
+            case WATCHLIST:
+                rules.setVisible(false);
+                refresh.setVisible(false);
+                clean.setVisible(true);
+                clear.setVisible(true);
+                break;
+        }
+    }
 
     @Override
     public void onResume() {
@@ -214,15 +245,13 @@ public class BoardGroupFragment
         if (DEBUG) Log.i(TAG, "onResume boardSelectorTab=" + boardSelectorTab);
         if (handler == null)
             handler = createHandler();
-        /*
-        if (boardSelectorTab == BoardSelectorTab.WATCHLIST)
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
-                }
-            });
-            */
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (getActivity() != null)
+                    getActivity().invalidateOptionsMenu();
+            }
+        }, 250); // to overcome bug in viewPager when tabs are rapidly switched
     }
 
     protected Handler createHandler() {
@@ -245,7 +274,6 @@ public class BoardGroupFragment
     }
 
     public Handler getChanHandler() {
-        if (DEBUG) Log.i(TAG, "for tab=" + boardSelectorTab + " returning handler=" + handler);
         return handler;
     }
 

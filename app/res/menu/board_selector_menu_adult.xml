@@ -10,21 +10,24 @@
           android:icon="@drawable/navigation_refresh"
           android:showAsAction="ifRoom"
             />
-    <item android:id="@+id/offline_chan_view_menu"
-          android:title="@string/offline_chan_view_menu"
-          android:icon="@drawable/device_access_storage"
-            />
     <item android:id="@+id/clean_watchlist_menu"
           android:title="@string/pref_clean_watchlist"
           android:icon="@drawable/content_discard"
+          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/clear_watchlist_menu"
           android:title="@string/pref_clear_watchlist"
           android:icon="@drawable/content_remove"
+          android:showAsAction="ifRoom"
             />
     <item android:id="@+id/global_rules_menu"
           android:title="@string/global_rules_menu"
-          android:icon="@drawable/action_help"
+          android:icon="@drawable/action_about"
+          android:showAsAction="ifRoom"
+            />
+    <item android:id="@+id/offline_chan_view_menu"
+          android:title="@string/offline_chan_view_menu"
+          android:icon="@drawable/device_access_storage"
             />
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"

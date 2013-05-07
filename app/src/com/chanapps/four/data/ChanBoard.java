@@ -246,7 +246,7 @@ public class ChanBoard {
 
     private static String[][] initRelatedBoards() {
         String[][] relatedBoardCodes = {
-                { "a", "c", "w", "m", "cgl", "cm", "jp", "vp", "co", "tv", "h", "d", "e", "y", "u", "d", "t" },
+                { "a", "c", "w", "m", "cgl", "cm", "jp", "vg", "vp", "co", "tv", "h", "d", "e", "y", "u", "d", "t" },
                 { "c", "a", "w", "cm", "vp", "mlp", "e", "u" },
                 { "w", "a", "wg", "p" },
                 { "m", "a", "n", "o", "k", "tg", "toy" },
@@ -255,8 +255,8 @@ public class ChanBoard {
                 { "n", "o", "trv", "g" },
                 { "jp", "cgl", "a", "co", "i", "h" },
                 { "vp", "mlp", "co", "tv", "toy" },
-                { "v", "vg", "vr", "g", "o", "k", "sp" },
-                { "vg", "v", "vr", "g", "o", "k", "sp" },
+                { "v", "vg", "vr", "g", "o", "k" },
+                { "vg", "v", "vr", "g", "o", "k", "sp", "asp" },
                 { "vr", "vg", "v", "g", "diy", "tg" },
                 { "co", "a", "cgl", "vp", "tv", "t" },
                 { "g", "sci", "o", "k", "diy", "v", "n" },
@@ -265,8 +265,8 @@ public class ChanBoard {
                 { "o", "g", "k", "out", "n" },
                 { "an", "toy", "p", "vp" },
                 { "tg", "vr", "toy", "diy", "po" },
-                { "sp", "asp", "out", "v", "vg", "fit", "k" },
-                { "asp", "sp", "out", "fit", "p", "n" },
+                { "sp", "asp", "out", "vg", "fit", "k" },
+                { "asp", "sp", "out", "fit", "p", "n", "vg" },
                 { "int", "trv", "jp", "adv", "pol", "q", "b" },
                 { "out", "o", "fit", "k", "n", "p", "trv" },
                 { "i", "po", "p", "ic", "3", "gd", "jp", "e" },

@@ -77,6 +77,7 @@ public class BoardSelectorActivity
         */
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
+        mViewPager.setOffscreenPageLimit(2); // keep all three tabs available
         setContentView(mViewPager);
     }
 
@@ -179,9 +180,13 @@ public class BoardSelectorActivity
     }
 
     protected String getSelectedBoardCode() {
+        return getSelectedTab().boardCode();
+    }
+
+    protected BoardSelectorTab getSelectedTab() {
         int i = mViewPager.getCurrentItem();
         BoardSelectorTab tab = BoardSelectorTab.values()[i];
-        return tab.boardCode();
+        return tab;
     }
 
     @Override

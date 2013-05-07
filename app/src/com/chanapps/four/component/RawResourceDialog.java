@@ -39,14 +39,12 @@ public class RawResourceDialog extends Dialog {
         this.layoutId = layoutId;
         this.headerId = headerId;
         this.detailId = detailId;
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setContentView(layoutId);
-        TextView tv = (TextView) findViewById(R.id.header_text);
-        tv.setText(readRawTextFile(headerId));
+        setTitle(readRawTextFile(headerId));
         View v = findViewById(R.id.detail_html);
         if (v instanceof TextView) {
             TextView detail = (TextView)v;
