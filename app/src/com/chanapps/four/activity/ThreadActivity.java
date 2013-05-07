@@ -298,7 +298,7 @@ public class ThreadActivity
     @Override
     protected void createAbsListView() {
         setAbsListViewClass();
-        View layout = View.inflate(getApplicationContext(), getLayoutId(), null);
+        layout = View.inflate(getApplicationContext(), getLayoutId(), null);
         setContentView(layout);
         initAbsListView();
         initAdapter();
