@@ -289,7 +289,9 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         }
         if (DEBUG) Log.i(TAG, "loaded image from prefs/intent url=" + imageUrl);
         if (DEBUG) Log.i(TAG, "After all loads , viewType: " + viewType.toString() + " boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
-        setActionBarTitle();
+        if (boardCode != null) {
+        	setActionBarTitle();
+        }
     }
 
     private void savePrefs() {

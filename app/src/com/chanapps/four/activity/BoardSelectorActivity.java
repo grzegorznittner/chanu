@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -16,13 +15,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
+
 import com.chanapps.four.adapter.TabsAdapter;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.BoardSelectorTab;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.UserStatistics.ChanFeature;
 import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.fragment.WatchlistCleanDialogFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
@@ -149,8 +151,12 @@ public class BoardSelectorActivity
         restoreInstanceState();
         NetworkProfileManager.instance().activityChange(this);
         int newMenuId = ChanBoard.showNSFW(this) ? R.menu.board_selector_menu_adult : R.menu.board_selector_menu;
-        if (menuId != newMenuId)
+        if (menuId != newMenuId) {
             invalidateOptionsMenu();
+        }
+        
+    	ChanFeature feature = NetworkProfileManager.instance().getUserStatistics().nextTipForPage(Page.BOARDLIST);
+    	if (DEBUG) Log.i(TAG, "Tip for " + feature + " should be displayed");
     }
 
     @Override
@@ -201,12 +207,14 @@ public class BoardSelectorActivity
                     if (DEBUG) Log.i(TAG, "Refreshing tab code=" + boardCode);
                     setProgressBarIndeterminateVisibility(true);
                     NetworkProfileManager.instance().manualRefresh(this);
+                    NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.MANUAL_REFRESH);
                     return true;
                 }
                 else {
                     return false;
                 }
             case R.id.offline_chan_view_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.ALL_CACHED_IMAGES);
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;
             case R.id.clean_watchlist_menu:
@@ -216,6 +224,7 @@ public class BoardSelectorActivity
                         .show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
                 return true;
             case R.id.clear_watchlist_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.WATCHLIST_CLEAR);
                 final BoardGroupFragment fragment2 =
                         (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(BoardSelectorTab.WATCHLIST.ordinal());
                 (new WatchlistClearDialogFragment(fragment2))

@@ -32,8 +32,10 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.BoardListCursorAdapter;
 import com.chanapps.four.component.*;
+import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.UserStatistics.ChanFeature;
 import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -264,6 +266,14 @@ public class BoardActivity
         restoreInstanceState();
 		NetworkProfileManager.instance().activityChange(this);
 		getSupportLoaderManager().restartLoader(0, null, this);
+		
+    	ChanFeature feature = null;
+    	if (this instanceof ThreadActivity) {
+    		feature = NetworkProfileManager.instance().getUserStatistics().nextTipForPage(Page.BOARD);
+    	} else {
+    		feature = NetworkProfileManager.instance().getUserStatistics().nextTipForPage(Page.THREAD);
+    	}
+    	if (DEBUG) Log.i(TAG, "Tip for " + feature + " should be displayed");
 	}
 
     protected String getLastPositionName() {
@@ -671,16 +681,19 @@ public class BoardActivity
                 //}
                 return true;
             case R.id.refresh_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.MANUAL_REFRESH);
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.toggle_view_type_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_LIST_VIEW);
                 viewType = viewType == ViewType.AS_GRID ? ViewType.AS_LIST : ViewType.AS_GRID;
                 invalidateOptionsMenu();
                 createAbsListView();
                 getSupportLoaderManager().restartLoader(0, null, this);
                 return true;
             case R.id.new_thread_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.ADD_THREAD);
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
                 replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
                 replyIntent.putExtra(ChanHelper.THREAD_NO, 0);
@@ -690,6 +703,7 @@ public class BoardActivity
                 startActivity(replyIntent);
                 return true;
             case R.id.offline_board_view_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.CACHED_BOARD_IMAGES);
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);
                 return true;
             case R.id.offline_chan_view_menu:

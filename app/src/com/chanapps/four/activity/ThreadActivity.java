@@ -1,10 +1,15 @@
 package com.chanapps.four.activity;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,16 +18,16 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Typeface;
-import android.support.v4.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.Loader;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
@@ -35,13 +40,39 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.ProgressBar;
+import android.widget.ShareActionProvider;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
-import com.chanapps.four.component.*;
-import com.chanapps.four.data.*;
+import com.chanapps.four.component.ChanGridSizer;
+import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.component.ThreadExpandImageOnClickListener;
+import com.chanapps.four.component.ThreadImageOnClickListener;
+import com.chanapps.four.component.TutorialOverlay;
+import com.chanapps.four.data.BoardType;
+import com.chanapps.four.data.ChanAd;
+import com.chanapps.four.data.ChanBlocklist;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.fragment.*;
+import com.chanapps.four.data.UserStatistics.ChanFeature;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.ChanThreadStat;
+import com.chanapps.four.data.ChanWatchlist;
+import com.chanapps.four.fragment.BlocklistSelectToAddDialogFragment;
+import com.chanapps.four.fragment.DeletePostDialogFragment;
+import com.chanapps.four.fragment.ListOfLinksDialogFragment;
+import com.chanapps.four.fragment.ReportPostDialogFragment;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
@@ -53,10 +84,6 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
-
-import java.io.File;
-import java.net.URI;
-import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -89,7 +116,6 @@ public class ThreadActivity
     protected String imageUrl;
     protected int imageWidth;
     protected int imageHeight;
-    protected UserStatistics userStats = null;
     protected boolean inWatchlist = false;
     protected ChanThread thread = null;
     protected boolean shouldPlayThread = false;
@@ -670,11 +696,13 @@ public class ThreadActivity
             case android.R.id.home:
                 return navigateUp();
             case R.id.refresh_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.MANUAL_REFRESH);
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             // thread_reply_popup_menu
             case R.id.post_reply_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.POST);
                 postReply("");
                 return true;
             /*
@@ -686,20 +714,24 @@ public class ThreadActivity
                 return true;
             */
             case R.id.watch_thread_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.WATCH_THREAD);
                 addToWatchlist();
                 return true;
 
             // thread_image_popup_menu
             case R.id.view_image_gallery_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.GALLERY_VIEW);
                 GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
                 addToWatchlistIfNotAlreadyIn();
                 return true;
             case R.id.download_all_images_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.PRELOAD_ALL_IMAGES);
                 ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
                 Toast.makeText(this, R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
                 addToWatchlistIfNotAlreadyIn();
                 return true;
             case R.id.download_all_images_to_gallery_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.DOWNLOAD_ALL_IMAGES_TO_GALLERY);
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo);
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                 addToWatchlistIfNotAlreadyIn();
@@ -711,6 +743,7 @@ public class ThreadActivity
                 return showPopupMenu(R.id.thread_list_layout, R.id.thread_image_popup_button_menu, R.menu.thread_image_popup_menu);
             */
             case R.id.play_thread_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.PLAY_THREAD);
                 return playThreadMenu();
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
@@ -722,6 +755,7 @@ public class ThreadActivity
                 rawResourceDialog.show();
                 return true;
             case R.id.board_rules_menu:
+            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_RULES);
                 displayBoardRules();
                 return true;
             case R.id.exit_menu:
@@ -756,19 +790,13 @@ public class ThreadActivity
         return true;
     }
 
-    protected UserStatistics ensureUserStats() {
-        if (userStats == null) {
-            userStats = ChanFileStorage.loadUserStats(getBaseContext());
-        }
-        return userStats;
-    }
-
     public void incrementCounterAndAddToWatchlistIfActive() {
-        ensureUserStats().threadUse(boardCode, threadNo);
+    	NetworkProfileManager.instance().getUserStatistics().threadUse(boardCode, threadNo);
         String key = boardCode + "/" + threadNo;
-        ChanThreadStat stat = ensureUserStats().boardThreadStats.get(key);
-        if (stat != null && stat.usage >= WATCHLIST_ACTIVITY_THRESHOLD && !inWatchlist)
+        ChanThreadStat stat = NetworkProfileManager.instance().getUserStatistics().boardThreadStats.get(key);
+        if (stat != null && stat.usage >= WATCHLIST_ACTIVITY_THRESHOLD && !inWatchlist) {
             addToWatchlistIfNotAlreadyIn();
+        }
     }
 
     protected void addToWatchlistIfNotAlreadyIn() {
