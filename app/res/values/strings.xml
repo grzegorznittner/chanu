@@ -516,39 +516,46 @@
     <!-- tutorial -->
     <string name="tutorial_overlay_button">Got It</string>
     <string name="tutorial_overlay_button_description">Dismiss tutorial</string>
-    <string name="tutorial_overlay_subject_boardlist">Welcome to the Boards</string>
-    <string name="tutorial_overlay_detail_boardlist">On Chanu, people post images on boards and discuss them.  Click a board to see its posts.</string>
-    <string name="tutorial_overlay_subject_recent">Popular Threads</string>
-    <string name="tutorial_overlay_detail_recent">Browse popular threads, visit recent posts, and view the latest images</string>
-    <string name="tutorial_overlay_subject_watchlist">Watchlist</string>
-    <string name="tutorial_overlay_detail_watchlist">Keep track of threads with the watchlist.</string>
-    <string name="tutorial_overlay_subject_board">Board View</string>
-    <string name="tutorial_overlay_detail_board">Browse uploaded images organized into thread topics.  Click a thread to see the discussion.</string>
-    <string name="tutorial_overlay_subject_thread">Thread View</string>
-    <string name="tutorial_overlay_detail_thread">The first image starts the discussion, text and image replies follow.</string>
 
-    <string name="tutorial_overlay_subject_boardspinner">Board Jump</string>
-    <string name="tutorial_overlay_detail_boardspinner">Use the Select Board spinner to quickly jump to a board</string>
-    <string name="tutorial_overlay_subject_recent_refresh">Popular Refresh</string>
-    <string name="tutorial_overlay_detail_recent_refresh">Click the refresh button to fetch the most recent popular threads</string>
+    <string name="tutorial_boardselector_desc">Welcome to the Boards</string>
+    <string name="tutorial_boardselector_desc_detail">On Chanu, people post images on boards and discuss them.  Click a board to see its posts.</string>
+    <string name="tutorial_popular_desc">Popular Threads</string>
+    <string name="tutorial_popular_desc_detail">Browse popular threads, visit recent posts, and view the latest images</string>
+    <string name="tutorial_watchlist_desc">Watchlist</string>
+    <string name="tutorial_watchlist_desc_detail">Keep track of threads with the watchlist.</string>
+    <string name="tutorial_watchlist_clear">Clean Watchlist</string>
+    <string name="tutorial_watchlist_clear_detail">You can use the trash icon to remove all dead threads from the watchlist</string>
+    <string name="tutorial_watchlist_delete">Delete Watchlist</string>
+    <string name="tutorial_watchlist_delete_detail">You can use the \'X\' icon to clear the watchlist</string>
 
-    <string name="tutorial_overlay_subject_board_search">Board Search</string>
-    <string name="tutorial_overlay_detail_board_search">Click the search button to find matching threads</string>
-    <string name="tutorial_overlay_subject_board_refresh">Board Refresh</string>
-    <string name="tutorial_overlay_detail_board_refresh">Click the refresh button to fetch the latest threads</string>
-    <string name="tutorial_overlay_subject_board_list">View as List</string>
-    <string name="tutorial_overlay_detail_board_list">Click the list button to view threads as a list</string>
-    <string name="tutorial_overlay_subject_board_new">New Thread</string>
-    <string name="tutorial_overlay_detail_board_new">Click the add button to post a new thread</string>
 
-    <string name="tutorial_overlay_subject_thread_search">Thread Search</string>
-    <string name="tutorial_overlay_detail_thread_search">Click the search button to find matching posts</string>
-    <string name="tutorial_overlay_subject_thread_refresh">Thread Refresh</string>
-    <string name="tutorial_overlay_detail_thread_refresh">Click the refresh button to fetch the latest posts</string>
-    <string name="tutorial_overlay_subject_thread_new">New Reply</string>
-    <string name="tutorial_overlay_detail_thread_new">Click the reply button to post a new reply</string>
-    <string name="tutorial_overlay_subject_thread_gallery">Gallery View</string>
-    <string name="tutorial_overlay_detail_thread_gallery">Click the image button to go to the thread gallery view</string>
+    <string name="tutorial_board_desc">Board View</string>
+    <string name="tutorial_board_desc_detail">Browse uploaded images organized into thread topics.  Click a thread to see the discussion.</string>
+    <string name="tutorial_board_select">Select Board</string>
+    <string name="tutorial_board_select_detail">Use the Select Board spinner to quickly jump to a board</string>
+    <string name="tutorial_manual_refresh">Manual Refresh</string>
+    <string name="tutorial_manual_refresh_detail">Use the refresh button to update the page</string>
+    <string name="tutorial_search_board">Thread Search</string>
+    <string name="tutorial_search_board_detail">Click the search button to find matching threads</string>
+    <string name="tutorial_board_list_view">View as List</string>
+    <string name="tutorial_board_list_view_detail">Click the list button to view threads as a list</string>
+    <string name="tutorial_add_thread">New Thread</string>
+    <string name="tutorial_add_thread_detail">Click the add button to post a new thread</string>
+
+    <string name="tutorial_thread_desc">Thread View</string>
+    <string name="tutorial_thread_desc_detail">The first image starts the discussion, text and image replies follow.</string>
+    <string name="tutorial_search_thread">Post Search</string>
+    <string name="tutorial_search_thread_detail">Click the search button to find matching posts</string>
+    <string name="tutorial_post">Post Reply</string>
+    <string name="tutorial_post_detail">Click the reply button to make a new post</string>
+
+    <!--
+    CACHED_BOARD_IMAGES, ALL_CACHED_IMAGES, BOARD_RULES, WATCH_THREAD,
+    PLAY_THREAD, PRELOAD_ALL_IMAGES, DOWNLOAD_ALL_IMAGES_TO_GALLERY,
+    SETTINGS_NAMES, SETTINGS_4CHAN_PASS, SETTINGS_CACHE_SIZE, SETTINGS_WATCHLIST
+    -->
+    <string name="tutorial_gallery_view">Gallery View</string>
+    <string name="tutorial_gallery_view_detail">Click the image button to go to the thread gallery view</string>
 
     <!-- board names -->
     <string name="board_type_worksafe">Worksafe</string>

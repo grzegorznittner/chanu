@@ -268,7 +268,7 @@ public class UserStatistics {
 		return ChanFeature.NONE;
 	}
 	
-	private void tipDisplayed(ChanFeature feature) {
+	public void tipDisplayed(ChanFeature feature) {
 		displayedTips.add(feature);
 		tipDisplayed = new Date().getTime();
 	}
