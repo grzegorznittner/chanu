@@ -223,7 +223,10 @@ public class UserStatistics {
 			}
 		}
 	}
-	
+
+	/**
+	 * Marks feature as used, tip for it won't be displayed
+	 */
 	public void featureUsed(ChanFeature feature) {
 		if (!usedFeatures.contains(feature)) {
 			Log.e(TAG, "Feature " + feature + " marked as used");
@@ -235,31 +238,50 @@ public class UserStatistics {
 		}
 		if (DEBUG) Log.i(TAG, "Used features: " + used);
 	}
-	
-	public ChanFeature nextTipForPage(TutorialOverlay.Page tutorialPage) {
-		if (!tipShouldBeDisplayed()) {
-			return ChanFeature.NONE;
-		}
-		
+
+	/**
+	 * Returns feature for which tip should be displayed.
+	 * If ChanFeature.NONE is returned then tip should not be displayed
+	 */
+	public ChanFeature nextTipForPage(TutorialOverlay.Page tutorialPage) {		
 		ChanFeature[] tipSet = null;
 		switch (tutorialPage) {
 		case BOARDLIST:
+			if (!displayedTips.contains(ChanFeature.BOARDSELECTOR_DESC)) {
+				return ChanFeature.BOARDSELECTOR_DESC;
+			}
 			tipSet = BOARDSELECTOR_FEATURES;
 			break;
 		case BOARD:
+			if (!displayedTips.contains(ChanFeature.BOARD_DESC)) {
+				return ChanFeature.BOARD_DESC;
+			}
 			tipSet = BOARD_FEATURES;
 			break;
 		case THREAD:
+			if (!displayedTips.contains(ChanFeature.THREAD_DESC)) {
+				return ChanFeature.THREAD_DESC;
+			}
 			tipSet = THREAD_FEATURES;
 			break;
 		case RECENT:
+			if (!displayedTips.contains(ChanFeature.POPULAR_DESC)) {
+				return ChanFeature.POPULAR_DESC;
+			}
 			tipSet = POPULAR_FEATURES;
 			break;
 		case WATCHLIST:
+			if (!displayedTips.contains(ChanFeature.WATCHLIST_DESC)) {
+				return ChanFeature.WATCHLIST_DESC;
+			}
 			tipSet = WATCHLIST_FEATURES;
 			break;
 		}
 		
+		if (!tipShouldBeDisplayed()) {
+			return ChanFeature.NONE;
+		}
+
 		for (ChanFeature feature : tipSet) {
 			if (!usedFeatures.contains(feature) && !displayedTips.contains(feature)) {
 				return feature;
@@ -268,6 +290,10 @@ public class UserStatistics {
 		return ChanFeature.NONE;
 	}
 	
+	/**
+	 * Marks tip of the feature as being displayed.
+	 * Tip for it won't be displayed anymore.
+	 */
 	private void tipDisplayed(ChanFeature feature) {
 		displayedTips.add(feature);
 		tipDisplayed = new Date().getTime();
