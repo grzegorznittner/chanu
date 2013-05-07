@@ -35,7 +35,6 @@ public class TutorialOverlay {
     protected Button tutorialOverlayButton;
 
     public TutorialOverlay(View layout, Page page) {
-
         feature = NetworkProfileManager.instance().getUserStatistics().nextTipForPage(page);
         if (feature == UserStatistics.ChanFeature.NONE) {
             return;

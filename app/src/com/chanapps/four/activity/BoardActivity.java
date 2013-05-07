@@ -10,7 +10,6 @@ import android.graphics.Typeface;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -57,9 +56,9 @@ public class BoardActivity
     private static final int THUMB_HEIGHT_PX = 150;
 
     protected AbstractBoardCursorAdapter adapter;
+    protected View layout;
     protected AbsListView absListView;
     protected Class absListViewClass = GridView.class;
-    protected TutorialOverlay tutorialOverlay;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
     protected int scrollOnNextLoaderFinished = -1;
@@ -98,7 +97,6 @@ public class BoardActivity
     public static Intent createIntentForActivity(Context context, String boardCode, String query) {
         String intentBoardCode = boardCode == null || boardCode.isEmpty() ? ChanBoard.DEFAULT_BOARD_CODE : boardCode;
         Intent intent = new Intent(context, BoardActivity.class);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(ChanHelper.BOARD_CODE, intentBoardCode);
         intent.putExtra(ChanHelper.PAGE, 0);
         intent.putExtra(SearchManager.QUERY, query);
@@ -233,9 +231,8 @@ public class BoardActivity
 
     protected void createAbsListView() {
         setAbsListViewClass();
-        View layout = View.inflate(getApplicationContext(), getLayoutId(), null);
+        layout = View.inflate(getApplicationContext(), getLayoutId(), null);
         setContentView(layout);
-        tutorialOverlay = new TutorialOverlay(layout, TutorialOverlay.Page.BOARD);
         initAbsListView();
         initAdapter();
         absListView.setClickable(true);
@@ -266,15 +263,12 @@ public class BoardActivity
         restoreInstanceState();
 		NetworkProfileManager.instance().activityChange(this);
 		getSupportLoaderManager().restartLoader(0, null, this);
-		
-    	ChanFeature feature = null;
-    	if (this instanceof ThreadActivity) {
-    		feature = NetworkProfileManager.instance().getUserStatistics().nextTipForPage(Page.BOARD);
-    	} else {
-    		feature = NetworkProfileManager.instance().getUserStatistics().nextTipForPage(Page.THREAD);
-    	}
-    	if (DEBUG) Log.i(TAG, "Tip for " + feature + " should be displayed");
+        new TutorialOverlay(layout, tutorialPage());
 	}
+
+    protected Page tutorialPage() {
+        return Page.BOARD;
+    }
 
     protected String getLastPositionName() {
         return ChanHelper.LAST_BOARD_POSITION;

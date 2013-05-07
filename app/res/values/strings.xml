@@ -138,9 +138,9 @@
     <string name="share_image_menu">Share Image</string>
     <string name="share_text_menu">Share Text</string>
     <string name="post_reply_send_menu">Post Reply</string>
-    <string name="offline_board_view_menu">Cached Board Images</string>
-    <string name="offline_board_view_title">%1$s: Cached Images</string>
-    <string name="offline_chan_view_menu">View Cached Images</string>
+    <string name="offline_board_view_menu">All Boards Gallery</string>
+    <string name="offline_board_view_title">%1$s: Images</string>
+    <string name="offline_chan_view_menu">Board Image Gallery</string>
 
     <!-- board types tab -->
     <string name="japanese_culture">Japanese Culture</string>
@@ -519,6 +519,8 @@
 
     <string name="tutorial_boardselector_desc">Welcome to the Boards</string>
     <string name="tutorial_boardselector_desc_detail">On Chanu, people post images on boards and discuss them.  Click a board to see its posts.</string>
+    <string name="tutorial_all_cached_images">All Boards Gallery</string>
+    <string name="tutorial_all_cached_images_detail">This menu shows all cached images grouped by board</string>
     <string name="tutorial_popular_desc">Popular Threads</string>
     <string name="tutorial_popular_desc_detail">Browse popular threads, visit recent posts, and view the latest images</string>
     <string name="tutorial_watchlist_desc">Watchlist</string>
@@ -541,6 +543,12 @@
     <string name="tutorial_board_list_view_detail">Click the list button to view threads as a list</string>
     <string name="tutorial_add_thread">New Thread</string>
     <string name="tutorial_add_thread_detail">Click the add button to post a new thread</string>
+    <string name="tutorial_cached_board_images">Board Image Gallery</string>
+    <string name="tutorial_cached_board_images_detail">This menu shows all cached images for the board grouped by thread</string>
+    <string name="tutorial_board_rules">Board Rules</string>
+    <string name="tutorial_board_rules_detail">This menu shows the rules for this board, read before posting</string>
+    <string name="tutorial_gallery_view">Gallery View</string>
+    <string name="tutorial_gallery_view_detail">Click the image button to go to the thread gallery view</string>
 
     <string name="tutorial_thread_desc">Thread View</string>
     <string name="tutorial_thread_desc_detail">The first image starts the discussion, text and image replies follow.</string>
@@ -548,14 +556,23 @@
     <string name="tutorial_search_thread_detail">Click the search button to find matching posts</string>
     <string name="tutorial_post">Post Reply</string>
     <string name="tutorial_post_detail">Click the reply button to make a new post</string>
+    <string name="tutorial_watch_thread">Watch Thread</string>
+    <string name="tutorial_watch_thread_detail">This menu adds the current thread to your watchlist</string>
+    <string name="tutorial_play_thread">Play Thread</string>
+    <string name="tutorial_play_thread_detail">This menu scrolls through the thread at reading speed, the Stop Thread menu stops it</string>
+    <string name="tutorial_preload_all_images">Preload All Images</string>
+    <string name="tutorial_preload_all_images_detail">This menu preloads all images at full size for faster gallery browsing</string>
+    <string name="tutorial_download_all_images_to_gallery">Download to Gallery</string>
+    <string name="tutorial_download_all_images_to_gallery_detail">This menu downloads all thread images to your Android gallery</string>
 
-    <!--
-    CACHED_BOARD_IMAGES, ALL_CACHED_IMAGES, BOARD_RULES, WATCH_THREAD,
-    PLAY_THREAD, PRELOAD_ALL_IMAGES, DOWNLOAD_ALL_IMAGES_TO_GALLERY,
-    SETTINGS_NAMES, SETTINGS_4CHAN_PASS, SETTINGS_CACHE_SIZE, SETTINGS_WATCHLIST
-    -->
-    <string name="tutorial_gallery_view">Gallery View</string>
-    <string name="tutorial_gallery_view_detail">Click the image button to go to the thread gallery view</string>
+    <string name="tutorial_settings_names">User Info</string>
+    <string name="tutorial_settings_names_detail">You can optionally enter the name, email and password you would like to auto-fill for posting</string>
+    <string name="tutorial_settings_4chan_pass">4chan Pass</string>
+    <string name="tutorial_settings_4chan_pass_detail">Purchase a 4chan Pass and enter here to bypass captcha when posting</string>
+    <string name="tutorial_settings_cache_size">Cache Size</string>
+    <string name="tutorial_settings_cache_size_detail">Adjust cache parameters to optimize browsing speed</string>
+    <string name="tutorial_settings_watchlist">Watchlist</string>
+    <string name="tutorial_settings_watchlist_detail">Adjust watchlist parameters for automatic list cleaning</string>
 
     <!-- board names -->
     <string name="board_type_worksafe">Worksafe</string>

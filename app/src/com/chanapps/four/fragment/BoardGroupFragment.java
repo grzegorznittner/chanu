@@ -48,8 +48,8 @@ public class BoardGroupFragment
 
     private BoardSelectorTab boardSelectorTab;
     private ResourceCursorAdapter adapter;
+    private View layout;
     private AbsListView absListView;
-    protected TutorialOverlay tutorialOverlay;
     private TextView emptyText;
     private int columnWidth = 0;
     private int columnHeight = 0;
@@ -201,9 +201,8 @@ public class BoardGroupFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         if (DEBUG) Log.d(TAG, "BoardGroupFragment " + boardSelectorTab + " onCreateView");
-        View layout = inflater.inflate(R.layout.board_selector_grid_layout, container, false);
+        layout = inflater.inflate(R.layout.board_selector_grid_layout, container, false);
         emptyText = (TextView)layout.findViewById(R.id.board_empty_text);
-        tutorialOverlay = new TutorialOverlay(layout, boardSelectorTab.tutorialPage());
         createAbsListView(layout);
         return layout;
     }
@@ -252,6 +251,7 @@ public class BoardGroupFragment
                     getActivity().invalidateOptionsMenu();
             }
         }, 250); // to overcome bug in viewPager when tabs are rapidly switched
+        new TutorialOverlay(layout, boardSelectorTab.tutorialPage());
     }
 
     protected Handler createHandler() {

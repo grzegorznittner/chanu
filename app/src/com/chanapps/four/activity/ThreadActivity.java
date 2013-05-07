@@ -300,7 +300,6 @@ public class ThreadActivity
         setAbsListViewClass();
         View layout = View.inflate(getApplicationContext(), getLayoutId(), null);
         setContentView(layout);
-        tutorialOverlay = new TutorialOverlay(layout, TutorialOverlay.Page.THREAD);
         initAbsListView();
         initAdapter();
         setupContextMenu();
@@ -1361,6 +1360,11 @@ public class ThreadActivity
 
         if (actionMode != null)
             actionMode.finish();
+    }
+
+    @Override
+    protected TutorialOverlay.Page tutorialPage() {
+        return TutorialOverlay.Page.THREAD;
     }
 
 }
