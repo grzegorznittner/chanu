@@ -849,10 +849,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
-            case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_post_reply);
-                rawResourceDialog.show();
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

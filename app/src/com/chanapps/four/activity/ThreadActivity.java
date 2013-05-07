@@ -300,7 +300,6 @@ public class ThreadActivity
         setAbsListViewClass();
         View layout = View.inflate(getApplicationContext(), getLayoutId(), null);
         setContentView(layout);
-        tutorialOverlay = new TutorialOverlay(layout, TutorialOverlay.Page.THREAD);
         initAbsListView();
         initAdapter();
         setupContextMenu();
@@ -749,10 +748,6 @@ public class ThreadActivity
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
-                return true;
-            case R.id.help_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_thread_list);
-                rawResourceDialog.show();
                 return true;
             case R.id.board_rules_menu:
             	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_RULES);
@@ -1365,6 +1360,11 @@ public class ThreadActivity
 
         if (actionMode != null)
             actionMode.finish();
+    }
+
+    @Override
+    protected TutorialOverlay.Page tutorialPage() {
+        return TutorialOverlay.Page.THREAD;
     }
 
 }

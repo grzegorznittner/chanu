@@ -294,7 +294,7 @@ public class UserStatistics {
 	 * Marks tip of the feature as being displayed.
 	 * Tip for it won't be displayed anymore.
 	 */
-	private void tipDisplayed(ChanFeature feature) {
+	public void tipDisplayed(ChanFeature feature) {
 		displayedTips.add(feature);
 		tipDisplayed = new Date().getTime();
 	}

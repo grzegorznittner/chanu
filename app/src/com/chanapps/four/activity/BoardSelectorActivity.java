@@ -244,10 +244,6 @@ public class BoardSelectorActivity
                 RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
                 rawResourceDialog.show();
                 return true;
-            case R.id.help_menu:
-                RawResourceDialog rawResourceDialog2 = new RawResourceDialog(this, R.layout.about_dialog, R.raw.help_header, R.raw.help_board_selector);
-                rawResourceDialog2.show();
-                return true;
             case R.id.exit_menu:
                 ChanHelper.exitApplication(this);
                 return true;

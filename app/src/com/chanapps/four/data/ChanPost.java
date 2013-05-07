@@ -255,6 +255,23 @@ public class ChanPost {
         return textComponents(query, true);
     }
 
+    private String cleanSubject(String subject) {
+        return subject
+                .trim()
+                .replaceFirst("^(<br/?>)+", "")
+                .replaceAll("(<br/?>)(<br/?>)+", "$1")
+                .replaceFirst("(<br/?>)+$", "")
+                .trim();
+    }
+
+    private String cleanMessage(String message) {
+        return message
+                .trim()
+                .replaceFirst("^(<br/?>)+", "")
+                .replaceFirst("(<br/?>)+$", "")
+                .trim();
+    }
+
     private String[] textComponents(String query, boolean showSpoiler) {
         String subText = sanitizeText(sub, false, showSpoiler);
         String comText = sanitizeText(com, false, showSpoiler);
@@ -263,11 +280,11 @@ public class ChanPost {
 
         if (!subject.isEmpty() || message.isEmpty()) { // we have a subject or can't extract from message
             if (DEBUG) Log.v(TAG, "Exception: provided subject=" + subject + " message=" + message);
-            return highlightComponents(subject, message, query);
+            return highlightComponents(cleanSubject(subject), cleanMessage(message), query);
         }
 
         if (comText.length() <= MAX_SUBJECT_LEN) { // just make message the subject
-            subject = message;
+            subject = cleanSubject(message);
             message = "";
             if (DEBUG) Log.v(TAG, "made message the subject=" + subject + " message=" + message);
             return highlightComponents(subject, message, query);
@@ -275,18 +292,13 @@ public class ChanPost {
 
         // start subject extraction process
         String[] terminators = { "\r", "\n", "<br/>", "<br>", ". ", "! ", "? ", "; ", ": ", ", " };
-        message = message
-                .replaceAll("(<br/?>)+", "<br/>")
-                .trim()
-                .replaceFirst("^(<br/?>)+", "")
-                .replaceFirst("(<br/?>)+$", "")
-                .trim();
+        message = cleanMessage(message);
         for (String terminator : terminators) {
             int i = message.indexOf(terminator);
             if (i > MIN_SUBJECT_LEN && i < MAX_SUBJECT_LEN) { // extract the subject
                 int len = terminator.length();
-                subject = message.substring(0, i + len).trim().replaceFirst("(<br/?>)+$", "").trim();
-                message = message.substring(i + len).trim().replaceFirst("^(<br/?>)+", "").trim();
+                subject = cleanSubject(message.substring(0, i + len));
+                message = cleanMessage(message.substring(i + len));
                 if (DEBUG) Log.v(TAG, "extracted subject=" + subject + " message=" + message);
                 return highlightComponents(subject, message, query);
             }
@@ -298,14 +310,15 @@ public class ChanPost {
         while (!Character.isWhitespace(c = comText.charAt(i)) && i > 0)
             i--; // rewind until we reach a whitespace character
         if (i > MIN_SUBJECT_LEN) { // we found a suitable cutoff point
-            subject = comText.substring(0, i).trim().replaceFirst("(<br/?>)+$", "").trim();
-            message = comText.substring(i + 1).trim().replaceFirst("^(<br/?>)+", "").trim();
+            subject = cleanSubject(comText.substring(0, i));
+            message = cleanMessage(comText.substring(i + 1));
             if (DEBUG) Log.v(TAG, "cutoff subject=" + subject + " message=" + message);
+            return highlightComponents(subject, message, query);
         }
 
         // default
         if (DEBUG) Log.v(TAG, "default subject=" + subject + " message=" + message);
-        return highlightComponents(subject, message, query);
+        return highlightComponents(cleanSubject(subject), cleanMessage(message), query);
     }
 
     private String[] highlightComponents(String subject, String message, String query) {
