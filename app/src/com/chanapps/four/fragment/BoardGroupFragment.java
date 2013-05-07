@@ -386,7 +386,7 @@ public class BoardGroupFragment
                 if (DEBUG) Log.i(TAG, "Long click " + boardSelectorTab + " /" + boardCode + "/" + threadNo);
                 ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
                 if (thread != null && thread.posts != null && thread.posts[0] != null && thread.posts[0].tim > 0) {
-                    WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, thread.posts[0].tim);
+                    WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, thread);
                     d.show(getFragmentManager(), WatchlistDeleteDialogFragment.TAG);
                     return true;
                 }

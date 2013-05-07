@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ToastRunnable;
+import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.ChanWatchlist;
 
 /**
@@ -25,12 +26,12 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
     public static final String TAG = WatchlistDeleteDialogFragment.class.getSimpleName();
 
     private Handler handler;
-    private long tim = 0;
+    private ChanThread thread;
 
-    public WatchlistDeleteDialogFragment(Handler handler, long tim) {
+    public WatchlistDeleteDialogFragment(Handler handler, ChanThread thread) {
         super();
         this.handler = handler;
-        this.tim = tim;
+        this.thread = thread;
     }
 
     @Override
@@ -42,7 +43,7 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Context ctx = getActivity();
-                                ChanWatchlist.deleteThreadFromWatchlist(ctx, tim);
+                                ChanWatchlist.deleteThreadFromWatchlist(ctx, thread);
                                 if (handler != null)
                                     handler.sendEmptyMessageDelayed(0, 10);
                                 dismiss();

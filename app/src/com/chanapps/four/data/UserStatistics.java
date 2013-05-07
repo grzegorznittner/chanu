@@ -9,13 +9,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import android.util.Log;
 
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
+import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.service.FileSaverService;
 
 /**
@@ -29,7 +32,42 @@ public class UserStatistics {
 	public static final int MIN_TOP_BOARDS = 5;
 	public static final int MAX_TOP_THREADS = 50;
 	private static final long MIN_STORE_DELAY = 15000;  // 15s
+	private static final long MIN_DELAY_FOR_TIPS = 5 * 60 * 1000; // 5min
 	
+	public static enum ChanFeature {
+		NONE,
+		BOARDSELECTOR_DESC, POPULAR_DESC, WATCHLIST_DESC, BOARD_DESC, THREAD_DESC,
+		WATCHLIST_CLEAR, WATCHLIST_DELETE,
+		BOARD_SELECT, MANUAL_REFRESH, SEARCH_BOARD, SEARCH_THREAD, BOARD_LIST_VIEW, ADD_THREAD, POST,
+		CACHED_BOARD_IMAGES, ALL_CACHED_IMAGES, BOARD_RULES, WATCH_THREAD, GALLERY_VIEW,
+		PLAY_THREAD, PRELOAD_ALL_IMAGES, DOWNLOAD_ALL_IMAGES_TO_GALLERY,
+		SETTINGS_NAMES, SETTINGS_4CHAN_PASS, SETTINGS_CACHE_SIZE, SETTINGS_WATCHLIST
+	}
+	
+	public static ChanFeature[] BOARDSELECTOR_FEATURES = new ChanFeature[]{
+		ChanFeature.BOARDSELECTOR_DESC, ChanFeature.BOARD_SELECT, ChanFeature.MANUAL_REFRESH,
+		ChanFeature.ALL_CACHED_IMAGES, ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
+		ChanFeature.SETTINGS_4CHAN_PASS};
+	public static ChanFeature[] POPULAR_FEATURES = new ChanFeature[]{
+		ChanFeature.POPULAR_DESC, ChanFeature.BOARD_SELECT, ChanFeature.MANUAL_REFRESH,
+		ChanFeature.ALL_CACHED_IMAGES, ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
+		ChanFeature.SETTINGS_4CHAN_PASS};
+	public static ChanFeature[] WATCHLIST_FEATURES = new ChanFeature[]{
+		ChanFeature.WATCHLIST_DESC, ChanFeature.BOARD_SELECT, ChanFeature.MANUAL_REFRESH, ChanFeature.WATCHLIST_CLEAR, ChanFeature.WATCHLIST_DELETE,
+		ChanFeature.ALL_CACHED_IMAGES, ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
+		ChanFeature.SETTINGS_4CHAN_PASS};
+	public static ChanFeature[] BOARD_FEATURES = new ChanFeature[]{
+		ChanFeature.BOARD_DESC, ChanFeature.BOARD_SELECT,
+		ChanFeature.SEARCH_BOARD, ChanFeature.BOARD_LIST_VIEW, ChanFeature.ADD_THREAD, ChanFeature.BOARD_RULES,
+		ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
+		ChanFeature.SETTINGS_4CHAN_PASS};
+	public static ChanFeature[] THREAD_FEATURES = new ChanFeature[]{ChanFeature.BOARD_SELECT, ChanFeature.MANUAL_REFRESH,
+		ChanFeature.SEARCH_THREAD, ChanFeature.POST, ChanFeature.GALLERY_VIEW, ChanFeature.PLAY_THREAD,
+		ChanFeature.WATCH_THREAD, ChanFeature.PRELOAD_ALL_IMAGES, ChanFeature.DOWNLOAD_ALL_IMAGES_TO_GALLERY,
+		ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
+		ChanFeature.SETTINGS_4CHAN_PASS};
+	public static ChanFeature[] GALLERY_FEATURES = new ChanFeature[]{};
+
 	/**
 	 * board code -> number of visits (including threads and image view)
 	 */
@@ -43,6 +81,17 @@ public class UserStatistics {
 	 * board '/' thread num -> number of visits (including image view)
 	 */
 	public Map<String, ChanThreadStat> boardThreadStats = new HashMap<String, ChanThreadStat>();
+	
+	/*
+	 * list of used features
+	 */
+	public Set<ChanFeature> usedFeatures = new HashSet<ChanFeature>();
+	/*
+	 *  list of displayed tips for features
+	 */
+	public Set<ChanFeature> displayedTips = new HashSet<ChanFeature>();
+	
+	public long tipDisplayed = 0;
 	
 	public long lastUpdate;
 	public long lastStored;
@@ -173,6 +222,60 @@ public class UserStatistics {
 				boardThreadStats.remove(threadStat.no);
 			}
 		}
+	}
+	
+	public void featureUsed(ChanFeature feature) {
+		if (!usedFeatures.contains(feature)) {
+			Log.e(TAG, "Feature " + feature + " marked as used");
+			usedFeatures.add(feature);
+		}
+		String used = "";
+		for (ChanFeature f : usedFeatures) {
+			used += f + ", ";
+		}
+		if (DEBUG) Log.i(TAG, "Used features: " + used);
+	}
+	
+	public ChanFeature nextTipForPage(TutorialOverlay.Page tutorialPage) {
+		if (!tipShouldBeDisplayed()) {
+			return ChanFeature.NONE;
+		}
+		
+		ChanFeature[] tipSet = null;
+		switch (tutorialPage) {
+		case BOARDLIST:
+			tipSet = BOARDSELECTOR_FEATURES;
+			break;
+		case BOARD:
+			tipSet = BOARD_FEATURES;
+			break;
+		case THREAD:
+			tipSet = THREAD_FEATURES;
+			break;
+		case RECENT:
+			tipSet = POPULAR_FEATURES;
+			break;
+		case WATCHLIST:
+			tipSet = WATCHLIST_FEATURES;
+			break;
+		}
+		
+		for (ChanFeature feature : tipSet) {
+			if (!usedFeatures.contains(feature) && !displayedTips.contains(feature)) {
+				return feature;
+			}
+		}
+		return ChanFeature.NONE;
+	}
+	
+	private void tipDisplayed(ChanFeature feature) {
+		displayedTips.add(feature);
+		tipDisplayed = new Date().getTime();
+	}
+	
+	public boolean tipShouldBeDisplayed() {
+		long currentTime = new Date().getTime();
+		return currentTime - tipDisplayed > MIN_DELAY_FOR_TIPS;
 	}
 
 	private String logBoardStats(List<ChanBoardStat> boards) {

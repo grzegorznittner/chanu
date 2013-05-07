@@ -43,6 +43,7 @@ public class ChanBoard {
     public static final String POPULAR_BOARD_CODE = "popular";
     public static final String LATEST_BOARD_CODE = "latest";
     public static final String LATEST_IMAGES_BOARD_CODE = "images";
+    public static final String WATCHLIST_BOARD_CODE = "watchlist";
 
     public static final String DEFAULT_BOARD_CODE = "a";
 
@@ -313,7 +314,8 @@ public class ChanBoard {
         String[][] boardCodesByType = {
 
                 {   BoardType.WATCHLIST.toString(),
-                        WATCH_BOARD_CODE, ctx.getString(R.string.board_watch)
+                        WATCH_BOARD_CODE, ctx.getString(R.string.board_watch),
+                        WATCHLIST_BOARD_CODE, ctx.getString(R.string.board_watch)
                 },
                 {   BoardType.POPULAR.toString(),
                         POPULAR_BOARD_CODE, ctx.getString(R.string.board_popular)

@@ -1,6 +1,6 @@
 package com.chanapps.four.data;
 
-import java.lang.ref.SoftReference;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,11 +14,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 import com.chanapps.four.activity.ChanActivityId;
@@ -92,15 +89,25 @@ public class ChanWatchlist {
         return Long.valueOf(threadPath.split(FIELD_SEPARATOR_REGEX)[2]);
     }
 
-    public static int watchThread(
-            Context ctx,
-            long tim,
-            String boardCode,
-            long threadNo,
-            String text,
-            String imageUrl,
-            int imageWidth,
-            int imageHeight) {
+    public static int watchThread(Context ctx, long tim, String boardCode,
+			long threadNo, String text, String imageUrl, int imageWidth, int imageHeight) {
+    	try {
+    		ChanBoard watched = ChanFileStorage.loadBoardData(ctx, ChanBoard.WATCHLIST_BOARD_CODE);
+    		Log.e(TAG, "Before adding " + boardCode + "/" + threadNo + " to watchlist (" + watched.threads.length + "):");
+    		for (ChanPost post : watched.threads) {
+    			Log.e(TAG, " >>> " + post.board + "/" + post.no + ", posts: " + ((ChanThread)post).posts.length + ", updated: " + new Date(((ChanThread)post).lastFetched));
+    		}
+    		
+	    	ChanThread thread = ChanFileStorage.loadThreadData(ctx, boardCode, threadNo);
+	    	ChanFileStorage.addWatchedThread(ctx, thread);
+
+    		Log.e(TAG, "After adding " + boardCode + "/" + threadNo + " to watchlist (" + watched.threads.length + "):");
+    		for (ChanPost post : watched.threads) {
+    			Log.e(TAG, " >>> " + post.board + "/" + post.no + ", posts: " + ((ChanThread)post).posts.length + ", updated: " + new Date(((ChanThread)post).lastFetched));
+    		}
+    	} catch (Exception e) {
+    		Log.e(TAG, "Error watching thread", e);
+    	}
         if (isThreadWatched(ctx, boardCode, threadNo)) {
             if (DEBUG) Log.v(TAG, "Thread " + boardCode + "/" + threadNo + " already in watchlist");
             return R.string.thread_already_in_watchlist;
@@ -265,10 +272,22 @@ public class ChanWatchlist {
         if (DEBUG) Log.i(TAG, "Watchlist cleaned");
     }
 
-    public static void deleteThreadFromWatchlist(Context ctx, long tim) {
+    public static void deleteThreadFromWatchlist(Context ctx, ChanThread thread) {
         List<Long> deleteTims = new ArrayList<Long>();
-        deleteTims.add(tim);
+        deleteTims.add(thread.posts[0].tim);
         deleteThreadsFromWatchlist(ctx, deleteTims);
+        
+        try {
+			ChanFileStorage.deleteWatchedThread(ctx, thread);
+			ChanBoard watched = ChanFileStorage.loadBoardData(ctx, ChanBoard.WATCHLIST_BOARD_CODE);
+			
+			Log.e(TAG, "After deleting " + thread.board + "/" + thread.no + " from watchlist (" + watched.threads.length + "):");
+    		for (ChanPost post : watched.threads) {
+    			Log.e(TAG, post.board + "/" + post.no + ", posts: " + ((ChanThread)post).posts.length + ", updated: " + new Date(((ChanThread)post).lastFetched));
+    		}
+		} catch (IOException e) {
+			Log.e(TAG, "Error deleting thread " + thread.board + "/" + thread.no, e);
+		}
 
         if (ctx instanceof Activity) // probably better way to do this
             ((Activity) ctx).runOnUiThread(new ToastRunnable(ctx, ctx.getString(R.string.dialog_deleted_from_watchlist)));
@@ -289,7 +308,7 @@ public class ChanWatchlist {
             }
         }
         newWatchlist.removeAll(delete);
-        saveWatchlist(ctx, newWatchlist);
+        saveWatchlist(ctx, newWatchlist);        
     }
 
     public static List<String> getSortedWatchlistFromPrefs(Context ctx) {
@@ -298,6 +317,9 @@ public class ChanWatchlist {
         threadPathList.addAll(threadPaths);
         Collections.sort(threadPathList);
         Collections.reverse(threadPathList);
+        
+        ChanBoard watched = ChanFileStorage.loadBoardData(ctx, ChanBoard.WATCHLIST_BOARD_CODE);
+        Log.e(TAG, "Old watchlist: " + threadPathList.size() + ", new watchlist: " + watched.threads.length);
         return threadPathList;
     }
 
