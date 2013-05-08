@@ -118,7 +118,7 @@
 
     <style name="BoardGridViewTablet" parent="AppTheme">
         <item name="android:layout_width">200dp</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
         <!--<item name="android:layout_centerInParent">true</item> -->
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingLeft">0dp</item>
