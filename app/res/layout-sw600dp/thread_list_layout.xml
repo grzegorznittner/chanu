@@ -15,7 +15,9 @@
         android:background="@color/DimDivider"/-->
 
     <ListView
-            android:id="@+id/thread_list_view" style="@style/ListViewTemplateTabletsThreads"/>
+            android:id="@+id/thread_list_view" style="@style/ListViewTemplateWithGridTabletsThreads"/>
+
+    <include layout="@layout/board_refresh_bar"/>
 
     <include layout="@layout/tutorial_overlay"/>
 

@@ -28,6 +28,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     protected SharedPreferences prefs;
     protected long threadNo;
     protected int numGridColumns;
+    protected boolean showRelatedBoards;
     private boolean hidePostNumbers;
     private boolean useFriendlyIds;
 
@@ -35,12 +36,13 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         super(context);
     }
 
-    public ThreadCursorLoader(Context context, String boardName, long threadNo, String query, AbsListView absListView) {
+    public ThreadCursorLoader(Context context, String boardName, long threadNo, String query, AbsListView absListView, boolean showRelatedBoards) {
         this(context);
         this.context = context;
         this.boardName = boardName;
         this.threadNo = threadNo;
         this.query = query.toLowerCase().trim();
+        this.showRelatedBoards = showRelatedBoards;
         initRandomGenerator();
         ChanHelper.Orientation orientation = ChanHelper.getOrientation(context);
         int defaultNumColumns = (orientation == ChanHelper.Orientation.PORTRAIT) ? DEFAULT_NUM_GRID_COLUMNS_PORTRAIT : DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE;
@@ -103,7 +105,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     }
 
     private void loadMatrixCursor(MatrixCursor matrixCursor, ChanBoard board, ChanThread thread) {
-        int adSpace = MINIMUM_AD_SPACING;
+        //int adSpace = MINIMUM_AD_SPACING;
         int i = 0;
         int numQueryMatches = 0;
         int numPosts = thread.posts.length;
@@ -120,6 +122,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             post.useFriendlyIds = useFriendlyIds;
             matrixCursor.addRow(post.makeRow(query));
             // randomly distribute ads
+            /*
             if (generator.nextDouble() < AD_PROBABILITY
                     && !(adSpace > 0)
                     && i < (numPosts - MINIMUM_AD_SPACING)) {
@@ -129,16 +132,13 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             else {
                 adSpace--;
             }
+            */
             i++;
         }
 
         // no search results marker
         if (!query.isEmpty() && numQueryMatches == 0)
             matrixCursor.addRow(ChanPost.makeTitleRow(boardName, context.getString(R.string.thread_search_no_results)));
-
-        // always put an ad at the bottom
-        if (i > 1 || thread.replies == 0)
-            matrixCursor.addRow(board.makePostAdRow(getContext(), i));
 
         // put related threads at the bottom
         List<Object[]> rows = board.makePostRelatedThreadsRows(threadNo);
@@ -149,12 +149,19 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         }
 
         // put related boards at the bottom
-        List<ChanBoard> boardRows = board.relatedBoards(context);
-        if (boardRows.size() > 0) {
-            matrixCursor.addRow(board.makePostRelatedBoardsHeaderRow(context));
-            for (ChanBoard relatedBoard : boardRows)
-                matrixCursor.addRow(relatedBoard.makePostBoardLinkRow());
+        if (showRelatedBoards) {
+            List<ChanBoard> boardRows = board.relatedBoards(context);
+            if (boardRows.size() > 0) {
+                matrixCursor.addRow(board.makePostRelatedBoardsHeaderRow(context));
+                for (ChanBoard relatedBoard : boardRows)
+                    matrixCursor.addRow(relatedBoard.makePostBoardLinkRow());
+            }
         }
+
+        // always put an ad at the bottom after done loading
+        if (i > 1 || thread.replies == 0)
+            matrixCursor.addRow(board.makePostAdRow(getContext(), i));
+
     }
 
     @Override

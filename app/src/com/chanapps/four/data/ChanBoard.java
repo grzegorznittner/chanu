@@ -500,12 +500,10 @@ public class ChanBoard {
         return ChanThread.makeBoardRow(link, name, getRandomImageResourceId());
     }
 
-    /*
     public Object[] makeThreadAdRow(Context context, int pos) {
         ChanAd ad = ChanAd.randomAd(workSafe, pos);
-        return ChanThread.makeAdRow(context, ad);
+        return ChanThread.makeAdRow(context, link, ad);
     }
-    */
 
     public Object[] makePostAdRow(Context context, int pos) {
         ChanAd ad = ChanAd.randomAd(workSafe, pos);

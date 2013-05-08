@@ -29,6 +29,7 @@ public class ChanGridSizer {
     private static final int[] MAX_COLUMN_WIDTHS = {
             ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH,
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH,
+            ServiceType.BOARDTHREAD.ordinal(), MAX_COLUMN_WIDTH,
             ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH,
             ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH
     };
@@ -36,6 +37,7 @@ public class ChanGridSizer {
     private static final int[] MAX_COLUMN_WIDTHS_LARGE = {
             ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH_LARGE,
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
+            ServiceType.BOARDTHREAD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
             ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
             ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_LARGE
     };
@@ -43,12 +45,14 @@ public class ChanGridSizer {
     private static final int[] MAX_COLUMN_WIDTHS_XLARGE = {
             ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
+            ServiceType.BOARDTHREAD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
             ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
             ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_XLARGE
     };
 
     private GridView g;
     private Display d;
+    private ServiceType serviceType;
     private int numColumns = 0;
     private int columnWidth = 0;
     private int columnHeight = 0;
@@ -59,6 +63,7 @@ public class ChanGridSizer {
     private int paddingBottom = 0;
 
     public ChanGridSizer(View g, Display d, ServiceType serviceType) {
+        this.serviceType = serviceType;
     	if (g instanceof GridView) {
     		this.g = (GridView)g;
     	}
@@ -109,7 +114,9 @@ public class ChanGridSizer {
         numColumns = width / maxColumnWidth == 1 ? 2 : width / maxColumnWidth;
         columnWidth = width / numColumns;
         columnHeight = columnWidth;
-		if (DEBUG) Log.i(TAG, "sizeGridToDisplay width: " + width + ", height: " + height + ", numCols: " + numColumns);
+        if (serviceType == ServiceType.BOARDTHREAD)
+            numColumns = 1; // force after sizing so sizing is consistent with board view
+        if (DEBUG) Log.i(TAG, "sizeGridToDisplay width: " + width + ", height: " + height + ", numCols: " + numColumns);
         if (g != null) {
         	g.setNumColumns(numColumns);
         	g.setColumnWidth(columnWidth);
@@ -124,13 +131,10 @@ public class ChanGridSizer {
         return columnHeight;
     }
 
-    public int getNumColumns() {
-        return numColumns;
-    }
-
     public enum ServiceType {
         SELECTOR,
         BOARD,
+        BOARDTHREAD,
         THREAD,
         WATCHLIST
     }

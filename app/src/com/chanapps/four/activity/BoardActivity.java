@@ -634,10 +634,15 @@ public class BoardActivity
             }
         }
         else {
-            setActionBarTitle(); // to reflect updated time
             handleUpdatedThreads(); // see if we need to update
-            setProgressBarIndeterminateVisibility(false);
+            setActionBarTitle(); // to reflect updated time
+            stopProgressBarIfLoadersDone();
         }
+    }
+
+    protected void stopProgressBarIfLoadersDone() {
+        //if (cursorLoader == null || !cursorLoader.isStarted())
+            setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
@@ -657,7 +662,7 @@ public class BoardActivity
         }
         else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
             final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-            ThreadActivity.startActivity(this, boardLink);
+            startActivity(this, boardLink);
         }
         else {
             final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
@@ -783,12 +788,14 @@ public class BoardActivity
     }
 
     protected void handleUpdatedThreads() {
+        LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
+        if (refreshLayout == null)
+            return;
         ChanBoard board = loadBoard();
         StringBuffer msg = new StringBuffer();
         if (board.shouldSwapThreads()) { // auto-update if we have no threads to show, don't display menu
             if (DEBUG) Log.i(TAG, "auto-updating threads since empty");
             board.swapLoadedThreads();
-            LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
             refreshLayout.setVisibility(LinearLayout.GONE);
         } else if ((board.newThreads > 0 || board.updatedThreads > 0)
                 && (query == null || query.isEmpty())) { // display update button
@@ -807,18 +814,16 @@ public class BoardActivity
             }
             msg.append(" available");
 
-            TextView refreshText = (TextView)findViewById(R.id.board_refresh_text);
+            TextView refreshText = (TextView)refreshLayout.findViewById(R.id.board_refresh_text);
             refreshText.setText(msg.toString());
-
-            LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
-            refreshLayout.setVisibility(LinearLayout.VISIBLE);
-
-            Button refreshButton = (Button)findViewById(R.id.board_refresh_button);
+            Button refreshButton = (Button)refreshLayout.findViewById(R.id.board_refresh_button);
             refreshButton.setClickable(true);
             refreshButton.setOnClickListener(this);
-            Button ignoreButton = (Button)findViewById(R.id.board_ignore_button);
+            Button ignoreButton = (Button)refreshLayout.findViewById(R.id.board_ignore_button);
             ignoreButton.setClickable(true);
             ignoreButton.setOnClickListener(this);
+
+            refreshLayout.setVisibility(LinearLayout.VISIBLE);
         } else { // don't display menu
             if (board.defData || board.lastFetched == 0) {
                 msg.append("not yet fetched");
@@ -828,10 +833,9 @@ public class BoardActivity
                 msg.append("fetched ").append(DateUtils.getRelativeTimeSpanString(
                         board.lastFetched, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString());
             }
-            TextView refreshText = (TextView)findViewById(R.id.board_refresh_text);
+            TextView refreshText = (TextView)refreshLayout.findViewById(R.id.board_refresh_text);
             refreshText.setText("Board is up to date");
 
-            LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
             refreshLayout.setVisibility(LinearLayout.GONE);
         }
     }

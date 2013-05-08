@@ -132,11 +132,10 @@ public class ChanThread extends ChanPost {
         };
     }
 
-    /*
-    public static Object[] makeAdRow(Context context, ChanAd ad) {
+    public static Object[] makeAdRow(Context context, String boardCode, ChanAd ad) {
         return new Object[] {
-                0,
-                "",
+                ad.hashCode(),
+                boardCode,
                 0,
                 "",
                 context.getResources().getString(R.string.board_advert_full),
@@ -150,7 +149,6 @@ public class ChanThread extends ChanPost {
                 THREAD_FLAG_AD
         };
     }
-    */
 
     public String toString() {
 		return "Thread " + no + ", com: " + com + ", sub:" + sub + ", posts: " + posts.length

@@ -18,41 +18,7 @@
             android:gravity="top|left"
             />
 
-    <LinearLayout android:id="@+id/board_refresh_bar"
-                  android:layout_width="match_parent"
-                  android:layout_height="48dp"
-                  android:gravity="right"
-                  android:orientation="horizontal"
-                  android:background="@color/PaletteSemiOpaqueMedGray">
-
-        <TextView
-                android:id="@+id/board_refresh_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/PaletteWhite"
-                android:textStyle="bold"
-                android:background="@color/PaletteTransparent"
-                android:textIsSelectable="false"/>
-        <Button
-                android:id="@+id/board_refresh_button"
-                android:layout_width="48dp"
-                android:layout_height="fill_parent"
-                android:textColor="@color/PaletteBlack"
-                android:layout_marginLeft="10dp"
-                android:paddingLeft="8dp"
-                android:drawableLeft="@drawable/board_refresh_button_selector"
-                android:background="@color/PaletteSemiOpaqueDarkGray"
-                />
-        <Button
-                android:id="@+id/board_ignore_button"
-                android:layout_width="48dp"
-                android:layout_height="fill_parent"
-                android:paddingLeft="8dp"
-                android:textColor="@color/PaletteBlack"
-                android:drawableLeft="@drawable/board_ignore_button_selector"
-                android:background="@color/PaletteSemiOpaqueDarkGray"
-                />
-    </LinearLayout>
+    <include layout="@layout/board_refresh_bar"/>
 
     <!--
     <LinearLayout

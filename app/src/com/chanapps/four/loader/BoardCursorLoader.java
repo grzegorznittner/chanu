@@ -115,12 +115,14 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                         context.getString(R.string.thread_search_no_results)));
             }
 
-            if (!board.isVirtualBoard() && matrixCursor.getCount() > 0) { // add related boards if any results
+            if (!board.isVirtualBoard() && i > 0) { // add related boards if any results
                 matrixCursor.addRow(ChanThread.makeTitleRow(boardName,
                         context.getString(R.string.board_related_boards_title)));
                 for (ChanBoard relatedBord : board.relatedBoards(context)) {
                     matrixCursor.addRow(relatedBord.makeRow());
                 }
+                // always put an ad at the bottom
+                matrixCursor.addRow(board.makeThreadAdRow(getContext(), i));
             }
         }
         registerContentObserver(matrixCursor, mObserver);

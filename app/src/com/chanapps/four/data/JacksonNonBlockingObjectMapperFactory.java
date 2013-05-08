@@ -135,7 +135,7 @@ public class JacksonNonBlockingObjectMapperFactory {
                 if (delegate != null)
                     o = delegate.getNullValue();
             }
-            return (Date)o;
+            return null;
         }
     }
 
