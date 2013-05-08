@@ -9,6 +9,11 @@
         >
     <ListView android:id="@+id/board_list_view_tablet" style="@style/ListViewTemplateTablets"/>
 
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/DimDivider"/>
+
     <ListView
             android:id="@+id/thread_list_view" style="@style/ListViewTemplateTabletsThreads" />
 

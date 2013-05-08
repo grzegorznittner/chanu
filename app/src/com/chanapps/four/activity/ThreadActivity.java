@@ -386,6 +386,12 @@ public class ThreadActivity
         absListView.setOnCreateContextMenuListener(this);
     }
 
+    protected boolean setEmptyItemText(TextView view) {
+        view.setText("");
+        view.setVisibility(View.GONE);
+        return true;
+    }
+
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
         /*
@@ -395,9 +401,11 @@ public class ThreadActivity
         if (DEBUG) Log.v(TAG, "                      text=" + cursor.getString(cursor.getColumnIndex(ChanPost.POST_HEADLINE_TEXT)));
         */
 
-        if ( cursor.getColumnIndex(ChanPost.POST_FLAGS) == -1) {
-            return super.setViewValue(view, cursor, columnIndex);
-
+        if ( cursor.getColumnIndex(ChanPost.POST_FLAGS) == -1) { // we are on board list
+            if (view.getId() == R.id.grid_item_thread_text)
+                return setEmptyItemText((TextView)view);
+            else
+                return super.setViewValue(view, cursor, columnIndex);
         }
         int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
         switch (view.getId()) {
