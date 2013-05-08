@@ -50,6 +50,8 @@ import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
+import com.chanapps.four.adapter.BoardListCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
@@ -64,11 +66,13 @@ import com.chanapps.four.fragment.BlocklistSelectToAddDialogFragment;
 import com.chanapps.four.fragment.DeletePostDialogFragment;
 import com.chanapps.four.fragment.ListOfLinksDialogFragment;
 import com.chanapps.four.fragment.ReportPostDialogFragment;
+import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
+import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.task.HighlightRepliesTask;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -90,8 +94,7 @@ public class ThreadActivity
         AbsListView.OnItemClickListener,
         AbsListView.MultiChoiceModeListener,
         PopupMenu.OnMenuItemClickListener,
-        MediaScannerConnection.OnScanCompletedListener
-{
+        MediaScannerConnection.OnScanCompletedListener {
     public static final String TAG = ThreadActivity.class.getSimpleName();
     public static final boolean DEBUG = false;
 
@@ -114,25 +117,35 @@ public class ThreadActivity
     protected Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
     protected ActionMode actionMode = null;
 
+    //tablet layout
+    private AbstractBoardCursorAdapter adapterBoardsTablet;
+    protected BoardCursorLoader cursorLoaderBoardsTablet;
+    private ListView absBoardListView;
+
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
-        if (threadNo > 0) {
-        	cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, query, absListView);
-            if (DEBUG) Log.i(TAG, "Started loader for " + boardCode + "/" + threadNo);
-            setProgressBarIndeterminateVisibility(true);
+        if (id == 0) {
+            if (threadNo > 0) {
+                cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, query, absListView);
+                if (DEBUG) Log.i(TAG, "Started loader for " + boardCode + "/" + threadNo);
+                setProgressBarIndeterminateVisibility(true);
+            } else {
+                cursorLoader = null;
+                setProgressBarIndeterminateVisibility(false);
+            }
+            return cursorLoader;
+        } else {
+            cursorLoaderBoardsTablet = new BoardCursorLoader(this, boardCode, "");
+            return cursorLoaderBoardsTablet;
         }
-        else {
-            cursorLoader = null;
-            setProgressBarIndeterminateVisibility(false);
-        }
-        return cursorLoader;
     }
 
     public static void startActivity(Activity from, String boardCode, long threadNo) {
         if (threadNo <= 0)
             startActivity(from, boardCode);
-	    else
+        else
             from.startActivity(createIntentForActivity(from, boardCode, threadNo, ""));
     }
 
@@ -193,21 +206,22 @@ public class ThreadActivity
             Intent selectorIntent = new Intent(this, BoardSelectorActivity.class);
             selectorIntent.putExtra(ChanHelper.BOARD_TYPE, BoardType.JAPANESE_CULTURE.toString());
             selectorIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
-            selectorIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+            selectorIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(selectorIntent);
             finish();
         }
         if (threadNo == 0) {
             Intent boardIntent = createIntentForActivity(this, boardCode, "");
-            boardIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+            boardIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(boardIntent);
             finish();
         }
         // normal processing resumes
         if (intent.getBooleanExtra(ChanHelper.TRIGGER_BOARD_REFRESH, false)) {
-        	FetchChanDataService.scheduleBoardFetch(getBaseContext(), boardCode);
+            FetchChanDataService.scheduleBoardFetch(getBaseContext(), boardCode);
         }
-        if (DEBUG) Log.i(TAG, "Thread intent is: " + intent.getStringExtra(ChanHelper.BOARD_CODE) + "/" + intent.getLongExtra(ChanHelper.THREAD_NO, 0));
+        if (DEBUG)
+            Log.i(TAG, "Thread intent is: " + intent.getStringExtra(ChanHelper.BOARD_CODE) + "/" + intent.getLongExtra(ChanHelper.THREAD_NO, 0));
         if (DEBUG) Log.i(TAG, "Thread loaded: " + boardCode + "/" + threadNo);
     }
 
@@ -237,11 +251,25 @@ public class ThreadActivity
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        if (absBoardListView != null)
+            getLoaderManager().destroyLoader(1);//todo - check if loader 1 is available
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (absBoardListView != null)
+            getSupportLoaderManager().restartLoader(1, null, this);  //todo - check if tablet
+    }
+
+    @Override
     protected void initAdapter() {
         adapter = new ThreadListCursorAdapter(this,
                 R.layout.thread_list_item,
                 this,
-                new String[] {
+                new String[]{
                         ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_IMAGE_URL,
@@ -254,7 +282,7 @@ public class ThreadActivity
                         ChanPost.POST_COUNTRY_URL,
                         ChanPost.POST_IMAGE_URL
                 },
-                new int[] {
+                new int[]{
                         R.id.list_item_header_wrapper,
                         R.id.list_item_expanded_progress_bar,
                         R.id.list_item_image_expanded,
@@ -268,6 +296,30 @@ public class ThreadActivity
                         R.id.list_item_image_exif
                 });
         absListView.setAdapter(adapter);
+
+        if (absBoardListView != null) {
+            adapterBoardsTablet = new BoardListCursorAdapter(this,
+                    R.layout.board_list_item,
+                    this,
+                    new String[]{
+                            ChanThread.THREAD_THUMBNAIL_URL,
+                            ChanThread.THREAD_TITLE,
+                            ChanThread.THREAD_SUBJECT,
+                            ChanThread.THREAD_HEADLINE,
+                            ChanThread.THREAD_TEXT,
+                            ChanThread.THREAD_COUNTRY_FLAG_URL
+                    },
+                    new int[]{
+                            R.id.grid_item_thread_thumb,
+                            R.id.grid_item_thread_title,
+                            R.id.grid_item_thread_subject,
+                            R.id.grid_item_thread_headline,
+                            R.id.grid_item_thread_text,
+                            R.id.grid_item_country_flag
+                    });
+            absBoardListView.setAdapter(adapterBoardsTablet);
+
+        }
     }
 
     @Override
@@ -284,7 +336,35 @@ public class ThreadActivity
 
     @Override
     protected void initAbsListView() {
-        absListView = (ListView)findViewById(R.id.thread_list_view);
+        absListView = (ListView) findViewById(R.id.thread_list_view);
+        absBoardListView = (ListView) findViewById(R.id.board_list_view_tablet);
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (loader == this.cursorLoader ) super.onLoadFinished(loader, data);
+        if (loader == this.cursorLoaderBoardsTablet) {
+            this.adapterBoardsTablet.swapCursor(data);
+
+            // retry load if maybe data wasn't there yet
+            if (data != null && data.getCount() < 1 && handler != null) {
+                NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
+                if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
+                    setProgressBarIndeterminateVisibility(false);
+                    String msg = String.format(getString(R.string.mobile_profile_health_status),
+                            health.toString().toLowerCase().replaceAll("_", " "));
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    handler.sendEmptyMessageDelayed(1, LOADER_RESTART_INTERVAL_SHORT_MS);
+                }
+            }
+            else {
+                setProgressBarIndeterminateVisibility(false);
+            }
+
+        }
     }
 
     @Override
@@ -297,6 +377,7 @@ public class ThreadActivity
         setupContextMenu();
         absListView.setOnItemClickListener(this);
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+
     }
 
     protected void setupContextMenu() {
@@ -313,18 +394,23 @@ public class ThreadActivity
         if (DEBUG) Log.v(TAG, "                    postId=" + cursor.getString(cursor.getColumnIndex(ChanPost.POST_ID)));
         if (DEBUG) Log.v(TAG, "                      text=" + cursor.getString(cursor.getColumnIndex(ChanPost.POST_HEADLINE_TEXT)));
         */
+
+        if ( cursor.getColumnIndex(ChanPost.POST_FLAGS) == -1) {
+            return super.setViewValue(view, cursor, columnIndex);
+
+        }
         int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
         switch (view.getId()) {
-            case R.id.list_item :
-                return setItem((ViewGroup)view, cursor, flags);
+            case R.id.list_item:
+                return setItem((ViewGroup) view, cursor, flags);
             case R.id.list_item_header_wrapper:
-                return setItemHeaderWrapper((ViewGroup)view, flags);
+                return setItemHeaderWrapper((ViewGroup) view, flags);
             case R.id.list_item_image_expanded:
                 return setItemImageExpanded((ImageView) view, cursor, flags);
             case R.id.list_item_expanded_progress_bar:
                 return setItemImageExpandedProgressBar((ProgressBar) view);
             case R.id.list_item_image_wrapper:
-                return setItemImageWrapper((ViewGroup)view, cursor, flags);
+                return setItemImageWrapper((ViewGroup) view, cursor, flags);
             case R.id.list_item_image:
                 return setItemImage((ImageView) view, cursor, flags);
             case R.id.list_item_country_flag:
@@ -348,7 +434,7 @@ public class ThreadActivity
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         item.setTag((flags | ChanPost.FLAG_IS_AD) > 0 ? null : postId);
         item.setTag(R.id.THREAD_VIEW_IS_EXPANDED, new Boolean(false));
-        ViewGroup itemHeaderWrapper = (ViewGroup)item.findViewById(R.id.list_item_header_wrapper);
+        ViewGroup itemHeaderWrapper = (ViewGroup) item.findViewById(R.id.list_item_header_wrapper);
         ViewGroup.LayoutParams params = itemHeaderWrapper.getLayoutParams();
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
 /*
@@ -429,7 +515,7 @@ public class ThreadActivity
             if (DEBUG) Log.i(TAG, "found itemView=" + itemView);
             if (itemView == null)
                 return;
-            if ((Boolean)itemView.getTag(R.id.THREAD_VIEW_IS_EXPANDED))
+            if ((Boolean) itemView.getTag(R.id.THREAD_VIEW_IS_EXPANDED))
                 return;
 
             Cursor cursor = adapter.getCursor();
@@ -462,8 +548,7 @@ public class ThreadActivity
         if (cursor.getPosition() == 0) {
             ensureSubjectTypeface();
             tv.setTypeface(subjectTypeface);
-        }
-        else {
+        } else {
             tv.setTypeface(Typeface.DEFAULT);
         }
         tv.setText(spanned);
@@ -495,8 +580,7 @@ public class ThreadActivity
                 tv.setPadding(0, 0, 0, padding8DP);
             */
             tv.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             tv.setText("");
             tv.setVisibility(View.GONE);
         }
@@ -519,17 +603,23 @@ public class ThreadActivity
 
     private ImageLoadingListener adImageLoadingListener = new ImageLoadingListener() {
         @Override
-        public void onLoadingStarted(String imageUri, View view) {}
+        public void onLoadingStarted(String imageUri, View view) {
+        }
+
         @Override
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
             if (view instanceof ImageView) {
-                imageLoader.displayImage(ChanAd.defaultImageUrl(), (ImageView)view, displayImageOptions);
+                imageLoader.displayImage(ChanAd.defaultImageUrl(), (ImageView) view, displayImageOptions);
             }
         }
+
         @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {}
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+        }
+
         @Override
-        public void onLoadingCancelled(String imageUri, View view) {}
+        public void onLoadingCancelled(String imageUri, View view) {
+        }
     };
 
     private boolean setItemImage(final ImageView iv, final Cursor cursor, int flags) {
@@ -560,21 +650,20 @@ public class ThreadActivity
 
         // scale image
         boolean isFirst = cursor.getPosition() == 0;
-        double scaleFactor = (double)tn_w / (double)tn_h;
+        double scaleFactor = (double) tn_w / (double) tn_h;
         if (scaleFactor < 0.5 || (isFirst && scaleFactor < 1)) { // tall image, restrict by height
             //params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
             int desiredHeight = isFirst
                     ? getResources().getDisplayMetrics().heightPixels / 2
                     : ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_MAXHEIGHT_DP);
-            params.width = (int)(scaleFactor * (double)desiredHeight);
+            params.width = (int) (scaleFactor * (double) desiredHeight);
             params.height = desiredHeight;
-        }
-        else {
+        } else {
             int desiredWidth = isFirst
                     ? displayMetrics.widthPixels
                     : ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
             params.width = desiredWidth; // restrict by width normally
-            params.height = (int)((double)desiredWidth / scaleFactor);
+            params.height = (int) ((double) desiredWidth / scaleFactor);
             //params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
         if (DEBUG) Log.i(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + params.width + "x" + params.height);
@@ -610,8 +699,7 @@ public class ThreadActivity
             iv.setVisibility(View.VISIBLE);
             String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_COUNTRY_URL));
             imageLoader.displayImage(countryFlagImageUrl, iv, displayImageOptions);
-        }
-        else {
+        } else {
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
         }
@@ -770,7 +858,7 @@ public class ThreadActivity
     }
 
     public void incrementCounterAndAddToWatchlistIfActive() {
-    	NetworkProfileManager.instance().getUserStatistics().threadUse(boardCode, threadNo);
+        NetworkProfileManager.instance().getUserStatistics().threadUse(boardCode, threadNo);
         String key = boardCode + "/" + threadNo;
         ChanThreadStat stat = NetworkProfileManager.instance().getUserStatistics().boardThreadStats.get(key);
         if (stat != null && stat.usage >= WATCHLIST_ACTIVITY_THRESHOLD && !inWatchlist) {
@@ -792,8 +880,8 @@ public class ThreadActivity
     }
 
     public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo);
-	}
+        return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo);
+    }
 
     @Override
     protected int getLayoutId() {
@@ -808,9 +896,8 @@ public class ThreadActivity
 
         MenuItem shareItem = menu.findItem(R.id.thread_context_share_action_menu);
         if (shareItem != null) {
-            shareActionProvider = (ShareActionProvider)shareItem.getActionProvider();
-        }
-        else {
+            shareActionProvider = (ShareActionProvider) shareItem.getActionProvider();
+        } else {
             shareActionProvider = null;
         }
 
@@ -927,7 +1014,7 @@ public class ThreadActivity
         for (int i = 0; i < absListView.getCount(); i++) {
             if (!postPos.get(i))
                 continue;
-            Cursor cursor = (Cursor)adapter.getItem(i);
+            Cursor cursor = (Cursor) adapter.getItem(i);
             if (cursor == null)
                 continue;
             String itemText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
@@ -943,7 +1030,7 @@ public class ThreadActivity
         for (int i = 0; i < absListView.getCount(); i++) {
             if (!postPos.get(i))
                 continue;
-            Cursor cursor = (Cursor)adapter.getItem(i);
+            Cursor cursor = (Cursor) adapter.getItem(i);
             if (cursor == null)
                 continue;
             String postNo = cursor.getString(cursor.getColumnIndex(ChanPost.POST_ID));
@@ -958,7 +1045,7 @@ public class ThreadActivity
     }
 
     protected String planifyText(String text) {
-        return text.replaceAll("<br/?>", "\n").replaceAll("<[^>]*>","");
+        return text.replaceAll("<br/?>", "\n").replaceAll("<[^>]*>", "");
     }
 
     protected void copyToClipboard(String text) {
@@ -975,11 +1062,11 @@ public class ThreadActivity
         for (int i = 0; i < absListView.getCount(); i++) {
             if (!postPos.get(i))
                 continue;
-            Cursor cursor = (Cursor)adapter.getItem(i);
+            Cursor cursor = (Cursor) adapter.getItem(i);
             if (cursor == null)
                 continue;
             String itemText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT))
-                + " " + cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+                    + " " + cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
             if (itemText == null)
                 itemText = "";
             text += (text.isEmpty() ? "" : "\n") + itemText;
@@ -989,7 +1076,9 @@ public class ThreadActivity
         List<String> urlList = extractUrls(text);
         String[] urls = urlList.toArray(new String[urlList.size()]);
         return urls;
-    };
+    }
+
+    ;
 
     protected static List<String> extractUrls(String input) {
         List<String> result = new ArrayList<String>();
@@ -1042,8 +1131,8 @@ public class ThreadActivity
         String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
                 ? " Thread " + threadNo
                 : thread.posts[0].threadSubject(getApplicationContext())
-                    .replaceAll("<br/?>", " ")
-                    .replaceAll("<[^>]*>", "");
+                .replaceAll("<br/?>", " ")
+                .replaceAll("<[^>]*>", "");
         a.setTitle(boardTitle + ": " + threadTitle);
         /*
         long lastFetched = 0;
@@ -1092,7 +1181,7 @@ public class ThreadActivity
         Cursor cursor = adapter.getCursor();
         if (cursor == null)
             return blocklist;
-        
+
         for (int i = 0; i < adapter.getCount(); i++) {
             if (!postPos.get(i))
                 continue;
@@ -1119,7 +1208,7 @@ public class ThreadActivity
             blocklist.put(ChanBlocklist.BlockType.EMAIL, emails);
         if (userIds.size() > 0)
             blocklist.put(ChanBlocklist.BlockType.ID, userIds);
-        
+
         return blocklist;
     }
 
@@ -1131,8 +1220,7 @@ public class ThreadActivity
         String escaped;
         try {
             escaped = URLEncoder.encode(strippedText, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "Unsupported encoding utf-8? You crazy!", e);
             escaped = strippedText;
         }
@@ -1208,8 +1296,7 @@ public class ThreadActivity
                         }
                         try {
                             Thread.sleep(25);
-                        }
-                        catch (InterruptedException e) {
+                        } catch (InterruptedException e) {
                             break;
                         }
                     }
@@ -1238,7 +1325,7 @@ public class ThreadActivity
         //if (absListView.getLastVisiblePosition() == adapter.getCount() - 1)
         //    return false; // stop
         //It is scrolled all the way down here
-        if (absListView.getLastVisiblePosition() >= absListView.getAdapter().getCount() -1)
+        if (absListView.getLastVisiblePosition() >= absListView.getAdapter().getCount() - 1)
             return false;
         if (handler == null)
             return false;
@@ -1290,8 +1377,7 @@ public class ThreadActivity
             intent.putExtra(Intent.EXTRA_TEXT, text);
             intent.setType("text/html");
             setShareIntent(intent);
-        }
-        else {
+        } else {
             ArrayList<Uri> uris = new ArrayList<Uri>();
             ArrayList<String> missingPaths = new ArrayList<String>();
             for (String path : paths) {
@@ -1299,8 +1385,7 @@ public class ThreadActivity
                     Uri uri = checkedImageUris.get(path);
                     uris.add(uri);
                     if (DEBUG) Log.i(TAG, "Added uri=" + uri);
-                }
-                else {
+                } else {
                     uris.add(Uri.fromFile(new File(path)));
                     missingPaths.add(path);
                 }
@@ -1340,7 +1425,7 @@ public class ThreadActivity
         setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
         if (handler != null) {
-        	handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+            handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
         }
 
         if (actionMode != null)
