@@ -43,7 +43,8 @@
     <style name="ListViewTemplateTabletsThreads" parent="AppTheme">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_toRightOf">@+id/board_list_view_tablet</item>
+        <!-- <item name="android:layout_toRightOf">@+id/board_list_view_tablet</item> -->
+        <item name="android:layout_toRightOf">@+id/board_grid_view_tablet</item>
         <item name="android:smoothScrollbar">true</item>
         <item name="android:padding">0dp</item>
         <item name="android:verticalSpacing">0dp</item>
