@@ -40,22 +40,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.PopupMenu;
-import android.widget.ProgressBar;
-import android.widget.ShareActionProvider;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
-import com.chanapps.four.adapter.BoardListCursorAdapter;
+import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
-import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.component.ThreadExpandImageOnClickListener;
 import com.chanapps.four.component.ThreadImageOnClickListener;
 import com.chanapps.four.component.TutorialOverlay;
@@ -120,7 +111,7 @@ public class ThreadActivity
     //tablet layout
     private AbstractBoardCursorAdapter adapterBoardsTablet;
     protected BoardCursorLoader cursorLoaderBoardsTablet;
-    private ListView absBoardListView;
+    private GridView absBoardListView;
 
 
     @Override
@@ -298,8 +289,8 @@ public class ThreadActivity
         absListView.setAdapter(adapter);
 
         if (absBoardListView != null) {
-            adapterBoardsTablet = new BoardListCursorAdapter(this,
-                    R.layout.board_list_item,
+            adapterBoardsTablet = new BoardGridCursorAdapter(this,
+                    R.layout.board_grid_item,
                     this,
                     new String[]{
                             ChanThread.THREAD_THUMBNAIL_URL,
@@ -307,7 +298,9 @@ public class ThreadActivity
                             ChanThread.THREAD_SUBJECT,
                             ChanThread.THREAD_HEADLINE,
                             ChanThread.THREAD_TEXT,
-                            ChanThread.THREAD_COUNTRY_FLAG_URL
+                            ChanThread.THREAD_COUNTRY_FLAG_URL,
+                            ChanThread.THREAD_NUM_REPLIES,
+                            ChanThread.THREAD_NUM_IMAGES
                     },
                     new int[]{
                             R.id.grid_item_thread_thumb,
@@ -315,8 +308,12 @@ public class ThreadActivity
                             R.id.grid_item_thread_subject,
                             R.id.grid_item_thread_headline,
                             R.id.grid_item_thread_text,
-                            R.id.grid_item_country_flag
-                    });
+                            R.id.grid_item_country_flag,
+                            R.id.grid_item_num_replies,
+                            R.id.grid_item_num_images
+                    },
+                    columnWidth,
+                    columnHeight);
             absBoardListView.setAdapter(adapterBoardsTablet);
 
         }
@@ -337,13 +334,13 @@ public class ThreadActivity
     @Override
     protected void initAbsListView() {
         absListView = (ListView) findViewById(R.id.thread_list_view);
-        absBoardListView = (ListView) findViewById(R.id.board_list_view_tablet);
+        absBoardListView = (GridView) findViewById(R.id.board_grid_view_tablet);
 
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (loader == this.cursorLoader ) super.onLoadFinished(loader, data);
+        if (loader == this.cursorLoader) super.onLoadFinished(loader, data);
         if (loader == this.cursorLoaderBoardsTablet) {
             this.adapterBoardsTablet.swapCursor(data);
 
@@ -355,12 +352,10 @@ public class ThreadActivity
                     String msg = String.format(getString(R.string.mobile_profile_health_status),
                             health.toString().toLowerCase().replaceAll("_", " "));
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     handler.sendEmptyMessageDelayed(1, LOADER_RESTART_INTERVAL_SHORT_MS);
                 }
-            }
-            else {
+            } else {
                 setProgressBarIndeterminateVisibility(false);
             }
 
@@ -401,9 +396,9 @@ public class ThreadActivity
         if (DEBUG) Log.v(TAG, "                      text=" + cursor.getString(cursor.getColumnIndex(ChanPost.POST_HEADLINE_TEXT)));
         */
 
-        if ( cursor.getColumnIndex(ChanPost.POST_FLAGS) == -1) { // we are on board list
+        if (cursor.getColumnIndex(ChanPost.POST_FLAGS) == -1) { // we are on board list
             if (view.getId() == R.id.grid_item_thread_text)
-                return setEmptyItemText((TextView)view);
+                return setEmptyItemText((TextView) view);
             else
                 return super.setViewValue(view, cursor, columnIndex);
         }

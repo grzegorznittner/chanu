@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar" />
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar"/>
 
     <style name="tabTheme" parent="AppTheme">
         <item name="android:tabWidgetStyle">@style/Widget.TabWidget</item>
@@ -19,7 +19,7 @@
         <item name="android:verticalSpacing">0dp</item>
         <item name="android:horizontalSpacing">0dp</item>
         <item name="android:stretchMode">none</item>
-<!--        <item name="android:divider">@color/PaletteOffWhite</item> -->
+        <!--        <item name="android:divider">@color/PaletteOffWhite</item> -->
         <item name="android:dividerHeight">1px</item>
         <item name="android:cacheColorHint">#00000000</item>
         <item name="android:fastScrollEnabled">true</item>
@@ -108,6 +108,25 @@
         <item name="android:verticalSpacing">0dp</item>
         <item name="android:horizontalSpacing">0dp</item>
         <item name="android:numColumns">2</item>
+        <item name="android:stretchMode">none</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:smoothScrollbar">true</item>
+        <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:fastScrollEnabled">true</item>
+        <!-- <item name="android:background">@drawable/board_view_gradient_bg</item>  -->
+    </style>
+
+    <style name="BoardGridViewTablet" parent="AppTheme">
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!--<item name="android:layout_centerInParent">true</item> -->
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:verticalSpacing">0dp</item>
+        <item name="android:horizontalSpacing">0dp</item>
+        <item name="android:numColumns">1</item>
         <item name="android:stretchMode">none</item>
         <item name="android:gravity">top|left</item>
         <item name="android:smoothScrollbar">true</item>
@@ -605,7 +624,7 @@
         <item name="android:scaleType">center</item>
     </style>
 
-<!-- POPUP STYLES -->
+    <!-- POPUP STYLES -->
 
     <style name="PopupFullTextLayout" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
@@ -710,14 +729,13 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:text">@string/done</item>
-<!--
-        <item name="android:shadowColor">@color/PaletteBlack</item>
-        <item name="android:shadowDx">1</item>
-        <item name="android:shadowDy">1</item>
-        <item name="android:shadowRadius">4</item>
--->
+        <!--
+                <item name="android:shadowColor">@color/PaletteBlack</item>
+                <item name="android:shadowDx">1</item>
+                <item name="android:shadowDy">1</item>
+                <item name="android:shadowRadius">4</item>
+        -->
     </style>
-
 
 
     <!-- colors -->

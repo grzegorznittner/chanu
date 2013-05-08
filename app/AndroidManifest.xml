@@ -1,11 +1,11 @@
-    <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.chanapps.four.activity"
-    android:versionCode="6"
-    android:versionName="1.0beta6">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.chanapps.four.activity"
+          android:versionCode="6"
+          android:versionName="1.0beta6">
 
     <uses-sdk
-        android:minSdkVersion="15" />
- <!--       android:targetSdkVersion="17" />  -->
+            android:minSdkVersion="15"/>
+    <!--       android:targetSdkVersion="17" />  -->
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -20,16 +20,16 @@
     <uses-permission android:name="android.permission.GET_TASKS"/>
 
     <!-- used by gallery for slideshow -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
 
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
 
     <supports-screens android:smallScreens="false"
-            android:normalScreens="true" android:largeScreens="true"
-            android:anyDensity="true" />
+                      android:normalScreens="true" android:largeScreens="true"
+                      android:anyDensity="true"/>
 
     <application
             android:name="com.chanapps.four.FourChannerApp"
@@ -64,7 +64,7 @@
         </activity>
 
         <activity android:name=".GalleryViewActivity" android:label="@string/full_screen_image_activity"
-            	 android:configChanges="orientation|screenSize">
+                  android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -157,9 +157,9 @@
 
         <!--widgets-->
         <activity android:name="com.chanapps.four.widget.WidgetConfigureActivity"
-                android:excludeFromRecents="true"
-                android:taskAffinity=""
-                android:label="@string/widget_configure_title">
+                  android:excludeFromRecents="true"
+                  android:taskAffinity=""
+                  android:label="@string/widget_configure_title">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
@@ -180,7 +180,7 @@
             </intent-filter>
         </receiver>
         <service android:name="com.chanapps.four.widget.UpdateWidgetService"/>
-        
+
         <!-- Gallery Photo widget -->
         <!-- 
         <activity android:name="com.chanapps.four.widget.PhotoAppWidgetConfigure"
@@ -240,81 +240,81 @@
                   android:screenOrientation="portrait"
                   android:label="@string/application_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
-        
+
         <activity android:name=".VideoViewActivity"
-                android:configChanges="orientation|keyboardHidden|screenSize"
-                android:exported="false">
+                  android:configChanges="orientation|keyboardHidden|screenSize"
+                  android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-             </intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
         </activity>
-        
+
 
         <!-- Gallery activities -->
-        
+
         <activity android:name="com.android.gallery3d.app.Wallpaper"
-                android:configChanges="keyboardHidden|orientation|screenSize"
-                android:theme="@style/android:Theme.Translucent.NoTitleBar"
-                android:exported="false">
+                  android:configChanges="keyboardHidden|orientation|screenSize"
+                  android:theme="@style/android:Theme.Translucent.NoTitleBar"
+                  android:exported="false">
             <intent-filter android:label="@string/camera_setas_wallpaper">
-                <action android:name="android.intent.action.ATTACH_DATA" />
-                <data android:mimeType="image/*" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.ATTACH_DATA"/>
+                <data android:mimeType="image/*"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
             <intent-filter android:label="@string/application_name">
-                <action android:name="android.intent.action.SET_WALLPAPER" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.SET_WALLPAPER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
             <meta-data android:name="android.wallpaper.preview"
-                    android:resource="@xml/wallpaper_picker_preview" />
+                       android:resource="@xml/wallpaper_picker_preview"/>
         </activity>
         <activity android:name="com.android.gallery3d.app.CropImage"
-                android:configChanges="keyboardHidden|orientation|screenSize"
-                android:label="@string/crop_label"
-                android:process=":crop"
-                android:exported="false">
+                  android:configChanges="keyboardHidden|orientation|screenSize"
+                  android:label="@string/crop_label"
+                  android:process=":crop"
+                  android:exported="false">
             <intent-filter android:label="@string/crop_label">
-                <action android:name="com.android.camera.action.CROP" />
-                <data android:scheme="http" />
-                <data android:scheme="https" />
-                <data android:scheme="content" />
-                <data android:scheme="file" />
-                <data android:scheme="" />
-                <data android:mimeType="image/*" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.ALTERNATIVE" />
-                <category android:name="android.intent.category.SELECTED_ALTERNATIVE" />
+                <action android:name="com.android.camera.action.CROP"/>
+                <data android:scheme="http"/>
+                <data android:scheme="https"/>
+                <data android:scheme="content"/>
+                <data android:scheme="file"/>
+                <data android:scheme=""/>
+                <data android:mimeType="image/*"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.ALTERNATIVE"/>
+                <category android:name="android.intent.category.SELECTED_ALTERNATIVE"/>
             </intent-filter>
         </activity>
         <activity android:name="com.android.gallery3d.photoeditor.PhotoEditor"
-                android:label="@string/photoeditor_name"
-                android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
-                android:configChanges="keyboardHidden|orientation|screenSize"
-                android:hardwareAccelerated="true"
-                android:exported="false">
+                  android:label="@string/photoeditor_name"
+                  android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
+                  android:configChanges="keyboardHidden|orientation|screenSize"
+                  android:hardwareAccelerated="true"
+                  android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.EDIT" />
-                <data android:mimeType="image/*" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.EDIT"/>
+                <data android:mimeType="image/*"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <uses-library android:name="com.google.android.media.effects"
-                android:required="false" />
+                      android:required="false"/>
 
         <activity android:name="com.android.gallery3d.app.SlideshowDream"
-                android:label="@string/slideshow_dream_name"
-                android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
-                android:hardwareAccelerated="true"
-                android:exported="false">
+                  android:label="@string/slideshow_dream_name"
+                  android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+                  android:hardwareAccelerated="true"
+                  android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.DREAM" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DREAM"/>
             </intent-filter>
-        </activity>        
+        </activity>
     </application>
 
 </manifest>
