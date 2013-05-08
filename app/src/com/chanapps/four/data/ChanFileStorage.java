@@ -274,29 +274,19 @@ public class ChanFileStorage {
 
     public static boolean hasNewBoardData(Context context, String boardCode) {
         ChanBoard board = loadBoardData(context, boardCode);
-        return board != null
-                && !board.defData
-                && (board.newThreads > 0
-                    || board.updatedThreads > 0
-                    || (board.loadedThreads != null && board.loadedThreads.length > 0));
+        return board == null ? false : board.hasNewBoardData();
     }
 
 	public static ChanBoard loadFreshBoardData(Context context, String boardCode) {
         if (DEBUG) Log.i(TAG, "loadFreshBoardData code=" + boardCode);
         ChanBoard board = loadBoardData(context, boardCode);
         if (hasNewBoardData(context, boardCode)) {
-            synchronized (board) {
-				board.threads = board.loadedThreads;
-				board.loadedThreads = new ChanThread[0];
-				board.newThreads = 0;
-				board.updatedThreads = 0;
-			}
-			FileSaverService.startService(context, FileType.BOARD_SAVE, board.link);
+            board.swapLoadedThreads();
+			FileSaverService.startService(context, FileType.BOARD_SAVE, boardCode);
 		}
-
         return board;
 	}
-	
+
 	private static ChanBoard prepareDefaultBoardData(Context context, String boardCode) {
 		ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
         if (board == null) {

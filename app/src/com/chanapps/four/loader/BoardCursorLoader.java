@@ -64,6 +64,13 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             Log.i(TAG, "board threadcount=" + (board.threads != null ? board.threads.length : 0));
             Log.i(TAG, "board loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0));
         }
+
+        if (board.shouldSwapThreads())
+        { // auto-update if we have no threads to show
+            if (DEBUG) Log.i(TAG, "auto-swapping loaded threads since empty");
+            board.swapLoadedThreads();
+        }
+
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
         //if (!board.isVirtualBoard())
         //    matrixCursor.addRow(ChanBoard.makeBoardTitleRow(context, boardName));
@@ -78,7 +85,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             int i = 0;
             for (ChanPost thread : board.threads) {
                 if (DEBUG) Log.i(TAG, "Loading thread:" + thread.no);
-                if (ChanBlocklist.isBlocked(context, thread)) {
+                if (ChanBlocklist.isBlocked(context, thread) || thread.no <= 0) {
                     if (DEBUG) Log.i(TAG, "Skipped thread: " + thread.no);
                     continue;
                 }
@@ -108,7 +115,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                         context.getString(R.string.thread_search_no_results)));
             }
 
-            if (!board.isVirtualBoard()) { // add related boards
+            if (!board.isVirtualBoard() && matrixCursor.getCount() > 0) { // add related boards if any results
                 matrixCursor.addRow(ChanThread.makeTitleRow(boardName,
                         context.getString(R.string.board_related_boards_title)));
                 for (ChanBoard relatedBord : board.relatedBoards(context)) {

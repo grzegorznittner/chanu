@@ -773,4 +773,38 @@ public class ChanBoard {
         return boardList;
     }
 
+    public boolean hasNewBoardData() {
+        if (defData)
+            return false;
+        if (newThreads > 0)
+            return true;
+        if (updatedThreads > 0)
+            return true;
+        if (loadedThreads != null && loadedThreads.length > 0)
+            return true;
+        return false;
+    }
+
+    public boolean shouldSwapThreads() {
+        if (loadedThreads == null || loadedThreads.length == 0)
+            return false;
+        if (threads == null || threads.length == 0)
+            return true;
+        if (threads[0] == null || threads[0].no <= 0)
+            return true;
+        return false;
+    }
+
+    public void swapLoadedThreads() {
+        if (hasNewBoardData()) {
+            synchronized (this) {
+                threads = loadedThreads;
+                loadedThreads = new ChanThread[0];
+                newThreads = 0;
+                updatedThreads = 0;
+            }
+        }
+    }
+
+
 }
