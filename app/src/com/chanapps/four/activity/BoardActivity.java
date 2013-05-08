@@ -641,8 +641,7 @@ public class BoardActivity
     }
 
     protected void stopProgressBarIfLoadersDone() {
-        //if (cursorLoader == null || !cursorLoader.isStarted())
-            setProgressBarIndeterminateVisibility(false);
+        setProgressBarIndeterminateVisibility(false);
     }
 
     @Override

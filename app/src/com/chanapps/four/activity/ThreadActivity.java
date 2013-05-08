@@ -92,6 +92,8 @@ public class ThreadActivity
     public static final int ITEM_THUMB_EMPTY_DP = 8;
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
+    protected static final int THREAD_DONE = 0x1;
+    protected static final int BOARD_DONE = 0x2;
 
     protected long threadNo;
     protected String text;
@@ -109,12 +111,14 @@ public class ThreadActivity
     protected AbstractBoardCursorAdapter adapterBoardsTablet;
     protected BoardCursorLoader cursorLoaderBoardsTablet;
     protected AbsListView absBoardListView;
+    protected int loadingStatusFlags = 0;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
         if (id == 0) {
             if (threadNo > 0) {
+                loadingStatusFlags &= ~THREAD_DONE;
                 cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, query, absListView, absBoardListView == null);
                 if (DEBUG) Log.i(TAG, "Started loader for " + boardCode + "/" + threadNo);
                 setProgressBarIndeterminateVisibility(true);
@@ -124,6 +128,7 @@ public class ThreadActivity
             }
             return cursorLoader;
         } else {
+            loadingStatusFlags &= ~BOARD_DONE;
             cursorLoaderBoardsTablet = new BoardCursorLoader(this, boardCode, "");
             setProgressBarIndeterminateVisibility(true);
             return cursorLoaderBoardsTablet;
@@ -229,7 +234,7 @@ public class ThreadActivity
         imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisc()
-                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                .imageScaleType(ImageScaleType.EXACTLY)
                 .resetViewBeforeLoading()
                 .build();
     }
@@ -377,8 +382,12 @@ public class ThreadActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (loader == this.cursorLoader) super.onLoadFinished(loader, data);
-        if (loader == this.cursorLoaderBoardsTablet) {
+        if (loader == this.cursorLoader) {
+            loadingStatusFlags |= THREAD_DONE;
+            super.onLoadFinished(loader, data);
+        }
+        else if (loader == this.cursorLoaderBoardsTablet) {
+            loadingStatusFlags |= BOARD_DONE;
             this.adapterBoardsTablet.swapCursor(data);
 
             // retry load if maybe data wasn't there yet
@@ -402,9 +411,7 @@ public class ThreadActivity
 
     @Override
     protected void stopProgressBarIfLoadersDone() {
-        //boolean threadLoaderRunning = cursorLoader != null && cursorLoader.isStarted();
-        //boolean boardLoaderRunning = cursorLoaderBoardsTablet != null && cursorLoaderBoardsTablet.isStarted();
-        //if (!threadLoaderRunning && !boardLoaderRunning)
+        if ((loadingStatusFlags & BOARD_DONE) > 0 && (loadingStatusFlags & THREAD_DONE) > 0)
             setProgressBarIndeterminateVisibility(false);
     }
 
@@ -533,8 +540,15 @@ public class ThreadActivity
             cursor.moveToPosition(pos);
             String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
             long linkedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-            if (linkedBoardCode != null && !linkedBoardCode.isEmpty() && linkedThreadNo > 0)
+            if (linkedBoardCode == null || linkedBoardCode.isEmpty() || linkedThreadNo <= 0)
+                return;
+            if (absBoardListView != null && boardCode.equals(linkedBoardCode)) {
+                threadNo = linkedThreadNo;
+                refresh();
+            }
+            else {
                 ThreadActivity.startActivity(ThreadActivity.this, linkedBoardCode, linkedThreadNo);
+            }
         }
     };
 
