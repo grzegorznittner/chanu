@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/thread_list_layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="0dp"
+        >
+    <ListView android:id="@+id/board_list_view_tablet" style="@style/ListViewTemplateTablets"/>
+
+    <ListView
+            android:id="@+id/thread_list_view" style="@style/ListViewTemplateTabletsThreads" />
+
+    <include layout="@layout/tutorial_overlay"/>
+
+</RelativeLayout>
