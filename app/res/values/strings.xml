@@ -525,8 +525,8 @@
     <string name="tutorial_popular_desc_detail">Browse popular threads, visit recent posts, and view the latest images</string>
     <string name="tutorial_watchlist_desc">Watchlist</string>
     <string name="tutorial_watchlist_desc_detail">Keep track of threads with the watchlist.</string>
-    <string name="tutorial_watchlist_clear">Clean Watchlist</string>
-    <string name="tutorial_watchlist_clear_detail">You can use the trash icon to remove all dead threads from the watchlist</string>
+    <string name="tutorial_watchlist_clean">Clean Watchlist</string>
+    <string name="tutorial_watchlist_clean_detail">You can use the trash icon to remove all dead threads from the watchlist</string>
     <string name="tutorial_watchlist_delete">Delete Watchlist</string>
     <string name="tutorial_watchlist_delete_detail">You can use the \'X\' icon to clear the watchlist</string>
 

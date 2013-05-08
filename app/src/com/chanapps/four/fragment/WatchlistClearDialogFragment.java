@@ -11,6 +11,8 @@ import android.widget.BaseAdapter;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.component.ToastRunnable;
+import com.chanapps.four.data.UserStatistics;
+import com.chanapps.four.service.NetworkProfileManager;
 
 /**
 * Created with IntelliJ IDEA.
@@ -31,6 +33,7 @@ public class WatchlistClearDialogFragment extends DialogFragment {
     }
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.WATCHLIST_DELETE);
         return (new AlertDialog.Builder(getActivity()))
                 .setMessage(R.string.dialog_clear_watchlist)
                 .setPositiveButton(R.string.dialog_delete,

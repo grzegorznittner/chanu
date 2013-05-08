@@ -29,6 +29,7 @@ import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.NetworkProfileManager;
 
 public class ChanBoard {
 
@@ -688,6 +689,7 @@ public class ChanBoard {
 
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) { // for action bar spinner
+            NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.BOARD_SELECT);
             if (position < 0)
                 return;
             String boardAsMenu = (String) parent.getItemAtPosition(position);

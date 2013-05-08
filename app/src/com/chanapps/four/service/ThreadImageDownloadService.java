@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.chanapps.four.activity.*;
+import com.chanapps.four.data.*;
 import org.apache.commons.io.IOUtils;
 
 import android.app.Notification;
@@ -35,11 +36,6 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
@@ -62,14 +58,17 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	private static final int MAX_RESTARTS = 3;
 
     public static void startDownloadToBoardFolder(Context context, String board, long threadNo) {
+        NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.PRELOAD_ALL_IMAGES);
         startDownload(context, board, threadNo, TargetType.TO_BOARD, 0, 0, null, new long[] {});
     }
     
     public static void startDownloadToGalleryFolder(Context context, String board, long threadNo) {
+        NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.DOWNLOAD_ALL_IMAGES_TO_GALLERY);
         startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, null, new long[] {});
     }
 
     public static void startDownloadToGalleryFolder(Context context, String board, long threadNo, String galleryFolder) {
+        NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.DOWNLOAD_ALL_IMAGES_TO_GALLERY);
         startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, galleryFolder, new long[] {});
     }
 

@@ -91,7 +91,9 @@ public class ChanWatchlist {
 
     public static int watchThread(Context ctx, long tim, String boardCode,
 			long threadNo, String text, String imageUrl, int imageWidth, int imageHeight) {
-    	try {
+        NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.WATCH_THREAD);
+
+        try {
     		ChanBoard watched = ChanFileStorage.loadBoardData(ctx, ChanBoard.WATCHLIST_BOARD_CODE);
     		Log.e(TAG, "Before adding " + boardCode + "/" + threadNo + " to watchlist (" + watched.threads.length + "):");
     		for (ChanPost post : watched.threads) {

@@ -5,12 +5,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.widget.BaseAdapter;
+import android.widget.Toast;
 import com.chanapps.four.activity.AboutActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.data.UserStatistics;
+import com.chanapps.four.service.NetworkProfileManager;
 
 
 /**
@@ -91,13 +95,26 @@ public class SettingsFragment
             public boolean onPreferenceClick(Preference preference) {
                 Intent intent = new Intent(getActivity(), AboutActivity.class);
                 startActivity(intent);
-                //
-                // (new RawResourceDialog(
-                //        getActivity(), R.layout.about_dialog, R.raw.about_header, R.raw.about_detail))
-                //        .show();
                 return true;
             }
         });
+
+        Preference.OnPreferenceClickListener namesListener = new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Toast.makeText(getActivity().getApplicationContext(), "FOO", Toast.LENGTH_SHORT).show();
+                NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.SETTINGS_NAMES);
+                return false;
+            }
+        };
+        Preference name = findPreference(SettingsActivity.PREF_USER_NAME);
+        Preference email = findPreference(SettingsActivity.PREF_USER_EMAIL);
+        Preference password = findPreference(SettingsActivity.PREF_USER_PASSWORD);
+        name.setOnPreferenceClickListener(namesListener);
+        email.setOnPreferenceClickListener(namesListener);
+        password.setOnPreferenceClickListener(namesListener);
+
+        // settings_names, settings_4chan_pass, settings_cache_size, settings_watchlist
 
 //        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }

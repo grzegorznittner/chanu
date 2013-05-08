@@ -57,18 +57,9 @@ import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.component.ThreadExpandImageOnClickListener;
 import com.chanapps.four.component.ThreadImageOnClickListener;
 import com.chanapps.four.component.TutorialOverlay;
-import com.chanapps.four.data.BoardType;
-import com.chanapps.four.data.ChanAd;
-import com.chanapps.four.data.ChanBlocklist;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.UserStatistics.ChanFeature;
-import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.data.ChanThreadStat;
-import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.fragment.BlocklistSelectToAddDialogFragment;
 import com.chanapps.four.fragment.DeletePostDialogFragment;
 import com.chanapps.four.fragment.ListOfLinksDialogFragment;
@@ -146,6 +137,7 @@ public class ThreadActivity
     }
 
     public static void startActivityForSearch(Activity from, String boardCode, long threadNo, String query) {
+        NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.SEARCH_THREAD);
         from.startActivity(createIntentForActivity(from, boardCode, threadNo, query));
     }
 
@@ -695,13 +687,11 @@ public class ThreadActivity
             case android.R.id.home:
                 return navigateUp();
             case R.id.refresh_menu:
-            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.MANUAL_REFRESH);
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             // thread_reply_popup_menu
             case R.id.post_reply_menu:
-            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.POST);
                 postReply("");
                 return true;
             /*
@@ -713,24 +703,20 @@ public class ThreadActivity
                 return true;
             */
             case R.id.watch_thread_menu:
-            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.WATCH_THREAD);
                 addToWatchlist();
                 return true;
 
             // thread_image_popup_menu
             case R.id.view_image_gallery_menu:
-            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.GALLERY_VIEW);
                 GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
                 addToWatchlistIfNotAlreadyIn();
                 return true;
             case R.id.download_all_images_menu:
-            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.PRELOAD_ALL_IMAGES);
                 ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
                 Toast.makeText(this, R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
                 addToWatchlistIfNotAlreadyIn();
                 return true;
             case R.id.download_all_images_to_gallery_menu:
-            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.DOWNLOAD_ALL_IMAGES_TO_GALLERY);
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo);
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                 addToWatchlistIfNotAlreadyIn();
@@ -742,7 +728,6 @@ public class ThreadActivity
                 return showPopupMenu(R.id.thread_list_layout, R.id.thread_image_popup_button_menu, R.menu.thread_image_popup_menu);
             */
             case R.id.play_thread_menu:
-            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.PLAY_THREAD);
                 return playThreadMenu();
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
@@ -750,7 +735,6 @@ public class ThreadActivity
                 startActivity(settingsIntent);
                 return true;
             case R.id.board_rules_menu:
-            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_RULES);
                 displayBoardRules();
                 return true;
             case R.id.exit_menu:
@@ -1164,6 +1148,7 @@ public class ThreadActivity
     }
 
     protected boolean playThreadMenu() {
+        NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.PLAY_THREAD);
         synchronized (this) {
             shouldPlayThread = !shouldPlayThread; // user clicked, invert play status
             invalidateOptionsMenu();

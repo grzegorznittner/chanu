@@ -363,6 +363,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             restarted = false;
         else
             restoreInstanceState();
+        if (threadNo <= 0)
+            NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.ADD_THREAD);
+        else
+            NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.POST);
     }
 
     @Override

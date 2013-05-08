@@ -87,6 +87,7 @@ public class BoardActivity
     }
 
     public static void startActivityForSearch(Activity from, String boardCode, String query) {
+        NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.SEARCH_BOARD);
         from.startActivity(createIntentForActivity(from, boardCode, query));
     }
 
@@ -677,7 +678,6 @@ public class BoardActivity
                 //}
                 return true;
             case R.id.refresh_menu:
-            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.MANUAL_REFRESH);
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
@@ -689,7 +689,6 @@ public class BoardActivity
                 getSupportLoaderManager().restartLoader(0, null, this);
                 return true;
             case R.id.new_thread_menu:
-            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.ADD_THREAD);
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
                 replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
                 replyIntent.putExtra(ChanHelper.THREAD_NO, 0);
@@ -699,7 +698,6 @@ public class BoardActivity
                 startActivity(replyIntent);
                 return true;
             case R.id.offline_board_view_menu:
-            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.CACHED_BOARD_IMAGES);
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);
                 return true;
             case R.id.offline_chan_view_menu:
@@ -721,6 +719,7 @@ public class BoardActivity
     }
 
     protected void displayBoardRules() {
+        NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_RULES);
         int boardRulesId = R.raw.global_rules_detail;
         try {
             boardRulesId = R.raw.class.getField("board_" + boardCode + "_rules").getInt(null);
