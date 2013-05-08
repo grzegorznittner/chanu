@@ -25,7 +25,37 @@
         <item name="android:fastScrollEnabled">true</item>
     </style>
 
-<!-- SELECTOR GRID STYLES -->
+    <style name="ListViewTemplateTablets" parent="AppTheme">
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_centerInParent">false</item>
+        <item name="android:smoothScrollbar">true</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:verticalSpacing">0dp</item>
+        <item name="android:horizontalSpacing">0dp</item>
+        <item name="android:stretchMode">none</item>
+        <!--        <item name="android:divider">@color/PaletteOffWhite</item> -->
+        <item name="android:dividerHeight">1px</item>
+        <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:fastScrollEnabled">true</item>
+    </style>
+
+    <style name="ListViewTemplateTabletsThreads" parent="AppTheme">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_toRightOf">@+id/board_list_view_tablet</item>
+        <item name="android:smoothScrollbar">true</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:verticalSpacing">0dp</item>
+        <item name="android:horizontalSpacing">0dp</item>
+        <item name="android:stretchMode">none</item>
+        <!--        <item name="android:divider">@color/PaletteOffWhite</item> -->
+        <item name="android:dividerHeight">1px</item>
+        <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:fastScrollEnabled">true</item>
+    </style>
+
+    <!-- SELECTOR GRID STYLES -->
 
     <style name="SelectorScrollView" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
