@@ -1367,4 +1367,9 @@ public class ThreadActivity
         return TutorialOverlay.Page.THREAD;
     }
 
+    @Override
+    protected void handleUpdatedThreads() {
+        // we always auto-update at thread level
+    }
+
 }
