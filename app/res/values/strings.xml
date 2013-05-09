@@ -1047,7 +1047,7 @@
 
     <!-- Font sizes -->
     <dimen name="BoardTypeText">18sp</dimen>
-    <dimen name="WidgetConfigureOkButton">16sp</dimen>
+    <dimen name="WidgetConfigureOkButton">18sp</dimen>
     <dimen name="BoardSelectorGridTextImageOverlay">12sp</dimen>
     <dimen name="BoardGridTextImageTopOverlay">12sp</dimen>
     <dimen name="BoardGridNumReplies">12sp</dimen>
@@ -1062,13 +1062,13 @@
     <dimen name="ThreadListHeaderSubject">22sp</dimen>
     <dimen name="ThreadListHeaderHead">12sp</dimen>
     <dimen name="ThreadListHeaderExifText">12sp</dimen>
-    <dimen name="ThreadListHeaderFullText">16sp</dimen>
+    <dimen name="ThreadListHeaderFullText">18sp</dimen>
     <dimen name="ThreadListHeaderTitle">14sp</dimen>
     <dimen name="ThreadListItemSubject">18sp</dimen>
     <dimen name="ThreadListItemHead">12sp</dimen>
     <dimen name="ThreadListItemTitle">14sp</dimen>
     <dimen name="ThreadListItemExifText">12sp</dimen>
-    <dimen name="ThreadListItemFullText">16sp</dimen>
+    <dimen name="ThreadListItemFullText">18sp</dimen>
     <dimen name="PostReplyEditText">14sp</dimen>
     <dimen name="PostReplyCheckbox">14sp</dimen>
     <dimen name="PopupFullTextHeader">22sp</dimen>

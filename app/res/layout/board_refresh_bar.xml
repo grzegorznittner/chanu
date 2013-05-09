@@ -3,8 +3,10 @@
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/board_refresh_bar"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="48dp"
+        android:layout_gravity="right"
+        android:layout_alignParentRight="true"
         android:gravity="right"
         android:orientation="horizontal"
         android:background="@color/PaletteSemiOpaqueMedGray">
@@ -13,6 +15,8 @@
             android:id="@+id/board_refresh_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:textColor="@color/PaletteWhite"
             android:textStyle="bold"
             android:background="@color/PaletteTransparent"

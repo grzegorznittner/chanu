@@ -277,6 +277,7 @@ public class ChanBoard {
                 { "ic", "i", "po", "adv", "gd", "3", "diy" },
                 { "wg", "w", "p", "ic", "gd", "3" },
                 { "mu", "lit", "tv", "p", "ic" },
+                { "lit", "tv", "p", "mu", "co", "a", "trv", "sci", "adv" },
                 { "fa", "cgl", "p", "ic", "adv", "diy" },
                 { "toy", "an", "jp", "vp", "co" },
                 { "3", "i", "ic", "po", "gd" },
