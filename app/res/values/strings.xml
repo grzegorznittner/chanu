@@ -196,7 +196,9 @@
 
     <!-- watchlist -->
     <string name="board_end_of_watchlist">End of Watchlist</string>
-    <string name="board_empty_watchlist">There are currently no threads in your watchlist\nSelect a board to find a thread to watch</string>
+    <string name="board_empty_watchlist">There are currently no threads in your watchlist\nSelect a board to find a
+        thread to watch
+    </string>
     <string name="board_empty_recent">Unable to load recent threads</string>
     <string name="board_empty_popular">Unable to load popular threads</string>
     <string name="board_empty_latest">Unable to load latest posts</string>
@@ -285,7 +287,7 @@
     <string name="dialog_clear_watchlist">Delete watchlist?</string>
     <string name="dialog_clean_watchlist">Clean dead threads?</string>
     <string name="dialog_set_wallpaper">Set as wallpaper?</string>
-    <string name="dialog_clear_cache_confirm">Clear all cached data?  This may take several minutes.</string>
+    <string name="dialog_clear_cache_confirm">Clear all cached data? This may take several minutes.</string>
     <string name="dialog_reset_preferences_confirm">Reset all preferences?</string>
     <string name="dialog_authorize">Authorize</string>
     <string name="dialog_close">Close</string>
@@ -332,7 +334,9 @@
     <string name="post_reply_subject_hint_required">Subject (Required)</string>
     <string name="post_reply_password_hint">Password (Optional)</string>
     <string name="post_reply_spoiler">Spoiler Image</string>
-    <string name="post_reply_recaptcha_url_root">http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc</string>
+    <string name="post_reply_recaptcha_url_root">
+        http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc
+    </string>
     <string name="post_reply_no_board">Can\'t post, unknown board</string>
     <string name="post_reply_added_image">Added image to post</string>
     <string name="post_reply_no_load_camera_image">Couldn\'t load camera image</string>
@@ -368,8 +372,8 @@
     <string name="pref_show_nsfw_boards_summ_on">Show boards not safe for work</string>
     <string name="pref_show_nsfw_boards_summ_off">Hide boards not safe for work (default)</string>
     <string name="pref_show_nsfw_boards_summ_detail">
-        Boards considered NSFW (not safe for work) are hidden by default.  These boards are moderated, but may
-        potentially contain offensive material.  If you are under 18 or it is illegal
+        Boards considered NSFW (not safe for work) are hidden by default. These boards are moderated, but may
+        potentially contain offensive material. If you are under 18 or it is illegal
         to view restricted content in your jurisdiction, do not check this button.
     </string>
     <string name="pref_notifications">Notifications</string>
@@ -402,7 +406,9 @@
     <string name="pref_clear_watchlist">Delete Watchlist</string>
     <string name="pref_clear_watchlist_summ">Remove all threads and empty watchlist</string>
     <string name="pref_clear_cache_pre_execute">Clearing cache, you will be notified when complete</string>
-    <string name="pref_clear_cache_pre_execute_no_notify">Clearing cache, you will receive a popup message when complete</string>
+    <string name="pref_clear_cache_pre_execute_no_notify">Clearing cache, you will receive a popup message when
+        complete
+    </string>
     <string name="pref_clear_cache_already_running">Already clearing cache, you will be notified when complete</string>
     <string name="pref_clear_cache_error">Couldn\'t clear cache</string>
     <string name="pref_clear_cache_success">Cleared cache successfully</string>
@@ -518,21 +524,28 @@
     <string name="tutorial_overlay_button_description">Dismiss tutorial</string>
 
     <string name="tutorial_boardselector_desc">Welcome to the Boards</string>
-    <string name="tutorial_boardselector_desc_detail">On Chanu, people post images on boards and discuss them.  Click a board to see its posts.</string>
+    <string name="tutorial_boardselector_desc_detail">On Chanu, people post images on boards and discuss them. Click a
+        board to see its posts.
+    </string>
     <string name="tutorial_all_cached_images">All Boards Gallery</string>
     <string name="tutorial_all_cached_images_detail">This menu shows all cached images grouped by board</string>
     <string name="tutorial_popular_desc">Popular Threads</string>
-    <string name="tutorial_popular_desc_detail">Browse popular threads, visit recent posts, and view the latest images</string>
+    <string name="tutorial_popular_desc_detail">Browse popular threads, visit recent posts, and view the latest images
+    </string>
     <string name="tutorial_watchlist_desc">Watchlist</string>
     <string name="tutorial_watchlist_desc_detail">Keep track of threads with the watchlist.</string>
     <string name="tutorial_watchlist_clean">Clean Watchlist</string>
-    <string name="tutorial_watchlist_clean_detail">You can use the trash icon to remove all dead threads from the watchlist</string>
+    <string name="tutorial_watchlist_clean_detail">You can use the trash icon to remove all dead threads from the
+        watchlist
+    </string>
     <string name="tutorial_watchlist_delete">Delete Watchlist</string>
     <string name="tutorial_watchlist_delete_detail">You can use the \'X\' icon to clear the watchlist</string>
 
 
     <string name="tutorial_board_desc">Board View</string>
-    <string name="tutorial_board_desc_detail">Browse uploaded images organized into thread topics.  Click a thread to see the discussion.</string>
+    <string name="tutorial_board_desc_detail">Browse uploaded images organized into thread topics. Click a thread to see
+        the discussion.
+    </string>
     <string name="tutorial_board_select">Select Board</string>
     <string name="tutorial_board_select_detail">Use the Select Board spinner to quickly jump to a board</string>
     <string name="tutorial_manual_refresh">Manual Refresh</string>
@@ -544,14 +557,17 @@
     <string name="tutorial_add_thread">New Thread</string>
     <string name="tutorial_add_thread_detail">Click the add button to post a new thread</string>
     <string name="tutorial_cached_board_images">Board Image Gallery</string>
-    <string name="tutorial_cached_board_images_detail">This menu shows all cached images for the board grouped by thread</string>
+    <string name="tutorial_cached_board_images_detail">This menu shows all cached images for the board grouped by
+        thread
+    </string>
     <string name="tutorial_board_rules">Board Rules</string>
     <string name="tutorial_board_rules_detail">This menu shows the rules for this board, read before posting</string>
     <string name="tutorial_gallery_view">Gallery View</string>
     <string name="tutorial_gallery_view_detail">Click the image button to go to the thread gallery view</string>
 
     <string name="tutorial_thread_desc">Thread View</string>
-    <string name="tutorial_thread_desc_detail">The first image starts the discussion, text and image replies follow.</string>
+    <string name="tutorial_thread_desc_detail">The first image starts the discussion, text and image replies follow.
+    </string>
     <string name="tutorial_search_thread">Post Search</string>
     <string name="tutorial_search_thread_detail">Click the search button to find matching posts</string>
     <string name="tutorial_post">Post Reply</string>
@@ -559,16 +575,26 @@
     <string name="tutorial_watch_thread">Watch Thread</string>
     <string name="tutorial_watch_thread_detail">This menu adds the current thread to your watchlist</string>
     <string name="tutorial_play_thread">Play Thread</string>
-    <string name="tutorial_play_thread_detail">This menu scrolls through the thread at reading speed, the Stop Thread menu stops it</string>
+    <string name="tutorial_play_thread_detail">This menu scrolls through the thread at reading speed, the Stop Thread
+        menu stops it
+    </string>
     <string name="tutorial_preload_all_images">Preload All Images</string>
-    <string name="tutorial_preload_all_images_detail">This menu preloads all images at full size for faster gallery browsing</string>
+    <string name="tutorial_preload_all_images_detail">This menu preloads all images at full size for faster gallery
+        browsing
+    </string>
     <string name="tutorial_download_all_images_to_gallery">Download to Gallery</string>
-    <string name="tutorial_download_all_images_to_gallery_detail">This menu downloads all thread images to your Android gallery</string>
+    <string name="tutorial_download_all_images_to_gallery_detail">This menu downloads all thread images to your Android
+        gallery
+    </string>
 
     <string name="tutorial_settings_names">User Info</string>
-    <string name="tutorial_settings_names_detail">You can optionally enter the name, email and password you would like to auto-fill for posting</string>
+    <string name="tutorial_settings_names_detail">You can optionally enter the name, email and password you would like
+        to auto-fill for posting
+    </string>
     <string name="tutorial_settings_4chan_pass">4chan Pass</string>
-    <string name="tutorial_settings_4chan_pass_detail">Purchase a 4chan Pass and enter here to bypass captcha when posting</string>
+    <string name="tutorial_settings_4chan_pass_detail">Purchase a 4chan Pass and enter here to bypass captcha when
+        posting
+    </string>
     <string name="tutorial_settings_cache_size">Cache Size</string>
     <string name="tutorial_settings_cache_size_detail">Adjust cache parameters to optimize browsing speed</string>
     <string name="tutorial_settings_watchlist">Watchlist</string>
@@ -1017,5 +1043,37 @@
         <item>/wsg/ Worksafe GIF</item>
         <item>/x/ Paranormal</item>
     </string-array>
+
+
+    <!-- Font sizes -->
+    <dimen name="BoardTypeText">18sp</dimen>
+    <dimen name="WidgetConfigureOkButton">16sp</dimen>
+    <dimen name="BoardSelectorGridTextImageOverlay">12sp</dimen>
+    <dimen name="BoardGridTextImageTopOverlay">12sp</dimen>
+    <dimen name="BoardGridNumReplies">12sp</dimen>
+    <dimen name="BoardGridAbbrev">12sp</dimen>
+    <dimen name="BoardGridNumImages">12sp</dimen>
+    <dimen name="BoardGridTextImageOverlay">12sp</dimen>
+    <dimen name="BoardListTextImageTopOverlay">12sp</dimen>
+    <dimen name="BoardListTitle">14sp</dimen>
+    <dimen name="BoardListSubject">18sp</dimen>
+    <dimen name="BoardListHeadline">12sp</dimen>
+    <dimen name="ThreadListLayout">14sp</dimen>
+    <dimen name="ThreadListHeaderSubject">22sp</dimen>
+    <dimen name="ThreadListHeaderHead">12sp</dimen>
+    <dimen name="ThreadListHeaderExifText">12sp</dimen>
+    <dimen name="ThreadListHeaderFullText">16sp</dimen>
+    <dimen name="ThreadListHeaderTitle">14sp</dimen>
+    <dimen name="ThreadListItemSubject">18sp</dimen>
+    <dimen name="ThreadListItemHead">12sp</dimen>
+    <dimen name="ThreadListItemTitle">14sp</dimen>
+    <dimen name="ThreadListItemExifText">12sp</dimen>
+    <dimen name="ThreadListItemFullText">16sp</dimen>
+    <dimen name="PostReplyEditText">14sp</dimen>
+    <dimen name="PostReplyCheckbox">14sp</dimen>
+    <dimen name="PopupFullTextHeader">22sp</dimen>
+    <dimen name="PopupFullTextButton">18sp</dimen>
+    <dimen name="PopupFullTextView">18sp</dimen>
+    <dimen name="MessageText">14sp</dimen>
 
 </resources>
