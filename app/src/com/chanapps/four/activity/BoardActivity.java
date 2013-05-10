@@ -19,7 +19,6 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
-import android.text.Html;
 import android.util.DisplayMetrics;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -40,6 +39,8 @@ import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
+import com.chanapps.four.viewer.BoardViewer;
+import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
@@ -76,11 +77,6 @@ public class BoardActivity
     protected Typeface subjectTypeface = null;
     protected int padding4DP = 0;
     protected int padding8DP = 0;
-
-    public enum ViewType {
-        AS_GRID,
-        AS_LIST
-    }
 
     public static void startActivity(Activity from, String boardCode) {
         from.startActivity(createIntentForActivity(from, boardCode));
@@ -181,7 +177,8 @@ public class BoardActivity
                             ChanThread.THREAD_SUBJECT,
                             ChanThread.THREAD_HEADLINE,
                             ChanThread.THREAD_TEXT,
-                            ChanThread.THREAD_COUNTRY_FLAG_URL
+                            ChanThread.THREAD_COUNTRY_FLAG_URL,
+                            ChanThread.THREAD_FLAGS
                     },
                     new int[] {
                             R.id.grid_item_thread_thumb,
@@ -189,7 +186,8 @@ public class BoardActivity
                             R.id.grid_item_thread_subject,
                             R.id.grid_item_thread_headline,
                             R.id.grid_item_thread_text,
-                            R.id.grid_item_country_flag
+                            R.id.grid_item_country_flag,
+                            R.id.grid_item_thread_banner_ad
                     });
         absListView.setAdapter(adapter);
     }
@@ -388,217 +386,10 @@ public class BoardActivity
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        return setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions,
+        return BoardViewer.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions,
                 boardCode, viewType, subjectTypeface, padding4DP);
     }
 
-    public static boolean setViewValue(View view,
-                                       Cursor cursor,
-                                       int columnIndex,
-                                       ImageLoader imageLoader,
-                                       DisplayImageOptions options,
-                                       String groupBoardCode,
-                                       ViewType viewType,
-                                       Typeface subjectTypeface,
-                                       int padding4DP)
-    {
-        int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) { // special case it to avoid needing a separate item layout
-            return setThreadTitleView(view, cursor, flags, viewType);
-        }
-        view.setVisibility(View.VISIBLE);
-        switch (view.getId()) {
-            case R.id.list_item:
-                return setThreadItem(view);
-            case R.id.grid_item_board_abbrev:
-                return setThreadBoardAbbrev((TextView) view, cursor, groupBoardCode, flags);
-            case R.id.grid_item_thread_title:
-                return setThreadTitle((TextView) view, cursor, flags, viewType);
-            case R.id.grid_item_thread_subject:
-                return setThreadSubject((TextView) view, cursor, viewType, subjectTypeface);
-            case R.id.grid_item_thread_headline:
-                return setThreadHeadline((TextView) view, cursor, padding4DP);
-            case R.id.grid_item_thread_text:
-                return setThreadText((TextView) view, cursor);
-            case R.id.grid_item_thread_thumb:
-                return setThreadThumb((ImageView) view, cursor, imageLoader, options, flags);
-            case R.id.grid_item_country_flag:
-                return setCountryFlag((ImageView) view, cursor, imageLoader, options);
-            case R.id.grid_item_num_replies:
-                return setThreadNumReplies((TextView) view, cursor, flags);
-            case R.id.grid_item_num_images:
-                return setThreadNumImages((TextView) view, cursor, flags);
-        }
-        return false;
-    }
-
-    protected static boolean setThreadTitleView(View view, Cursor cursor, int flags, ViewType viewType) {
-        if (view.getId() == R.id.grid_item_thread_title) {
-            setThreadTitle((TextView) view, cursor, flags, viewType);
-            view.setVisibility(View.VISIBLE);
-        }
-        else if (view.getId() == R.id.grid_item) {
-            view.setVisibility(View.VISIBLE);
-        }
-        else if (view.getId() == R.id.list_item) {
-            view.setVisibility(View.VISIBLE);
-            View v = view.findViewById(R.id.grid_item_thread_image_wrapper);
-            if (v != null)
-                v.setVisibility(View.GONE);
-        }
-        else {
-            view.setVisibility(View.GONE);
-        }
-        return true;
-    }
-
-    protected static boolean setThreadItem(View view) {
-        View v = view.findViewById(R.id.grid_item_thread_image_wrapper);
-        if (v != null)
-            v.setVisibility(View.VISIBLE);
-        return true;
-    }
-
-    protected static boolean setThreadBoardAbbrev(TextView tv, Cursor cursor, String groupBoardCode, int flags) {
-        String threadAbbrev = "";
-        String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-        if (boardCode != null && !boardCode.isEmpty() && !boardCode.equals(groupBoardCode))
-            threadAbbrev += "/" + boardCode + "/";
-        if ((flags & ChanThread.THREAD_FLAG_DEAD) > 0)
-            threadAbbrev += (threadAbbrev.isEmpty()?"":" ") + tv.getContext().getString(R.string.dead_thread_abbrev);
-        if ((flags & ChanThread.THREAD_FLAG_CLOSED) > 0)
-            threadAbbrev += (threadAbbrev.isEmpty()?"":" ") + tv.getContext().getString(R.string.closed_thread_abbrev);
-        if ((flags & ChanThread.THREAD_FLAG_STICKY) > 0)
-            threadAbbrev += (threadAbbrev.isEmpty()?"":" ") + tv.getContext().getString(R.string.sticky_thread_abbrev);
-        tv.setText(threadAbbrev);
-        if (!threadAbbrev.isEmpty())
-            tv.setVisibility(View.VISIBLE);
-        else
-            tv.setVisibility(View.GONE);
-        return true;
-    }
-
-    protected static boolean setThreadTitle(TextView tv, Cursor cursor, int flags, ViewType viewType) {
-        if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
-            String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
-            if (viewType == ViewType.AS_LIST) {
-                text = text.toUpperCase();
-            }
-            tv.setText(Html.fromHtml(text));
-            tv.setVisibility(View.VISIBLE);
-        }
-        else {
-            tv.setVisibility(View.GONE);
-        }
-        return true;
-    }
-
-    protected static boolean setThreadSubject(TextView tv, Cursor cursor, ViewType viewType, Typeface subjectTypeface) {
-        String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
-        if (text != null && !text.isEmpty()) {
-            tv.setText(Html.fromHtml(text));
-            tv.setVisibility(View.VISIBLE);
-        }
-        else {
-            tv.setText("");
-            tv.setVisibility(View.GONE);
-        }
-        return true;
-    }
-
-    protected static boolean setThreadHeadline(TextView tv, Cursor cursor, int padding4DP) {
-        String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
-        if (text != null && !text.isEmpty()) {
-            tv.setPadding(tv.getPaddingLeft(), 0, tv.getPaddingRight(), tv.getPaddingBottom());
-        }
-        else {
-            tv.setPadding(tv.getPaddingLeft(), padding4DP, tv.getPaddingRight(), tv.getPaddingBottom());
-        }
-        tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_HEADLINE))));
-        return true;
-    }
-
-    protected static boolean setThreadText(TextView tv, Cursor cursor) {
-        String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
-        if (text != null && !text.isEmpty()) {
-            tv.setText(Html.fromHtml(text));
-            tv.setVisibility(View.VISIBLE);
-        }
-        else {
-            tv.setText("");
-            tv.setVisibility(View.GONE);
-        }
-        return true;
-    }
-
-    protected static boolean setThreadThumb(ImageView iv, Cursor cursor, ImageLoader imageLoader,
-                                            DisplayImageOptions options, int flags) {
-        if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
-            iv.setImageBitmap(null);
-        }
-        else {
-            String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
-            if (url == null || url.isEmpty()) {
-                String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-                long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-                int i = (new Long(threadNo % 3)).intValue();
-                url = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
-            }
-            imageLoader.displayImage(
-                    url,
-                    iv,
-                    options);
-            //options.modifyCenterCrop(true)); // load async
-        }
-        return true;
-    }
-
-    protected static boolean setCountryFlag(ImageView iv, Cursor cursor, ImageLoader imageLoader, DisplayImageOptions options) {
-        String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_COUNTRY_FLAG_URL));
-        if (url != null && !url.isEmpty()) {
-            iv.setVisibility(View.VISIBLE);
-            imageLoader.displayImage(url, iv, options);
-        }
-        else {
-            iv.setVisibility(View.GONE);
-            iv.setImageResource(0);
-        }
-        return true;
-    }
-
-    protected static boolean setThreadNumReplies(TextView tv, Cursor cursor, int flags) {
-        int n = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_REPLIES));
-        if ((flags & (ChanThread.THREAD_FLAG_AD
-                | ChanThread.THREAD_FLAG_BOARD
-                | ChanThread.THREAD_FLAG_TITLE)) == 0
-                && n >= 0)
-        {
-            tv.setText(n + "r");
-            tv.setVisibility(View.VISIBLE);
-        }
-        else {
-            tv.setText("");
-            tv.setVisibility(View.GONE);
-        }
-        return true;
-    }
-
-    protected static boolean setThreadNumImages(TextView tv, Cursor cursor, int flags) {
-        int n = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES));
-        if ((flags & (ChanThread.THREAD_FLAG_AD
-                | ChanThread.THREAD_FLAG_BOARD
-                | ChanThread.THREAD_FLAG_TITLE)) == 0
-                && n >= 0)
-        {
-            tv.setText(n + "i");
-            tv.setVisibility(View.VISIBLE);
-        }
-        else {
-            tv.setText("");
-            tv.setVisibility(View.GONE);
-        }
-        return true;
-    }
 
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -624,7 +415,7 @@ public class BoardActivity
         if (data != null && data.getCount() < 1 && handler != null) {
             NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
             if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
-                setProgressBarIndeterminateVisibility(false);
+                stopProgressBarIfLoadersDone();
                 String msg = String.format(getString(R.string.mobile_profile_health_status),
                         health.toString().toLowerCase().replaceAll("_", " "));
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
@@ -656,16 +447,18 @@ public class BoardActivity
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         ChanHelper.simulateClickAnim(this, view);
         if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
-            final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
+            String[] clickUrls = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL))
+                    .split(ChanThread.AD_DELIMITER);
+            String clickUrl = viewType == ViewType.AS_GRID ? clickUrls[0] : clickUrls[1];
             ChanHelper.launchUrlInBrowser(this, clickUrl);
         }
         else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
-            final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
             startActivity(this, boardLink);
         }
         else {
-            final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+            String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
             ThreadActivity.startActivity(this, boardLink, threadNo);
         }
     }

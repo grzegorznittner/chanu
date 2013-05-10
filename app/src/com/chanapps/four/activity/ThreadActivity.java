@@ -394,7 +394,7 @@ public class ThreadActivity
             if (data != null && data.getCount() < 1 && handler != null) {
                 NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
                 if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
-                    setProgressBarIndeterminateVisibility(false);
+                    stopProgressBarIfLoadersDone();
                     String msg = String.format(getString(R.string.mobile_profile_health_status),
                             health.toString().toLowerCase().replaceAll("_", " "));
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();

@@ -177,6 +177,18 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <style name="BoardTypeBannerAd" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:contentDescription">@string/advert_content_description</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
     <style name="BoardSelectorGridTextImageOverlay" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

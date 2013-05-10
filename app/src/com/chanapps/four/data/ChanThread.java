@@ -132,6 +132,8 @@ public class ChanThread extends ChanPost {
         };
     }
 
+    public static final String AD_DELIMITER = "\t";
+
     public static Object[] makeAdRow(Context context, String boardCode, ChanAd ad) {
         return new Object[] {
                 ad.hashCode(),
@@ -141,9 +143,9 @@ public class ChanThread extends ChanPost {
                 context.getResources().getString(R.string.board_advert_full),
                 "",
                 context.getResources().getString(R.string.board_advert_info),
-                ad.imageUrl(),
+                ad.imageUrl() + AD_DELIMITER + ad.bannerImageUrl(),
                 "",
-                ad.clickUrl(),
+                ad.clickUrl() + AD_DELIMITER + ad.bannerClickUrl(),
                 0,
                 0,
                 THREAD_FLAG_AD

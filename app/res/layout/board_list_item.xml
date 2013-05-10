@@ -86,4 +86,9 @@
             android:textSize="16dp"
             />
 
+    <com.chanapps.four.component.StretchyImageView
+            android:id="@+id/grid_item_thread_banner_ad"
+            style="@style/BoardTypeBannerAd"
+            />
+
 </LinearLayout>

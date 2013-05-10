@@ -25,6 +25,8 @@ import com.chanapps.four.data.*;
 import com.chanapps.four.loader.*;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
+import com.chanapps.four.viewer.BoardViewer;
+import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -408,8 +410,8 @@ public class BoardGroupFragment
             case WATCHLIST:
             case RECENT:
             default:
-                return BoardActivity.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions,
-                        boardSelectorTab.boardCode(), BoardActivity.ViewType.AS_GRID, null, 0);
+                return BoardViewer.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions,
+                        boardSelectorTab.boardCode(), ViewType.AS_GRID, null, 0);
         }
     }
 

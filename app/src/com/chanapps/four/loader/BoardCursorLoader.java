@@ -74,6 +74,11 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
         //if (!board.isVirtualBoard())
         //    matrixCursor.addRow(ChanBoard.makeBoardTitleRow(context, boardName));
+        if (query.isEmpty()) {
+            // always put an ad at the top when not searching
+            matrixCursor.addRow(board.makeThreadAdRow(getContext(), 0));
+        }
+
         if (!query.isEmpty()) {
             String title = String.format(context.getString(R.string.board_search_results), "<i>" + query + "</i>");
             matrixCursor.addRow(ChanThread.makeTitleRow(boardName, title));

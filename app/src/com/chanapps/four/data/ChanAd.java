@@ -21,25 +21,31 @@ public class ChanAd {
 
     private enum AdType {
 
-        ADULT_SINGLE_PRODUCT(70, 140, 187, true),
-        PG_SINGLE_PRODUCT(68, 140, 187, false);
+        ADULT_SINGLE_PRODUCT(97, 180, 180, 60, 728, 90),
+        PG_SINGLE_PRODUCT(121, 150, 150, 109, 728, 90);
 
         private final int code;
         private final int width;
         private final int height;
-        private final boolean adult;
+        private final int bannerCode;
+        private final int bannerWidth;
+        private final int bannerHeight;
 
-        AdType(int code, int width, int height, boolean adult) {
+        AdType(int code, int width, int height, int bannerCode, int bannerWidth, int bannerHeight) {
             this.code = code;
             this.width = width;
             this.height = height;
-            this.adult = adult;
+            this.bannerCode = bannerCode;
+            this.bannerWidth = bannerWidth;
+            this.bannerHeight = bannerHeight;
         }
 
         public int code() { return code; }
         public int width() { return width; }
         public int height() { return height; }
-        public boolean adult() { return adult; }
+        public int bannerCode() { return bannerCode; }
+        public int bannerWidth() { return bannerWidth; }
+        public int bannerHeight() { return bannerHeight; }
     };
 
     private static final Random generator = new Random();
@@ -69,7 +75,10 @@ public class ChanAd {
         }
     }
 
-    public static final ChanAd randomAd(boolean workSafe, int pos) {
+    protected static final int NUM_BANNERS = 10;
+
+    public static final ChanAd randomAd(boolean workSafe) {
+        int pos = (int)Math.floor(Math.random() * NUM_BANNERS);
         return new ChanAd(workSafe, pos);
     }
 
@@ -92,6 +101,22 @@ public class ChanAd {
 
     public int tn_h() {
         return adType.height();
+    }
+
+    public String bannerImageUrl() {
+        return JLIST_AD_IMAGE_ROOT_URL + "/" + adType.bannerCode() + "?" + pos;
+    }
+
+    public String bannerClickUrl() {
+        return JLIST_AD_CLICK_ROOT_URL + "/" + adType.bannerCode();
+    }
+
+    public int tn_w_banner() {
+        return adType.bannerWidth();
+    }
+
+    public int tn_h_banner() {
+        return adType.bannerHeight();
     }
 
 }
