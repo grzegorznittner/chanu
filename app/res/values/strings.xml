@@ -204,6 +204,7 @@
     <string name="board_empty_latest">Unable to load latest posts</string>
     <string name="board_empty_default">Unable to load board list</string>
     <string name="thread_already_in_watchlist">Thread already in watchlist</string>
+    <string name="thread_not_added_to_watchlist">Couldn\'t add thread to watchlist</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
     <string name="thread_added_to_watchlist_activity_based">Thread auto-added to watchlist</string>
     <string name="thread_watchlist_cleared">Cleared watchlist</string>
@@ -1063,13 +1064,13 @@
     <dimen name="ThreadListHeaderSubject">22sp</dimen>
     <dimen name="ThreadListHeaderHead">12sp</dimen>
     <dimen name="ThreadListHeaderExifText">12sp</dimen>
-    <dimen name="ThreadListHeaderFullText">18sp</dimen>
+    <dimen name="ThreadListHeaderFullText">14sp</dimen>
     <dimen name="ThreadListHeaderTitle">14sp</dimen>
     <dimen name="ThreadListItemSubject">18sp</dimen>
     <dimen name="ThreadListItemHead">12sp</dimen>
     <dimen name="ThreadListItemTitle">14sp</dimen>
     <dimen name="ThreadListItemExifText">12sp</dimen>
-    <dimen name="ThreadListItemFullText">18sp</dimen>
+    <dimen name="ThreadListItemFullText">14sp</dimen>
     <dimen name="PostReplyEditText">14sp</dimen>
     <dimen name="PostReplyCheckbox">14sp</dimen>
     <dimen name="PopupFullTextHeader">22sp</dimen>

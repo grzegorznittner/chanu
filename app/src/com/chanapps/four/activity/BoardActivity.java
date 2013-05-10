@@ -412,7 +412,7 @@ public class BoardActivity
         }
 
         // retry load if maybe data wasn't there yet
-        if (data != null && data.getCount() < 1 && handler != null) {
+        if ((data == null || data.getCount() < 1) && handler != null) {
             NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
             if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
                 stopProgressBarIfLoadersDone();

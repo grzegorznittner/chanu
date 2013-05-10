@@ -89,6 +89,11 @@ public class ChanWatchlist {
         return Long.valueOf(threadPath.split(FIELD_SEPARATOR_REGEX)[2]);
     }
 
+    public static int watchThread(Context ctx, String boardCode, long threadNo) {
+        // FIXME fix it so thread is watched please ;-)
+        return R.string.thread_not_added_to_watchlist;
+    }
+
     public static int watchThread(Context ctx, long tim, String boardCode,
 			long threadNo, String text, String imageUrl, int imageWidth, int imageHeight) {
         NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.WATCH_THREAD);

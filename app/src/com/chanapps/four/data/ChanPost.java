@@ -22,7 +22,7 @@ public class ChanPost {
     private static final int MAX_LINE = 40;
     private static final int MAX_THREAD_SUBJECT_LEN = 100;
     private static final int MIN_SUBJECT_LEN = 2;
-    private static final int MAX_SUBJECT_LEN = 100; // 4chan enforces 100
+    private static final int MAX_SUBJECT_LEN = 50; // 4chan enforces 100
 
     public static final String POST_NO = "postNo";
     public static final String POST_ID = "_id";

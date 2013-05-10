@@ -22,6 +22,7 @@ import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
+import com.chanapps.four.viewer.ThreadViewer;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
@@ -89,8 +90,8 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
         DisplayMetrics displayMetrics = itemExpandedImage.getResources().getDisplayMetrics();
         padding8Dp = ChanGridSizer.dpToPx(displayMetrics, NO_TEXT_PADDING_TOP_DP);
-        itemThumbWidth = ChanGridSizer.dpToPx(displayMetrics, ThreadActivity.ITEM_THUMB_WIDTH_DP);
-        itemThumbEmptyWidth = ChanGridSizer.dpToPx(displayMetrics, ThreadActivity.ITEM_THUMB_EMPTY_DP);
+        itemThumbWidth = ChanGridSizer.dpToPx(displayMetrics, ThreadViewer.ITEM_THUMB_WIDTH_DP);
+        itemThumbEmptyWidth = ChanGridSizer.dpToPx(displayMetrics, ThreadViewer.ITEM_THUMB_EMPTY_DP);
 
         listPosition = cursor.getPosition();
         postW = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_W));
