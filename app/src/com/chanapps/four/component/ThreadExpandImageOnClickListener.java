@@ -194,7 +194,9 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     private void setImageDimensions(Point targetSize) {
         ViewGroup.LayoutParams params = itemExpandedImage.getLayoutParams();
         if (params != null) {
-            if (listPosition == 0 && itemThumbnailImage != null && itemThumbnailImage.getLayoutParams() != null) { // for thread header use existing params
+            if ((flags & ChanPost.FLAG_IS_HEADER) > 0
+                    && itemThumbnailImage != null
+                    && itemThumbnailImage.getLayoutParams() != null) { // for thread header use existing params
                 ViewGroup.LayoutParams thumbParams = itemThumbnailImage.getLayoutParams();
                 params.width = thumbParams.width;
                 params.height = thumbParams.height;

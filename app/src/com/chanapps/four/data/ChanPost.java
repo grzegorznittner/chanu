@@ -61,6 +61,7 @@ public class ChanPost {
     public static final int FLAG_IS_TITLE = 0x200;
     public static final int FLAG_IS_THREADLINK = 0x400;
     public static final int FLAG_IS_BOARDLINK = 0x800;
+    public static final int FLAG_IS_HEADER = 0x1000;
 
     private int postFlags(boolean isAd, boolean isThreadLink, String subject, String text, String exifText) {
         int flags = 0;
@@ -838,10 +839,13 @@ public class ChanPost {
         return new MatrixCursor(POST_COLUMNS);
     }
 
-    public Object[] makeRow(String query) {
+    public Object[] makeRow(String query, int i) {
         String[] textComponents = textComponents(query);
         String[] spoilerComponents = spoilerComponents(query);
         String exifText = exifText();
+        int flags = postFlags(false, false, textComponents[0], textComponents[1], exifText);
+        if (i == 0)
+            flags |= FLAG_IS_HEADER;
         return new Object[] {
                 no,
                 board,
@@ -866,7 +870,7 @@ public class ChanPost {
                 email,
                 thumbnailId(),
                 ext,
-                postFlags(false, false, textComponents[0], textComponents[1], exifText)
+                flags
         };
     }
 
@@ -931,19 +935,18 @@ public class ChanPost {
     }
 
     public static Object[] makeAdRow(Context context, String boardCode, ChanAd ad) {
-        String subject = context.getString(R.string.advert_header);
         return new Object[] {
-                2,
+                ad.hashCode(),
                 boardCode,
                 0,
-                ad.imageUrl(),
+                ad.bannerImageUrl(),
                 "",
                 "",
-                context.getString(R.string.board_advert_full),
-                subject,
-                ad.clickUrl(),
-                ad.tn_w(),
-                ad.tn_h(),
+                "",
+                "",
+                ad.bannerClickUrl(),
+                ad.tn_w_banner(),
+                ad.tn_h_banner(),
                 -1,
                 -1,
                 0,
@@ -956,7 +959,7 @@ public class ChanPost {
                 "",
                 "",
                 "",
-                FLAG_HAS_IMAGE | FLAG_HAS_SUBJECT | FLAG_IS_AD
+                FLAG_HAS_IMAGE | FLAG_IS_AD
         };
     }
 

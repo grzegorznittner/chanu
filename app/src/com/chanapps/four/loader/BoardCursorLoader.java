@@ -72,18 +72,19 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         }
 
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
+
         //if (!board.isVirtualBoard())
         //    matrixCursor.addRow(ChanBoard.makeBoardTitleRow(context, boardName));
-        if (query.isEmpty()) {
-            // always put an ad at the top when not searching
-            matrixCursor.addRow(board.makeThreadAdRow(getContext(), 0));
-        }
 
-        if (!query.isEmpty()) {
-            String title = String.format(context.getString(R.string.board_search_results), "<i>" + query + "</i>");
-            matrixCursor.addRow(ChanThread.makeTitleRow(boardName, title));
-        }
-        if (board.threads != null && board.threads.length > 0 && !board.defData) { // show loading
+        if (board.threads != null && board.threads.length > 1 && !board.defData) { // show loading
+            if (!board.isVirtualBoard())
+                matrixCursor.addRow(board.makeThreadAdRow(getContext(), 0));
+
+            if (!query.isEmpty()) {
+                String title = String.format(context.getString(R.string.board_search_results), "<i>" + query + "</i>");
+                matrixCursor.addRow(ChanThread.makeTitleRow(boardName, title));
+            }
+
             if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
             //int adSpace = MINIMUM_AD_SPACING;
             int numQueryMatches = 0;
@@ -126,9 +127,11 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 for (ChanBoard relatedBord : board.relatedBoards(context)) {
                     matrixCursor.addRow(relatedBord.makeRow());
                 }
-                // always put an ad at the bottom
-                matrixCursor.addRow(board.makeThreadAdRow(getContext(), i));
             }
+
+            // always put an ad at the bottom
+            if (!board.isVirtualBoard())
+                matrixCursor.addRow(board.makeThreadAdRow(getContext(), i));
         }
         registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;

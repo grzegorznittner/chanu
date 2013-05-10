@@ -9,7 +9,9 @@
         android:layout_alignParentRight="true"
         android:gravity="right"
         android:orientation="horizontal"
-        android:background="@color/PaletteSemiOpaqueMedGray">
+        android:background="@color/PaletteSemiOpaqueMedGray"
+        android:visibility="gone"
+        >
 
     <TextView
             android:id="@+id/board_refresh_text"

@@ -37,4 +37,9 @@
 
     <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_image_exif"/>
 
+    <ImageView
+            android:id="@+id/list_item_thread_banner_ad"
+            style="@style/ThreadListBannerAd"
+            />
+
 </com.chanapps.four.component.CheckableLinearLayout>

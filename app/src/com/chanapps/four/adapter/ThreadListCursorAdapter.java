@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanPost;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,7 +42,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
         String tag = convertView == null ? "" : (String)convertView.getTag(TYPE);
         if (tag == null)
             tag = "";
-        String newTag = cursor.getPosition() == 0 ? HEADER : ITEM;
+        int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
+        String newTag = (flags & ChanPost.FLAG_IS_HEADER) > 0 ? HEADER : ITEM;
 
         View v = (convertView == null || !tag.equals(newTag))
             ? newView(context, parent, newTag, position)
@@ -57,7 +59,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     @Override
     protected View newView(Context context, ViewGroup parent, String tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        View v = (position == 0)
+        View v = HEADER.equals(tag)
             ? mInflater.inflate(R.layout.thread_list_header, parent, false)
             : mInflater.inflate(R.layout.thread_list_item, parent, false);
         v.setTag(TYPE, tag);

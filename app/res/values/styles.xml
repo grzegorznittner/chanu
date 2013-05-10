@@ -623,6 +623,14 @@
         <!-- <item name="android:focusableInTouchMode">true</item> -->
     </style>
 
+    <style name="ThreadListBannerAd" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:contentDescription">@string/advert_content_description</item>
+        <item name="android:visibility">gone</item>
+    </style>
     <!-- POST REPLY STYLES -->
 
     <style name="PostReplyEditText" parent="AppTheme">

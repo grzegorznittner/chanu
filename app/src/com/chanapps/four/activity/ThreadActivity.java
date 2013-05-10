@@ -270,7 +270,8 @@ public class ThreadActivity
                         ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_TEXT,
                         ChanPost.POST_COUNTRY_URL,
-                        ChanPost.POST_IMAGE_URL
+                        ChanPost.POST_IMAGE_URL,
+                        ChanPost.POST_FLAGS
                 },
                 new int[]{
                         R.id.list_item_header_wrapper,
@@ -283,7 +284,8 @@ public class ThreadActivity
                         R.id.list_item_title,
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
-                        R.id.list_item_image_exif
+                        R.id.list_item_image_exif,
+                        R.id.list_item_thread_banner_ad
                 });
         absListView.setAdapter(adapter);
 

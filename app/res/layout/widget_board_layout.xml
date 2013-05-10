@@ -76,7 +76,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:scaleType="fitXY"
-            android:src="@drawable/app_icon"
+            android:src="@drawable/app_icon_grayscale"
             android:background="@color/PaletteTransparent"
             android:contentDescription="@string/app_name"
             />

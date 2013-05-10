@@ -106,6 +106,10 @@ public class ThreadCursorLoader extends BoardCursorLoader {
 
     private void loadMatrixCursor(MatrixCursor matrixCursor, ChanBoard board, ChanThread thread) {
         //int adSpace = MINIMUM_AD_SPACING;
+
+        // always put an ad at the top
+        matrixCursor.addRow(board.makePostAdRow(getContext(), 0));
+
         int i = 0;
         int numQueryMatches = 0;
         int numPosts = thread.posts.length;
@@ -120,7 +124,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             post.closed = thread.closed; // inherit
             post.hidePostNumbers = hidePostNumbers;
             post.useFriendlyIds = useFriendlyIds;
-            matrixCursor.addRow(post.makeRow(query));
+            matrixCursor.addRow(post.makeRow(query, i));
             // randomly distribute ads
             /*
             if (generator.nextDouble() < AD_PROBABILITY
@@ -143,7 +147,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         // put related threads at the bottom
         List<Object[]> rows = board.makePostRelatedThreadsRows(threadNo);
         if (rows.size() > 0) {
-            matrixCursor.addRow(board.makePostRelatedThreadsHeaderRow(getContext()));
+            matrixCursor.addRow(board.makePostRelatedThreadsHeaderRow(context));
             for (Object[] row : rows)
                 matrixCursor.addRow(row);
         }
