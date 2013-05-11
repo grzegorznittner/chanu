@@ -8,29 +8,27 @@
             />
 
     <TextView
-            android:id="@+id/grid_item_num_replies"
-            style="@style/BoardGridNumReplies"
-            />
-
-    <TextView
             android:id="@+id/grid_item_board_abbrev"
             style="@style/BoardGridAbbrev"
             />
 
-    <TextView
-            android:id="@+id/grid_item_num_images"
-            style="@style/BoardGridNumImages"
-            />
-
-    <RelativeLayout
-        style="@style/BoardGridTextImageOverlayWrapper">
+    <LinearLayout
+            android:id="@+id/grid_item_text_wrapper"
+            style="@style/BoardGridOverlay">
 
         <TextView
                 android:id="@+id/grid_item_thread_subject"
-                style="@style/BoardGridTextImageTopOverlay"
+                style="@style/BoardGridSubject"
+                android:lines="2"
                 />
 
-    </RelativeLayout>
+        <TextView
+                android:id="@+id/grid_item_thread_info"
+                style="@style/BoardGridInfo"
+                android:lines="1"
+                />
+
+    </LinearLayout>
 
     <ImageView
             android:id="@+id/grid_item_country_flag"

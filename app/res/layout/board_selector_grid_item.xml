@@ -9,7 +9,7 @@
 
     <TextView
             android:id="@+id/grid_item_thread_subject"
-            style="@style/BoardSelectorGridTextImageOverlay"
+            style="@style/BoardSelectorOverlay"
             />
 
     <ImageView

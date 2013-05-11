@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanThread;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,10 +19,28 @@ public class BoardSelectorGridCursorAdapter extends AbstractBoardCursorAdapter {
     private int columnWidth;
     private int columnHeight;
 
-    public BoardSelectorGridCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to, int columnWidth, int columnHeight) {
+    protected BoardSelectorGridCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to, int columnWidth, int columnHeight) {
         super(context, layout, viewBinder, from, to);
         this.columnWidth = columnWidth;
         this.columnHeight = columnHeight;
+    }
+
+    public BoardSelectorGridCursorAdapter(Context context, ViewBinder viewBinder, int columnWidth, int columnHeight) {
+        this(context,
+                R.layout.board_selector_grid_item,
+                viewBinder,
+                new String[] {
+                        ChanThread.THREAD_TITLE,
+                        ChanThread.THREAD_SUBJECT,
+                        ChanThread.THREAD_THUMBNAIL_URL
+                },
+                new int[] {
+                        R.id.grid_item_thread_title,
+                        R.id.grid_item_thread_subject,
+                        R.id.grid_item_thread_thumb
+                },
+                columnWidth,
+                columnHeight);
     }
 
     protected View newView(Context context, ViewGroup parent, String tag, int position) {

@@ -7,11 +7,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
-import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.activity.GalleryViewActivity;
-import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanBoardStat;
 import com.chanapps.four.data.ChanFileStorage;
@@ -22,6 +18,7 @@ import com.chanapps.four.data.ChanThreadStat;
 import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.data.UserStatistics;
+import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.service.CleanUpService;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
@@ -30,7 +27,7 @@ import com.chanapps.four.widget.BoardWidgetProvider;
 
 public class MobileProfile extends AbstractNetworkProfile {
 	private static final String TAG = MobileProfile.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	private String networkType = "3G";
 	
@@ -267,7 +264,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 		super.onUpdateViewData(baseContext, handler, boardCode);
 		
 		final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
+		final ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
 
         if (ChanFileStorage.hasNewBoardData(baseContext, boardCode))
 		    ChanFileStorage.loadFreshBoardData(baseContext, boardCode);
@@ -281,6 +278,7 @@ public class MobileProfile extends AbstractNetworkProfile {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    Log.e(TAG, "Exception updateviewdata boardselector boardCode=" + currentActivityId.boardCode);
                     activity.refresh();
                 }
             });
@@ -333,9 +331,9 @@ public class MobileProfile extends AbstractNetworkProfile {
 	}
 
     private void handleBoardSelectorParseSuccess(ChanIdentifiedService service) {
-        ChanActivityId data = service.getChanActivityId();
+        final ChanActivityId data = service.getChanActivityId();
         final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-        ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
+        final ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
 
         // check if board data corrupted, we need to reload it
         if (ChanBoard.POPULAR_BOARD_CODE.equals(data.boardCode)) {
@@ -348,17 +346,26 @@ public class MobileProfile extends AbstractNetworkProfile {
             }
         }
 
-        // user is on the same tab, we need to reload it
+        // user is on the same tab and it's a manual refresh, reload it
         Handler handler = activity.getChanHandler();
-        if (    //data.boardCode.equals(currentActivityId.boardCode) &&
+        if ((currentActivityId.priority || data.priority) &&
                 currentActivityId.activity == LastActivity.BOARD_SELECTOR_ACTIVITY &&
+                data.boardCode != null && !data.boardCode.isEmpty() &&
+                activity instanceof BoardSelectorActivity &&
                 handler != null)
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    activity.refresh();
-                }
-            });
+        {
+            final BoardSelectorActivity bsa = (BoardSelectorActivity)activity;
+            final BoardGroupFragment fragment = bsa.getSelectedFragment();
+            if (fragment.getBoardSelectorTab().boardCode().equals(data.boardCode)) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (DEBUG) Log.i(TAG, "Exception refreshing boardselector fragment boardCode=" + currentActivityId.boardCode + " data boardcode=" + data.boardCode);
+                        fragment.refresh();
+                    }
+                });
+            }
+        }
 
         // tell it to refresh widgets for board if any are configured
         if (DEBUG) Log.i(TAG, "Calling widget provider update for boardCode=" + data.boardCode);

@@ -24,7 +24,7 @@ public class ChanGridSizer {
     private static final int MAX_COLUMN_WIDTH = 110;
     private static final int MAX_COLUMN_WIDTH_LARGE = 140;
     //private static final int MAX_COLUMN_WIDTH = 150;
-    private static final int MAX_COLUMN_WIDTH_XLARGE = 200;
+    private static final int MAX_COLUMN_WIDTH_XLARGE = 170;
 
     private static final int[] MAX_COLUMN_WIDTHS = {
             ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH,

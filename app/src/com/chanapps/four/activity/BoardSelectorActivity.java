@@ -19,6 +19,7 @@ import android.view.Window;
 import com.chanapps.four.adapter.TabsAdapter;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.BoardSelectorTab;
 import com.chanapps.four.data.ChanBoard;
@@ -60,7 +61,7 @@ public class BoardSelectorActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DEBUG) Log.v(TAG, "onCreate");
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar loader
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar
 
         Intent intent = getIntent();
         if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
@@ -85,7 +86,9 @@ public class BoardSelectorActivity
     protected void onStart() {
         super.onStart();
         final ActionBar bar = getActionBar();
-        bar.setTitle(getString(R.string.application_name) + ": " + getString(R.string.application_tagname));
+        bar.setTitle(getString(R.string.application_name)
+                + ChanHelper.TITLE_SEPARATOR
+                + getString(R.string.board_selector_boardlist_title));
         bar.setDisplayShowTitleEnabled(true);
         bar.setDisplayHomeAsUpEnabled(false);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -127,7 +130,8 @@ public class BoardSelectorActivity
                 : ensurePrefs().getString(BOARD_SELECTOR_TAB, DEFAULT_BOARD_SELECTOR_TAB.toString());
         BoardSelectorTab tab = BoardSelectorTab.valueOf(tabVal);
         //getActionBar().setSelectedNavigationItem(tab.ordinal());
-        mViewPager.setCurrentItem(tab.ordinal(), true);
+        if (mViewPager.getCurrentItem() != tab.ordinal())
+            mViewPager.setCurrentItem(tab.ordinal(), false);
     }
 
     protected void onStop() {
@@ -158,6 +162,8 @@ public class BoardSelectorActivity
         
     	ChanFeature feature = NetworkProfileManager.instance().getUserStatistics().nextTipForPage(Page.BOARDLIST);
     	if (DEBUG) Log.i(TAG, "Tip for " + feature + " should be displayed");
+
+        new TutorialOverlay(mViewPager, Page.BOARDLIST);
     }
 
     @Override
@@ -263,10 +269,13 @@ public class BoardSelectorActivity
 
     @Override
     public void refresh() {
-        if (DEBUG) Log.i(TAG, "refreshing boardTab=" + getSelectedBoardCode());
+        // don't call this, instead you have to call the fragment
+    }
+
+    public BoardGroupFragment getSelectedFragment() {
         BoardGroupFragment fragment = (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(mViewPager.getCurrentItem());
         if (DEBUG) Log.i(TAG, "found fragment=" + fragment + " tab=" + fragment.getArguments().getString(BOARD_SELECTOR_TAB) + " handler=" + fragment.getChanHandler());
-        fragment.refresh();
+        return fragment;
     }
 
     public void selectTab(BoardSelectorTab tab) {
@@ -280,7 +289,6 @@ public class BoardSelectorActivity
             fragment.getAdapter().notifyDataSetChanged();
     }
 
-    @Override
     public void closeSearch() {}
 
 }

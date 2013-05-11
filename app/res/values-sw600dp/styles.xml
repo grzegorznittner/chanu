@@ -1,0 +1,5 @@
+<resources>
+    <style name="BoardRefreshBar" parent="BoardRefreshBarBase">
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+</resources>

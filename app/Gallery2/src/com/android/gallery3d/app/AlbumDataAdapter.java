@@ -98,11 +98,13 @@ public class AlbumDataAdapter implements AlbumView.Model {
     public void resume() {
         mSource.addContentListener(mSourceListener);
         mReloadTask = new ReloadTask();
-        mReloadTask.start();
+        if (mReloadTask != null)
+            mReloadTask.start();
     }
 
     public void pause() {
-        mReloadTask.terminate();
+        if (mReloadTask != null)
+            mReloadTask.terminate();
         mReloadTask = null;
         mSource.removeContentListener(mSourceListener);
     }

@@ -276,11 +276,7 @@ public class AlbumSetPage extends ActivityState implements
         mEyePosition = new EyePosition(context, this);
         mDetailsSource = new MyDetailsSource();
         mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        GalleryActionBar actionBar = mActivity.getGalleryActionBar();
-        if (actionBar != null) {
-            mSelectedAction = data.getInt(
-                    AlbumSetPage.KEY_SELECTED_CLUSTER_TYPE, FilterUtils.CLUSTER_BY_ALBUM);
-        }
+        mSelectedAction = FilterUtils.CLUSTER_BY_ALBUM;
         startTransition();
     }
 
@@ -293,8 +289,6 @@ public class AlbumSetPage extends ActivityState implements
         mAlbumSetView.pause();
         mEyePosition.pause();
         DetailsHelper.pause();
-        GalleryActionBar actionBar = mActivity.getGalleryActionBar();
-        if (actionBar != null) actionBar.hideClusterMenu();
         if (mSyncTask != null) {
             mSyncTask.cancel();
             mSyncTask = null;
@@ -310,8 +304,6 @@ public class AlbumSetPage extends ActivityState implements
         mAlbumSetView.resume();
         mEyePosition.resume();
         mActionModeHandler.resume();
-        GalleryActionBar actionBar = mActivity.getGalleryActionBar();
-        if (actionBar != null) actionBar.hideClusterMenu();
     }
 
     private void initializeData(Bundle data) {
@@ -370,8 +362,8 @@ public class AlbumSetPage extends ActivityState implements
 
     @Override
     protected boolean onCreateActionBar(Menu menu) {
-        Activity activity = (Activity) mActivity;
         GalleryActionBar actionBar = mActivity.getGalleryActionBar();
+        /*
         MenuInflater inflater = activity.getMenuInflater();
 
         final boolean inAlbum = mActivity.getStateManager().hasStateClass(
@@ -395,6 +387,9 @@ public class AlbumSetPage extends ActivityState implements
             mShowClusterMenu = !inAlbum;
             inflater.inflate(R.menu.albumset, menu);
         }
+        */
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         return true;
     }
 
@@ -449,12 +444,8 @@ public class AlbumSetPage extends ActivityState implements
     }
 
     private String getSelectedString() {
-        GalleryActionBar actionBar = mActivity.getGalleryActionBar();
         int count = mSelectionManager.getSelectedCount();
-        int action = actionBar.getClusterTypeAction();
-        int string = action == FilterUtils.CLUSTER_BY_ALBUM
-                ? R.plurals.number_of_albums_selected
-                : R.plurals.number_of_groups_selected;
+        int string = R.plurals.number_of_albums_selected;
         String format = mActivity.getResources().getQuantityString(string, count);
         return String.format(format, count);
     }
@@ -462,7 +453,6 @@ public class AlbumSetPage extends ActivityState implements
     public void onSelectionModeChange(int mode) {
         switch (mode) {
             case SelectionManager.ENTER_SELECTION_MODE: {
-                mActivity.getGalleryActionBar().hideClusterMenu();
                 mActionMode = mActionModeHandler.startActionMode();
                 mVibrator.vibrate(100);
                 break;

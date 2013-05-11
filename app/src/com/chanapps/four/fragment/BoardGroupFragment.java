@@ -26,6 +26,7 @@ import com.chanapps.four.loader.*;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
 import com.chanapps.four.viewer.BoardViewer;
+import com.chanapps.four.viewer.BoardlistViewer;
 import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -46,7 +47,7 @@ public class BoardGroupFragment
 {
 
     private static final String TAG = BoardGroupFragment.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private BoardSelectorTab boardSelectorTab;
     private ResourceCursorAdapter adapter;
@@ -68,15 +69,13 @@ public class BoardGroupFragment
 
     @Override
     public void refresh() {
-        //setActionBarTitle(); // for update time
-        //invalidateOptionsMenu(); // in case spinner needs to be reset
-        /*
-        if (adapter != null)
-            adapter.notifyDataSetChanged();
-        */
         if (handler != null)
-            handler.sendEmptyMessageDelayed(0, 200);
-        getActivity().invalidateOptionsMenu();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
+                }
+            });
     }
 
     public void invalidate() {
@@ -118,9 +117,7 @@ public class BoardGroupFragment
             default:
                 break;
         }
-        LoaderManager.enableDebugLogging(true);
-        getLoaderManager().initLoader(0, null, this);
-        if (DEBUG) Log.v(TAG, "onCreate init loader");
+        //LoaderManager.enableDebugLogging(true);
     }
 
     protected void createAbsListView(View contentView) {
@@ -152,49 +149,13 @@ public class BoardGroupFragment
 
     protected void assignCursorAdapter() {
         switch (boardSelectorTab) {
+            default:
             case BOARDLIST:
-                adapter = new BoardSelectorGridCursorAdapter(getActivity(),
-                        R.layout.board_selector_grid_item,
-                        this,
-                        new String[] {
-                                ChanThread.THREAD_THUMBNAIL_URL,
-                                ChanThread.THREAD_TITLE,
-                                ChanThread.THREAD_SUBJECT
-                        },
-                        new int[] {
-                                R.id.grid_item_thread_thumb,
-                                R.id.grid_item_thread_title,
-                                R.id.grid_item_thread_subject
-                        },
-                        columnWidth,
-                        columnHeight);
+                adapter = new BoardSelectorGridCursorAdapter(getActivity().getApplicationContext(), this, columnWidth, columnHeight);
                 break;
             case WATCHLIST:
             case RECENT:
-            default:
-                adapter = new BoardGridCursorAdapter(getActivity(),
-                        R.layout.board_grid_item,
-                        this,
-                        new String[] {
-                                ChanThread.THREAD_BOARD_CODE,
-                                ChanThread.THREAD_THUMBNAIL_URL,
-                                ChanThread.THREAD_TITLE,
-                                ChanThread.THREAD_SUBJECT,
-                                ChanThread.THREAD_COUNTRY_FLAG_URL,
-                                ChanThread.THREAD_NUM_REPLIES,
-                                ChanThread.THREAD_NUM_IMAGES
-                        },
-                        new int[] {
-                                R.id.grid_item_board_abbrev,
-                                R.id.grid_item_thread_thumb,
-                                R.id.grid_item_thread_title,
-                                R.id.grid_item_thread_subject,
-                                R.id.grid_item_country_flag,
-                                R.id.grid_item_num_replies,
-                                R.id.grid_item_num_images
-                        },
-                        columnWidth,
-                        columnHeight);
+                adapter = new BoardGridCursorAdapter(getActivity().getApplicationContext(), this, columnWidth, columnHeight);
                 break;
         }
     }
@@ -246,33 +207,33 @@ public class BoardGroupFragment
         if (DEBUG) Log.i(TAG, "onResume boardSelectorTab=" + boardSelectorTab);
         if (handler == null)
             handler = createHandler();
+        // to overcome bug in viewPager when tabs are rapidly switched
+        // if watchlist/nsfwboards need to be updated, loader should be called manually via handler
+        /*
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (getActivity() != null)
                     getActivity().invalidateOptionsMenu();
             }
-        }, 250); // to overcome bug in viewPager when tabs are rapidly switched
-        new TutorialOverlay(layout, boardSelectorTab.tutorialPage());
+        }, 250);
+        */
+        //if (boardSelectorTab == BoardSelectorTab.BOARDLIST) { // doesn't change except for NSFW switch
+        //    //if (absListView != null && absListView.getCount() <= 0)
+        //    //    getLoaderManager().restartLoader(0, null, this);
+        //}
+        //else {
+        //    getLoaderManager().restartLoader(0, null, this);
+        //}
+        if (absListView != null && absListView.getCount() <= 0 && getLoaderManager() != null) {
+            if (DEBUG) Log.i(TAG, "No data displayed, starting loader");
+            getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
+        }
     }
 
     protected Handler createHandler() {
         if (DEBUG) Log.i(TAG, "creating handler");
-        return new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            try {
-                super.handleMessage(msg);
-                switch (msg.what) {
-                    default:
-                        getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
-                }
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Couldn't handle message " + msg, e);
-            }
-        }
-        };
+        return new Handler();
     }
 
     public Handler getChanHandler() {
@@ -406,7 +367,7 @@ public class BoardGroupFragment
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         switch (boardSelectorTab) {
             case BOARDLIST:
-                return setBoardlistViewValue(view, cursor, columnIndex);
+                return BoardlistViewer.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions);
             case WATCHLIST:
             case RECENT:
             default:
@@ -415,67 +376,7 @@ public class BoardGroupFragment
         }
     }
 
-    protected boolean setBoardlistViewValue(View view, Cursor cursor, int columnIndex) {
-        switch (view.getId()) {
-            case R.id.grid_item_thread_subject:
-                return setThreadSubject((TextView) view, cursor);
-            case R.id.grid_item_thread_title:
-                return setThreadTitle((TextView) view, cursor);
-            case R.id.grid_item_thread_thumb:
-                return setThreadThumb((ImageView) view, cursor);
-            case R.id.grid_item_country_flag:
-                return setThreadCountryFlag((ImageView) view, cursor);
-        }
-        return false;
+    public BoardSelectorTab getBoardSelectorTab() {
+        return boardSelectorTab;
     }
-
-    protected boolean setThreadSubject(TextView tv, Cursor cursor) {
-        int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((threadFlags & ChanThread.THREAD_FLAG_TITLE) > 0) {
-            tv.setVisibility(View.GONE);
-            tv.setText("");
-        }
-        else {
-            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
-            tv.setVisibility(View.VISIBLE);
-        }
-        return true;
-    }
-
-    protected boolean setThreadTitle(TextView tv, Cursor cursor) {
-        int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((threadFlags & ChanThread.THREAD_FLAG_TITLE) > 0) {
-            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE))));
-            tv.setVisibility(View.VISIBLE);
-        }
-        else {
-            tv.setVisibility(View.GONE);
-            tv.setText("");
-        }
-        return true;
-    }
-
-    protected boolean setThreadThumb(ImageView iv, Cursor cursor) {
-        int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((threadFlags & ChanThread.THREAD_FLAG_TITLE) > 0) {
-            iv.setImageBitmap(null);
-        }
-        else {
-            imageLoader.displayImage(
-                    cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
-                    iv,
-                    //displayImageOptions); // load async
-                    displayImageOptions.modifyCenterCrop(true)); // load async
-            }
-        return true;
-    }
-
-    protected boolean setThreadCountryFlag(ImageView iv, Cursor cursor) {
-        imageLoader.displayImage(
-                cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_COUNTRY_FLAG_URL)),
-                iv,
-                displayImageOptions);
-        return true;
-    }
-
 }

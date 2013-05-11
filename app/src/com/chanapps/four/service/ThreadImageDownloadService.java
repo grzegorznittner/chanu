@@ -18,6 +18,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import android.support.v4.app.NotificationCompat;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.data.*;
 import org.apache.commons.io.IOUtils;
@@ -275,7 +276,8 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 		Builder notifBuilder = new Notification.Builder(context);
-		notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
+		notifBuilder.setSmallIcon(R.drawable.app_notification_icon_grayscale);
+        notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
 		notifBuilder.setAutoCancel(true);
 		notifBuilder.setContentTitle(context.getString(R.string.download_all_images_complete));
 		notifBuilder.setContentText
@@ -307,7 +309,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		                thread.tn_w, thread.tn_h, thread.tim,
 		                false, 0);
 			}
-			*/
+  			*/
 			break;
 		}
         

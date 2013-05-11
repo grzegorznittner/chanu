@@ -24,8 +24,42 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected static final String HEADER = "header";
     protected static final String ITEM = "item";
 
-    public ThreadListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
+    protected ThreadListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
+    }
+
+    public ThreadListCursorAdapter(Context context, ViewBinder viewBinder) {
+        this(context,
+                R.layout.thread_list_item,
+                viewBinder,
+                new String[]{
+                        ChanPost.POST_IMAGE_URL,
+                        ChanPost.POST_IMAGE_URL,
+                        ChanPost.POST_IMAGE_URL,
+                        ChanPost.POST_IMAGE_URL,
+                        ChanPost.POST_IMAGE_URL,
+                        ChanPost.POST_HEADLINE_TEXT,
+                        ChanPost.POST_SUBJECT_TEXT,
+                        ChanPost.POST_SUBJECT_TEXT,
+                        ChanPost.POST_TEXT,
+                        ChanPost.POST_COUNTRY_URL,
+                        ChanPost.POST_IMAGE_URL,
+                        ChanPost.POST_FLAGS
+                },
+                new int[]{
+                        R.id.list_item_header_wrapper,
+                        R.id.list_item_expanded_progress_bar,
+                        R.id.list_item_image_expanded,
+                        R.id.list_item_image_wrapper,
+                        R.id.list_item_image,
+                        R.id.list_item_header,
+                        R.id.list_item_subject,
+                        R.id.list_item_title,
+                        R.id.list_item_text,
+                        R.id.list_item_country_flag,
+                        R.id.list_item_image_exif,
+                        R.id.list_item_thread_banner_ad
+                });
     }
 
     @Override

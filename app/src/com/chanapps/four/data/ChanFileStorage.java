@@ -625,12 +625,10 @@ public class ChanFileStorage {
     
     private static void updateWatchedThread(Context context, ChanThread watchedThread) throws IOException {
     	ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
-    	ChanThread thread = null;
     	for (int i = 0; i < board.threads.length; i++) {
-    		thread = (ChanThread)board.threads[i];
+    		ChanPost thread = board.threads[i];
     		if (thread.no == watchedThread.no) {
     			board.threads[i] = watchedThread;
-    			
     	    	storeBoardData(context, board);
     		}
     	}

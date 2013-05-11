@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 
+import android.util.Log;
 import android.widget.Toast;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.data.ChanFileStorage;
@@ -101,7 +102,8 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
                 && currentActivityId.boardCode != null
                 && currentActivityId.boardCode.equals(boardCode);
 
-        if (boardActivity && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY
+        if (boardActivity
+                && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY
                 && currentActivityId.threadNo == 0 && handler != null)
             handler.post(new Runnable() {
                 @Override

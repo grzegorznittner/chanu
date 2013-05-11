@@ -172,7 +172,7 @@
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/BoardTypeText</item>
         <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:background">@drawable/board_type_gradient_bg</item>
+        <item name="android:background">@color/PaletteBlack</item>
         <item name="android:textStyle">bold</item>
         <item name="android:visibility">gone</item>
     </style>
@@ -189,60 +189,59 @@
         <item name="android:visibility">gone</item>
     </style>
 
-    <style name="BoardSelectorGridTextImageOverlay" parent="AppTheme">
+    <style name="BoardSelectorOverlay" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:paddingTop">@dimen/BoardSelectorGridTextImageOverlay_paddingTop</item>
-        <item name="android:paddingLeft">@dimen/BoardSelectorGridTextImageOverlay_paddingLeft</item>
-        <item name="android:paddingRight">@dimen/BoardSelectorGridTextImageOverlay_paddingRight</item>
-        <item name="android:paddingBottom">@dimen/BoardSelectorGridTextImageOverlay_paddingBottom</item>
-        <item name="android:gravity">center_horizontal|center_vertical</item>
-        <item name="android:textSize">@dimen/BoardSelectorGridTextImageOverlay</item>
+        <item name="android:paddingTop">@dimen/BoardSelectorOverlay_paddingTop</item>
+        <item name="android:paddingLeft">@dimen/BoardSelectorOverlay_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardSelectorOverlay_paddingRight</item>
+        <item name="android:paddingBottom">@dimen/BoardSelectorOverlay_paddingBottom</item>
+        <item name="android:gravity">center_horizontal|bottom</item>
+        <item name="android:textSize">@dimen/BoardSelectorOverlay</item>
         <item name="android:background">@drawable/board_subject_gradient_bg</item>
         <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:lines">1</item>
+        <item name="android:maxLines">2</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:visibility">gone</item>
     </style>
 
-    <style name="BoardGridTextImageOverlayWrapper" parent="AppTheme">
+    <style name="BoardGridOverlay" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/BoardGridOverlay_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardGridOverlay_paddingBottom</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:background">@drawable/board_subject_gradient_bg</item>
     </style>
 
-    <style name="BoardGridTextImageTopOverlay" parent="AppTheme">
+    <style name="BoardGridSubject" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:paddingTop">@dimen/BoardGridTextImageTopOverlay_paddingTop</item>
-        <item name="android:paddingLeft">@dimen/BoardGridTextImageTopOverlay_paddingLeft</item>
-        <item name="android:paddingRight">@dimen/BoardGridTextImageTopOverlay_paddingRight</item>
-        <item name="android:paddingBottom">@dimen/BoardGridTextImageTopOverlay_paddingBottom</item>
-        <item name="android:gravity">center_horizontal|center_vertical</item>
-        <item name="android:textSize">@dimen/BoardGridTextImageTopOverlay</item>
-        <item name="android:background">@drawable/board_subject_gradient_bg</item>
+        <item name="android:paddingTop">@dimen/BoardGridSubject_paddingTop</item>
+        <item name="android:paddingLeft">@dimen/BoardGridSubject_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardGridSubject_paddingRight</item>
+        <item name="android:paddingBottom">@dimen/BoardGridSubject_paddingBottom</item>
+        <item name="android:gravity">center_horizontal|bottom</item>
+        <item name="android:textSize">@dimen/BoardGridSubject</item>
         <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:lines">2</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="BoardGridNumReplies" parent="AppTheme">
-        <item name="android:layout_width">wrap_content</item>
+    <style name="BoardGridInfo" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_marginLeft">0dp</item>
-        <item name="android:layout_marginTop">0dp</item>
-        <item name="android:paddingLeft">@dimen/BoardGridNumReplies_paddingLeft</item>
-        <item name="android:paddingRight">@dimen/BoardGridNumReplies_paddingRight</item>
-        <item name="android:textSize">@dimen/BoardGridNumReplies</item>
-        <item name="android:background">@drawable/board_num_replies_gradient_bg</item>
+        <item name="android:paddingTop">@dimen/BoardGridInfo_paddingTop</item>
+        <item name="android:paddingLeft">@dimen/BoardGridInfo_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardGridInfo_paddingRight</item>
+        <item name="android:paddingBottom">@dimen/BoardGridInfo_paddingBottom</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">@dimen/BoardGridInfo</item>
         <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:lines">1</item>
+        <item name="android:maxLines">1</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -260,39 +259,6 @@
         <item name="android:lines">1</item>
         <item name="android:textStyle">bold</item>
         <item name="android:visibility">gone</item>
-    </style>
-
-    <style name="BoardGridNumImages" parent="AppTheme">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentRight">true</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_marginRight">0dp</item>
-        <item name="android:layout_marginTop">0dp</item>
-        <item name="android:paddingLeft">@dimen/BoardGridNumImages_paddingLeft</item>
-        <item name="android:paddingRight">@dimen/BoardGridNumImages_paddingRight</item>
-        <item name="android:textSize">@dimen/BoardGridNumImages</item>
-        <item name="android:background">@drawable/board_num_images_gradient_bg</item>
-        <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:lines">1</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="BoardGridTextImageOverlay" parent="AppTheme">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_below">@+id/grid_item_thread_subject</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingLeft">0dp</item>
-        <item name="android:paddingRight">0dp</item>
-        <item name="android:paddingBottom">@dimen/BoardGridTextImageOverlay_paddingBottom</item>
-        <item name="android:gravity">center_horizontal|top</item>
-        <item name="android:textSize">@dimen/BoardGridTextImageOverlay</item>
-        <item name="android:background">@color/PaletteTextOverlayBackground</item>
-        <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:lines">1</item>
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="BoardSelectorGridCountryFlag" parent="AppTheme">
@@ -380,6 +346,20 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/BoardListHeadline</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
+    </style>
+
+    <style name="BoardRefreshBarBase" parent="AppTheme">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_gravity">right</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:gravity">right</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@color/PaletteBlack34Opacity</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="BoardRefreshBar" parent="BoardRefreshBarBase">
+        <item name="android:layout_width">match_parent</item>
     </style>
 
     <!-- THREAD LIST STYLES -->
@@ -805,12 +785,12 @@
     <color name="PaletteMedGray">#888</color>
     <color name="PaletteDarkGray">#444</color>
     <color name="PaletteLighterGrayHalfOpacity">#80dddddd</color>
-    <color name="PaletteLightBlack">#ff030303</color>
-    <color name="PaletteBlack">#ff010101</color>
-    <color name="PaletteBlackHalfOpacity">#80010101</color>
-    <color name="PaletteBlack34Opacity">#d0010101</color>
-    <color name="PaletteBlackMostlyOpaque">#ec000000</color>
-    <color name="PaletteTextOverlayBackground">#a0010101</color>
+    <color name="PaletteLightBlack">#ff333333</color>
+    <color name="PaletteBlack">#ff222222</color>
+    <color name="PaletteBlackHalfOpacity">#80222222</color>
+    <color name="PaletteBlack34Opacity">#d0222222</color>
+    <color name="PaletteBlackMostlyOpaque">#ec222222</color>
+    <color name="PaletteTextOverlayBackground">#a0222222</color>
     <color name="popupbackground">#fff0f0f0</color>
 
     <color name="blue_base">#449def</color>

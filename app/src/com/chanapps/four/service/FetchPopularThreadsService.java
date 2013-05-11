@@ -38,7 +38,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 	private static final String TAG = FetchPopularThreadsService.class.getSimpleName();
 	private static final boolean DEBUG = false;
 
-    private boolean force;
+    private boolean priority;
     private boolean backgroundLoad;
 
     public static boolean scheduleBackgroundPopularFetchService(Context context) {
@@ -115,7 +115,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
             return;
         }
 
-		force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false);
+		priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
 		if (DEBUG) Log.i(TAG, "Handling popular threads fetch");
 		handlePopularThreadsFetch();
 	}
@@ -143,7 +143,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
             tc.setConnectTimeout(fetchParams.connectTimeout);
 
 			ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.POPULAR_BOARD_CODE);
-            if (board != null && board.lastFetched > 0 && !force) {
+            if (board != null && board.lastFetched > 0 && !priority) {
             	if (DEBUG) Log.i(TAG, "IfModifiedSince set as last fetch happened "
         				+ ((startTime - board.lastFetched) / 1000) + "s ago");
                 tc.setIfModifiedSince(board.lastFetched);
@@ -343,7 +343,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 
 	@Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(ChanBoard.POPULAR_BOARD_CODE, -1, force);
+		return new ChanActivityId(ChanBoard.POPULAR_BOARD_CODE, -1, priority);
 	}
 
 	static class ParsableString {

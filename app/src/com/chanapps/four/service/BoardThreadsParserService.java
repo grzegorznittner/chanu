@@ -44,11 +44,11 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
     private String boardCode;
     private boolean boardCatalog;
     private int pageNo;
-    private boolean force;
+    private boolean priority;
     private ChanBoard board;
 
     public static void startService(Context context, String boardCode, int pageNo) {
-        if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + false );
+        if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " priority=" + false );
         Intent intent = new Intent(context, BoardThreadsParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
@@ -57,13 +57,11 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
     }
 
     public static void startServiceWithPriority(Context context, String boardCode, int pageNo) {
-        if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " force=" + true );
+        if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " priority=" + true );
         Intent intent = new Intent(context, BoardThreadsParserService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
         intent.putExtra(ChanHelper.PAGE, pageNo);
-        intent.putExtra(ChanHelper.FORCE_REFRESH, true);
-        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
         context.startService(intent);
     }
 
@@ -80,7 +78,7 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
 		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
 		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
 		pageNo = boardCatalog ? -1 : intent.getIntExtra(ChanHelper.PAGE, 0);
-        force = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false);
+        priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
 		if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " page=" + pageNo);
 
         long startTime = Calendar.getInstance().getTimeInMillis();
@@ -201,6 +199,6 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
 
     @Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(boardCode, pageNo, force);
+		return new ChanActivityId(boardCode, pageNo, priority);
 	}
 }

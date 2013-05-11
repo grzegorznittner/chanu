@@ -962,23 +962,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (board == null)
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         String replyTitle = threadNo > 0
-                ? getString(R.string.post_reply_thread_title)
-                : getString(R.string.post_reply_title);
-        String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/: " + replyTitle;
-        /*
-        int subtitleId = R.string.post_reply_thread_title;
-        if (threadNo > 0) {
-            ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
-            String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
-                    ? " Thread " + threadNo
-                    : thread.posts[0].threadSubject(getApplicationContext())
-                    .replaceAll("<br/?>", " ")
-                    .replaceAll("<[^>]*>", "");
-            title += ": " + threadTitle;
-            subtitleId = R.string.post_reply_title;
-        }
-        getActionBar().setSubtitle(subtitleId);
-        */
+                ? getString(R.string.post_reply_title)
+                : getString(R.string.post_reply_thread_title);
+        String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/"
+                + ChanHelper.TITLE_SEPARATOR + replyTitle;
         getActionBar().setDisplayHomeAsUpEnabled(false);
         getActionBar().setTitle(title);
     }

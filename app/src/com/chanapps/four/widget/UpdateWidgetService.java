@@ -234,7 +234,6 @@ public class UpdateWidgetService extends Service {
 
             }
             intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
-            intent.putExtra(ChanHelper.FORCE_REFRESH, true);
             intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
             int uniqueId = (100 * widgetConf.appWidgetId) + 3;
             return PendingIntent.getService(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);

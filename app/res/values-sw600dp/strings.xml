@@ -2,8 +2,9 @@
     <!-- Font sizes -->
     <dimen name="BoardTypeText">22sp</dimen>
     <dimen name="WidgetConfigureOkButton">22sp</dimen>
-    <dimen name="BoardSelectorGridTextImageOverlay">14sp</dimen>
-    <dimen name="BoardGridTextImageTopOverlay">14sp</dimen>
+    <dimen name="BoardSelectorOverlay">14sp</dimen>
+    <dimen name="BoardGridSubject">14sp</dimen>
+    <dimen name="BoardGridInfo">14sp</dimen>
     <dimen name="BoardGridNumReplies">14sp</dimen>
     <dimen name="BoardGridAbbrev">14sp</dimen>
     <dimen name="BoardGridNumImages">14sp</dimen>
@@ -32,18 +33,26 @@
 
     <!-- Padding & Margins -->
 
-    <dimen name="BoardGridViewTablet_paddingRight">5dp</dimen>
+    <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
     <dimen name="BoardTypeText_padding">8dp</dimen>
 
-    <dimen name="BoardSelectorGridTextImageOverlay_paddingTop">4dp</dimen>
-    <dimen name="BoardSelectorGridTextImageOverlay_paddingLeft">2dp</dimen>
-    <dimen name="BoardSelectorGridTextImageOverlay_paddingRight">2dp</dimen>
-    <dimen name="BoardSelectorGridTextImageOverlay_paddingBottom">4dp</dimen>
+    <dimen name="BoardSelectorOverlay_paddingTop">4dp</dimen>
+    <dimen name="BoardSelectorOverlay_paddingLeft">2dp</dimen>
+    <dimen name="BoardSelectorOverlay_paddingRight">2dp</dimen>
+    <dimen name="BoardSelectorOverlay_paddingBottom">4dp</dimen>
 
-    <dimen name="BoardGridTextImageTopOverlay_paddingTop">2dp</dimen>
-    <dimen name="BoardGridTextImageTopOverlay_paddingLeft">4dp</dimen>
-    <dimen name="BoardGridTextImageTopOverlay_paddingRight">4dp</dimen>
-    <dimen name="BoardGridTextImageTopOverlay_paddingBottom">2dp</dimen>
+    <dimen name="BoardGridOverlay_paddingTop">4dp</dimen>
+    <dimen name="BoardGridOverlay_paddingBottom">4dp</dimen>
+
+    <dimen name="BoardGridSubject_paddingTop">0dp</dimen>
+    <dimen name="BoardGridSubject_paddingLeft">4dp</dimen>
+    <dimen name="BoardGridSubject_paddingRight">4dp</dimen>
+    <dimen name="BoardGridSubject_paddingBottom">0dp</dimen>
+
+    <dimen name="BoardGridInfo_paddingTop">0dp</dimen>
+    <dimen name="BoardGridInfo_paddingLeft">4dp</dimen>
+    <dimen name="BoardGridInfo_paddingRight">4dp</dimen>
+    <dimen name="BoardGridInfo_paddingBottom">0dp</dimen>
 
     <dimen name="BoardGridNumReplies_paddingLeft">2dp</dimen>
     <dimen name="BoardGridNumReplies_paddingRight">2dp</dimen>
@@ -61,11 +70,9 @@
     <dimen name="BoardSelectorGridCountryFlag_marginRight">11dp</dimen>
     <dimen name="BoardSelectorGridCountryFlag_marginTop">11dp</dimen>
 
-
     <dimen name="BoardGridCountryFlag_layout_width">16dp</dimen>
     <dimen name="BoardGridCountryFlag_layout_height">11dp</dimen>
     <dimen name="BoardGridCountryFlag_marginTop">4dp</dimen>
-
 
     <dimen name="BoardListTextImageTopOverlay_paddingTop">2dp</dimen>
     <dimen name="BoardListTextImageTopOverlay_paddingBottom">2dp</dimen>
@@ -75,12 +82,10 @@
     <dimen name="BoardListTitle_paddingRight">8dp</dimen>
     <dimen name="BoardListTitle_paddingBottom">8dp</dimen>
 
-
     <dimen name="BoardListSubject_paddingTop">2dp</dimen>
     <dimen name="BoardListSubject_paddingLeft">8dp</dimen>
     <dimen name="BoardListSubject_paddingRight">16dp</dimen>
     <dimen name="BoardListSubject_paddingBottom">0dp</dimen>
-
 
     <dimen name="BoardListHeadline_paddingTop">0dp</dimen>
     <dimen name="BoardListHeadline_paddingLeft">8dp</dimen>
@@ -190,5 +195,6 @@
     <dimen name="WidgetConfigureOkButton_paddingTop">4dp</dimen>
     <dimen name="WidgetConfigureOkButton_paddingBottom">4dp</dimen>
 
+    <string name="BoardRefreshBarWidth">wrap_content</string>
 
 </resources>

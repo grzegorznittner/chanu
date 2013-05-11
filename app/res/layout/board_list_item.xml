@@ -4,7 +4,7 @@
               android:orientation="vertical"
         >
 
-    <TextView android:id="@+id/grid_item_thread_title"
+    <TextView android:id="@+id/list_item_thread_title"
               style="@style/BoardListTitle"/>
 
     <LinearLayout
@@ -15,32 +15,20 @@
             >
 
         <RelativeLayout
-                android:id="@+id/grid_item_thread_image_wrapper"
+                android:id="@+id/list_item_thread_image_wrapper"
                 android:layout_width="0dp"
                 android:layout_weight="4"
                 android:layout_height="wrap_content">
 
             <com.chanapps.four.component.StretchyImageView
-                    android:id="@+id/grid_item_thread_thumb"
+                    android:id="@+id/list_item_thread_thumb"
                     style="@style/BoardGridImage"
                     android:layout_height="140dp"
                     />
 
             <TextView
-                    android:id="@+id/grid_item_num_replies"
-                    style="@style/BoardGridNumReplies"
-                    android:visibility="gone"
-                    />
-
-            <TextView
-                    android:id="@+id/grid_item_board_abbrev"
+                    android:id="@+id/list_item_board_abbrev"
                     style="@style/BoardGridAbbrev"
-                    android:visibility="gone"
-                    />
-
-            <TextView
-                    android:id="@+id/grid_item_num_images"
-                    style="@style/BoardGridNumImages"
                     android:visibility="gone"
                     />
 
@@ -53,18 +41,18 @@
                 android:orientation="vertical">
 
             <TextView
-                    android:id="@+id/grid_item_thread_subject"
+                    android:id="@+id/list_item_thread_subject"
                     style="@style/BoardListSubject"
                     />
 
             <ImageView
-                    android:id="@+id/grid_item_country_flag"
+                    android:id="@+id/list_item_country_flag"
                     style="@style/ThreadListItemCountryFlag"
                     android:layout_below="@+id/grid_item_thread_subject"
                     />
 
             <TextView
-                    android:id="@+id/grid_item_thread_headline"
+                    android:id="@+id/list_item_thread_headline"
                     style="@style/BoardListHeadline"
                     android:layout_below="@+id/grid_item_thread_subject"
                     android:layout_toRightOf="@+id/grid_item_country_flag"
@@ -75,7 +63,7 @@
     </LinearLayout>
 
     <TextView
-            android:id="@+id/grid_item_thread_text"
+            android:id="@+id/list_item_thread_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Full text goes here"
@@ -87,7 +75,7 @@
             />
 
     <com.chanapps.four.component.StretchyImageView
-            android:id="@+id/grid_item_thread_banner_ad"
+            android:id="@+id/list_item_thread_banner_ad"
             style="@style/BoardTypeBannerAd"
             />
 

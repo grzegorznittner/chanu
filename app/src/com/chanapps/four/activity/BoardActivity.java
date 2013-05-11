@@ -7,6 +7,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.graphics.Typeface;
+import android.os.Message;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
@@ -34,7 +35,6 @@ import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.UserStatistics.ChanFeature;
-import com.chanapps.four.handler.LoaderHandler;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -48,7 +48,12 @@ import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class BoardActivity
         extends FragmentActivity
-        implements ClickableLoaderActivity, ChanIdentifiedActivity, RefreshableActivity, OnClickListener
+        implements ChanIdentifiedActivity,
+        RefreshableActivity,
+        OnClickListener,
+        AdapterView.OnItemClickListener,
+        LoaderManager.LoaderCallbacks<Cursor>,
+        AbstractBoardCursorAdapter.ViewBinder
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
 	public static final boolean DEBUG = false;
@@ -142,53 +147,9 @@ public class BoardActivity
 
     protected void initAdapter() {
         if (absListView instanceof GridView)
-        adapter = new BoardGridCursorAdapter(this,
-                R.layout.board_grid_item,
-                this,
-                new String[] {
-                        ChanThread.THREAD_THUMBNAIL_URL,
-                        ChanThread.THREAD_TITLE,
-                        ChanThread.THREAD_SUBJECT,
-                        ChanThread.THREAD_HEADLINE,
-                        ChanThread.THREAD_TEXT,
-                        ChanThread.THREAD_COUNTRY_FLAG_URL,
-                        ChanThread.THREAD_NUM_REPLIES,
-                        ChanThread.THREAD_NUM_IMAGES
-                },
-                new int[] {
-                        R.id.grid_item_thread_thumb,
-                        R.id.grid_item_thread_title,
-                        R.id.grid_item_thread_subject,
-                        R.id.grid_item_thread_headline,
-                        R.id.grid_item_thread_text,
-                        R.id.grid_item_country_flag,
-                        R.id.grid_item_num_replies,
-                        R.id.grid_item_num_images
-                },
-                columnWidth,
-                columnHeight);
+            adapter = new BoardGridCursorAdapter(this, this, columnWidth, columnHeight);
         else
-            adapter = new BoardListCursorAdapter(this,
-                    R.layout.board_list_item,
-                    this,
-                    new String[] {
-                            ChanThread.THREAD_THUMBNAIL_URL,
-                            ChanThread.THREAD_TITLE,
-                            ChanThread.THREAD_SUBJECT,
-                            ChanThread.THREAD_HEADLINE,
-                            ChanThread.THREAD_TEXT,
-                            ChanThread.THREAD_COUNTRY_FLAG_URL,
-                            ChanThread.THREAD_FLAGS
-                    },
-                    new int[] {
-                            R.id.grid_item_thread_thumb,
-                            R.id.grid_item_thread_title,
-                            R.id.grid_item_thread_subject,
-                            R.id.grid_item_thread_headline,
-                            R.id.grid_item_thread_text,
-                            R.id.grid_item_country_flag,
-                            R.id.grid_item_thread_banner_ad
-                    });
+            adapter = new BoardListCursorAdapter(this, this);
         absListView.setAdapter(adapter);
     }
 
@@ -242,7 +203,7 @@ public class BoardActivity
 
     protected synchronized Handler ensureHandler() {
         if (handler == null && ChanHelper.onUIThread()) {
-        	handler = new LoaderHandler(this);
+        	handler = new LoaderHandler();
         }
         return handler;
     }
@@ -336,7 +297,7 @@ public class BoardActivity
         }
         query = intent.hasExtra(SearchManager.QUERY)
                 ? intent.getStringExtra(SearchManager.QUERY)
-                : prefs.getString(SearchManager.QUERY, "");
+                : ensurePrefs().getString(SearchManager.QUERY, "");
         // backup in case we are missing stuff
         if (boardCode == null || boardCode.isEmpty()) {
             Log.e(TAG, "Empty board code, redirecting to board selector");
@@ -389,7 +350,6 @@ public class BoardActivity
         return BoardViewer.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions,
                 boardCode, viewType, subjectTypeface, padding4DP);
     }
-
 
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -608,10 +568,10 @@ public class BoardActivity
 
             TextView refreshText = (TextView)refreshLayout.findViewById(R.id.board_refresh_text);
             refreshText.setText(msg.toString());
-            Button refreshButton = (Button)refreshLayout.findViewById(R.id.board_refresh_button);
-            refreshButton.setClickable(true);
-            refreshButton.setOnClickListener(this);
-            Button ignoreButton = (Button)refreshLayout.findViewById(R.id.board_ignore_button);
+            //ImageButton refreshButton = (ImageButton)refreshLayout.findViewById(R.id.board_refresh_button);
+            //refreshButton.setClickable(true);
+            //refreshButton.setOnClickListener(this);
+            ImageButton ignoreButton = (ImageButton)refreshLayout.findViewById(R.id.board_ignore_button);
             ignoreButton.setClickable(true);
             ignoreButton.setOnClickListener(this);
 
@@ -674,16 +634,31 @@ public class BoardActivity
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.board_refresh_button) {
-			setProgressBarIndeterminateVisibility(true);
-            NetworkProfileManager.instance().manualRefresh(this);
-		} else if (v.getId() == R.id.board_ignore_button) {
-			TextView refreshText = (TextView)findViewById(R.id.board_refresh_text);
-	        refreshText.setText("Board is up to date");
-	        
+		if (v.getId() == R.id.board_ignore_button) {
 	        LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
 	        refreshLayout.setVisibility(LinearLayout.GONE);
 		}
 	}
 
+    protected class LoaderHandler extends Handler {
+        public LoaderHandler() {}
+        @Override
+        public void handleMessage(Message msg) {
+            try {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case 1:
+                        if (DEBUG) Log.i(TAG, ">>>>>>>>>>> restart message received restarting loader");
+                        getSupportLoaderManager().restartLoader(1, null, BoardActivity.this);
+                        break;
+
+                    default:
+                        if (DEBUG) Log.i(TAG, ">>>>>>>>>>> restart message received restarting loader");
+                        getSupportLoaderManager().restartLoader(0, null, BoardActivity.this);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Couldn't handle message " + msg, e);
+            }
+        }
+    }
 }

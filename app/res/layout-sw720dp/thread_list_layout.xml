@@ -16,10 +16,6 @@
 
     <ListView
             android:id="@+id/thread_list_view" style="@style/ListViewTemplateWithGridTabletsThreads"
-            android:paddingLeft="64dp"
-            android:paddingTop="64dp"
-            android:paddingRight="64dp"
-            android:paddingBottom="64dp"
             android:background="@color/PaletteOffWhite"/>
 
     <include layout="@layout/board_refresh_bar"/>

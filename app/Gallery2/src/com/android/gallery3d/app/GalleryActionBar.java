@@ -181,8 +181,8 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
     }
 
     public void hideClusterMenu() {
-        mClusterRunner = null;
-        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        //mClusterRunner = null;
+        //mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     }
 
     public void setTitle(String title) {
@@ -223,5 +223,11 @@ public class GalleryActionBar implements ActionBar.OnNavigationListener {
     	if (mActionBar != null) {
     		mActionBar.setDisplayHomeAsUpEnabled(enabled);
     	}
+    }
+
+    public void setDisplayShowHomeEnabled(boolean enabled) {
+        if (mActionBar != null) {
+            mActionBar.setDisplayShowHomeEnabled(enabled);
+        }
     }
 }

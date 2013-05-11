@@ -3,43 +3,36 @@
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/board_refresh_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_gravity="right"
-        android:layout_alignParentRight="true"
-        android:gravity="right"
-        android:orientation="horizontal"
-        android:background="@color/PaletteSemiOpaqueMedGray"
-        android:visibility="gone"
+        style="@style/BoardRefreshBar"
         >
 
     <TextView
             android:id="@+id/board_refresh_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
+            android:layout_gravity="left|center_vertical"
+            android:gravity="left|center_vertical"
+            android:paddingLeft="16dp"
             android:paddingRight="8dp"
             android:textColor="@color/PaletteWhite"
             android:textStyle="bold"
-            android:background="@color/PaletteTransparent"
             android:textIsSelectable="false"/>
-    <Button
+    <!--
+    <ImageButton
             android:id="@+id/board_refresh_button"
             android:layout_width="48dp"
             android:layout_height="fill_parent"
-            android:textColor="@color/PaletteBlack"
-            android:layout_marginLeft="10dp"
             android:paddingLeft="8dp"
-            android:drawableLeft="@drawable/board_refresh_button_selector"
-            android:background="@color/PaletteSemiOpaqueDarkGray"
+            android:background="@color/PaletteTransparent"
+            android:src="@drawable/board_refresh_button_selector"
             />
-    <Button
+            -->
+    <ImageButton
             android:id="@+id/board_ignore_button"
             android:layout_width="48dp"
             android:layout_height="fill_parent"
             android:paddingLeft="8dp"
-            android:textColor="@color/PaletteBlack"
-            android:drawableLeft="@drawable/board_ignore_button_selector"
-            android:background="@color/PaletteSemiOpaqueDarkGray"
+            android:background="@color/PaletteTransparent"
+            android:src="@drawable/board_ignore_button_selector"
             />
 </LinearLayout>

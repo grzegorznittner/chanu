@@ -256,95 +256,12 @@ public class ThreadActivity
 
     @Override
     protected void initAdapter() {
-        adapter = new ThreadListCursorAdapter(this,
-                R.layout.thread_list_item,
-                this,
-                new String[]{
-                        ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_HEADLINE_TEXT,
-                        ChanPost.POST_SUBJECT_TEXT,
-                        ChanPost.POST_SUBJECT_TEXT,
-                        ChanPost.POST_TEXT,
-                        ChanPost.POST_COUNTRY_URL,
-                        ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_FLAGS
-                },
-                new int[]{
-                        R.id.list_item_header_wrapper,
-                        R.id.list_item_expanded_progress_bar,
-                        R.id.list_item_image_expanded,
-                        R.id.list_item_image_wrapper,
-                        R.id.list_item_image,
-                        R.id.list_item_header,
-                        R.id.list_item_subject,
-                        R.id.list_item_title,
-                        R.id.list_item_text,
-                        R.id.list_item_country_flag,
-                        R.id.list_item_image_exif,
-                        R.id.list_item_thread_banner_ad
-                });
+        adapter = new ThreadListCursorAdapter(this, this);
         absListView.setAdapter(adapter);
-
         if (absBoardListView != null && absBoardListView instanceof GridView) {
-            adapterBoardsTablet = new BoardGridCursorAdapter(this,
-                    R.layout.board_grid_item,
-                    this,
-                    new String[]{
-                            ChanThread.THREAD_THUMBNAIL_URL,
-                            ChanThread.THREAD_TITLE,
-                            ChanThread.THREAD_SUBJECT,
-                            ChanThread.THREAD_HEADLINE,
-                            ChanThread.THREAD_TEXT,
-                            ChanThread.THREAD_COUNTRY_FLAG_URL,
-                            ChanThread.THREAD_NUM_REPLIES,
-                            ChanThread.THREAD_NUM_IMAGES
-                    },
-                    new int[]{
-                            R.id.grid_item_thread_thumb,
-                            R.id.grid_item_thread_title,
-                            R.id.grid_item_thread_subject,
-                            R.id.grid_item_thread_headline,
-                            R.id.grid_item_thread_text,
-                            R.id.grid_item_country_flag,
-                            R.id.grid_item_num_replies,
-                            R.id.grid_item_num_images
-                    },
-                    columnWidth,
-                    columnHeight);
+            adapterBoardsTablet = new BoardGridCursorAdapter(this, this, columnWidth, columnHeight);
             absBoardListView.setAdapter(adapterBoardsTablet);
         }
-        /*
-        else if (absBoardListView != null && absBoardListView instanceof ListView) {
-            adapterBoardsTablet = new BoardListCursorAdapter(this,
-                    R.layout.board_list_item,
-                    this,
-                    new String[]{
-                            ChanThread.THREAD_THUMBNAIL_URL,
-                            ChanThread.THREAD_TITLE,
-                            ChanThread.THREAD_SUBJECT,
-                            ChanThread.THREAD_HEADLINE,
-                            ChanThread.THREAD_TEXT,
-                            ChanThread.THREAD_COUNTRY_FLAG_URL,
-                            ChanThread.THREAD_NUM_REPLIES,
-                            ChanThread.THREAD_NUM_IMAGES
-                    },
-                    new int[]{
-                            R.id.grid_item_thread_thumb,
-                            R.id.grid_item_thread_title,
-                            R.id.grid_item_thread_subject,
-                            R.id.grid_item_thread_headline,
-                            R.id.grid_item_thread_text,
-                            R.id.grid_item_country_flag,
-                            R.id.grid_item_num_replies,
-                            R.id.grid_item_num_images
-                    });
-            absBoardListView.setAdapter(adapterBoardsTablet);
-        }
-        */
     }
 
     @Override
@@ -994,29 +911,13 @@ public class ThreadActivity
 
         ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
         String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
-                ? " Thread " + threadNo
+                ? "Thread " + threadNo
                 : thread.posts[0].threadSubject(getApplicationContext())
                 .replaceAll("<br/?>", " ")
                 .replaceAll("<[^>]*>", "");
-        a.setTitle(boardTitle + ": " + threadTitle);
-        /*
-        long lastFetched = 0;
-        if (thread != null && thread.lastFetched > 0)
-            lastFetched = thread.lastFetched;
-        else if (board != null && board.lastFetched > 0)
-            lastFetched = board.lastFetched;
-        String timeSpan;
-        long now = (new Date()).getTime();
-        if (lastFetched <= 0)
-            timeSpan = "last fetch unknown";
-        else if (Math.abs(lastFetched - now) < 60000)
-            timeSpan = "fetched just now";
-        else
-            timeSpan = "fetched " + DateUtils.getRelativeTimeSpanString(lastFetched,
-                    now, 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString();
-        a.setSubtitle(timeSpan);
-        */
-        //a.setTitle(boardTitle);
+        if (threadTitle == null || threadTitle.isEmpty())
+            threadTitle = "Thread " + threadNo;
+        a.setTitle(boardTitle + ChanHelper.TITLE_SEPARATOR + threadTitle);
         a.setDisplayShowTitleEnabled(true);
         a.setDisplayHomeAsUpEnabled(true);
     }

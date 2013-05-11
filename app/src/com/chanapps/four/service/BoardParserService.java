@@ -72,10 +72,8 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
         intent.putExtra(ChanHelper.PAGE, pageNo);
-        if (priority) {
-	        intent.putExtra(ChanHelper.FORCE_REFRESH, true);
+        if (priority)
 	        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
-        }
         context.startService(intent);
     }
     
@@ -92,8 +90,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
 		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
 		pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
-        priority = intent.getBooleanExtra(ChanHelper.FORCE_REFRESH, false)
-            || (intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0);
+        priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
 		if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " priority=" + priority);
 
         if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {

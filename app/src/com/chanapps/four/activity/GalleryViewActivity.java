@@ -138,7 +138,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     public static Intent getOfflineAlbumViewIntent(Context from, String boardCode) {
         Intent intent = new Intent(from, GalleryViewActivity.class);
-        if (boardCode == null) {
+        if (boardCode == null || boardCode.isEmpty()) {
         	intent.putExtra(VIEW_TYPE, ViewType.OFFLINE_ALBUMSET_VIEW.toString());
         } else {
         	intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
@@ -234,7 +234,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	protected void onStart() {
 		super.onStart();
 		if (DEBUG) Log.i(TAG, "onStart");
-        loadPrefs();
     }
 
     private void loadPrefs() {
@@ -246,7 +245,10 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             	viewType = ViewType.OFFLINE_ALBUMSET_VIEW;
             }
 
-            if (intent.hasExtra(ChanHelper.BOARD_CODE) && intent.hasExtra(ChanHelper.THREAD_NO)) {
+            if (viewType == ViewType.PHOTO_VIEW
+                    && intent.hasExtra(ChanHelper.BOARD_CODE)
+                    && intent.hasExtra(ChanHelper.THREAD_NO)
+                    && intent.hasExtra(ChanPost.POST_NO)) {
                 boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
                 threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
                 postNo = intent.getLongExtra(ChanPost.POST_NO, 0);
@@ -254,20 +256,32 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                     postNo = threadNo; // for calls from null thread grid items used in header
                 }
                 imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
-                if (DEBUG) Log.i(TAG, "Loaded from intent, viewType: " + viewType.toString() + " boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
             }
-            else if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
+            else if (viewType == ViewType.ALBUM_VIEW
+                    && intent.hasExtra(ChanHelper.BOARD_CODE)
+                    && intent.hasExtra(ChanHelper.THREAD_NO)) {
                 boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+                threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+                postNo = 0;
+                imageUrl = "";
+            }
+            else if (viewType == ViewType.OFFLINE_ALBUM_VIEW
+                    && intent.hasExtra(ChanHelper.BOARD_CODE)) {
+                boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+                threadNo = 0;
+                postNo = 0;
+                imageUrl = "";
             }
             else {
-                // no intent given, go back to board selector
-                if (DEBUG) Log.i(TAG, "Intent received without postno");
-                Intent intent = BoardSelectorActivity.createIntentForActivity(this, BoardSelectorTab.BOARDLIST);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
+                viewType = ViewType.OFFLINE_ALBUMSET_VIEW;
+                boardCode = "";
+                threadNo = 0;
+                postNo = 0;
+                imageUrl = "";
             }
+            if (DEBUG) Log.i(TAG, "Loaded from intent, viewType: " + viewType.toString() + " boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
         }
+        /*
         if (viewType != ViewType.OFFLINE_ALBUMSET_VIEW && viewType != ViewType.OFFLINE_ALBUM_VIEW && postNo == 0) {
             viewType = ViewType.valueOf(prefs.getString(VIEW_TYPE, ViewType.PHOTO_VIEW.toString()));
             boardCode = prefs.getString(ChanHelper.BOARD_CODE, "");
@@ -282,21 +296,21 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 viewType = ViewType.OFFLINE_ALBUMSET_VIEW;
             }
         }
+        */
         if (!loadChanPostData()) { // fill in the best we can
             post = new ChanPost();
             post.no = postNo;
             post.resto = threadNo;
             post.board = boardCode;
         }
+        /*
         if (imageUrl == null || imageUrl.isEmpty()) {
             if (DEBUG) Log.i(TAG, "trying to load imageurl from prefs as last-ditch attempt");
             imageUrl = prefs.getString(ChanHelper.IMAGE_URL, "");
         }
-        if (DEBUG) Log.i(TAG, "loaded image from prefs/intent url=" + imageUrl);
-        if (DEBUG) Log.i(TAG, "After all loads , viewType: " + viewType.toString() + " boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
-        if (boardCode != null) {
-        	setActionBarTitle();
-        }
+        */
+        if (DEBUG) Log.i(TAG, "Loaded viewType: " + viewType.toString() + " boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
+        setActionBarTitle();
     }
 
     private void savePrefs() {
@@ -314,7 +328,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     @Override
     protected void onStop () {
     	super.onStop();
-        savePrefs();
     	if (DEBUG) Log.i(TAG, "onStop");
     }
 
@@ -324,7 +337,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 		if (DEBUG) Log.i(TAG, "onResume");
 		loadPrefs();
 		prepareGalleryView();
-        
         NetworkProfileManager.instance().activityChange(this);
 	}
 	
@@ -451,13 +463,13 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         try {
         switch (item.getItemId()) {
             case android.R.id.home:
-            	if (DEBUG) Log.i(TAG, "Gallery state stack: " + getStateManager().getStackDescription());
-            	getStateManager().compactActivityStateStack();
-            	if (getStateManager().getStateCount() > 1) {
-            		getStateManager().onBackPressed();
-            	} else {
+            	//if (DEBUG) Log.i(TAG, "Gallery state stack: " + getStateManager().getStackDescription());
+            	//getStateManager().compactActivityStateStack();
+            	//if (getStateManager().getStateCount() > 1) {
+            	//	getStateManager().onBackPressed();
+            	//} else {
             		navigateUp();
-            	}
+            	//}
                 return true;
             case R.id.download_all_images_to_gallery_menu:
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null);
@@ -589,9 +601,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getStateManager().createOptionsMenu(menu);
-        
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.gallery_view_menu, menu);        
+        inflater.inflate(R.menu.gallery_view_menu, menu);
         return true;
     }
     /*
@@ -630,42 +641,43 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     private void setActionBarTitle() {
         if (DEBUG) Log.i(TAG, "setting action bar based on viewType=" + viewType);
-        if (DEBUG) Log.i(TAG, "about to load board data for action bar board=" + boardCode);
-        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        if (board == null) {
-            board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
+        String title = "";
+        if (boardCode != null && !boardCode.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "about to load board data for action bar board=" + boardCode);
+            ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+            if (board == null) {
+                board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
+            }
+            title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
+            if (threadNo > 0) {
+                String threadTitle = "";
+                ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
+                if (thread != null)
+                    threadTitle = thread.threadSubject(getApplicationContext());
+                if (threadTitle.isEmpty())
+                    threadTitle = "Thread " + threadNo;
+                title += ChanHelper.TITLE_SEPARATOR + threadTitle;
+            }
         }
-        String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
-        if (getActionBar() != null) {
-        	switch(viewType) {
-        	case OFFLINE_ALBUMSET_VIEW:
-        		getActionBar().setTitle(R.string.offline_chan_view_menu);
-        		break;
-        	case OFFLINE_ALBUM_VIEW:
-        		getActionBar().setTitle(String.format(getString(R.string.offline_board_view_title), title));
-        		break;
-        	case PHOTO_VIEW:
-        	case ALBUM_VIEW:
-        	default:
+        if (getActionBar() == null) {
+            if (DEBUG) Log.i(TAG, "Action bar was null");
+            return;
+        }
+        switch(viewType) {
+            case OFFLINE_ALBUMSET_VIEW:
+                getActionBar().setTitle(R.string.offline_chan_view_menu);
+                break;
+            case OFFLINE_ALBUM_VIEW:
+                getActionBar().setTitle(String.format(getString(R.string.offline_board_view_title), title));
+                break;
+            case PHOTO_VIEW:
+            case ALBUM_VIEW:
+            default:
                 getActionBar().setTitle(title);
-        	}
-            getActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        if (getGalleryActionBar() != null) {
-        	switch(viewType) {
-        	case OFFLINE_ALBUMSET_VIEW:
-                getGalleryActionBar().setTitle(R.string.offline_chan_view_menu);
-                break;
-        	case OFFLINE_ALBUM_VIEW:
-                getGalleryActionBar().setTitle(String.format(getString(R.string.offline_board_view_title), title));
-                break;
-        	case PHOTO_VIEW:
-        	case ALBUM_VIEW:
-        	default:
-                getGalleryActionBar().setTitle(title);
-        	}
-            getGalleryActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        getActionBar().setDisplayShowHomeEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (DEBUG) Log.i(TAG, "Set action bar");
     }
 
     private static class ProgressHandler extends Handler {
