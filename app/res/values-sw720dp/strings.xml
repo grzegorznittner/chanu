@@ -3,8 +3,8 @@
     <dimen name="BoardTypeText">22sp</dimen>
     <dimen name="WidgetConfigureOkButton">22sp</dimen>
     <dimen name="BoardSelectorOverlay">18sp</dimen>
-    <dimen name="BoardGridSubject">18sp</dimen>
-    <dimen name="BoardGridInfo">18sp</dimen>
+    <dimen name="BoardGridSubject">16sp</dimen>
+    <dimen name="BoardGridInfo">16sp</dimen>
     <dimen name="BoardGridNumReplies">18sp</dimen>
     <dimen name="BoardGridAbbrev">18sp</dimen>
     <dimen name="BoardGridNumImages">18sp</dimen>
@@ -41,7 +41,7 @@
     <dimen name="BoardSelectorOverlay_paddingRight">8dp</dimen>
     <dimen name="BoardSelectorOverlay_paddingBottom">8dp</dimen>
 
-    <dimen name="BoardGridOverlay_paddingTop">8dp</dimen>
+    <dimen name="BoardGridOverlay_paddingTop">24dp</dimen>
     <dimen name="BoardGridOverlay_paddingBottom">8dp</dimen>
 
     <dimen name="BoardGridSubject_paddingTop">0dp</dimen>
@@ -59,6 +59,8 @@
 
     <dimen name="BoardGridAbbrev_paddingLeft">16dp</dimen>
     <dimen name="BoardGridAbbrev_paddingRight">16dp</dimen>
+    <dimen name="BoardGridAbbrev_paddingTop">8dp</dimen>
+    <dimen name="BoardGridAbbrev_paddingBottom">16dp</dimen>
 
     <dimen name="BoardGridNumImages_paddingLeft">8dp</dimen>
     <dimen name="BoardGridNumImages_paddingRight">8dp</dimen>
@@ -129,7 +131,7 @@
 
     <dimen name="ThreadListItemImage_maxWidth">194dp</dimen>
 
-    <dimen name="ThreadListItemImageExpanded_paddingBottom">32dp</dimen>
+    <dimen name="ThreadListItemImageExpanded_marginBottom">32dp</dimen>
 
     <dimen name="ThreadListItemSubject_marginLeft">32dp</dimen>
     <dimen name="ThreadListItemSubject_paddingRight">64dp</dimen>

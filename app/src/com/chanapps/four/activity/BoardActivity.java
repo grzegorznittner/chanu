@@ -39,7 +39,8 @@ import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
-import com.chanapps.four.viewer.BoardViewer;
+import com.chanapps.four.viewer.BoardGridViewer;
+import com.chanapps.four.viewer.BoardListViewer;
 import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -125,7 +126,6 @@ public class BoardActivity
                 : "";
         initImageLoader();
         createAbsListView();
-        ensureHandler();
         ensureSubjectTypeface();
         initPaddings();
         LoaderManager.enableDebugLogging(true);
@@ -201,17 +201,11 @@ public class BoardActivity
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
     }
 
-    protected synchronized Handler ensureHandler() {
-        if (handler == null && ChanHelper.onUIThread()) {
-        	handler = new LoaderHandler();
-        }
-        return handler;
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
-        ensureHandler();
+        if (handler == null)
+            handler = new LoaderHandler();
 		if (DEBUG) Log.v(TAG, "onStart query=" + query);
     }
 
@@ -219,16 +213,13 @@ public class BoardActivity
 	protected void onResume() {
 		super.onResume();
 		if (DEBUG) Log.v(TAG, "onResume query=" + query);
-        ensureHandler();
+        if (handler == null)
+            handler = new LoaderHandler();
         restoreInstanceState();
 		NetworkProfileManager.instance().activityChange(this);
 		getSupportLoaderManager().restartLoader(0, null, this);
-        new TutorialOverlay(layout, tutorialPage());
+        new TutorialOverlay(layout, Page.BOARD);
 	}
-
-    protected Page tutorialPage() {
-        return Page.BOARD;
-    }
 
     protected String getLastPositionName() {
         return ChanHelper.LAST_BOARD_POSITION;
@@ -347,8 +338,10 @@ public class BoardActivity
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        return BoardViewer.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions,
-                boardCode, viewType, subjectTypeface, padding4DP);
+        if (viewType == ViewType.AS_GRID)
+            return BoardGridViewer.setViewValue(view, cursor, imageLoader, displayImageOptions, boardCode);
+        else
+            return BoardListViewer.setViewValue(view, cursor, imageLoader, displayImageOptions, boardCode, padding4DP);
     }
 
     @Override
@@ -380,9 +373,9 @@ public class BoardActivity
                         health.toString().toLowerCase().replaceAll("_", " "));
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
             }
-            else {
-                handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
-            }
+            //else {
+            //    handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+            //}
         }
         else {
             handleUpdatedThreads(); // see if we need to update
@@ -405,7 +398,6 @@ public class BoardActivity
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        ChanHelper.simulateClickAnim(this, view);
         if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
             String[] clickUrls = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL))
                     .split(ChanThread.AD_DELIMITER);
@@ -640,18 +632,13 @@ public class BoardActivity
 		}
 	}
 
-    protected class LoaderHandler extends Handler {
+    private class LoaderHandler extends Handler {
         public LoaderHandler() {}
         @Override
         public void handleMessage(Message msg) {
             try {
                 super.handleMessage(msg);
                 switch (msg.what) {
-                    case 1:
-                        if (DEBUG) Log.i(TAG, ">>>>>>>>>>> restart message received restarting loader");
-                        getSupportLoaderManager().restartLoader(1, null, BoardActivity.this);
-                        break;
-
                     default:
                         if (DEBUG) Log.i(TAG, ">>>>>>>>>>> restart message received restarting loader");
                         getSupportLoaderManager().restartLoader(0, null, BoardActivity.this);

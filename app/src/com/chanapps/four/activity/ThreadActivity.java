@@ -20,36 +20,28 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.Loader;
-import android.text.Html;
-import android.text.Spanned;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.ActionMode;
-import android.view.Display;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
-import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.DispatcherHelper;
-import com.chanapps.four.component.ThreadExpandImageOnClickListener;
-import com.chanapps.four.component.ThreadImageOnClickListener;
-import com.chanapps.four.component.TutorialOverlay;
+import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.UserStatistics.ChanFeature;
@@ -65,7 +57,6 @@ import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.task.HighlightRepliesTask;
-import com.chanapps.four.viewer.BoardViewer;
 import com.chanapps.four.viewer.ThreadViewer;
 import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -80,22 +71,47 @@ import com.nostra13.universalimageloader.core.assist.*;
  * To change this template use File | Settings | File Templates.
  */
 public class ThreadActivity
-        extends BoardActivity
+        extends FragmentActivity
         implements ChanIdentifiedActivity,
         RefreshableActivity,
+        LoaderManager.LoaderCallbacks<Cursor>,
+        AbstractBoardCursorAdapter.ViewBinder,
         AbsListView.OnItemClickListener,
         AbsListView.MultiChoiceModeListener,
         PopupMenu.OnMenuItemClickListener,
         MediaScannerConnection.OnScanCompletedListener {
+
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
     protected static final int THREAD_DONE = 0x1;
     protected static final int BOARD_DONE = 0x2;
+    public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
 
+    protected AbstractBoardCursorAdapter adapter;
+    protected View layout;
+    protected AbsListView absListView;
+    protected Class absListViewClass = GridView.class;
+    protected Handler handler;
+    protected BoardCursorLoader cursorLoader;
+    protected int scrollOnNextLoaderFinished = -1;
+    protected ImageLoader imageLoader;
+    protected DisplayImageOptions displayImageOptions;
+    protected Menu menu;
+    protected SharedPreferences prefs;
+    protected long tim;
+    protected String boardCode;
+    protected String query = "";
+    protected int columnWidth = 0;
+    protected int columnHeight = 0;
+    protected MenuItem searchMenuItem;
+    protected ViewType viewType = ViewType.AS_GRID;
+    protected Typeface subjectTypeface = null;
+    protected int padding4DP = 0;
+    protected int padding8DP = 0;
     protected long threadNo;
     protected String text;
     protected String imageUrl;
@@ -114,13 +130,33 @@ public class ThreadActivity
     protected int loadingStatusFlags = 0;
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        if (DEBUG) Log.v(TAG, "************ onCreate");
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        query = getIntent().hasExtra(SearchManager.QUERY)
+                ? getIntent().getStringExtra(SearchManager.QUERY)
+                : "";
+        initImageLoader();
+        createAbsListView();
+        initPaddings();
+        LoaderManager.enableDebugLogging(true);
+    }
+
+    protected void initPaddings() {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        padding4DP = ChanGridSizer.dpToPx(metrics, 4);
+        padding8DP = ChanGridSizer.dpToPx(metrics, 8);
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader");
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader id=" + id);
         if (id == 0) {
             if (threadNo > 0) {
                 loadingStatusFlags &= ~THREAD_DONE;
                 cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, query, absListView, absBoardListView == null);
-                if (DEBUG) Log.i(TAG, "Started loader for " + boardCode + "/" + threadNo);
+                if (DEBUG) Log.i(TAG, "Started loader for thread /" + boardCode + "/" + threadNo);
                 setProgressBarIndeterminateVisibility(true);
             } else {
                 cursorLoader = null;
@@ -129,6 +165,7 @@ public class ThreadActivity
             return cursorLoader;
         } else {
             loadingStatusFlags &= ~BOARD_DONE;
+            if (DEBUG) Log.i(TAG, "Started loader for board /" + boardCode + "/");
             cursorLoaderBoardsTablet = new BoardCursorLoader(this, boardCode, "");
             setProgressBarIndeterminateVisibility(true);
             return cursorLoaderBoardsTablet;
@@ -137,7 +174,7 @@ public class ThreadActivity
 
     public static void startActivity(Activity from, String boardCode, long threadNo) {
         if (threadNo <= 0)
-            startActivity(from, boardCode);
+            BoardActivity.startActivity(from, boardCode);
         else
             from.startActivity(createIntentForActivity(from, boardCode, threadNo, ""));
     }
@@ -162,7 +199,12 @@ public class ThreadActivity
         return intent;
     }
 
-    @Override
+    protected SharedPreferences ensurePrefs() {
+        if (prefs == null)
+            prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs;
+    }
+
     protected void loadFromIntentOrPrefs() {
         ensurePrefs();
         Intent intent = getIntent();
@@ -200,7 +242,7 @@ public class ThreadActivity
             finish();
         }
         if (threadNo == 0) {
-            Intent boardIntent = createIntentForActivity(this, boardCode, "");
+            Intent boardIntent = BoardActivity.createIntentForActivity(this, boardCode, "");
             boardIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(boardIntent);
             finish();
@@ -214,7 +256,14 @@ public class ThreadActivity
         if (DEBUG) Log.i(TAG, "Thread loaded: " + boardCode + "/" + threadNo);
     }
 
-    @Override
+    protected void restoreInstanceState() {
+        if (DEBUG) Log.i(TAG, "Restoring instance state... query=" + query);
+        loadFromIntentOrPrefs();
+        setActionBarTitle();
+        //scrollToLastPosition();
+        invalidateOptionsMenu(); // for correct spinner display
+    }
+
     protected void saveInstanceState() {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putString(ChanHelper.BOARD_CODE, boardCode);
@@ -229,7 +278,6 @@ public class ThreadActivity
         DispatcherHelper.saveActivityToPrefs(this);
     }
 
-    @Override
     protected void initImageLoader() {
         imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
@@ -240,21 +288,43 @@ public class ThreadActivity
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        if (absBoardListView != null)
-            getLoaderManager().destroyLoader(1);
+    protected void onStart() {
+        super.onStart();
+        if (DEBUG) Log.v(TAG, "onStart query=" + query);
+        if (handler == null)
+            handler = new LoaderHandler();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (absBoardListView != null) {
+        if (DEBUG) Log.v(TAG, "onResume query=" + query);
+        if (handler == null)
+            handler = new LoaderHandler();
+        restoreInstanceState();
+        NetworkProfileManager.instance().activityChange(this);
+        getSupportLoaderManager().restartLoader(0, null, this);
+        if (absBoardListView != null)
             getSupportLoaderManager().restartLoader(1, null, this);
-        }
+        new TutorialOverlay(layout, tutorialPage());
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if (DEBUG) Log.v(TAG, "onPause query=" + query);
+        saveInstanceState();
+        handler = null;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (absBoardListView != null)
+            getLoaderManager().destroyLoader(1);
+        handler = null;
+    }
+
     protected void initAdapter() {
         adapter = new ThreadListCursorAdapter(this, this);
         absListView.setAdapter(adapter);
@@ -264,19 +334,24 @@ public class ThreadActivity
         }
     }
 
-    @Override
     protected String getLastPositionName() {
         return ChanHelper.LAST_THREAD_POSITION;
     }
 
-    @Override
     protected void sizeGridToDisplay() {
         Display display = getWindowManager().getDefaultDisplay();
         ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.THREAD);
         cg.sizeGridToDisplay();
     }
 
-    @Override
+    protected void resetImageOptions(ImageSize imageSize) {
+        displayImageOptions = new DisplayImageOptions.Builder()
+                .cacheOnDisc()
+                .cacheInMemory()
+                .resetViewBeforeLoading()
+                .build();
+    }
+
     protected void initAbsListView() {
         absListView = (ListView) findViewById(R.id.thread_list_view);
         absBoardListView = (GridView) findViewById(R.id.board_grid_view_tablet);
@@ -302,7 +377,7 @@ public class ThreadActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (loader == this.cursorLoader) {
-            if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished count=" + (data == null ? 0 : data.getCount()));
+            if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished loader=" + loader + " count=" + (data == null ? 0 : data.getCount()));
             adapter.swapCursor(data);
             if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
             if (absListView != null) {
@@ -315,7 +390,7 @@ public class ThreadActivity
             // retry load if maybe data wasn't there yet
             ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
             if ((data == null || data.getCount() < 1
-                    || (thread != null && thread.replies > 0 && !thread.isDead && data.getCount() < 2))
+                    || (thread != null && thread.replies > 0 && !thread.isDead && data.getCount() <= 2))
                     && handler != null)
             {
                 NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
@@ -325,9 +400,9 @@ public class ThreadActivity
                             health.toString().toLowerCase().replaceAll("_", " "));
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                 }
-                else {
-                    handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
-                }
+                //else {
+                //    handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+                //}
             }
             else {
                 loadingStatusFlags |= THREAD_DONE;
@@ -345,11 +420,11 @@ public class ThreadActivity
                     String msg = String.format(getString(R.string.mobile_profile_health_status),
                             health.toString().toLowerCase().replaceAll("_", " "));
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-                } else {
-                    handler.sendEmptyMessageDelayed(1, LOADER_RESTART_INTERVAL_SHORT_MS);
                 }
+                //else {
+                //    handler.sendEmptyMessageDelayed(1, LOADER_RESTART_INTERVAL_SHORT_MS);
+                //}
             } else {
-                handleUpdatedThreads(); // see if we need to update
                 loadingStatusFlags |= BOARD_DONE;
                 stopProgressBarIfLoadersDone();
             }
@@ -357,7 +432,6 @@ public class ThreadActivity
         }
     }
 
-    @Override
     protected void stopProgressBarIfLoadersDone() {
         if (absBoardListView == null && (loadingStatusFlags & THREAD_DONE) > 0)
             setProgressBarIndeterminateVisibility(false);
@@ -365,7 +439,6 @@ public class ThreadActivity
             setProgressBarIndeterminateVisibility(false);
     }
 
-    @Override
     protected void createAbsListView() {
         setAbsListViewClass();
         layout = View.inflate(getApplicationContext(), getLayoutId(), null);
@@ -405,7 +478,6 @@ public class ThreadActivity
             return null;
     }
 
-    @Override
     protected void setAbsListViewClass() {
         absListViewClass = ListView.class;
     }
@@ -521,6 +593,21 @@ public class ThreadActivity
         }
     }
 
+    protected void displayBoardRules() {
+        NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_RULES);
+        int boardRulesId = R.raw.global_rules_detail;
+        try {
+            boardRulesId = R.raw.class.getField("board_" + boardCode + "_rules").getInt(null);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't find rules for board:" + boardCode);
+        }
+        RawResourceDialog rawResourceDialog
+                = new RawResourceDialog(this, R.layout.board_rules_dialog, R.raw.board_rules_header, boardRulesId);
+        rawResourceDialog.show();
+
+    }
+
     protected boolean showPopupMenu(int layoutId, int menuItemId, int popupMenuId) {
         View v = findViewById(menuItemId);
         if (v == null)
@@ -545,6 +632,13 @@ public class ThreadActivity
         return true;
     }
 
+    protected void setupSearch(Menu menu) {
+        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+        searchMenuItem = menu.findItem(R.id.search_menu);
+        SearchView searchView = (SearchView)searchMenuItem.getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+    }
+
     protected void addToWatchlistIfNotAlreadyIn() {
         int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
         if (stringId == R.string.thread_added_to_watchlist)
@@ -560,7 +654,6 @@ public class ThreadActivity
         return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo);
     }
 
-    @Override
     protected int getLayoutId() {
         return R.layout.thread_list_layout;
     }
@@ -785,14 +878,14 @@ public class ThreadActivity
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Cursor cursor = (Cursor) parent.getItemAtPosition(position);
             int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-            ChanHelper.simulateClickAnim(ThreadActivity.this.getApplicationContext(), view);
+            //ChanHelper.simulateClickAnim(ThreadActivity.this.getApplicationContext(), view);
             if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
                 final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
                 ChanHelper.launchUrlInBrowser(ThreadActivity.this, clickUrl);
             }
             else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
                 final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-                startActivity(ThreadActivity.this, boardLink);
+                BoardActivity.startActivity(ThreadActivity.this, boardLink);
             }
             else {
                 final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
@@ -899,7 +992,6 @@ public class ThreadActivity
         }
     };
 
-    @Override
     public void setActionBarTitle() {
         final ActionBar a = getActionBar();
         if (a == null)
@@ -1188,7 +1280,6 @@ public class ThreadActivity
 
     @Override
     public void refresh() {
-        handleUpdatedThreads();
         setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
         if (handler != null) {
@@ -1201,16 +1292,52 @@ public class ThreadActivity
             actionMode.finish();
     }
 
-    @Override
     protected TutorialOverlay.Page tutorialPage() {
         return TutorialOverlay.Page.THREAD;
     }
 
+    private class LoaderHandler extends Handler {
+        public LoaderHandler() {}
+        @Override
+        public void handleMessage(Message msg) {
+            try {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case 1:
+                        if (DEBUG) Log.i(TAG, ">>>>>>>>>>> restart message received restarting loader");
+                        getSupportLoaderManager().restartLoader(1, null, ThreadActivity.this);
+                        break;
+
+                    default:
+                        if (DEBUG) Log.i(TAG, ">>>>>>>>>>> restart message received restarting loader");
+                        getSupportLoaderManager().restartLoader(0, null, ThreadActivity.this);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Couldn't handle message " + msg, e);
+            }
+        }
+    }
+
     @Override
-    protected void handleUpdatedThreads() {
-        // we always auto-update at thread level
-        if (absBoardListView != null)
-            super.handleUpdatedThreads();
+    public FragmentManager getSupportFragmentManager() {
+        return getSupportFragmentManager();
+    }
+
+    @Override
+    public void closeSearch() {
+        if (searchMenuItem != null)
+            searchMenuItem.collapseActionView();
+    }
+
+    @Override
+    public Handler getChanHandler() {
+        return handler;
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
+        adapter.swapCursor(null);
     }
 
 }

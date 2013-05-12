@@ -1,7 +1,6 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
-import android.os.Message;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -10,7 +9,6 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.Loader;
-import android.text.Html;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
@@ -20,13 +18,12 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.BoardSelectorGridCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.*;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
-import com.chanapps.four.viewer.BoardViewer;
-import com.chanapps.four.viewer.BoardlistViewer;
+import com.chanapps.four.viewer.BoardGridViewer;
+import com.chanapps.four.viewer.BoardSelectorBoardsViewer;
 import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -113,7 +110,9 @@ public class BoardGroupFragment
                 ChanWatchlist.setWatchlistFragment(this);
                 break;
             case RECENT:
-                FetchPopularThreadsService.schedulePopularFetchWithPriority(getActivity().getApplicationContext());
+                //ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), boardSelectorTab.boardCode());
+                //FetchPopularThreadsService.schedulePopularFetchService(getActivity().getApplicationContext());
+                break;
             default:
                 break;
         }
@@ -336,7 +335,6 @@ public class BoardGroupFragment
                 ThreadActivity.startActivity(getActivity(), boardCode, threadNo);
                 break;
         }
-        ChanHelper.simulateClickAnim(activity, view);
     }
 
     @Override
@@ -367,12 +365,11 @@ public class BoardGroupFragment
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         switch (boardSelectorTab) {
             case BOARDLIST:
-                return BoardlistViewer.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions);
+                return BoardSelectorBoardsViewer.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions);
             case WATCHLIST:
             case RECENT:
             default:
-                return BoardViewer.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions,
-                        boardSelectorTab.boardCode(), ViewType.AS_GRID, null, 0);
+                return BoardGridViewer.setViewValue(view, cursor, imageLoader, displayImageOptions, boardSelectorTab.boardCode());
         }
     }
 

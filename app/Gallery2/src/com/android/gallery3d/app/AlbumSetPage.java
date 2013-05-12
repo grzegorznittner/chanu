@@ -363,6 +363,8 @@ public class AlbumSetPage extends ActivityState implements
     @Override
     protected boolean onCreateActionBar(Menu menu) {
         GalleryActionBar actionBar = mActivity.getGalleryActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         /*
         MenuInflater inflater = activity.getMenuInflater();
 
@@ -388,8 +390,6 @@ public class AlbumSetPage extends ActivityState implements
             inflater.inflate(R.menu.albumset, menu);
         }
         */
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
         return true;
     }
 

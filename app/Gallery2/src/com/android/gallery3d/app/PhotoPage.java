@@ -427,6 +427,9 @@ public class PhotoPage extends ActivityState
 
     @Override
     protected boolean onCreateActionBar(Menu menu) {
+        GalleryActionBar actionBar = mActivity.getGalleryActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         MenuInflater inflater = ((Activity) mActivity).getMenuInflater();
         inflater.inflate(R.menu.photo, menu);
         if (menu != null) {

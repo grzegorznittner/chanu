@@ -42,13 +42,14 @@ import java.net.URI;
 public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
     private static final String TAG = ThreadExpandImageOnClickListener.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final int NO_TEXT_PADDING_TOP_DP = 8;
 
     private ViewGroup itemHeaderWrapper;
     private ViewGroup itemThumbnailImageWrapper;
     private ImageView itemThumbnailImage;
     private ImageView itemExpandedImage;
+    private View itemExpandedImageClickEffect;
     private ProgressBar itemExpandedProgressBar;
     private TextView itemExifView;
     private TextView itemSubjectView;
@@ -82,6 +83,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         itemThumbnailImageWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_image_wrapper);
         itemThumbnailImage = (ImageView)itemView.findViewById(R.id.list_item_image);
         itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
+        itemExpandedImageClickEffect = itemView.findViewById(R.id.list_item_image_expanded_click_effect);
         itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
         itemExifView = (TextView)itemView.findViewById(R.id.list_item_image_exif);
         itemSubjectView = (TextView)itemView.findViewById(R.id.list_item_subject);
@@ -112,17 +114,26 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
     private void hideThumbnail() {
         if (DEBUG) Log.i(TAG, "hiding thumbnail...");
-        if (itemThumbnailImageWrapper == null || itemThumbnailImage == null || itemHeaderWrapper == null) {
-            if (DEBUG) Log.i(TAG, "Couldn't hide thumbnail, null views");
+        if (itemThumbnailImage == null) {
+            if (DEBUG) Log.i(TAG, "Couldn't hide thumbnail, null thumbnail image");
             return;
         }
         itemThumbnailImage.setImageDrawable(null);
-        ViewGroup.LayoutParams params = itemThumbnailImageWrapper == null ? null : itemThumbnailImageWrapper.getLayoutParams();
+
+        if (itemThumbnailImageWrapper == null) {
+            if (DEBUG) Log.i(TAG, "Skipping adjusting thumbnail height, null thumbnail image wrapper");
+            return;
+        }
+        ViewGroup.LayoutParams params = itemThumbnailImageWrapper.getLayoutParams();
         if (params == null)
             return;
         params.width = itemThumbEmptyWidth;
 
-        ViewGroup.LayoutParams params2 = itemHeaderWrapper == null ? null : itemHeaderWrapper.getLayoutParams();
+        if (itemHeaderWrapper == null) {
+            if (DEBUG) Log.i(TAG, "Skipping adjusting thumbnail height, no header wrapper");
+            return;
+        }
+        ViewGroup.LayoutParams params2 = itemHeaderWrapper.getLayoutParams();
         if (params2 == null)
             return;
 
@@ -202,15 +213,16 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
                 params.height = thumbParams.height;
             }
             else {
-                //int paddingTop = padding8Dp;
-                //int paddingBottom = (flags & ChanPost.FLAG_HAS_TEXT) > 0 ? 0 : padding8Dp;
-                int paddingTop = 0;
-                int paddingBottom = padding8Dp;
-                itemExpandedImage.setPadding(0, paddingTop, 0, paddingBottom);
                 params.width = targetSize.x;
-                params.height = targetSize.y + paddingTop + paddingBottom;
+                params.height = targetSize.y;
             }
-            if (DEBUG) Log.i(TAG, "set expanded image size=" + targetSize.x + "x" + targetSize.y);
+            if (DEBUG) Log.i(TAG, "set expanded image size=" + params.width + "x" + params.height);
+            ViewGroup.LayoutParams params2 = itemExpandedImageClickEffect.getLayoutParams();
+            if (params2 != null) {
+                params2.width = params.width;
+                params2.height = params.height;
+                if (DEBUG) Log.i(TAG, "set expanded image click effect size=" + params2.width + "x" + params2.height);
+            }
         }
     }
 
@@ -235,7 +247,9 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         if (itemExpandedProgressBar != null)
             itemExpandedProgressBar.setVisibility(View.VISIBLE);
 
-        ImageSize imageSize = new ImageSize(targetSize.x/2, targetSize.y/2); // load image at half res to avoid out of mem
+        int width = targetSize.x; // may need to adjust to avoid out of mem
+        int height = targetSize.y;
+        ImageSize imageSize = new ImageSize(width, height); // load image at half res to avoid out of mem
         if (DEBUG) Log.i(TAG, "Downsampling image to size=" + imageSize.getWidth() + "x" + imageSize.getHeight());
         DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
                 .imageSize(imageSize)
@@ -277,6 +291,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
                 if (itemExpandedProgressBar != null)
                     itemExpandedProgressBar.setVisibility(View.GONE);
                 view.setVisibility(View.VISIBLE);
+                itemExpandedImageClickEffect.setVisibility(View.VISIBLE);
                 hideThumbnail();
                 //if (itemThumbnailImage != null && listPosition == 0) // thread header loads image over thumbnail
                 //    itemThumbnailImage.setImageDrawable(null);

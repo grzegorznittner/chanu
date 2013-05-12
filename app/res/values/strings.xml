@@ -2,6 +2,7 @@
 
     <!-- titles -->
     <string name="app_name">Chanu</string>
+    <string name="app_name_home">Go to Chanu</string>
     <string name="application_name">Chanu</string>
     <string name="application_tagname">4chan Reloaded</string>
     <string name="title_item_detail">Item Detail</string>
@@ -1099,7 +1100,7 @@
     <dimen name="BoardSelectorOverlay_paddingRight">2dp</dimen>
     <dimen name="BoardSelectorOverlay_paddingBottom">4dp</dimen>
 
-    <dimen name="BoardGridOverlay_paddingTop">8dp</dimen>
+    <dimen name="BoardGridOverlay_paddingTop">12dp</dimen>
     <dimen name="BoardGridOverlay_paddingBottom">8dp</dimen>
 
     <dimen name="BoardGridSubject_paddingTop">0dp</dimen>
@@ -1114,6 +1115,8 @@
 
     <dimen name="BoardGridAbbrev_paddingLeft">4dp</dimen>
     <dimen name="BoardGridAbbrev_paddingRight">4dp</dimen>
+    <dimen name="BoardGridAbbrev_paddingTop">4dp</dimen>
+    <dimen name="BoardGridAbbrev_paddingBottom">8dp</dimen>
 
     <dimen name="BoardSelectorGridCountryFlag_layout_width">16dp</dimen>
     <dimen name="BoardSelectorGridCountryFlag_layout_height">11dp</dimen>
@@ -1179,7 +1182,7 @@
 
     <dimen name="ThreadListItemImage_maxWidth">96dp</dimen>
 
-    <dimen name="ThreadListItemImageExpanded_paddingBottom">8dp</dimen>
+    <dimen name="ThreadListItemImageExpanded_marginBottom">8dp</dimen>
 
     <dimen name="ThreadListItemSubject_marginLeft">8dp</dimen>
     <dimen name="ThreadListItemSubject_paddingRight">16dp</dimen>

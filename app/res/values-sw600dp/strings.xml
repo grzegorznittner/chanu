@@ -41,7 +41,7 @@
     <dimen name="BoardSelectorOverlay_paddingRight">2dp</dimen>
     <dimen name="BoardSelectorOverlay_paddingBottom">4dp</dimen>
 
-    <dimen name="BoardGridOverlay_paddingTop">4dp</dimen>
+    <dimen name="BoardGridOverlay_paddingTop">16dp</dimen>
     <dimen name="BoardGridOverlay_paddingBottom">4dp</dimen>
 
     <dimen name="BoardGridSubject_paddingTop">0dp</dimen>
@@ -59,6 +59,8 @@
 
     <dimen name="BoardGridAbbrev_paddingLeft">4dp</dimen>
     <dimen name="BoardGridAbbrev_paddingRight">4dp</dimen>
+    <dimen name="BoardGridAbbrev_paddingTop">6dp</dimen>
+    <dimen name="BoardGridAbbrev_paddingBottom">12dp</dimen>
 
     <dimen name="BoardGridNumImages_paddingLeft">2dp</dimen>
     <dimen name="BoardGridNumImages_paddingRight">2dp</dimen>
@@ -129,7 +131,7 @@
 
     <dimen name="ThreadListItemImage_maxWidth">96dp</dimen>
 
-    <dimen name="ThreadListItemImageExpanded_paddingBottom">8dp</dimen>
+    <dimen name="ThreadListItemImageExpanded_marginBottom">8dp</dimen>
 
     <dimen name="ThreadListItemSubject_marginLeft">8dp</dimen>
     <dimen name="ThreadListItemSubject_paddingRight">16dp</dimen>

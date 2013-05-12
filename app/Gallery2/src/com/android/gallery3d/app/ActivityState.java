@@ -133,6 +133,9 @@ abstract public class ActivityState {
     protected boolean onCreateActionBar(Menu menu) {
         // TODO: we should return false if there is no menu to show
         //       this is a workaround for a bug in system
+        GalleryActionBar actionBar = mActivity.getGalleryActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         return true;
     }
 

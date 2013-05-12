@@ -445,20 +445,15 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
 
     @Override
     protected boolean onCreateActionBar(Menu menu) {
-        Activity activity = (Activity) mActivity;
         GalleryActionBar actionBar = mActivity.getGalleryActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        Activity activity = (Activity) mActivity;
         Log.w(TAG, "Action bar for activity " + mActivity.getClass().getCanonicalName() + " is " + actionBar
         		+ " and it's title is '" + actionBar.getTitle() + "'");
         MenuInflater inflater = activity.getMenuInflater();
 
         if (mGetContent) {
-            inflater.inflate(R.menu.pickup, menu);
-            int typeBits = mData.getInt(Gallery.KEY_TYPE_BITS,
-                    DataManager.INCLUDE_IMAGE);
-
-            if (actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {
-            	actionBar.setTitle(GalleryUtils.getSelectionModePrompt(typeBits));
-            }
         } else {
             inflater.inflate(R.menu.album, menu);
             //if (actionBar != null && actionBar.getTitle() != null && !actionBar.getTitle().isEmpty()) {
@@ -482,8 +477,6 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
             //}
         }
         actionBar.setSubtitle(null);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
         return true;
     }
 

@@ -22,7 +22,7 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
  * Time: 1:31 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BoardlistViewer {
+public class BoardSelectorBoardsViewer {
 
     static public boolean setViewValue(View view, Cursor cursor, int columnIndex,
                                                    ImageLoader imageLoader, DisplayImageOptions options) {

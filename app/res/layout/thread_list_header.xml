@@ -18,6 +18,11 @@
                      android:layout_centerInParent="true"
                      android:id="@+id/list_item_expanded_progress_bar"/>
 
+        <View
+                android:id="@+id/list_item_image_expanded_click_effect"
+                style="@style/ThreadListHeaderImageExpandedClickEffect"
+                />
+
     </RelativeLayout>
 
     <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>

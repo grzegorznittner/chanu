@@ -224,10 +224,10 @@
         <item name="android:paddingLeft">@dimen/BoardGridSubject_paddingLeft</item>
         <item name="android:paddingRight">@dimen/BoardGridSubject_paddingRight</item>
         <item name="android:paddingBottom">@dimen/BoardGridSubject_paddingBottom</item>
-        <item name="android:gravity">center_horizontal|bottom</item>
+        <item name="android:gravity">center_horizontal|top</item>
         <item name="android:textSize">@dimen/BoardGridSubject</item>
         <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:lines">2</item>
+        <item name="android:maxLines">2</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -238,25 +238,25 @@
         <item name="android:paddingLeft">@dimen/BoardGridInfo_paddingLeft</item>
         <item name="android:paddingRight">@dimen/BoardGridInfo_paddingRight</item>
         <item name="android:paddingBottom">@dimen/BoardGridInfo_paddingBottom</item>
-        <item name="android:gravity">center_horizontal</item>
+        <item name="android:gravity">center_horizontal|top</item>
         <item name="android:textSize">@dimen/BoardGridInfo</item>
         <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:maxLines">1</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="BoardGridAbbrev" parent="AppTheme">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_centerHorizontal">true</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_marginTop">0dp</item>
         <item name="android:paddingLeft">@dimen/BoardGridAbbrev_paddingLeft</item>
         <item name="android:paddingRight">@dimen/BoardGridAbbrev_paddingRight</item>
+        <item name="android:paddingTop">@dimen/BoardGridAbbrev_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardGridAbbrev_paddingBottom</item>
+        <item name="android:gravity">center_horizontal</item>
         <item name="android:textSize">@dimen/BoardGridAbbrev</item>
         <item name="android:background">@drawable/board_abbrev_gradient_bg</item>
         <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:lines">1</item>
         <item name="android:textStyle">bold</item>
         <item name="android:visibility">gone</item>
     </style>
@@ -392,8 +392,18 @@
         <item name="android:layout_centerHorizontal">true</item>
         <item name="android:layout_marginBottom">@dimen/ThreadListHeaderImageExpanded_layout_marginBottom</item>
         <item name="android:gravity">center</item>
-        <item name="android:scaleType">fitXY</item>
+        <item name="android:scaleType">fitCenter</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
+    </style>
+
+    <style name="ThreadListHeaderImageExpandedClickEffect" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginBottom">@dimen/ThreadListHeaderImageExpanded_layout_marginBottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:contentDescription">@string/thread_post_image</item>
+        <item name="android:background">@drawable/board_grid_selector_bg</item>
     </style>
 
     <style name="ThreadListHeaderSubject" parent="AppTheme">
@@ -515,11 +525,20 @@
     <style name="ThreadListItemImageExpanded" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">@dimen/ThreadListItemImageExpanded_marginBottom</item>
         <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">@dimen/ThreadListItemImageExpanded_paddingBottom</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:contentDescription">@string/thread_post_image_expanded</item>
+    </style>
+
+    <style name="ThreadListItemImageExpandedClickEffect" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">@dimen/ThreadListItemImageExpanded_marginBottom</item>
+        <item name="android:contentDescription">@string/thread_post_image_expanded</item>
+        <item name="android:background">@drawable/board_grid_selector_bg</item>
     </style>
 
     <style name="ThreadListItemSubject" parent="AppTheme">
@@ -795,6 +814,7 @@
 
     <color name="blue_base">#449def</color>
     <color name="blue_base_half">#80449def</color>
+    <color name="blue_base_34">#c0449def</color>
     <color name="blue_stroke">#2f6699</color>
     <color name="blue_gradientS">#00a2e2</color>
     <color name="blue_gradientE">#0767a4</color>

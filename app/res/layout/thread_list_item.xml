@@ -10,6 +10,12 @@
             android:layout_height="wrap_content"
             >
         <ImageView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded"/>
+
+        <View
+                android:id="@+id/list_item_image_expanded_click_effect"
+                style="@style/ThreadListItemImageExpandedClickEffect"
+                />
+
     </RelativeLayout>
 
     <RelativeLayout

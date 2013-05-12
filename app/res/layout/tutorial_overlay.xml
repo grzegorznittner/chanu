@@ -41,7 +41,7 @@
             android:layout_marginRight="16dp"
             android:layout_below="@+id/tutorial_overlay_detail"
             android:layout_alignParentRight="true"
-            android:background="@drawable/blue_menu_btn"
+            android:background="@drawable/board_grid_selector_bg"
             android:paddingLeft="48dp"
             android:paddingTop="8dp"
             android:paddingRight="48dp"

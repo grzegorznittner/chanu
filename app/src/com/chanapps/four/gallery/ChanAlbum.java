@@ -81,6 +81,8 @@ public class ChanAlbum extends MediaSet {
 
 	@Override
 	public long reload() {
+        if (application == null)
+            return mDataVersion;
 		ChanThread thread = ChanFileStorage.loadThreadData(application.getAndroidContext(), board, threadNo);
 		int prevSize = posts.size();
 		posts.clear();

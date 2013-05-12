@@ -117,7 +117,7 @@ public class MobileProfile extends AbstractNetworkProfile {
 
     private void prefetchDefaultBoards(Context context) {
         // makeToast(R.string.mobile_profile_preloading_defaults);
-        FetchPopularThreadsService.schedulePopularFetchWithPriority(context);
+        FetchPopularThreadsService.schedulePopularFetchService(context);
         //FetchChanDataService.scheduleBoardFetch(context, "a");
         /*
             FetchChanDataService.scheduleBoardFetch(context, "b");
@@ -149,24 +149,23 @@ public class MobileProfile extends AbstractNetworkProfile {
 	public void onBoardSelectorSelected(Context context, String boardCode) {
 		super.onBoardSelectorSelected(context, boardCode);
         // prefetch popular in the background if we haven't loaded it yet
-        /*
         if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode)) {
-        */
-        Health health = getConnectionHealth();
+            Health health = getConnectionHealth();
             if (health == Health.NO_CONNECTION) {
                 makeHealthStatusToast(context, health);
                 return;
             }
             ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
             if (board != null && board.threads != null && board.threads.length > 0) {
-                if (DEBUG) Log.i(TAG, "skipping preload board " + boardCode + " as already have data");
-                return;
+                if (DEBUG) Log.i(TAG, "skipping fetch board selector " + boardCode + " as already have data");
             }
-
-            FetchPopularThreadsService.schedulePopularFetchWithPriority(context);
-        //}
+            else {
+                if (DEBUG) Log.i(TAG, "fetching board selector " + boardCode + " as no data is present");
+                FetchPopularThreadsService.schedulePopularFetchWithPriority(context);
+            }
+        }
 	}
 
 
@@ -278,7 +277,6 @@ public class MobileProfile extends AbstractNetworkProfile {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e(TAG, "Exception updateviewdata boardselector boardCode=" + currentActivityId.boardCode);
                     activity.refresh();
                 }
             });

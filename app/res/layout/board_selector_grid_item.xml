@@ -22,4 +22,10 @@
             style="@style/BoardTypeText"
             />
 
+    <View
+            android:id="@+id/grid_item_click_effect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/board_grid_selector_bg"/>
+
 </RelativeLayout>

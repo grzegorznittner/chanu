@@ -46,8 +46,7 @@ public class ThreadViewer {
                                        String groupBoardCode, Typeface subjectTypeface, int padding4DP) {
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
         if (flagIdx == -1) { // we are on board list
-            return BoardViewer.setViewValue(view, cursor, columnIndex, imageLoader, options,
-                    groupBoardCode, ViewType.AS_GRID, subjectTypeface, padding4DP);
+            return BoardGridViewer.setViewValue(view, cursor, imageLoader, options, groupBoardCode);
         }
         int flags = cursor.getInt(flagIdx);
         if ((flags & ChanPost.FLAG_IS_TITLE) > 0) { // special case it to avoid needing a separate item layout
@@ -63,6 +62,8 @@ public class ThreadViewer {
                 return setHeaderWrapper((ViewGroup) view, flags);
             case R.id.list_item_image_expanded:
                 return setImageExpanded((ImageView) view, cursor, flags);
+            case R.id.list_item_image_expanded_click_effect:
+                return setImageExpandedClickEffect(view, cursor, flags);
             case R.id.list_item_expanded_progress_bar:
                 return setImageExpandedProgressBar((ProgressBar) view);
             case R.id.list_item_image_wrapper:
@@ -290,11 +291,23 @@ public class ThreadViewer {
     static private boolean setImageExpanded(final ImageView iv, final Cursor cursor, int flags) {
         ChanHelper.clearBigImageView(iv);
         iv.setVisibility(View.GONE);
+        /*
         if ((flags & (ChanPost.FLAG_IS_AD
                 | ChanPost.FLAG_IS_TITLE
                 | ChanPost.FLAG_IS_THREADLINK
                 | ChanPost.FLAG_IS_BOARDLINK)) == 0)
             iv.setOnClickListener(new ThreadImageOnClickListener(cursor));
+        */
+        return true;
+    }
+
+    static private boolean setImageExpandedClickEffect(final View view, final Cursor cursor, int flags) {
+        view.setVisibility(View.GONE);
+        if ((flags & (ChanPost.FLAG_IS_AD
+                | ChanPost.FLAG_IS_TITLE
+                | ChanPost.FLAG_IS_THREADLINK
+                | ChanPost.FLAG_IS_BOARDLINK)) == 0)
+            view.setOnClickListener(new ThreadImageOnClickListener(cursor));
         return true;
     }
 
@@ -326,7 +339,7 @@ public class ThreadViewer {
             view.setVisibility(View.VISIBLE);
         }
         else if (view.getId() == R.id.list_item_header_wrapper) {
-            setHeaderWrapper((ViewGroup)view, flags);
+            setHeaderWrapper((ViewGroup) view, flags);
         }
         else {
             view.setVisibility(View.GONE);

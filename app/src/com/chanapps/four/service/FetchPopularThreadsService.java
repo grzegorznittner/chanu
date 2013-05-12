@@ -53,7 +53,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
         return schedulePopularFetchService(context, true, false);
     }
 
-    public static boolean schedulePopularFetchService(Context context, boolean priority, boolean backgroundLoad) {
+    private static boolean schedulePopularFetchService(Context context, boolean priority, boolean backgroundLoad) {
         if (!boardNeedsRefresh(context, priority)) {
             if (DEBUG) Log.i(TAG, "Skipping priority popular threads fetch service refresh unneeded");
             return false;

@@ -32,17 +32,19 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
                 new String[] {
                         ChanThread.THREAD_TITLE,
                         ChanThread.THREAD_SUBJECT,
-                        ChanThread.THREAD_COUNTRY_FLAG_URL,
                         ChanThread.THREAD_NUM_REPLIES,
+                        ChanThread.THREAD_NUM_IMAGES,
                         ChanThread.THREAD_FLAGS,
+                        ChanThread.THREAD_COUNTRY_FLAG_URL,
                         ChanThread.THREAD_THUMBNAIL_URL
                 },
                 new int[] {
                         R.id.grid_item_thread_title,
                         R.id.grid_item_thread_subject,
-                        R.id.grid_item_country_flag,
                         R.id.grid_item_thread_info,
                         R.id.grid_item_text_wrapper,
+                        R.id.grid_item_board_abbrev,
+                        R.id.grid_item_country_flag,
                         R.id.grid_item_thread_thumb
                 },
                 columnWidth,

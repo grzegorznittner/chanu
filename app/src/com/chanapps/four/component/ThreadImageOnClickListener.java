@@ -2,8 +2,10 @@ package com.chanapps.four.component;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.nfc.Tag;
 import android.view.View;
 import android.widget.Toast;
+import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
@@ -35,7 +37,7 @@ public class ThreadImageOnClickListener implements View.OnClickListener {
         postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
         resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
-        threadNo = resto != 0 ? resto : postId;
+        threadNo = resto > 0 ? resto : postId;
         w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_W));
         h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_H));
         position = cursor.getPosition();
@@ -44,9 +46,10 @@ public class ThreadImageOnClickListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        Log.e("FOO", "Exception: handling click to gallery for activity=" + activity);
         if (activity != null && activity instanceof Activity) {
-            ChanHelper.simulateClickAnim(v.getContext(), v);
             incrementCounterAndAddToWatchlistIfActive(v);
+            Log.e("FOO", "Exception: starting gallery for /" + boardCode + "/" + threadNo + ":" + postId + "," + position);
             GalleryViewActivity.startActivity((Activity)activity, boardCode, threadNo, postId, position);
         }
     }

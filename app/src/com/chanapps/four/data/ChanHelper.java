@@ -145,11 +145,6 @@ public class ChanHelper {
 		jp.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
 	}
 
-    public static void simulateClickAnim(Context context, View view) {
-        Animation animation = AnimationUtils.loadAnimation(context, R.animator.fadeoutin);
-        view.startAnimation(animation);
-    }
-
     public static void launchUrlInBrowser(Context context, String url) {
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
