@@ -43,7 +43,7 @@
 
     <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_image_exif"/>
 
-    <ImageView
+    <com.chanapps.four.component.StretchyImageView
             android:id="@+id/list_item_thread_banner_ad"
             style="@style/ThreadListBannerAd"
             />

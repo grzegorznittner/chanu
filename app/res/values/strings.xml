@@ -1148,9 +1148,8 @@
     <dimen name="BoardListHeadline_paddingRight">16dp</dimen>
     <dimen name="BoardListHeadline_paddingBottom">4dp</dimen>
 
-    <dimen name="ThreadListHeaderImage_layout_marginBottom">8dp</dimen>
-
-    <dimen name="ThreadListHeaderImageExpanded_layout_marginBottom">8dp</dimen>
+    <dimen name="ThreadListHeaderImage_layout_marginTop">8dp</dimen>
+    <dimen name="ThreadListHeaderImage_layout_marginBottom">0dp</dimen>
 
     <dimen name="ThreadListHeaderSubject_layout_marginLeft">16dp</dimen>
     <dimen name="ThreadListHeaderSubject_layout_marginRight">16dp</dimen>

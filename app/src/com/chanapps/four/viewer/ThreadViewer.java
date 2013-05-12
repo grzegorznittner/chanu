@@ -53,7 +53,7 @@ public class ThreadViewer {
             return setTitleView(view, cursor, flags);
         }
         if ((flags & ChanPost.FLAG_IS_AD) > 0) {
-            return setBannerAdView(view, cursor, imageLoader, options, flags);
+            return setBannerAdView(view, cursor, imageLoader, options, flags, padding4DP);
         }
         switch (view.getId()) {
             case R.id.list_item:
@@ -83,7 +83,7 @@ public class ThreadViewer {
             case R.id.list_item_image_exif:
                 return setImageExifValue((TextView) view);
             case R.id.list_item_thread_banner_ad:
-                return setBannerAd((ImageView) view, cursor, imageLoader, options, flags);
+                return setBannerAd((ImageView) view, cursor, imageLoader, options, flags, padding4DP);
             default:
                 return false;
         }
@@ -230,6 +230,31 @@ public class ThreadViewer {
         }
     };
 
+    static private ImageLoadingListener bannerAdImageLoadingListener = new ImageLoadingListener() {
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {
+        }
+
+        @Override
+        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            view.setVisibility(View.GONE);
+            //if (view instanceof ImageView) {
+            //    ChanImageLoader.getInstance(view.getContext()).displayImage(ChanAd.defaultImageUrl(), (ImageView) view);
+            //}
+        }
+
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            ViewGroup.LayoutParams params = view.getLayoutParams();
+            if (params != null)
+                params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+
+        @Override
+        public void onLoadingCancelled(String imageUri, View view) {
+        }
+    };
+
     static private boolean setImage(final ImageView iv, final Cursor cursor, int flags,
                                         ImageLoader imageLoader, DisplayImageOptions options) {
         ViewGroup.LayoutParams params = iv.getLayoutParams();
@@ -352,9 +377,9 @@ public class ThreadViewer {
     }
 
     protected static boolean setBannerAdView(View view, Cursor cursor, ImageLoader imageLoader,
-                                             DisplayImageOptions options, int flags) {
+                                             DisplayImageOptions options, int flags, int padding4DP) {
         if (view.getId() == R.id.list_item_thread_banner_ad) {
-            setBannerAd((ImageView) view, cursor, imageLoader, options, flags);
+            setBannerAd((ImageView) view, cursor, imageLoader, options, flags, padding4DP);
         }
         else if (view.getId() == R.id.list_item) {
             view.setVisibility(View.VISIBLE);
@@ -366,15 +391,23 @@ public class ThreadViewer {
     }
 
     protected static boolean setBannerAd(final ImageView iv, Cursor cursor, ImageLoader imageLoader,
-                                         DisplayImageOptions options, int flags) {
+                                         DisplayImageOptions options, int flags, int padding4DP) {
         iv.setImageBitmap(null);
         if ((flags & ChanPost.FLAG_IS_AD) > 0) {
+            ViewGroup.LayoutParams params = iv.getLayoutParams();
+            if (params != null)
+                params.height = 12 * padding4DP; // 48dp to avoid big jumps, precalc would be better
             iv.setVisibility(View.VISIBLE);
             String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
+            //int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
+            //int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
             if (DEBUG) Log.i(TAG, "Displaying ad image iv=" + iv + " url=" + url);
-            imageLoader.displayImage(url, iv, options);
+            imageLoader.displayImage(url, iv, options, bannerAdImageLoadingListener);
         }
         else {
+            ViewGroup.LayoutParams params = iv.getLayoutParams();
+            if (params != null)
+                params.height = 0;
             iv.setVisibility(View.GONE);
         }
         return true;
