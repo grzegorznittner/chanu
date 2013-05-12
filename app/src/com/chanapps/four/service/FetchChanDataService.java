@@ -20,11 +20,7 @@ import android.util.Log;
 
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.data.FetchParams;
+import com.chanapps.four.data.*;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
@@ -34,7 +30,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
     private String boardCode;
     private boolean boardCatalog;
@@ -100,6 +96,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 
     private static boolean scheduleThreadFetch(Context context, String boardCode, long threadNo, boolean priority, boolean backgroundLoad) {
     	if (!threadNeedsRefresh(context, boardCode, threadNo, true)) {
+            if (DEBUG) Log.i(TAG, "skipping refresh, thread doesn't need it for /" + boardCode + "/" + threadNo);
         	return false;
         }
         if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + "/" + threadNo
@@ -344,9 +341,26 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 
             thread.lastFetched = now;
             if (tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
-                if (DEBUG) Log.i(TAG, "Got 404 on thread, thread no longer exists");
+                if (DEBUG) Log.i(TAG, "Got 404 on thread, thread no longer exists, setting dead thread");
+
+                // store dead status for thread
                 thread.isDead = true;
+                if (thread.posts != null && thread.posts[0] != null)
+                    thread.posts[0].isDead = true;
                 ChanFileStorage.storeThreadData(getBaseContext(), thread);
+
+                // store dead status into board thread record
+                ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
+                if (board != null && board.threads != null) {
+                    for (int i = 0; i < board.threads.length; i++) {
+                        if (board.threads[i] != null && board.threads[i].no == threadNo) {
+                            board.threads[i].isDead = true;
+                            ChanFileStorage.storeBoardData(getBaseContext(), board);
+                            break;
+                        }
+                    }
+                }
+                
                 NetworkProfileManager.instance().failedFetchingData(this, Failure.DEAD_THREAD);
                 return;
             } else if (contentType == null || !contentType.contains("json")) {

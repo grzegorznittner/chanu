@@ -24,7 +24,7 @@ import com.chanapps.four.service.ThreadParserService;
  */
 public abstract class AbstractNetworkProfile implements NetworkProfile {
 	private static final String TAG = "AbstractNetworkProfile";
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	protected int usageCounter = 0;
 	
@@ -224,21 +224,31 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 		if (DEBUG) Log.d(TAG, "failedFetchingData called for " + service);
 		storeFailedDataTransfer();
         final ChanActivityId data = service.getChanActivityId();
-        if (data == null || (data.threadNo > 0 && data.postNo > 0)) // ignore post/image fetch failures
+        if (data == null || (data.threadNo > 0 && data.postNo > 0)) { // ignore post/image fetch failures
+            if (DEBUG) Log.i(TAG, "null data or image fetch failure, ignoring");
             return;
+        }
         final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-        if (activity == null || activity.getChanActivityId().activity != data.activity)
+        if (activity == null) {
+            if (DEBUG) Log.i(TAG, "null activity failure, ignoring");
             return;
+        }
         Handler handler = activity.getChanHandler();
-        if (handler == null)
+        if (handler == null) {
+            if (DEBUG) Log.i(TAG, "null handler failure, ignoring");
             return;
+        }
         int msgId;
         switch (failure) {
             case DEAD_THREAD:
                 msgId = R.string.mobile_profile_fetch_dead_thread;
+                if (DEBUG) Log.i(TAG, "refreshig after dead thread");
+                postStopMessageWithRefresh(handler, msgId);
                 break;
             case THREAD_UNMODIFIED:
                 msgId = R.string.mobile_profile_fetch_unmodified;
+                if (DEBUG) Log.i(TAG, "stopping after unmodified thread");
+                postStopMessage(handler, msgId);
                 break;
             case NETWORK:
             case MISSING_DATA:
@@ -246,8 +256,10 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
             case CORRUPT_DATA:
             default:
                 msgId = R.string.mobile_profile_fetch_failure;
+                if (DEBUG) Log.i(TAG, "stopping after generic failure");
+                postStopMessage(handler, msgId);
+                break;
         }
-        postStopMessage(handler, msgId);
     }
 
 	@Override
@@ -306,4 +318,17 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
         });
     }
 
+    protected void postStopMessageWithRefresh(Handler handler, final int stringId) {
+        if (handler == null)
+            return;
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                if (stringId > 0)
+                    Toast.makeText(activity.getBaseContext(), stringId, Toast.LENGTH_SHORT).show();
+                activity.refresh();
+            }
+        });
+    }
 }

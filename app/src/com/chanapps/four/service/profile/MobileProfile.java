@@ -286,17 +286,33 @@ public class MobileProfile extends AbstractNetworkProfile {
 	public void onThreadSelected(Context context, String boardCode, long threadId) {
 		if(DEBUG) Log.d(TAG, "onThreadSelected");
 		super.onThreadSelected(context, boardCode, threadId);
-        ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadId);
-        if (thread != null && thread.posts != null && thread.posts.length > 1) {
-            if (DEBUG) Log.i(TAG, "thread already loading, skipping load");
-            return;
-        }
         Health health = getConnectionHealth();
-        if (health == Health.NO_CONNECTION) {
+
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        if (board != null && board.threads != null && board.threads.length > 1) {
+            if (DEBUG) Log.i(TAG, "board already loaded for thread, skipping load");
+        }
+        else if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
         }
-        FetchChanDataService.scheduleThreadFetchWithPriority(context, boardCode, threadId);
+        else {
+            if (DEBUG) Log.i(TAG, "scheduling board fetch for thread with priority for /" + boardCode + "/");
+            FetchChanDataService.scheduleBoardFetchWithPriority(context, boardCode);
+        }
+
+        ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadId);
+        if (thread != null && thread.posts != null && (thread.replies == 0 || thread.posts.length > 1)) {
+            if (DEBUG) Log.i(TAG, "thread already loading, skipping load");
+        }
+        else if (health == Health.NO_CONNECTION) {
+            makeHealthStatusToast(context, health);
+            return;
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "scheduling thread fetch with priority for /" + boardCode + "/" + threadId);
+            FetchChanDataService.scheduleThreadFetchWithPriority(context, boardCode, threadId);
+        }
 	}
 	
 	@Override

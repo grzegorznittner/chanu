@@ -303,9 +303,9 @@ public class ThreadActivity
             handler = new LoaderHandler();
         restoreInstanceState();
         NetworkProfileManager.instance().activityChange(this);
-        getSupportLoaderManager().restartLoader(0, null, this);
         if (absBoardListView != null)
-            getSupportLoaderManager().restartLoader(1, null, this);
+            getSupportLoaderManager().restartLoader(1, null, this); // board loader for tablet view
+        getSupportLoaderManager().restartLoader(0, null, this); // thread loader
         new TutorialOverlay(layout, tutorialPage());
     }
 
@@ -1282,14 +1282,20 @@ public class ThreadActivity
     public void refresh() {
         setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
-        if (handler != null) {
-            handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
-            if (absBoardListView != null)
-                handler.sendEmptyMessageDelayed(1, LOADER_RESTART_INTERVAL_SHORT_MS);
-        }
-
+        refreshBoard(); // for tablets
+        refreshThread();
         if (actionMode != null)
             actionMode.finish();
+    }
+
+    public void refreshBoard() { /* for tablets */
+        if (handler != null && absBoardListView != null)
+            handler.sendEmptyMessageDelayed(1, LOADER_RESTART_INTERVAL_SHORT_MS);
+    }
+
+    public void refreshThread() {
+        if (handler != null)
+            handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
     }
 
     protected TutorialOverlay.Page tutorialPage() {

@@ -68,22 +68,7 @@ public class BoardListViewer {
     }
 
     protected static boolean setBoardAbbrev(TextView tv, Cursor cursor, String groupBoardCode, int flags) {
-        String threadAbbrev = "";
-        String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-        if (boardCode != null && !boardCode.isEmpty() && !boardCode.equals(groupBoardCode))
-            threadAbbrev += "/" + boardCode + "/";
-        if ((flags & ChanThread.THREAD_FLAG_DEAD) > 0)
-            threadAbbrev += (threadAbbrev.isEmpty()?"":" ") + tv.getContext().getString(R.string.dead_thread_abbrev);
-        if ((flags & ChanThread.THREAD_FLAG_CLOSED) > 0)
-            threadAbbrev += (threadAbbrev.isEmpty()?"":" ") + tv.getContext().getString(R.string.closed_thread_abbrev);
-        if ((flags & ChanThread.THREAD_FLAG_STICKY) > 0)
-            threadAbbrev += (threadAbbrev.isEmpty()?"":" ") + tv.getContext().getString(R.string.sticky_thread_abbrev);
-        tv.setText(threadAbbrev);
-        if (!threadAbbrev.isEmpty())
-            tv.setVisibility(View.VISIBLE);
-        else
-            tv.setVisibility(View.GONE);
-        return true;
+        return BoardGridViewer.setBoardAbbrev(tv, cursor, groupBoardCode, flags);
     }
 
     protected static boolean setTitle(TextView tv, Cursor cursor, int flags) {

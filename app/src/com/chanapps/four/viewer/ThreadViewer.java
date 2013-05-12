@@ -140,22 +140,26 @@ public class ThreadViewer {
     }
 
     static private boolean setSubject(final TextView tv, final Cursor cursor, int flags) {
-        if ((flags & ChanPost.FLAG_HAS_SUBJECT) == 0
-                || (flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE)) > 0) {
+        if ((flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE)) > 0) {
             tv.setText("");
             tv.setVisibility(View.GONE);
             return true;
         }
-        String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-        Spanned spanned = Html.fromHtml(text);
-        //if (cursor.getPosition() == 0) {
-        //    ensureSubjectTypeface();
-        //    tv.setTypeface(subjectTypeface);
-        //} else {
-        //    tv.setTypeface(Typeface.DEFAULT);
-        //}
-        tv.setText(spanned);
-        tv.setVisibility(View.VISIBLE);
+        String text = "";
+        if ((flags & ChanPost.FLAG_HAS_SUBJECT) > 0)
+            text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+        if ((flags & ChanPost.FLAG_IS_CLOSED) > 0)
+            text = tv.getResources().getString(R.string.thread_is_closed) + (text.isEmpty() ? "" : " ") + text;
+        if ((flags & ChanPost.FLAG_IS_DEAD) > 0)
+            text = tv.getResources().getString(R.string.thread_is_dead) + (text.isEmpty() ? "" : " ") + text;
+        if (text.length() > 0) {
+            tv.setText(Html.fromHtml(text));
+            tv.setVisibility(View.VISIBLE);
+        }
+        else {
+            tv.setText("");
+            tv.setVisibility(View.GONE);
+        }
         return true;
     }
 
