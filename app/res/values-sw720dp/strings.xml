@@ -101,16 +101,16 @@
     <dimen name="ThreadListHeaderSubject_layout_marginRight">32dp</dimen>
     <dimen name="ThreadListHeaderSubject_paddingTop">32dp</dimen>
 
-    <dimen name="ThreadListHeaderHeadWrapper_paddingBottom">32dp</dimen>
-    <dimen name="ThreadListHeaderHeadWrapper_paddingLeft">32dp</dimen>
+    <dimen name="ThreadListHeaderHeadWrapper_paddingBottom">16dp</dimen>
+    <dimen name="ThreadListHeaderHeadWrapper_paddingLeft">16dp</dimen>
 
     <dimen name="ThreadListHeaderCountryFlag_layout_width">32dp</dimen>
     <dimen name="ThreadListHeaderCountryFlag_layout_height">24dp</dimen>
     <dimen name="ThreadListHeaderCountryFlag_layout_marginTop">16dp</dimen>
     <dimen name="ThreadListHeaderCountryFlag_layout_marginLeft">32dp</dimen>
 
-    <dimen name="ThreadListHeaderHead_layout_marginLeft">32dp</dimen>
-    <dimen name="ThreadListHeaderHead_layout_marginRight">32dp</dimen>
+    <dimen name="ThreadListHeaderHead_layout_marginLeft">16dp</dimen>
+    <dimen name="ThreadListHeaderHead_layout_marginRight">16dp</dimen>
 
     <dimen name="ThreadListHeaderExifText_layout_marginLeft">32dp</dimen>
     <dimen name="ThreadListHeaderExifText_layout_marginRight">32dp</dimen>
@@ -126,14 +126,21 @@
 
     <dimen name="ThreadListHeaderBar_layout_height">2dp</dimen>
 
-    <dimen name="ThreadListItemImageWrapper_layout_width">194dp</dimen>
+    <dimen name="ThreadListItemHeaderWrapper_paddingLeft">32dp</dimen>
+    <dimen name="ThreadListItemHeaderWrapper_paddingRight">32dp</dimen>
 
-    <dimen name="ThreadListItemImage_maxWidth">194dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_width">96dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_marginTop">16dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_marginLeft">0dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_marginRight">16dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_marginBottom">16dp</dimen>
+
+    <dimen name="ThreadListItemImage_maxWidth">96dp</dimen>
 
     <dimen name="ThreadListItemImageExpanded_marginBottom">32dp</dimen>
 
-    <dimen name="ThreadListItemSubject_marginLeft">32dp</dimen>
-    <dimen name="ThreadListItemSubject_paddingRight">32dp</dimen>
+    <dimen name="ThreadListItemSubject_marginLeft">0dp</dimen>
+    <dimen name="ThreadListItemSubject_paddingRight">0dp</dimen>
 
     <dimen name="ThreadListItemCountryFlag_layout_width">32dp</dimen>
     <dimen name="ThreadListItemCountryFlag_layout_height">24dp</dimen>
@@ -141,14 +148,11 @@
     <dimen name="ThreadListItemCountryFlag_marginLeft">32dp</dimen>
     <dimen name="ThreadListItemCountryFlag_marginBottom">32dp</dimen>
 
-    <dimen name="ThreadListItemHead_marginLeft">32dp</dimen>
-    <dimen name="ThreadListItemHead_marginRight">32dp</dimen>
-    <dimen name="ThreadListItemHead_paddingBottom">32dp</dimen>
-
-    <dimen name="ThreadListItemHead_marginLeft">32dp</dimen>
-    <dimen name="ThreadListItemHead_paddingRight">32dp</dimen>
-    <dimen name="ThreadListItemHead_paddingTop">16dp</dimen>
-    <dimen name="ThreadListItemHead_paddingBottom">32dp</dimen>
+    <dimen name="ThreadListItemHead_marginLeft">0dp</dimen>
+    <dimen name="ThreadListItemHead_marginRight">0dp</dimen>
+    <dimen name="ThreadListItemHead_paddingRight">0dp</dimen>
+    <dimen name="ThreadListItemHead_paddingTop">8dp</dimen>
+    <dimen name="ThreadListItemHead_paddingBottom">16dp</dimen>
 
     <dimen name="ThreadListItemExifText_layout_marginLeft">32dp</dimen>
     <dimen name="ThreadListItemExifText_layout_marginRight">32dp</dimen>

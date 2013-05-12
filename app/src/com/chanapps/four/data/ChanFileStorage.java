@@ -30,7 +30,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanFileStorage {
 	private static final String TAG = ChanFileStorage.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	private static final int MAX_BOARDS_IN_CACHE = 100;
 	private static final int MAX_THREADS_IN_CACHE = 200;
@@ -201,6 +201,7 @@ public class ChanFileStorage {
     	}
     	ChanThread currentThread = threadCache.get(thread.board + "/" + thread.no);
     	if (currentThread != null && currentThread.lastFetched > thread.lastFetched) {
+            if (DEBUG) Log.i(TAG, "skipping thread cached time=" + currentThread.lastFetched + " newer than storing time=" + thread.lastFetched);
     		return;
     	}
 		threadCache.put(thread.board + "/" + thread.no, thread);
@@ -582,6 +583,7 @@ public class ChanFileStorage {
         thread.posts = survivingPosts;
 
         try {
+            if (DEBUG) Log.i(TAG, "After delete calling storeThreadData for /" + thread.board + "/" + thread.no);
             storeThreadData(context, thread);
         }
         catch (IOException e) {

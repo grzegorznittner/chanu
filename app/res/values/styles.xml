@@ -503,6 +503,10 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_marginTop">@dimen/ThreadListItemImageWrapper_layout_marginTop</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListItemImageWrapper_layout_marginLeft</item>
+        <item name="android:layout_marginRight">@dimen/ThreadListItemImageWrapper_layout_marginRight</item>
+        <item name="android:paddingBottom">@dimen/ThreadListItemImageWrapper_layout_marginBottom</item>
     </style>
 
     <style name="ThreadListItemImage" parent="AppTheme">

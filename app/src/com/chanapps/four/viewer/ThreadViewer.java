@@ -201,11 +201,10 @@ public class ThreadViewer {
     }
 
     static private boolean setImageWrapper(final ViewGroup layout, final Cursor cursor, int flags) {
-        ViewGroup.LayoutParams params = layout.getLayoutParams();
-        DisplayMetrics displayMetrics = layout.getResources().getDisplayMetrics();
-        int widthDp = (flags & ChanPost.FLAG_HAS_IMAGE) > 0 ? ITEM_THUMB_WIDTH_DP : ITEM_THUMB_EMPTY_DP;
-        params.width = ChanGridSizer.dpToPx(displayMetrics, widthDp);
-        layout.setVisibility(View.VISIBLE);
+        if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
+            layout.setVisibility(View.VISIBLE);
+        else
+            layout.setVisibility(View.GONE);
         return true;
     }
 

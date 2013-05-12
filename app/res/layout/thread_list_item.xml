@@ -21,7 +21,10 @@
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/list_item_header_wrapper">
+            android:id="@+id/list_item_header_wrapper"
+            android:paddingLeft="@dimen/ThreadListItemHeaderWrapper_paddingLeft"
+            android:paddingRight="@dimen/ThreadListItemHeaderWrapper_paddingRight"
+            >
         <RelativeLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper">
             <com.chanapps.four.component.StretchyImageView
                     style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>

@@ -17,6 +17,7 @@ public class ChanPost {
 	public static final String TAG = ChanPost.class.getSimpleName();
     private static final boolean DEBUG = false;
 
+    public static final String HEADLINE_DELIMITER = "<br/>";
     public static final int MAX_SINGLELINE_TEXT_LEN = 20;
     private static final int MIN_LINE = 30;
     private static final int MAX_LINE = 40;
@@ -524,7 +525,7 @@ public class ChanPost {
         if (resto <= 0)
             items.add(threadInfoLine());
         items.add(dateText());
-        String component = ChanHelper.join(items, " <b>&middot;</b> ");
+        String component = ChanHelper.join(items, HEADLINE_DELIMITER);
         return highlightComponent(component, query);
     }
 

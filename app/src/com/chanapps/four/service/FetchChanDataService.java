@@ -37,7 +37,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     private int pageNo;
     private long threadNo;
     private boolean boardHandling = true;
-    private boolean force;
+    private boolean priority;
     private boolean backgroundLoad;
     
     private ChanBoard board;
@@ -59,7 +59,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     	if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode)) {
-    		return FetchPopularThreadsService.schedulePopularFetchService(context);
+    		return FetchPopularThreadsService.schedulePopularFetchService(context, priority, backgroundLoad);
     	}
     	
     	if (!boardNeedsRefresh(context, boardCode, priority)) {
@@ -134,7 +134,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             long interval = now - board.lastFetched;
         	if (interval < refresh) {
         		if (DEBUG) Log.i(TAG, "Skipping board " + boardCode + " fetch as it was fetched "
-        				+ (interval / 1000) + "s ago, refresh for force=" + forceRefresh + " delay is " + (refresh / 1000) + "s" );
+        				+ (interval / 1000) + "s ago, refresh for priority=" + forceRefresh + " delay is " + (refresh / 1000) + "s" );
         		return false;
         	}
         }
@@ -192,7 +192,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 		threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
 		boardHandling = threadNo == 0;
 
-		force = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
+		priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
 		if (boardHandling) {
 			if (DEBUG) Log.i(TAG, "Handling board " + boardCode + (boardCatalog ? " catalog" : " page=" + pageNo));
 			handleBoard();
@@ -247,7 +247,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             tc.setReadTimeout(fetchParams.readTimeout);
             tc.setConnectTimeout(fetchParams.connectTimeout);
             
-            if (board != null && board.lastFetched > 0 && !force) {
+            if (board != null && board.lastFetched > 0 && !priority) {
             	if (DEBUG) Log.i(TAG, "IfModifiedSince set as last fetch happened "
         				+ ((startTime - board.lastFetched) / 1000) + "s ago");
                 tc.setIfModifiedSince(board.lastFetched);
@@ -276,7 +276,20 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             	int fetchTime = (int)(new Date().getTime() - startTime);
                 
                 if (DEBUG) Log.w(TAG, "Fetched and stored " + chanApi + " in " + fetchTime + "ms, size " + fileSize);
-                NetworkProfileManager.instance().finishedFetchingData(this, fetchTime, (int)fileSize);
+                if (DEBUG) Log.i(TAG, "Calling finishedFetchingData priority=" + priority);
+                final ChanActivityId activityId = getChanActivityId();
+                final Context context = getApplicationContext();
+                final ChanIdentifiedService service = new ChanIdentifiedService() {
+                    @Override
+                    public ChanActivityId getChanActivityId() {
+                        return activityId;
+                    }
+                    @Override
+                    public Context getApplicationContext() {
+                        return context;
+                    }
+                };
+                NetworkProfileManager.instance().finishedFetchingData(service, fetchTime, (int)fileSize);
             }
         } catch (IOException e) {
             //toastUI(R.string.board_service_couldnt_read);
@@ -325,7 +338,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             URL chanApi = new URL("http://api.4chan.org/" + boardCode + "/res/" + threadNo + ".json");
             tc = (HttpURLConnection) chanApi.openConnection();
             tc.setReadTimeout(NetworkProfileManager.instance().getFetchParams().readTimeout);
-            if (thread.lastFetched > 0 && !force) {
+            if (thread.lastFetched > 0 && !priority) {
             	if (DEBUG) Log.i(TAG, "IfModifiedSince set as last fetch happened "
         				+ ((startTime - thread.lastFetched) / 1000) + "s ago");
                 tc.setIfModifiedSince(thread.lastFetched);
@@ -347,6 +360,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 thread.isDead = true;
                 if (thread.posts != null && thread.posts[0] != null)
                     thread.posts[0].isDead = true;
+                if (DEBUG) Log.i(TAG, "After handleBoard dead thread calling storeThreadData for /" + thread.board + "/" + thread.no);
                 ChanFileStorage.storeThreadData(getBaseContext(), thread);
 
                 // store dead status into board thread record
@@ -370,7 +384,19 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             else {
                 long fileSize = ChanFileStorage.storeThreadFile(getBaseContext(), boardCode, threadNo, new InputStreamReader(tc.getInputStream()));
                 int fetchTime = (int)(new Date().getTime() - startTime);
-                NetworkProfileManager.instance().finishedFetchingData(this, fetchTime, (int)fileSize);
+                final ChanActivityId activityId = getChanActivityId();
+                final Context context = getApplicationContext();
+                final ChanIdentifiedService service = new ChanIdentifiedService() {
+                    @Override
+                    public ChanActivityId getChanActivityId() {
+                        return activityId;
+                    }
+                    @Override
+                    public Context getApplicationContext() {
+                        return context;
+                    }
+                };
+                NetworkProfileManager.instance().finishedFetchingData(service, fetchTime, (int)fileSize);
             }
 
         } catch (IOException e) {
@@ -389,9 +415,9 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 	@Override
 	public ChanActivityId getChanActivityId() {
 		if (threadNo > 0) {
-			return new ChanActivityId(boardCode, threadNo, force);
+			return new ChanActivityId(boardCode, threadNo, priority);
 		} else {
-			return new ChanActivityId(boardCode, pageNo, force);
+			return new ChanActivityId(boardCode, pageNo, priority);
 		}
 	}
 

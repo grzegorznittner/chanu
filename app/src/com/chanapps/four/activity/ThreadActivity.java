@@ -282,7 +282,7 @@ public class ThreadActivity
         imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         displayImageOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisc()
-                .imageScaleType(ImageScaleType.EXACTLY)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
                 .resetViewBeforeLoading()
                 .build();
     }
@@ -878,7 +878,6 @@ public class ThreadActivity
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Cursor cursor = (Cursor) parent.getItemAtPosition(position);
             int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-            //ChanHelper.simulateClickAnim(ThreadActivity.this.getApplicationContext(), view);
             if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
                 final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
                 ChanHelper.launchUrlInBrowser(ThreadActivity.this, clickUrl);
@@ -894,7 +893,8 @@ public class ThreadActivity
                 }
                 else if (boardCode.equals(boardLink)) { // just redisplay right tab
                     threadNo = threadNoLink;
-                    refresh();
+                    refreshThread();
+                    NetworkProfileManager.instance().activityChange(ThreadActivity.this);
                 }
                 else {
                     startActivity(ThreadActivity.this, boardLink, threadNoLink);

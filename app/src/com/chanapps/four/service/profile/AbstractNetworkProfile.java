@@ -196,7 +196,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 		
 		ChanActivityId data = service.getChanActivityId();
         if (DEBUG) Log.i(TAG, "fetchData success for /" + data.boardCode + "/" + data.threadNo + "/" + data.postNo + " priority=" + data.priority);
-        
+
         if (ChanBoard.isVirtualBoard(data.boardCode)) {
             // skip since fetch&parse steps happen together for virtual boards
         } else if (data.threadNo == 0) {

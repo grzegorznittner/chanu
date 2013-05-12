@@ -1180,14 +1180,21 @@
 
     <dimen name="ThreadListHeaderBar_layout_height">2dp</dimen>
 
+    <dimen name="ThreadListItemHeaderWrapper_paddingLeft">8dp</dimen>
+    <dimen name="ThreadListItemHeaderWrapper_paddingRight">8dp</dimen>
+
     <dimen name="ThreadListItemImageWrapper_layout_width">96dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_marginTop">0dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_marginLeft">0dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_marginRight">8dp</dimen>
+    <dimen name="ThreadListItemImageWrapper_layout_marginBottom">0dp</dimen>
 
     <dimen name="ThreadListItemImage_maxWidth">96dp</dimen>
 
     <dimen name="ThreadListItemImageExpanded_marginBottom">8dp</dimen>
 
-    <dimen name="ThreadListItemSubject_marginLeft">8dp</dimen>
-    <dimen name="ThreadListItemSubject_paddingRight">16dp</dimen>
+    <dimen name="ThreadListItemSubject_marginLeft">0dp</dimen>
+    <dimen name="ThreadListItemSubject_paddingRight">0dp</dimen>
 
     <dimen name="ThreadListItemCountryFlag_layout_width">18dp</dimen>
     <dimen name="ThreadListItemCountryFlag_layout_height">12dp</dimen>
@@ -1195,12 +1202,9 @@
     <dimen name="ThreadListItemCountryFlag_marginLeft">8dp</dimen>
     <dimen name="ThreadListItemCountryFlag_marginBottom">8dp</dimen>
 
-    <dimen name="ThreadListItemHead_marginLeft">8dp</dimen>
-    <dimen name="ThreadListItemHead_marginRight">16dp</dimen>
-    <dimen name="ThreadListItemHead_paddingBottom">8dp</dimen>
-
-    <dimen name="ThreadListItemHead_marginLeft">8dp</dimen>
-    <dimen name="ThreadListItemHead_paddingRight">16dp</dimen>
+    <dimen name="ThreadListItemHead_marginLeft">0dp</dimen>
+    <dimen name="ThreadListItemHead_marginRight">0dp</dimen>
+    <dimen name="ThreadListItemHead_paddingRight">0dp</dimen>
     <dimen name="ThreadListItemHead_paddingTop">4dp</dimen>
     <dimen name="ThreadListItemHead_paddingBottom">8dp</dimen>
 

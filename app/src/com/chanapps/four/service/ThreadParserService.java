@@ -35,7 +35,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
 public class ThreadParserService extends BaseChanService implements ChanIdentifiedService {
 
     protected static final String TAG = ThreadParserService.class.getName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     protected static final long STORE_INTERVAL_MS = 2000;
 
@@ -123,8 +123,13 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
             if (previousPostNum > 0 && thread.posts.length == 0) {
                 if (DEBUG) Log.w(TAG, "Thread " + boardCode + "/" + threadNo + " has 0 posts after parsing, won't be stored");
             } else {
-            	ChanFileStorage.storeThreadData(getBaseContext(), thread);
-                if (DEBUG) Log.i(TAG, "Stored thread " + boardCode + "/" + threadNo
+                if (!boardCode.equals(thread.board)) {
+                    if (DEBUG) Log.i(TAG, "Found inconsistent thread boardCode=" + thread.board + ", repairing to=" + boardCode);
+                    thread.board = boardCode;
+                }
+                if (DEBUG) Log.i(TAG, "In onHandleIntent in ThreadParserService calling storeThreadData for /" + thread.board + "/" + thread.no);
+                ChanFileStorage.storeThreadData(getBaseContext(), thread);
+                if (DEBUG) Log.i(TAG, "Stored thread " + boardCode + "/" + threadNo + " with " + thread.posts.length + " posts"
                 		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             }
             NetworkProfileManager.instance().finishedParsingData(this);

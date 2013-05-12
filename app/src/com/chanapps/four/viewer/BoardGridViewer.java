@@ -59,6 +59,7 @@ public class BoardGridViewer {
     }
 
     static boolean setBoardAbbrev(TextView tv, Cursor cursor, String groupBoardCode, int flags) {
+        tv.setVisibility(View.GONE);
         String threadAbbrev = "";
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         if (boardCode != null && !boardCode.isEmpty() && !boardCode.equals(groupBoardCode)) {
@@ -75,10 +76,6 @@ public class BoardGridViewer {
         if ((flags & ChanThread.THREAD_FLAG_STICKY) > 0)
             threadAbbrev += (threadAbbrev.isEmpty()?"":" ") + tv.getContext().getString(R.string.thread_is_sticky);
         tv.setText(threadAbbrev);
-        if (!threadAbbrev.isEmpty())
-            tv.setVisibility(View.VISIBLE);
-        else
-            tv.setVisibility(View.GONE);
         return true;
     }
 
@@ -152,6 +149,8 @@ public class BoardGridViewer {
                 ViewGroup wrapper = (ViewGroup)parentView.findViewById(R.id.grid_item_text_wrapper);
                 TextView subject = (TextView)parentView.findViewById(R.id.grid_item_thread_subject);
                 TextView info = (TextView)parentView.findViewById(R.id.grid_item_thread_info);
+                TextView abbrev = (TextView)parentView.findViewById(R.id.grid_item_board_abbrev);
+                ImageView countryFlag = (ImageView)parentView.findViewById(R.id.grid_item_country_flag);
                 boolean oneVisible = false;
                 if (subject != null && subject.getText() != null && subject.getText().length() > 0) {
                     subject.setVisibility(View.VISIBLE);
@@ -163,6 +162,10 @@ public class BoardGridViewer {
                 }
                 if (wrapper != null && oneVisible)
                     wrapper.setVisibility(View.VISIBLE);
+                if (abbrev != null)
+                    abbrev.setVisibility(View.VISIBLE);
+                if (countryFlag.getDrawable() != null)
+                    countryFlag.setVisibility(View.VISIBLE);
             }
         }
         @Override
@@ -171,14 +174,13 @@ public class BoardGridViewer {
     };
 
     protected static boolean setCountryFlag(ImageView iv, Cursor cursor, ImageLoader imageLoader, DisplayImageOptions options) {
+        iv.setVisibility(View.GONE);
         String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_COUNTRY_FLAG_URL));
         if (url != null && !url.isEmpty()) {
-            iv.setVisibility(View.VISIBLE);
             imageLoader.displayImage(url, iv, options);
         }
         else {
-            iv.setVisibility(View.GONE);
-            iv.setImageResource(0);
+            iv.setImageDrawable(null);
         }
         return true;
     }

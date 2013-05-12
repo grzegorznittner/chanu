@@ -121,13 +121,14 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
                 try {
                     ChanPost post = mapper.readValue(postValue, ChanPost.class);
                     if (post != null) {
-                        post.board = boardCode;
+                        if (post.board == null || post.board.isEmpty())
+                            post.board = boardCode;
                         if (first) {
-                            thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
+                            thread = ChanFileStorage.loadThreadData(getBaseContext(), post.board, post.no);
                             // if thread was not stored create a new object
                             if (thread == null || thread.defData) {
                                 thread = new ChanThread();
-                                thread.board = boardCode;
+                                thread.board = post.board;
                                 thread.lastFetched = 0;
                                 thread.no = post.no;
                                 // note we don't set the lastUpdated here because we didn't pull the full thread yet
@@ -148,7 +149,8 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
             }
             if (thread != null) {
                 thread.mergePosts(posts);
-            	ChanFileStorage.storeThreadData(getBaseContext(), thread);
+                if (DEBUG) Log.i(TAG, "After parseBoard calling storeThreadData for /" + thread.board + "/" + thread.no);
+                ChanFileStorage.storeThreadData(getBaseContext(), thread);
             }
         }
         if (DEBUG) Log.i(TAG, "Stored " + threads.size() + " threads for board " + boardCode);
@@ -168,15 +170,17 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
                     try {
                         ChanPost post = mapper.readValue(threadValue, ChanPost.class);
                         if (post != null) {
-                            post.board = boardCode;
-                            ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, post.no);
+                            if (post.board == null || post.board.isEmpty())
+                                post.board = boardCode;
+                            ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), post.board, post.no);
                             if (thread == null || thread.defData) {
                                 thread = new ChanThread();
                                 if (thread != null) {
-                                    thread.board = boardCode;
+                                    thread.board = post.board;
                                     thread.lastFetched = 0;
                                     thread.no = post.no;
                                     thread.posts = new ChanPost[]{post};
+                                    if (DEBUG) Log.i(TAG, "After parseBoardCatalog calling storeThreadData for /" + thread.board + "/" + thread.no);
                                     ChanFileStorage.storeThreadData(getBaseContext(), thread);
                                     updatedThreads++;
                                 }
