@@ -1259,4 +1259,23 @@
     <dimen name="WidgetConfigureOkButton_paddingTop">4dp</dimen>
     <dimen name="WidgetConfigureOkButton_paddingBottom">4dp</dimen>
 
+
+    <!-- tutorial_overlay -->
+    <dimen name="tutorial_overlay_subject_layout_margin">16dp</dimen>
+    <dimen name="tutorial_overlay_subject_textSize">22sp</dimen>
+
+    <dimen name="tutorial_overlay_detail_marginLeft">16dp</dimen>
+    <dimen name="tutorial_overlay_detail_marginTop">0sp</dimen>
+    <dimen name="tutorial_overlay_detail_marginRight">16dp</dimen>
+    <dimen name="tutorial_overlay_detail_marginBottom">16dp</dimen>
+    <dimen name="tutorial_overlay_detail_textSize">18sp</dimen>
+
+    <dimen name="tutorial_overlay_button_marginTop">48dp</dimen>
+    <dimen name="tutorial_overlay_button_marginRight">16dp</dimen>
+    <dimen name="tutorial_overlay_button_paddingLeft">48dp</dimen>
+    <dimen name="tutorial_overlay_button_paddingTop">8dp</dimen>
+    <dimen name="tutorial_overlay_button_paddingRight">48dp</dimen>
+    <dimen name="tutorial_overlay_button_paddingBottom">8dp</dimen>
+    <dimen name="tutorial_overlay_button_textSize">22sp</dimen>
+
 </resources>
