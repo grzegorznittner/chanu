@@ -380,7 +380,8 @@ public class ThreadActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (loader == this.cursorLoader) {
-            if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished loader=" + loader + " count=" + (data == null ? 0 : data.getCount()));
+            if (DEBUG)
+                Log.v(TAG, ">>>>>>>>>>> onLoadFinished loader=" + loader + " count=" + (data == null ? 0 : data.getCount()));
             adapter.swapCursor(data);
             if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
             if (absListView != null) {
@@ -394,8 +395,7 @@ public class ThreadActivity
             ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
             if ((data == null || data.getCount() < 1
                     || (thread != null && thread.replies > 0 && !thread.isDead && data.getCount() <= 2))
-                    && handler != null)
-            {
+                    && handler != null) {
                 NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
                 if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
                     stopProgressBarIfLoadersDone();
@@ -406,13 +406,11 @@ public class ThreadActivity
                 //else {
                 //    handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
                 //}
-            }
-            else {
+            } else {
                 loadingStatusFlags |= THREAD_DONE;
                 stopProgressBarIfLoadersDone();
             }
-        }
-        else if (loader == this.cursorLoaderBoardsTablet) {
+        } else if (loader == this.cursorLoaderBoardsTablet) {
             this.adapterBoardsTablet.swapCursor(data);
 
             // retry load if maybe data wasn't there yet
@@ -601,8 +599,7 @@ public class ThreadActivity
         int boardRulesId = R.raw.global_rules_detail;
         try {
             boardRulesId = R.raw.class.getField("board_" + boardCode + "_rules").getInt(null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Couldn't find rules for board:" + boardCode);
         }
         RawResourceDialog rawResourceDialog
@@ -636,9 +633,9 @@ public class ThreadActivity
     }
 
     protected void setupSearch(Menu menu) {
-        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchMenuItem = menu.findItem(R.id.search_menu);
-        SearchView searchView = (SearchView)searchMenuItem.getActionView();
+        SearchView searchView = (SearchView) searchMenuItem.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
     }
 
@@ -851,7 +848,6 @@ public class ThreadActivity
         return urls;
     }
 
-    ;
 
     protected static List<String> extractUrls(String input) {
         List<String> result = new ArrayList<String>();
@@ -884,22 +880,18 @@ public class ThreadActivity
             if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
                 final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
                 ChanHelper.launchUrlInBrowser(ThreadActivity.this, clickUrl);
-            }
-            else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
+            } else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
                 final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
                 BoardActivity.startActivity(ThreadActivity.this, boardLink);
-            }
-            else {
+            } else {
                 final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
                 final long threadNoLink = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
                 if (boardCode.equals(boardLink) && threadNo == threadNoLink) { // already on this, do nothing
-                }
-                else if (boardCode.equals(boardLink)) { // just redisplay right tab
+                } else if (boardCode.equals(boardLink)) { // just redisplay right tab
                     threadNo = threadNoLink;
                     refreshThread();
                     NetworkProfileManager.instance().activityChange(ThreadActivity.this);
-                }
-                else {
+                } else {
                     startActivity(ThreadActivity.this, boardLink, threadNoLink);
                 }
             }
@@ -945,8 +937,7 @@ public class ThreadActivity
             if (absBoardListView != null && boardCode.equals(linkedBoardCode)) {
                 threadNo = linkedThreadNo;
                 refresh();
-            }
-            else {
+            } else {
                 ThreadActivity.startActivity(ThreadActivity.this, linkedBoardCode, linkedThreadNo);
             }
         }
@@ -990,8 +981,18 @@ public class ThreadActivity
             if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
             if ((flags & (ChanPost.FLAG_HAS_IMAGE | ChanPost.FLAG_HAS_EXIF | ChanPost.FLAG_HAS_SPOILER)) > 0) {
                 (new ThreadExpandImageOnClickListener(getApplicationContext(), cursor, itemView)).onClick(itemView);
-                itemView.setTag(R.id.THREAD_VIEW_IS_EXPANDED, new Boolean(true));
+                itemView.setTag(R.id.THREAD_VIEW_IS_EXPANDED, Boolean.TRUE);
             }
+
+            //todo - decide for the header image what happend on a click
+/*
+            if ((flags & ChanPost.FLAG_IS_HEADER) > 0  ) {
+                long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+                int position = cursor.getPosition();
+                GalleryViewActivity.startActivity(ThreadActivity.this, boardCode, threadNo, postId, position);
+            }
+*/
+
         }
     };
 
@@ -1306,7 +1307,9 @@ public class ThreadActivity
     }
 
     private class LoaderHandler extends Handler {
-        public LoaderHandler() {}
+        public LoaderHandler() {
+        }
+
         @Override
         public void handleMessage(Message msg) {
             try {
