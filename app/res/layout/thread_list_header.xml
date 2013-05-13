@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.chanapps.four.component.CheckableLinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        style="@style/ThreadListLayout"
+        style="@style/ThreadListHeaderLayout"
         android:id="@+id/list_item">
 
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
             >
 
         <com.chanapps.four.component.StretchyImageView style="@style/ThreadListHeaderImage" android:id="@+id/list_item_image"/>
@@ -25,18 +24,23 @@
 
     </RelativeLayout>
 
-    <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
+    <LinearLayout
+            style="@style/ThreadListHeaderInnerLayout"
+            >
 
-    <RelativeLayout style="@style/ThreadListHeaderHeadWrapper" android:id="@+id/list_item_header_wrapper">
-        <ImageView style="@style/ThreadListHeaderCountryFlag" android:id="@+id/list_item_country_flag"/>
-        <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"/>
-        <TextView style="@style/ThreadListHeaderTitle" android:id="@+id/list_item_title"/>
-    </RelativeLayout>
+        <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
 
+        <LinearLayout style="@style/ThreadListHeaderHeadWrapper" android:id="@+id/list_item_header_wrapper">
+            <ImageView style="@style/ThreadListHeaderCountryFlag" android:id="@+id/list_item_country_flag"/>
+            <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"/>
+            <TextView style="@style/ThreadListHeaderTitle" android:id="@+id/list_item_title"/>
+        </LinearLayout>
 
-    <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
+        <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
 
-    <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_image_exif"/>
+        <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_image_exif"/>
+
+    </LinearLayout>
 
     <View style="@style/ThreadListHeaderBar" android:id="@+id/list_item_header_bar"/>
 

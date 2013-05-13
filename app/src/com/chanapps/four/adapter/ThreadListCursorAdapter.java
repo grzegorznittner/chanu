@@ -23,6 +23,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected static final int TYPE = R.id.THREAD_VIEW_TYPE;
     protected static final String HEADER = "header";
     protected static final String ITEM = "item";
+    protected static final String AD = "ad";
 
     protected ThreadListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
@@ -38,17 +39,16 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_HEADLINE_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_TEXT,
                         ChanPost.POST_COUNTRY_URL,
                         ChanPost.POST_IMAGE_URL,
+                        ChanPost.POST_FLAGS,
                         ChanPost.POST_FLAGS
                 },
                 new int[]{
-                        R.id.list_item_header_wrapper,
                         R.id.list_item_expanded_progress_bar,
                         R.id.list_item_image_expanded,
                         R.id.list_item_image_expanded_click_effect,
@@ -60,7 +60,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
                         R.id.list_item_image_exif,
-                        R.id.list_item_thread_banner_ad
+                        R.id.list_item_thread_banner_ad,
+                        R.id.list_item_thread_banner_ad_click_effect
                 });
     }
 
@@ -79,7 +80,13 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
         if (tag == null)
             tag = "";
         int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-        String newTag = (flags & ChanPost.FLAG_IS_HEADER) > 0 ? HEADER : ITEM;
+        String newTag;
+        if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
+            newTag = HEADER;
+        else if ((flags & ChanPost.FLAG_IS_AD) > 0)
+            newTag = AD;
+        else
+            newTag = ITEM;
 
         View v = (convertView == null || !tag.equals(newTag))
             ? newView(context, parent, newTag, position)
@@ -95,9 +102,14 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     @Override
     protected View newView(Context context, ViewGroup parent, String tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        View v = HEADER.equals(tag)
-            ? mInflater.inflate(R.layout.thread_list_header, parent, false)
-            : mInflater.inflate(R.layout.thread_list_item, parent, false);
+        int id;
+        if (HEADER.equals(tag))
+            id = R.layout.thread_list_header;
+        else if (AD.equals(tag))
+            id = R.layout.thread_list_ad;
+        else
+            id = R.layout.thread_list_item;
+        View v = mInflater.inflate(id, parent, false);
         v.setTag(TYPE, tag);
         return v;
     }

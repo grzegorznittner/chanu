@@ -80,7 +80,6 @@ public class BoardActivity
     protected int columnHeight = 0;
     protected MenuItem searchMenuItem;
     protected ViewType viewType = ViewType.AS_GRID;
-    protected Typeface subjectTypeface = null;
     protected int padding4DP = 0;
     protected int padding8DP = 0;
 
@@ -126,7 +125,6 @@ public class BoardActivity
                 : "";
         initImageLoader();
         createAbsListView();
-        ensureSubjectTypeface();
         initPaddings();
         LoaderManager.enableDebugLogging(true);
     }
@@ -616,12 +614,6 @@ public class BoardActivity
     public void closeSearch() {
         if (searchMenuItem != null)
             searchMenuItem.collapseActionView();
-    }
-
-    protected Typeface ensureSubjectTypeface() {
-        if (subjectTypeface == null)
-            subjectTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Condensed.ttf");
-        return subjectTypeface;
     }
 
 	@Override

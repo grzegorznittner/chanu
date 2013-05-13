@@ -108,7 +108,6 @@ public class ThreadActivity
     protected int columnWidth = 0;
     protected int columnHeight = 0;
     protected MenuItem searchMenuItem;
-    protected ViewType viewType = ViewType.AS_GRID;
     protected Typeface subjectTypeface = null;
     protected int padding4DP = 0;
     protected int padding8DP = 0;
@@ -129,6 +128,8 @@ public class ThreadActivity
     protected AbsListView absBoardListView;
     protected int loadingStatusFlags = 0;
 
+    public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (DEBUG) Log.v(TAG, "************ onCreate");
@@ -137,6 +138,8 @@ public class ThreadActivity
         query = getIntent().hasExtra(SearchManager.QUERY)
                 ? getIntent().getStringExtra(SearchManager.QUERY)
                 : "";
+        if (subjectTypeface == null)
+            subjectTypeface = Typeface.createFromAsset(getAssets(), SUBJECT_FONT);
         initImageLoader();
         createAbsListView();
         initPaddings();
@@ -462,7 +465,7 @@ public class ThreadActivity
 
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
-        return ThreadViewer.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions,
+        return ThreadViewer.setViewValue(view, cursor, imageLoader, displayImageOptions,
                 boardCode, subjectTypeface, padding4DP);
     }
 

@@ -8,6 +8,7 @@ import android.text.Spanned;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -41,7 +42,7 @@ public class ThreadViewer {
     private static final String TAG = ThreadViewer.class.getSimpleName();
     private static final boolean DEBUG = true;
 
-    public static boolean setViewValue(final View view, final Cursor cursor, final int columnIndex,
+    public static boolean setViewValue(final View view, final Cursor cursor,
                                        final ImageLoader imageLoader, final DisplayImageOptions options,
                                        String groupBoardCode, Typeface subjectTypeface, int padding4DP) {
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
@@ -53,8 +54,14 @@ public class ThreadViewer {
             return setTitleView(view, cursor, flags);
         }
         if ((flags & ChanPost.FLAG_IS_AD) > 0) {
-            return setBannerAdView(view, cursor, imageLoader, options, flags, padding4DP);
+            return setBannerAdView(view, cursor, imageLoader, options, padding4DP);
         }
+        return setListItemView(view, cursor, imageLoader, options, subjectTypeface, flags);
+    }
+
+    public static boolean setListItemView(final View view, final Cursor cursor,
+                                       final ImageLoader imageLoader, final DisplayImageOptions options,
+                                       Typeface subjectTypeface, int flags) {
         switch (view.getId()) {
             case R.id.list_item:
                 return setItem((ViewGroup) view, cursor, flags);
@@ -75,15 +82,13 @@ public class ThreadViewer {
             case R.id.list_item_header:
                 return setHeaderValue((TextView) view, cursor);
             case R.id.list_item_subject:
-                return setSubject((TextView) view, cursor, flags);
+                return setSubject((TextView) view, cursor, subjectTypeface, flags);
             case R.id.list_item_title:
                 return setTitle((TextView) view, cursor, flags);
             case R.id.list_item_text:
                 return setText((TextView) view, cursor, flags);
             case R.id.list_item_image_exif:
                 return setImageExifValue((TextView) view);
-            case R.id.list_item_thread_banner_ad:
-                return setBannerAd((ImageView) view, cursor, imageLoader, options, flags, padding4DP);
             default:
                 return false;
         }
@@ -139,7 +144,7 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean setSubject(final TextView tv, final Cursor cursor, int flags) {
+    static private boolean setSubject(final TextView tv, final Cursor cursor, Typeface subjectTypeface, int flags) {
         if ((flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE)) > 0) {
             tv.setText("");
             tv.setVisibility(View.GONE);
@@ -154,6 +159,8 @@ public class ThreadViewer {
             text = tv.getResources().getString(R.string.thread_is_dead) + (text.isEmpty() ? "" : " ") + text;
         if (text.length() > 0) {
             tv.setText(Html.fromHtml(text));
+            if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
+                tv.setTypeface(subjectTypeface);
             tv.setVisibility(View.VISIBLE);
         }
         else {
@@ -376,38 +383,41 @@ public class ThreadViewer {
     }
 
     protected static boolean setBannerAdView(View view, Cursor cursor, ImageLoader imageLoader,
-                                             DisplayImageOptions options, int flags, int padding4DP) {
-        if (view.getId() == R.id.list_item_thread_banner_ad) {
-            setBannerAd((ImageView) view, cursor, imageLoader, options, flags, padding4DP);
+                                             DisplayImageOptions options, int padding4DP) {
+        switch (view.getId()) {
+            case R.id.list_item_thread_banner_ad:
+                return setBannerAd((ImageView) view, cursor, imageLoader, options, padding4DP);
+            case R.id.list_item_thread_banner_ad_click_effect:
+                return setBannerAdLayoutParams(view, cursor, padding4DP);
+            default:
+                return true;
         }
-        else if (view.getId() == R.id.list_item) {
-            view.setVisibility(View.VISIBLE);
-        }
-        else {
-            view.setVisibility(View.GONE);
-        }
-        return true;
     }
 
     protected static boolean setBannerAd(final ImageView iv, Cursor cursor, ImageLoader imageLoader,
-                                         DisplayImageOptions options, int flags, int padding4DP) {
-        iv.setImageBitmap(null);
-        if ((flags & ChanPost.FLAG_IS_AD) > 0) {
-            ViewGroup.LayoutParams params = iv.getLayoutParams();
+                                         DisplayImageOptions options, int padding4DP) {
+        setBannerAdLayoutParams(iv, cursor, padding4DP);
+        String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
+        if (DEBUG) Log.i(TAG, "Displaying ad image iv=" + iv + " url=" + url);
+        imageLoader.displayImage(url, iv, options, bannerAdImageLoadingListener);
+        return true;
+    }
+
+    protected static boolean setBannerAdLayoutParams(final View v, Cursor cursor, int padding4DP) {
+        ViewParent parent = v.getParent();
+        View parentView = parent == null ? null : (View)parent;
+        if (parentView != null) {
+            int measuredWidth = parentView.getMeasuredWidth();
+            int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
+            int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
+            ViewGroup.LayoutParams params = v.getLayoutParams();
             if (params != null)
                 params.height = 12 * padding4DP; // 48dp to avoid big jumps, precalc would be better
-            iv.setVisibility(View.VISIBLE);
-            String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
-            //int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
-            //int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
-            if (DEBUG) Log.i(TAG, "Displaying ad image iv=" + iv + " url=" + url);
-            imageLoader.displayImage(url, iv, options, bannerAdImageLoadingListener);
         }
-        else {
-            ViewGroup.LayoutParams params = iv.getLayoutParams();
+        else { // approximate
+            ViewGroup.LayoutParams params = v.getLayoutParams();
             if (params != null)
-                params.height = 0;
-            iv.setVisibility(View.GONE);
+                params.height = 12 * padding4DP; // 48dp to avoid big jumps, precalc would be better
         }
         return true;
     }

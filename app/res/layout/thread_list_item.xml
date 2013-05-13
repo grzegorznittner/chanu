@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.chanapps.four.component.CheckableLinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        style="@style/ThreadListLayout"
+        style="@style/ThreadListItemLayout"
         android:id="@+id/list_item"
         >
 
@@ -32,10 +32,6 @@
                          android:layout_centerInParent="true"
                          android:id="@+id/list_item_expanded_progress_bar"/>
         </RelativeLayout>
-        <View
-            android:id="@+id/list_item_top_spacer"
-            android:layout_width="wrap_content"
-            android:layout_height="4dp"/>
         <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"/>
         <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
         <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"/>
@@ -45,10 +41,5 @@
     <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
 
     <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_image_exif"/>
-
-    <com.chanapps.four.component.StretchyImageView
-            android:id="@+id/list_item_thread_banner_ad"
-            style="@style/ThreadListBannerAd"
-            />
 
 </com.chanapps.four.component.CheckableLinearLayout>

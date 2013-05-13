@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.chanapps.four.component.CheckableRelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/ThreadListAdLayout"
+        android:id="@+id/list_item"
+        >
+
+    <com.chanapps.four.component.StretchyImageView
+            android:id="@+id/list_item_thread_banner_ad"
+            style="@style/ThreadListBannerAd"
+            />
+
+    <View
+            android:id="@+id/list_item_thread_banner_ad_click_effect"
+            style="@style/ThreadListBannerAdClickEffect"
+            />
+
+</com.chanapps.four.component.CheckableRelativeLayout>
