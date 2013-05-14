@@ -15,7 +15,6 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.ChanThreadStat;
-import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.fragment.BoardGroupFragment;
@@ -177,15 +176,10 @@ public class MobileProfile extends AbstractNetworkProfile {
             makeHealthStatusToast(context, health);
             return;
         }
-        if (DEBUG) Log.i(TAG, "Manual refresh board=" + boardCode);
-        if (ChanBoard.WATCH_BOARD_CODE.equals(boardCode)) {
-            ChanWatchlist.fetchWatchlistThreads(context);
-            //ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-            //activity.refresh();
-        }
-        else if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
+        if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode)) {
+            if (DEBUG) Log.i(TAG, "Manual refresh board=" + boardCode);
             boolean canFetch = FetchPopularThreadsService.schedulePopularFetchWithPriority(context);
             if (!canFetch)
                 postStopMessage(handler, R.string.board_wait_to_refresh);

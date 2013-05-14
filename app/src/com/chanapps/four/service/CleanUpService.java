@@ -20,14 +20,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanBoardStat;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanThread;
-import com.chanapps.four.data.ChanWatchlist;
-import com.chanapps.four.data.FileDesc;
-import com.chanapps.four.data.UserStatistics;
+import com.chanapps.four.data.*;
 import com.chanapps.four.widget.BoardWidgetProvider;
 
 /**
@@ -184,19 +177,21 @@ public class CleanUpService extends BaseChanService {
     }
 
 	private List<String> prepareTopWatchedBoards(Context context) {
-		List<ChanThread> watchedThreads = ChanWatchlist.getWatchedThreads(context);
-		List<String> watchedOrTopBoard = new ArrayList<String>();
-		for (ChanThread thread : watchedThreads) {
-			if (!watchedOrTopBoard.contains(thread.board)) {
-				watchedOrTopBoard.add(thread.board);
-			}
-		}
-		UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
-		for (ChanBoardStat stat : userStats.topBoards()) {
-			if (!watchedOrTopBoard.contains(stat.board)) {
-				watchedOrTopBoard.add(stat.board);
-			}
-		}
+        List<String> watchedOrTopBoard = new ArrayList<String>();
+        ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+        if (board != null && board.threads != null) {
+            for (ChanPost thread : board.threads) {
+                if (!watchedOrTopBoard.contains(thread.board)) {
+                    watchedOrTopBoard.add(thread.board);
+                }
+            }
+        }
+        UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
+        for (ChanBoardStat stat : userStats.topBoards()) {
+            if (!watchedOrTopBoard.contains(stat.board)) {
+                watchedOrTopBoard.add(stat.board);
+            }
+        }
 		return watchedOrTopBoard;
 	}
 

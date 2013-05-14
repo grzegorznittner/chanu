@@ -291,12 +291,11 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
     protected int updateThreadsAndWatchlist(ChanPostResponse chanPostResponse) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean addThreadToWatchlist = prefs.getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true);
         long tim = activity.tim != 0 ? activity.tim : 1000 * (new Date()).getTime();// approximate until we get it back from the api
         long postThreadNo = chanPostResponse.getThreadNo(); // direct from 4chan post response parsing
         long threadNo = postThreadNo != 0 ? postThreadNo : activity.threadNo; // fallback
         long postNo = chanPostResponse.getPostNo();
-        if (DEBUG) Log.i(TAG, "posted " + activity.boardCode + "/" + threadNo + " tim:" + tim + " addToWatchlist:" + addThreadToWatchlist);
+        if (DEBUG) Log.i(TAG, "posted /" + activity.boardCode + "/" + threadNo + ":" + postNo + " tim:" + tim);
 
         // forcing thread/board refresh
         ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
@@ -306,29 +305,26 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
                 FetchChanDataService.scheduleThreadFetchWithPriority(activity, activity.boardCode, activity.threadNo);
             } else if (activityId.activity == LastActivity.BOARD_ACTIVITY) {
                 ChanFileStorage.resetLastFetched(activityId.boardCode);
-                FetchChanDataService.scheduleBoardFetch(activity, activity.boardCode);
+                FetchChanDataService.scheduleBoardFetchWithPriority(activity, activity.boardCode);
             }
         }
 
-        String threadText = activity.getSubject().trim();
-        if ("".equals(threadText))
-            threadText = activity.getMessage().trim();
-        if ("".equals(threadText))
-            threadText = ChanWatchlist.DEFAULT_WATCHTEXT;
-        if (threadText.length() > ChanPost.MAX_SINGLELINE_TEXT_LEN)
-            threadText = threadText.substring(0, ChanPost.MAX_SINGLELINE_TEXT_LEN);
-        if (addThreadToWatchlist && threadNo > 0) {
-            ChanWatchlist.watchThread(context,
-                    tim,
-                    activity.boardCode,
-                    threadNo,
-                    threadText,
-                    activity.imageUri == null ? null : activity.imageUri.toString(),
-                    250,
-                    250);
+        // auto-add to watchlist
+        ChanThread thread = new ChanThread();
+        thread.no = threadNo;
+        thread.board = activity.boardCode;
+        thread.tim = tim;
+        thread.tn_w = 250;
+        thread.tn_h = 250;
+        thread.sub = activity.getSubject().trim();
+        thread.com = activity.getMessage().trim();
+        try {
+            ChanFileStorage.addWatchedThread(context, thread);
         }
-
-        ChanPostlist.addPost(context, activity.boardCode, threadNo, postNo, password);
+        catch (IOException e) {
+            Log.e(TAG, "Couldn't add thread /" + thread.board + "/" + thread.no + " to watchlist", e);
+        }
+        //ChanPostlist.addPost(context, activity.boardCode, threadNo, postNo, password);
 
         activity.imageUri = null; // now we've processed so don't use it again
         return 0;

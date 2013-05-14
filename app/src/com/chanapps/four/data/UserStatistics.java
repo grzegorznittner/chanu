@@ -264,7 +264,8 @@ public class UserStatistics {
 			}
 			tipSet = THREAD_FEATURES;
 			break;
-		case RECENT:
+		    /*
+        case RECENT:
 			if (!displayedTips.contains(ChanFeature.POPULAR_DESC)) {
 				return ChanFeature.POPULAR_DESC;
 			}
@@ -276,8 +277,9 @@ public class UserStatistics {
 			}
 			tipSet = WATCHLIST_FEATURES;
 			break;
-		}
-		
+		*/
+        }
+
 		if (!tipShouldBeDisplayed()) {
 			return ChanFeature.NONE;
 		}

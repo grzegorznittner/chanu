@@ -1,6 +1,7 @@
 package com.chanapps.four.activity;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -58,7 +59,6 @@ import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.task.HighlightRepliesTask;
 import com.chanapps.four.viewer.ThreadViewer;
-import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.*;
@@ -116,7 +116,6 @@ public class ThreadActivity
     protected String imageUrl;
     protected int imageWidth;
     protected int imageHeight;
-    protected ChanThread thread = null;
     protected boolean shouldPlayThread = false;
     protected ShareActionProvider shareActionProvider = null;
     protected Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
@@ -558,17 +557,14 @@ public class ThreadActivity
             // thread_image_popup_menu
             case R.id.view_image_gallery_menu:
                 GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
-                addToWatchlistIfNotAlreadyIn();
                 return true;
             case R.id.download_all_images_menu:
                 ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
                 Toast.makeText(this, R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
-                addToWatchlistIfNotAlreadyIn();
                 return true;
             case R.id.download_all_images_to_gallery_menu:
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo);
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
-                addToWatchlistIfNotAlreadyIn();
                 return true;
             /*
             case R.id.thread_reply_popup_button_menu:
@@ -639,15 +635,22 @@ public class ThreadActivity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
     }
 
-    protected void addToWatchlistIfNotAlreadyIn() {
-        int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
-        if (stringId == R.string.thread_added_to_watchlist)
-            Toast.makeText(this, R.string.thread_added_to_watchlist_activity_based, Toast.LENGTH_SHORT).show();
-    }
-
     protected void addToWatchlist() {
-        int stringId = ChanWatchlist.watchThread(this, tim, boardCode, threadNo, text, imageUrl, imageWidth, imageHeight);
-        Toast.makeText(this, stringId, Toast.LENGTH_SHORT).show();
+        ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
+        if (thread == null) {
+            Log.e(TAG, "Couldn't add null thread /" + boardCode + "/" + threadNo + " to watchlist");
+            Toast.makeText(getApplicationContext(), R.string.thread_not_added_to_watchlist, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            ChanFileStorage.addWatchedThread(this.getApplicationContext(), thread);
+            if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/" + threadNo + " to watchlist");
+            Toast.makeText(getApplicationContext(), R.string.thread_added_to_watchlist, Toast.LENGTH_SHORT).show();
+        }
+        catch (IOException e) {
+            Log.e(TAG, "Exception adding /" + boardCode + "/" + threadNo + " to watchlist", e);
+            Toast.makeText(getApplicationContext(), R.string.thread_not_added_to_watchlist, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public ChanActivityId getChanActivityId() {
@@ -729,7 +732,6 @@ public class ThreadActivity
             case R.id.download_images_to_gallery_menu:
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
-                addToWatchlistIfNotAlreadyIn();
                 return true;
             case R.id.go_to_link_menu:
                 String[] urls = extractUrlsFromPosts(postPos);

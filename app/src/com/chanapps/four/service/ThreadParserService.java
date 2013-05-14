@@ -85,8 +85,8 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
         if (threadNo == 0) {
             Log.e(TAG, "Board loading must be done via the FetchChanDataService");
         }
-        if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
-            Log.e(TAG, "Watching board must use ChanWatchlist instead of service");
+        if (boardCode.equals(ChanBoard.WATCHLIST_BOARD_CODE)) {
+            Log.e(TAG, "Watchlist is never parsed but stored directly");
             return;
         }
 

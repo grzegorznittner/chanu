@@ -10,11 +10,6 @@
           android:icon="@drawable/navigation_refresh"
           android:showAsAction="ifRoom"
             />
-    <item android:id="@+id/clean_watchlist_menu"
-          android:title="@string/pref_clean_watchlist"
-          android:icon="@drawable/content_discard"
-          android:showAsAction="ifRoom"
-            />
     <item android:id="@+id/clear_watchlist_menu"
           android:title="@string/pref_clear_watchlist"
           android:icon="@drawable/content_remove"

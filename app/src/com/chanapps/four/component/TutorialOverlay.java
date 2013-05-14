@@ -22,8 +22,6 @@ public class TutorialOverlay {
 
     public enum Page {
         BOARDLIST,
-        RECENT,
-        WATCHLIST,
         BOARD,
         THREAD;
     }

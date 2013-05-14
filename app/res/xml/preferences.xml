@@ -88,27 +88,6 @@
                 android:title="@string/pref_clear_cache"
                 android:summary="@string/pref_clear_cache_summ" />
 
-    </PreferenceCategory>
-
-    <PreferenceCategory
-            android:key="pref_watchlist_category"
-            android:title="@string/pref_watchlist_category">
-
-        <com.chanapps.four.component.WatchlistRetentionPreference
-                android:key="pref_watchlist_retention"
-                android:title="@string/pref_watchlist_retention"
-                android:summary="@string/pref_watchlist_retention_summ"
-                chanapps:min="0"
-                chanapps:max="365"
-                chanapps:unitsLeft=""
-                chanapps:unitsRight="days"
-                />
-
-        <Preference
-                android:key="pref_clean_watchlist"
-                android:title="@string/pref_clean_watchlist"
-                android:summary="@string/pref_clean_watchlist_summ" />
-
         <Preference
                 android:key="pref_clear_watchlist"
                 android:title="@string/pref_clear_watchlist"
@@ -140,13 +119,6 @@
                     android:summaryOn="@string/pref_hide_post_numbers_summ_on"
                     android:summaryOff="@string/pref_hide_post_numbers_summ_off"
                     android:defaultValue="false" />
-
-            <CheckBoxPreference
-                    android:key="pref_automatically_manage_watchlist"
-                    android:title="@string/pref_automatically_manage_watchlist"
-                    android:summaryOn="@string/pref_automatically_manage_watchlist_summ_on"
-                    android:summaryOff="@string/pref_automatically_manage_watchlist_summ_off"
-                    android:defaultValue="true" />
 
             <CheckBoxPreference
                     android:key="pref_use_friendly_ids"

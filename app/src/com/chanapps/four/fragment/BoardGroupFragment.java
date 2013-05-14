@@ -102,23 +102,6 @@ public class BoardGroupFragment
         if (DEBUG) Log.v(TAG, "BoardGroupFragment " + boardSelectorTab + " onCreate");
     }
 
-    @Override                                             
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        switch (boardSelectorTab) {
-            case WATCHLIST:
-                ChanWatchlist.setWatchlistFragment(this);
-                break;
-            case RECENT:
-                //ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), boardSelectorTab.boardCode());
-                //FetchPopularThreadsService.schedulePopularFetchService(getActivity().getApplicationContext());
-                break;
-            default:
-                break;
-        }
-        //LoaderManager.enableDebugLogging(true);
-    }
-
     protected void createAbsListView(View contentView) {
         absListView = (GridView)contentView.findViewById(R.id.board_grid_view);
         Display display = getActivity().getWindowManager().getDefaultDisplay();
@@ -175,26 +158,22 @@ public class BoardGroupFragment
         if (DEBUG) Log.i(TAG, "onPrepareOptionsMenu tab=" + boardSelectorTab);
         MenuItem rules = menu.findItem(R.id.global_rules_menu);
         MenuItem refresh = menu.findItem(R.id.refresh_menu);
-        MenuItem clean = menu.findItem(R.id.clean_watchlist_menu);
         MenuItem clear = menu.findItem(R.id.clear_watchlist_menu);
         switch (boardSelectorTab) {
             default:
             case BOARDLIST:
                 rules.setVisible(true);
                 refresh.setVisible(false);
-                clean.setVisible(false);
                 clear.setVisible(false);
                 break;
             case RECENT:
                 rules.setVisible(false);
                 refresh.setVisible(true);
-                clean.setVisible(false);
                 clear.setVisible(false);
                 break;
             case WATCHLIST:
                 rules.setVisible(false);
                 refresh.setVisible(false);
-                clean.setVisible(true);
                 clear.setVisible(true);
                 break;
         }
@@ -270,7 +249,7 @@ public class BoardGroupFragment
             case BOARDLIST:
                 return new BoardSelectorCursorLoader(getActivity());
             case WATCHLIST:
-                return new BoardSelectorWatchlistCursorLoader(getActivity());
+                return new BoardCursorLoader(getActivity(), boardSelectorTab.boardCode(), "");
             case RECENT:
             default:
                 return new BoardTypeRecentCursorLoader(getActivity());

@@ -91,7 +91,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
             for (int i = 0; i < spinnerAdapter.getCount(); i++) {
                 String boardText = (String)spinnerAdapter.getItem(i);
                 if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                    && ChanBoard.WATCH_BOARD_CODE.equals(widgetConf.boardCode)
+                    && ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)
                     && boardText.matches(getString(R.string.board_watch)))
                 {
                     position = i;
@@ -137,7 +137,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
                 if (onDisk) {
                     freshFetch = false;
                 } else {
-                    if (ChanBoard.WATCH_BOARD_CODE.equals(widgetConf.boardCode)) {
+                    if (ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)) {
                         freshFetch = false;
                     }
                     else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
@@ -240,7 +240,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
             boardSpinnerLine = "";
         String boardCode;
         if (getString(R.string.board_watch).equals(boardSpinnerLine)) {
-            boardCode = ChanBoard.WATCH_BOARD_CODE;
+            boardCode = ChanBoard.WATCHLIST_BOARD_CODE;
         }
         else if (getString(R.string.board_popular).equals(boardSpinnerLine)) {
             boardCode = ChanBoard.POPULAR_BOARD_CODE;
