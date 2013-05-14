@@ -20,6 +20,7 @@ import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.service.FileSaverService;
+import com.chanapps.four.service.NetworkProfileManager;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -128,7 +129,20 @@ public class UserStatistics {
 			FileSaverService.startService(activity.getBaseContext(), FileSaverService.FileType.USER_STATISTICS);
 		}
 	}
-	
+
+    public void reset() {
+        boardStats.clear();
+        threadStats.clear();
+        boardThreadStats.clear();
+        usedFeatures.clear();
+        displayedTips.clear();
+        tipDisplayed = 0;
+        lastUpdate = 0;
+        ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        if (activity != null)
+            FileSaverService.startService(activity.getBaseContext(), FileSaverService.FileType.USER_STATISTICS);
+    }
+
 	public void boardUse(String boardCode) {
 		if (boardCode == null) {
 			return;
@@ -300,8 +314,14 @@ public class UserStatistics {
 		displayedTips.add(feature);
 		tipDisplayed = new Date().getTime();
 	}
-	
-	public boolean tipShouldBeDisplayed() {
+
+    public void disableTips() {
+        for (ChanFeature feature : ChanFeature.values())
+            displayedTips.add(feature);
+        tipDisplayed = new Date().getTime();
+    }
+
+    public boolean tipShouldBeDisplayed() {
 		long currentTime = new Date().getTime();
 		return currentTime - tipDisplayed > MIN_DELAY_FOR_TIPS;
 	}

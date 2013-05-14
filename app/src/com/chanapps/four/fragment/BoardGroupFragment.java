@@ -21,15 +21,15 @@ import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.*;
 import com.chanapps.four.service.FetchChanDataService;
-import com.chanapps.four.service.FetchPopularThreadsService;
 import com.chanapps.four.viewer.BoardGridViewer;
 import com.chanapps.four.viewer.BoardSelectorBoardsViewer;
-import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
+
+import java.lang.ref.WeakReference;
 
 /**
 * User: arley
@@ -60,8 +60,10 @@ public class BoardGroupFragment
     protected ImageLoader imageLoader;
     protected DisplayImageOptions displayImageOptions;
 
-    public BaseAdapter getAdapter() {
-        return adapter;
+    protected static boolean scheduledWatchlistRefresh = false;
+
+    public static void scheduleWatchlistRefresh() {
+        scheduledWatchlistRefresh = true;
     }
 
     @Override
@@ -73,10 +75,6 @@ public class BoardGroupFragment
                     getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
                 }
             });
-    }
-
-    public void invalidate() {
-        // ignored
     }
 
     @Override
@@ -203,8 +201,16 @@ public class BoardGroupFragment
         //else {
         //    getLoaderManager().restartLoader(0, null, this);
         //}
-        if (absListView != null && absListView.getCount() <= 0 && getLoaderManager() != null) {
+        if (absListView.getCount() <= 0) {
+            if (boardSelectorTab == BoardSelectorTab.WATCHLIST)
+                scheduledWatchlistRefresh = false;
             if (DEBUG) Log.i(TAG, "No data displayed, starting loader");
+            getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
+        }
+        else if (scheduledWatchlistRefresh) {
+            if (boardSelectorTab == BoardSelectorTab.WATCHLIST)
+                scheduledWatchlistRefresh = false;
+            if (DEBUG) Log.i(TAG, "Refresh scheduled, starting loader");
             getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
         }
     }
@@ -238,21 +244,24 @@ public class BoardGroupFragment
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        handler = null;
+    public void onDestroy() {
+        super.onDestroy();
+        if (DEBUG) Log.i(TAG, "onDestroy tab=" + boardSelectorTab);
+        if (boardSelectorTab == BoardSelectorTab.WATCHLIST)
+            scheduledWatchlistRefresh = false;
     }
+
 
     protected Loader<Cursor> createCursorLoader() {
         if (DEBUG) Log.v(TAG, "createCursorLoader boardSelectorType=" + boardSelectorTab);
         switch (boardSelectorTab) {
             case BOARDLIST:
-                return new BoardSelectorCursorLoader(getActivity());
+                return new BoardSelectorCursorLoader(getBaseContext());
             case WATCHLIST:
-                return new BoardCursorLoader(getActivity(), boardSelectorTab.boardCode(), "");
+                return new BoardCursorLoader(getBaseContext(), boardSelectorTab.boardCode(), "");
             case RECENT:
             default:
-                return new BoardTypeRecentCursorLoader(getActivity());
+                return new BoardTypeRecentCursorLoader(getBaseContext());
         }
     }
 

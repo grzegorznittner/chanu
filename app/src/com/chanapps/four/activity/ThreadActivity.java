@@ -46,10 +46,7 @@ import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.UserStatistics.ChanFeature;
-import com.chanapps.four.fragment.BlocklistSelectToAddDialogFragment;
-import com.chanapps.four.fragment.DeletePostDialogFragment;
-import com.chanapps.four.fragment.ListOfLinksDialogFragment;
-import com.chanapps.four.fragment.ReportPostDialogFragment;
+import com.chanapps.four.fragment.*;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
@@ -644,6 +641,7 @@ public class ThreadActivity
         }
         try {
             ChanFileStorage.addWatchedThread(this.getApplicationContext(), thread);
+            BoardGroupFragment.scheduleWatchlistRefresh();
             if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/" + threadNo + " to watchlist");
             Toast.makeText(getApplicationContext(), R.string.thread_added_to_watchlist, Toast.LENGTH_SHORT).show();
         }
@@ -789,10 +787,22 @@ public class ThreadActivity
             Cursor cursor = (Cursor) adapter.getItem(i);
             if (cursor == null)
                 continue;
-            String itemText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
-            if (itemText == null)
-                itemText = "";
-            text += (text.isEmpty() ? "" : "<br/><br/>") + itemText;
+            String subject = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_SUBJECT));
+            if (subject != null && !subject.isEmpty())
+                text += (text.isEmpty() ? "" : "\n") + subject;
+            String message = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_TEXT));
+            if (message != null && !message.isEmpty())
+                text += (text.isEmpty() ? "" : "\n") + message;
+            if (text.isEmpty()) {
+                subject = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+                if (subject != null && !subject.isEmpty())
+                    text += (text.isEmpty() ? "" : "\n") + subject;
+                message = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+                if (message != null && !message.isEmpty())
+                    text += (text.isEmpty() ? "" : "\n") + message;
+            }
+            if (!text.isEmpty())
+                text += "<br/><br/>";
         }
         return text;
     }

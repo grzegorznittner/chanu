@@ -225,5 +225,7 @@
     <dimen name="tutorial_overlay_button_paddingBottom">8dp</dimen>
     <dimen name="tutorial_overlay_button_textSize">22sp</dimen>
 
+    <dimen name="tutorial_overlay_dismiss_marginRight">16dp</dimen>
+    <dimen name="tutorial_overlay_dismiss_marginBottom">8dp</dimen>
 
 </resources>

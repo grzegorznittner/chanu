@@ -31,6 +31,7 @@ public class TutorialOverlay {
     protected TextView tutorialOverlaySubject;
     protected TextView tutorialOverlayDetail;
     protected Button tutorialOverlayButton;
+    protected TextView tutorialOverlayDismiss;
 
     public TutorialOverlay(View layout, Page page) {
         feature = NetworkProfileManager.instance().getUserStatistics().nextTipForPage(page);
@@ -57,6 +58,14 @@ public class TutorialOverlay {
             public void onClick(View v) {
                 tutorialOverlay.setVisibility(View.GONE);
                 NetworkProfileManager.instance().getUserStatistics().tipDisplayed(feature);
+            }
+        });
+        tutorialOverlayDismiss = (TextView)layout.findViewById(R.id.tutorial_overlay_dismiss);
+        tutorialOverlayDismiss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tutorialOverlay.setVisibility(View.GONE);
+                NetworkProfileManager.instance().getUserStatistics().disableTips();
             }
         });
         tutorialOverlay.setVisibility(View.VISIBLE);

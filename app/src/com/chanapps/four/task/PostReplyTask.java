@@ -1,17 +1,15 @@
 package com.chanapps.four.task;
 
 import java.io.*;
-import java.net.URI;
-import java.net.URL;
 import java.util.*;
 
 import android.os.Message;
+import com.chanapps.four.activity.*;
 import com.chanapps.four.data.*;
+import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.multipartmime.*;
 import org.apache.commons.io.FileUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 
 import android.content.Context;
@@ -24,10 +22,6 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
-import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.PostReplyActivity;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.PostingReplyDialogFragment;
 import com.chanapps.four.service.FetchChanDataService;
@@ -320,6 +314,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
         thread.com = activity.getMessage().trim();
         try {
             ChanFileStorage.addWatchedThread(context, thread);
+            BoardGroupFragment.scheduleWatchlistRefresh();
         }
         catch (IOException e) {
             Log.e(TAG, "Couldn't add thread /" + thread.board + "/" + thread.no + " to watchlist", e);

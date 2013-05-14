@@ -25,7 +25,6 @@ import com.chanapps.four.data.BoardSelectorTab;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.UserStatistics.ChanFeature;
 import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -35,7 +34,7 @@ public class BoardSelectorActivity
         implements ChanIdentifiedActivity
 {
     public static final String TAG = "BoardSelectorActivity";
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final String BOARD_SELECTOR_TAB = "boardSelectorTab";
 
     private ViewPager mViewPager;
@@ -43,7 +42,6 @@ public class BoardSelectorActivity
     private SharedPreferences prefs = null;
     private int menuId;
     public static final BoardSelectorTab DEFAULT_BOARD_SELECTOR_TAB = BoardSelectorTab.BOARDLIST;
-    //public BoardSelectorTab selectedBoardTab = DEFAULT_BOARD_SELECTOR_TAB;
 
     public static void startActivity(Activity from, BoardSelectorTab tab) {
         from.startActivity(createIntentForActivity(from, tab));
@@ -159,9 +157,6 @@ public class BoardSelectorActivity
             invalidateOptionsMenu();
         }
         
-    	ChanFeature feature = NetworkProfileManager.instance().getUserStatistics().nextTipForPage(Page.BOARDLIST);
-    	if (DEBUG) Log.i(TAG, "Tip for " + feature + " should be displayed");
-
         new TutorialOverlay(mViewPager, Page.BOARDLIST);
     }
 
@@ -226,9 +221,9 @@ public class BoardSelectorActivity
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;
             case R.id.clear_watchlist_menu:
-                final BoardGroupFragment fragment =
-                        (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(BoardSelectorTab.WATCHLIST.ordinal());
-                (new WatchlistClearDialogFragment(fragment))
+                BoardGroupFragment fragment = (BoardGroupFragment)mTabsAdapter
+                        .getFragmentAtPosition(BoardSelectorTab.WATCHLIST.ordinal());
+                new WatchlistClearDialogFragment(fragment)
                         .show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
                 return true;
             case R.id.settings_menu:
@@ -237,7 +232,8 @@ public class BoardSelectorActivity
                 startActivity(settingsIntent);
                 return true;
             case R.id.global_rules_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this, R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this,
+                        R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
                 rawResourceDialog.show();
                 return true;
             case R.id.exit_menu:
@@ -273,13 +269,6 @@ public class BoardSelectorActivity
 
     public void selectTab(BoardSelectorTab tab) {
         mViewPager.setCurrentItem(tab.ordinal(), true);
-    }
-
-    public void notifyWatchlistChanged() {
-        BoardGroupFragment fragment
-                = (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(BoardSelectorTab.WATCHLIST.ordinal());
-        if (fragment != null && fragment.getAdapter() != null)
-            fragment.getAdapter().notifyDataSetChanged();
     }
 
     public void closeSearch() {}

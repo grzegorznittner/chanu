@@ -21,7 +21,7 @@ import com.chanapps.four.data.*;
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected static final String TAG = BoardCursorLoader.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
     protected static final double AD_PROBABILITY = 0.20;
     protected static final int MINIMUM_AD_SPACING = 4;
@@ -76,7 +76,8 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         //if (!board.isVirtualBoard())
         //    matrixCursor.addRow(ChanBoard.makeBoardTitleRow(context, boardName));
 
-        if (board.threads != null && board.threads.length > 1 && !board.defData) { // show loading
+        if (board.threads != null && !board.defData
+                && board.threads.length > 0 && board.threads[0] != null && !board.threads[0].defData) { // show loading
             if (!board.isVirtualBoard())
                 matrixCursor.addRow(board.makeThreadAdRow(getContext(), 0));
 

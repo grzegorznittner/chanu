@@ -54,4 +54,17 @@
             android:contentDescription="@string/tutorial_overlay_button_description"
             />
 
+    <TextView
+            android:id="@+id/tutorial_overlay_dismiss"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/tutorial_overlay_dismiss_marginRight"
+            android:layout_marginBottom="@dimen/tutorial_overlay_dismiss_marginBottom"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/PaletteLighterGray"
+            android:textSize="@dimen/tutorial_overlay_detail_textSize"
+            android:text="@string/tutorial_overlay_dismiss"
+            />
+
 </RelativeLayout>

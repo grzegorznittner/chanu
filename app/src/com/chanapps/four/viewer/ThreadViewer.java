@@ -153,10 +153,12 @@ public class ThreadViewer {
         String text = "";
         if ((flags & ChanPost.FLAG_HAS_SUBJECT) > 0)
             text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-        if ((flags & ChanPost.FLAG_IS_CLOSED) > 0)
-            text = tv.getResources().getString(R.string.thread_is_closed) + (text.isEmpty() ? "" : " ") + text;
-        if ((flags & ChanPost.FLAG_IS_DEAD) > 0)
-            text = tv.getResources().getString(R.string.thread_is_dead) + (text.isEmpty() ? "" : " ") + text;
+        if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
+            if ((flags & ChanPost.FLAG_IS_CLOSED) > 0)
+                text = tv.getResources().getString(R.string.thread_is_closed) + (text.isEmpty() ? "" : " ") + text;
+            if ((flags & ChanPost.FLAG_IS_DEAD) > 0)
+                text = tv.getResources().getString(R.string.thread_is_dead) + (text.isEmpty() ? "" : " ") + text;
+        }
         if (text.length() > 0) {
             tv.setText(Html.fromHtml(text));
             if ((flags & ChanPost.FLAG_IS_HEADER) > 0)

@@ -114,13 +114,6 @@
                     android:defaultValue="true" />
 
             <CheckBoxPreference
-                    android:key="pref_hide_post_numbers"
-                    android:title="@string/pref_hide_post_numbers"
-                    android:summaryOn="@string/pref_hide_post_numbers_summ_on"
-                    android:summaryOff="@string/pref_hide_post_numbers_summ_off"
-                    android:defaultValue="false" />
-
-            <CheckBoxPreference
                     android:key="pref_use_friendly_ids"
                     android:title="@string/pref_use_friendly_ids"
                     android:summaryOn="@string/pref_use_friendly_ids_summ_on"

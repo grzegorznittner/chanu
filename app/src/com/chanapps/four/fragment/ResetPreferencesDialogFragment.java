@@ -12,6 +12,8 @@ import android.app.DialogFragment;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.UserStatistics;
+import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.widget.BoardWidgetProvider;
 import java.util.Set;
 
@@ -48,11 +50,9 @@ public class ResetPreferencesDialogFragment extends DialogFragment {
                                         .putStringSet(ChanHelper.PREF_WIDGET_BOARDS, savedWidgetConf)
                                         .commit();
 
-                                // I tried to call notifyStateChange on the root adapter instead but it does nothing
-                                Activity activity = fragment.getActivity();
-                                Intent intent = activity.getIntent();
-                                activity.finish();
-                                activity.startActivity(intent);
+                                NetworkProfileManager.instance().getUserStatistics().reset();
+                                fragment.setPreferenceScreen(null);
+                                fragment.addPreferencesFromResource(R.xml.preferences);
                                 Toast.makeText(getActivity(), R.string.dialog_reset_preferences, Toast.LENGTH_SHORT).show();
                             }
                         })

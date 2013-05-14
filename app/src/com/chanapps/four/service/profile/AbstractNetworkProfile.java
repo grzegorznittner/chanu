@@ -129,10 +129,6 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	public void onBoardSelectorSelected(Context context, String boardCode) {
 		if (DEBUG) Log.d(TAG, "onBoardSelectorSelected called");
 		usageCounter++;
-        ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-        if (activity.getChanActivityId().activity == ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY) {
-            ((BoardSelectorActivity)activity).notifyWatchlistChanged(); // best to do in watchlist itself, don't know how
-        }
 	}
 
 	@Override

@@ -29,7 +29,6 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     protected long threadNo;
     protected int numGridColumns;
     protected boolean showRelatedBoards;
-    private boolean hidePostNumbers;
     private boolean useFriendlyIds;
 
     protected ThreadCursorLoader(Context context) {
@@ -70,7 +69,6 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     @Override
     public Cursor loadInBackground() {
         try {
-            hidePostNumbers = boardName.equals("b") ? false : prefs.getBoolean(SettingsActivity.PREF_HIDE_POST_NUMBERS, false);
             useFriendlyIds = prefs.getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
             ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
             if (DEBUG) Log.i(TAG, "Loaded board from storage " + board);
@@ -122,7 +120,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
                 numQueryMatches++;
             post.isDead = thread.isDead; // inherit from parent
             post.closed = thread.closed; // inherit
-            post.hidePostNumbers = hidePostNumbers;
+            post.hidePostNumbers = false; // always show
             post.useFriendlyIds = useFriendlyIds;
             matrixCursor.addRow(post.makeRow(query, i));
             // randomly distribute ads

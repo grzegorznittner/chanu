@@ -90,58 +90,58 @@
 
     <!-- menus -->
     <string name="settings_menu">Settings</string>
-    <string name="global_rules_menu">Global Rules</string>
-    <string name="board_rules_menu">Board Rules</string>
-    <string name="go_to_top_position_menu">Go to Top</string>
-    <string name="play_thread_menu">Play Thread</string>
-    <string name="play_thread_stop_menu">Stop Thread</string>
-    <string name="go_to_end_position_menu">Go to End</string>
-    <string name="refresh_board_menu">Refresh Board</string>
-    <string name="refresh_thread_menu">Refresh Thread</string>
-    <string name="new_thread_menu">New Thread</string>
-    <string name="prefetch_board_menu">Preload Board Threads</string>
-    <string name="watch_thread_menu">Watch Thread</string>
-    <string name="view_as_grid_menu">View As Grid</string>
-    <string name="view_as_list_menu">View As List</string>
-    <string name="thread_image_popup_menu">Thread Images</string>
-    <string name="thread_navigate_popup_menu">Thread Navigation</string>
-    <string name="thread_reply_menu">Thread Reply</string>
-    <string name="post_reply_menu">Post Reply</string>
-    <string name="post_reply_quote_menu">Post Quoted Reply</string>
-    <string name="post_reply_all_menu">Post Reply</string>
-    <string name="post_reply_all_quote_menu">Post Quoted Reply</string>
-    <string name="go_to_link_menu">Go To Link</string>
+    <string name="global_rules_menu">Global rules</string>
+    <string name="board_rules_menu">Board rules</string>
+    <string name="go_to_top_position_menu">Go to top</string>
+    <string name="play_thread_menu">Play thread</string>
+    <string name="play_thread_stop_menu">Stop thread</string>
+    <string name="go_to_end_position_menu">Go to end</string>
+    <string name="refresh_board_menu">Refresh board</string>
+    <string name="refresh_thread_menu">Refresh thread</string>
+    <string name="new_thread_menu">New thread</string>
+    <string name="prefetch_board_menu">Preload threads</string>
+    <string name="watch_thread_menu">Watch thread</string>
+    <string name="view_as_grid_menu">View as grid</string>
+    <string name="view_as_list_menu">View as list</string>
+    <string name="thread_image_popup_menu">Thread images</string>
+    <string name="thread_navigate_popup_menu">Thread navigation</string>
+    <string name="thread_reply_menu">Thread reply</string>
+    <string name="post_reply_menu">Post reply</string>
+    <string name="post_reply_quote_menu">Post quoted reply</string>
+    <string name="post_reply_all_menu">Post reply</string>
+    <string name="post_reply_all_quote_menu">Post quoted reply</string>
+    <string name="go_to_link_menu">Go to link</string>
     <string name="go_to_link_not_found">No links found in posts</string>
-    <string name="select_text_menu">Select Text</string>
-    <string name="select_text_hint">Select Text</string>
-    <string name="copy_text_menu">Copy Text</string>
-    <string name="delete_report_posts_menu">Delete/Report Posts</string>
-    <string name="delete_posts_menu">Delete Posts</string>
-    <string name="report_posts_menu">Report Posts</string>
-    <string name="block_posts_menu">Block Posts</string>
-    <string name="translate_posts_menu">Translate Posts</string>
+    <string name="select_text_menu">Select text</string>
+    <string name="select_text_hint">Select text</string>
+    <string name="copy_text_menu">Copy text</string>
+    <string name="delete_report_posts_menu">Delete/report posts</string>
+    <string name="delete_posts_menu">Delete posts</string>
+    <string name="report_posts_menu">Report posts</string>
+    <string name="block_posts_menu">Block posts</string>
+    <string name="translate_posts_menu">Translate posts</string>
     <string name="translate_no_text">No text found to translate</string>
-    <string name="share_image">Share Image</string>
-    <string name="share_text">Share Text</string>
+    <string name="share_image">Share image</string>
+    <string name="share_text">Share text</string>
     <string name="share_text_default">Thread /</string>
     <string name="share_text_empty">No text found to share</string>
-    <string name="toggle_image_only_menu">Toggle Image Only</string>
-    <string name="prev_image_menu">Prev Image</string>
-    <string name="next_image_menu">Next Image</string>
-    <string name="download_all_images_menu">Preload All Images</string>
-    <string name="download_all_images_to_gallery_menu">Download All To Gallery</string>
-    <string name="download_images_to_gallery_menu">Download To Gallery</string>
-    <string name="download_image_menu">Save to Gallery</string>
-    <string name="set_as_wallpaper_menu">Set as Wallpaper</string>
-    <string name="view_image_gallery_menu">Thread Gallery</string>
-    <string name="image_search_menu">Reverse Image Search</string>
-    <string name="anime_image_search_menu">IQDB Image Search</string>
-    <string name="share_image_menu">Share Image</string>
-    <string name="share_text_menu">Share Text</string>
-    <string name="post_reply_send_menu">Post Reply</string>
-    <string name="offline_board_view_menu">Board Gallery</string>
+    <string name="toggle_image_only_menu">Toggle image only</string>
+    <string name="prev_image_menu">Prev image</string>
+    <string name="next_image_menu">Next image</string>
+    <string name="download_all_images_menu">Preload all images</string>
+    <string name="download_all_images_to_gallery_menu">Download to gallery</string>
+    <string name="download_images_to_gallery_menu">Download to gallery</string>
+    <string name="download_image_menu">Save to gallery</string>
+    <string name="set_as_wallpaper_menu">Set as wallpaper</string>
+    <string name="view_image_gallery_menu">Thread gallery</string>
+    <string name="image_search_menu">Reverse image search</string>
+    <string name="anime_image_search_menu">IQDB image search</string>
+    <string name="share_image_menu">Share image</string>
+    <string name="share_text_menu">Share text</string>
+    <string name="post_reply_send_menu">Post reply</string>
+    <string name="offline_board_view_menu">Board gallery</string>
     <string name="offline_board_view_title">%1$s</string>
-    <string name="offline_chan_view_menu">Boards Gallery</string>
+    <string name="offline_chan_view_menu">Boards gallery</string>
 
     <!-- board types tab -->
     <string name="japanese_culture">Japanese Culture</string>
@@ -541,6 +541,7 @@
     <!-- tutorial -->
     <string name="tutorial_overlay_button">Got It</string>
     <string name="tutorial_overlay_button_description">Dismiss tutorial</string>
+    <string name="tutorial_overlay_dismiss">Don\'t show any more tutorials</string>
 
     <string name="tutorial_boardselector_desc">Welcome to the Boards</string>
     <string name="tutorial_boardselector_desc_detail">On Chanu, people post images on boards and discuss them. Click a
@@ -1279,5 +1280,8 @@
     <dimen name="tutorial_overlay_button_paddingRight">48dp</dimen>
     <dimen name="tutorial_overlay_button_paddingBottom">8dp</dimen>
     <dimen name="tutorial_overlay_button_textSize">22sp</dimen>
+
+    <dimen name="tutorial_overlay_dismiss_marginRight">16dp</dimen>
+    <dimen name="tutorial_overlay_dismiss_marginBottom">8dp</dimen>
 
 </resources>
