@@ -214,11 +214,11 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 	}
 
 	private void handleBoard() {
-        if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
-            Log.e(TAG, "Watching board must use ChanWatchlist instead of service");
+        if (boardCode.equals(ChanBoard.WATCHLIST_BOARD_CODE)) {
+            Log.e(TAG, "Watchlist cannot be fetched from external site, only added and removed within the program");
             return;
         }
-        
+
         HttpURLConnection tc = null;
 		try {
 			board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
@@ -307,11 +307,11 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 	private void handleThread() {
         HttpURLConnection tc = null;
         if (threadNo == 0) {
-            Log.e(TAG, "Thread loading must be done via the BoardLoadService");
+            Log.e(TAG, "Board-level loading must be done via the BoardLoadService");
             return;
         }
-        if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
-            Log.e(TAG, "Watching board must use ChanWatchlist instead of service");
+        if (boardCode.equals(ChanBoard.WATCHLIST_BOARD_CODE)) {
+            Log.e(TAG, "Watchlist should not be fetched");
             return;
         }
 

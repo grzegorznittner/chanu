@@ -93,11 +93,6 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
 		if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " priority=" + priority);
 
-        if (boardCode.equals(ChanBoard.WATCH_BOARD_CODE)) {
-            Log.e(TAG, "Watching board must use ChanWatchlist instead of service");
-            return;
-        }
-
         long startTime = Calendar.getInstance().getTimeInMillis();
 		try {
             Context context = getBaseContext();

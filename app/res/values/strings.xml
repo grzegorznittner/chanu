@@ -223,6 +223,8 @@
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
     <string name="thread_added_to_watchlist_activity_based">Thread auto-added to watchlist</string>
     <string name="thread_watchlist_cleared">Cleared watchlist</string>
+    <string name="thread_watchlist_not_cleared">Couldn\'t clear watchlist</string>
+    <string name="thread_watchlist_not_deleted_thread">Couldn\'t delete thread from watchlist</string>
     <string name="thread_watchlist_default_name">Watched Thread</string>
 
 

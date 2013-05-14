@@ -10,9 +10,8 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanWatchlist;
+import com.chanapps.four.data.*;
+import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.widget.BoardWidgetProvider;
@@ -74,15 +73,21 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.SLOW)
         {
             if (DEBUG) Log.i(TAG, "fetchAll fetching widgets, watchlists, and uncached boards");
-            // never clean automatically since it isn't respecting the auto clean time
-            // /if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsActivity.PREF_AUTOMATICALLY_MANAGE_WATCHLIST, true))
-            //    (new ChanWatchlist.CleanWatchlistTask(context, null, false)).execute();
-            //ChanWatchlist.fetchWatchlistThreads(context);
+            fetchWatchlistThreads(context);
             BoardWidgetProvider.fetchAllWidgets(context);
             ChanBoard.preloadUncachedBoards(context);
         }
         else {
             if (DEBUG) Log.i(TAG, "fetchAll no connection, skipping fetch");
+        }
+    }
+
+    public static void fetchWatchlistThreads(Context context) {
+        ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+        if (board == null || board.threads == null)
+            return;
+        for (ChanPost thread : board.threads) {
+            FetchChanDataService.scheduleThreadFetch(context, thread.board, thread.no);
         }
     }
 

@@ -27,7 +27,6 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.UserStatistics.ChanFeature;
 import com.chanapps.four.fragment.BoardGroupFragment;
-import com.chanapps.four.fragment.WatchlistCleanDialogFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.chanapps.four.service.NetworkProfileManager;
 
@@ -210,7 +209,7 @@ public class BoardSelectorActivity
         switch (item.getItemId()) {
             case R.id.refresh_menu:
                 String boardCode = getSelectedBoardCode();
-                if (ChanBoard.WATCH_BOARD_CODE.equals(boardCode)
+                if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)
                         || ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
                         || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
                         || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode))
@@ -226,16 +225,10 @@ public class BoardSelectorActivity
             case R.id.offline_chan_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;
-            case R.id.clean_watchlist_menu:
+            case R.id.clear_watchlist_menu:
                 final BoardGroupFragment fragment =
                         (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(BoardSelectorTab.WATCHLIST.ordinal());
-                (new WatchlistCleanDialogFragment(fragment))
-                        .show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
-                return true;
-            case R.id.clear_watchlist_menu:
-                final BoardGroupFragment fragment2 =
-                        (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(BoardSelectorTab.WATCHLIST.ordinal());
-                (new WatchlistClearDialogFragment(fragment2))
+                (new WatchlistClearDialogFragment(fragment))
                         .show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
                 return true;
             case R.id.settings_menu:

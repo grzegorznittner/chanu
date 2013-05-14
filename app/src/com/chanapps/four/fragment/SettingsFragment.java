@@ -69,16 +69,6 @@ public class SettingsFragment
             }
         });
 
-        Preference cleanWatchlistButton = findPreference(SettingsActivity.PREF_CLEAN_WATCHLIST);
-        cleanWatchlistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                (new WatchlistCleanDialogFragment())
-                        .show(getFragmentManager(), WatchlistCleanDialogFragment.TAG);
-                return true;
-            }
-        });
-
         Preference clearWatchlistButton = findPreference(SettingsActivity.PREF_CLEAR_WATCHLIST);
         clearWatchlistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override

@@ -20,12 +20,12 @@ public enum BoardSelectorTab {
     RECENT (R.string.board_selector_recent_title,
             ChanBoard.POPULAR_BOARD_CODE,
             R.string.board_empty_recent,
-            TutorialOverlay.Page.RECENT),
+            TutorialOverlay.Page.BOARDLIST),
 
     WATCHLIST (R.string.board_selector_watchlist_title,
-            ChanBoard.WATCH_BOARD_CODE,
+            ChanBoard.WATCHLIST_BOARD_CODE,
             R.string.board_empty_watchlist,
-            TutorialOverlay.Page.WATCHLIST);
+            TutorialOverlay.Page.BOARDLIST);
 
     private final int displayStringId;
     private final String boardCode;

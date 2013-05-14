@@ -98,10 +98,6 @@ public class UpdateWidgetService extends Service {
 
        private void loadBoard() {
             try {
-                if (ChanBoard.WATCH_BOARD_CODE.equals(widgetConf.boardCode)) {
-                    Log.e(TAG, "UnsupportedException: watch board code not yet supported for widgets");
-                    return;
-                }
                 threads = loadBestWidgetThreads(context, widgetConf.boardCode, NUM_TOP_THREADS);
 
                 if (DEBUG) Log.i(TAG, "Loaded board=" + widgetConf.boardCode + " with widget threads");
@@ -205,7 +201,7 @@ public class UpdateWidgetService extends Service {
         private PendingIntent makeBoardIntent() {
             Intent intent;
             if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
-                BoardSelectorTab tab = ChanBoard.WATCH_BOARD_CODE.equals(widgetConf.boardCode)
+                BoardSelectorTab tab = ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)
                         ? BoardSelectorTab.WATCHLIST
                         : BoardSelectorTab.RECENT;
                 intent = BoardSelectorActivity.createIntentForActivity(context, tab);
@@ -220,7 +216,7 @@ public class UpdateWidgetService extends Service {
 
         private PendingIntent makeRefreshIntent() {
             Intent intent;
-            if (ChanBoard.WATCH_BOARD_CODE.equals(widgetConf.boardCode)) {
+            if (ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)) {
                 return null;
             }
             else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {

@@ -40,7 +40,6 @@ public class ChanBoard {
     private static final int NUM_RELATED_BOARDS = 3;
     private static final int NUM_RELATED_THREADS = 3;
 
-    public static final String WATCH_BOARD_CODE = "watch";
     public static final String POPULAR_BOARD_CODE = "popular";
     public static final String LATEST_BOARD_CODE = "latest";
     public static final String LATEST_IMAGES_BOARD_CODE = "images";
@@ -316,7 +315,6 @@ public class ChanBoard {
         String[][] boardCodesByType = {
 
                 {   BoardType.WATCHLIST.toString(),
-                        WATCH_BOARD_CODE, ctx.getString(R.string.board_watch),
                         WATCHLIST_BOARD_CODE, ctx.getString(R.string.board_watch)
                 },
                 {   BoardType.POPULAR.toString(),
@@ -727,7 +725,7 @@ public class ChanBoard {
     }
 
     public static boolean isVirtualBoard(String boardCode) {
-        return WATCH_BOARD_CODE.equals(boardCode)
+        return WATCHLIST_BOARD_CODE.equals(boardCode)
                 || POPULAR_BOARD_CODE.equals(boardCode)
                 || LATEST_BOARD_CODE.equals(boardCode)
                 || LATEST_IMAGES_BOARD_CODE.equals(boardCode);

@@ -8,12 +8,7 @@ import android.widget.Toast;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.ThreadActivity;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanThreadStat;
-import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.service.NetworkProfileManager;
 
 /**
@@ -48,22 +43,8 @@ public class ThreadImageOnClickListener implements View.OnClickListener {
         ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         Log.e("FOO", "Exception: handling click to gallery for activity=" + activity);
         if (activity != null && activity instanceof Activity) {
-            incrementCounterAndAddToWatchlistIfActive(v);
             Log.e("FOO", "Exception: starting gallery for /" + boardCode + "/" + threadNo + ":" + postId + "," + position);
             GalleryViewActivity.startActivity((Activity)activity, boardCode, threadNo, postId, position);
-        }
-    }
-
-    public void incrementCounterAndAddToWatchlistIfActive(View v) {
-        NetworkProfileManager.instance().getUserStatistics().threadUse(boardCode, threadNo);
-        String key = boardCode + "/" + threadNo;
-        ChanThreadStat stat = NetworkProfileManager.instance().getUserStatistics().boardThreadStats.get(key);
-        if (stat != null
-                && stat.usage >= ThreadActivity.WATCHLIST_ACTIVITY_THRESHOLD
-                && !ChanWatchlist.isThreadWatched(v.getContext(), boardCode, threadNo)) {
-            int stringId = ChanWatchlist.watchThread(v.getContext(), boardCode, threadNo);
-            if (stringId == R.string.thread_added_to_watchlist)
-                Toast.makeText(v.getContext(), R.string.thread_added_to_watchlist_activity_based, Toast.LENGTH_SHORT).show();
         }
     }
 

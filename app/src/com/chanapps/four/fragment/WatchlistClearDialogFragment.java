@@ -6,13 +6,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.DialogFragment;
-//import android.support.v4.app.DialogFragment;
-import android.widget.BaseAdapter;
+import android.widget.Toast;
+import com.android.gallery3d.ui.Log;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanWatchlist;
-import com.chanapps.four.component.ToastRunnable;
+import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.service.NetworkProfileManager;
+
+import java.io.IOException;
 
 /**
 * Created with IntelliJ IDEA.
@@ -40,11 +42,25 @@ public class WatchlistClearDialogFragment extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Context ctx = getActivity();
-                                ChanWatchlist.clearWatchlist(ctx);
-                                (new ToastRunnable(getActivity(), getString(R.string.dialog_cleared_watchlist))).run();
-                                if (fragment != null)
-                                    fragment.invalidate();
+                                try {
+                                    Log.i(TAG, "Clearing watchlist...");
+                                    ChanFileStorage.clearWatchedThreads(getActivity().getApplicationContext());
+                                    if (fragment != null && fragment.handler != null)
+                                        fragment.handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (getActivity() instanceof ChanIdentifiedActivity)
+                                                    ((ChanIdentifiedActivity)getActivity()).refresh();
+                                            }
+                                        });
+                                    Toast.makeText(getActivity().getApplicationContext(),
+                                            R.string.thread_watchlist_cleared, Toast.LENGTH_SHORT).show();
+                                }
+                                catch (IOException e) {
+                                    Log.e(TAG, "Couldn't clear watchlist", e);
+                                    Toast.makeText(getActivity().getApplicationContext(),
+                                            R.string.thread_watchlist_not_cleared, Toast.LENGTH_SHORT).show();
+                                }
                                 dismiss();
                             }
                         })

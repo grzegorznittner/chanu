@@ -643,6 +643,8 @@ public class ChanFileStorage {
     }
     
 	private static boolean isThreadWatched(ChanBoard board, ChanThread thread) {
+        if (board == null || board.threads == null)
+            return false;
 		for (ChanPost post : board.threads) {
 			if (post.no == thread.no) {
 				return true;
@@ -650,4 +652,9 @@ public class ChanFileStorage {
 		}
 		return false;
 	}
+
+    public static boolean isThreadWatched(Context context, ChanThread thread) {
+        ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+        return isThreadWatched(board, thread);
+    }
 }

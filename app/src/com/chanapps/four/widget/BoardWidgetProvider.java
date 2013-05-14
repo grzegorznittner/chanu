@@ -10,8 +10,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanWatchlist;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
 
@@ -93,8 +93,8 @@ public class BoardWidgetProvider extends AppWidgetProvider {
         }
         for (String boardCode : boardsToFetch) {
             if (DEBUG) Log.i(TAG, "fetchAllWidgets board=" + boardCode + " scheduling fetch");
-            if (ChanBoard.WATCH_BOARD_CODE.equals(boardCode))
-                ChanWatchlist.fetchWatchlistThreads(context);
+            if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
+                GlobalAlarmReceiver.fetchWatchlistThreads(context);
             else if (ChanBoard.isVirtualBoard(boardCode))
                 FetchPopularThreadsService.scheduleBackgroundPopularFetchService(context);
             else
@@ -215,11 +215,14 @@ public class BoardWidgetProvider extends AppWidgetProvider {
             public void run() {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 boolean hasWidgets = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>()).size() > 0;
-                boolean hasWatchlist = prefs.getStringSet(ChanHelper.THREAD_WATCHLIST, new HashSet<String>()).size() > 0;
                 if (hasWidgets)
                     fetchAllWidgets(context);
+
+                ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+                boolean hasWatchlist = (board != null && board.threads != null && board.threads.length > 0);
                 if (hasWatchlist)
-                    ChanWatchlist.fetchWatchlistThreads(context);
+                    GlobalAlarmReceiver.fetchWatchlistThreads(context);
+
                 if (hasWidgets || hasWatchlist)
                     scheduleGlobalAlarm(context);
             }
