@@ -156,8 +156,6 @@ public class BoardSelectorActivity
         if (menuId != newMenuId) {
             invalidateOptionsMenu();
         }
-        
-        new TutorialOverlay(mViewPager, Page.BOARDLIST);
     }
 
     @Override

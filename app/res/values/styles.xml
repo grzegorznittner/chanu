@@ -442,6 +442,8 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">false</item>
     </style>
 
     <style name="ThreadListHeaderHeadWrapper" parent="AppTheme">
@@ -583,6 +585,8 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/ThreadListItemSubject</item>
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">false</item>
     </style>
 
     <style name="ThreadListItemCountryFlag" parent="AppTheme">

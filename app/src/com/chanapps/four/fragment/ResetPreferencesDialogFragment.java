@@ -52,7 +52,7 @@ public class ResetPreferencesDialogFragment extends DialogFragment {
 
                                 NetworkProfileManager.instance().getUserStatistics().reset();
                                 fragment.setPreferenceScreen(null);
-                                fragment.addPreferencesFromResource(R.xml.preferences);
+                                fragment.initPreferenceScreen();
                                 Toast.makeText(getActivity(), R.string.dialog_reset_preferences, Toast.LENGTH_SHORT).show();
                             }
                         })

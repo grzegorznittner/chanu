@@ -36,7 +36,11 @@ public class SettingsFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initPreferenceScreen();
+//        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
 
+    public void initPreferenceScreen() {
         addPreferencesFromResource(R.xml.preferences);
 
         Preference blocklistButton = findPreference(SettingsActivity.PREF_BLOCKLIST_BUTTON);
@@ -92,7 +96,6 @@ public class SettingsFragment
         Preference.OnPreferenceClickListener namesListener = new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Toast.makeText(getActivity().getApplicationContext(), "FOO", Toast.LENGTH_SHORT).show();
                 NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.SETTINGS_NAMES);
                 return false;
             }
@@ -103,11 +106,8 @@ public class SettingsFragment
         name.setOnPreferenceClickListener(namesListener);
         email.setOnPreferenceClickListener(namesListener);
         password.setOnPreferenceClickListener(namesListener);
-
-        // settings_names, settings_4chan_pass, settings_cache_size, settings_watchlist
-
-//        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
+
 /*
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         boolean passEnabled = prefs.getBoolean(SettingsActivity.PREF_PASS_ENABLED, false);

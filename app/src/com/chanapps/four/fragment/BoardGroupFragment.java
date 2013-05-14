@@ -18,6 +18,7 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.BoardSelectorGridCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
+import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.*;
 import com.chanapps.four.service.FetchChanDataService;
@@ -213,6 +214,8 @@ public class BoardGroupFragment
             if (DEBUG) Log.i(TAG, "Refresh scheduled, starting loader");
             getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
         }
+        if (boardSelectorTab == BoardSelectorTab.BOARDLIST)
+            new TutorialOverlay(layout, TutorialOverlay.Page.BOARDLIST);
     }
 
     protected Handler createHandler() {
