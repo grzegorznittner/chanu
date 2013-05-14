@@ -306,7 +306,7 @@ public class ChanFileStorage {
 		thread.tim = thread.created.getTime() * 1000;
 		thread.tn_w = 240;
 		thread.tn_h = 240;
-		thread.defData = !ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode);
+		thread.defData = true;
 		
 		board.threads = new ChanThread[] { thread };
 		board.lastFetched = 0;
@@ -598,7 +598,13 @@ public class ChanFileStorage {
     	if (isThreadWatched(board, thread)) {
     		return;
     	}
-    	List<ChanPost> newThreads = new ArrayList<ChanPost>(Arrays.asList(board.threads));
+    	List<ChanPost> newThreads = null;
+    	if (board.defData) {
+    		newThreads = new ArrayList<ChanPost>();
+    		board.defData = false;
+    	} else {
+    		newThreads = new ArrayList<ChanPost>(Arrays.asList(board.threads));
+    	}
     	newThreads.add(thread);
     	board.threads = newThreads.toArray(new ChanPost[]{});
     	
