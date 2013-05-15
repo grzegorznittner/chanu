@@ -558,9 +558,9 @@ public class BoardActivity
 
             TextView refreshText = (TextView)refreshLayout.findViewById(R.id.board_refresh_text);
             refreshText.setText(msg.toString());
-            //ImageButton refreshButton = (ImageButton)refreshLayout.findViewById(R.id.board_refresh_button);
-            //refreshButton.setClickable(true);
-            //refreshButton.setOnClickListener(this);
+            ImageButton refreshButton = (ImageButton)refreshLayout.findViewById(R.id.board_refresh_button);
+            refreshButton.setClickable(true);
+            refreshButton.setOnClickListener(this);
             ImageButton ignoreButton = (ImageButton)refreshLayout.findViewById(R.id.board_ignore_button);
             ignoreButton.setClickable(true);
             ignoreButton.setOnClickListener(this);
@@ -618,7 +618,13 @@ public class BoardActivity
 
 	@Override
 	public void onClick(View v) {
-		if (v.getId() == R.id.board_ignore_button) {
+        if (v.getId() == R.id.board_refresh_button) {
+            setProgressBarIndeterminateVisibility(true);
+            LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
+            refreshLayout.setVisibility(LinearLayout.GONE);
+            NetworkProfileManager.instance().manualRefresh(this);
+        }
+        else if (v.getId() == R.id.board_ignore_button) {
 	        LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
 	        refreshLayout.setVisibility(LinearLayout.GONE);
 		}

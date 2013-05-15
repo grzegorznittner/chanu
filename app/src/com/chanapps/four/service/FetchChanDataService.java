@@ -130,7 +130,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
         long now = new Date().getTime();
         if (board != null && !board.defData && board.lastFetched > 0) {
-        	long refresh = forceRefresh ? params.forceRefreshDelay : params.refreshDelay;
+        	long refresh = (forceRefresh || board.isFastBoard()) ? params.forceRefreshDelay : params.refreshDelay;
             long interval = now - board.lastFetched;
         	if (interval < refresh) {
         		if (DEBUG) Log.i(TAG, "Skipping board " + boardCode + " fetch as it was fetched "

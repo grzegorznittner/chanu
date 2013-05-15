@@ -162,7 +162,7 @@ public class BoardGridViewer {
                 }
                 if (wrapper != null && oneVisible)
                     wrapper.setVisibility(View.VISIBLE);
-                if (abbrev != null)
+                if (abbrev != null && abbrev.getText() != null && abbrev.getText().length() > 0)
                     abbrev.setVisibility(View.VISIBLE);
                 if (countryFlag.getDrawable() != null)
                     countryFlag.setVisibility(View.VISIBLE);

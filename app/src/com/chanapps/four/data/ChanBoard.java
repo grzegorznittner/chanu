@@ -1,14 +1,6 @@
 package com.chanapps.four.data;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -729,6 +721,17 @@ public class ChanBoard {
                 || POPULAR_BOARD_CODE.equals(boardCode)
                 || LATEST_BOARD_CODE.equals(boardCode)
                 || LATEST_IMAGES_BOARD_CODE.equals(boardCode);
+    }
+
+    private static final String[] fastBoards = { "a", "b", "v", "vr" };
+    private static final Set<String> fastBoardSet = new HashSet<String>(Arrays.asList(fastBoards));
+
+    public boolean isFastBoard() {
+        if (link == null)
+            return false;
+        if (fastBoardSet.contains(link))
+            return true;
+        return false;
     }
 
     public static String getBestWidgetImageUrl(ChanPost thread, String backupBoardCode, int i) {
