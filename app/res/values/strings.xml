@@ -1073,7 +1073,7 @@
     <dimen name="BoardGridNumImages">12sp</dimen>
     <dimen name="BoardGridTextImageOverlay">12sp</dimen>
     <dimen name="BoardListTextImageTopOverlay">12sp</dimen>
-    <dimen name="BoardListTitle">14sp</dimen>
+    <dimen name="BoardListTitle">16sp</dimen>
     <dimen name="BoardListSubject">18sp</dimen>
     <dimen name="BoardListHeadline">12sp</dimen>
     <dimen name="ThreadListLayout">16sp</dimen>
@@ -1134,7 +1134,7 @@
     <dimen name="BoardListTextImageTopOverlay_paddingTop">2dp</dimen>
     <dimen name="BoardListTextImageTopOverlay_paddingBottom">2dp</dimen>
 
-    <dimen name="BoardListTitle_paddingTop">16dp</dimen>
+    <dimen name="BoardListTitle_paddingTop">8dp</dimen>
     <dimen name="BoardListTitle_paddingLeft">16dp</dimen>
     <dimen name="BoardListTitle_paddingRight">8dp</dimen>
     <dimen name="BoardListTitle_paddingBottom">8dp</dimen>
@@ -1148,6 +1148,12 @@
     <dimen name="BoardListHeadline_paddingLeft">8dp</dimen>
     <dimen name="BoardListHeadline_paddingRight">16dp</dimen>
     <dimen name="BoardListHeadline_paddingBottom">4dp</dimen>
+
+    <dimen name="BoardListText_paddingLeft">16dp</dimen>
+    <dimen name="BoardListText_paddingRight">16dp</dimen>
+    <dimen name="BoardListText_paddingTop">8dp</dimen>
+    <dimen name="BoardListText_paddingBottom">8dp</dimen>
+    <dimen name="BoardListText_textSize">16sp</dimen>
 
     <dimen name="ThreadListHeaderImage_layout_marginTop">8dp</dimen>
     <dimen name="ThreadListHeaderImage_layout_marginBottom">0dp</dimen>

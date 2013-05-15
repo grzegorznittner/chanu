@@ -80,9 +80,9 @@
     <dimen name="BoardListTextImageTopOverlay_paddingBottom">2dp</dimen>
 
     <dimen name="BoardListTitle_paddingTop">16dp</dimen>
-    <dimen name="BoardListTitle_paddingLeft">16dp</dimen>
-    <dimen name="BoardListTitle_paddingRight">8dp</dimen>
-    <dimen name="BoardListTitle_paddingBottom">8dp</dimen>
+    <dimen name="BoardListTitle_paddingLeft">32dp</dimen>
+    <dimen name="BoardListTitle_paddingRight">32dp</dimen>
+    <dimen name="BoardListTitle_paddingBottom">16dp</dimen>
 
     <dimen name="BoardListSubject_paddingTop">2dp</dimen>
     <dimen name="BoardListSubject_paddingLeft">8dp</dimen>
@@ -93,6 +93,12 @@
     <dimen name="BoardListHeadline_paddingLeft">8dp</dimen>
     <dimen name="BoardListHeadline_paddingRight">16dp</dimen>
     <dimen name="BoardListHeadline_paddingBottom">4dp</dimen>
+
+    <dimen name="BoardListText_paddingLeft">32dp</dimen>
+    <dimen name="BoardListText_paddingRight">32dp</dimen>
+    <dimen name="BoardListText_paddingTop">16dp</dimen>
+    <dimen name="BoardListText_paddingBottom">16dp</dimen>
+    <dimen name="BoardListText_textSize">16sp</dimen>
 
     <dimen name="ThreadListHeaderImage_layout_marginTop">0dp</dimen>
     <dimen name="ThreadListHeaderImage_layout_marginBottom">0dp</dimen>

@@ -124,8 +124,9 @@ public class BoardListViewer {
 
     protected static boolean setListThumb(ImageView iv, Cursor cursor, ImageLoader imageLoader,
                                             DisplayImageOptions options, int flags) {
+        iv.setImageBitmap(null);
+        iv.setVisibility(View.VISIBLE);
         if ((flags & (ChanThread.THREAD_FLAG_TITLE | ChanThread.THREAD_FLAG_AD)) > 0) { // hide thumbnail
-            iv.setImageBitmap(null);
             return true;
         }
         String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
