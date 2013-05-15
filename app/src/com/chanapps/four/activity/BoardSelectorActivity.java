@@ -83,13 +83,15 @@ public class BoardSelectorActivity
     protected void onStart() {
         super.onStart();
         final ActionBar bar = getActionBar();
-        bar.setTitle(getString(R.string.application_name)
+
+        bar.setTitle(getString(R.string.application_name));
+        /*
                 + ChanHelper.TITLE_SEPARATOR
                 + getString(R.string.board_selector_boardlist_title));
-        bar.setDisplayShowTitleEnabled(true);
+        */
+        bar.setDisplayShowTitleEnabled(false);
         bar.setDisplayHomeAsUpEnabled(false);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE);
     }
 
     public TabsAdapter ensureTabsAdapter() {

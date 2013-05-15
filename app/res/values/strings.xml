@@ -697,8 +697,8 @@
     <string name="board_latest">Latest</string>
     <string name="board_latest_abbrev">Latest</string>
     <string name="board_latest_images">Latest Images</string>
-    <string name="board_select">Go</string>
-    <string name="board_select_abbrev">Go</string>
+    <string name="board_select">Chanu</string>
+    <string name="board_select_abbrev">Chanu</string>
 
     <!-- spinner dropdown -->
     <string-array name="board_array">

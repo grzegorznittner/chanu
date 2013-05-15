@@ -46,17 +46,19 @@ public class ThreadViewer {
                                        final ImageLoader imageLoader, final DisplayImageOptions options,
                                        String groupBoardCode, Typeface subjectTypeface, int padding4DP) {
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
-        if (flagIdx == -1) { // we are on board list
+        int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
+        if (flags < 0) { // we are on board list
             return BoardGridViewer.setViewValue(view, cursor, imageLoader, options, groupBoardCode);
         }
-        int flags = cursor.getInt(flagIdx);
-        if ((flags & ChanPost.FLAG_IS_TITLE) > 0) { // special case it to avoid needing a separate item layout
+        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0) {
             return setTitleView(view, cursor, flags);
         }
-        if ((flags & ChanPost.FLAG_IS_AD) > 0) {
+        else if ((flags & ChanPost.FLAG_IS_AD) > 0) {
             return setBannerAdView(view, cursor, imageLoader, options, padding4DP);
         }
-        return setListItemView(view, cursor, imageLoader, options, subjectTypeface, flags);
+        else {
+            return setListItemView(view, cursor, imageLoader, options, subjectTypeface, flags);
+        }
     }
 
     public static boolean setListItemView(final View view, final Cursor cursor,
@@ -83,8 +85,6 @@ public class ThreadViewer {
                 return setHeaderValue((TextView) view, cursor);
             case R.id.list_item_subject:
                 return setSubject((TextView) view, cursor, subjectTypeface, flags);
-            case R.id.list_item_title:
-                return setTitle((TextView) view, cursor, flags);
             case R.id.list_item_text:
                 return setText((TextView) view, cursor, flags);
             case R.id.list_item_image_exif:
@@ -169,19 +169,6 @@ public class ThreadViewer {
             tv.setText("");
             tv.setVisibility(View.GONE);
         }
-        return true;
-    }
-
-    static private boolean setTitle(final TextView tv, final Cursor cursor, int flags) {
-        if ((flags & ChanPost.FLAG_IS_TITLE) == 0) {
-            tv.setText("");
-            tv.setVisibility(View.GONE);
-            return true;
-        }
-        String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-        Spanned spanned = Html.fromHtml(text);
-        tv.setText(spanned);
-        tv.setVisibility(View.VISIBLE);
         return true;
     }
 
@@ -369,18 +356,15 @@ public class ThreadViewer {
 
     protected static boolean setTitleView(View view, Cursor cursor, int flags) {
         if (view.getId() == R.id.list_item_title) {
-            setTitle((TextView) view, cursor, flags);
-            view.setVisibility(View.VISIBLE);
+            String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+            Spanned spanned = Html.fromHtml(text);
+            ((TextView)view).setText(spanned);
         }
+        /*
         else if (view.getId() == R.id.list_item) {
             view.setVisibility(View.VISIBLE);
         }
-        else if (view.getId() == R.id.list_item_header_wrapper) {
-            setHeaderWrapper((ViewGroup) view, flags);
-        }
-        else {
-            view.setVisibility(View.GONE);
-        }
+        */
         return true;
     }
 

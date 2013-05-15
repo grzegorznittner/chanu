@@ -251,7 +251,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 					@Override
 					public void run() {
 						if (activityId.activity == LastActivity.BOARD_ACTIVITY && board.link.equals(activityId.boardCode)) {
-							((BoardActivity)activity).setActionBarTitle();
+							((BoardActivity)activity).handleUpdatedThreads();
 						}
 					}
 				});

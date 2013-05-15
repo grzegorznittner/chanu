@@ -258,7 +258,6 @@ public class ThreadActivity
     protected void restoreInstanceState() {
         if (DEBUG) Log.i(TAG, "Restoring instance state... query=" + query);
         loadFromIntentOrPrefs();
-        setActionBarTitle();
         //scrollToLastPosition();
         invalidateOptionsMenu(); // for correct spinner display
     }
@@ -292,6 +291,7 @@ public class ThreadActivity
         if (DEBUG) Log.v(TAG, "onStart query=" + query);
         if (handler == null)
             handler = new LoaderHandler();
+        setActionBarTitle();
     }
 
     @Override
@@ -1012,6 +1012,7 @@ public class ThreadActivity
         final ActionBar a = getActionBar();
         if (a == null)
             return;
+        /*
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board == null)
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
@@ -1026,7 +1027,8 @@ public class ThreadActivity
         if (threadTitle == null || threadTitle.isEmpty())
             threadTitle = "Thread " + threadNo;
         a.setTitle(boardTitle + ChanHelper.TITLE_SEPARATOR + threadTitle);
-        a.setDisplayShowTitleEnabled(true);
+        */
+        a.setDisplayShowTitleEnabled(false);
         a.setDisplayHomeAsUpEnabled(true);
     }
 
@@ -1296,7 +1298,6 @@ public class ThreadActivity
 
     @Override
     public void refresh() {
-        setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
         refreshBoard(); // for tablets
         refreshThread();

@@ -398,6 +398,11 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <style name="ThreadListTitleLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <!-- THREAD LIST HEADER -->
 
     <style name="ThreadListHeaderImage" parent="AppTheme">
@@ -615,19 +620,19 @@
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
     </style>
 
-    <style name="ThreadListItemTitle" parent="AppTheme">
+    <style name="ThreadListTitle" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">0dp</item>
-        <item name="android:layout_marginLeft">@dimen/ThreadListItemHead_marginLeft</item>
-        <item name="android:layout_toRightOf">@+id/list_item_image_wrapper</item>
-        <item name="android:paddingRight">@dimen/ThreadListItemHead_paddingRight</item>
-        <item name="android:paddingTop">@dimen/ThreadListItemHead_paddingTop</item>
-        <item name="android:paddingBottom">@dimen/ThreadListItemHead_paddingBottom</item>
+        <item name="android:paddingLeft">@dimen/BoardListTitle_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardListTitle_paddingRight</item>
+        <item name="android:paddingTop">@dimen/BoardListTitle_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardListTitle_paddingBottom</item>
         <item name="android:gravity">top|left</item>
-        <item name="android:textSize">@dimen/ThreadListItemTitle</item>
+        <item name="android:textSize">@dimen/BoardListTitle</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:background">@drawable/thread_button_gradient_bg</item>
     </style>
 
     <style name="ThreadListItemExifText" parent="AppTheme">

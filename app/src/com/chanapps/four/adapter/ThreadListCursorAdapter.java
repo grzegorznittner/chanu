@@ -24,6 +24,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected static final String HEADER = "header";
     protected static final String ITEM = "item";
     protected static final String AD = "ad";
+    protected static final String TITLE = "title";
 
     protected ThreadListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
@@ -85,6 +86,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             newTag = HEADER;
         else if ((flags & ChanPost.FLAG_IS_AD) > 0)
             newTag = AD;
+        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
+            newTag = TITLE;
         else
             newTag = ITEM;
 
@@ -107,6 +110,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             id = R.layout.thread_list_header;
         else if (AD.equals(tag))
             id = R.layout.thread_list_ad;
+        else if (TITLE.equals(tag))
+            id = R.layout.thread_list_title;
         else
             id = R.layout.thread_list_item;
         View v = mInflater.inflate(id, parent, false);

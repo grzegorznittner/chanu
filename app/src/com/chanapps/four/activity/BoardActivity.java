@@ -205,6 +205,7 @@ public class BoardActivity
         if (handler == null)
             handler = new LoaderHandler();
 		if (DEBUG) Log.v(TAG, "onStart query=" + query);
+        setActionBarTitle();
     }
 
 	@Override
@@ -303,7 +304,6 @@ public class BoardActivity
         if (DEBUG) Log.i(TAG, "Restoring instance state... query=" + query);
         loadFromIntentOrPrefs();
         handleUpdatedThreads();
-        setActionBarTitle();
         //scrollToLastPosition();
         invalidateOptionsMenu(); // for correct spinner display
     }
@@ -513,11 +513,13 @@ public class BoardActivity
         final ActionBar a = getActionBar();
         if (a == null)
             return;
+        /*
         if (DEBUG) Log.i(TAG, "about to load board data for action bar board=" + boardCode);
         ChanBoard board = loadBoard();
         String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
         a.setTitle(title);
-        a.setDisplayShowTitleEnabled(true);
+        */
+        a.setDisplayShowTitleEnabled(false);
         a.setDisplayHomeAsUpEnabled(true);
     }
 
@@ -529,7 +531,7 @@ public class BoardActivity
         return board;
     }
 
-    protected void handleUpdatedThreads() {
+    public void handleUpdatedThreads() {
         LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
         if (refreshLayout == null)
             return;

@@ -5,7 +5,7 @@
           android:title="@string/board_select"
           android:icon="@drawable/collections_view_as_list"
           android:actionDropDownStyle="@style/BoardJumpDropDown"
-          android:actionLayout="@layout/board_jump_spinner"
+          android:actionLayout="@layout/board_jump_spinner_long"
           android:showAsAction="ifRoom"
             />
 

@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.SET_WALLPAPER"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="com.android.vending.BILLING"/>
+    <!-- <uses-permission android:name="com.android.vending.BILLING"/> -->
 
     <!-- check if app is in the foreground -->
     <uses-permission android:name="android.permission.GET_TASKS"/>
@@ -36,7 +36,6 @@
             android:icon="@drawable/app_icon"
             android:label="@string/application_name"
             android:theme="@style/AppTheme"
-            android:uiOptions="splitActionBarWhenNarrow"
             android:debuggable="true">
 
         <activity
