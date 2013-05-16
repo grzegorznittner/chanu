@@ -80,7 +80,7 @@ public class ChanThread extends ChanPost {
                 post.no,
                 "",
                 textComponents[0],
-                post.headline(query, true),
+                post.headline(query, true, null),
                 textComponents[1],
                 post.thumbnailUrl(),
                 post.countryFlagUrl(),
@@ -304,6 +304,31 @@ public class ChanThread extends ChanPost {
         for (int i = 0; i < emailPostsArr.length; i++)
             emailPostsArr[i] = emailPosts.get(i);
         return emailPostsArr;
+    }
+
+    public Map<Long, HashSet<Long>> backlinksMap() {
+        Map<Long, HashSet<Long>> backlinksMap = new HashMap<Long, HashSet<Long>>();
+        for (ChanPost post : posts) {
+            HashSet<Long> backlinks = post.backlinks();
+            if (backlinks != null && !backlinks.isEmpty())
+                backlinksMap.put(post.no, backlinks);
+        }
+        return backlinksMap;
+    }
+
+    public Map<Long, HashSet<Long>> repliesMap(Map<Long, HashSet<Long>> backlinksMap) {
+        Map<Long, HashSet<Long>> repliesMap = new HashMap<Long, HashSet<Long>>();
+        for (Long laterPostNo : backlinksMap.keySet()) {
+            for (Long originalPostNo : backlinksMap.get(laterPostNo)) {
+                HashSet<Long> replies = repliesMap.get(originalPostNo);
+                if (replies == null) {
+                    replies = new HashSet<Long>();
+                    repliesMap.put(originalPostNo, replies);
+                }
+                replies.add(laterPostNo);
+            }
+        }
+        return repliesMap;
     }
 
 }

@@ -22,7 +22,7 @@ import java.util.Set;
 * Time: 10:55 PM
 * To change this template use File | Settings | File Templates.
 */
-public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
+public class HighlightSamePosterRepliesTask extends AsyncTask<long[], Void, String> {
 
     private static final boolean DEBUG = false;
 
@@ -30,22 +30,14 @@ public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
     private AbsListView absListView = null;
     private String boardCode = null;
     private long threadNo = 0;
-    private SearchType searchType = SearchType.PREVIOUS_POSTS;
     private Set<Long> origSet = new HashSet<Long>();
     private Set<Long> repliesSet = new HashSet<Long>();
 
-    public enum SearchType {
-        PREVIOUS_POSTS,
-        POST_REPLIES,
-        SAME_POSTERS
-    }
-    
-    public HighlightRepliesTask(Context context, AbsListView absListView, String boardCode, long threadNo, SearchType searchType) {
+    public HighlightSamePosterRepliesTask(Context context, AbsListView absListView, String boardCode, long threadNo) {
         this.context = context;
         this.absListView = absListView;
         this.boardCode = boardCode;
         this.threadNo = threadNo;
-        this.searchType = searchType;
     }
 
     protected void addPostsToReplies(long[] replies) {
@@ -66,23 +58,14 @@ public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
             ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
             if (thread != null) {
                 for (long postNo : postNos) {
-                    switch (searchType) {
-                        case PREVIOUS_POSTS:
-                            addPostsToReplies(thread.getPrevPostsReferenced(postNo));
-                            break;
-                        case POST_REPLIES:
-                            addPostsToReplies(thread.getNextPostsReferredTo(postNo));
-                            break;
-                        case SAME_POSTERS:
-                            ChanPost post = thread.getPost(postNo);
-                            if (post == null)
-                                break;
-                            addPostsToReplies(thread.getIdPosts(postNo, post.id));
-                            addPostsToReplies(thread.getTripcodePosts(postNo, post.trip));
-                            addPostsToReplies(thread.getNamePosts(postNo, post.name));
-                            addPostsToReplies(thread.getEmailPosts(postNo, post.email));
-                            break;
-                    }
+                    ChanPost post = thread.getPost(postNo);
+                    if (post == null)
+                        break;
+                    addPostsToReplies(thread.getIdPosts(postNo, post.id));
+                    addPostsToReplies(thread.getTripcodePosts(postNo, post.trip));
+                    addPostsToReplies(thread.getNamePosts(postNo, post.name));
+                    addPostsToReplies(thread.getEmailPosts(postNo, post.email));
+                    break;
                 }
             }
             else {
@@ -97,25 +80,9 @@ public class HighlightRepliesTask extends AsyncTask<long[], Void, String> {
         if (DEBUG) Log.i(ThreadActivity.TAG, "Set highlight posts=" + Arrays.toString(repliesSet.toArray()));
 
         if (repliesSet.size() == 0)
-            switch (searchType) {
-                case PREVIOUS_POSTS:
-                    return context.getString(R.string.thread_no_prev_posts_found);
-                case POST_REPLIES:
-                default:
-                    return context.getString(R.string.thread_no_replies_found);
-                case SAME_POSTERS:
-                    return context.getString(R.string.thread_no_same_poster_found);
-            }
-
-        switch (searchType) {
-            case PREVIOUS_POSTS:
-                return String.format(context.getString(R.string.thread_prev_replies_found), repliesSet.size());
-            case POST_REPLIES:
-            default:
-                return String.format(context.getString(R.string.thread_next_replies_found), repliesSet.size());
-            case SAME_POSTERS:
-                return String.format(context.getString(R.string.thread_id_found), repliesSet.size());
-        }
+            return context.getString(R.string.thread_no_same_poster_found);
+        else
+            return String.format(context.getString(R.string.thread_id_found), repliesSet.size());
     }
 
     @Override

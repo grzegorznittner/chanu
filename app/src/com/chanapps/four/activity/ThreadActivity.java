@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -29,7 +27,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.Loader;
@@ -54,7 +51,7 @@ import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
-import com.chanapps.four.task.HighlightRepliesTask;
+import com.chanapps.four.task.HighlightSamePosterRepliesTask;
 import com.chanapps.four.viewer.ThreadViewer;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -81,7 +78,6 @@ public class ThreadActivity
     public static final String TAG = ThreadActivity.class.getSimpleName();
     public static final boolean DEBUG = true;
 
-    public static final int WATCHLIST_ACTIVITY_THRESHOLD = 7; // arbitrary from experience
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
     protected static final int THREAD_DONE = 0x1;
@@ -142,6 +138,13 @@ public class ThreadActivity
         LoaderManager.enableDebugLogging(true);
     }
 
+    public Cursor getCursor() {
+        if (adapter != null)
+            return adapter.getCursor();
+        else
+            return null;
+    }
+
     protected void initPaddings() {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         padding4DP = ChanGridSizer.dpToPx(metrics, 4);
@@ -154,7 +157,7 @@ public class ThreadActivity
         if (id == 0) {
             if (threadNo > 0) {
                 loadingStatusFlags &= ~THREAD_DONE;
-                cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, query, absListView, absBoardListView == null);
+                cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, query, absBoardListView == null);
                 if (DEBUG) Log.i(TAG, "Started loader for thread /" + boardCode + "/" + threadNo);
                 setProgressBarIndeterminateVisibility(true);
             } else {
@@ -347,6 +350,7 @@ public class ThreadActivity
         displayImageOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisc()
                 .cacheInMemory()
+                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
                 .resetViewBeforeLoading()
                 .build();
     }
@@ -463,7 +467,6 @@ public class ThreadActivity
                 boardCode, subjectTypeface, padding4DP);
     }
 
-
     protected File fullSizeImageFile(Cursor cursor) {
         long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         String ext = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXT));
@@ -493,7 +496,7 @@ public class ThreadActivity
         replyIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
         replyIntent.putExtra(ChanPost.POST_NO, 0);
         replyIntent.putExtra(ChanHelper.TIM, tim);
-        replyIntent.putExtra(ChanHelper.TEXT, planifyText(replyText));
+        replyIntent.putExtra(ChanHelper.TEXT, ChanPost.planifyText(replyText));
         startActivity(replyIntent);
     }
 
@@ -699,7 +702,6 @@ public class ThreadActivity
         }
 
         switch (item.getItemId()) {
-
             case R.id.post_reply_all_menu:
                 if (DEBUG) Log.i(TAG, "Post nos: " + Arrays.toString(postNos));
                 postReply(postNos);
@@ -708,17 +710,8 @@ public class ThreadActivity
                 String quotesText = selectQuoteText(postPos);
                 postReply(quotesText);
                 return true;
-
-            case R.id.highlight_replies_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.POST_REPLIES))
-                        .execute(postNos);
-                return true;
-            case R.id.highlight_previous_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.PREVIOUS_POSTS))
-                        .execute(postNos);
-                return true;
             case R.id.highlight_ids_menu:
-                (new HighlightRepliesTask(getApplicationContext(), absListView, boardCode, threadNo, HighlightRepliesTask.SearchType.SAME_POSTERS))
+                (new HighlightSamePosterRepliesTask(getApplicationContext(), absListView, boardCode, threadNo))
                         .execute(postNos);
                 return true;
             case R.id.copy_text_menu:
@@ -726,21 +719,12 @@ public class ThreadActivity
                 copyToClipboard(selectText);
                 //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
                 return true;
-
             case R.id.download_images_to_gallery_menu:
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.go_to_link_menu:
-                String[] urls = extractUrlsFromPosts(postPos);
-                if (urls != null && urls.length > 0)
-                    (new ListOfLinksDialogFragment(urls)).show(getSupportFragmentManager(), ListOfLinksDialogFragment.TAG);
-                else
-                    Toast.makeText(getApplicationContext(), R.string.go_to_link_not_found, Toast.LENGTH_SHORT).show();
-                return true;
             case R.id.translate_posts_menu:
                 return translatePosts(postPos);
-
             case R.id.delete_posts_menu:
                 (new DeletePostDialogFragment(this, boardCode, threadNo, postNos))
                         .show(getSupportFragmentManager(), DeletePostDialogFragment.TAG);
@@ -753,15 +737,6 @@ public class ThreadActivity
                 Map<ChanBlocklist.BlockType, List<String>> blocklist = extractBlocklist(postPos);
                 (new BlocklistSelectToAddDialogFragment(this, blocklist)).show(getSupportFragmentManager(), TAG);
                 return true;
-
-            //case R.id.thread_context_reply_popup_button_menu:
-            //    return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_reply_popup_button_menu, R.menu.thread_context_reply_popup_menu);
-            //case R.id.thread_context_replies_popup_button_menu:
-            //    return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_replies_popup_button_menu, R.menu.thread_context_replies_popup_menu);
-            //case R.id.thread_context_info_popup_button_menu:
-            //    return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_info_popup_button_menu, R.menu.thread_context_info_popup_menu);
-            //case R.id.thread_context_delete_report_popup_button_menu:
-            //    return showPopupMenu(R.id.thread_list_layout, R.id.thread_context_delete_report_popup_button_menu, R.menu.thread_context_delete_report_popup_menu);
             default:
                 return false;
         }
@@ -826,62 +801,13 @@ public class ThreadActivity
         return text;
     }
 
-    protected String planifyText(String text) {
-        return text.replaceAll("<br/?>", "\n").replaceAll("<[^>]*>", "");
-    }
-
     protected void copyToClipboard(String text) {
         android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
         android.content.ClipData clip = android.content.ClipData.newPlainText(
                 getApplicationContext().getString(R.string.app_name),
-                planifyText(text));
+                ChanPost.planifyText(text));
         clipboard.setPrimaryClip(clip);
         Toast.makeText(getApplicationContext(), R.string.copy_text_complete, Toast.LENGTH_SHORT).show();
-    }
-
-    protected String[] extractUrlsFromPosts(SparseBooleanArray postPos) {
-        String text = "";
-        for (int i = 0; i < absListView.getCount(); i++) {
-            if (!postPos.get(i))
-                continue;
-            Cursor cursor = (Cursor) adapter.getItem(i);
-            if (cursor == null)
-                continue;
-            String itemText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT))
-                    + " " + cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
-            if (itemText == null)
-                itemText = "";
-            text += (text.isEmpty() ? "" : "\n") + itemText;
-        }
-        text = text.replaceAll("\n", ""); // convert to single line
-        if (DEBUG) Log.i(TAG, "extracted text: " + text);
-        List<String> urlList = extractUrls(text);
-        String[] urls = urlList.toArray(new String[urlList.size()]);
-        return urls;
-    }
-
-
-    protected static List<String> extractUrls(String input) {
-        List<String> result = new ArrayList<String>();
-
-        Pattern pattern = Pattern.compile(
-                "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
-                        "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" +
-                        "|mil|biz|info|mobi|name|aero|jobs|museum" +
-                        "|travel|[a-z]{2}))(:[\\d]{1,5})?" +
-                        "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
-                        "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
-                        "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
-                        "(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
-                        "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" +
-                        "(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b");
-
-        Matcher matcher = pattern.matcher(input);
-        while (matcher.find()) {
-            result.add(matcher.group());
-        }
-
-        return result;
     }
 
     protected AdapterView.OnItemClickListener absBoardListViewListener = new AdapterView.OnItemClickListener() {
@@ -914,14 +840,17 @@ public class ThreadActivity
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
+        if (DEBUG) Log.i(TAG, "onItemClick pos=" + position + " flags=" + flags + " view=" + view);
         if ((flags & ChanPost.FLAG_IS_AD) > 0)
             itemAdListener.onClick(view);
         else if ((flags & ChanPost.FLAG_IS_THREADLINK) > 0)
             itemThreadLinkListener.onClick(view);
         else if ((flags & ChanPost.FLAG_IS_BOARDLINK) > 0)
             itemBoardLinkListener.onClick(view);
-        else if ((flags & (ChanPost.FLAG_HAS_IMAGE | ChanPost.FLAG_HAS_EXIF | ChanPost.FLAG_HAS_SPOILER)) > 0)
-            itemExpandListener.onClick(view);
+        else
+            itemPopupListener.onClick(view);
+        //else if ((flags & (ChanPost.FLAG_HAS_IMAGE | ChanPost.FLAG_HAS_EXIF | ChanPost.FLAG_HAS_SPOILER)) > 0)
+        //    itemExpandListener.onClick(view);
     }
 
     protected View.OnClickListener itemAdListener = new View.OnClickListener() {
@@ -967,6 +896,33 @@ public class ThreadActivity
         }
     };
 
+    protected View.OnClickListener itemPopupListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = absListView.getPositionForView(v);
+            if (DEBUG) Log.i(TAG, "itemPopupListener position=" + pos);
+            Cursor cursor = adapter.getCursor();
+            if (DEBUG) Log.i(TAG, "1");
+            cursor.moveToPosition(pos);
+            if (DEBUG) Log.i(TAG, "2");
+
+            String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+            if (DEBUG) Log.i(TAG, "3");
+            long linkedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
+            if (DEBUG) Log.i(TAG, "4");
+            long linkedPostNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+            if (DEBUG) Log.i(TAG, "5");
+            if (linkedThreadNo <= 0)
+                linkedThreadNo = linkedPostNo;
+            if (DEBUG) Log.i(TAG, "6");
+            if (DEBUG) Log.i(TAG, "Calling thread popup for /" + linkedBoardCode + "/" + linkedThreadNo
+                    + ":" + linkedPostNo + " cursorPos=" + cursor.getPosition());
+            (new ThreadPopupDialogFragment(linkedBoardCode, linkedThreadNo, linkedPostNo, pos))
+                    .show(getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
+        }
+    };
+
+    /*
     protected View.OnClickListener itemExpandListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -997,16 +953,17 @@ public class ThreadActivity
             }
 
             //todo - decide for the header image what happend on a click
-/*
-            if ((flags & ChanPost.FLAG_IS_HEADER) > 0  ) {
-                long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-                int position = cursor.getPosition();
-                GalleryViewActivity.startActivity(ThreadActivity.this, boardCode, threadNo, postId, position);
-            }
-*/
+
+            //if ((flags & ChanPost.FLAG_IS_HEADER) > 0  ) {
+            //    long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+            //    int position = cursor.getPosition();
+            //    GalleryViewActivity.startActivity(ThreadActivity.this, boardCode, threadNo, postId, position);
+            //}
+
 
         }
     };
+    */
 
     public void setActionBarTitle() {
         final ActionBar a = getActionBar();
@@ -1228,7 +1185,6 @@ public class ThreadActivity
 
     public void updateSharedIntent() {
         SparseBooleanArray postPos = absListView.getCheckedItemPositions();
-        String text = "/" + boardCode + "/ " + getActionBar().getTitle().toString();
         String extraText = selectText(postPos);
         if (extraText != null && !extraText.isEmpty())
             text += "\n\n" + extraText.replaceAll("</?br/?>", "\n").replaceAll("<[^>]*>", "");
@@ -1341,11 +1297,6 @@ public class ThreadActivity
                 Log.e(TAG, "Couldn't handle message " + msg, e);
             }
         }
-    }
-
-    @Override
-    public FragmentManager getSupportFragmentManager() {
-        return getSupportFragmentManager();
     }
 
     @Override

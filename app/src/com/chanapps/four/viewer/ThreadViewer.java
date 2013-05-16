@@ -50,8 +50,11 @@ public class ThreadViewer {
         if (flags < 0) { // we are on board list
             return BoardGridViewer.setViewValue(view, cursor, imageLoader, options, groupBoardCode);
         }
+        else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0) {
+            return setUrlLinkView(view, cursor);
+        }
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0) {
-            return setTitleView(view, cursor, flags);
+            return setTitleView(view, cursor);
         }
         else if ((flags & ChanPost.FLAG_IS_AD) > 0) {
             return setBannerAdView(view, cursor, imageLoader, options, padding4DP);
@@ -330,7 +333,8 @@ public class ThreadViewer {
         if ((flags & (ChanPost.FLAG_IS_AD
                 | ChanPost.FLAG_IS_TITLE
                 | ChanPost.FLAG_IS_THREADLINK
-                | ChanPost.FLAG_IS_BOARDLINK)) == 0)
+                | ChanPost.FLAG_IS_BOARDLINK
+                | ChanPost.FLAG_NO_EXPAND)) == 0)
             view.setOnClickListener(new ThreadImageOnClickListener(cursor));
         return true;
     }
@@ -354,17 +358,21 @@ public class ThreadViewer {
         return true;
     }
 
-    protected static boolean setTitleView(View view, Cursor cursor, int flags) {
+    protected static boolean setUrlLinkView(View view, Cursor cursor) {
+        if (view.getId() == R.id.list_item_urllink) {
+            String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+            Spanned spanned = Html.fromHtml("<u>" + text + "</u>");
+            ((TextView)view).setText(spanned);
+        }
+        return true;
+    }
+
+    protected static boolean setTitleView(View view, Cursor cursor) {
         if (view.getId() == R.id.list_item_title) {
             String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
             Spanned spanned = Html.fromHtml(text);
             ((TextView)view).setText(spanned);
         }
-        /*
-        else if (view.getId() == R.id.list_item) {
-            view.setVisibility(View.VISIBLE);
-        }
-        */
         return true;
     }
 

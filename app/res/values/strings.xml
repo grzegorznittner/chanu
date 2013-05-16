@@ -62,6 +62,10 @@
     <string name="delete_post_response_error">Couldn\'t delete post, unknown response</string>
     <string name="delete_post_only_image">Delete Only Image?</string>
 
+    <!-- thread popup -->
+    <string name="thread_popup_title">Post %1$d</string>
+    <string name="thread_popup_reply">Reply</string>
+
     <!-- report post -->
     <string name="report_button">Report Post</string>
     <string name="report_post_title">Report Post</string>
@@ -187,6 +191,7 @@
     <string name="thread_couldnt_download_image_down">Network issue, can\'t download image</string>
     <string name="thread_couldnt_download_image">Couldn\'t download image</string>
     <string name="thread_no_prev_posts_found">No referenced posts found</string>
+    <string name="thread_no_replies">NO REPLIES</string>
     <string name="thread_no_replies_found">No replies found</string>
     <string name="thread_no_same_poster_found">No posts found with same poster</string>
     <string name="thread_prev_replies_found">Found %1$d references</string>
@@ -207,6 +212,16 @@
         <item quantity="zero">no images</item>
         <item quantity="one">1 image</item>
         <item quantity="other">%1$d images</item>
+    </plurals>
+    <plurals name="thread_num_backlinks">
+        <item quantity="zero">no backlinks</item>
+        <item quantity="one">1 backlink</item>
+        <item quantity="other">%1$d backlinks</item>
+    </plurals>
+    <plurals name="thread_num_links">
+        <item quantity="zero">no links</item>
+        <item quantity="one">1 link</item>
+        <item quantity="other">%1$d links</item>
     </plurals>
 
     <!-- watchlist -->

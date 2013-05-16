@@ -1,15 +1,21 @@
 package com.chanapps.four.data;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.chanapps.four.activity.R;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 public class ChanPost {
@@ -49,6 +55,9 @@ public class ChanPost {
     public static final String POST_USER_ID = "id";
     public static final String POST_TRIPCODE = "trip";
     public static final String POST_THUMBNAIL_ID = "postThumbnailId";
+    public static final String POST_BACKLINKS_BLOB = "backlinksBlob";
+    public static final String POST_REPLIES_BLOB = "repliesBlob";
+    public static final String POST_LINKED_URLS_BLOB = "linkedUrlsBlob";
     public static final String POST_FLAGS = "postFlags";
     public static final int FLAG_HAS_IMAGE = 0x001;
     public static final int FLAG_HAS_SUBJECT = 0x002;
@@ -63,6 +72,12 @@ public class ChanPost {
     public static final int FLAG_IS_THREADLINK = 0x400;
     public static final int FLAG_IS_BOARDLINK = 0x800;
     public static final int FLAG_IS_HEADER = 0x1000;
+    public static final int FLAG_IS_URLLINK = 0x2000;
+    public static final int FLAG_NO_EXPAND = 0x4000;
+
+    public static String planifyText(String text) {
+        return text.replaceAll("<br/?>", "\n").replaceAll("<[^>]*>", "");
+    }
 
     private int postFlags(boolean isAd, boolean isThreadLink, String subject, String text, String exifText) {
         int flags = 0;
@@ -113,6 +128,9 @@ public class ChanPost {
             POST_EMAIL,
             POST_THUMBNAIL_ID,
             POST_EXT,
+            POST_BACKLINKS_BLOB,
+            POST_REPLIES_BLOB,
+            POST_LINKED_URLS_BLOB,
             POST_FLAGS
     };
 
@@ -502,7 +520,7 @@ public class ChanPost {
         return "";
     }
 
-    public String headline(String query, boolean boardLevel) {
+    public String headline(String query, boolean boardLevel, byte[] repliesBlob) {
         List<String> items = new ArrayList<String>();
         if (!boardLevel && !hidePostNumbers)
             items.add(Long.toString(no));
@@ -525,6 +543,17 @@ public class ChanPost {
         if (resto <= 0)
             items.add(threadInfoLine());
         items.add(dateText());
+        if (repliesBlob != null && repliesBlob.length > 0) {
+            HashSet<Long> hashSet = (HashSet<Long>)parseBlob(repliesBlob);
+            if (hashSet != null && hashSet.size() > 0) {
+                List<Long> replies = new ArrayList<Long>(hashSet);
+                Collections.sort(replies);
+                String s = "Replies:";
+                for (Long l : replies)
+                    s += " >>" + l;
+                items.add(s);
+            }
+        }
         String component = ChanHelper.join(items, HEADLINE_DELIMITER);
         return highlightComponent(component, query);
     }
@@ -552,11 +581,11 @@ public class ChanPost {
             if (bumplimit == 1)
                 text += " (BL)";
             if (isDead)
-                text += (text.isEmpty() ? "" : " ") + "DEAD";
+                text += " DEAD";
             if (sticky > 0)
-                text += (text.isEmpty() ? "" : " ") + "STICKY";
+                text += " STICKY";
             if (closed > 0)
-                text += (text.isEmpty() ? "" : " ") + "CLOSED";
+                text += " CLOSED";
         }
         return text;
     }
@@ -592,6 +621,85 @@ public class ChanPost {
         boolean matches = com.indexOf("#p" + postNo + "\"") >= 0;
         if (DEBUG) Log.i(TAG, "Matching postNo=" + postNo + " is " + matches + " against com=" + com);
         return matches;
+    }
+
+    protected static final Pattern BACKLINK_PATTERN = Pattern.compile("#p(\\d+)\"");
+
+    protected HashSet<Long> backlinks() {
+        HashSet<Long> backlinks = null;
+        if (com != null && !com.isEmpty()) {
+            Matcher m = BACKLINK_PATTERN.matcher(com);
+            while (m.find()) {
+                if (backlinks == null)
+                    backlinks = new HashSet<Long>();
+                backlinks.add(new Long(m.group(1)));
+            }
+        }
+        return backlinks;
+    }
+
+    protected static final Pattern LINKED_URL_PATTERN = Pattern.compile(
+            "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
+                    "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" +
+                    "|mil|biz|info|mobi|name|aero|jobs|museum" +
+                    "|travel|[a-z]{2}))(:[\\d]{1,5})?" +
+                    "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
+                    "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
+                    "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
+                    "(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
+                    "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" +
+                    "(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b");
+
+
+    protected HashSet<String> linkedUrls() {
+        HashSet<String> urls = null;
+        if (sub != null && !sub.isEmpty()) {
+            Matcher m = LINKED_URL_PATTERN.matcher(sub);
+            while (m.find()) {
+                if (urls == null)
+                    urls = new HashSet<String>();
+                urls.add(m.group(0));
+            }
+        }
+        if (com != null && !com.isEmpty()) {
+            Matcher m = LINKED_URL_PATTERN.matcher(com);
+            while (m.find()) {
+                if (urls == null)
+                    urls = new HashSet<String>();
+                urls.add(m.group(0));
+            }
+        }
+        return urls;
+    }
+
+    public static byte[] blobify(HashSet<?> hashSet) {
+        if (hashSet == null || hashSet.isEmpty())
+            return null;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(hashSet);
+            return baos.toByteArray();
+        }
+        catch (IOException e) {
+            Log.e(TAG, "Couldn't serialize set=" + hashSet, e);
+        }
+        return null;
+    }
+
+    public static HashSet<?> parseBlob(final byte[] b) {
+        if (b == null || b.length == 0)
+            return null;
+        try {
+            ByteArrayInputStream bais = new ByteArrayInputStream(b);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            HashSet<?> hashSet = (HashSet<?>)ois.readObject();
+            return hashSet;
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't deserialize blob=" + b);
+        }
+        return null;
     }
 
     private static final String SAGE_POST_ID = "Heaven";
@@ -840,7 +948,7 @@ public class ChanPost {
         return new MatrixCursor(POST_COLUMNS);
     }
 
-    public Object[] makeRow(String query, int i) {
+    public Object[] makeRow(String query, int i, byte[] backlinksBlob, byte[] repliesBlob) {
         String[] textComponents = textComponents(query);
         String[] spoilerComponents = spoilerComponents(query);
         String exifText = exifText();
@@ -854,7 +962,7 @@ public class ChanPost {
                 thumbnailUrl(),
                 imageUrl(),
                 countryFlagUrl(),
-                headline(query, false),
+                headline(query, false, repliesBlob),
                 textComponents[0],
                 textComponents[1],
                 tn_w,
@@ -871,6 +979,9 @@ public class ChanPost {
                 email,
                 thumbnailId(),
                 ext,
+                backlinksBlob,
+                repliesBlob,
+                blobify(linkedUrls()),
                 flags
         };
     }
@@ -884,7 +995,7 @@ public class ChanPost {
                 thumbnailUrl(),
                 "",
                 countryFlagUrl(),
-                headline("", false),
+                headline("", false, null),
                 textComponents[0],
                 "",
                 tn_w,
@@ -901,6 +1012,9 @@ public class ChanPost {
                 email,
                 thumbnailId(),
                 ext,
+                null,
+                null,
+                null,
                 postFlags(false, true, textComponents[0], "", "")
         };
     }
@@ -931,6 +1045,9 @@ public class ChanPost {
                 "",
                 drawableId,
                 "",
+                null,
+                null,
+                null,
                 FLAG_HAS_IMAGE | FLAG_HAS_SUBJECT | FLAG_IS_BOARDLINK
         };
     }
@@ -960,6 +1077,9 @@ public class ChanPost {
                 "",
                 "",
                 "",
+                null,
+                null,
+                null,
                 FLAG_HAS_IMAGE | FLAG_IS_AD
         };
     }
@@ -967,7 +1087,7 @@ public class ChanPost {
     public static Object[] makeTitleRow(String boardCode, String title) {
         String subject = title;
         return new Object[] {
-                3,
+                title.hashCode(),
                 boardCode,
                 0,
                 "",
@@ -990,14 +1110,50 @@ public class ChanPost {
                 "",
                 "",
                 "",
+                null,
+                null,
+                null,
                 FLAG_HAS_SUBJECT | FLAG_IS_TITLE
+        };
+    }
+
+    public static Object[] makeUrlLinkRow(String boardCode, String url) {
+        String subject = url;
+        return new Object[] {
+                url.hashCode(),
+                boardCode,
+                0,
+                "",
+                "",
+                "",
+                "",
+                subject,
+                "",
+                "",
+                "",
+                -1,
+                -1,
+                0,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                null,
+                null,
+                null,
+                FLAG_HAS_SUBJECT | FLAG_IS_URLLINK
         };
     }
 
     public static final int MIN_TOKEN_LENGTH = 5;
 
     public Set<String> keywords() {
-        String text = (sub == null ? "" : sub) + (com == null ? "" : com) + headline("", false);
+        String text = (sub == null ? "" : sub) + (com == null ? "" : com) + headline("", false, null);
         String stripped = text.replaceAll("<[^>]*>|\\W+", " ");
         String[] tokens = stripped.split("\\s+");
         if (DEBUG) Log.v(TAG, "threadNo=" + no + " tokens=" + Arrays.toString(tokens));
@@ -1016,6 +1172,37 @@ public class ChanPost {
         int relevancy = tokenSet.size();
         if (DEBUG && relevancy > 0) Log.v(TAG, "relevancy=" + relevancy + " matching keywords=" + tokenSet);
         return relevancy;
+    }
+
+    public static Object[] extractPostRow(Cursor cursor) {
+        int flagIdx = cursor.getColumnIndex(POST_FLAGS);
+        int postNoIdx = cursor.getColumnIndex(POST_ID);
+        int restoIdx = cursor.getColumnIndex(POST_RESTO);
+        int timIdx = cursor.getColumnIndex(POST_TIM);
+        int c = cursor.getColumnCount();
+        Object[] o = new Object[c];
+        for (int i = 0; i < c; i++) {
+            if (i == flagIdx) {
+                int flags = cursor.getInt(flagIdx);
+                flags |= FLAG_NO_EXPAND;
+                o[i] = flags;
+                continue;
+            }
+            if (i == postNoIdx || i == restoIdx || i == timIdx) {
+                o[i] = cursor.getLong(i);
+                continue;
+            }
+            int type = cursor.getType(i);
+            switch (type) {
+                case Cursor.FIELD_TYPE_BLOB: o[i] = cursor.getBlob(i); break;
+                case Cursor.FIELD_TYPE_FLOAT: o[i] = cursor.getFloat(i); break;
+                case Cursor.FIELD_TYPE_INTEGER: o[i] = cursor.getInt(i); break;
+                case Cursor.FIELD_TYPE_STRING: o[i] = cursor.getString(i); break;
+                case Cursor.FIELD_TYPE_NULL:
+                default: o[i] = null; break;
+            }
+        }
+        return o;
     }
 
 }

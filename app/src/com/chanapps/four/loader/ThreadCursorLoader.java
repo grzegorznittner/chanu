@@ -2,7 +2,9 @@ package com.chanapps.four.loader;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import android.content.Context;
@@ -22,12 +24,9 @@ public class ThreadCursorLoader extends BoardCursorLoader {
 
     private static final String TAG = ThreadCursorLoader.class.getSimpleName();
     private static final boolean DEBUG = false;
-    private static final int DEFAULT_NUM_GRID_COLUMNS_PORTRAIT = 2;
-    private static final int DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE = 3;
 
     protected SharedPreferences prefs;
     protected long threadNo;
-    protected int numGridColumns;
     protected boolean showRelatedBoards;
     private boolean useFriendlyIds;
 
@@ -35,7 +34,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         super(context);
     }
 
-    public ThreadCursorLoader(Context context, String boardName, long threadNo, String query, AbsListView absListView, boolean showRelatedBoards) {
+    public ThreadCursorLoader(Context context, String boardName, long threadNo, String query, boolean showRelatedBoards) {
         this(context);
         this.context = context;
         this.boardName = boardName;
@@ -43,19 +42,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         this.query = query.toLowerCase().trim();
         this.showRelatedBoards = showRelatedBoards;
         initRandomGenerator();
-        ChanHelper.Orientation orientation = ChanHelper.getOrientation(context);
-        int defaultNumColumns = (orientation == ChanHelper.Orientation.PORTRAIT) ? DEFAULT_NUM_GRID_COLUMNS_PORTRAIT : DEFAULT_NUM_GRID_COLUMNS_LANDSCAPE;
-        if (absListView instanceof GridView) {
-            GridView gridView = (GridView)absListView;
-            int currentNumGridColumns = gridView.getNumColumns();
-            this.numGridColumns = (gridView == null || currentNumGridColumns <= 0) ? defaultNumColumns : currentNumGridColumns;
-        }
-        else {
-            this.numGridColumns = 0;
-        }
-        if (threadNo == 0) {
+        if (threadNo <= 0)
             throw new ExceptionInInitializerError("Can't have zero threadNo in a thread cursor loader");
-        }
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -103,6 +91,10 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     }
 
     private void loadMatrixCursor(MatrixCursor matrixCursor, ChanBoard board, ChanThread thread) {
+        // first get the maps for thread references
+        Map<Long, HashSet<Long>> backlinksMap = thread.backlinksMap();
+        Map<Long, HashSet<Long>> repliesMap = thread.repliesMap(backlinksMap);
+
         //int adSpace = MINIMUM_AD_SPACING;
 
         // always put an ad at the top
@@ -110,7 +102,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
 
         int i = 0;
         int numQueryMatches = 0;
-        int numPosts = thread.posts.length;
+        //int numPosts = thread.posts.length;
         for (ChanPost post : thread.posts) {
             if (ChanBlocklist.isBlocked(context, post))
                 continue;
@@ -122,7 +114,9 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             post.closed = thread.closed; // inherit
             post.hidePostNumbers = false; // always show
             post.useFriendlyIds = useFriendlyIds;
-            matrixCursor.addRow(post.makeRow(query, i));
+            byte[] backlinksBlob = ChanPost.blobify(backlinksMap.get(post.no));
+            byte[] repliesBlob = ChanPost.blobify(repliesMap.get(post.no));
+            matrixCursor.addRow(post.makeRow(query, i, backlinksBlob, repliesBlob));
             // randomly distribute ads
             /*
             if (generator.nextDouble() < AD_PROBABILITY

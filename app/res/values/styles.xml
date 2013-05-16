@@ -446,6 +446,7 @@
         <item name="android:paddingTop">@dimen/ThreadListHeaderSubject_paddingTop</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">false</item>
@@ -488,6 +489,7 @@
         <item name="android:layout_marginRight">@dimen/ThreadListHeaderExifText_layout_marginRight</item>
         <item name="android:paddingBottom">@dimen/ThreadListHeaderExifText_paddingBottom</item>
         <item name="android:gravity">top|left</item>
+        <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:textSize">@dimen/ThreadListHeaderExifText</item>
         <item name="android:visibility">gone</item>
     </style>
@@ -499,6 +501,7 @@
         <item name="android:layout_marginRight">@dimen/ThreadListHeaderFullText_layout_marginRight</item>
         <item name="android:paddingBottom">@dimen/ThreadListHeaderFullText_paddingBottom</item>
         <item name="android:gravity">top|left</item>
+        <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:textSize">@dimen/ThreadListHeaderFullText</item>
         <!-- <item name="android:textIsSelectable">true</item>  -->
         <item name="android:autoLink">web|email</item>
@@ -588,6 +591,7 @@
         <item name="android:paddingRight">@dimen/ThreadListItemSubject_paddingRight</item>
         <item name="android:layout_toRightOf">@+id/list_item_image_wrapper</item>
         <item name="android:gravity">top|left</item>
+        <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/ThreadListItemSubject</item>
         <item name="android:autoLink">web|email</item>
@@ -635,6 +639,20 @@
         <item name="android:background">@drawable/thread_button_gradient_bg</item>
     </style>
 
+    <style name="ThreadListUrlLink" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:paddingLeft">@dimen/BoardListTitle_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardListTitle_paddingRight</item>
+        <item name="android:paddingTop">@dimen/BoardListTitle_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardListTitle_paddingBottom</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">@dimen/BoardListTitle</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteBlue</item>
+    </style>
+
     <style name="ThreadListItemExifText" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -642,6 +660,7 @@
         <item name="android:layout_marginRight">@dimen/ThreadListItemExifText_layout_marginRight</item>
         <item name="android:paddingTop">@dimen/ThreadListItemExifText_paddingTop</item>
         <item name="android:gravity">top|left</item>
+        <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:textSize">@dimen/ThreadListItemExifText</item>
         <item name="android:visibility">gone</item>
     </style>
@@ -653,6 +672,7 @@
         <item name="android:layout_marginRight">@dimen/ThreadListItemFullText_layout_marginRight</item>
         <item name="android:paddingTop">@dimen/ThreadListItemFullText_paddingTop</item>
         <item name="android:gravity">top|left</item>
+        <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:textSize">@dimen/ThreadListItemFullText</item>
         <!-- <item name="android:textIsSelectable">true</item>  -->
         <item name="android:autoLink">web|email</item>

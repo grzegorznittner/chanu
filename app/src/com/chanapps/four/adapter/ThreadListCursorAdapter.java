@@ -25,6 +25,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected static final String ITEM = "item";
     protected static final String AD = "ad";
     protected static final String TITLE = "title";
+    protected static final String URLLINK = "urlLink";
 
     protected ThreadListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
@@ -43,6 +44,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         ChanPost.POST_HEADLINE_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
+                        ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_TEXT,
                         ChanPost.POST_COUNTRY_URL,
                         ChanPost.POST_IMAGE_URL,
@@ -58,6 +60,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         R.id.list_item_header,
                         R.id.list_item_subject,
                         R.id.list_item_title,
+                        R.id.list_item_urllink,
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
                         R.id.list_item_image_exif,
@@ -86,6 +89,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             newTag = HEADER;
         else if ((flags & ChanPost.FLAG_IS_AD) > 0)
             newTag = AD;
+        else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0)
+            newTag = URLLINK;
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
             newTag = TITLE;
         else
@@ -110,6 +115,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             id = R.layout.thread_list_header;
         else if (AD.equals(tag))
             id = R.layout.thread_list_ad;
+        else if (URLLINK.equals(tag))
+            id = R.layout.thread_list_urllink;
         else if (TITLE.equals(tag))
             id = R.layout.thread_list_title;
         else

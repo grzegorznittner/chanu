@@ -9,29 +9,11 @@
     <item android:id="@+id/post_reply_all_quote_menu"
           android:title="@string/post_reply_all_quote_menu"
           android:icon="@drawable/social_reply_all"
-          android:showAsAction="ifRoom"
-            />
-
-    <item android:id="@+id/highlight_previous_menu"
-          android:title="@string/highlight_previous"
-          android:icon="@drawable/navigation_collapse"
-          android:showAsAction="ifRoom"
-            />
-    <item android:id="@+id/highlight_replies_menu"
-          android:title="@string/highlight_replies"
-          android:icon="@drawable/navigation_expand"
-          android:showAsAction="ifRoom"
             />
 
     <item android:id="@+id/download_images_to_gallery_menu"
           android:title="@string/download_images_to_gallery_menu"
           android:icon="@drawable/av_download"
-          android:showAsAction="ifRoom"
-            />
-
-    <item android:id="@+id/go_to_link_menu"
-          android:title="@string/go_to_link_menu"
-          android:icon="@drawable/navigation_forward"
             />
 
     <item android:id="@+id/translate_posts_menu"
