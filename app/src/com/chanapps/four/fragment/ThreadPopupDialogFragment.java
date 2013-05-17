@@ -197,12 +197,17 @@ public class ThreadPopupDialogFragment
     protected Cursor detailsCursor() {
         MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
         addBlobRows(matrixCursor, ChanPost.POST_BACKLINKS_BLOB, R.plurals.thread_num_backlinks);
+        addPostRow(matrixCursor);
         addBlobRows(matrixCursor, ChanPost.POST_REPLIES_BLOB, R.plurals.thread_num_replies);
         addLinksRows(matrixCursor);
-        if (matrixCursor.getCount() <= 0) // add placeholder row
-            matrixCursor.addRow(ChanPost.makeTitleRow(boardCode,
-                    String.format(getResources().getQuantityString(R.plurals.thread_num_replies, 0), 0).toUpperCase()));
         return matrixCursor;
+    }
+
+    protected void addPostRow(MatrixCursor matrixCursor) {
+        matrixCursor.addRow(ChanPost.makeTitleRow(boardCode,
+                getResources().getString(R.string.thread_post_title).toUpperCase()));
+        cursor.moveToPosition(pos);
+        matrixCursor.addRow(ChanPost.extractPostRow(cursor));
     }
 
     protected void addBlobRows(MatrixCursor matrixCursor, String columnName, int pluralTitleStringId) {

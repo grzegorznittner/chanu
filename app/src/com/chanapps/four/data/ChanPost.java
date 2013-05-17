@@ -406,11 +406,12 @@ public class ChanPost {
         return exifText(com);
     }
 
+    protected static final Pattern EXIF_PATTERN = Pattern.compile(".*<table[^>]*class=\"exif\"[^>]*>(.*)</table>.*");
+
     private static final String exifText(String text) {
         if (text == null || text.isEmpty())
             return null;
-        Pattern p = Pattern.compile(".*<table[^>]*class=\"exif\"[^>]*>(.*)</table>.*");
-        Matcher m = p.matcher(text);
+        Matcher m = EXIF_PATTERN.matcher(text);
         if (!m.matches())
             return null;
         String g = m.group(1);
@@ -505,9 +506,9 @@ public class ChanPost {
     }
 
     public String dateText() {
-        long milliseconds = 1000 * time; // time in seconds, convert
-        return (time > 0)
-            ? DateUtils.getRelativeTimeSpanString(milliseconds, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString()
+        long timeMs = time > 0 ? 1000 * time : tim;
+        return (timeMs > 0)
+            ? DateUtils.getRelativeTimeSpanString(timeMs, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString()
             : "";
     }
 

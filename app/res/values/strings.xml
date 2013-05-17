@@ -202,6 +202,7 @@
     <string name="thread_go_to_link">Go To Link</string>
     <string name="thread_image_download_error">Error downloading thread images</string>
     <string name="thread_no_start_play">Can\'t start play, already at end</string>
+    <string name="thread_post_title">Post</string>
 
     <plurals name="thread_num_replies">
         <item quantity="zero">no replies</item>

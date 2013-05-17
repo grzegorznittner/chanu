@@ -179,12 +179,6 @@ public class ThreadViewer {
         if ((flags & ChanPost.FLAG_IS_AD) == 0 && (flags & ChanPost.FLAG_HAS_TEXT) > 0) {
             String postText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
             tv.setText(Html.fromHtml(postText));
-            /*
-            if (cursor.getPosition() != 0 && (flags & ChanPost.FLAG_HAS_IMAGE) > 0) // has image
-                tv.setPadding(0, padding8DP, 0, padding8DP);
-            else
-                tv.setPadding(0, 0, 0, padding8DP);
-            */
             tv.setVisibility(View.VISIBLE);
         } else {
             tv.setText("");
