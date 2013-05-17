@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.Loader;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.*;
@@ -91,8 +89,6 @@ public class ThreadActivity
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
     protected int scrollOnNextLoaderFinished = -1;
-    protected ImageLoader imageLoader;
-    protected DisplayImageOptions displayImageOptions;
     protected Menu menu;
     protected SharedPreferences prefs;
     protected long tim;
@@ -101,9 +97,6 @@ public class ThreadActivity
     protected int columnWidth = 0;
     protected int columnHeight = 0;
     protected MenuItem searchMenuItem;
-    protected Typeface subjectTypeface = null;
-    protected int padding4DP = 0;
-    protected int padding8DP = 0;
     protected long threadNo;
     protected String text;
     protected String imageUrl;
@@ -120,8 +113,6 @@ public class ThreadActivity
     protected AbsListView absBoardListView;
     protected int loadingStatusFlags = 0;
 
-    public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (DEBUG) Log.v(TAG, "************ onCreate");
@@ -130,11 +121,7 @@ public class ThreadActivity
         query = getIntent().hasExtra(SearchManager.QUERY)
                 ? getIntent().getStringExtra(SearchManager.QUERY)
                 : "";
-        if (subjectTypeface == null)
-            subjectTypeface = Typeface.createFromAsset(getAssets(), SUBJECT_FONT);
-        initImageLoader();
         createAbsListView();
-        initPaddings();
         LoaderManager.enableDebugLogging(true);
     }
 
@@ -143,12 +130,6 @@ public class ThreadActivity
             return adapter.getCursor();
         else
             return null;
-    }
-
-    protected void initPaddings() {
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        padding4DP = ChanGridSizer.dpToPx(metrics, 4);
-        padding8DP = ChanGridSizer.dpToPx(metrics, 8);
     }
 
     @Override
@@ -279,15 +260,6 @@ public class ThreadActivity
         DispatcherHelper.saveActivityToPrefs(this);
     }
 
-    protected void initImageLoader() {
-        imageLoader = ChanImageLoader.getInstance(getApplicationContext());
-        displayImageOptions = new DisplayImageOptions.Builder()
-                .cacheOnDisc()
-                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
-                .resetViewBeforeLoading()
-                .build();
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -346,25 +318,11 @@ public class ThreadActivity
         cg.sizeGridToDisplay();
     }
 
-    protected void resetImageOptions(ImageSize imageSize) {
-        displayImageOptions = new DisplayImageOptions.Builder()
-                .cacheOnDisc()
-                .cacheInMemory()
-                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
-                .resetViewBeforeLoading()
-                .build();
-    }
-
     protected void initAbsListView() {
         absListView = (ListView) findViewById(R.id.thread_list_view);
         absBoardListView = (GridView) findViewById(R.id.board_grid_view_tablet);
-        if (absBoardListView != null) {
+        if (absBoardListView != null)
             sizeTabletGridToDisplay();
-            resetImageOptions(new ImageSize(columnWidth, columnHeight));
-        }
-        //else {
-        //    absBoardListView = (ListView) findViewById(R.id.board_list_view_tablet);
-        //}
     }
 
     protected void sizeTabletGridToDisplay() {
@@ -403,9 +361,6 @@ public class ThreadActivity
                             health.toString().toLowerCase().replaceAll("_", " "));
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                 }
-                //else {
-                //    handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
-                //}
             } else {
                 loadingStatusFlags |= THREAD_DONE;
                 stopProgressBarIfLoadersDone();
@@ -422,9 +377,6 @@ public class ThreadActivity
                             health.toString().toLowerCase().replaceAll("_", " "));
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
                 }
-                //else {
-                //    handler.sendEmptyMessageDelayed(1, LOADER_RESTART_INTERVAL_SHORT_MS);
-                //}
             } else {
                 loadingStatusFlags |= BOARD_DONE;
                 stopProgressBarIfLoadersDone();
@@ -448,6 +400,7 @@ public class ThreadActivity
         initAdapter();
         setupContextMenu();
         absListView.setOnItemClickListener(this);
+        ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
         if (absBoardListView != null) {
             absBoardListView.setOnItemClickListener(absBoardListViewListener);
@@ -463,8 +416,7 @@ public class ThreadActivity
 
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
-        return ThreadViewer.setViewValue(view, cursor, imageLoader, displayImageOptions,
-                boardCode, subjectTypeface, padding4DP);
+        return ThreadViewer.setViewValue(view, cursor, boardCode);
     }
 
     protected File fullSizeImageFile(Cursor cursor) {
@@ -538,23 +490,12 @@ public class ThreadActivity
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
-            // thread_reply_popup_menu
             case R.id.post_reply_menu:
                 postReply("");
                 return true;
-            /*
-            case R.id.post_reply_quote_menu:
-                SparseBooleanArray pos = new SparseBooleanArray();
-                pos.append(0, true);
-                String quoteText = selectQuoteText(pos);
-                postReply(quoteText);
-                return true;
-            */
             case R.id.watch_thread_menu:
                 addToWatchlist();
                 return true;
-
-            // thread_image_popup_menu
             case R.id.view_image_gallery_menu:
                 GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
                 return true;
@@ -566,12 +507,6 @@ public class ThreadActivity
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo);
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                 return true;
-            /*
-            case R.id.thread_reply_popup_button_menu:
-                return showPopupMenu(R.id.thread_list_layout, R.id.thread_reply_popup_button_menu, R.menu.thread_reply_popup_menu);
-            case R.id.thread_image_popup_button_menu:
-                return showPopupMenu(R.id.thread_list_layout, R.id.thread_image_popup_button_menu, R.menu.thread_image_popup_menu);
-            */
             case R.id.play_thread_menu:
                 return playThreadMenu();
             case R.id.settings_menu:
@@ -602,19 +537,6 @@ public class ThreadActivity
                 = new RawResourceDialog(this, R.layout.board_rules_dialog, R.raw.board_rules_header, boardRulesId);
         rawResourceDialog.show();
 
-    }
-
-    protected boolean showPopupMenu(int layoutId, int menuItemId, int popupMenuId) {
-        View v = findViewById(menuItemId);
-        if (v == null)
-            v = findViewById(layoutId);
-        if (v == null)
-            return false;
-        PopupMenu popup = new PopupMenu(this, v);
-        popup.inflate(popupMenuId);
-        popup.setOnMenuItemClickListener(this);
-        popup.show();
-        return true;
     }
 
     @Override
@@ -1190,6 +1112,7 @@ public class ThreadActivity
             text += "\n\n" + extraText.replaceAll("</?br/?>", "\n").replaceAll("<[^>]*>", "");
         ArrayList<String> paths = new ArrayList<String>();
         Cursor cursor = adapter.getCursor();
+        ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         for (int i = 0; i < absListView.getCount(); i++) {
             if (!postPos.get(i) || !cursor.moveToPosition(i))
                 continue;

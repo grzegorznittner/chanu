@@ -1,7 +1,9 @@
 package com.chanapps.four.viewer;
 
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.text.Html;
 import android.text.Spanned;
@@ -24,6 +26,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,18 +40,44 @@ public class ThreadViewer {
     public static final int ITEM_THUMB_WIDTH_DP = 96;
     public static final int ITEM_THUMB_MAXHEIGHT_DP = ITEM_THUMB_WIDTH_DP;
     public static final int ITEM_THUMB_EMPTY_DP = 8;
+    public static final int DEFAULT_AD_HEIGHT_DP = 48;
     public static final int MAX_HEADER_SCALE = 3;
+    public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
     private static final boolean DEBUG = true;
 
-    public static boolean setViewValue(final View view, final Cursor cursor,
-                                       final ImageLoader imageLoader, final DisplayImageOptions options,
-                                       String groupBoardCode, Typeface subjectTypeface, int padding4DP) {
+    private static DisplayMetrics displayMetrics = null;
+    private static Typeface subjectTypeface = null;
+    private static int defaultAdHeight = 0;
+    private static int itemThumbWidth = 0;
+    private static int itemThumbMaxHeight = 0;
+    private static ImageLoader imageLoader = null;
+    private static DisplayImageOptions displayImageOptions = null;
+
+    private static void initMetrics(View view) {
+        Resources res = view.getResources();
+        displayMetrics = res.getDisplayMetrics();
+        subjectTypeface = Typeface.createFromAsset(res.getAssets(), SUBJECT_FONT);
+        defaultAdHeight = ChanGridSizer.dpToPx(displayMetrics, DEFAULT_AD_HEIGHT_DP);
+        itemThumbWidth = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
+        itemThumbMaxHeight = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_MAXHEIGHT_DP);
+        imageLoader = ChanImageLoader.getInstance(view.getContext());
+        displayImageOptions = new DisplayImageOptions.Builder()
+                .cacheOnDisc()
+                .cacheInMemory()
+                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+                .resetViewBeforeLoading()
+                .build();
+    }
+
+    public static boolean setViewValue(final View view, final Cursor cursor, String groupBoardCode) {
+        if (displayMetrics == null)
+            initMetrics(view);
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
         int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
         if (flags < 0) { // we are on board list
-            return BoardGridViewer.setViewValue(view, cursor, imageLoader, options, groupBoardCode);
+            return BoardGridViewer.setViewValue(view, cursor, imageLoader, displayImageOptions, groupBoardCode);
         }
         else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0) {
             return setUrlLinkView(view, cursor);
@@ -57,16 +86,14 @@ public class ThreadViewer {
             return setTitleView(view, cursor);
         }
         else if ((flags & ChanPost.FLAG_IS_AD) > 0) {
-            return setBannerAdView(view, cursor, imageLoader, options, padding4DP);
+            return setBannerAdView(view, cursor);
         }
         else {
-            return setListItemView(view, cursor, imageLoader, options, subjectTypeface, flags);
+            return setListItemView(view, cursor, flags);
         }
     }
 
-    public static boolean setListItemView(final View view, final Cursor cursor,
-                                       final ImageLoader imageLoader, final DisplayImageOptions options,
-                                       Typeface subjectTypeface, int flags) {
+    public static boolean setListItemView(final View view, final Cursor cursor, int flags) {
         switch (view.getId()) {
             case R.id.list_item:
                 return setItem((ViewGroup) view, cursor, flags);
@@ -81,13 +108,13 @@ public class ThreadViewer {
             case R.id.list_item_image_wrapper:
                 return setImageWrapper((ViewGroup) view, cursor, flags);
             case R.id.list_item_image:
-                return setImage((ImageView) view, cursor, flags, imageLoader, options);
+                return setImage((ImageView) view, cursor, flags);
             case R.id.list_item_country_flag:
-                return setCountryFlag((ImageView) view, cursor, flags, imageLoader, options);
+                return setCountryFlag((ImageView) view, cursor, flags);
             case R.id.list_item_header:
                 return setHeaderValue((TextView) view, cursor);
             case R.id.list_item_subject:
-                return setSubject((TextView) view, cursor, subjectTypeface, flags);
+                return setSubject((TextView) view, cursor, flags);
             case R.id.list_item_text:
                 return setText((TextView) view, cursor, flags);
             case R.id.list_item_image_exif:
@@ -147,7 +174,7 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean setSubject(final TextView tv, final Cursor cursor, Typeface subjectTypeface, int flags) {
+    static private boolean setSubject(final TextView tv, final Cursor cursor, int flags) {
         if ((flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE)) > 0) {
             tv.setText("");
             tv.setVisibility(View.GONE);
@@ -247,66 +274,81 @@ public class ThreadViewer {
         }
     };
 
-    static private boolean setImage(final ImageView iv, final Cursor cursor, int flags,
-                                        ImageLoader imageLoader, DisplayImageOptions options) {
-        ViewGroup.LayoutParams params = iv.getLayoutParams();
-        if (params == null) { // something wrong in layout
-            iv.setImageBitmap(null);
-            iv.setVisibility(View.VISIBLE);
+    static private boolean clearImage(final ImageView iv, ViewGroup.LayoutParams params) {
+        iv.setImageBitmap(null);
+        iv.setVisibility(View.VISIBLE);
+        if (params == null) // something wrong in layout
             return true;
-        }
-        if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0) {
-            iv.setImageBitmap(null);
-            params.width = 0;
-            params.height = 0;
-            iv.setLayoutParams(params);
-            iv.setVisibility(View.VISIBLE);
-            return true;
-        }
+        params.width = 0;
+        params.height = 0;
+        return true;
+    }
 
-        String imageUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
+    static private boolean displayImageAtDefaultSize(final ImageView iv, ViewGroup.LayoutParams params, String url) {
+        params.width = itemThumbWidth;
+        params.height = itemThumbMaxHeight;
+        iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        iv.setVisibility(View.VISIBLE);
+        imageLoader.displayImage(url, iv, displayImageOptions);
+        return true;
+    }
+
+    static private boolean setImage(final ImageView iv, final Cursor cursor, int flags) {
+        ViewGroup.LayoutParams params = iv.getLayoutParams();
+        if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0 || params == null)
+            return clearImage(iv, params);
+
+        String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
         int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
-        DisplayMetrics displayMetrics = iv.getResources().getDisplayMetrics();
-        if (tn_w == 0 || tn_h == 0) { // we don't have height and width, so just show unscaled image
-            params.width = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
-            params.height = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_MAXHEIGHT_DP);
-            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            iv.setVisibility(View.VISIBLE);
-            imageLoader.displayImage(imageUrl, iv, options);
-            return true;
-        }
+        if (tn_w == 0 || tn_h == 0)  // we don't have height and width, so just show unscaled image
+            return displayImageAtDefaultSize(iv, params, url);
 
         // scale image
-        boolean isHeader = (flags & ChanPost.FLAG_IS_HEADER) > 0;
-        double scaleFactor = (double) tn_w / (double) tn_h;
-        if (scaleFactor < 0.5 || (isHeader && scaleFactor < 1)) { // tall image, restrict by height
-            //params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            int maxHeaderHeight = Math.min(iv.getResources().getDisplayMetrics().heightPixels / 2, tn_h * MAX_HEADER_SCALE); // prevent excessive scaling
-            int desiredHeight = isHeader
-                    ? maxHeaderHeight
-                    : ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_MAXHEIGHT_DP);
-            params.width = (int) (scaleFactor * (double) desiredHeight);
-            params.height = desiredHeight;
-        } else {
-            int maxHeaderWidth = Math.min(displayMetrics.widthPixels, tn_w * MAX_HEADER_SCALE); // prevent excessive scaling
-            int desiredWidth = isHeader
-                    ? maxHeaderWidth
-                    : ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
-            params.width = desiredWidth; // restrict by width normally
-            params.height = (int) ((double) desiredWidth / scaleFactor);
-            //params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
-        //if (DEBUG) Log.i(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + params.width + "x" + params.height);
-        iv.setLayoutParams(params);
-        //iv.setScaleType(ImageView.ScaleType.FIT_XY);
+        Point imageSize = ((flags & ChanPost.FLAG_IS_HEADER) > 0)
+                ? sizeHeaderImage(tn_w, tn_h)
+                : sizeItemImage(tn_w, tn_h);
+        params.width = imageSize.x;
+        params.height = imageSize.y;
+
+        // display image
         iv.setVisibility(View.VISIBLE);
         if ((flags & ChanPost.FLAG_IS_AD) > 0)
-            imageLoader.displayImage(imageUrl, iv, options, adImageLoadingListener);
+            imageLoader.displayImage(url, iv, displayImageOptions, adImageLoadingListener);
         else
-            imageLoader.displayImage(imageUrl, iv, options);
+            imageLoader.displayImage(url, iv, displayImageOptions);
 
         return true;
+    }
+
+    static private Point sizeHeaderImage(int tn_w, int tn_h) {
+        Point imageSize = new Point();
+        double scaleFactor = (double) tn_w / (double) tn_h;
+        if (scaleFactor < 1) { // tall image, restrict by height
+            int desiredHeight = Math.min(displayMetrics.heightPixels / 2, tn_h * MAX_HEADER_SCALE); // prevent excessive scaling
+            imageSize.x = (int) (scaleFactor * (double) desiredHeight);
+            imageSize.y = desiredHeight;
+        } else {
+            int desiredWidth = Math.min(displayMetrics.widthPixels, tn_w * MAX_HEADER_SCALE); // prevent excessive scaling
+            imageSize.x = desiredWidth; // restrict by width normally
+            imageSize.y = (int) ((double) desiredWidth / scaleFactor);
+        }
+        //if (DEBUG) Log.i(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + params.width + "x" + params.height);
+        return imageSize;
+    }
+
+    static private Point sizeItemImage(int tn_w, int tn_h) {
+        Point imageSize = new Point();
+        double scaleFactor = (double) tn_w / (double) tn_h;
+        if (scaleFactor < 0.5) { // tall image, restrict by height
+            imageSize.x = (int) (scaleFactor * (double) itemThumbMaxHeight);
+            imageSize.y = itemThumbMaxHeight;
+        } else {
+            imageSize.x = itemThumbWidth; // restrict by width normally
+            imageSize.y = (int) ((double) itemThumbWidth / scaleFactor);
+        }
+        //if (DEBUG) Log.i(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + params.width + "x" + params.height);
+        return imageSize;
     }
 
     static private boolean setImageExpanded(final ImageView iv, final Cursor cursor, int flags) {
@@ -338,13 +380,12 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean setCountryFlag(final ImageView iv, final Cursor cursor, int flags,
-                                              ImageLoader imageLoader, DisplayImageOptions options) {
+    static private boolean setCountryFlag(final ImageView iv, final Cursor cursor, int flags) {
         if ((flags & ChanPost.FLAG_HAS_COUNTRY) > 0) {
             iv.setImageBitmap(null);
             iv.setVisibility(View.VISIBLE);
-            String countryFlagImageUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_COUNTRY_URL));
-            imageLoader.displayImage(countryFlagImageUrl, iv, options);
+            String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_COUNTRY_URL));
+            imageLoader.displayImage(url, iv, displayImageOptions);
         } else {
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
@@ -370,28 +411,26 @@ public class ThreadViewer {
         return true;
     }
 
-    protected static boolean setBannerAdView(View view, Cursor cursor, ImageLoader imageLoader,
-                                             DisplayImageOptions options, int padding4DP) {
+    protected static boolean setBannerAdView(View view, Cursor cursor) {
         switch (view.getId()) {
             case R.id.list_item_thread_banner_ad:
-                return setBannerAd((ImageView) view, cursor, imageLoader, options, padding4DP);
+                return setBannerAd((ImageView) view, cursor);
             case R.id.list_item_thread_banner_ad_click_effect:
-                return setBannerAdLayoutParams(view, cursor, padding4DP);
+                return setBannerAdLayoutParams(view, cursor);
             default:
                 return true;
         }
     }
 
-    protected static boolean setBannerAd(final ImageView iv, Cursor cursor, ImageLoader imageLoader,
-                                         DisplayImageOptions options, int padding4DP) {
-        setBannerAdLayoutParams(iv, cursor, padding4DP);
+    protected static boolean setBannerAd(final ImageView iv, Cursor cursor) {
+        setBannerAdLayoutParams(iv, cursor);
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         if (DEBUG) Log.i(TAG, "Displaying ad image iv=" + iv + " url=" + url);
-        imageLoader.displayImage(url, iv, options, bannerAdImageLoadingListener);
+        imageLoader.displayImage(url, iv, displayImageOptions, bannerAdImageLoadingListener);
         return true;
     }
 
-    protected static boolean setBannerAdLayoutParams(final View v, Cursor cursor, int padding4DP) {
+    protected static boolean setBannerAdLayoutParams(final View v, Cursor cursor) {
         ViewParent parent = v.getParent();
         View parentView = parent == null ? null : (View)parent;
         if (parentView != null) {
@@ -400,12 +439,12 @@ public class ThreadViewer {
             int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
             ViewGroup.LayoutParams params = v.getLayoutParams();
             if (params != null)
-                params.height = 12 * padding4DP; // 48dp to avoid big jumps, precalc would be better
+                params.height = defaultAdHeight; // 48dp to avoid big jumps, precalc would be better
         }
         else { // approximate
             ViewGroup.LayoutParams params = v.getLayoutParams();
             if (params != null)
-                params.height = 12 * padding4DP; // 48dp to avoid big jumps, precalc would be better
+                params.height = defaultAdHeight; // 48dp to avoid big jumps, precalc would be better
         }
         return true;
     }

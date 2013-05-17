@@ -22,13 +22,9 @@ import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.viewer.ThreadViewer;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
-
 import java.util.HashSet;
-import java.util.Set;
 
 /**
 * Created with IntelliJ IDEA.
@@ -51,8 +47,6 @@ public class ThreadPopupDialogFragment
     private int pos;
     private Cursor cursor;
 
-    private ImageLoader imageLoader;
-    private DisplayImageOptions displayImageOptions;
     private AbstractBoardCursorAdapter adapter;
     private AbsListView absListView;
     private View layout;
@@ -181,16 +175,11 @@ public class ThreadPopupDialogFragment
     }
 
     protected void init() {
-        imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
-        displayImageOptions = new DisplayImageOptions.Builder()
-                .cacheOnDisc()
-                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
-                .resetViewBeforeLoading()
-                .build();
         adapter = new ThreadListCursorAdapter(getActivity().getApplicationContext(), this);
         absListView = (ListView) layout.findViewById(R.id.thread_list_view);
         absListView.setAdapter(adapter);
         absListView.setOnItemClickListener(this);
+        ImageLoader imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
     }
 
@@ -246,7 +235,7 @@ public class ThreadPopupDialogFragment
 
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
-        return ThreadViewer.setViewValue(view, cursor, imageLoader, displayImageOptions, boardCode, null, 0);
+        return ThreadViewer.setViewValue(view, cursor, boardCode);
     }
 
     @Override
