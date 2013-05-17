@@ -23,7 +23,7 @@ import com.chanapps.four.data.*;
 public class ThreadCursorLoader extends BoardCursorLoader {
 
     private static final String TAG = ThreadCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     protected SharedPreferences prefs;
     protected long threadNo;
@@ -91,6 +91,9 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     }
 
     private void loadMatrixCursor(MatrixCursor matrixCursor, ChanBoard board, ChanThread thread) {
+        if (DEBUG) Log.i(TAG, "Thread topthumb size=" + thread.tn_w + "x" + thread.tn_h);
+        if (DEBUG) Log.i(TAG, "Thread posthumb size=" + thread.posts[0].tn_w + "x" + thread.posts[0].tn_h);
+
         // first get the maps for thread references
         Map<Long, HashSet<Long>> backlinksMap = thread.backlinksMap();
         Map<Long, HashSet<Long>> repliesMap = thread.repliesMap(backlinksMap);

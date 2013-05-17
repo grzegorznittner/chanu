@@ -3,6 +3,7 @@ package com.chanapps.four.viewer;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.text.Html;
@@ -27,6 +28,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 /**
  * Created with IntelliJ IDEA.
@@ -63,10 +65,15 @@ public class ThreadViewer {
         itemThumbWidth = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
         itemThumbMaxHeight = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_MAXHEIGHT_DP);
         imageLoader = ChanImageLoader.getInstance(view.getContext());
-        displayImageOptions = new DisplayImageOptions.Builder()
+        displayImageOptions = createDisplayImageOptions(null);
+    }
+
+    private static DisplayImageOptions createDisplayImageOptions(ImageSize imageSize) {
+        return new DisplayImageOptions.Builder()
                 .cacheOnDisc()
                 .cacheInMemory()
-                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+                .imageSize(imageSize)
+                .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
                 .resetViewBeforeLoading()
                 .build();
     }
@@ -274,6 +281,40 @@ public class ThreadViewer {
         }
     };
 
+    static private boolean setImage(final ImageView iv, final Cursor cursor, int flags) {
+        ViewGroup.LayoutParams params = iv.getLayoutParams();
+        if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0 || params == null)
+            return clearImage(iv, params);
+
+        String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
+        int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
+        int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
+        if (tn_w == 0 || tn_h == 0)  // we don't have height and width, so just show unscaled image
+            return displayImageAtDefaultSize(iv, params, url);
+
+        // scale image
+        Point imageSize;
+        if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
+            imageSize = sizeHeaderImage(tn_w, tn_h);
+            params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+        else {
+            imageSize = sizeItemImage(tn_w, tn_h);
+            params.width = imageSize.x;
+            params.height = imageSize.y;
+        }
+        ImageSize displayImageSize = new ImageSize(imageSize.x, imageSize.y);
+        DisplayImageOptions options = createDisplayImageOptions(displayImageSize);
+
+        // display image
+        iv.setVisibility(View.VISIBLE);
+        ImageLoadingListener listener = ((flags & ChanPost.FLAG_IS_AD) > 0) ? adImageLoadingListener : null;
+        imageLoader.displayImage(url, iv, options, listener);
+
+        return true;
+    }
+
     static private boolean clearImage(final ImageView iv, ViewGroup.LayoutParams params) {
         iv.setImageBitmap(null);
         iv.setVisibility(View.VISIBLE);
@@ -293,47 +334,19 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean setImage(final ImageView iv, final Cursor cursor, int flags) {
-        ViewGroup.LayoutParams params = iv.getLayoutParams();
-        if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0 || params == null)
-            return clearImage(iv, params);
-
-        String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
-        int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
-        int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
-        if (tn_w == 0 || tn_h == 0)  // we don't have height and width, so just show unscaled image
-            return displayImageAtDefaultSize(iv, params, url);
-
-        // scale image
-        Point imageSize = ((flags & ChanPost.FLAG_IS_HEADER) > 0)
-                ? sizeHeaderImage(tn_w, tn_h)
-                : sizeItemImage(tn_w, tn_h);
-        params.width = imageSize.x;
-        params.height = imageSize.y;
-
-        // display image
-        iv.setVisibility(View.VISIBLE);
-        if ((flags & ChanPost.FLAG_IS_AD) > 0)
-            imageLoader.displayImage(url, iv, displayImageOptions, adImageLoadingListener);
-        else
-            imageLoader.displayImage(url, iv, displayImageOptions);
-
-        return true;
-    }
-
-    static private Point sizeHeaderImage(int tn_w, int tn_h) {
+    static private Point sizeHeaderImage(final int tn_w, final int tn_h) {
         Point imageSize = new Point();
         double scaleFactor = (double) tn_w / (double) tn_h;
         if (scaleFactor < 1) { // tall image, restrict by height
-            int desiredHeight = Math.min(displayMetrics.heightPixels / 2, tn_h * MAX_HEADER_SCALE); // prevent excessive scaling
+            int desiredHeight = Math.min(displayMetrics.heightPixels / 2, 900000); //, tn_h * MAX_HEADER_SCALE); // prevent excessive scaling
             imageSize.x = (int) (scaleFactor * (double) desiredHeight);
             imageSize.y = desiredHeight;
         } else {
-            int desiredWidth = Math.min(displayMetrics.widthPixels, tn_w * MAX_HEADER_SCALE); // prevent excessive scaling
+            int desiredWidth = Math.min(displayMetrics.widthPixels / 2, 9000000); //tn_w * MAX_HEADER_SCALE); // prevent excessive scaling
             imageSize.x = desiredWidth; // restrict by width normally
             imageSize.y = (int) ((double) desiredWidth / scaleFactor);
         }
-        //if (DEBUG) Log.i(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + params.width + "x" + params.height);
+        if (DEBUG) Log.i(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + imageSize.x + "x" + imageSize.y);
         return imageSize;
     }
 
@@ -347,7 +360,7 @@ public class ThreadViewer {
             imageSize.x = itemThumbWidth; // restrict by width normally
             imageSize.y = (int) ((double) itemThumbWidth / scaleFactor);
         }
-        //if (DEBUG) Log.i(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + params.width + "x" + params.height);
+        //if (DEBUG) Log.i(TAG, "Item Input size=" + tn_w + "x" + tn_h + " output size=" + imageSize.x + "x" + imageSize.y);
         return imageSize;
     }
 

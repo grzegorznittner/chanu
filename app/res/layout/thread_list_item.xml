@@ -26,7 +26,7 @@
             android:paddingRight="@dimen/ThreadListItemHeaderWrapper_paddingRight"
             >
         <RelativeLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper">
-            <com.chanapps.four.component.StretchyImageView
+            <ImageView
                     style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
             <ProgressBar style="@style/ThreadListItemExpandedProgressBar"
                          android:layout_centerInParent="true"

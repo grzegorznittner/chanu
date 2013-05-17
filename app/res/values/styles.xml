@@ -406,7 +406,7 @@
     <!-- THREAD LIST HEADER -->
 
     <style name="ThreadListHeaderImage" parent="AppTheme">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerHorizontal">true</item>
         <item name="android:layout_marginTop">@dimen/ThreadListHeaderImage_layout_marginTop</item>
@@ -414,6 +414,7 @@
         <item name="android:gravity">center</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
+        <item name="android:background">@color/PaletteLightGray</item>
     </style>
 
     <style name="ThreadListHeaderImageExpanded" parent="AppTheme">
@@ -548,10 +549,12 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentTop">true</item>
         <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:maxWidth">@dimen/ThreadListItemImage_maxWidth</item>
+        <!--<item name="android:maxWidth">@dimen/ThreadListItemImage_maxWidth</item> -->
         <item name="android:gravity">top|left</item>
         <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">@color/PaletteLightGray</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
+
     </style>
 
     <style name="ThreadListItemExpandedProgressBar" parent="@android:style/Widget.Holo.Light.ProgressBar.Large">

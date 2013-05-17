@@ -185,28 +185,29 @@ public class ThreadPopupDialogFragment
 
     protected Cursor detailsCursor() {
         MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
-        addBlobRows(matrixCursor, ChanPost.POST_BACKLINKS_BLOB, R.plurals.thread_num_backlinks);
-        addPostRow(matrixCursor);
+        int count = addBlobRows(matrixCursor, ChanPost.POST_BACKLINKS_BLOB, R.plurals.thread_num_backlinks);
+        addPostRow(matrixCursor, count > 0);
         addBlobRows(matrixCursor, ChanPost.POST_REPLIES_BLOB, R.plurals.thread_num_replies);
         addLinksRows(matrixCursor);
         return matrixCursor;
     }
 
-    protected void addPostRow(MatrixCursor matrixCursor) {
-        matrixCursor.addRow(ChanPost.makeTitleRow(boardCode,
-                getResources().getString(R.string.thread_post_title).toUpperCase()));
+    protected void addPostRow(MatrixCursor matrixCursor, boolean showTitle) {
+        if (showTitle)
+            matrixCursor.addRow(ChanPost.makeTitleRow(boardCode,
+                    getResources().getString(R.string.thread_post_title).toUpperCase()));
         cursor.moveToPosition(pos);
         matrixCursor.addRow(ChanPost.extractPostRow(cursor));
     }
 
-    protected void addBlobRows(MatrixCursor matrixCursor, String columnName, int pluralTitleStringId) {
+    protected int addBlobRows(MatrixCursor matrixCursor, String columnName, int pluralTitleStringId) {
         cursor.moveToPosition(pos);
         byte[] b = cursor.getBlob(cursor.getColumnIndex(columnName));
         if (b == null || b.length == 0)
-            return;
+            return 0;
         HashSet<?> links = ChanPost.parseBlob(b);
         if (links == null || links.size() <= 0)
-            return;
+            return 0;
         int count = links.size();
         String title = String.format(getResources().getQuantityString(pluralTitleStringId, count), count);
         matrixCursor.addRow(ChanPost.makeTitleRow(boardCode, title.toUpperCase()));
@@ -216,6 +217,7 @@ public class ThreadPopupDialogFragment
                 matrixCursor.addRow(ChanPost.extractPostRow(cursor));
             cursor.moveToNext();
         }
+        return count;
     }
 
     protected void addLinksRows(MatrixCursor matrixCursor) {

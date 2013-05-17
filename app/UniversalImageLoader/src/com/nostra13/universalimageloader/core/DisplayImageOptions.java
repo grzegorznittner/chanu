@@ -183,6 +183,15 @@ public final class DisplayImageOptions implements Cloneable {
 		return postProcessor;
 	}
 
+    public DisplayImageOptions createClone() {
+        try {
+            return (DisplayImageOptions)clone();
+        } catch (CloneNotSupportedException e) {
+            Log.e(TAG, "Clone error", e);
+        }
+        return this;
+    }
+
 	public DisplayImageOptions modifyCenterCrop(boolean centerCropImage) {
 		try {
 			DisplayImageOptions options = (DisplayImageOptions)clone();

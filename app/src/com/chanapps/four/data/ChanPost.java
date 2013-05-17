@@ -614,6 +614,13 @@ public class ChanPost {
         omitted_images = from.omitted_images;
         omitted_posts = from.omitted_posts;
         replies = from.replies;
+        tn_w = from.tn_w;
+        tn_h = from.tn_h;
+        sub = from.sub;
+        com = from.com;
+        sticky = from.sticky;
+        closed = from.closed;
+        spoiler = from.spoiler;
     }
 
     public boolean refersTo(long postNo) {

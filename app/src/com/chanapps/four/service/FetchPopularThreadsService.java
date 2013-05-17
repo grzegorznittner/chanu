@@ -322,8 +322,8 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 			int sIdx = thumb.indexOf("s");
 			if (sIdx > 0) {
 				thread.tim = Long.parseLong(thumb.substring(0, sIdx));
-				thread.tn_w = 150;
-				thread.tn_h = 150;
+				thread.tn_w = 0;
+				thread.tn_h = 0;
 			}
 		}
 		if (str.moveTo("</a>")) {
