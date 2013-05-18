@@ -65,5 +65,8 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     @Override
     public void closeSearch() {}
 
+    @Override
+    public void startProgress() {}
+
 }
 

@@ -19,8 +19,6 @@ import android.view.Window;
 import com.chanapps.four.adapter.TabsAdapter;
 import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.component.TutorialOverlay;
-import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.BoardSelectorTab;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
@@ -271,6 +269,14 @@ public class BoardSelectorActivity
         mViewPager.setCurrentItem(tab.ordinal(), true);
     }
 
+    @Override
     public void closeSearch() {}
+
+    @Override
+    public void startProgress() {
+        Handler handler = getChanHandler();
+        if (handler != null)
+        setProgressBarIndeterminateVisibility(true);
+    }
 
 }

@@ -1239,4 +1239,11 @@ public class ThreadActivity
         adapter.swapCursor(null);
     }
 
+    @Override
+    public void startProgress() {
+        Handler handler = getChanHandler();
+        if (handler != null)
+            setProgressBarIndeterminateVisibility(true);
+    }
+
 }

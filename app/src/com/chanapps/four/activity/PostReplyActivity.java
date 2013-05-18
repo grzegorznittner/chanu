@@ -1005,4 +1005,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     @Override
     public void closeSearch() {}
 
+    @Override
+    public void startProgress() {}
+
 }

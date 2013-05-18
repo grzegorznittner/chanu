@@ -406,13 +406,13 @@
     <!-- THREAD LIST HEADER -->
 
     <style name="ThreadListHeaderImage" parent="AppTheme">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerHorizontal">true</item>
         <item name="android:layout_marginTop">@dimen/ThreadListHeaderImage_layout_marginTop</item>
         <item name="android:layout_marginBottom">@dimen/ThreadListHeaderImage_layout_marginBottom</item>
         <item name="android:gravity">center</item>
-        <item name="android:scaleType">fitCenter</item>
+        <item name="android:scaleType">center</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
         <item name="android:background">@color/PaletteLightGray</item>
     </style>

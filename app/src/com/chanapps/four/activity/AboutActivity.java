@@ -51,4 +51,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity {
     @Override
     public void closeSearch() {}
 
+    @Override
+    public void startProgress() {}
+
 }

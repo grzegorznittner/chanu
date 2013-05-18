@@ -100,7 +100,7 @@
     <dimen name="BoardListText_paddingBottom">16dp</dimen>
     <dimen name="BoardListText_textSize">16sp</dimen>
 
-    <dimen name="ThreadListHeaderImage_layout_marginTop">0dp</dimen>
+    <dimen name="ThreadListHeaderImage_layout_marginTop">16dp</dimen>
     <dimen name="ThreadListHeaderImage_layout_marginBottom">0dp</dimen>
 
     <dimen name="ThreadListHeaderSubject_layout_marginLeft">0dp</dimen>

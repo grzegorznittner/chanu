@@ -3,13 +3,16 @@ package com.chanapps.four.viewer;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -24,17 +27,30 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
  */
 public class BoardSelectorBoardsViewer {
 
-    static public boolean setViewValue(View view, Cursor cursor, int columnIndex,
-                                                   ImageLoader imageLoader, DisplayImageOptions options) {
+    private static ImageLoader imageLoader;
+    private static DisplayImageOptions displayImageOptions;
+
+    private static void initStatics(View view) {
+        imageLoader = ChanImageLoader.getInstance(view.getContext());
+        displayImageOptions = new DisplayImageOptions.Builder()
+                .cacheOnDisc()
+                .cacheInMemory()
+                .resetViewBeforeLoading()
+                .build();
+    }
+
+    static public boolean setViewValue(View view, Cursor cursor) {
+        if (imageLoader == null)
+            initStatics(view);
         switch (view.getId()) {
             case R.id.grid_item_thread_subject:
                 return setThreadSubject((TextView) view, cursor);
             case R.id.grid_item_thread_title:
                 return setThreadTitle((TextView) view, cursor);
             case R.id.grid_item_thread_thumb:
-                return setThreadThumb((ImageView) view, cursor, imageLoader, options);
+                return setThreadThumb((ImageView) view, cursor);
             case R.id.grid_item_country_flag:
-                return setThreadCountryFlag((ImageView) view, cursor, imageLoader, options);
+                return setThreadCountryFlag((ImageView) view, cursor);
         }
         return false;
     }
@@ -64,8 +80,7 @@ public class BoardSelectorBoardsViewer {
         return true;
     }
 
-    static protected boolean setThreadThumb(ImageView iv, Cursor cursor,
-                                            ImageLoader imageLoader, DisplayImageOptions options) {
+    static protected boolean setThreadThumb(ImageView iv, Cursor cursor) {
         int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         if ((threadFlags & ChanThread.THREAD_FLAG_TITLE) > 0) {
             iv.setImageBitmap(null);
@@ -74,18 +89,17 @@ public class BoardSelectorBoardsViewer {
             imageLoader.displayImage(
                     cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL)),
                     iv,
-                    options.modifyCenterCrop(true),
+                    displayImageOptions,
                     thumbLoadingListener);
         }
         return true;
     }
 
-    static protected boolean setThreadCountryFlag(ImageView iv, Cursor cursor,
-                                                  ImageLoader imageLoader, DisplayImageOptions options) {
+    static protected boolean setThreadCountryFlag(ImageView iv, Cursor cursor) {
         imageLoader.displayImage(
                 cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_COUNTRY_FLAG_URL)),
                 iv,
-                options);
+                displayImageOptions);
         return true;
     }
 

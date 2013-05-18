@@ -3,7 +3,6 @@ package com.chanapps.four.viewer;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.text.Html;
@@ -43,7 +42,7 @@ public class ThreadViewer {
     public static final int ITEM_THUMB_MAXHEIGHT_DP = ITEM_THUMB_WIDTH_DP;
     public static final int ITEM_THUMB_EMPTY_DP = 8;
     public static final int DEFAULT_AD_HEIGHT_DP = 48;
-    public static final int MAX_HEADER_SCALE = 3;
+    public static final int MAX_HEADER_SCALE = 2;
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
@@ -57,7 +56,7 @@ public class ThreadViewer {
     private static ImageLoader imageLoader = null;
     private static DisplayImageOptions displayImageOptions = null;
 
-    private static void initMetrics(View view) {
+    private static void initStatics(View view) {
         Resources res = view.getResources();
         displayMetrics = res.getDisplayMetrics();
         subjectTypeface = Typeface.createFromAsset(res.getAssets(), SUBJECT_FONT);
@@ -80,11 +79,11 @@ public class ThreadViewer {
 
     public static boolean setViewValue(final View view, final Cursor cursor, String groupBoardCode) {
         if (displayMetrics == null)
-            initMetrics(view);
+            initStatics(view);
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
         int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
         if (flags < 0) { // we are on board list
-            return BoardGridViewer.setViewValue(view, cursor, imageLoader, displayImageOptions, groupBoardCode);
+            return BoardGridViewer.setViewValue(view, cursor, groupBoardCode);
         }
         else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0) {
             return setUrlLinkView(view, cursor);
@@ -296,8 +295,10 @@ public class ThreadViewer {
         Point imageSize;
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
             imageSize = sizeHeaderImage(tn_w, tn_h);
-            params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            params.width = imageSize.x;
+            params.height = imageSize.y;
+            //params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            //params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
         else {
             imageSize = sizeItemImage(tn_w, tn_h);
@@ -338,11 +339,11 @@ public class ThreadViewer {
         Point imageSize = new Point();
         double scaleFactor = (double) tn_w / (double) tn_h;
         if (scaleFactor < 1) { // tall image, restrict by height
-            int desiredHeight = Math.min(displayMetrics.heightPixels / 2, 900000); //, tn_h * MAX_HEADER_SCALE); // prevent excessive scaling
+            int desiredHeight = Math.min(displayMetrics.heightPixels / 2, tn_h * MAX_HEADER_SCALE); // prevent excessive scaling
             imageSize.x = (int) (scaleFactor * (double) desiredHeight);
             imageSize.y = desiredHeight;
         } else {
-            int desiredWidth = Math.min(displayMetrics.widthPixels / 2, 9000000); //tn_w * MAX_HEADER_SCALE); // prevent excessive scaling
+            int desiredWidth = Math.min(displayMetrics.widthPixels / 2, tn_w * MAX_HEADER_SCALE); // prevent excessive scaling
             imageSize.x = desiredWidth; // restrict by width normally
             imageSize.y = (int) ((double) desiredWidth / scaleFactor);
         }

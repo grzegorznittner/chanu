@@ -2,23 +2,22 @@ package com.chanapps.four.viewer;
 
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.nfc.Tag;
+import android.os.Debug;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-
-import javax.security.auth.login.LoginException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,12 +28,25 @@ import javax.security.auth.login.LoginException;
  */
 public class BoardGridViewer {
 
-    public static boolean setViewValue(View view,
-                                       Cursor cursor,
-                                       ImageLoader imageLoader,
-                                       DisplayImageOptions options,
-                                       String groupBoardCode)
+    private static boolean DEBUG = true;
+    private static String TAG = BoardGridViewer.class.getSimpleName();
+
+    private static ImageLoader imageLoader;
+    private static DisplayImageOptions displayImageOptions;
+
+    private static void initStatics(View view) {
+        imageLoader = ChanImageLoader.getInstance(view.getContext());
+        displayImageOptions = new DisplayImageOptions.Builder()
+                .cacheOnDisc()
+                .cacheInMemory()
+                .resetViewBeforeLoading()
+                .build();
+    }
+
+    public static boolean setViewValue(View view, Cursor cursor, String groupBoardCode)
     {
+        if (imageLoader == null)
+            initStatics(view);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) { // special case it to avoid needing a separate item layout
             return setTitleView(view, cursor, flags);
@@ -49,9 +61,9 @@ public class BoardGridViewer {
             case R.id.grid_item_thread_subject:
                 return setGridSubject((TextView) view, cursor);
             case R.id.grid_item_thread_thumb:
-                return setGridThumb((ImageView) view, cursor, imageLoader, options, flags);
+                return setGridThumb((ImageView) view, cursor, flags);
             case R.id.grid_item_country_flag:
-                return setCountryFlag((ImageView) view, cursor, imageLoader, options);
+                return setCountryFlag((ImageView) view, cursor);
             case R.id.grid_item_thread_info:
                 return setInfo((TextView) view, cursor, flags);
         }
@@ -80,13 +92,13 @@ public class BoardGridViewer {
     }
 
     protected static boolean setTitle(TextView tv, Cursor cursor, int flags) {
+        tv.setVisibility(View.GONE);
         if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
             String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
             tv.setText(Html.fromHtml(text));
-            tv.setVisibility(View.VISIBLE);
         }
         else {
-            tv.setVisibility(View.GONE);
+            tv.setText("");
         }
         return true;
     }
@@ -102,20 +114,20 @@ public class BoardGridViewer {
     }
 
     protected static boolean setText(TextView tv, Cursor cursor) {
+        tv.setVisibility(View.GONE);
         String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
         if (text != null && !text.isEmpty()) {
             tv.setText(Html.fromHtml(text));
-            tv.setVisibility(View.VISIBLE);
         }
         else {
             tv.setText("");
-            tv.setVisibility(View.GONE);
         }
         return true;
     }
 
-    protected static boolean setGridThumb(ImageView iv, Cursor cursor, ImageLoader imageLoader,
-                                          DisplayImageOptions options, int flags) {
+    protected static boolean setGridThumb(ImageView iv, Cursor cursor, int flags) {
+        iv.setImageDrawable(null);
+        iv.setVisibility(View.VISIBLE);
         String url;
         if ((flags & (ChanThread.THREAD_FLAG_TITLE | ChanThread.THREAD_FLAG_AD)) > 0) {
             url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL))
@@ -130,7 +142,7 @@ public class BoardGridViewer {
                 url = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
             }
         }
-        imageLoader.displayImage(url, iv, options, thumbLoadingListener);
+        imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
         return true;
     }
 
@@ -151,21 +163,26 @@ public class BoardGridViewer {
                 TextView info = (TextView)parentView.findViewById(R.id.grid_item_thread_info);
                 TextView abbrev = (TextView)parentView.findViewById(R.id.grid_item_board_abbrev);
                 ImageView countryFlag = (ImageView)parentView.findViewById(R.id.grid_item_country_flag);
+                if (DEBUG) Log.i(TAG, "onLoadingComplete subject=" + subject.getText() + " url=" + imageUri
+                        + " img=" + loadedImage + " byteCount=" + loadedImage.getByteCount());
                 boolean oneVisible = false;
-                if (subject != null && subject.getText() != null && subject.getText().length() > 0) {
-                    subject.setVisibility(View.VISIBLE);
-                    oneVisible = true;
+                boolean overlayDetails = true;
+                if (overlayDetails) {
+                    if (subject != null && subject.getText() != null && subject.getText().length() > 0) {
+                        subject.setVisibility(View.VISIBLE);
+                        oneVisible = true;
+                    }
+                    if (info != null && info.getText() != null && info.getText().length() > 0) {
+                        info.setVisibility(View.VISIBLE);
+                        oneVisible = true;
+                    }
+                    if (wrapper != null && oneVisible)
+                        wrapper.setVisibility(View.VISIBLE);
+                    if (abbrev != null && abbrev.getText() != null && abbrev.getText().length() > 0)
+                        abbrev.setVisibility(View.VISIBLE);
+                    if (countryFlag.getDrawable() != null)
+                        countryFlag.setVisibility(View.VISIBLE);
                 }
-                if (info != null && info.getText() != null && info.getText().length() > 0) {
-                    info.setVisibility(View.VISIBLE);
-                    oneVisible = true;
-                }
-                if (wrapper != null && oneVisible)
-                    wrapper.setVisibility(View.VISIBLE);
-                if (abbrev != null && abbrev.getText() != null && abbrev.getText().length() > 0)
-                    abbrev.setVisibility(View.VISIBLE);
-                if (countryFlag.getDrawable() != null)
-                    countryFlag.setVisibility(View.VISIBLE);
             }
         }
         @Override
@@ -173,11 +190,11 @@ public class BoardGridViewer {
         }
     };
 
-    protected static boolean setCountryFlag(ImageView iv, Cursor cursor, ImageLoader imageLoader, DisplayImageOptions options) {
+    protected static boolean setCountryFlag(ImageView iv, Cursor cursor) {
         iv.setVisibility(View.GONE);
         String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_COUNTRY_FLAG_URL));
         if (url != null && !url.isEmpty()) {
-            imageLoader.displayImage(url, iv, options);
+            imageLoader.displayImage(url, iv, displayImageOptions);
         }
         else {
             iv.setImageDrawable(null);

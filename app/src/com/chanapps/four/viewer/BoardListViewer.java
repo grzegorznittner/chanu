@@ -3,12 +3,15 @@ package com.chanapps.four.viewer;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -23,19 +26,31 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
  */
 public class BoardListViewer {
 
-    public static boolean setViewValue(View view,
-                                       Cursor cursor,
-                                       ImageLoader imageLoader,
-                                       DisplayImageOptions options,
-                                       String groupBoardCode,
-                                       int padding4DP)
-    {
+    private static DisplayMetrics displayMetrics = null;
+    private static ImageLoader imageLoader;
+    private static DisplayImageOptions displayImageOptions;
+    private static int padding4DP;
+
+    private static void initStatics(View view) {
+        displayMetrics = view.getResources().getDisplayMetrics();
+        padding4DP = ChanGridSizer.dpToPx(displayMetrics, 4);
+        imageLoader = ChanImageLoader.getInstance(view.getContext());
+        displayImageOptions = new DisplayImageOptions.Builder()
+                .cacheOnDisc()
+                .cacheInMemory()
+                .resetViewBeforeLoading()
+                .build();
+    }
+
+    public static boolean setViewValue(View view, Cursor cursor, String groupBoardCode) {
+        if (displayMetrics == null)
+            initStatics(view);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) { // special case it to avoid needing a separate item layout
             return setTitleView(view, cursor, flags);
         }
         else if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
-            return setBannerAdView(view, cursor, imageLoader, options, flags);
+            return setBannerAdView(view, cursor, flags);
         }
         switch (view.getId()) {
             case R.id.list_item:
@@ -47,15 +62,15 @@ public class BoardListViewer {
             case R.id.list_item_thread_subject:
                 return setListSubject((TextView) view, cursor);
             case R.id.list_item_thread_headline:
-                return setHeadline((TextView) view, cursor, padding4DP);
+                return setHeadline((TextView) view, cursor);
             case R.id.list_item_thread_text:
                 return setText((TextView) view, cursor);
             case R.id.list_item_thread_thumb:
-                return setListThumb((ImageView) view, cursor, imageLoader, options, flags);
+                return setListThumb((ImageView) view, cursor, flags);
             case R.id.list_item_country_flag:
-                return setCountryFlag((ImageView) view, cursor, imageLoader, options);
+                return setCountryFlag((ImageView) view, cursor);
             case R.id.list_item_thread_banner_ad:
-                return setBannerAd((ImageView) view, cursor, imageLoader, options, flags);
+                return setBannerAd((ImageView) view, cursor, flags);
         }
         return false;
     }
@@ -97,7 +112,7 @@ public class BoardListViewer {
         return true;
     }
 
-    protected static boolean setHeadline(TextView tv, Cursor cursor, int padding4DP) {
+    protected static boolean setHeadline(TextView tv, Cursor cursor) {
         String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
         if (text != null && !text.isEmpty()) {
             tv.setPadding(tv.getPaddingLeft(), 0, tv.getPaddingRight(), tv.getPaddingBottom());
@@ -122,8 +137,7 @@ public class BoardListViewer {
         return true;
     }
 
-    protected static boolean setListThumb(ImageView iv, Cursor cursor, ImageLoader imageLoader,
-                                            DisplayImageOptions options, int flags) {
+    protected static boolean setListThumb(ImageView iv, Cursor cursor, int flags) {
         iv.setImageBitmap(null);
         iv.setVisibility(View.VISIBLE);
         if ((flags & (ChanThread.THREAD_FLAG_TITLE | ChanThread.THREAD_FLAG_AD)) > 0) { // hide thumbnail
@@ -136,15 +150,15 @@ public class BoardListViewer {
             int i = (new Long(threadNo % 3)).intValue();
             url = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
         }
-        imageLoader.displayImage(url, iv, options);
+        imageLoader.displayImage(url, iv, displayImageOptions);
         return true;
     }
 
-    protected static boolean setCountryFlag(ImageView iv, Cursor cursor, ImageLoader imageLoader, DisplayImageOptions options) {
+    protected static boolean setCountryFlag(ImageView iv, Cursor cursor) {
         String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_COUNTRY_FLAG_URL));
         if (url != null && !url.isEmpty()) {
             iv.setVisibility(View.VISIBLE);
-            imageLoader.displayImage(url, iv, options);
+            imageLoader.displayImage(url, iv, displayImageOptions);
         }
         else {
             iv.setVisibility(View.GONE);
@@ -170,10 +184,9 @@ public class BoardListViewer {
         return true;
     }
 
-    protected static boolean setBannerAdView(View view, Cursor cursor, ImageLoader imageLoader,
-                                             DisplayImageOptions options, int flags) {
+    protected static boolean setBannerAdView(View view, Cursor cursor, int flags) {
         if (view.getId() == R.id.list_item_thread_banner_ad) {
-            setBannerAd((ImageView) view, cursor, imageLoader, options, flags);
+            setBannerAd((ImageView) view, cursor, flags);
         }
         else if (view.getId() == R.id.list_item) {
             view.setVisibility(View.VISIBLE);
@@ -187,14 +200,13 @@ public class BoardListViewer {
         return true;
     }
 
-    protected static boolean setBannerAd(final ImageView iv, Cursor cursor, ImageLoader imageLoader,
-                                         DisplayImageOptions options, int flags) {
+    protected static boolean setBannerAd(final ImageView iv, Cursor cursor, int flags) {
         iv.setImageBitmap(null);
         iv.setVisibility(View.GONE);
         if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
             String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL))
                     .split(ChanThread.AD_DELIMITER)[1];
-            imageLoader.displayImage(url, iv, options, new ImageLoadingListener() {
+            imageLoader.displayImage(url, iv, displayImageOptions, new ImageLoadingListener() {
                 @Override
                 public void onLoadingStarted(String imageUri, View view) {
                     //To change body of implemented methods use File | Settings | File Templates.

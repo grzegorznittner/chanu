@@ -9,7 +9,7 @@
             android:layout_height="wrap_content"
             >
 
-        <com.chanapps.four.component.StretchyImageView style="@style/ThreadListHeaderImage" android:id="@+id/list_item_image"/>
+        <ImageView style="@style/ThreadListHeaderImage" android:id="@+id/list_item_image"/>
 
         <com.chanapps.four.component.StretchyImageView style="@style/ThreadListHeaderImageExpanded" android:id="@+id/list_item_image_expanded"/>
 

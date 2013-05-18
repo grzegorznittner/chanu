@@ -6,7 +6,6 @@ import java.util.List;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.SearchManager;
-import android.graphics.Typeface;
 import android.os.Message;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
@@ -20,7 +19,6 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
-import android.util.DisplayMetrics;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.*;
@@ -42,9 +40,7 @@ import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.viewer.BoardGridViewer;
 import com.chanapps.four.viewer.BoardListViewer;
 import com.chanapps.four.viewer.ViewType;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class BoardActivity
@@ -57,10 +53,8 @@ public class BoardActivity
         AbstractBoardCursorAdapter.ViewBinder
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
-    private static final int THUMB_WIDTH_PX = 150;
-    private static final int THUMB_HEIGHT_PX = 150;
 
     protected AbstractBoardCursorAdapter adapter;
     protected View layout;
@@ -69,8 +63,6 @@ public class BoardActivity
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
     protected int scrollOnNextLoaderFinished = -1;
-    protected ImageLoader imageLoader;
-    protected DisplayImageOptions displayImageOptions;
     protected Menu menu;
     protected SharedPreferences prefs;
     protected long tim;
@@ -80,8 +72,6 @@ public class BoardActivity
     protected int columnHeight = 0;
     protected MenuItem searchMenuItem;
     protected ViewType viewType = ViewType.AS_GRID;
-    protected int padding4DP = 0;
-    protected int padding8DP = 0;
 
     public static void startActivity(Activity from, String boardCode) {
         from.startActivity(createIntentForActivity(from, boardCode));
@@ -110,11 +100,6 @@ public class BoardActivity
         return intent;
     }
 
-    protected void initImageLoader() {
-        imageLoader = ChanImageLoader.getInstance(getApplicationContext());
-        resetImageOptions(new ImageSize(THUMB_WIDTH_PX, THUMB_HEIGHT_PX)); // view pager needs micro images
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 		if (DEBUG) Log.v(TAG, "************ onCreate");
@@ -123,16 +108,8 @@ public class BoardActivity
         query = getIntent().hasExtra(SearchManager.QUERY)
                 ? getIntent().getStringExtra(SearchManager.QUERY)
                 : "";
-        initImageLoader();
         createAbsListView();
-        initPaddings();
         LoaderManager.enableDebugLogging(true);
-    }
-
-    protected void initPaddings() {
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        padding4DP = ChanGridSizer.dpToPx(metrics, 4);
-        padding8DP = ChanGridSizer.dpToPx(metrics, 8);
     }
 
     protected void sizeGridToDisplay() {
@@ -168,19 +145,10 @@ public class BoardActivity
         return searchQuery != null && !searchQuery.isEmpty();
     }
 
-    protected void resetImageOptions(ImageSize imageSize) {
-        displayImageOptions = new DisplayImageOptions.Builder()
-                .cacheOnDisc()
-                .cacheInMemory()
-                .resetViewBeforeLoading()
-                .build();
-    }
-
     protected void initAbsListView() {
         if (GridView.class.equals(absListViewClass)) {
             absListView = (GridView)findViewById(R.id.board_grid_view);
             sizeGridToDisplay();
-            resetImageOptions(new ImageSize(columnWidth, columnHeight));
         }
         else {
             absListView = (ListView)findViewById(R.id.board_list_view);
@@ -196,6 +164,7 @@ public class BoardActivity
         absListView.setClickable(true);
         absListView.setOnItemClickListener(this);
         absListView.setLongClickable(false);
+        ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
     }
 
@@ -337,9 +306,9 @@ public class BoardActivity
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         if (viewType == ViewType.AS_GRID)
-            return BoardGridViewer.setViewValue(view, cursor, imageLoader, displayImageOptions, boardCode);
+            return BoardGridViewer.setViewValue(view, cursor, boardCode);
         else
-            return BoardListViewer.setViewValue(view, cursor, imageLoader, displayImageOptions, boardCode, padding4DP);
+            return BoardListViewer.setViewValue(view, cursor, boardCode);
     }
 
     @Override
@@ -648,4 +617,11 @@ public class BoardActivity
             }
         }
     }
+
+    @Override
+    public void startProgress() {
+        if (handler != null)
+            setProgressBarIndeterminateVisibility(true);
+    }
+
 }

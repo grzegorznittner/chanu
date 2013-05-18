@@ -105,7 +105,7 @@
     <dimen name="ThreadListLayout_paddingLeft">16dp</dimen>
     <dimen name="ThreadListLayout_paddingRight">16dp</dimen>
 
-    <dimen name="ThreadListHeaderImage_layout_marginTop">0dp</dimen>
+    <dimen name="ThreadListHeaderImage_layout_marginTop">8dp</dimen>
     <dimen name="ThreadListHeaderImage_layout_marginBottom">0dp</dimen>
 
     <dimen name="ThreadListHeaderSubject_layout_marginLeft">0dp</dimen>

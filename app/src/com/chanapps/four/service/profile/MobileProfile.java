@@ -189,18 +189,24 @@ public class MobileProfile extends AbstractNetworkProfile {
     @Override
 	public void onBoardSelected(Context context, String boardCode) {
 		super.onBoardSelected(context, boardCode);
-        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        /*if (board != null && board.threads != null && board.threads.length > 0) {
-            if (DEBUG) Log.i(TAG, "skipping preload board as already have data");
-            return;
-        }*/
         Health health = getConnectionHealth();
         if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             if (DEBUG) Log.i(TAG, "skipping preload board as there is no network connection");
             return;
         }
-        boolean canFetch = FetchChanDataService.scheduleBoardFetch(context, boardCode);
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        boolean priority = (board == null || board.defData
+                || board.threads == null || board.threads.length == 0 || board.threads[0].defData);
+        /*if (board != null && board.threads != null && board.threads.length > 0) {
+            if (DEBUG) Log.i(TAG, "skipping preload board as already have data");
+            return;
+        }*/
+        boolean canFetch = priority
+            ? FetchChanDataService.scheduleBoardFetchWithPriority(context, boardCode)
+            : FetchChanDataService.scheduleBoardFetch(context, boardCode);
+        if (canFetch && priority)
+            NetworkProfileManager.instance().getActivity().startProgress();
         if (canFetch)
             if (DEBUG) Log.i(TAG, "auto-fetching selected board=" + boardCode);
         else

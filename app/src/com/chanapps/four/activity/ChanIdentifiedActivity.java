@@ -26,4 +26,7 @@ public interface ChanIdentifiedActivity {
     // used for refreshing data
     void refresh();
 
+    // tell activity we are starting fetch
+    void startProgress();
+
 }

@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.Loader;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
@@ -58,9 +59,6 @@ public class BoardGroupFragment
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
 
-    protected ImageLoader imageLoader;
-    protected DisplayImageOptions displayImageOptions;
-
     protected static boolean scheduledWatchlistRefresh = false;
 
     public static void scheduleWatchlistRefresh() {
@@ -108,23 +106,14 @@ public class BoardGroupFragment
         cg.sizeGridToDisplay();
         columnWidth = cg.getColumnWidth();
         columnHeight = cg.getColumnHeight();
-        
-        ImageSize imageSize = new ImageSize(columnWidth, columnHeight); // view pager needs micro images
-        imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
-        displayImageOptions = new DisplayImageOptions.Builder()
-                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
-                .imageSize(imageSize)
-                .cacheOnDisc()
-                .cacheInMemory()
-                .resetViewBeforeLoading()
-                .build();
-        
+
         assignCursorAdapter();
         absListView.setAdapter(adapter);
         absListView.setClickable(true);
         absListView.setOnItemClickListener(this);
         absListView.setLongClickable(true);
         absListView.setOnItemLongClickListener(this);
+        ImageLoader imageLoader = ChanImageLoader.getInstance(getBaseContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
     }
 
@@ -356,11 +345,11 @@ public class BoardGroupFragment
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         switch (boardSelectorTab) {
             case BOARDLIST:
-                return BoardSelectorBoardsViewer.setViewValue(view, cursor, columnIndex, imageLoader, displayImageOptions);
+                return BoardSelectorBoardsViewer.setViewValue(view, cursor);
             case WATCHLIST:
             case RECENT:
             default:
-                return BoardGridViewer.setViewValue(view, cursor, imageLoader, displayImageOptions, boardSelectorTab.boardCode());
+                return BoardGridViewer.setViewValue(view, cursor, boardSelectorTab.boardCode());
         }
     }
 
