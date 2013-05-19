@@ -237,7 +237,7 @@ public class ThreadPopupDialogFragment
 
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
-        return ThreadViewer.setViewValue(view, cursor, boardCode);
+        return ThreadViewer.setViewValue(view, cursor, boardCode, null, null);
     }
 
     @Override

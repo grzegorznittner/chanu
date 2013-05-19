@@ -418,7 +418,7 @@
     </style>
 
     <style name="ThreadListHeaderImageExpanded" parent="AppTheme">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerHorizontal">true</item>
         <item name="android:layout_marginTop">@dimen/ThreadListHeaderImage_layout_marginTop</item>
@@ -451,6 +451,8 @@
         <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">false</item>
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">true</item>
     </style>
 
     <style name="ThreadListHeaderHeadWrapper" parent="AppTheme">
@@ -481,6 +483,8 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">true</item>
     </style>
 
     <style name="ThreadListHeaderExifText" parent="AppTheme">
@@ -506,7 +510,7 @@
         <item name="android:textSize">@dimen/ThreadListHeaderFullText</item>
         <!-- <item name="android:textIsSelectable">true</item>  -->
         <item name="android:autoLink">web|email</item>
-        <item name="android:linksClickable">false</item>
+        <item name="android:linksClickable">true</item>
         <!-- <item name="android:focusable">false</item> -->
         <!-- <item name="android:focusableInTouchMode">true</item> -->
     </style>
@@ -599,6 +603,8 @@
         <item name="android:textSize">@dimen/ThreadListItemSubject</item>
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">false</item>
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">true</item>
     </style>
 
     <style name="ThreadListItemCountryFlag" parent="AppTheme">
@@ -625,6 +631,8 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/ThreadListItemHead</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">true</item>
     </style>
 
     <style name="ThreadListTitle" parent="AppTheme">
@@ -679,7 +687,7 @@
         <item name="android:textSize">@dimen/ThreadListItemFullText</item>
         <!-- <item name="android:textIsSelectable">true</item>  -->
         <item name="android:autoLink">web|email</item>
-        <item name="android:linksClickable">false</item>
+        <item name="android:linksClickable">true</item>
         <!-- <item name="android:focusable">false</item> -->
         <!-- <item name="android:focusableInTouchMode">true</item> -->
     </style>

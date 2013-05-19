@@ -416,7 +416,7 @@ public class ThreadActivity
 
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
-        return ThreadViewer.setViewValue(view, cursor, boardCode);
+        return ThreadViewer.setViewValue(view, cursor, boardCode, imageOnClickListener, exifOnClickListener);
     }
 
     protected File fullSizeImageFile(Cursor cursor) {
@@ -771,8 +771,6 @@ public class ThreadActivity
             itemBoardLinkListener.onClick(view);
         else
             itemPopupListener.onClick(view);
-        //else if ((flags & (ChanPost.FLAG_HAS_IMAGE | ChanPost.FLAG_HAS_EXIF | ChanPost.FLAG_HAS_SPOILER)) > 0)
-        //    itemExpandListener.onClick(view);
     }
 
     protected View.OnClickListener itemAdListener = new View.OnClickListener() {
@@ -844,8 +842,7 @@ public class ThreadActivity
         }
     };
 
-    /*
-    protected View.OnClickListener itemExpandListener = new View.OnClickListener() {
+    protected View.OnClickListener imageOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int pos = absListView.getPositionForView(v);
@@ -862,30 +859,50 @@ public class ThreadActivity
             if (DEBUG) Log.i(TAG, "found itemView=" + itemView);
             if (itemView == null)
                 return;
-            if ((Boolean) itemView.getTag(R.id.THREAD_VIEW_IS_EXPANDED))
+            if ((Boolean) itemView.getTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED))
                 return;
 
             Cursor cursor = adapter.getCursor();
             cursor.moveToPosition(pos);
             final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
             if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
-            if ((flags & (ChanPost.FLAG_HAS_IMAGE | ChanPost.FLAG_HAS_EXIF | ChanPost.FLAG_HAS_SPOILER)) > 0) {
+            if ((flags & (ChanPost.FLAG_HAS_IMAGE)) > 0) {
                 (new ThreadExpandImageOnClickListener(getApplicationContext(), cursor, itemView)).onClick(itemView);
-                itemView.setTag(R.id.THREAD_VIEW_IS_EXPANDED, Boolean.TRUE);
+                itemView.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.TRUE);
             }
-
-            //todo - decide for the header image what happend on a click
-
-            //if ((flags & ChanPost.FLAG_IS_HEADER) > 0  ) {
-            //    long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-            //    int position = cursor.getPosition();
-            //    GalleryViewActivity.startActivity(ThreadActivity.this, boardCode, threadNo, postId, position);
-            //}
-
-
         }
     };
-    */
+
+    protected View.OnClickListener exifOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = absListView.getPositionForView(v);
+            if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
+
+            View itemView = null;
+            for (int i = 0; i < absListView.getChildCount(); i++) {
+                View child = absListView.getChildAt(i);
+                if (absListView.getPositionForView(child) == pos) {
+                    itemView = child;
+                    break;
+                }
+            }
+            if (DEBUG) Log.i(TAG, "found itemView=" + itemView);
+            if (itemView == null)
+                return;
+            if ((Boolean) itemView.getTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED))
+                return;
+
+            Cursor cursor = adapter.getCursor();
+            cursor.moveToPosition(pos);
+            final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
+            if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
+            if ((flags & (ChanPost.FLAG_HAS_EXIF)) > 0) {
+                (new ThreadExpandExifOnClickListener(cursor, itemView)).onClick(itemView);
+                itemView.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, Boolean.TRUE);
+            }
+        }
+    };
 
     public void setActionBarTitle() {
         final ActionBar a = getActionBar();

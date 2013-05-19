@@ -6,7 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.text.Html;
+import android.text.Spannable;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,7 @@ import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ChanGridSizer;
@@ -77,7 +81,9 @@ public class ThreadViewer {
                 .build();
     }
 
-    public static boolean setViewValue(final View view, final Cursor cursor, String groupBoardCode) {
+    public static boolean setViewValue(final View view, final Cursor cursor, String groupBoardCode,
+                                       View.OnClickListener imageOnClickListener,
+                                       View.OnClickListener exifOnClickListener) {
         if (displayMetrics == null)
             initStatics(view);
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
@@ -95,11 +101,13 @@ public class ThreadViewer {
             return setBannerAdView(view, cursor);
         }
         else {
-            return setListItemView(view, cursor, flags);
+            return setListItemView(view, cursor, flags, imageOnClickListener, exifOnClickListener);
         }
     }
 
-    public static boolean setListItemView(final View view, final Cursor cursor, int flags) {
+    public static boolean setListItemView(final View view, final Cursor cursor, int flags,
+                                          View.OnClickListener imageOnClickListener,
+                                          View.OnClickListener exifOnClickListener) {
         switch (view.getId()) {
             case R.id.list_item:
                 return setItem((ViewGroup) view, cursor, flags);
@@ -114,7 +122,7 @@ public class ThreadViewer {
             case R.id.list_item_image_wrapper:
                 return setImageWrapper((ViewGroup) view, cursor, flags);
             case R.id.list_item_image:
-                return setImage((ImageView) view, cursor, flags);
+                return setImage((ImageView) view, cursor, flags, imageOnClickListener);
             case R.id.list_item_country_flag:
                 return setCountryFlag((ImageView) view, cursor, flags);
             case R.id.list_item_header:
@@ -122,7 +130,7 @@ public class ThreadViewer {
             case R.id.list_item_subject:
                 return setSubject((TextView) view, cursor, flags);
             case R.id.list_item_text:
-                return setText((TextView) view, cursor, flags);
+                return setText((TextView) view, cursor, flags, exifOnClickListener);
             case R.id.list_item_image_exif:
                 return setImageExifValue((TextView) view);
             default:
@@ -141,21 +149,11 @@ public class ThreadViewer {
     static protected boolean setItem(ViewGroup item, Cursor cursor, int flags) {
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         item.setTag((flags | ChanPost.FLAG_IS_AD) > 0 ? null : postId);
-        item.setTag(R.id.THREAD_VIEW_IS_EXPANDED, new Boolean(false));
+        item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, new Boolean(false));
+        item.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, new Boolean(false));
         ViewGroup itemHeaderWrapper = (ViewGroup) item.findViewById(R.id.list_item_header_wrapper);
         ViewGroup.LayoutParams params = itemHeaderWrapper.getLayoutParams();
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-/*
-        boolean clickable = (flags & (
-                        ChanPost.FLAG_IS_AD |
-                        ChanPost.FLAG_IS_THREADLINK |
-                        ChanPost.FLAG_HAS_IMAGE |
-                        ChanPost.FLAG_HAS_EXIF |
-                        ChanPost.FLAG_HAS_SPOILER))
-                        > 0;
-        //item.setClickable(clickable);
-        if (DEBUG) Log.i(TAG, "Exception postId=" + postId + " isClickable=" + clickable + " flags=" + flags);
-        */
         item.setVisibility(View.VISIBLE);
         return true;
     }
@@ -208,12 +206,41 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean setText(final TextView tv, final Cursor cursor, int flags) {
-        if ((flags & ChanPost.FLAG_IS_AD) == 0 && (flags & ChanPost.FLAG_HAS_TEXT) > 0) {
-            String postText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
-            tv.setText(Html.fromHtml(postText));
+    static private final String SHOW_EXIF_TEXT = "Show EXIF Data";
+    static private final String SHOW_EXIF_HTML = "<b>" + SHOW_EXIF_TEXT + "</b>";
+
+    static private boolean setText(final TextView tv, final Cursor cursor, int flags,
+                                   final View.OnClickListener exifOnClickListener) {
+        String text;
+        if ((flags & ChanPost.FLAG_IS_AD) > 0) {
+            text = "";
+        }
+        else if ((flags & ChanPost.FLAG_HAS_TEXT) > 0) {
+            text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+        }
+        else {
+            text = "";
+        }
+        if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null) {
+            text += (text.isEmpty() ? "" : " ") + SHOW_EXIF_HTML;
+        }
+        Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text));
+        if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null) {
+            ClickableSpan exif = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    exifOnClickListener.onClick(widget);
+                }
+            };
+            tv.setMovementMethod(LinkMovementMethod.getInstance());
+            spannable.setSpan(exif, spannable.length() - SHOW_EXIF_TEXT.length(), spannable.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        if (spannable.length() > 0) {
+            tv.setText(spannable);
             tv.setVisibility(View.VISIBLE);
-        } else {
+        }
+        else {
             tv.setText("");
             tv.setVisibility(View.GONE);
         }
@@ -280,7 +307,7 @@ public class ThreadViewer {
         }
     };
 
-    static private boolean setImage(final ImageView iv, final Cursor cursor, int flags) {
+    static private boolean setImage(final ImageView iv, final Cursor cursor, int flags, View.OnClickListener imageOnClickListener) {
         ViewGroup.LayoutParams params = iv.getLayoutParams();
         if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0 || params == null)
             return clearImage(iv, params);
@@ -309,6 +336,7 @@ public class ThreadViewer {
         DisplayImageOptions options = createDisplayImageOptions(displayImageSize);
 
         // display image
+        iv.setOnClickListener(imageOnClickListener);
         iv.setVisibility(View.VISIBLE);
         ImageLoadingListener listener = ((flags & ChanPost.FLAG_IS_AD) > 0) ? adImageLoadingListener : null;
         imageLoader.displayImage(url, iv, options, listener);

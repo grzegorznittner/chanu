@@ -51,7 +51,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     private ImageView itemExpandedImage;
     private View itemExpandedImageClickEffect;
     private ProgressBar itemExpandedProgressBar;
-    private TextView itemExifView;
     private TextView itemSubjectView;
     private TextView itemHeadlineView;
     private TextView itemTextView;
@@ -67,7 +66,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     private int flags;
     private String spoilerSubject;
     private String spoilerText;
-    private String exifText;
 
     public ThreadExpandImageOnClickListener(Context context, final Cursor cursor, final View itemView) {
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
@@ -77,7 +75,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         thumbImageUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         spoilerSubject = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_SUBJECT));
         spoilerText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_TEXT));
-        exifText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXIF_TEXT));
 
         itemHeaderWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_header_wrapper);
         itemThumbnailImageWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_image_wrapper);
@@ -85,7 +82,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
         itemExpandedImageClickEffect = itemView.findViewById(R.id.list_item_image_expanded_click_effect);
         itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
-        itemExifView = (TextView)itemView.findViewById(R.id.list_item_image_exif);
         itemSubjectView = (TextView)itemView.findViewById(R.id.list_item_subject);
         itemHeadlineView = (TextView)itemView.findViewById(R.id.list_item_header);
         itemTextView = (TextView)itemView.findViewById(R.id.list_item_text);
@@ -172,8 +168,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         if (DEBUG) Log.i(TAG, "expanding pos=" + listPosition);
         if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
             expandImage();
-        if ((flags & ChanPost.FLAG_HAS_EXIF) > 0)
-            expandExif();
         if ((flags & ChanPost.FLAG_HAS_SPOILER) > 0)
             expandSpoiler();
     }
@@ -333,18 +327,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         setImageDimensions(targetSize);
         //scheduleScrollIfNeeded(targetSize);
         displayImage(targetSize);
-    }
-
-    private void expandExif() {
-        if (itemExifView.getVisibility() == View.VISIBLE) {
-            itemExifView.setVisibility(View.GONE);
-            return;
-        }
-        if (DEBUG) Log.i(TAG, "Expanding exifText=" + exifText);
-        if (itemExifView != null && exifText != null && !exifText.isEmpty()) {
-            itemExifView.setText(Html.fromHtml(exifText));
-            itemExifView.setVisibility(View.VISIBLE);
-        }
     }
 
     private void expandSpoiler() {
