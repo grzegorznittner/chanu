@@ -49,9 +49,7 @@ import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
-import com.chanapps.four.task.HighlightSamePosterRepliesTask;
 import com.chanapps.four.viewer.ThreadViewer;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.*;
 
@@ -69,8 +67,8 @@ public class ThreadActivity
         LoaderManager.LoaderCallbacks<Cursor>,
         AbstractBoardCursorAdapter.ViewBinder,
         AbsListView.OnItemClickListener,
-        AbsListView.MultiChoiceModeListener,
-        PopupMenu.OnMenuItemClickListener,
+        //AbsListView.MultiChoiceModeListener,
+        ActionMode.Callback,
         MediaScannerConnection.OnScanCompletedListener {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
@@ -409,14 +407,19 @@ public class ThreadActivity
     }
 
     protected void setupContextMenu() {
-        absListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
-        absListView.setMultiChoiceModeListener(this);
+        absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        //absListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+        //absListView.setMultiChoiceModeListener(this);
         absListView.setOnCreateContextMenuListener(this);
     }
 
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
-        return ThreadViewer.setViewValue(view, cursor, boardCode, imageOnClickListener, exifOnClickListener);
+        return ThreadViewer.setViewValue(view, cursor, boardCode,
+                imageOnClickListener,
+                backlinkOnClickListener, repliesOnClickListener, sameIdOnClickListener,
+                exifOnClickListener,
+                startActionModeListener);
     }
 
     protected File fullSizeImageFile(Cursor cursor) {
@@ -604,15 +607,18 @@ public class ThreadActivity
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        if (DEBUG) Log.i(TAG, "onPrepareActionMode");
         updateSharedIntent();
         return true;
     }
 
+    /*
     @Override
     public void onItemCheckedStateChanged(final ActionMode mode, final int position, final long id, final boolean checked) {
-        if (DEBUG) Log.i(TAG, "Updating shared intent pos=" + position + " checked=" + checked);
+        if (DEBUG) Log.i(TAG, "onItemCheckedStateChanged pos=" + position + " checked=" + checked);
         updateSharedIntent();
     }
+     */
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
@@ -631,10 +637,6 @@ public class ThreadActivity
             case R.id.post_reply_all_quote_menu:
                 String quotesText = selectQuoteText(postPos);
                 postReply(quotesText);
-                return true;
-            case R.id.highlight_ids_menu:
-                (new HighlightSamePosterRepliesTask(getApplicationContext(), absListView, boardCode, threadNo))
-                        .execute(postNos);
                 return true;
             case R.id.copy_text_menu:
                 String selectText = selectText(postPos);
@@ -769,8 +771,6 @@ public class ThreadActivity
             itemThreadLinkListener.onClick(view);
         else if ((flags & ChanPost.FLAG_IS_BOARDLINK) > 0)
             itemBoardLinkListener.onClick(view);
-        else
-            itemPopupListener.onClick(view);
     }
 
     protected View.OnClickListener itemAdListener = new View.OnClickListener() {
@@ -816,31 +816,27 @@ public class ThreadActivity
         }
     };
 
-    protected View.OnClickListener itemPopupListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int pos = absListView.getPositionForView(v);
-            if (DEBUG) Log.i(TAG, "itemPopupListener position=" + pos);
-            Cursor cursor = adapter.getCursor();
-            if (DEBUG) Log.i(TAG, "1");
-            cursor.moveToPosition(pos);
-            if (DEBUG) Log.i(TAG, "2");
+    protected View.OnClickListener createPopupListener(final ThreadPopupDialogFragment.PopupType popupType) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int pos = absListView.getPositionForView(v);
+                Cursor cursor = adapter.getCursor();
+                cursor.moveToPosition(pos);
+                String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+                long linkedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
+                long linkedPostNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+                if (linkedThreadNo <= 0)
+                    linkedThreadNo = linkedPostNo;
+                (new ThreadPopupDialogFragment(linkedBoardCode, linkedThreadNo, linkedPostNo, pos, popupType))
+                        .show(getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
+            }
+        };
+    }
 
-            String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
-            if (DEBUG) Log.i(TAG, "3");
-            long linkedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
-            if (DEBUG) Log.i(TAG, "4");
-            long linkedPostNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-            if (DEBUG) Log.i(TAG, "5");
-            if (linkedThreadNo <= 0)
-                linkedThreadNo = linkedPostNo;
-            if (DEBUG) Log.i(TAG, "6");
-            if (DEBUG) Log.i(TAG, "Calling thread popup for /" + linkedBoardCode + "/" + linkedThreadNo
-                    + ":" + linkedPostNo + " cursorPos=" + cursor.getPosition());
-            (new ThreadPopupDialogFragment(linkedBoardCode, linkedThreadNo, linkedPostNo, pos))
-                    .show(getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
-        }
-    };
+    protected View.OnClickListener backlinkOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.BACKLINKS);
+    protected View.OnClickListener repliesOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.REPLIES);
+    protected View.OnClickListener sameIdOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.SAME_ID);
 
     protected View.OnClickListener imageOnClickListener = new View.OnClickListener() {
         @Override
@@ -904,6 +900,30 @@ public class ThreadActivity
         }
     };
 
+    protected View.OnLongClickListener startActionModeListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            int pos = absListView.getPositionForView(v);
+            if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
+
+            View itemView = null;
+            for (int i = 0; i < absListView.getChildCount(); i++) {
+                View child = absListView.getChildAt(i);
+                if (absListView.getPositionForView(child) == pos) {
+                    itemView = child;
+                    break;
+                }
+            }
+            if (DEBUG) Log.i(TAG, "found itemView=" + itemView);
+            if (itemView == null)
+                return false;
+
+            startActionMode(ThreadActivity.this);
+            absListView.setItemChecked(pos, true);
+            return true;
+        }
+    };
+
     public void setActionBarTitle() {
         final ActionBar a = getActionBar();
         if (a == null)
@@ -926,20 +946,6 @@ public class ThreadActivity
         */
         a.setDisplayShowTitleEnabled(false);
         a.setDisplayHomeAsUpEnabled(true);
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        if (item == null)
-            return false;
-        long[] postNos = absListView.getCheckedItemIds();
-        SparseBooleanArray postPos = absListView.getCheckedItemPositions();
-        switch (item.getItemId()) {
-            // thread context info popup menu
-
-            default:
-                return false;
-        }
     }
 
     protected Map<ChanBlocklist.BlockType, List<String>> extractBlocklist(SparseBooleanArray postPos) {

@@ -57,7 +57,7 @@ public class ChanPost {
     public static final String POST_THUMBNAIL_ID = "postThumbnailId";
     public static final String POST_BACKLINKS_BLOB = "backlinksBlob";
     public static final String POST_REPLIES_BLOB = "repliesBlob";
-    public static final String POST_LINKED_URLS_BLOB = "linkedUrlsBlob";
+    public static final String POST_SAME_IDS_BLOB = "sameIdsBlob";
     public static final String POST_FLAGS = "postFlags";
     public static final int FLAG_HAS_IMAGE = 0x001;
     public static final int FLAG_HAS_SUBJECT = 0x002;
@@ -130,7 +130,7 @@ public class ChanPost {
             POST_EXT,
             POST_BACKLINKS_BLOB,
             POST_REPLIES_BLOB,
-            POST_LINKED_URLS_BLOB,
+            POST_SAME_IDS_BLOB,
             POST_FLAGS
     };
 
@@ -527,10 +527,10 @@ public class ChanPost {
             items.add(Long.toString(no));
         if (email != null && !email.isEmpty() && email.equals("sage"))
             items.add("<b>sage</b>");
-        if (id != null && !id.isEmpty() && id.equals("Heaven"))
+        if (id != null && !id.isEmpty() && id.equals(SAGE_POST_ID))
             items.add("<b>sage</b>");
         if (id != null && !id.isEmpty())
-            items.add(formattedUserId());
+            items.add("Id: " + formattedUserId());
         if (name != null && !name.isEmpty() && !name.equals("Anonymous"))
             items.add(name);
         if (trip != null && !trip.isEmpty())
@@ -646,40 +646,6 @@ public class ChanPost {
         return backlinks;
     }
 
-    protected static final Pattern LINKED_URL_PATTERN = Pattern.compile(
-            "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
-                    "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" +
-                    "|mil|biz|info|mobi|name|aero|jobs|museum" +
-                    "|travel|[a-z]{2}))(:[\\d]{1,5})?" +
-                    "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
-                    "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
-                    "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
-                    "(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
-                    "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" +
-                    "(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b");
-
-
-    protected HashSet<String> linkedUrls() {
-        HashSet<String> urls = null;
-        if (sub != null && !sub.isEmpty()) {
-            Matcher m = LINKED_URL_PATTERN.matcher(sub);
-            while (m.find()) {
-                if (urls == null)
-                    urls = new HashSet<String>();
-                urls.add(m.group(0));
-            }
-        }
-        if (com != null && !com.isEmpty()) {
-            Matcher m = LINKED_URL_PATTERN.matcher(com);
-            while (m.find()) {
-                if (urls == null)
-                    urls = new HashSet<String>();
-                urls.add(m.group(0));
-            }
-        }
-        return urls;
-    }
-
     public static byte[] blobify(HashSet<?> hashSet) {
         if (hashSet == null || hashSet.isEmpty())
             return null;
@@ -710,7 +676,7 @@ public class ChanPost {
         return null;
     }
 
-    private static final String SAGE_POST_ID = "Heaven";
+    public static final String SAGE_POST_ID = "Heaven";
     private static final String[] NAMES = {
             "Aries",
             "Bian",
@@ -956,7 +922,7 @@ public class ChanPost {
         return new MatrixCursor(POST_COLUMNS);
     }
 
-    public Object[] makeRow(String query, int i, byte[] backlinksBlob, byte[] repliesBlob) {
+    public Object[] makeRow(String query, int i, byte[] backlinksBlob, byte[] repliesBlob, byte[] sameIdsBlob) {
         String[] textComponents = textComponents(query);
         String[] spoilerComponents = spoilerComponents(query);
         String exifText = exifText();
@@ -989,7 +955,7 @@ public class ChanPost {
                 ext,
                 backlinksBlob,
                 repliesBlob,
-                blobify(linkedUrls()),
+                sameIdsBlob,
                 flags
         };
     }
@@ -1122,39 +1088,6 @@ public class ChanPost {
                 null,
                 null,
                 FLAG_HAS_SUBJECT | FLAG_IS_TITLE
-        };
-    }
-
-    public static Object[] makeUrlLinkRow(String boardCode, String url) {
-        String subject = url;
-        return new Object[] {
-                url.hashCode(),
-                boardCode,
-                0,
-                "",
-                "",
-                "",
-                "",
-                subject,
-                "",
-                "",
-                "",
-                -1,
-                -1,
-                0,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                null,
-                null,
-                null,
-                FLAG_HAS_SUBJECT | FLAG_IS_URLLINK
         };
     }
 

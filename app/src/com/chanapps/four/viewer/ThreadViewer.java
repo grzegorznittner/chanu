@@ -17,7 +17,6 @@ import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ChanGridSizer;
@@ -32,6 +31,9 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -83,7 +85,12 @@ public class ThreadViewer {
 
     public static boolean setViewValue(final View view, final Cursor cursor, String groupBoardCode,
                                        View.OnClickListener imageOnClickListener,
-                                       View.OnClickListener exifOnClickListener) {
+                                       View.OnClickListener backlinkOnClickListener,
+                                       View.OnClickListener repliesOnClickListener,
+                                       View.OnClickListener sameIdOnClickListener,
+                                       View.OnClickListener exifOnClickListener,
+                                       View.OnLongClickListener startActionModeListener
+                                       ) {
         if (displayMetrics == null)
             initStatics(view);
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
@@ -101,13 +108,22 @@ public class ThreadViewer {
             return setBannerAdView(view, cursor);
         }
         else {
-            return setListItemView(view, cursor, flags, imageOnClickListener, exifOnClickListener);
+            return setListItemView(view, cursor, flags,
+                    imageOnClickListener,
+                    backlinkOnClickListener, repliesOnClickListener, sameIdOnClickListener,
+                    exifOnClickListener,
+                    startActionModeListener);
         }
     }
 
     public static boolean setListItemView(final View view, final Cursor cursor, int flags,
                                           View.OnClickListener imageOnClickListener,
-                                          View.OnClickListener exifOnClickListener) {
+                                          View.OnClickListener backlinkOnClickListener,
+                                          View.OnClickListener repliesOnClickListener,
+                                          View.OnClickListener sameIdOnClickListener,
+                                          View.OnClickListener exifOnClickListener,
+                                          View.OnLongClickListener startActionModeListener) {
+        view.setOnLongClickListener(startActionModeListener);
         switch (view.getId()) {
             case R.id.list_item:
                 return setItem((ViewGroup) view, cursor, flags);
@@ -126,11 +142,11 @@ public class ThreadViewer {
             case R.id.list_item_country_flag:
                 return setCountryFlag((ImageView) view, cursor, flags);
             case R.id.list_item_header:
-                return setHeaderValue((TextView) view, cursor);
+                return setHeaderValue((TextView) view, cursor, repliesOnClickListener, sameIdOnClickListener);
             case R.id.list_item_subject:
-                return setSubject((TextView) view, cursor, flags);
+                return setSubject((TextView) view, cursor, flags, backlinkOnClickListener);
             case R.id.list_item_text:
-                return setText((TextView) view, cursor, flags, exifOnClickListener);
+                return setText((TextView) view, cursor, flags, backlinkOnClickListener, exifOnClickListener);
             case R.id.list_item_image_exif:
                 return setImageExifValue((TextView) view);
             default:
@@ -170,15 +186,21 @@ public class ThreadViewer {
     }
 
 
-    static private boolean setHeaderValue(final TextView tv, final Cursor cursor) {
+    static private boolean setHeaderValue(final TextView tv, final Cursor cursor,
+                                          View.OnClickListener repliesOnClickListener,
+                                          View.OnClickListener sameIdOnClickListener) {
         String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_HEADLINE_TEXT));
-        Spanned spanned = Html.fromHtml(text);
-        tv.setText(spanned);
+        Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text));
+        addLinkedSpans(tv, spannable, POST_PATTERN, repliesOnClickListener);
+        if (cursor.getBlob(cursor.getColumnIndex(ChanPost.POST_SAME_IDS_BLOB)) != null)
+            addLinkedSpans(tv, spannable, ID_PATTERN, sameIdOnClickListener);
+        tv.setText(spannable);
         tv.setVisibility(View.VISIBLE);
         return true;
     }
 
-    static private boolean setSubject(final TextView tv, final Cursor cursor, int flags) {
+    static private boolean setSubject(final TextView tv, final Cursor cursor, int flags,
+                                      View.OnClickListener backlinkOnClickListener) {
         if ((flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE)) > 0) {
             tv.setText("");
             tv.setVisibility(View.GONE);
@@ -193,8 +215,10 @@ public class ThreadViewer {
             if ((flags & ChanPost.FLAG_IS_DEAD) > 0)
                 text = tv.getResources().getString(R.string.thread_is_dead) + (text.isEmpty() ? "" : " ") + text;
         }
-        if (text.length() > 0) {
-            tv.setText(Html.fromHtml(text));
+        Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text));
+        if (spannable.length() > 0) {
+            addLinkedSpans(tv, spannable, POST_PATTERN, backlinkOnClickListener);
+            tv.setText(spannable);
             if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
                 tv.setTypeface(subjectTypeface);
             tv.setVisibility(View.VISIBLE);
@@ -210,33 +234,22 @@ public class ThreadViewer {
     static private final String SHOW_EXIF_HTML = "<b>" + SHOW_EXIF_TEXT + "</b>";
 
     static private boolean setText(final TextView tv, final Cursor cursor, int flags,
+                                   final View.OnClickListener backlinkOnClickListener,
                                    final View.OnClickListener exifOnClickListener) {
         String text;
-        if ((flags & ChanPost.FLAG_IS_AD) > 0) {
+        if ((flags & ChanPost.FLAG_IS_AD) > 0)
             text = "";
-        }
-        else if ((flags & ChanPost.FLAG_HAS_TEXT) > 0) {
+        else if ((flags & ChanPost.FLAG_HAS_TEXT) > 0)
             text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
-        }
-        else {
+        else
             text = "";
-        }
-        if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null) {
+        if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null)
             text += (text.isEmpty() ? "" : " ") + SHOW_EXIF_HTML;
-        }
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text));
-        if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null) {
-            ClickableSpan exif = new ClickableSpan() {
-                @Override
-                public void onClick(View widget) {
-                    exifOnClickListener.onClick(widget);
-                }
-            };
-            tv.setMovementMethod(LinkMovementMethod.getInstance());
-            spannable.setSpan(exif, spannable.length() - SHOW_EXIF_TEXT.length(), spannable.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
+        if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null)
+            addExifSpan(tv, spannable, exifOnClickListener);
         if (spannable.length() > 0) {
+            addLinkedSpans(tv, spannable, POST_PATTERN, backlinkOnClickListener);
             tv.setText(spannable);
             tv.setVisibility(View.VISIBLE);
         }
@@ -245,6 +258,43 @@ public class ThreadViewer {
             tv.setVisibility(View.GONE);
         }
         return true;
+    }
+
+    static private void addExifSpan(TextView tv, Spannable spannable, final View.OnClickListener listener) {
+        if (listener == null)
+            return;
+        ClickableSpan exif = new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                listener.onClick(widget);
+            }
+        };
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+        spannable.setSpan(exif, spannable.length() - SHOW_EXIF_TEXT.length(), spannable.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    static private final Pattern POST_PATTERN = Pattern.compile("(>>\\d+)");
+    static private final Pattern ID_PATTERN = Pattern.compile("Id: ([A-Za-z0-9+./_:!-]+)");
+
+    static private void addLinkedSpans(TextView tv, Spannable spannable, Pattern pattern,
+                                       final View.OnClickListener listener) {
+        if (listener == null)
+            return;
+        Matcher m = pattern.matcher(spannable);
+        boolean found = false;
+        while (m.find()) {
+            ClickableSpan popup = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    listener.onClick(widget);
+                }
+            };
+            spannable.setSpan(popup, m.start(1), m.end(1), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            found = true;
+        }
+        if (found)
+            tv.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     static private boolean setImageExifValue(final TextView tv) {
@@ -307,7 +357,8 @@ public class ThreadViewer {
         }
     };
 
-    static private boolean setImage(final ImageView iv, final Cursor cursor, int flags, View.OnClickListener imageOnClickListener) {
+    static private boolean setImage(final ImageView iv, final Cursor cursor, int flags,
+                                    View.OnClickListener imageOnClickListener) {
         ViewGroup.LayoutParams params = iv.getLayoutParams();
         if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0 || params == null)
             return clearImage(iv, params);

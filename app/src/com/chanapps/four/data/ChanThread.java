@@ -331,4 +331,19 @@ public class ChanThread extends ChanPost {
         return repliesMap;
     }
 
+    public Map<String, HashSet<Long>> sameIdsMap() {
+        Map<String, HashSet<Long>> sameIdsMap = new HashMap<String, HashSet<Long>>();
+        for (ChanPost post : posts) {
+            if (post.id == null || post.id.isEmpty() || post.id.equals(ChanPost.SAGE_POST_ID))
+                continue;
+            HashSet<Long> sameIds = sameIdsMap.get(post.id);
+            if (sameIds == null) {
+                sameIds = new HashSet<Long>();
+                sameIdsMap.put(post.id, sameIds);
+            }
+            sameIds.add(post.no);
+        }
+        return sameIdsMap;
+    }
+
 }

@@ -9,6 +9,7 @@ import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -39,12 +40,20 @@ public class ThreadPopupDialogFragment
         AdapterView.OnItemClickListener
 {
 
+    static public enum PopupType {
+        BACKLINKS,
+        REPLIES,
+        SAME_ID
+    }
+
     public static final String TAG = ThreadPopupDialogFragment.class.getSimpleName();
 
     private String boardCode;
     private long threadNo;
     private long postNo;
     private int pos;
+    private PopupType popupType;
+
     private Cursor cursor;
 
     private AbstractBoardCursorAdapter adapter;
@@ -56,12 +65,13 @@ public class ThreadPopupDialogFragment
         super();
     }
 
-    public ThreadPopupDialogFragment(String boardCode, long threadNo, long postNo, int pos) {
+    public ThreadPopupDialogFragment(String boardCode, long threadNo, long postNo, int pos, PopupType popupType) {
         super();
         this.boardCode = boardCode;
         this.threadNo = threadNo;
         this.postNo = postNo;
         this.pos = pos;
+        this.popupType = popupType;
     }
 
     @Override
@@ -71,18 +81,30 @@ public class ThreadPopupDialogFragment
             threadNo = savedInstanceState.getLong(ChanHelper.THREAD_NO);
             postNo = savedInstanceState.getLong(ChanHelper.POST_NO);
             pos = savedInstanceState.getInt(ChanHelper.LAST_THREAD_POSITION);
+            popupType = PopupType.valueOf(savedInstanceState.getString(ChanHelper.POPUP_TYPE));
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         layout = inflater.inflate(R.layout.thread_popup_dialog_fragment, null);
-        String title = String.format(getString(R.string.thread_popup_title), postNo);
         init();
         return builder
                 .setView(layout)
-                .setTitle(title)
+                .setTitle(popupTitle())
                 .setPositiveButton(R.string.thread_popup_reply, postReplyListener)
                 .setNegativeButton(R.string.dialog_close, dismissListener)
                 .create();
+    }
+
+    private String popupTitle() {
+        switch (popupType) {
+            case BACKLINKS:
+                return getString(R.string.thread_backlinks);
+            case REPLIES:
+                return getString(R.string.thread_replies);
+            default:
+            case SAME_ID:
+                return getString(R.string.thread_same_id);
+        }
     }
 
     @Override
@@ -91,6 +113,7 @@ public class ThreadPopupDialogFragment
         outState.putLong(ChanHelper.THREAD_NO, threadNo);
         outState.putLong(ChanHelper.POST_NO, postNo);
         outState.putInt(ChanHelper.LAST_THREAD_POSITION, pos);
+        outState.putString(ChanHelper.POPUP_TYPE, popupType.toString());
     }
 
     protected DialogInterface.OnClickListener postReplyListener = new DialogInterface.OnClickListener() {
@@ -185,32 +208,31 @@ public class ThreadPopupDialogFragment
 
     protected Cursor detailsCursor() {
         MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
-        int count = addBlobRows(matrixCursor, ChanPost.POST_BACKLINKS_BLOB, R.plurals.thread_num_backlinks);
-        addPostRow(matrixCursor, count > 0);
-        addBlobRows(matrixCursor, ChanPost.POST_REPLIES_BLOB, R.plurals.thread_num_replies);
-        addLinksRows(matrixCursor);
+        switch (popupType) {
+            case BACKLINKS:
+                addBlobRows(matrixCursor, ChanPost.POST_BACKLINKS_BLOB);
+                break;
+            case REPLIES:
+                addBlobRows(matrixCursor, ChanPost.POST_REPLIES_BLOB);
+                break;
+            default:
+            case SAME_ID:
+                addBlobRows(matrixCursor, ChanPost.POST_SAME_IDS_BLOB);
+                break;
+        }
         return matrixCursor;
     }
 
-    protected void addPostRow(MatrixCursor matrixCursor, boolean showTitle) {
-        if (showTitle)
-            matrixCursor.addRow(ChanPost.makeTitleRow(boardCode,
-                    getResources().getString(R.string.thread_post_title).toUpperCase()));
-        cursor.moveToPosition(pos);
-        matrixCursor.addRow(ChanPost.extractPostRow(cursor));
-    }
-
-    protected int addBlobRows(MatrixCursor matrixCursor, String columnName, int pluralTitleStringId) {
+    protected int addBlobRows(MatrixCursor matrixCursor, String columnName) {
         cursor.moveToPosition(pos);
         byte[] b = cursor.getBlob(cursor.getColumnIndex(columnName));
         if (b == null || b.length == 0)
             return 0;
         HashSet<?> links = ChanPost.parseBlob(b);
+        Log.e(TAG, "Exception blob size=" + links.size());
         if (links == null || links.size() <= 0)
             return 0;
         int count = links.size();
-        String title = String.format(getResources().getQuantityString(pluralTitleStringId, count), count);
-        matrixCursor.addRow(ChanPost.makeTitleRow(boardCode, title.toUpperCase()));
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             if (links.contains(cursor.getLong(0)))
@@ -220,24 +242,9 @@ public class ThreadPopupDialogFragment
         return count;
     }
 
-    protected void addLinksRows(MatrixCursor matrixCursor) {
-        cursor.moveToPosition(pos);
-        byte[] b = cursor.getBlob(cursor.getColumnIndex(ChanPost.POST_LINKED_URLS_BLOB));
-        if (b == null || b.length == 0)
-            return;
-        HashSet<?> links = ChanPost.parseBlob(b);
-        if (links == null || links.size() <= 0)
-            return;
-        int count = links.size();
-        String title = String.format(getResources().getQuantityString(R.plurals.thread_num_links, count), count);
-        matrixCursor.addRow(ChanPost.makeTitleRow(boardCode, title.toUpperCase()));
-        for (Object link : links)
-            matrixCursor.addRow(ChanPost.makeUrlLinkRow(boardCode, link.toString()));
-    }
-
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
-        return ThreadViewer.setViewValue(view, cursor, boardCode, null, null);
+        return ThreadViewer.setViewValue(view, cursor, boardCode, null, null, null, null, null, null);
     }
 
     @Override

@@ -97,6 +97,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         // first get the maps for thread references
         Map<Long, HashSet<Long>> backlinksMap = thread.backlinksMap();
         Map<Long, HashSet<Long>> repliesMap = thread.repliesMap(backlinksMap);
+        Map<String, HashSet<Long>> sameIdsMap = thread.sameIdsMap();
 
         //int adSpace = MINIMUM_AD_SPACING;
 
@@ -119,7 +120,10 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             post.useFriendlyIds = useFriendlyIds;
             byte[] backlinksBlob = ChanPost.blobify(backlinksMap.get(post.no));
             byte[] repliesBlob = ChanPost.blobify(repliesMap.get(post.no));
-            matrixCursor.addRow(post.makeRow(query, i, backlinksBlob, repliesBlob));
+            HashSet<Long> sameIds = sameIdsMap.get(post.id);
+            byte[] sameIdsBlob = sameIds.size() <= 1 ? null : ChanPost.blobify(sameIds);
+            Log.e(TAG, "Exception: sameIds size=" + sameIds.size());
+            matrixCursor.addRow(post.makeRow(query, i, backlinksBlob, repliesBlob, sameIdsBlob));
             // randomly distribute ads
             /*
             if (generator.nextDouble() < AD_PROBABILITY

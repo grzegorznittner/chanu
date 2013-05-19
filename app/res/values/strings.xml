@@ -183,7 +183,7 @@
     <string name="thread_is_sticky">STICKY</string>
     <string name="thread_wait_to_refresh">Min 10 sec between refresh</string>
     <string name="thread_end_of_thread">End of Thread</string>
-    <string name="thread_context_select">Select Posts</string>
+    <string name="thread_context_select">Done</string>
     <string name="thread_no_posts_selected">No Posts Selected</string>
     <string name="thread_couldnt_load">Couldn\'t load thread</string>
     <string name="thread_couldnt_load_image_cancelled">Couldn\'t load image, cancelled</string>
@@ -300,7 +300,9 @@
     <string name="dead_thread_abbrev">D</string>
     <string name="closed_thread_abbrev">C</string>
     <string name="sticky_thread_abbrev">S</string>
-    <string name="thread_replies">Thread Replies</string>
+    <string name="thread_backlinks">References</string>
+    <string name="thread_replies">Replies</string>
+    <string name="thread_same_id">Same Id</string>
     <string name="thread_info">Thread Info</string>
     <string name="highlight_replies">Highlight Replies</string>
     <string name="highlight_previous">Highlight References</string>

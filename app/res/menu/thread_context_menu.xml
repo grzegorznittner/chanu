@@ -3,12 +3,12 @@
 
     <item android:id="@+id/post_reply_all_menu"
           android:title="@string/post_reply_all_menu"
-          android:icon="@drawable/social_reply"
+          android:icon="@drawable/social_reply_all"
           android:showAsAction="ifRoom"
             />
     <item android:id="@+id/post_reply_all_quote_menu"
           android:title="@string/post_reply_all_quote_menu"
-          android:icon="@drawable/social_reply_all"
+          android:icon="@drawable/social_chat"
             />
 
     <item android:id="@+id/download_images_to_gallery_menu"
@@ -19,11 +19,6 @@
     <item android:id="@+id/translate_posts_menu"
           android:title="@string/translate"
           android:icon="@drawable/content_import_export"
-            />
-
-    <item android:id="@+id/highlight_ids_menu"
-          android:title="@string/highlight_ids"
-          android:icon="@drawable/action_about"
             />
 
     <item android:id="@+id/copy_text_menu"
