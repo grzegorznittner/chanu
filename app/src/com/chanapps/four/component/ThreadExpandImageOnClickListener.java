@@ -99,6 +99,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         postImageUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_FULL_IMAGE_URL));
         fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
         flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
+        if (DEBUG) Log.i(TAG, "postUrl=" + postImageUrl + " postSize=" + postW + "x" + postH);
     }
 
     private void collapseImageView() {
@@ -149,6 +150,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         */
     }
 
+    /*
     private int measureTextViewHeight(TextView tv) {
         Context context = tv.getContext();
         CharSequence text = tv.getText();
@@ -169,7 +171,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         params.width = itemThumbWidth;
         ChanImageLoader.getInstance(itemThumbnailImage.getContext()).displayImage(thumbImageUrl, itemThumbnailImage);
     }
-
+    */
     @Override
     public void onClick(View v) {
         if (DEBUG) Log.i(TAG, "expanding pos=" + listPosition);
@@ -179,6 +181,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
             expandSpoiler();
     }
 
+    /*
     private Point calculateImageDimensions() {
         if (DEBUG) Log.i(TAG, "post size " + postW + "x" + postH);
         DisplayMetrics displayMetrics = itemExpandedImage.getResources().getDisplayMetrics();
@@ -202,10 +205,11 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         int height = Math.round(scaleFactor * (float)postH);
         return new Point(width, height);
     }
-
+    */
     private void setImageDimensions(Point targetSize) {
         ViewGroup.LayoutParams params = itemExpandedImage.getLayoutParams();
         if (params != null) {
+            /*
             if ((flags & ChanPost.FLAG_IS_HEADER) > 0
                     && itemThumbnailImage != null
                     && itemThumbnailImage.getLayoutParams() != null) { // for thread header use existing params
@@ -214,9 +218,10 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
                 params.height = thumbParams.height;
             }
             else {
-                params.width = targetSize.x;
-                params.height = targetSize.y;
-            }
+            */
+            params.width = targetSize.x;
+            params.height = targetSize.y;
+            //}
             if (DEBUG) Log.i(TAG, "set expanded image size=" + params.width + "x" + params.height);
             ViewGroup.LayoutParams params2 = itemExpandedImageClickEffect.getLayoutParams();
             if (params2 != null) {
@@ -332,8 +337,10 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
             return;
         }
         clearImage();
-        Point targetSize = calculateImageDimensions();
-        if (DEBUG) Log.i(TAG, "target size " + targetSize.x + "x" + targetSize.y);
+        ThreadViewer.initStatics(itemExpandedImage);
+        Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
+        //calculateImageDimensions();
+        if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
         setImageDimensions(targetSize);
         //scheduleScrollIfNeeded(targetSize);
         displayImage(targetSize);

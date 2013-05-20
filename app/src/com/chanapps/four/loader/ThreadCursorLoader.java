@@ -91,8 +91,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
     }
 
     private void loadMatrixCursor(MatrixCursor matrixCursor, ChanBoard board, ChanThread thread) {
-        if (DEBUG) Log.i(TAG, "Thread topthumb size=" + thread.tn_w + "x" + thread.tn_h);
-        if (DEBUG) Log.i(TAG, "Thread posthumb size=" + thread.posts[0].tn_w + "x" + thread.posts[0].tn_h);
+        if (DEBUG) Log.i(TAG, "Thread toplevel thumb=" + thread.tn_w + "x" + thread.tn_h + " full=" + thread.w + "x" + thread.h);
+        if (DEBUG) Log.i(TAG, "Thread postlevel thumb=" + thread.posts[0].tn_w + "x" + thread.posts[0].tn_h + " full=" + thread.posts[0].w + "x" + thread.posts[0].h);
 
         // first get the maps for thread references
         Map<Long, HashSet<Long>> backlinksMap = thread.backlinksMap();

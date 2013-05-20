@@ -596,7 +596,7 @@ public class ChanPost {
         for (ChanPost existingThread : threads) {
             if (this.no == existingThread.no) {
                 exists = true;
-                existingThread.copyThreadStatusFields(this);
+                existingThread.copyUpdatedInfoFields(this);
                 break;
             }
         }
@@ -605,22 +605,40 @@ public class ChanPost {
         }
     }
 
-    public void copyThreadStatusFields(ChanPost from) {
-        ext = from.ext;
-        closed = from.closed;
+    public void copyUpdatedInfoFields(ChanPost from) {
         bumplimit = from.bumplimit;
         imagelimit = from.imagelimit;
         images = from.images;
         omitted_images = from.omitted_images;
         omitted_posts = from.omitted_posts;
         replies = from.replies;
+        /*
         tn_w = from.tn_w;
         tn_h = from.tn_h;
         sub = from.sub;
         com = from.com;
         sticky = from.sticky;
+        */
         closed = from.closed;
+        /*
         spoiler = from.spoiler;
+        now = from.now;
+        trip = from.trip;
+        id = from.id;
+        capcode = from.capcode;
+        country = from.country;
+        country_name = from.country_name;
+        email = from.email;
+        created = from.created;
+        time = from.time;
+        tim = from.tim;
+        filename = from.filename;
+        ext = from.ext;
+        w = from.w;
+        h = from.h;
+        fsize = from.fsize;
+        */
+        filedeleted = from.filedeleted;
     }
 
     public boolean refersTo(long postNo) {

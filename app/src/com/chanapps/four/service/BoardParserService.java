@@ -44,9 +44,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
 public class BoardParserService extends BaseChanService implements ChanIdentifiedService {
 
     protected static final String TAG = BoardParserService.class.getSimpleName();
-    private static final boolean DEBUG = false;
-	
-	protected static final long STORE_INTERVAL_MS = 2000;
+    private static final boolean DEBUG = true;
     protected static final int MAX_THREAD_RETENTION_PER_BOARD = 200;
 
     private String boardCode;
@@ -201,6 +199,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     	        for (JsonNode threadValue : pageNode.path("threads")) { // iterate over threads
     	            try {
                         ChanPost post = mapper.readValue(threadValue, ChanPost.class);
+                        if (DEBUG) Log.i(TAG, "post sub=" + post.sub + " thumb=" + post.tn_w + "x" + post.tn_h + " full=" + post.w + "x" + post.h);
                         if (post != null) {
                             post.board = boardCode;
                             threads.add(post);

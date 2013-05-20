@@ -62,7 +62,9 @@ public class ThreadViewer {
     private static ImageLoader imageLoader = null;
     private static DisplayImageOptions displayImageOptions = null;
 
-    private static void initStatics(View view) {
+    public static void initStatics(View view) {
+        if (displayMetrics != null)
+            return;
         Resources res = view.getResources();
         displayMetrics = res.getDisplayMetrics();
         subjectTypeface = Typeface.createFromAsset(res.getAssets(), SUBJECT_FONT);
@@ -91,8 +93,7 @@ public class ThreadViewer {
                                        View.OnClickListener exifOnClickListener,
                                        View.OnLongClickListener startActionModeListener
                                        ) {
-        if (displayMetrics == null)
-            initStatics(view);
+        initStatics(view);
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
         int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
         if (flags < 0) { // we are on board list
@@ -416,7 +417,7 @@ public class ThreadViewer {
         return true;
     }
 
-    static private Point sizeHeaderImage(final int tn_w, final int tn_h) {
+    public static Point sizeHeaderImage(final int tn_w, final int tn_h) {
         Point imageSize = new Point();
         double scaleFactor = (double) tn_w / (double) tn_h;
         if (scaleFactor < 1) { // tall image, restrict by height
@@ -424,7 +425,7 @@ public class ThreadViewer {
             imageSize.x = (int) (scaleFactor * (double) desiredHeight);
             imageSize.y = desiredHeight;
         } else {
-            int desiredWidth = Math.min(displayMetrics.widthPixels / 2, tn_w * MAX_HEADER_SCALE); // prevent excessive scaling
+            int desiredWidth = Math.min(displayMetrics.widthPixels, tn_w * MAX_HEADER_SCALE); // prevent excessive scaling
             imageSize.x = desiredWidth; // restrict by width normally
             imageSize.y = (int) ((double) desiredWidth / scaleFactor);
         }
@@ -432,7 +433,7 @@ public class ThreadViewer {
         return imageSize;
     }
 
-    static private Point sizeItemImage(int tn_w, int tn_h) {
+    public static Point sizeItemImage(int tn_w, int tn_h) {
         Point imageSize = new Point();
         double scaleFactor = (double) tn_w / (double) tn_h;
         if (scaleFactor < 0.5) { // tall image, restrict by height
