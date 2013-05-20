@@ -148,7 +148,7 @@
 
     <dimen name="ThreadListItemImage_maxWidth">96dp</dimen>
 
-    <dimen name="ThreadListItemImageExpanded_marginBottom">16dp</dimen>
+    <dimen name="ThreadListItemImageExpandedWrapper_marginBottom">16dp</dimen>
 
     <dimen name="ThreadListItemSubject_marginLeft">0dp</dimen>
     <dimen name="ThreadListItemSubject_paddingRight">0dp</dimen>

@@ -121,8 +121,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             byte[] backlinksBlob = ChanPost.blobify(backlinksMap.get(post.no));
             byte[] repliesBlob = ChanPost.blobify(repliesMap.get(post.no));
             HashSet<Long> sameIds = sameIdsMap.get(post.id);
-            byte[] sameIdsBlob = sameIds.size() <= 1 ? null : ChanPost.blobify(sameIds);
-            Log.e(TAG, "Exception: sameIds size=" + sameIds.size());
+            byte[] sameIdsBlob = (sameIds != null && sameIds.size() > 1) ? ChanPost.blobify(sameIds) : null;
             matrixCursor.addRow(post.makeRow(query, i, backlinksBlob, repliesBlob, sameIdsBlob));
             // randomly distribute ads
             /*

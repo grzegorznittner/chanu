@@ -113,17 +113,17 @@
     <string name="post_reply_menu">Post reply</string>
     <string name="post_reply_quote_menu">Post quoted reply</string>
     <string name="post_reply_all_menu">Post reply</string>
-    <string name="post_reply_all_quote_menu">Post quoted reply</string>
+    <string name="post_reply_all_quote_menu">Ouoted reply</string>
     <string name="go_to_link_menu">Go to link</string>
     <string name="go_to_link_not_found">No links found in posts</string>
     <string name="select_text_menu">Select text</string>
     <string name="select_text_hint">Select text</string>
     <string name="copy_text_menu">Copy text</string>
     <string name="delete_report_posts_menu">Delete/report posts</string>
-    <string name="delete_posts_menu">Delete posts</string>
-    <string name="report_posts_menu">Report posts</string>
-    <string name="block_posts_menu">Block posts</string>
-    <string name="translate_posts_menu">Translate posts</string>
+    <string name="delete_posts_menu">Delete</string>
+    <string name="report_posts_menu">Report</string>
+    <string name="block_posts_menu">Block</string>
+    <string name="translate_posts_menu">Translate post</string>
     <string name="translate_no_text">No text found to translate</string>
     <string name="share_image">Share image</string>
     <string name="share_text">Share text</string>
@@ -1221,7 +1221,7 @@
 
     <dimen name="ThreadListItemImage_maxWidth">96dp</dimen>
 
-    <dimen name="ThreadListItemImageExpanded_marginBottom">8dp</dimen>
+    <dimen name="ThreadListItemImageExpandedWrapper_marginBottom">8dp</dimen>
 
     <dimen name="ThreadListItemSubject_marginLeft">0dp</dimen>
     <dimen name="ThreadListItemSubject_paddingRight">0dp</dimen>

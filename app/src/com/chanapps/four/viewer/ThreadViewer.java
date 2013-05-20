@@ -129,8 +129,10 @@ public class ThreadViewer {
                 return setItem((ViewGroup) view, cursor, flags);
             case R.id.list_item_header_wrapper:
                 return setHeaderWrapper((ViewGroup) view, flags);
+            case R.id.list_item_image_expanded_wrapper:
+                return setImageExpandedWrapper((ViewGroup) view);
             case R.id.list_item_image_expanded:
-                return setImageExpanded((ImageView) view, cursor, flags);
+                return setImageExpanded((ImageView) view);
             case R.id.list_item_image_expanded_click_effect:
                 return setImageExpandedClickEffect(view, cursor, flags);
             case R.id.list_item_expanded_progress_bar:
@@ -444,16 +446,14 @@ public class ThreadViewer {
         return imageSize;
     }
 
-    static private boolean setImageExpanded(final ImageView iv, final Cursor cursor, int flags) {
+    static private boolean setImageExpandedWrapper(final ViewGroup v) {
+        v.setVisibility(View.GONE);
+        return true;
+    }
+
+    static private boolean setImageExpanded(final ImageView iv) {
         ChanHelper.clearBigImageView(iv);
         iv.setVisibility(View.GONE);
-        /*
-        if ((flags & (ChanPost.FLAG_IS_AD
-                | ChanPost.FLAG_IS_TITLE
-                | ChanPost.FLAG_IS_THREADLINK
-                | ChanPost.FLAG_IS_BOARDLINK)) == 0)
-            iv.setOnClickListener(new ThreadImageOnClickListener(cursor));
-        */
         return true;
     }
 

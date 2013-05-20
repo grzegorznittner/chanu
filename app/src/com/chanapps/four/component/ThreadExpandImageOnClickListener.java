@@ -48,6 +48,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     private ViewGroup itemHeaderWrapper;
     private ViewGroup itemThumbnailImageWrapper;
     private ImageView itemThumbnailImage;
+    private ViewGroup itemExpandedWrapper;
     private ImageView itemExpandedImage;
     private View itemExpandedImageClickEffect;
     private ProgressBar itemExpandedProgressBar;
@@ -79,6 +80,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         itemHeaderWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_header_wrapper);
         itemThumbnailImageWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_image_wrapper);
         itemThumbnailImage = (ImageView)itemView.findViewById(R.id.list_item_image);
+        itemExpandedWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_image_expanded_wrapper);
         itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
         itemExpandedImageClickEffect = itemView.findViewById(R.id.list_item_image_expanded_click_effect);
         itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
@@ -102,6 +104,8 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     private void collapseImageView() {
         if (DEBUG) Log.i(TAG, "collapsed pos=" + listPosition);
         //ChanHelper.clearBigImageView(itemExpandedImage);
+        if (itemExpandedWrapper != null)
+            itemExpandedWrapper.setVisibility(View.GONE);
         if (itemExpandedProgressBar != null)
             itemExpandedProgressBar.setVisibility(View.GONE);
         //itemExpandedImage.setVisibility(View.GONE);
@@ -115,11 +119,13 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
             return;
         }
         itemThumbnailImage.setImageDrawable(null);
-
+        itemThumbnailImage.setVisibility(View.GONE);
         if (itemThumbnailImageWrapper == null) {
             if (DEBUG) Log.i(TAG, "Skipping adjusting thumbnail height, null thumbnail image wrapper");
             return;
         }
+        itemThumbnailImageWrapper.setVisibility(View.GONE);
+        /*
         ViewGroup.LayoutParams params = itemThumbnailImageWrapper.getLayoutParams();
         if (params == null)
             return;
@@ -140,6 +146,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         int wrapperHeight = padding8Dp/2 + subjectHeight + spacer + headlineHeight + padding8Dp;
         if (DEBUG) Log.i(TAG, "subjectHeight=" + subjectHeight + " headlineHeight=" + headlineHeight + " wrapperHeight=" + wrapperHeight);
         params2.height = wrapperHeight; // for some reason doesn't respect wrap_content
+        */
     }
 
     private int measureTextViewHeight(TextView tv) {
@@ -285,7 +292,10 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
                 if (itemExpandedProgressBar != null)
                     itemExpandedProgressBar.setVisibility(View.GONE);
                 view.setVisibility(View.VISIBLE);
-                itemExpandedImageClickEffect.setVisibility(View.VISIBLE);
+                if (itemExpandedImageClickEffect != null)
+                    itemExpandedImageClickEffect.setVisibility(View.VISIBLE);
+                if (itemExpandedWrapper != null)
+                    itemExpandedWrapper.setVisibility(View.VISIBLE);
                 hideThumbnail();
                 //if (itemThumbnailImage != null && listPosition == 0) // thread header loads image over thumbnail
                 //    itemThumbnailImage.setImageDrawable(null);

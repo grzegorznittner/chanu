@@ -41,6 +41,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_IMAGE_URL,
+                        ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_HEADLINE_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
@@ -53,6 +54,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                 },
                 new int[]{
                         R.id.list_item_expanded_progress_bar,
+                        R.id.list_item_image_expanded_wrapper,
                         R.id.list_item_image_expanded,
                         R.id.list_item_image_expanded_click_effect,
                         R.id.list_item_image_wrapper,
