@@ -44,7 +44,7 @@ import java.net.URI;
 public class ThreadExpandExifOnClickListener implements View.OnClickListener {
 
     private static final String TAG = ThreadExpandExifOnClickListener.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private TextView itemExifView;
     private int listPosition = 0;

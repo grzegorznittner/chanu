@@ -46,7 +46,7 @@ public class BoardGroupFragment
 {
 
     private static final String TAG = BoardGroupFragment.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private BoardSelectorTab boardSelectorTab;
     private ResourceCursorAdapter adapter;

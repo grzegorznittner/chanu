@@ -28,7 +28,7 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
  */
 public class BoardGridViewer {
 
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
     private static String TAG = BoardGridViewer.class.getSimpleName();
 
     private static ImageLoader imageLoader;

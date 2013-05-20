@@ -25,7 +25,7 @@ import java.lang.ref.WeakReference;
 public class WatchlistClearDialogFragment extends DialogFragment {
 
     public static final String TAG = WatchlistClearDialogFragment.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     WeakReference<BoardGroupFragment> fragmentRef = null;
 

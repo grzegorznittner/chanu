@@ -18,7 +18,7 @@ import com.chanapps.four.service.NetworkProfileManager;
  */
 public class TutorialOverlay {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public enum Page {
         BOARDLIST,

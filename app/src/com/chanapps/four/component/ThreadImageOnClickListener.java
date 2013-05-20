@@ -41,9 +41,7 @@ public class ThreadImageOnClickListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-        Log.e("FOO", "Exception: handling click to gallery for activity=" + activity);
         if (activity != null && activity instanceof Activity) {
-            Log.e("FOO", "Exception: starting gallery for /" + boardCode + "/" + threadNo + ":" + postId + "," + position);
             GalleryViewActivity.startActivity((Activity)activity, boardCode, threadNo, postId, position);
         }
     }

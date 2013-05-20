@@ -299,7 +299,7 @@ public class ChanPost {
         String message = comText != null ? comText : "";
 
         if (!subject.isEmpty() || message.isEmpty()) { // we have a subject or can't extract from message
-            if (DEBUG) Log.v(TAG, "Exception: provided subject=" + subject + " message=" + message);
+            if (DEBUG) Log.v(TAG, "provided subject=" + subject + " message=" + message);
             return highlightComponents(cleanSubject(subject), cleanMessage(message), query);
         }
 
@@ -326,8 +326,7 @@ public class ChanPost {
 
         // cutoff
         int i = MAX_SUBJECT_LEN - 1; // start cut at max len
-        char c;
-        while (!Character.isWhitespace(c = comText.charAt(i)) && i > 0)
+        while (!Character.isWhitespace(comText.charAt(i)) && i > 0)
             i--; // rewind until we reach a whitespace character
         if (i > MIN_SUBJECT_LEN) { // we found a suitable cutoff point
             subject = cleanSubject(comText.substring(0, i));

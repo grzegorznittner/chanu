@@ -53,7 +53,7 @@ public class BoardActivity
         AbstractBoardCursorAdapter.ViewBinder
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
 
     protected AbstractBoardCursorAdapter adapter;

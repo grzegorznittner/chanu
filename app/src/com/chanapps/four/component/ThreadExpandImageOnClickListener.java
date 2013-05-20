@@ -42,7 +42,7 @@ import java.net.URI;
 public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
     private static final String TAG = ThreadExpandImageOnClickListener.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final int NO_TEXT_PADDING_TOP_DP = 8;
 
     private ViewGroup itemHeaderWrapper;

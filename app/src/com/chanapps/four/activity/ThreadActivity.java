@@ -72,7 +72,7 @@ public class ThreadActivity
         MediaScannerConnection.OnScanCompletedListener {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;

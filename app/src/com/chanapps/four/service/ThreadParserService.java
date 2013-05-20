@@ -35,7 +35,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
 public class ThreadParserService extends BaseChanService implements ChanIdentifiedService {
 
     protected static final String TAG = ThreadParserService.class.getName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     protected static final long STORE_INTERVAL_MS = 2000;
 
