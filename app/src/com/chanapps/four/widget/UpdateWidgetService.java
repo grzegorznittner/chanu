@@ -117,7 +117,7 @@ public class UpdateWidgetService extends Service {
             if (board == null)
                 board = ChanBoard.getBoardByCode(context, ChanBoard.DEFAULT_BOARD_CODE);
             if (board == null) {
-                Log.e(TAG, "EXCEPTION something very bad happened null board code=" + widgetConf.boardCode);
+                Log.e(TAG, "Something very bad happened null board code=" + widgetConf.boardCode);
                 return;
             }
 

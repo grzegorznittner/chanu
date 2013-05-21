@@ -49,6 +49,7 @@ import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
+import com.chanapps.four.viewer.ThreadListener;
 import com.chanapps.four.viewer.ThreadViewer;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.*;
@@ -110,6 +111,8 @@ public class ThreadActivity
     protected BoardCursorLoader cursorLoaderBoardsTablet;
     protected AbsListView absBoardListView;
     protected int loadingStatusFlags = 0;
+
+    protected ThreadListener threadListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -264,6 +267,7 @@ public class ThreadActivity
         if (DEBUG) Log.v(TAG, "onStart query=" + query);
         if (handler == null)
             handler = new LoaderHandler();
+        threadListener = new ThreadListener(getSupportFragmentManager(), absListView, adapter, handler);
         setActionBarTitle();
     }
 
@@ -304,16 +308,6 @@ public class ThreadActivity
             adapterBoardsTablet = new BoardGridCursorAdapter(this, this, columnWidth, columnHeight);
             absBoardListView.setAdapter(adapterBoardsTablet);
         }
-    }
-
-    protected String getLastPositionName() {
-        return ChanHelper.LAST_THREAD_POSITION;
-    }
-
-    protected void sizeGridToDisplay() {
-        Display display = getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.THREAD);
-        cg.sizeGridToDisplay();
     }
 
     protected void initAbsListView() {
@@ -416,9 +410,11 @@ public class ThreadActivity
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
         return ThreadViewer.setViewValue(view, cursor, boardCode,
-                imageOnClickListener,
-                backlinkOnClickListener, repliesOnClickListener, sameIdOnClickListener,
-                exifOnClickListener,
+                threadListener.imageOnClickListener,
+                threadListener.backlinkOnClickListener,
+                threadListener.repliesOnClickListener,
+                threadListener.sameIdOnClickListener,
+                threadListener.exifOnClickListener,
                 startActionModeListener);
     }
 
@@ -813,90 +809,6 @@ public class ThreadActivity
             String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
             if (linkedBoardCode != null && !linkedBoardCode.isEmpty())
                 BoardActivity.startActivity(ThreadActivity.this, linkedBoardCode);
-        }
-    };
-
-    protected View.OnClickListener createPopupListener(final ThreadPopupDialogFragment.PopupType popupType) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int pos = absListView.getPositionForView(v);
-                Cursor cursor = adapter.getCursor();
-                cursor.moveToPosition(pos);
-                String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
-                long linkedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
-                long linkedPostNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-                if (linkedThreadNo <= 0)
-                    linkedThreadNo = linkedPostNo;
-                (new ThreadPopupDialogFragment(linkedBoardCode, linkedThreadNo, linkedPostNo, pos, popupType))
-                        .show(getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
-            }
-        };
-    }
-
-    protected View.OnClickListener backlinkOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.BACKLINKS);
-    protected View.OnClickListener repliesOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.REPLIES);
-    protected View.OnClickListener sameIdOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.SAME_ID);
-
-    protected View.OnClickListener imageOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int pos = absListView.getPositionForView(v);
-            if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
-
-            View itemView = null;
-            for (int i = 0; i < absListView.getChildCount(); i++) {
-                View child = absListView.getChildAt(i);
-                if (absListView.getPositionForView(child) == pos) {
-                    itemView = child;
-                    break;
-                }
-            }
-            if (DEBUG) Log.i(TAG, "found itemView=" + itemView);
-            if (itemView == null)
-                return;
-            if ((Boolean) itemView.getTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED))
-                return;
-
-            Cursor cursor = adapter.getCursor();
-            cursor.moveToPosition(pos);
-            final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-            if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
-            if ((flags & (ChanPost.FLAG_HAS_IMAGE)) > 0) {
-                (new ThreadExpandImageOnClickListener(getApplicationContext(), cursor, itemView)).onClick(itemView);
-                itemView.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.TRUE);
-            }
-        }
-    };
-
-    protected View.OnClickListener exifOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int pos = absListView.getPositionForView(v);
-            if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
-
-            View itemView = null;
-            for (int i = 0; i < absListView.getChildCount(); i++) {
-                View child = absListView.getChildAt(i);
-                if (absListView.getPositionForView(child) == pos) {
-                    itemView = child;
-                    break;
-                }
-            }
-            if (DEBUG) Log.i(TAG, "found itemView=" + itemView);
-            if (itemView == null)
-                return;
-            if ((Boolean) itemView.getTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED))
-                return;
-
-            Cursor cursor = adapter.getCursor();
-            cursor.moveToPosition(pos);
-            final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-            if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
-            if ((flags & (ChanPost.FLAG_HAS_EXIF)) > 0) {
-                (new ThreadExpandExifOnClickListener(cursor, itemView)).onClick(itemView);
-                itemView.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, Boolean.TRUE);
-            }
         }
     };
 

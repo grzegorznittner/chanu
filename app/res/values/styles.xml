@@ -483,7 +483,7 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
-        <item name="android:autoLink">web|email</item>
+        <item name="android:autoLink">email</item>
         <item name="android:linksClickable">true</item>
     </style>
 
@@ -629,7 +629,7 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/ThreadListItemHead</item>
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
-        <item name="android:autoLink">web|email</item>
+        <item name="android:autoLink">email</item>
         <item name="android:linksClickable">true</item>
     </style>
 
@@ -848,7 +848,6 @@
         -->
     </style>
 
-
     <!-- colors -->
 
     <color name="HoloDimForegroundInverse">#323232</color>
@@ -879,6 +878,7 @@
     <color name="PaletteDarkGray">#444</color>
     <color name="PaletteLighterGrayHalfOpacity">#80dddddd</color>
     <color name="PaletteLightBlack">#ff333333</color>
+    <color name="PaletteJetBlack">#ff000000</color>
     <color name="PaletteBlack">#ff222222</color>
     <color name="PaletteBlackHalfOpacity">#80222222</color>
     <color name="PaletteBlack34Opacity">#d0222222</color>

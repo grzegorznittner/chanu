@@ -374,7 +374,7 @@ public class MobileProfile extends AbstractNetworkProfile {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (DEBUG) Log.i(TAG, "Exception refreshing boardselector fragment boardCode=" + currentActivityId.boardCode + " data boardcode=" + data.boardCode);
+                        if (DEBUG) Log.i(TAG, "Refreshing boardselector fragment boardCode=" + currentActivityId.boardCode + " data boardcode=" + data.boardCode);
                         fragment.refresh();
                     }
                 });
