@@ -383,8 +383,14 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/BoardListTitle</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:background">@drawable/thread_button_gradient_bg</item>
+        <item name="android:textColor">@color/PaletteChanuGreen</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="BoardListTitleBar" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/ThreadListHeaderBar_layout_height</item>
+        <item name="android:background">@color/PaletteChanuGreen</item>
         <item name="android:visibility">gone</item>
     </style>
 

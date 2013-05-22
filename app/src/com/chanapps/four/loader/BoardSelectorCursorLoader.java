@@ -53,7 +53,7 @@ public class BoardSelectorCursorLoader extends AsyncTaskLoader<Cursor> {
                 if (DEBUG) Log.i(TAG, "Loading " + boards.size() + " boards");
                 for (ChanBoard board : boards) {
                     if (DEBUG) Log.i(TAG, "Loading board:" + board.link);
-                    row = board.makeRow();
+                    row = board.makeRow(context);
                     matrixCursor.addRow(row);
                     if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
                 }

@@ -27,6 +27,7 @@ public class BoardListCursorAdapter extends AbstractBoardCursorAdapter {
                 new String[] {
                         ChanThread.THREAD_THUMBNAIL_URL,
                         ChanThread.THREAD_TITLE,
+                        ChanThread.THREAD_TITLE,
                         ChanThread.THREAD_SUBJECT,
                         ChanThread.THREAD_HEADLINE,
                         ChanThread.THREAD_TEXT,
@@ -36,6 +37,7 @@ public class BoardListCursorAdapter extends AbstractBoardCursorAdapter {
                 new int[] {
                         R.id.list_item_thread_thumb,
                         R.id.list_item_thread_title,
+                        R.id.list_item_thread_title_bar,
                         R.id.list_item_thread_subject,
                         R.id.list_item_thread_headline,
                         R.id.list_item_thread_text,

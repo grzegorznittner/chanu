@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.text.Html;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +26,9 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
  * To change this template use File | Settings | File Templates.
  */
 public class BoardListViewer {
+
+    private static final String TAG = BoardListViewer.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     private static DisplayMetrics displayMetrics = null;
     private static ImageLoader imageLoader;
@@ -59,6 +63,8 @@ public class BoardListViewer {
                 return setBoardAbbrev((TextView) view, cursor, groupBoardCode, flags);
             case R.id.list_item_thread_title:
                 return setTitle((TextView) view, cursor, flags);
+            case R.id.list_item_thread_title_bar:
+                return setGone(view);
             case R.id.list_item_thread_subject:
                 return setListSubject((TextView) view, cursor);
             case R.id.list_item_thread_headline:
@@ -113,14 +119,21 @@ public class BoardListViewer {
     }
 
     protected static boolean setHeadline(TextView tv, Cursor cursor) {
-        String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+        String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_HEADLINE));
         if (text != null && !text.isEmpty()) {
-            tv.setPadding(tv.getPaddingLeft(), 0, tv.getPaddingRight(), tv.getPaddingBottom());
+            String subj = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+            if (DEBUG) Log.i(TAG, "subj=" + subj + " head=" + text);
+            if (subj != null && !subj.isEmpty())
+                tv.setPadding(tv.getPaddingLeft(), 0, tv.getPaddingRight(), tv.getPaddingBottom());
+            else
+                tv.setPadding(tv.getPaddingLeft(), padding4DP, tv.getPaddingRight(), tv.getPaddingBottom());
+            tv.setText(Html.fromHtml(text));
+            tv.setVisibility(View.VISIBLE);
         }
         else {
-            tv.setPadding(tv.getPaddingLeft(), padding4DP, tv.getPaddingRight(), tv.getPaddingBottom());
+            tv.setText("");
+            tv.setVisibility(View.GONE);
         }
-        tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_HEADLINE))));
         return true;
     }
 
@@ -170,6 +183,9 @@ public class BoardListViewer {
     protected static boolean setTitleView(View view, Cursor cursor, int flags) {
         if (view.getId() == R.id.list_item_thread_title) {
             setTitle((TextView) view, cursor, flags);
+            view.setVisibility(View.VISIBLE);
+        }
+        else if (view.getId() == R.id.list_item_thread_title_bar) {
             view.setVisibility(View.VISIBLE);
         }
         else if (view.getId() == R.id.list_item) {
@@ -232,4 +248,8 @@ public class BoardListViewer {
         return true;
     }
 
+    protected static boolean setGone(View view) {
+        view.setVisibility(View.GONE);
+        return true;
+    }
 }

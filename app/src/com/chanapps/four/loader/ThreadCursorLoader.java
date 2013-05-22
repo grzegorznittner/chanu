@@ -156,7 +156,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             if (boardRows.size() > 0) {
                 matrixCursor.addRow(board.makePostRelatedBoardsHeaderRow(context));
                 for (ChanBoard relatedBoard : boardRows)
-                    matrixCursor.addRow(relatedBoard.makePostBoardLinkRow());
+                    matrixCursor.addRow(relatedBoard.makePostBoardLinkRow(context));
             }
         }
 

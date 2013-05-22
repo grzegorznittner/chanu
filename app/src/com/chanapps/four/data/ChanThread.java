@@ -91,14 +91,14 @@ public class ChanThread extends ChanPost {
         };
     }
 
-    public static Object[] makeBoardRow(String boardCode, String boardName, int boardImageResourceId) {
+    public static Object[] makeBoardRow(Context context, String boardCode, String boardName, int boardImageResourceId) {
         return new Object[] {
                 boardCode.hashCode(),
                 boardCode,
                 0,
                 "",
                 boardName,
-                "",
+                ChanBoard.getDescription(context, boardCode),
                 "",
                 "drawable://" + boardImageResourceId,
                 "",

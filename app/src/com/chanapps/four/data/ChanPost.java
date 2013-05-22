@@ -1016,7 +1016,7 @@ public class ChanPost {
         };
     }
 
-    public static Object[] makeBoardLinkRow(ChanBoard board) {
+    public static Object[] makeBoardLinkRow(Context context, ChanBoard board) {
         int drawableId = board.getRandomImageResourceId();
         return new Object[] {
                 board.link.hashCode(),
@@ -1025,7 +1025,7 @@ public class ChanPost {
                 "drawable://" + drawableId,
                 "",
                 "",
-                "",
+                board.getDescription(context),
                 board.name,
                 "",
                 250,

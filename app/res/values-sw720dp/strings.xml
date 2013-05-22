@@ -12,7 +12,7 @@
     <dimen name="BoardListTextImageTopOverlay">14sp</dimen>
     <dimen name="BoardListTitle">18sp</dimen>
     <dimen name="BoardListSubject">22sp</dimen>
-    <dimen name="BoardListHeadline">14sp</dimen>
+    <dimen name="BoardListHeadline">18sp</dimen>
     <dimen name="ThreadListLayout">18sp</dimen>
     <dimen name="ThreadListHeaderSubject">24sp</dimen>
     <dimen name="ThreadListHeaderHead">18sp</dimen>
