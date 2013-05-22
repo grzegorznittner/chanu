@@ -16,14 +16,6 @@
           android:icon="@drawable/content_save"
           android:showAsAction="ifRoom"
             />
-    <item android:id="@+id/image_search_menu"
-          android:title="@string/image_search_menu"
-          android:icon="@drawable/action_search"
-            />
-    <item android:id="@+id/anime_image_search_menu"
-          android:title="@string/anime_image_search_menu"
-          android:icon="@drawable/action_search"
-            />
     <item android:id="@+id/offline_board_view_menu"
           android:title="@string/offline_board_view_menu"
             />

@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.text.Editable;
 import android.text.format.DateUtils;
 import android.util.Log;
 
@@ -390,11 +391,11 @@ public class ChanPost {
         text = text
                 .replaceAll("<span[^>]*class=\"abbr\"[^>]*>.*</span>", "")    // exif reference
                 .replaceAll("<table[^>]*class=\"exif\"[^>]*>.*</table>", "");  // exif info
-        if (!showSpoiler)
-            text = text.replaceAll("<s>[^<]*</s>", "XXXSPOILERXXX");                       // spoiler text
+        //if (!showSpoiler)
+        //    text = text.replaceAll("<s>[^<]*</s>", "XXXSPOILERXXX");                       // spoiler text
         text = textViewFilter(text, collapseNewlines);
-        if (!showSpoiler)
-            text = text.replaceAll("XXXSPOILERXXX", "<b>spoiler</b>");
+        //if (!showSpoiler)
+        //    text = text.replaceAll("XXXSPOILERXXX", "<b>spoiler</b>");
         long end = System.currentTimeMillis();
         if (DEBUG) Log.v(TAG, "Regexp: " + (end - start) + "ms");
 
@@ -428,7 +429,10 @@ public class ChanPost {
     private static final String textViewFilter(String s, boolean collapseNewlines) {
         String t = s
                 .replaceAll("<br */?>", "\n")
-                .replaceAll("<[^>]+>", "")
+                .replaceAll("<[^s/][^>]+>", "") // preserve <s> tags
+                .replaceAll("<s[^>]+>", "")
+                .replaceAll("</[^s][^>]*>", "")
+                .replaceAll("</s[^>]+>", "")
                 .replaceAll("&lt;", "<")
                 .replaceAll("&gt;", ">")
                 .replaceAll("&amp;", "&")
@@ -941,7 +945,7 @@ public class ChanPost {
 
     public Object[] makeRow(String query, int i, byte[] backlinksBlob, byte[] repliesBlob, byte[] sameIdsBlob) {
         String[] textComponents = textComponents(query);
-        String[] spoilerComponents = spoilerComponents(query);
+        //String[] spoilerComponents = spoilerComponents(query);
         String exifText = exifText();
         int flags = postFlags(false, false, textComponents[0], textComponents[1], exifText);
         if (i == 0)
@@ -961,8 +965,10 @@ public class ChanPost {
                 w,
                 h,
                 tim,
-                spoilerComponents[0],
-                spoilerComponents[1],
+                "",
+                "",
+                //spoilerComponents[0],
+                //spoilerComponents[1],
                 exifText(),
                 id,
                 trip,

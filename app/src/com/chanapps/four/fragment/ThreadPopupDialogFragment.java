@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.*;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
@@ -22,6 +23,7 @@ import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
+import com.chanapps.four.viewer.ThreadListener;
 import com.chanapps.four.viewer.ThreadViewer;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
@@ -36,8 +38,7 @@ import java.util.HashSet;
 */
 public class ThreadPopupDialogFragment
         extends DialogFragment
-        implements AbstractBoardCursorAdapter.ViewBinder,
-        AdapterView.OnItemClickListener
+        implements AbstractBoardCursorAdapter.ViewBinder
 {
 
     static public enum PopupType {
@@ -60,6 +61,7 @@ public class ThreadPopupDialogFragment
     private AbsListView absListView;
     private View layout;
     private Handler handler;
+    private ThreadListener threadListener;
 
     public ThreadPopupDialogFragment() {
         super();
@@ -198,12 +200,13 @@ public class ThreadPopupDialogFragment
     }
 
     protected void init() {
-        adapter = new ThreadListCursorAdapter(getActivity().getApplicationContext(), this);
+        adapter = new ThreadListCursorAdapter(getActivity(), this);
         absListView = (ListView) layout.findViewById(R.id.thread_list_view);
         absListView.setAdapter(adapter);
-        absListView.setOnItemClickListener(this);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+        threadListener = new ThreadListener(getActivity().getSupportFragmentManager(), absListView, adapter,
+                ((ChanIdentifiedActivity)getActivity()).getChanHandler());
     }
 
     protected Cursor detailsCursor() {
@@ -229,7 +232,6 @@ public class ThreadPopupDialogFragment
         if (b == null || b.length == 0)
             return 0;
         HashSet<?> links = ChanPost.parseBlob(b);
-        Log.e(TAG, "Exception blob size=" + links.size());
         if (links == null || links.size() <= 0)
             return 0;
         int count = links.size();
@@ -244,17 +246,13 @@ public class ThreadPopupDialogFragment
 
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
-        return ThreadViewer.setViewValue(view, cursor, boardCode, null, null, null, null, null, null);
+        return ThreadViewer.setViewValue(view, cursor, boardCode,
+                threadListener.imageOnClickListener,
+                null, //threadListener.backlinkOnClickListener,
+                null, //threadListener.repliesOnClickListener,
+                null, //threadListener.sameIdOnClickListener,
+                threadListener.exifOnClickListener,
+                null);
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-        if ((flags & ChanPost.FLAG_IS_URLLINK) > 0) {
-            String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-            if (url != null && !url.isEmpty())
-                ChanHelper.launchUrlInBrowser(getActivity(), url);
-        }
-    }
 }

@@ -3,13 +3,12 @@ package com.chanapps.four.viewer;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.text.Html;
-import android.text.Spannable;
-import android.text.Spanned;
+import android.text.*;
 import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
+import android.text.style.*;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +30,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
+import org.xml.sax.XMLReader;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -193,10 +193,11 @@ public class ThreadViewer {
                                           View.OnClickListener repliesOnClickListener,
                                           View.OnClickListener sameIdOnClickListener) {
         String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_HEADLINE_TEXT));
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text));
-        addLinkedSpans(tv, spannable, POST_PATTERN, repliesOnClickListener);
+        addLinkedSpans(spannable, POST_PATTERN, repliesOnClickListener);
         if (cursor.getBlob(cursor.getColumnIndex(ChanPost.POST_SAME_IDS_BLOB)) != null)
-            addLinkedSpans(tv, spannable, ID_PATTERN, sameIdOnClickListener);
+            addLinkedSpans(spannable, ID_PATTERN, sameIdOnClickListener);
         tv.setText(spannable);
         tv.setVisibility(View.VISIBLE);
         return true;
@@ -218,9 +219,11 @@ public class ThreadViewer {
             if ((flags & ChanPost.FLAG_IS_DEAD) > 0)
                 text = tv.getResources().getString(R.string.thread_is_dead) + (text.isEmpty() ? "" : " ") + text;
         }
-        Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text));
+        if (DEBUG) Log.i(TAG, "setSubject text=" + text);
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+        Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text, null, spoilerTagHandler));
         if (spannable.length() > 0) {
-            addLinkedSpans(tv, spannable, POST_PATTERN, backlinkOnClickListener);
+            addLinkedSpans(spannable, POST_PATTERN, backlinkOnClickListener);
             tv.setText(spannable);
             if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
                 tv.setTypeface(subjectTypeface);
@@ -248,11 +251,13 @@ public class ThreadViewer {
             text = "";
         if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null)
             text += (text.isEmpty() ? "" : " ") + SHOW_EXIF_HTML;
-        Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text));
+        if (DEBUG) Log.i(TAG, "setText text=" + text);
+        tv.setMovementMethod(LinkMovementMethod.getInstance());
+        Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text, null, spoilerTagHandler));
         if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null)
             addExifSpan(tv, spannable, exifOnClickListener);
         if (spannable.length() > 0) {
-            addLinkedSpans(tv, spannable, POST_PATTERN, backlinkOnClickListener);
+            addLinkedSpans(spannable, POST_PATTERN, backlinkOnClickListener);
             tv.setText(spannable);
             tv.setVisibility(View.VISIBLE);
         }
@@ -272,7 +277,6 @@ public class ThreadViewer {
                 listener.onClick(widget);
             }
         };
-        tv.setMovementMethod(LinkMovementMethod.getInstance());
         spannable.setSpan(exif, spannable.length() - SHOW_EXIF_TEXT.length(), spannable.length(),
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
@@ -280,12 +284,11 @@ public class ThreadViewer {
     static private final Pattern POST_PATTERN = Pattern.compile("(>>\\d+)");
     static private final Pattern ID_PATTERN = Pattern.compile("Id: ([A-Za-z0-9+./_:!-]+)");
 
-    static private void addLinkedSpans(TextView tv, Spannable spannable, Pattern pattern,
+    static private void addLinkedSpans(Spannable spannable, Pattern pattern,
                                        final View.OnClickListener listener) {
         if (listener == null)
             return;
         Matcher m = pattern.matcher(spannable);
-        boolean found = false;
         while (m.find()) {
             ClickableSpan popup = new ClickableSpan() {
                 @Override
@@ -294,10 +297,7 @@ public class ThreadViewer {
                 }
             };
             spannable.setSpan(popup, m.start(1), m.end(1), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            found = true;
         }
-        if (found)
-            tv.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     static private boolean setImageExifValue(final TextView tv) {
@@ -542,5 +542,96 @@ public class ThreadViewer {
         }
         return true;
     }
+
+    static private final Html.TagHandler spoilerTagHandler = new Html.TagHandler() {
+        static private final String SPOILER_TAG = "s";
+        class SpoilerSpan extends ClickableSpan {
+            private int start = 0;
+            private int end = 0;
+            private boolean blackout = true;
+            public SpoilerSpan() {
+                super();
+            }
+            public SpoilerSpan(int start, int end) {
+                this();
+                this.start = start;
+                this.end = end;
+            }
+            @Override
+            public void onClick(View widget) {
+                if (!(widget instanceof TextView))
+                    return;
+                TextView tv = (TextView)widget;
+                CharSequence cs = tv.getText();
+                if (!(cs instanceof Spannable))
+                    return;
+                Spannable s = (Spannable)cs;
+                Object[] spans = s.getSpans(start, end, this.getClass());
+                if (spans == null || spans.length == 0)
+                    return;
+                if (DEBUG) Log.i(TAG, "Found " + spans.length + " spans");
+                blackout = false;
+                widget.invalidate();
+            }
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                ds.bgColor = blackout ? Color.BLACK : 0;
+            }
+        }
+        class SpanFactory {
+            public Class getSpanClass() { return SpoilerSpan.class; }
+            public Object getSpan(final int start, final int end) { return new SpoilerSpan(start, end); }
+        }
+        SpanFactory spanFactory = new SpanFactory();
+        public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader) {
+            if (SPOILER_TAG.equals(tag))
+                handleSpoiler(opening, output);
+        }
+        private void handleSpoiler(boolean opening, Editable output) {
+            if (opening)
+                handleSpoilerOpen(output);
+            else
+                handleSpoilerClose(output);
+        }
+        private void handleSpoilerOpen(Editable output) {
+            if (DEBUG) Log.i(TAG, "handleSpoilerOpen(" + output + ")");
+            int len = output.length();
+            output.setSpan(spanFactory.getSpan(len, len), len, len, Spannable.SPAN_MARK_MARK);
+        }
+        private void handleSpoilerClose(Editable output) {
+            if (DEBUG) Log.i(TAG, "handleSpoilerClose(" + output + ")");
+            int len = output.length();
+            Object obj = getFirst(output, spanFactory.getSpanClass());
+            int start = output.getSpanStart(obj);
+            output.removeSpan(obj);
+            if (start >= 0 && len >= 0 && start != len)  {
+                output.setSpan(spanFactory.getSpan(start, len), start, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                if (DEBUG) Log.i(TAG, "setSpan(" + start + ", " + len + ")");
+            }
+        }
+        private Object getFirst(Editable text, Class kind) {
+            Object[] objs = text.getSpans(0, text.length(), kind);
+            if (objs.length == 0)
+                return null;
+            if (DEBUG) Log.i(TAG, "Found " + objs.length + " matching spans");
+            for (int i = 0; i < objs.length; i++) {
+                Object span = objs[i];
+                if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK)
+                    return span;
+            }
+            return null;
+        }
+        private Object getLast(Editable text, Class kind) {
+            Object[] objs = text.getSpans(0, text.length(), kind);
+            if (objs.length == 0)
+                return null;
+            for (int i = objs.length - 1; i >= 0; i--) {
+                Object span = objs[i];
+                if (text.getSpanFlags(span) == Spannable.SPAN_MARK_MARK)
+                    return span;
+            }
+            return null;
+        }
+    };
 
 }

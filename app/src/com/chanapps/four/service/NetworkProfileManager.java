@@ -146,7 +146,7 @@ public class NetworkProfileManager {
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 		}
-        if (DEBUG) Log.i(TAG, "EXCEPTION activeProfile=" + activeProfile);
+        if (DEBUG) Log.i(TAG, "activeProfile=" + activeProfile);
 		switch(currentActivityId.activity) {
 		case BOARD_SELECTOR_ACTIVITY:
             activeProfile.onBoardSelectorRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
