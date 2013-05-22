@@ -643,6 +643,12 @@ public class ThreadActivity
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                 return true;
+            case R.id.image_search_menu:
+                imageSearch(postPos, IMAGE_SEARCH_ROOT);
+                return true;
+            case R.id.anime_image_search_menu:
+                imageSearch(postPos, IMAGE_SEARCH_ROOT_ANIME);
+                return true;
             case R.id.translate_posts_menu:
                 return translatePosts(postPos);
             case R.id.delete_posts_menu:
@@ -1179,6 +1185,42 @@ public class ThreadActivity
         Handler handler = getChanHandler();
         if (handler != null)
             setProgressBarIndeterminateVisibility(true);
+    }
+
+    private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";
+    private static final String IMAGE_SEARCH_ROOT_ANIME = "http://iqdb.org/?url=";
+
+    private void imageSearch(SparseBooleanArray postPos, String rootUrl) {
+        String imageUrl = "";
+        for (int i = 0; i < absListView.getCount(); i++) {
+            if (!postPos.get(i))
+                continue;
+            Cursor cursor = (Cursor) adapter.getItem(i);
+            if (cursor == null)
+                continue;
+            int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
+            if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0)
+                continue;
+            String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_FULL_IMAGE_URL));
+            if (url == null || url.isEmpty())
+                continue;
+            imageUrl = url;
+            break;
+        }
+        if (imageUrl.isEmpty()) {
+            Toast.makeText(this, R.string.full_screen_image_search_not_found, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            String encodedImageUrl = URLEncoder.encode(imageUrl, "UTF-8");
+            String url =  rootUrl + encodedImageUrl;
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(intent);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't do image search imageUrl=" + imageUrl, e);
+            Toast.makeText(this, R.string.full_screen_image_search_error, Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

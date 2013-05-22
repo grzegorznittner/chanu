@@ -395,21 +395,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     	prepareGalleryView();
     }
     
-	private String checkLocalImage() {
-    	try {
-            Uri uri = ChanFileStorage.getLocalImageUri(getBaseContext(), post);
-            File localImage = new File(URI.create(uri.toString()));
-	    	if (localImage.exists()) {
-    			return uri.toString();
-	    	} else {
-	    		if (DEBUG) Log.i(TAG, "Image " + localImageUri + " doesn't exist");
-	    	}
-    	} catch (Exception e) {
-    		Log.e(TAG, "Image file checking error", e);
-    	}
-    	return null;
-	}
-
     private void prepareGalleryView() {
     	handler = new ProgressHandler(this);
     	View contentView = inflater.inflate(R.layout.gallery_layout,
@@ -491,18 +476,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 else
                     Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.image_search_menu:
-                if (checkLocalImage() != null)
-                    imageSearch();
-                else
-                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.anime_image_search_menu:
-                if (checkLocalImage() != null)
-                    animeImageSearch();
-                else
-                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
-                return true;
             */
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
@@ -520,29 +493,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	    }
     }
 
-    private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";
-    private static final String IMAGE_SEARCH_ROOT_ANIME = "http://iqdb.org/?url=";
-
-    private void imageSearch() {
-        imageSearch(IMAGE_SEARCH_ROOT);
-    }
-
-    private void animeImageSearch() {
-        imageSearch(IMAGE_SEARCH_ROOT_ANIME);
-    }
-
-    private void imageSearch(String rootUrl) {
-        try {
-            String encodedImageUrl = URLEncoder.encode(imageUrl, "UTF-8");
-            String url =  rootUrl + encodedImageUrl;
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            startActivity(intent);
-        }
-        catch (Exception e) {
-            Log.e(TAG, "Couldn't do image search imageUrl=" + imageUrl, e);
-            Toast.makeText(this, R.string.full_screen_image_search_error, Toast.LENGTH_SHORT).show();
-        }
-    }
 
     private class CopyImageToGalleryTask extends AsyncTask<String, Void, Integer> {
         private Context context;
