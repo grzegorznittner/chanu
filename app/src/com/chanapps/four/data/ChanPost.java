@@ -1168,4 +1168,73 @@ public class ChanPost {
         }
         return o;
     }
+    
+    public void updateThreadData(ChanThread t) {
+    	closed = t.closed;
+    	omitted_images = t.omitted_images;
+    	omitted_posts = t.omitted_posts;
+    	
+    	if (t.posts.length > 0 && t.posts[0] != null) {
+        	replies = t.posts[0].replies;
+        	images = t.posts[0].images;
+	    	bumplimit = t.posts[0].bumplimit;
+	    	capcode = t.posts[0].capcode;
+	    	com = t.posts[0].com;
+	    	country = t.posts[0].country;
+	    	country_name = t.posts[0].country_name;
+	    	email = t.posts[0].email;
+	    	ext = t.posts[0].ext;
+	    	filedeleted = t.posts[0].filedeleted;
+	    	filename = t.posts[0].filename;
+	    	fsize = t.posts[0].fsize;
+	    	h = t.posts[0].h;
+	    	hideAllText = t.posts[0].hideAllText;
+	    	hidePostNumbers = t.posts[0].hidePostNumbers;
+	    	id = t.posts[0].id;
+	    	now = t.posts[0].now;
+	    	spoiler = t.posts[0].spoiler;
+	    	sticky = t.posts[0].sticky;
+	    	sub = t.posts[0].sub;
+	    	tim = t.posts[0].tim;
+	    	tn_h = t.posts[0].tn_h;
+	    	tn_w = t.posts[0].tn_w;
+	    	trip = t.posts[0].trip;
+	    	useFriendlyIds = t.posts[0].useFriendlyIds;
+	    	w = t.posts[0].w;
+    	}    	
+    }
+
+    public void updateThreadDataWithPost(ChanPost t) {
+    	closed = t.closed;
+    	omitted_images = t.omitted_images;
+    	omitted_posts = t.omitted_posts;
+    	
+    	replies = t.replies;
+    	images = t.images;
+    	bumplimit = t.bumplimit;
+    	capcode = t.capcode;
+    	com = t.com;
+    	country = t.country;
+    	country_name = t.country_name;
+    	email = t.email;
+    	ext = t.ext;
+    	filedeleted = t.filedeleted;
+    	filename = t.filename;
+    	fsize = t.fsize;
+    	h = t.h;
+    	hideAllText = t.hideAllText;
+    	hidePostNumbers = t.hidePostNumbers;
+    	id = t.id;
+    	now = t.now;
+    	spoiler = t.spoiler;
+    	sticky = t.sticky;
+    	sub = t.sub;
+    	tim = t.tim;
+    	tn_h = t.tn_h;
+    	tn_w = t.tn_w;
+    	trip = t.trip;
+    	useFriendlyIds = t.useFriendlyIds;
+    	w = t.w;
+    }
+
 }

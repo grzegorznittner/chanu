@@ -120,6 +120,7 @@ public class ChanFileStorage {
 			ObjectMapper mapper = ChanHelper.getJsonMapper();
 			mapper.writeValue(new File(boardDir, board.link + CACHE_EXT), board);
 			if (DEBUG) Log.i(TAG, "Stored " + board.threads.length + " threads for board '" + board.link + "'");
+			updateWatchedThread(context, board);
 		} else {
 			Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
 		}
@@ -599,19 +600,21 @@ public class ChanFileStorage {
     		return;
     	}
     	List<ChanPost> newThreads = null;
-    	if (board.defData || board.threads[0].defData) {
+    	if (board.defData || (board.threads.length > 0 && board.threads[0].defData)) {
     		newThreads = new ArrayList<ChanPost>();
     		board.defData = false;
     	} else {
     		newThreads = new ArrayList<ChanPost>(Arrays.asList(board.threads));
     	}
-    	Log.i(TAG, "Before adding to watchlist: " + thread);
+    	if (DEBUG) Log.i(TAG, "Before adding to watchlist: " + thread);
     	newThreads.add(thread.cloneForWatchlist());
     	board.threads = newThreads.toArray(new ChanPost[]{});
     	
-    	Log.i(TAG, "After adding to watchlist: " + board.threads[board.threads.length - 1]);
-    	Log.i(TAG, "After adding to watchlist threads: " + board.threads[0]);
-    	Log.i(TAG, "After adding to watchlist defData: " + board.threads[0].defData);
+    	if (DEBUG) {
+	    	Log.i(TAG, "After adding to watchlist: " + board.threads[board.threads.length - 1]);
+	    	Log.i(TAG, "After adding to watchlist threads: " + board.threads[0]);
+	    	Log.i(TAG, "After adding to watchlist defData: " + board.threads[0].defData);
+    	}
     	
     	storeBoardData(context, board);
     }
@@ -635,14 +638,42 @@ public class ChanFileStorage {
     	storeBoardData(context, board);
     }
     
-    private static void updateWatchedThread(Context context, ChanThread watchedThread) throws IOException {
+    private static void updateWatchedThread(Context context, ChanThread loadedThread) throws IOException {
     	ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
     	for (int i = 0; i < board.threads.length; i++) {
     		ChanPost thread = board.threads[i];
-    		if (thread.no == watchedThread.no) {
-    			board.threads[i] = watchedThread;
+    		if (thread.no == loadedThread.no && thread.board.equals(loadedThread.board)) {
+    			board.threads[i].updateThreadData(loadedThread);
+    			Log.e(TAG, "Updating watched thread " + thread.board + "/" + thread.no
+    					+ " replies: " + board.threads[i].replies + " images: " + board.threads[i].images);
     	    	storeBoardData(context, board);
     		}
+    	}
+    }
+
+    private static void updateWatchedThread(Context context, ChanBoard loadedBoard) throws IOException {
+    	if (loadedBoard.defData || loadedBoard.loadedThreads == null || loadedBoard.loadedThreads.length == 0
+    			|| loadedBoard.loadedThreads[0].defData) {
+    		return;
+    	}
+    	ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+    	boolean needsToBeStored = false;
+    	for (int i = 0; i < board.threads.length; i++) {
+    		ChanPost thread = board.threads[i];
+    		if (thread.board.equals(loadedBoard.link)) {
+    			for (int t = 0; t < loadedBoard.loadedThreads.length; t++) {
+    				ChanPost loadedThread = loadedBoard.loadedThreads[t];
+    	    		if (thread.no == loadedThread.no) {
+    	    			board.threads[i].updateThreadDataWithPost(loadedThread);
+    	    			Log.e(TAG, "Updating watched thread " + thread.board + "/" + thread.no
+    	    					+ " replies: " + board.threads[i].replies + " images: " + board.threads[i].images);
+    	    			needsToBeStored = true;
+    	    		}
+    			}
+    		}
+    	}
+    	if (needsToBeStored) {
+	    	storeBoardData(context, board);
     	}
     }
     

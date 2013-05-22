@@ -1,12 +1,18 @@
 package com.chanapps.four.data;
 
-import android.content.Context;
-import android.database.MatrixCursor;
-import android.util.Log;
-import com.chanapps.four.activity.R;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
-import java.util.*;
+import android.content.Context;
+import android.database.MatrixCursor;
+
+import com.chanapps.four.activity.R;
 
 public class ChanThread extends ChanPost {
     private static final boolean DEBUG = false;
@@ -218,12 +224,11 @@ public class ChanThread extends ChanPost {
         }
         return sameIdsMap;
     }
-
+    
     public ChanThread cloneForWatchlist() {
     	ChanThread t = new ChanThread();
     	t.no = no;
     	t.board = board;
-    	t.replies = replies;
     	t.closed = closed;
     	t.created = created;
     	t.omitted_images = omitted_images;
@@ -232,6 +237,8 @@ public class ChanThread extends ChanPost {
     	t.defData = false;
 
     	if (posts.length > 0 && posts[0] != null) {
+        	t.replies = posts[0].replies;
+        	t.images = posts[0].images;
 	    	t.bumplimit = posts[0].bumplimit;
 	    	t.capcode = posts[0].capcode;
 	    	t.com = posts[0].com;
