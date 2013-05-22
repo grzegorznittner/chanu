@@ -3,25 +3,26 @@ package com.chanapps.four.loader;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
-//import android.content.AsyncTaskLoader;
-import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.*;
+import com.chanapps.four.data.ChanBlocklist;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
 
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected static final String TAG = BoardCursorLoader.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
     protected static final double AD_PROBABILITY = 0.20;
     protected static final int MINIMUM_AD_SPACING = 4;
@@ -61,10 +62,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         if (DEBUG)  {
-            Log.i(TAG, "board threadcount=" + (board.threads != null ? board.threads.length : 0));
+            Log.i(TAG, "board " + board.link + ", threadcount=" + (board.threads != null ? board.threads.length : 0));
             Log.i(TAG, "board loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0));
         }
-
+        
         if (board.shouldSwapThreads())
         { // auto-update if we have no threads to show
             if (DEBUG) Log.i(TAG, "auto-swapping loaded threads since empty");
@@ -73,13 +74,11 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
 
-        //if (!board.isVirtualBoard())
-        //    matrixCursor.addRow(ChanBoard.makeBoardTitleRow(context, boardName));
-
         if (board.threads != null && !board.defData
                 && board.threads.length > 0 && board.threads[0] != null && !board.threads[0].defData) { // show loading
-            if (!board.isVirtualBoard())
+            if (!board.isVirtualBoard()) {
                 matrixCursor.addRow(board.makeThreadAdRow(getContext(), 0));
+            }
 
             if (!query.isEmpty()) {
                 String title = String.format(context.getString(R.string.board_search_results), "<i>" + query + "</i>");
@@ -91,7 +90,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             int numQueryMatches = 0;
             int i = 0;
             for (ChanPost thread : board.threads) {
-                if (DEBUG) Log.i(TAG, "Loading thread:" + thread.no);
+                if (DEBUG) Log.i(TAG, "Loading thread: " + thread);
                 if (ChanBlocklist.isBlocked(context, thread) || thread.no <= 0) {
                     if (DEBUG) Log.i(TAG, "Skipped thread: " + thread.no);
                     continue;

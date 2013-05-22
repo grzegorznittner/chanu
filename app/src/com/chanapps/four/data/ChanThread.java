@@ -219,4 +219,46 @@ public class ChanThread extends ChanPost {
         return sameIdsMap;
     }
 
+    public ChanThread cloneForWatchlist() {
+    	ChanThread t = new ChanThread();
+    	t.no = no;
+    	t.board = board;
+    	t.replies = replies;
+    	t.closed = closed;
+    	t.created = created;
+    	t.omitted_images = omitted_images;
+    	t.omitted_posts = omitted_posts;
+    	t.resto = resto;
+    	t.defData = false;
+
+    	if (posts.length > 0 && posts[0] != null) {
+	    	t.bumplimit = posts[0].bumplimit;
+	    	t.capcode = posts[0].capcode;
+	    	t.com = posts[0].com;
+	    	t.country = posts[0].country;
+	    	t.country_name = posts[0].country_name;
+	    	t.email = posts[0].email;
+	    	t.ext = posts[0].ext;
+	    	t.filedeleted = posts[0].filedeleted;
+	    	t.filename = posts[0].filename;
+	    	t.fsize = posts[0].fsize;
+	    	t.h = posts[0].h;
+	    	t.hideAllText = posts[0].hideAllText;
+	    	t.hidePostNumbers = posts[0].hidePostNumbers;
+	    	t.id = posts[0].id;
+	    	t.now = posts[0].now;
+	    	t.spoiler = posts[0].spoiler;
+	    	t.sticky = posts[0].sticky;
+	    	t.sub = posts[0].sub;
+	    	t.tim = posts[0].tim;
+	    	t.tn_h = posts[0].tn_h;
+	    	t.tn_w = posts[0].tn_w;
+	    	t.trip = posts[0].trip;
+	    	t.useFriendlyIds = posts[0].useFriendlyIds;
+	    	t.w = posts[0].w;
+    	}
+    	
+    	return t;
+    }
+
 }

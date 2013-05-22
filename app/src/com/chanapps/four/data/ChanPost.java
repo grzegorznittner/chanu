@@ -1168,5 +1168,4 @@ public class ChanPost {
         }
         return o;
     }
-
 }
