@@ -79,10 +79,10 @@
     <dimen name="BoardListTextImageTopOverlay_paddingTop">2dp</dimen>
     <dimen name="BoardListTextImageTopOverlay_paddingBottom">2dp</dimen>
 
-    <dimen name="BoardListTitle_paddingTop">16dp</dimen>
+    <dimen name="BoardListTitle_paddingTop">24dp</dimen>
     <dimen name="BoardListTitle_paddingLeft">32dp</dimen>
     <dimen name="BoardListTitle_paddingRight">32dp</dimen>
-    <dimen name="BoardListTitle_paddingBottom">16dp</dimen>
+    <dimen name="BoardListTitle_paddingBottom">8dp</dimen>
 
     <dimen name="BoardListSubject_paddingTop">2dp</dimen>
     <dimen name="BoardListSubject_paddingLeft">8dp</dimen>

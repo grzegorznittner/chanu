@@ -5,6 +5,8 @@
         android:id="@+id/list_item"
         >
 
-        <TextView style="@style/ThreadListTitle" android:id="@+id/list_item_title"/>
+    <TextView style="@style/ThreadListTitle" android:id="@+id/list_item_title"/>
+
+    <View style="@style/ThreadListHeaderBar"/>
 
 </LinearLayout>

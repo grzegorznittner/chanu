@@ -213,7 +213,7 @@ public class BoardGridViewer {
             String s = tv.getResources().getQuantityString(R.plurals.thread_num_replies, r, r);
             if (r > 0) {
                 int i = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES));
-                s += " " + tv.getResources().getQuantityString(R.plurals.thread_num_images, i, i);
+                s += " " + tv.getResources().getQuantityString(R.plurals.thread_num_imgs, i, i);
             }
             tv.setText(s);
         }

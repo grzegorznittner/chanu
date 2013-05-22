@@ -214,6 +214,11 @@
         <item quantity="one">1 image</item>
         <item quantity="other">%1$d images</item>
     </plurals>
+    <plurals name="thread_num_imgs">
+        <item quantity="zero">no imgs</item>
+        <item quantity="one">1 img</item>
+        <item quantity="other">%1$d imgs</item>
+    </plurals>
     <plurals name="thread_num_backlinks">
         <item quantity="zero">no backlinks</item>
         <item quantity="one">1 backlink</item>
@@ -1153,10 +1158,10 @@
     <dimen name="BoardListTextImageTopOverlay_paddingTop">2dp</dimen>
     <dimen name="BoardListTextImageTopOverlay_paddingBottom">2dp</dimen>
 
-    <dimen name="BoardListTitle_paddingTop">8dp</dimen>
+    <dimen name="BoardListTitle_paddingTop">12dp</dimen>
     <dimen name="BoardListTitle_paddingLeft">16dp</dimen>
     <dimen name="BoardListTitle_paddingRight">8dp</dimen>
-    <dimen name="BoardListTitle_paddingBottom">8dp</dimen>
+    <dimen name="BoardListTitle_paddingBottom">4dp</dimen>
 
     <dimen name="BoardListSubject_paddingTop">2dp</dimen>
     <dimen name="BoardListSubject_paddingLeft">8dp</dimen>

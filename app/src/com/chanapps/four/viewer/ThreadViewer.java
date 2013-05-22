@@ -497,6 +497,7 @@ public class ThreadViewer {
     }
 
     protected static boolean setTitleView(View view, Cursor cursor) {
+        if (DEBUG) Log.i(TAG, "setting title view");
         if (view.getId() == R.id.list_item_title) {
             String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
             Spanned spanned = Html.fromHtml(text);

@@ -464,6 +464,7 @@
     <style name="ThreadListTitleLayout" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <!-- THREAD LIST HEADER -->
@@ -595,7 +596,7 @@
     <style name="ThreadListHeaderBar" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/ThreadListHeaderBar_layout_height</item>
-        <item name="android:background">@color/PaletteBlue</item>
+        <item name="android:background">@color/PaletteChanuGreen</item>
     </style>
 
     <!-- THREAD LIST ITEM -->
@@ -707,8 +708,8 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/BoardListTitle</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:background">@drawable/thread_button_gradient_bg</item>
+        <item name="android:textColor">@color/PaletteChanuGreen</item>
+        <!--<item name="android:background">@drawable/thread_button_gradient_bg</item>-->
     </style>
 
     <style name="ThreadListUrlLink" parent="AppTheme">
