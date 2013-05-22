@@ -599,14 +599,19 @@ public class ChanFileStorage {
     		return;
     	}
     	List<ChanPost> newThreads = null;
-    	if (board.defData) {
+    	if (board.defData || board.threads[0].defData) {
     		newThreads = new ArrayList<ChanPost>();
     		board.defData = false;
     	} else {
     		newThreads = new ArrayList<ChanPost>(Arrays.asList(board.threads));
     	}
-    	newThreads.add(thread);
+    	Log.i(TAG, "Before adding to watchlist: " + thread);
+    	newThreads.add(thread.cloneForWatchlist());
     	board.threads = newThreads.toArray(new ChanPost[]{});
+    	
+    	Log.i(TAG, "After adding to watchlist: " + board.threads[board.threads.length - 1]);
+    	Log.i(TAG, "After adding to watchlist threads: " + board.threads[0]);
+    	Log.i(TAG, "After adding to watchlist defData: " + board.threads[0].defData);
     	
     	storeBoardData(context, board);
     }
@@ -626,7 +631,7 @@ public class ChanFileStorage {
 
     public static void clearWatchedThreads(Context context) throws IOException {
     	ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
-    	board.threads = new ChanPost[]{};
+    	board.threads = new ChanThread[]{};
     	storeBoardData(context, board);
     }
     
