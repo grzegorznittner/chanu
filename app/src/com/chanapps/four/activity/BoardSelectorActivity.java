@@ -229,6 +229,10 @@ public class BoardSelectorActivity
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
+            case R.id.about_menu:
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
+                return true;
             case R.id.global_rules_menu:
                 RawResourceDialog rawResourceDialog = new RawResourceDialog(this,
                         R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);

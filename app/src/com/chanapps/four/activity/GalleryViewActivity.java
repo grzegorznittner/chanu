@@ -482,6 +482,10 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
+            case R.id.about_menu:
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
+                return true;
             case R.id.exit_menu:
                 ChanHelper.exitApplication(this);
                 return true;

@@ -508,13 +508,17 @@ public class ThreadActivity
                 return true;
             case R.id.play_thread_menu:
                 return playThreadMenu();
+            case R.id.board_rules_menu:
+                displayBoardRules();
+                return true;
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
-            case R.id.board_rules_menu:
-                displayBoardRules();
+            case R.id.about_menu:
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.exit_menu:
                 ChanHelper.exitApplication(this);

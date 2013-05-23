@@ -39,13 +39,15 @@ public class AboutFragment extends PreferenceFragment
         linkPreference("pref_about_data_4chan", "https://github.com/4chan/4chan-API");
         linkPreference("pref_about_data_uil", "https://github.com/nostra13/Android-Universal-Image-Loader");
         linkPreference("pref_about_data_color", "https://code.google.com/p/color-picker-view/");
-        linkPreference("pref_about_developer_chanapps", "market://search?q=pub:Chanapps Software");
+        linkPreference("pref_about_developer_chanapps", "http://www.chanapps.com/chanu/");
+        linkPreference("pref_about_developer_rate_us", "market://search?q=pub:Chanapps Software");
 
+        /*
         emailPreference("pref_about_developer_burns", getString(R.string.pref_about_developer_burns_sum));
         emailPreference("pref_about_developer_nittner", getString(R.string.pref_about_developer_nittner_sum));
         emailPreference("pref_about_developer_pop", getString(R.string.pref_about_developer_pop_sum));
         emailPreference("pref_about_developer_milas", getString(R.string.pref_about_developer_milas_sum));
-
+        */
     }
 
     protected void linkPreference(final String pref, final String url) {
@@ -58,7 +60,7 @@ public class AboutFragment extends PreferenceFragment
                     }
                 });
     }
-
+    /*
     protected void emailPreference(final String pref, final String email) {
         findPreference(pref).setOnPreferenceClickListener(
                 new Preference.OnPreferenceClickListener() {
@@ -73,5 +75,5 @@ public class AboutFragment extends PreferenceFragment
                     }
                 });
     }
-
+    */
 }

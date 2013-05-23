@@ -485,9 +485,9 @@
     <string name="pref_about_title">Chanu</string>
     <string name="pref_about_title_sum">4chan Reloaded</string>
     <string name="pref_about_application_category">Application</string>
-    <string name="pref_about_application_version">Version 1.0 beta 4</string>
-    <string name="pref_about_application_version_sum">Released 11 Apr 2013</string>
-    <string name="pref_about_application_rate">Rate</string>
+    <string name="pref_about_application_version">Version 1.0 beta 12</string>
+    <string name="pref_about_application_version_sum">Released 23 May 2013</string>
+    <string name="pref_about_application_rate">Rate Us</string>
     <string name="pref_about_application_rate_sum">Visit Chanu on Google Play</string>
     <string name="pref_about_data_category">Uses</string>
     <string name="pref_about_data_4chan">4chan API</string>
@@ -496,9 +496,9 @@
     <string name="pref_about_data_uil_sum">Courtesy of Sergey Tarasevich</string>
     <string name="pref_about_data_color">mColorPicker</string>
     <string name="pref_about_data_color_sum">Courtesy of Daniel Nilsson</string>
-    <string name="pref_about_developer_category">Team</string>
+    <string name="pref_about_developer_category">Developer</string>
     <string name="pref_about_developer_chanapps">Chanapps Software</string>
-    <string name="pref_about_developer_chanapps_sum">Premium provider of Android applications</string>
+    <string name="pref_about_developer_chanapps_sum">See our other offerings</string>
     <string name="pref_about_developer_burns">John Burns</string>
     <string name="pref_about_developer_burns_sum">johnarleyburns@gmail.com</string>
     <string name="pref_about_developer_nittner">Grzegorz Nittner</string>

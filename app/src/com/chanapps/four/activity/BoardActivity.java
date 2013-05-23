@@ -419,12 +419,16 @@ public class BoardActivity
             case R.id.offline_chan_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;
+            case R.id.board_rules_menu:
+                displayBoardRules();
+                return true;
             case R.id.settings_menu:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
                 return true;
-            case R.id.board_rules_menu:
-                displayBoardRules();
+            case R.id.about_menu:
+                intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.exit_menu:
                 ChanHelper.exitApplication(this);

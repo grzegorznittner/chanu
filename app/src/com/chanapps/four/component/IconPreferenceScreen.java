@@ -31,7 +31,7 @@ public class IconPreferenceScreen extends Preference {
     public IconPreferenceScreen(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.context = context;
-        setLayoutResource(R.layout.preference_icon);
+        setLayoutResource(R.layout.about_preference_icon);
         typedArray = context.obtainStyledAttributes(attrs,
                 R.styleable.IconPreferenceScreen, defStyle, 0);
     }

@@ -75,6 +75,7 @@
                 android:summary="@string/pref_about_developer_chanapps_sum"
                 />
 
+        <!--
         <Preference
                 android:key="pref_about_developer_burns"
                 android:title="@string/pref_about_developer_burns"
@@ -98,7 +99,7 @@
                 android:title="@string/pref_about_developer_milas"
                 android:summary="@string/pref_about_developer_milas_sum"
                 />
-
+        -->
     </PreferenceCategory>
 
 </PreferenceScreen>
