@@ -369,6 +369,12 @@ public class ThreadViewer {
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
         int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
+
+        if ((flags & ChanPost.FLAG_HAS_SPOILER) > 0) { // don't size based on hidden image, size based on filler image
+            tn_w = 250;
+            tn_h = 250;
+        }
+
         if (tn_w == 0 || tn_h == 0)  // we don't have height and width, so just show unscaled image
             return displayImageAtDefaultSize(iv, params, url);
 
