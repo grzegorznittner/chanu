@@ -5,7 +5,7 @@
         android:id="@+id/list_item"
         >
 
-    <com.chanapps.four.component.StretchyImageView
+    <ImageView
             android:id="@+id/list_item_thread_banner_ad"
             style="@style/ThreadListBannerAd"
             />

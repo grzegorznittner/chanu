@@ -52,7 +52,7 @@ public class ThreadViewer {
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static DisplayMetrics displayMetrics = null;
     private static Typeface subjectTypeface = null;
@@ -86,6 +86,7 @@ public class ThreadViewer {
     }
 
     public static boolean setViewValue(final View view, final Cursor cursor, String groupBoardCode,
+                                       boolean isTablet,
                                        View.OnClickListener imageOnClickListener,
                                        View.OnClickListener backlinkOnClickListener,
                                        View.OnClickListener repliesOnClickListener,
@@ -103,7 +104,7 @@ public class ThreadViewer {
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
             return setTitleView(view, cursor);
         else if ((flags & ChanPost.FLAG_IS_AD) > 0)
-            return setBannerAdView(view, cursor);
+            return setBannerAdView(view, cursor, isTablet);
         else if ((flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0)
             return setListLinkView(view, cursor, flags);
         else
@@ -538,41 +539,38 @@ public class ThreadViewer {
         return true;
     }
 
-    protected static boolean setBannerAdView(View view, Cursor cursor) {
+    protected static boolean setBannerAdView(View view, Cursor cursor, boolean isTablet) {
         switch (view.getId()) {
             case R.id.list_item_thread_banner_ad:
-                return setBannerAd((ImageView) view, cursor);
+                return setBannerAd((ImageView) view, cursor, isTablet);
             case R.id.list_item_thread_banner_ad_click_effect:
-                return setBannerAdLayoutParams(view, cursor);
+                return setBannerAdLayoutParams(view, cursor, isTablet);
             default:
                 return true;
         }
     }
 
-    protected static boolean setBannerAd(final ImageView iv, Cursor cursor) {
-        setBannerAdLayoutParams(iv, cursor);
+    protected static boolean setBannerAd(final ImageView iv, Cursor cursor, boolean isTablet) {
+        setBannerAdLayoutParams(iv, cursor, isTablet);
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         if (DEBUG) Log.i(TAG, "Displaying ad image iv=" + iv + " url=" + url);
         imageLoader.displayImage(url, iv, displayImageOptions, bannerAdImageLoadingListener);
         return true;
     }
 
-    protected static boolean setBannerAdLayoutParams(final View v, Cursor cursor) {
-        ViewParent parent = v.getParent();
-        View parentView = parent == null ? null : (View)parent;
-        if (parentView != null) {
-            int measuredWidth = parentView.getMeasuredWidth();
-            int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
-            int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
-            ViewGroup.LayoutParams params = v.getLayoutParams();
-            if (params != null)
-                params.height = defaultAdHeight; // 48dp to avoid big jumps, precalc would be better
-        }
-        else { // approximate
-            ViewGroup.LayoutParams params = v.getLayoutParams();
-            if (params != null)
-                params.height = defaultAdHeight; // 48dp to avoid big jumps, precalc would be better
-        }
+    protected static boolean setBannerAdLayoutParams(final View v, Cursor cursor, boolean isTablet) {
+        ViewGroup.LayoutParams params = v.getLayoutParams();
+        if (params == null)
+            return false;
+        double tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
+        double tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
+        double viewWidth = displayMetrics.widthPixels
+                - v.getResources().getDimensionPixelSize(R.dimen.BoardGridViewTablet_layout_width);
+        double scale = viewWidth / tn_w;
+        double scaledHeight = scale * tn_h;
+        if (DEBUG) Log.i(TAG, "Ad inSize=" + tn_w + "x" + tn_h + " outSize=" + viewWidth + "x" + scaledHeight);
+        params.width = (int)viewWidth;
+        params.height = (int)scaledHeight;
         return true;
     }
 

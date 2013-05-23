@@ -33,6 +33,7 @@
 
     <!-- Padding & Margins -->
 
+    <dimen name="BoardGridViewTablet_layout_width">150dp</dimen>
     <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
     <dimen name="BoardTypeText_padding">8dp</dimen>
 

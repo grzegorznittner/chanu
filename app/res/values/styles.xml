@@ -12,7 +12,7 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_chanu</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_chanu</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Chanu</item>
-                <!-- Light.DarkActionBar specific -->
+        <!-- Light.DarkActionBar specific -->
         <item name="android:actionBarWidgetTheme">@style/Theme.Chanu.Widget</item>
     </style>
 
@@ -197,7 +197,7 @@
     </style>
 
     <style name="BoardGridViewTablet" parent="AppTheme">
-        <item name="android:layout_width">150dp</item>
+        <item name="android:layout_width">@dimen/BoardGridViewTablet_layout_width</item>
         <!-- actually we'll set this manually depending on screen size -->
         <item name="android:layout_height">match_parent</item>
         <!--<item name="android:layout_centerInParent">true</item> -->
@@ -520,9 +520,8 @@
         <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
         <item name="android:autoLink">web|email</item>
-        <item name="android:linksClickable">false</item>
-        <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
+        <item name="android:textColorLink">@color/PaletteChanuGreen</item>
     </style>
 
     <style name="ThreadListHeaderHeadWrapper" parent="AppTheme">
@@ -555,6 +554,7 @@
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
         <item name="android:autoLink">email</item>
         <item name="android:linksClickable">true</item>
+        <item name="android:textColorLink">@color/PaletteChanuGreen</item>
     </style>
 
     <style name="ThreadListHeaderExifText" parent="AppTheme">
@@ -578,11 +578,9 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:textSize">@dimen/ThreadListHeaderFullText</item>
-        <!-- <item name="android:textIsSelectable">true</item>  -->
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
-        <!-- <item name="android:focusable">false</item> -->
-        <!-- <item name="android:focusableInTouchMode">true</item> -->
+        <item name="android:textColorLink">@color/PaletteChanuGreen</item>
     </style>
 
     <style name="ThreadListHeaderTitle" parent="AppTheme">
@@ -670,9 +668,8 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/ThreadListItemSubject</item>
         <item name="android:autoLink">web|email</item>
-        <item name="android:linksClickable">false</item>
-        <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
+        <item name="android:textColorLink">@color/PaletteChanuGreen</item>
     </style>
 
     <style name="ThreadListItemCountryFlag" parent="AppTheme">
@@ -701,6 +698,7 @@
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
         <item name="android:autoLink">email</item>
         <item name="android:linksClickable">true</item>
+        <item name="android:textColorLink">@color/PaletteChanuGreen</item>
     </style>
 
     <style name="ThreadListTitle" parent="AppTheme">
@@ -757,11 +755,9 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:textSize">@dimen/ThreadListItemFullText</item>
-        <!-- <item name="android:textIsSelectable">true</item>  -->
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
-        <!-- <item name="android:focusable">false</item> -->
-        <!-- <item name="android:focusableInTouchMode">true</item> -->
+        <item name="android:textColorLink">@color/PaletteChanuGreen</item>
     </style>
 
     <style name="ThreadListBannerAd" parent="AppTheme">
@@ -810,7 +806,7 @@
     </style>
 
     <!-- POPUP STYLES -->
-
+    <!--
     <style name="PopupFullTextLayout" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -884,7 +880,7 @@
         <item name="android:paddingBottom">@dimen/PopupFullTextView_paddingBottom</item>
         <item name="android:visibility">gone</item>
     </style>
-
+    -->
     <style name="MessageText" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

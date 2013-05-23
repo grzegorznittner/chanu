@@ -410,6 +410,7 @@ public class ThreadActivity
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
         return ThreadViewer.setViewValue(view, cursor, boardCode,
+                isTablet(),
                 threadListener.imageOnClickListener,
                 threadListener.backlinkOnClickListener,
                 threadListener.repliesOnClickListener,
@@ -738,6 +739,10 @@ public class ThreadActivity
                 ChanPost.planifyText(text));
         clipboard.setPrimaryClip(clip);
         Toast.makeText(getApplicationContext(), R.string.copy_text_complete, Toast.LENGTH_SHORT).show();
+    }
+
+    protected boolean isTablet() {
+        return absBoardListView != null;
     }
 
     protected AdapterView.OnItemClickListener absBoardListViewListener = new AdapterView.OnItemClickListener() {

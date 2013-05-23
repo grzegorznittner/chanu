@@ -88,10 +88,12 @@ public class ThreadPopupDialogFragment
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         layout = inflater.inflate(R.layout.thread_popup_dialog_fragment, null);
+        TextView title = (TextView)layout.findViewById(R.id.thread_popup_dialog_title);
+        title.setText(popupTitle());
         init();
+        setStyle(STYLE_NO_TITLE, 0);
         return builder
                 .setView(layout)
-                .setTitle(popupTitle())
                 .setPositiveButton(R.string.thread_popup_reply, postReplyListener)
                 .setNegativeButton(R.string.dialog_close, dismissListener)
                 .create();
@@ -247,6 +249,7 @@ public class ThreadPopupDialogFragment
     @Override
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
         return ThreadViewer.setViewValue(view, cursor, boardCode,
+                false, // never show board list at fragment pop-up level
                 threadListener.imageOnClickListener,
                 null, //threadListener.backlinkOnClickListener,
                 null, //threadListener.repliesOnClickListener,
