@@ -1277,11 +1277,14 @@
 
     <dimen name="ThreadListLayout_paddingTop">8dp</dimen>
     <dimen name="ThreadListLayout_paddingBottom">8dp</dimen>
-    <dimen name="ThreadListLayout_paddingLeft">16dp</dimen>
-    <dimen name="ThreadListLayout_paddingRight">16dp</dimen>
+    <dimen name="ThreadListLayout_paddingLeft">0dp</dimen>
+    <dimen name="ThreadListHeaderInnerLayout_paddingLeft">16dp</dimen>
+    <dimen name="ThreadListLayout_paddingRight">0dp</dimen>
 
     <dimen name="ThreadListItemHeaderWrapper_paddingLeft">0dp</dimen>
-    <dimen name="ThreadListItemHeaderWrapper_paddingRight">0dp</dimen>
+    <dimen name="ThreadListItemHeaderWrapper_paddingRight">16dp</dimen>
+
+    <dimen name="ThreadListItemImageSpacer_layout_width">16dp</dimen>
 
     <dimen name="ThreadListItemImageWrapper_layout_width">96dp</dimen>
     <dimen name="ThreadListItemImageWrapper_layout_marginTop">0dp</dimen>
@@ -1292,6 +1295,8 @@
     <dimen name="ThreadListItemImage_maxWidth">96dp</dimen>
 
     <dimen name="ThreadListItemImageExpandedWrapper_marginBottom">8dp</dimen>
+    <dimen name="ThreadListItemImageExpandedWrapper_paddingLeft">16dp</dimen>
+    <dimen name="ThreadListItemImageExpandedWrapper_paddingRight">16dp</dimen>
 
     <dimen name="ThreadListItemSubject_marginLeft">0dp</dimen>
     <dimen name="ThreadListItemSubject_paddingRight">0dp</dimen>
@@ -1315,6 +1320,8 @@
     <dimen name="ThreadListItemFullText_layout_marginLeft">0dp</dimen>
     <dimen name="ThreadListItemFullText_layout_marginRight">0dp</dimen>
     <dimen name="ThreadListItemFullText_paddingTop">8dp</dimen>
+    <dimen name="ThreadListItemFullText_paddingLeft">16dp</dimen>
+    <dimen name="ThreadListItemFullTextHeader_paddingLeft">0dp</dimen>
 
     <dimen name="PostReplyEditText_padding">8dp</dimen>
     <dimen name="PostReplyEditText_layout_marginLeft">16dp</dimen>

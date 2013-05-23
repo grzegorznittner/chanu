@@ -445,7 +445,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">@dimen/ThreadListLayout_paddingTop</item>
         <item name="android:paddingBottom">@dimen/ThreadListLayout_paddingBottom</item>
-        <item name="android:paddingLeft">@dimen/ThreadListLayout_paddingLeft</item>
+        <item name="android:paddingLeft">@dimen/ThreadListHeaderInnerLayout_paddingLeft</item>
         <item name="android:paddingRight">@dimen/ThreadListLayout_paddingRight</item>
         <item name="android:orientation">vertical</item>
         <item name="android:textSize">@dimen/ThreadListLayout</item>
@@ -738,6 +738,8 @@
         <item name="android:layout_marginLeft">@dimen/ThreadListItemExifText_layout_marginLeft</item>
         <item name="android:layout_marginRight">@dimen/ThreadListItemExifText_layout_marginRight</item>
         <item name="android:paddingTop">@dimen/ThreadListItemExifText_paddingTop</item>
+        <item name="android:paddingLeft">@dimen/ThreadListItemFullText_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/ThreadListItemFullText_paddingLeft</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:textSize">@dimen/ThreadListItemExifText</item>
@@ -750,6 +752,8 @@
         <item name="android:layout_marginLeft">@dimen/ThreadListItemFullText_layout_marginLeft</item>
         <item name="android:layout_marginRight">@dimen/ThreadListItemFullText_layout_marginRight</item>
         <item name="android:paddingTop">@dimen/ThreadListItemFullText_paddingTop</item>
+        <item name="android:paddingLeft">@dimen/ThreadListItemFullText_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/ThreadListItemFullText_paddingLeft</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:textSize">@dimen/ThreadListItemFullText</item>
