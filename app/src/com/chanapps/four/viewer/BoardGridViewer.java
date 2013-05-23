@@ -163,8 +163,9 @@ public class BoardGridViewer {
                 TextView info = (TextView)parentView.findViewById(R.id.grid_item_thread_info);
                 TextView abbrev = (TextView)parentView.findViewById(R.id.grid_item_board_abbrev);
                 ImageView countryFlag = (ImageView)parentView.findViewById(R.id.grid_item_country_flag);
-                if (DEBUG) Log.i(TAG, "onLoadingComplete subject=" + subject.getText() + " url=" + imageUri
-                        + " img=" + loadedImage + " byteCount=" + loadedImage.getByteCount());
+                if (DEBUG) Log.i(TAG, "onLoadingComplete subject=" + subject.getText() + " info=" + info.getText()
+                        + " abbrev=" + abbrev.getText()
+                        + " url=" + imageUri + " img=" + loadedImage + " byteCount=" + loadedImage.getByteCount());
                 boolean oneVisible = false;
                 boolean overlayDetails = true;
                 if (overlayDetails) {
@@ -178,7 +179,9 @@ public class BoardGridViewer {
                     }
                     if (wrapper != null && oneVisible)
                         wrapper.setVisibility(View.VISIBLE);
-                    if (abbrev != null && abbrev.getText() != null && abbrev.getText().length() > 0)
+                    if (abbrev != null && abbrev.getText() != null
+                            && abbrev.getText().length() > 0
+                            && !abbrev.getText().toString().equals(subject.getText().toString()))
                         abbrev.setVisibility(View.VISIBLE);
                     if (countryFlag.getDrawable() != null)
                         countryFlag.setVisibility(View.VISIBLE);
@@ -213,7 +216,7 @@ public class BoardGridViewer {
             String s = tv.getResources().getQuantityString(R.plurals.thread_num_replies, r, r);
             if (r > 0) {
                 int i = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_NUM_IMAGES));
-                s += " " + tv.getResources().getQuantityString(R.plurals.thread_num_images, i, i);
+                s += " " + tv.getResources().getQuantityString(R.plurals.thread_num_imgs, i, i);
             }
             tv.setText(s);
         }

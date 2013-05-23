@@ -177,8 +177,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         if (DEBUG) Log.i(TAG, "expanding pos=" + listPosition);
         if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
             expandImage();
-        if ((flags & ChanPost.FLAG_HAS_SPOILER) > 0)
-            expandSpoiler();
     }
 
     /*
@@ -344,18 +342,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         setImageDimensions(targetSize);
         //scheduleScrollIfNeeded(targetSize);
         displayImage(targetSize);
-    }
-
-    private void expandSpoiler() {
-        if (DEBUG) Log.i(TAG, "Expanding spoiler subject=" + spoilerSubject + " text=" + spoilerText);
-        if (itemSubjectView != null && spoilerSubject != null && !spoilerSubject.isEmpty()) {
-            itemSubjectView.setText(Html.fromHtml(spoilerSubject));
-            itemSubjectView.setVisibility(View.VISIBLE);
-        }
-        if (itemTextView != null && spoilerText != null && !spoilerText.isEmpty()) {
-            itemTextView.setText(Html.fromHtml(spoilerText));
-            itemTextView.setVisibility(View.VISIBLE);
-        }
     }
 
 }

@@ -35,9 +35,13 @@
             <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"/>
         </LinearLayout>
 
-        <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
+        <TextView style="@style/ThreadListItemFullText"
+                  android:paddingLeft="@dimen/ThreadListItemFullTextHeader_paddingLeft"
+                  android:id="@+id/list_item_text"/>
 
-        <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_image_exif"/>
+        <TextView style="@style/ThreadListItemExifText"
+                  android:paddingLeft="@dimen/ThreadListItemFullTextHeader_paddingLeft"
+                  android:id="@+id/list_item_image_exif"/>
 
     </LinearLayout>
 

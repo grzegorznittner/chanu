@@ -125,7 +125,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 matrixCursor.addRow(ChanThread.makeTitleRow(boardName,
                         context.getString(R.string.board_related_boards_title)));
                 for (ChanBoard relatedBord : board.relatedBoards(context)) {
-                    matrixCursor.addRow(relatedBord.makeRow());
+                    matrixCursor.addRow(relatedBord.makeRow(context));
                 }
             }
 

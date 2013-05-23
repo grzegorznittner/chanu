@@ -11,6 +11,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/ThreadListItemImageExpandedWrapper_marginBottom"
+            android:paddingLeft="@dimen/ThreadListItemImageExpandedWrapper_paddingLeft"
+            android:paddingRight="@dimen/ThreadListItemImageExpandedWrapper_paddingRight"
             android:visibility="gone"
             >
         <ImageView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded"/>
@@ -29,7 +31,12 @@
             android:paddingLeft="@dimen/ThreadListItemHeaderWrapper_paddingLeft"
             android:paddingRight="@dimen/ThreadListItemHeaderWrapper_paddingRight"
             >
-        <RelativeLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper">
+        <View android:layout_width="@dimen/ThreadListItemImageSpacer_layout_width"
+              android:layout_height="match_parent"
+              android:id="@+id/list_item_image_spacer"/>
+        <RelativeLayout style="@style/ThreadListItemImageWrapper"
+                        android:layout_toRightOf="@+id/list_item_image_spacer"
+                        android:id="@+id/list_item_image_wrapper">
             <ImageView
                     style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
             <ProgressBar style="@style/ThreadListItemExpandedProgressBar"

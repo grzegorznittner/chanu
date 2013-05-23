@@ -236,6 +236,22 @@ public class ChanBoard {
         return imageId;
     }
 
+    public String getDescription(Context context) {
+        return getDescription(context, link);
+    }
+
+    public static String getDescription(Context context, String boardCode) {
+        String stringName = "board_desc_" + boardCode;
+        try {
+            int id = context.getResources().getIdentifier(stringName, "string", context.getPackageName());
+            return context.getString(id);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't find board description for boardCode=" + boardCode);
+            return "";
+        }
+    }
+
     private static String[][] initRelatedBoards() {
         String[][] relatedBoardCodes = {
                 { "a", "c", "w", "m", "cgl", "cm", "jp", "vg", "vp", "co", "tv", "h", "d", "e", "y", "u", "d", "t" },
@@ -307,7 +323,7 @@ public class ChanBoard {
         String[][] boardCodesByType = {
 
                 {   BoardType.WATCHLIST.toString(),
-                        WATCHLIST_BOARD_CODE, ctx.getString(R.string.board_watch)
+                        WATCHLIST_BOARD_CODE, ctx.getString(R.string.board_watch),
                 },
                 {   BoardType.POPULAR.toString(),
                         POPULAR_BOARD_CODE, ctx.getString(R.string.board_popular)
@@ -487,8 +503,8 @@ public class ChanBoard {
             return false;
     }
 
-    public Object[] makeRow() { // for board selector
-        return ChanThread.makeBoardRow(link, name, getRandomImageResourceId());
+    public Object[] makeRow(Context context) { // for board selector
+        return ChanThread.makeBoardRow(context, link, name, getRandomImageResourceId());
     }
 
     public Object[] makeThreadAdRow(Context context, int pos) {
@@ -592,8 +608,8 @@ public class ChanBoard {
         return rows;
     }
 
-    public Object[] makePostBoardLinkRow() {
-        return ChanPost.makeBoardLinkRow(this);
+    public Object[] makePostBoardLinkRow(Context context) {
+        return ChanPost.makeBoardLinkRow(context, this);
     }
 
     public void updateCountersAfterLoad() {

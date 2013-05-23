@@ -88,7 +88,7 @@ public class ChanPost {
             flags |= FLAG_HAS_SUBJECT;
         if (text != null && !text.isEmpty())
             flags |= FLAG_HAS_TEXT;
-        if (!isThreadLink && hasSpoiler())
+        if (!isThreadLink && spoiler > 0)
             flags |= FLAG_HAS_SPOILER;
         if (!isThreadLink && exifText != null && !exifText.isEmpty())
             flags |= FLAG_HAS_EXIF;
@@ -226,15 +226,6 @@ public class ChanPost {
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingBooleanDeserializer.class)
     public boolean useFriendlyIds = true;
 
-    private boolean hasSpoiler() {
-        if (spoiler > 0)
-            return true;
-        if (sub != null && sub.matches(".*<s>.*</s>.*"))
-            return true;
-        if (com != null && com.matches(".*<s>.*</s>.*"))
-            return true;
-        return false;
-    }
 
     public static final String quoteText(String in) {
         if (in == null || in.isEmpty())
@@ -1016,7 +1007,7 @@ public class ChanPost {
         };
     }
 
-    public static Object[] makeBoardLinkRow(ChanBoard board) {
+    public static Object[] makeBoardLinkRow(Context context, ChanBoard board) {
         int drawableId = board.getRandomImageResourceId();
         return new Object[] {
                 board.link.hashCode(),
@@ -1025,7 +1016,7 @@ public class ChanPost {
                 "drawable://" + drawableId,
                 "",
                 "",
-                "",
+                board.getDescription(context),
                 board.name,
                 "",
                 250,

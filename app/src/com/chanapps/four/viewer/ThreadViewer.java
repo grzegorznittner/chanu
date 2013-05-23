@@ -96,25 +96,22 @@ public class ThreadViewer {
         initStatics(view);
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
         int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
-        if (flags < 0) { // we are on board list
+        if (flags < 0) // we are on board list
             return BoardGridViewer.setViewValue(view, cursor, groupBoardCode);
-        }
-        else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0) {
+        else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0)
             return setUrlLinkView(view, cursor);
-        }
-        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0) {
+        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
             return setTitleView(view, cursor);
-        }
-        else if ((flags & ChanPost.FLAG_IS_AD) > 0) {
+        else if ((flags & ChanPost.FLAG_IS_AD) > 0)
             return setBannerAdView(view, cursor);
-        }
-        else {
+        else if ((flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0)
+            return setListItemView(view, cursor, flags, null, null, null, null, null, null);
+        else
             return setListItemView(view, cursor, flags,
                     imageOnClickListener,
                     backlinkOnClickListener, repliesOnClickListener, sameIdOnClickListener,
                     exifOnClickListener,
                     startActionModeListener);
-        }
     }
 
     public static boolean setListItemView(final View view, final Cursor cursor, int flags,
@@ -124,7 +121,10 @@ public class ThreadViewer {
                                           View.OnClickListener sameIdOnClickListener,
                                           View.OnClickListener exifOnClickListener,
                                           View.OnLongClickListener startActionModeListener) {
-        view.setOnLongClickListener(startActionModeListener);
+        if (startActionModeListener != null)
+            view.setOnLongClickListener(startActionModeListener);
+        else
+            view.setLongClickable(false);
         switch (view.getId()) {
             case R.id.list_item:
                 return setItem((ViewGroup) view, cursor, flags);
@@ -369,6 +369,12 @@ public class ThreadViewer {
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
         int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
+
+        if ((flags & ChanPost.FLAG_HAS_SPOILER) > 0) { // don't size based on hidden image, size based on filler image
+            tn_w = 250;
+            tn_h = 250;
+        }
+
         if (tn_w == 0 || tn_h == 0)  // we don't have height and width, so just show unscaled image
             return displayImageAtDefaultSize(iv, params, url);
 
@@ -390,7 +396,10 @@ public class ThreadViewer {
         DisplayImageOptions options = createDisplayImageOptions(displayImageSize);
 
         // display image
-        iv.setOnClickListener(imageOnClickListener);
+        if (imageOnClickListener != null)
+            iv.setOnClickListener(imageOnClickListener);
+        else
+            iv.setClickable(false);
         iv.setVisibility(View.VISIBLE);
         ImageLoadingListener listener = ((flags & ChanPost.FLAG_IS_AD) > 0) ? adImageLoadingListener : null;
         imageLoader.displayImage(url, iv, options, listener);
@@ -466,6 +475,8 @@ public class ThreadViewer {
                 | ChanPost.FLAG_IS_BOARDLINK
                 | ChanPost.FLAG_NO_EXPAND)) == 0)
             view.setOnClickListener(new ThreadImageOnClickListener(cursor));
+        else
+            view.setClickable(false);
         return true;
     }
 

@@ -214,6 +214,11 @@
         <item quantity="one">1 image</item>
         <item quantity="other">%1$d images</item>
     </plurals>
+    <plurals name="thread_num_imgs">
+        <item quantity="zero">no imgs</item>
+        <item quantity="one">1 img</item>
+        <item quantity="other">%1$d imgs</item>
+    </plurals>
     <plurals name="thread_num_backlinks">
         <item quantity="zero">no backlinks</item>
         <item quantity="one">1 backlink</item>
@@ -719,6 +724,70 @@
     <string name="board_select">Chanu</string>
     <string name="board_select_abbrev">Chanu</string>
 
+    <!-- board descriptions -->
+    <string name="board_desc_3">3D Modeling and Imagery</string>
+    <string name="board_desc_a">Japanese animation and manga books</string>
+    <string name="board_desc_adv">Crowdsourced advice column</string>
+    <string name="board_desc_an">Pets, plants, and cute cuddly photos</string>
+    <string name="board_desc_asp">Sports outside the mainstream</string>
+    <string name="board_desc_b">Anonymous anarchy and craziness</string>
+    <string name="board_desc_c">Cute girl/waifu anime pics</string>
+    <string name="board_desc_cgl">Costume dressup, elegant gothic lolita</string>
+    <string name="board_desc_ck">Recipies, kitchenware, tips</string>
+    <string name="board_desc_cm">Male-only anime pictures</string>
+    <string name="board_desc_co">Western superheros and comic books</string>
+    <string name="board_desc_d">Hardcore animated futanari, bondage, tentacles</string>
+    <string name="board_desc_diy">Plans, projects, instructions, critique</string>
+    <string name="board_desc_e">Softcore anime and manga females</string>
+    <string name="board_desc_fa">Trends, closets, outfit ratings</string>
+    <string name="board_desc_fit">Workouts, progress pics, scooby</string>
+    <string name="board_desc_g">Geeks, gadgets and garages</string>
+    <string name="board_desc_gd">Websites, logos, posters, commentary</string>
+    <string name="board_desc_gif">Uncensored animated GIFs</string>
+    <string name="board_desc_h">Traditional animated hardcore</string>
+    <string name="board_desc_hc">Live action hardcore porn</string>
+    <string name="board_desc_hm">Male-only softcore photos</string>
+    <string name="board_desc_hr">Artwork, scans, photography and images</string>
+    <string name="board_desc_i">Slow board of images drawn on the Oekaki app</string>
+    <string name="board_desc_ic">Post, rate, and critique drawings and artwork</string>
+    <string name="board_desc_int">Global languages and cultures</string>
+    <string name="board_desc_jp">Weaboos, Hello Kitty, and all things Japanese</string>
+    <string name="board_desc_k">Guns, swords, and military history</string>
+    <string name="board_desc_lgbt">Lesbian, gay, bisexual and transgender community</string>
+    <string name="board_desc_lit">The culture of books dissected anonymously</string>
+    <string name="board_desc_m">Humanoid robots, exoskeletons, transformers</string>
+    <string name="board_desc_mlp">Bronie heaven dedicated to My Little Pony</string>
+    <string name="board_desc_mu">Fans, haters, and listening pleasure</string>
+    <string name="board_desc_n">Trains, planes, ships, and lots of bicycles</string>
+    <string name="board_desc_o">Car talk, show-and-tell, mods</string>
+    <string name="board_desc_out">Hiking, camping, hunting, fishing, conservation</string>
+    <string name="board_desc_p">Original content photographs and constructive criticism</string>
+    <string name="board_desc_po">The art of folding paper and constructing cutouts</string>
+    <string name="board_desc_pol">No-holds-barred free-for-all political discussion</string>
+    <string name="board_desc_q">Meta-discussion of boards, moderation, future direction</string>
+    <string name="board_desc_r">Ask the community for sources of images and videos</string>
+    <string name="board_desc_r9k">All posts are unique; anything said before is auto-deleted</string>
+    <string name="board_desc_s">Software female-only photos</string>
+    <string name="board_desc_s4s">Currated crazy sayings from around the boards</string>
+    <string name="board_desc_sci">Nerd heaven, discussion of mathematics and science</string>
+    <string name="board_desc_soc">Hookup threads, ideal mates, rate-me pics</string>
+    <string name="board_desc_sp">Major professional sports and teams</string>
+    <string name="board_desc_t">Share the latest torrent links</string>
+    <string name="board_desc_tg">Board games, card games, role playing</string>
+    <string name="board_desc_toy">Action pictures, collectibles, make your own</string>
+    <string name="board_desc_trv">Stories, questions, experiences from around the world</string>
+    <string name="board_desc_tv">Series, episodes, movies, sets, production</string>
+    <string name="board_desc_u">Softcore animated lesbian pics</string>
+    <string name="board_desc_v">Vidya console and game discussion</string>
+    <string name="board_desc_vg">Long-lived threads focusing on particular games</string>
+    <string name="board_desc_vp">Collecting, training, and battling to become the master</string>
+    <string name="board_desc_vr">Pre-2000 console and PC game discussion</string>
+    <string name="board_desc_w">J-pop and anime-related large wallpaper images</string>
+    <string name="board_desc_wg">Highres non-anime wallpaper images</string>
+    <string name="board_desc_wsg">Animated GIFs strictly without lewd material</string>
+    <string name="board_desc_x">Aliens, ghosts, monsters - the truth is out there</string>
+    <string name="board_desc_y">Softcore animated gay images</string>
+
     <!-- spinner dropdown -->
     <string-array name="board_array">
         <item>@string/board_select_abbrev</item>
@@ -1094,7 +1163,7 @@
     <dimen name="BoardListTextImageTopOverlay">12sp</dimen>
     <dimen name="BoardListTitle">16sp</dimen>
     <dimen name="BoardListSubject">18sp</dimen>
-    <dimen name="BoardListHeadline">12sp</dimen>
+    <dimen name="BoardListHeadline">16sp</dimen>
     <dimen name="ThreadListLayout">16sp</dimen>
     <dimen name="ThreadListHeaderSubject">22sp</dimen>
     <dimen name="ThreadListHeaderHead">16sp</dimen>
@@ -1153,10 +1222,10 @@
     <dimen name="BoardListTextImageTopOverlay_paddingTop">2dp</dimen>
     <dimen name="BoardListTextImageTopOverlay_paddingBottom">2dp</dimen>
 
-    <dimen name="BoardListTitle_paddingTop">8dp</dimen>
+    <dimen name="BoardListTitle_paddingTop">12dp</dimen>
     <dimen name="BoardListTitle_paddingLeft">16dp</dimen>
     <dimen name="BoardListTitle_paddingRight">8dp</dimen>
-    <dimen name="BoardListTitle_paddingBottom">8dp</dimen>
+    <dimen name="BoardListTitle_paddingBottom">4dp</dimen>
 
     <dimen name="BoardListSubject_paddingTop">2dp</dimen>
     <dimen name="BoardListSubject_paddingLeft">8dp</dimen>
@@ -1208,11 +1277,14 @@
 
     <dimen name="ThreadListLayout_paddingTop">8dp</dimen>
     <dimen name="ThreadListLayout_paddingBottom">8dp</dimen>
-    <dimen name="ThreadListLayout_paddingLeft">16dp</dimen>
-    <dimen name="ThreadListLayout_paddingRight">16dp</dimen>
+    <dimen name="ThreadListLayout_paddingLeft">0dp</dimen>
+    <dimen name="ThreadListHeaderInnerLayout_paddingLeft">16dp</dimen>
+    <dimen name="ThreadListLayout_paddingRight">0dp</dimen>
 
     <dimen name="ThreadListItemHeaderWrapper_paddingLeft">0dp</dimen>
-    <dimen name="ThreadListItemHeaderWrapper_paddingRight">0dp</dimen>
+    <dimen name="ThreadListItemHeaderWrapper_paddingRight">16dp</dimen>
+
+    <dimen name="ThreadListItemImageSpacer_layout_width">16dp</dimen>
 
     <dimen name="ThreadListItemImageWrapper_layout_width">96dp</dimen>
     <dimen name="ThreadListItemImageWrapper_layout_marginTop">0dp</dimen>
@@ -1223,6 +1295,8 @@
     <dimen name="ThreadListItemImage_maxWidth">96dp</dimen>
 
     <dimen name="ThreadListItemImageExpandedWrapper_marginBottom">8dp</dimen>
+    <dimen name="ThreadListItemImageExpandedWrapper_paddingLeft">16dp</dimen>
+    <dimen name="ThreadListItemImageExpandedWrapper_paddingRight">16dp</dimen>
 
     <dimen name="ThreadListItemSubject_marginLeft">0dp</dimen>
     <dimen name="ThreadListItemSubject_paddingRight">0dp</dimen>
@@ -1246,6 +1320,8 @@
     <dimen name="ThreadListItemFullText_layout_marginLeft">0dp</dimen>
     <dimen name="ThreadListItemFullText_layout_marginRight">0dp</dimen>
     <dimen name="ThreadListItemFullText_paddingTop">8dp</dimen>
+    <dimen name="ThreadListItemFullText_paddingLeft">16dp</dimen>
+    <dimen name="ThreadListItemFullTextHeader_paddingLeft">0dp</dimen>
 
     <dimen name="PostReplyEditText_padding">8dp</dimen>
     <dimen name="PostReplyEditText_layout_marginLeft">16dp</dimen>
