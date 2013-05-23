@@ -105,13 +105,34 @@ public class ThreadViewer {
         else if ((flags & ChanPost.FLAG_IS_AD) > 0)
             return setBannerAdView(view, cursor);
         else if ((flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0)
-            return setListItemView(view, cursor, flags, null, null, null, null, null, null);
+            return setListLinkView(view, cursor, flags);
         else
             return setListItemView(view, cursor, flags,
                     imageOnClickListener,
                     backlinkOnClickListener, repliesOnClickListener, sameIdOnClickListener,
                     exifOnClickListener,
                     startActionModeListener);
+    }
+
+    public static boolean setListLinkView(final View view, final Cursor cursor, int flags) {
+        switch (view.getId()) {
+            case R.id.list_item:
+                return setItem((ViewGroup) view, cursor, flags);
+            case R.id.list_item_header_wrapper:
+                return setHeaderWrapper((ViewGroup) view, flags);
+            case R.id.list_item_image_wrapper:
+                return setImageWrapper((ViewGroup) view, cursor, flags);
+            case R.id.list_item_image:
+                return setImage((ImageView) view, cursor, flags, null);
+            case R.id.list_item_country_flag:
+                return setCountryFlag((ImageView) view, cursor, flags);
+            case R.id.list_item_header:
+                return setHeaderValue((TextView) view, cursor, null, null);
+            case R.id.list_item_subject:
+                return setSubject((TextView) view, cursor, flags, null);
+            default:
+                return false;
+        }
     }
 
     public static boolean setListItemView(final View view, final Cursor cursor, int flags,
@@ -123,8 +144,6 @@ public class ThreadViewer {
                                           View.OnLongClickListener startActionModeListener) {
         if (startActionModeListener != null)
             view.setOnLongClickListener(startActionModeListener);
-        else
-            view.setLongClickable(false);
         switch (view.getId()) {
             case R.id.list_item:
                 return setItem((ViewGroup) view, cursor, flags);
@@ -193,10 +212,13 @@ public class ThreadViewer {
                                           View.OnClickListener repliesOnClickListener,
                                           View.OnClickListener sameIdOnClickListener) {
         String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_HEADLINE_TEXT));
-        tv.setMovementMethod(LinkMovementMethod.getInstance());
+        if (repliesOnClickListener != null || sameIdOnClickListener != null)
+            tv.setMovementMethod(LinkMovementMethod.getInstance());
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text));
-        addLinkedSpans(spannable, POST_PATTERN, repliesOnClickListener);
-        if (cursor.getBlob(cursor.getColumnIndex(ChanPost.POST_SAME_IDS_BLOB)) != null)
+        if (repliesOnClickListener != null)
+            addLinkedSpans(spannable, POST_PATTERN, repliesOnClickListener);
+        if (cursor.getBlob(cursor.getColumnIndex(ChanPost.POST_SAME_IDS_BLOB)) != null
+                && sameIdOnClickListener != null)
             addLinkedSpans(spannable, ID_PATTERN, sameIdOnClickListener);
         tv.setText(spannable);
         tv.setVisibility(View.VISIBLE);
@@ -220,10 +242,12 @@ public class ThreadViewer {
                 text = tv.getResources().getString(R.string.thread_is_dead) + (text.isEmpty() ? "" : " ") + text;
         }
         if (DEBUG) Log.i(TAG, "setSubject text=" + text);
-        tv.setMovementMethod(LinkMovementMethod.getInstance());
+        if (backlinkOnClickListener != null)
+            tv.setMovementMethod(LinkMovementMethod.getInstance());
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text, null, spoilerTagHandler));
         if (spannable.length() > 0) {
-            addLinkedSpans(spannable, POST_PATTERN, backlinkOnClickListener);
+            if (backlinkOnClickListener != null)
+                addLinkedSpans(spannable, POST_PATTERN, backlinkOnClickListener);
             tv.setText(spannable);
             if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
                 tv.setTypeface(subjectTypeface);
@@ -252,12 +276,14 @@ public class ThreadViewer {
         if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null)
             text += (text.isEmpty() ? "" : " ") + SHOW_EXIF_HTML;
         if (DEBUG) Log.i(TAG, "setText text=" + text);
-        tv.setMovementMethod(LinkMovementMethod.getInstance());
+        if (backlinkOnClickListener != null || exifOnClickListener != null)
+            tv.setMovementMethod(LinkMovementMethod.getInstance());
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text, null, spoilerTagHandler));
         if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null)
             addExifSpan(tv, spannable, exifOnClickListener);
         if (spannable.length() > 0) {
-            addLinkedSpans(spannable, POST_PATTERN, backlinkOnClickListener);
+            if (backlinkOnClickListener != null)
+                addLinkedSpans(spannable, POST_PATTERN, backlinkOnClickListener);
             tv.setText(spannable);
             tv.setVisibility(View.VISIBLE);
         }
@@ -398,8 +424,6 @@ public class ThreadViewer {
         // display image
         if (imageOnClickListener != null)
             iv.setOnClickListener(imageOnClickListener);
-        else
-            iv.setClickable(false);
         iv.setVisibility(View.VISIBLE);
         ImageLoadingListener listener = ((flags & ChanPost.FLAG_IS_AD) > 0) ? adImageLoadingListener : null;
         imageLoader.displayImage(url, iv, options, listener);
@@ -475,8 +499,6 @@ public class ThreadViewer {
                 | ChanPost.FLAG_IS_BOARDLINK
                 | ChanPost.FLAG_NO_EXPAND)) == 0)
             view.setOnClickListener(new ThreadImageOnClickListener(cursor));
-        else
-            view.setClickable(false);
         return true;
     }
 

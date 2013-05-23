@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.chanapps.four.component.CheckableLinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/ThreadListItemLayout"
+        android:id="@+id/list_item"
+        >
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_item_header_wrapper"
+            android:paddingLeft="@dimen/ThreadListItemHeaderWrapper_paddingLeft"
+            android:paddingRight="@dimen/ThreadListItemHeaderWrapper_paddingRight"
+            >
+        <View android:layout_width="@dimen/ThreadListItemImageSpacer_layout_width"
+              android:layout_height="match_parent"
+              android:id="@+id/list_item_image_spacer"/>
+        <RelativeLayout style="@style/ThreadListItemImageWrapper"
+                        android:layout_toRightOf="@+id/list_item_image_spacer"
+                        android:id="@+id/list_item_image_wrapper">
+            <ImageView
+                    style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
+        </RelativeLayout>
+        <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"/>
+        <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
+        <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"/>
+    </RelativeLayout>
+
+</com.chanapps.four.component.CheckableLinearLayout>

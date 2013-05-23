@@ -28,6 +28,10 @@
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"
             />
+    <item android:id="@+id/about_menu"
+          android:title="@string/about_menu"
+          android:icon="@drawable/action_about"
+            />
     <item android:id="@+id/exit_menu"
           android:title="@string/exit_menu"
           android:icon="@drawable/navigation_cancel"

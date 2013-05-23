@@ -25,6 +25,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected static final String ITEM = "item";
     protected static final String AD = "ad";
     protected static final String TITLE = "title";
+    protected static final String LINK = "link";
     protected static final String URLLINK = "urlLink";
 
     protected ThreadListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
@@ -95,6 +96,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             newTag = URLLINK;
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
             newTag = TITLE;
+        else if ((flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0)
+            newTag = LINK;
         else
             newTag = ITEM;
 
@@ -121,6 +124,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             id = R.layout.thread_list_urllink;
         else if (TITLE.equals(tag))
             id = R.layout.thread_list_title;
+        else if (LINK.equals(tag))
+            id = R.layout.thread_list_link;
         else
             id = R.layout.thread_list_item;
         View v = mInflater.inflate(id, parent, false);
