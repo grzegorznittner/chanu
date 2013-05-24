@@ -6,6 +6,9 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.RefreshableActivity;
 import com.chanapps.four.activity.SettingsActivity;
@@ -79,8 +82,16 @@ public class BlocklistAddDialogFragment extends DialogFragment {
                 plural,
                 formattedBlocklist);
 
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
+        TextView title = (TextView)layout.findViewById(R.id.title);
+        TextView message = (TextView)layout.findViewById(R.id.message);
+        title.setText(R.string.dialog_blocklist);
+        message.setText(msg);
+        setStyle(STYLE_NO_TITLE, 0);
+
         return (new AlertDialog.Builder(getActivity()))
-                .setMessage(msg)
+                .setView(layout)
                 .setPositiveButton(R.string.dialog_add,
                         new DialogInterface.OnClickListener() {
                             @Override

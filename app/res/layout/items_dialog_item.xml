@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+<com.chanapps.four.component.CheckableLinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/ItemsDialogItemLayout"
+        android:id="@+id/item"
+        >
+    -->
+<TextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/text1"
+        style="@style/ItemsDialogItemLayout"
+        />
+        <!--
+        </com.chanapps.four.component.CheckableLinearLayout>
+        -->

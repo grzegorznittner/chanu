@@ -6,6 +6,9 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBlocklist;
 
@@ -59,9 +62,15 @@ public class BlocklistSelectToViewDialogFragment extends DialogFragment {
                     .create();
         }
         else {
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
+            TextView title = (TextView)layout.findViewById(R.id.title);
+            TextView message = (TextView)layout.findViewById(R.id.message);
+            title.setText(R.string.dialog_blocklist);
+            message.setText(R.string.blocklist_empty);
+            setStyle(STYLE_NO_TITLE, 0);
             return new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.blocklist_title)
-                    .setMessage(R.string.blocklist_empty)
+                    .setView(layout)
                     .setNeutralButton(R.string.dismiss,
                             new DialogInterface.OnClickListener() {
                                 @Override

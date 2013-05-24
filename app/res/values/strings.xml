@@ -72,7 +72,7 @@
     <string name="report_post_title_type">Reason for report</string>
     <string name="report_post">Report</string>
     <string name="report_post_select_type">Select a report type</string>
-    <string name="report_post_reporting">Reporting Post...</string>
+    <string name="report_post_reporting">Reporting...</string>
     <string-array name="report_post_types">
         <item>Rule violation</item>
         <item>Illegal content</item>
@@ -320,15 +320,20 @@
     <string name="popup_go_to_thread">Go To Thread</string>
 
     <!-- dialog text -->
+    <string name="dialog_cache">Cache</string>
+    <string name="dialog_blocklist">Blocklist</string>
+    <string name="dialog_pass">4chan Pass</string>
     <string name="dialog_logout_pass">Logging out Pass...</string>
     <string name="dialog_authorizing_pass">Authorizing Pass...</string>
-    <string name="dialog_posting_reply">Posting Reply...</string>
+    <string name="dialog_report_post">Report Post</string>
+    <string name="dialog_post">Post Reply</string>
+    <string name="dialog_posting_reply">Uploading post...</string>
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
     <string name="dialog_clear_watchlist">Delete watchlist?</string>
     <string name="dialog_clean_watchlist">Clean dead threads?</string>
     <string name="dialog_set_wallpaper">Set as wallpaper?</string>
     <string name="dialog_clear_cache_confirm">Clear all cached data? This may take several minutes.</string>
-    <string name="dialog_reset_preferences_confirm">Reset all preferences?</string>
+    <string name="dialog_reset_preferences_confirm">Reset all preferences to default?</string>
     <string name="dialog_authorize">Authorize</string>
     <string name="dialog_close">Close</string>
     <string name="dialog_add">Add</string>
@@ -339,12 +344,14 @@
     <string name="dialog_set">Set</string>
     <string name="dialog_reset">Reset</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_watchlist">Watchlist</string>
     <string name="dialog_added_to_watchlist">Added to watchlist</string>
     <string name="dialog_deleted_from_watchlist">Removed from watchlist</string>
     <string name="dialog_cleared_watchlist">Watchlist cleared</string>
     <string name="dialog_cleaning_watchlist">Cleaning watchlist...</string>
     <string name="dialog_cleaned_watchlist">Watchlist cleaned</string>
     <string name="dialog_watchlist_cleaning_error">Couldn\'t clean watchlist</string>
+    <string name="dialog_reset_title">Reset Preferences</string>
     <string name="dialog_reset_preferences">Preferences reset to defaults</string>
 
     <!-- post reply activity -->
@@ -1181,6 +1188,7 @@
     <dimen name="PopupFullTextButton">18sp</dimen>
     <dimen name="PopupFullTextView">18sp</dimen>
     <dimen name="MessageText">16sp</dimen>
+    <dimen name="DialogFragmentMessageSize">16sp</dimen>
 
     <!-- Padding & Margins -->
 
@@ -1281,6 +1289,12 @@
     <dimen name="ThreadListLayout_paddingLeft">0dp</dimen>
     <dimen name="ThreadListHeaderInnerLayout_paddingLeft">16dp</dimen>
     <dimen name="ThreadListLayout_paddingRight">0dp</dimen>
+
+    <dimen name="ItemsDialogItemLayout_paddingTop">8dp</dimen>
+    <dimen name="ItemsDialogItemLayout_paddingBottom">8dp</dimen>
+    <dimen name="ItemsDialogItemLayout_paddingLeft">16dp</dimen>
+    <dimen name="ItemsDialogItemLayout_paddingRight">16dp</dimen>
+    <dimen name="ItemsDialogItemLayout_textSize">16sp</dimen>
 
     <dimen name="ThreadListItemHeaderWrapper_paddingLeft">0dp</dimen>
     <dimen name="ThreadListItemHeaderWrapper_paddingRight">16dp</dimen>

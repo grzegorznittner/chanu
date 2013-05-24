@@ -16,19 +16,24 @@ import java.util.*;
 public class ChanBlocklist {
 
     public enum BlockType {
-        TRIPCODE,
-        NAME,
-        EMAIL,
-        ID
+        TRIPCODE ("Tripcode", ChanHelper.PREF_BLOCKLIST_TRIPCODE),
+        NAME ("Name", ChanHelper.PREF_BLOCKLIST_NAME),
+        EMAIL ("Email", ChanHelper.PREF_BLOCKLIST_EMAIL),
+        ID ("Id", ChanHelper.PREF_BLOCKLIST_ID);
+        private String displayString;
+        private String blockPref;
+        BlockType(String s, String t) {
+            displayString = s;
+            blockPref = t;
+        }
+        public String displayString() {
+            return displayString;
+        }
+        public String blockPref() {
+            return blockPref;
+        }
     };
 
-    public static final String[] BLOCK_PREFS = {
-            ChanHelper.PREF_BLOCKLIST_TRIPCODE,
-            ChanHelper.PREF_BLOCKLIST_NAME,
-            ChanHelper.PREF_BLOCKLIST_EMAIL,
-            ChanHelper.PREF_BLOCKLIST_ID
-    };
-    
     private static Map<BlockType, Set<String>> blocklist;
 
     private static void initBlocklist(Context context) {
@@ -37,10 +42,9 @@ public class ChanBlocklist {
         blocklist.clear();
         for (int i = 0; i < BlockType.values().length; i++) {
             BlockType blockType = BlockType.values()[i];
-            String blockPref = BLOCK_PREFS[i];
             Set<String> blocks = PreferenceManager
                     .getDefaultSharedPreferences(context)
-                    .getStringSet(blockPref, new HashSet<String>());
+                    .getStringSet(blockType.blockPref(), new HashSet<String>());
             blocklist.put(blockType, blocks);
         }
     }
@@ -93,8 +97,7 @@ public class ChanBlocklist {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         for (int i = 0; i < BlockType.values().length; i++) {
             BlockType blockType = BlockType.values()[i];
-            String blockPref = BLOCK_PREFS[i];
-            editor.putStringSet(blockPref, blocklist.get(blockType));
+            editor.putStringSet(blockType.blockPref(), blocklist.get(blockType));
         }
         editor.commit();
     }

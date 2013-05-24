@@ -6,6 +6,9 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
@@ -35,8 +38,15 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
+        TextView title = (TextView)layout.findViewById(R.id.title);
+        TextView message = (TextView)layout.findViewById(R.id.message);
+        title.setText(R.string.dialog_watchlist);
+        message.setText(R.string.dialog_delete_watchlist_thread);
+        setStyle(STYLE_NO_TITLE, 0);
         return (new AlertDialog.Builder(getActivity()))
-                .setMessage(R.string.dialog_delete_watchlist_thread)
+                .setView(layout)
                 .setPositiveButton(R.string.dialog_remove,
                         new DialogInterface.OnClickListener() {
                             @Override

@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.RefreshableActivity;
@@ -58,12 +59,14 @@ public class DeletePostDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.delete_post_dialog_fragment, null);
+        View layout = inflater.inflate(R.layout.delete_post_dialog_fragment, null);
+        TextView title = (TextView)layout.findViewById(R.id.title);
+        title.setText(R.string.delete_post_title);
+        setStyle(STYLE_NO_TITLE, 0);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder
-            .setView(view)
-            .setTitle(R.string.delete_post_title)
+            .setView(layout)
             .setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -88,9 +91,9 @@ public class DeletePostDialogFragment extends DialogFragment {
                 public void onClick(DialogInterface dialog, int which) {
                 }
             });
-        passwordText = (EditText)view.findViewById(R.id.delete_post_password);
+        passwordText = (EditText)layout.findViewById(R.id.delete_post_password);
         passwordText.setText(password);
-        imageOnlyCheckbox = (CheckBox)view.findViewById(R.id.delete_post_only_image_checkbox);
+        imageOnlyCheckbox = (CheckBox)layout.findViewById(R.id.delete_post_only_image_checkbox);
         imageOnlyCheckbox.setChecked(false);
         return builder.create();
     }

@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.app.DialogFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanHelper;
@@ -33,8 +36,15 @@ public class ResetPreferencesDialogFragment extends DialogFragment {
     }
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
+        TextView title = (TextView)layout.findViewById(R.id.title);
+        TextView message = (TextView)layout.findViewById(R.id.message);
+        title.setText(R.string.dialog_reset_preferences);
+        message.setText(R.string.dialog_reset_preferences_confirm);
+        setStyle(STYLE_NO_TITLE, 0);
         return (new AlertDialog.Builder(getActivity()))
-                .setMessage(R.string.dialog_reset_preferences_confirm)
+                .setView(layout)
                 .setPositiveButton(R.string.dialog_reset,
                         new DialogInterface.OnClickListener() {
                             @Override

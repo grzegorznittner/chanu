@@ -5,6 +5,9 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.task.LogoutPassTask;
 
@@ -24,8 +27,15 @@ public class LogoutPassDialogFragment extends DialogFragment {
     }
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
+        TextView title = (TextView)layout.findViewById(R.id.title);
+        TextView message = (TextView)layout.findViewById(R.id.message);
+        title.setText(R.string.dialog_pass);
+        message.setText(R.string.dialog_logout_pass);
+        setStyle(STYLE_NO_TITLE, 0);
         return (new AlertDialog.Builder(getActivity()))
-                .setMessage(R.string.dialog_logout_pass)
+                .setView(layout)
                 .setNegativeButton(R.string.dialog_cancel,
                         new DialogInterface.OnClickListener() {
                             @Override

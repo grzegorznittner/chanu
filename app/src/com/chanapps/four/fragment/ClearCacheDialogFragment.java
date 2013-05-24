@@ -8,6 +8,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
@@ -38,8 +41,15 @@ public class ClearCacheDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
+        TextView title = (TextView)layout.findViewById(R.id.title);
+        TextView message = (TextView)layout.findViewById(R.id.message);
+        title.setText(R.string.dialog_cache);
+        message.setText(R.string.dialog_clear_cache_confirm);
+        setStyle(STYLE_NO_TITLE, 0);
         return (new AlertDialog.Builder(getActivity()))
-                .setMessage(R.string.dialog_clear_cache_confirm)
+                .setView(layout)
                 .setPositiveButton(R.string.dialog_clear,
                         new DialogInterface.OnClickListener() {
                             @Override
