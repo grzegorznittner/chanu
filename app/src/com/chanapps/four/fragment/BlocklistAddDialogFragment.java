@@ -5,12 +5,12 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
+import android.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.RefreshableActivity;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanBlocklist;
 import com.chanapps.four.data.ChanPost;
@@ -28,16 +28,13 @@ public class BlocklistAddDialogFragment extends DialogFragment {
 
     public static final String TAG = BlocklistAddDialogFragment.class.getSimpleName();
 
-    RefreshableActivity activity;
     ChanBlocklist.BlockType blockType;
     List<String> blocks;
 
-    public BlocklistAddDialogFragment(RefreshableActivity activity,
-                                      ChanBlocklist.BlockType blockType,
+    public BlocklistAddDialogFragment(ChanBlocklist.BlockType blockType,
                                       List<String> blocks)
     {
         super();
-        this.activity = activity;
         this.blockType = blockType;
         this.blocks = blocks;
     }
@@ -47,7 +44,7 @@ public class BlocklistAddDialogFragment extends DialogFragment {
 
         List<String> formattedBlocks;
         boolean useFriendlyIds = PreferenceManager
-                .getDefaultSharedPreferences(activity.getBaseContext())
+                .getDefaultSharedPreferences(getActivity())
                 .getBoolean(SettingsActivity.PREF_USE_FRIENDLY_IDS, true);
         switch (blockType) {
             case TRIPCODE:
@@ -77,7 +74,7 @@ public class BlocklistAddDialogFragment extends DialogFragment {
                 .replaceAll("^\\[", "")
                 .replaceAll("\\]$", "");
         String plural = sortedBlocks.size() > 1 ? "s" : "";
-        String msg = String.format(activity.getBaseContext().getString(R.string.blocklist_add_id_confirm),
+        String msg = String.format(getString(R.string.blocklist_add_id_confirm),
                 blockType.toString().toLowerCase(),
                 plural,
                 formattedBlocklist);
@@ -96,8 +93,8 @@ public class BlocklistAddDialogFragment extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ChanBlocklist.addAll(activity.getBaseContext(), blockType, blocks);
-                                activity.refresh();
+                                ChanBlocklist.addAll(getActivity(), blockType, blocks);
+                                ((ChanIdentifiedActivity)getActivity()).refresh();
                             }
                         })
                 .setNegativeButton(R.string.dialog_cancel,

@@ -11,6 +11,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import com.chanapps.four.activity.PostReplyShareActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
@@ -25,11 +28,11 @@ import java.util.List;
 * Time: 12:44 PM
 * To change this template use File | Settings | File Templates.
 */
-public class PickShareBoardDialogFragment extends DialogFragment {
+public class PickShareBoardDialogFragment extends ListDialogFragment {
 
     public static final String TAG = PickShareBoardDialogFragment.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private String[] boards;
     private Handler activityHandler;
@@ -54,29 +57,28 @@ public class PickShareBoardDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         initBoards(getActivity());
-        return new AlertDialog.Builder(getActivity())
-        .setTitle(R.string.post_reply_share_pick_board)
-        .setItems(boards, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                String boardLine = boards[which];
-                String boardCode = boardLine.substring(1, boardLine.indexOf(' '));
-                if (DEBUG) Log.i(TAG, "Picked board=" + boardCode);
-                Bundle b = new Bundle();
-                b.putString(ChanHelper.BOARD_CODE, boardCode);
-                Message msg = Message.obtain(activityHandler, PostReplyShareActivity.PICK_BOARD);
-                msg.setData(b);
-                msg.sendToTarget();
-            }
-        })
-        .setNegativeButton(R.string.dialog_cancel,
-                new DialogInterface.OnClickListener() {
+        return createListDialog(R.string.post_reply_share_pick_board, R.string.post_reply_share_pick_board,
+                R.string.post_reply_share_error,
+                boards, new ListView.OnItemClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (DEBUG) Log.i(TAG, "Picking board cancelled");
-                        Message.obtain(activityHandler, PostReplyShareActivity.POST_CANCELLED).sendToTarget();
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String boardLine = boards[position];
+                        String boardCode = boardLine.substring(1, boardLine.indexOf(' '));
+                        if (DEBUG) Log.i(TAG, "Picked board=" + boardCode);
+                        Bundle b = new Bundle();
+                        b.putString(ChanHelper.BOARD_CODE, boardCode);
+                        Message msg = Message.obtain(activityHandler, PostReplyShareActivity.PICK_BOARD);
+                        msg.setData(b);
+                        msg.sendToTarget();
+                        dismiss();
                     }
-                })
-        .create();
+                }, new Dialog.OnCancelListener() {
+                    public void onCancel(DialogInterface dialog) {
+                        Message.obtain(activityHandler, PostReplyShareActivity.POST_CANCELLED).sendToTarget();
+
+                    }
+
+                });
     }
 
 }

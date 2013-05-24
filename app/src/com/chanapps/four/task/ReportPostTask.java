@@ -5,8 +5,8 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.RefreshableActivity;
 import com.chanapps.four.data.ReportPostResponse;
 import com.chanapps.four.fragment.ReportingPostDialogFragment;
 import com.chanapps.four.multipartmime.MultipartEntity;
@@ -37,7 +37,7 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
     public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final boolean DEBUG = false;
 
-    private RefreshableActivity refreshableActivity = null;
+    private ChanIdentifiedActivity refreshableActivity = null;
     private String boardCode = null;
     private long[] postNos = {};
     private int reportTypeIndex;
@@ -46,7 +46,7 @@ public class ReportPostTask extends AsyncTask<ReportingPostDialogFragment, Void,
     private Context context = null;
     private ReportingPostDialogFragment dialogFragment = null;
 
-    public ReportPostTask(RefreshableActivity refreshableActivity,
+    public ReportPostTask(ChanIdentifiedActivity refreshableActivity,
                           String boardCode, long threadNo, long[] postNos,
                           String reportType, int reportTypeIndex,
                           String recaptchaChallenge,

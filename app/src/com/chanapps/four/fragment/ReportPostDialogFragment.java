@@ -12,8 +12,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.RefreshableActivity;
 import com.chanapps.four.task.LoadCaptchaTask;
 import com.chanapps.four.task.ReportPostTask;
 
@@ -28,8 +28,6 @@ public class ReportPostDialogFragment extends DialogFragment {
 
     public static final String TAG = ReportPostDialogFragment.class.getSimpleName();
 
-    //private ActionMode mode;
-    private RefreshableActivity refreshableActivity;
     private String boardCode;
     private long threadNo = 0;
     private long[] postNos = {};
@@ -41,12 +39,8 @@ public class ReportPostDialogFragment extends DialogFragment {
     private LoadCaptchaTask loadCaptchaTask;
 
 
-    public ReportPostDialogFragment(//ActionMode mode,
-                                    RefreshableActivity refreshableActivity,
-                                    String boardCode, long threadNo, long[] postNos) {
+    public ReportPostDialogFragment(String boardCode, long threadNo, long[] postNos) {
         super();
-        //this.mode = mode;
-        this.refreshableActivity = refreshableActivity;
         this.boardCode = boardCode;
         this.threadNo = threadNo;
         this.postNos = postNos;
@@ -138,7 +132,7 @@ public class ReportPostDialogFragment extends DialogFragment {
 
                 closeKeyboard();
                 ReportPostTask reportPostTask = new ReportPostTask(
-                        refreshableActivity, boardCode, threadNo, postNos,
+                        (ChanIdentifiedActivity)getActivity(), boardCode, threadNo, postNos,
                         reportType, reportTypeIndex, recaptchaChallenge, recaptchaResponse);
                 ReportingPostDialogFragment dialogFragment = new ReportingPostDialogFragment(reportPostTask);
                 dialogFragment.show(getActivity().getSupportFragmentManager(), ReportingPostDialogFragment.TAG);

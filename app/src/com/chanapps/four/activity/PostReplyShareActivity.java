@@ -18,7 +18,7 @@ import com.chanapps.four.fragment.PickShareBoardDialogFragment;
  * Time: 11:52 AM
  * To change this template use File | Settings | File Templates.
  */
-public class PostReplyShareActivity extends PostReplyActivity implements ChanIdentifiedActivity, RefreshableActivity {
+public class PostReplyShareActivity extends PostReplyActivity implements ChanIdentifiedActivity {
 
     public static final boolean DEBUG = false;
     public static final int PICK_BOARD = 0x011;
@@ -47,7 +47,7 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
 
     protected void handleSendImage(Uri imageUri) {
         this.imageUri = imageUri;
-        new PickShareBoardDialogFragment(handler).show(getSupportFragmentManager(), PickShareBoardDialogFragment.TAG);
+        new PickShareBoardDialogFragment(handler).show(getFragmentManager(), PickShareBoardDialogFragment.TAG);
     }
 
     @Override

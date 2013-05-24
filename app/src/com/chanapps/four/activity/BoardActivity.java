@@ -46,7 +46,6 @@ import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 public class BoardActivity
         extends FragmentActivity
         implements ChanIdentifiedActivity,
-        RefreshableActivity,
         OnClickListener,
         AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,

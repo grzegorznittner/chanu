@@ -7,10 +7,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import com.chanapps.four.activity.PostReplyActivity;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.RefreshableActivity;
-import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.activity.*;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.task.AuthorizePassTask;
@@ -34,7 +31,6 @@ public class PassSettingsFragment extends PreferenceFragment
     public static String PASS_PURCHASE_URL = "https://www.4chan.org/pass";
 
     protected DialogInterface.OnDismissListener dismissListener;
-    protected RefreshableActivity refreshableActivity;
     protected SharedPreferences prefs;
     protected Preference authButton;
     protected Preference purchaseButton;
@@ -62,7 +58,7 @@ public class PassSettingsFragment extends PreferenceFragment
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 // we're cheating
-                ChanHelper.launchUrlInBrowser((PostReplyActivity)refreshableActivity, PASS_PURCHASE_URL);
+                ChanHelper.launchUrlInBrowser(getActivity(), PASS_PURCHASE_URL);
                 return true;
             }
         });
@@ -81,10 +77,6 @@ public class PassSettingsFragment extends PreferenceFragment
     public void show(FragmentTransaction transaction, String tag) {
         transaction.add(this, tag);
         transaction.commit();
-    }
-
-    public void setRefreshableActivity(RefreshableActivity activity) {
-        refreshableActivity = activity;
     }
 
     public void setOnDismissListener(DialogInterface.OnDismissListener dismissListener) {
@@ -130,7 +122,7 @@ public class PassSettingsFragment extends PreferenceFragment
     private void authorizePass() {
         String passToken = ensurePrefs().getString(SettingsActivity.PREF_PASS_TOKEN, "");
         String passPIN = ensurePrefs().getString(SettingsActivity.PREF_PASS_PIN, "");
-        AuthorizePassTask authorizePassTask = new AuthorizePassTask(refreshableActivity, passToken, passPIN);
+        AuthorizePassTask authorizePassTask = new AuthorizePassTask((ChanIdentifiedActivity)getActivity(), passToken, passPIN);
         AuthorizingPassDialogFragment passDialogFragment = new AuthorizingPassDialogFragment(authorizePassTask);
         passDialogFragment.show(getFragmentManager(), AuthorizingPassDialogFragment.TAG);
         if (!authorizePassTask.isCancelled()) {

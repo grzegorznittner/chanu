@@ -6,8 +6,8 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.RefreshableActivity;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.AuthorizePassResponse;
 import com.chanapps.four.data.PersistentCookieStore;
@@ -43,14 +43,14 @@ public class AuthorizePassTask extends AsyncTask<AuthorizingPassDialogFragment, 
     public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final boolean DEBUG = false;
 
-    private RefreshableActivity refreshableActivity;
+    private ChanIdentifiedActivity refreshableActivity;
     private Context context;
     private String passToken;
     private String passPIN;
     private AuthorizingPassDialogFragment dialogFragment;
     private PersistentCookieStore cookieStore;
 
-    public AuthorizePassTask(RefreshableActivity refreshableActivity, String passToken, String passPIN) {
+    public AuthorizePassTask(ChanIdentifiedActivity refreshableActivity, String passToken, String passPIN) {
         this.refreshableActivity = refreshableActivity;
         this.context = refreshableActivity.getBaseContext();
         this.passToken = passToken;

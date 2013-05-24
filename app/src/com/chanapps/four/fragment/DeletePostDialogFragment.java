@@ -17,10 +17,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.RefreshableActivity;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.component.Dismissable;
 import com.chanapps.four.task.DeletePostTask;
 
 /**
@@ -34,8 +33,6 @@ public class DeletePostDialogFragment extends DialogFragment {
 
     public static final String TAG = DeletePostDialogFragment.class.getSimpleName();
 
-    //private ActionMode mode = null;
-    private RefreshableActivity refreshableActivity = null;
     private String boardCode = null;
     private long threadNo = 0;
     private long[] postNos = {};
@@ -43,17 +40,13 @@ public class DeletePostDialogFragment extends DialogFragment {
     private EditText passwordText = null;
     private CheckBox imageOnlyCheckbox = null;
 
-    public DeletePostDialogFragment(//ActionMode mode,
-                                    RefreshableActivity refreshableActivity,
-                                    String boardCode, long threadNo, long[] postNos) {
+    public DeletePostDialogFragment(String boardCode, long threadNo, long[] postNos) {
         super();
-        //this.mode = mode;
-        this.refreshableActivity = refreshableActivity;
         this.boardCode = boardCode;
         this.threadNo = threadNo;
         this.postNos = postNos;
         this.password = PreferenceManager
-                .getDefaultSharedPreferences(refreshableActivity.getBaseContext())
+                .getDefaultSharedPreferences(getActivity())
                 .getString(SettingsActivity.PREF_USER_PASSWORD, "");
     }
 
@@ -78,7 +71,7 @@ public class DeletePostDialogFragment extends DialogFragment {
                     closeKeyboard();
                     boolean onlyImages = imageOnlyCheckbox.isChecked();
                     DeletePostTask deletePostTask = new DeletePostTask(
-                            refreshableActivity, boardCode, threadNo, postNos, password, onlyImages);
+                            (ChanIdentifiedActivity)getActivity(), boardCode, threadNo, postNos, password, onlyImages);
                     DeletingPostDialogFragment dialogFragment = new DeletingPostDialogFragment(deletePostTask, onlyImages);
                     dialogFragment.show(getActivity().getSupportFragmentManager(), DeletingPostDialogFragment.TAG);
                     if (!deletePostTask.isCancelled())

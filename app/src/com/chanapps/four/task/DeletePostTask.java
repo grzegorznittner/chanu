@@ -5,8 +5,8 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.RefreshableActivity;
 import com.chanapps.four.data.*;
 import com.chanapps.four.fragment.DeletingPostDialogFragment;
 import com.chanapps.four.multipartmime.*;
@@ -32,7 +32,7 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
     public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final boolean DEBUG = false;
 
-    private RefreshableActivity refreshableActivity = null;
+    private ChanIdentifiedActivity activity = null;
     private String boardCode = null;
     private long threadNo = 0;
     private long[] postNos = {};
@@ -41,10 +41,10 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
     private Context context = null;
     private DeletingPostDialogFragment dialogFragment = null;
 
-    public DeletePostTask(RefreshableActivity refreshableActivity,
+    public DeletePostTask(ChanIdentifiedActivity activity,
                           String boardCode, long threadNo, long[] postNos, String password, boolean imageOnly) {
-        this.refreshableActivity = refreshableActivity;
-        this.context = refreshableActivity.getBaseContext();
+        this.activity = activity;
+        this.context = activity.getBaseContext();
         this.boardCode = boardCode;
         this.threadNo = threadNo;
         this.postNos = postNos;
@@ -208,7 +208,7 @@ public class DeletePostTask extends AsyncTask<DeletingPostDialogFragment, Void, 
         }
         int msgId = imageOnly ? R.string.delete_post_successful_image : R.string.delete_post_successful;
         Toast.makeText(context, msgId, Toast.LENGTH_SHORT).show();
-        refreshableActivity.refresh();
+        activity.refresh();
         dialogFragment.dismiss();
     }
 

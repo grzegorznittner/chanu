@@ -38,7 +38,7 @@ import java.lang.ref.WeakReference;
 */
 public class BoardGroupFragment
     extends Fragment
-    implements RefreshableActivity,
+    implements
         AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,
@@ -65,7 +65,6 @@ public class BoardGroupFragment
         scheduledWatchlistRefresh = true;
     }
 
-    @Override
     public void refresh() {
         if (handler != null)
             handler.post(new Runnable() {
@@ -76,16 +75,15 @@ public class BoardGroupFragment
             });
     }
 
-    @Override
     public Context getBaseContext() {
         return getActivity().getBaseContext();
     }
-
+    /*
     @Override
     public FragmentManager getSupportFragmentManager() {
         return getActivity().getSupportFragmentManager();
     }
-
+    */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

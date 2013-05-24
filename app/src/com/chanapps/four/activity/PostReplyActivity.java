@@ -39,7 +39,7 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.util.Random;
 
-public class PostReplyActivity extends FragmentActivity implements ChanIdentifiedActivity, RefreshableActivity {
+public class PostReplyActivity extends FragmentActivity implements ChanIdentifiedActivity {
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
 
@@ -219,7 +219,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         closeKeyboard();
         PassSettingsFragment fragment = new PassSettingsFragment();
         fragment.setOnDismissListener(dismissListener);
-        fragment.setRefreshableActivity(this);
         android.app.FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.add(android.R.id.content, fragment);
         ft.setTransition(android.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);

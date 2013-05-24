@@ -5,8 +5,8 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.RefreshableActivity;
 import com.chanapps.four.data.LogoutPassResponse;
 import com.chanapps.four.data.PersistentCookieStore;
 import com.chanapps.four.fragment.LogoutPassDialogFragment;
@@ -41,14 +41,14 @@ public class LogoutPassTask extends AsyncTask<LogoutPassDialogFragment, Void, In
     public static final String POST_URL_ROOT = "https://sys.4chan.org/";
     public static final boolean DEBUG = false;
 
-    private RefreshableActivity refreshableActivity;
+    private ChanIdentifiedActivity refreshableActivity;
     private Context context;
     private String passToken;
     private String passPIN;
     private LogoutPassDialogFragment dialogFragment;
     private PersistentCookieStore cookieStore;
 
-    public LogoutPassTask(RefreshableActivity refreshableActivity, String passToken, String passPIN) {
+    public LogoutPassTask(ChanIdentifiedActivity refreshableActivity, String passToken, String passPIN) {
         this.refreshableActivity = refreshableActivity;
         this.context = refreshableActivity.getBaseContext();
         this.passToken = passToken;

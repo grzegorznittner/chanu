@@ -64,7 +64,6 @@ import com.nostra13.universalimageloader.core.assist.*;
 public class ThreadActivity
         extends FragmentActivity
         implements ChanIdentifiedActivity,
-        RefreshableActivity,
         LoaderManager.LoaderCallbacks<Cursor>,
         AbstractBoardCursorAdapter.ViewBinder,
         AbsListView.OnItemClickListener,
@@ -657,16 +656,16 @@ public class ThreadActivity
             case R.id.translate_posts_menu:
                 return translatePosts(postPos);
             case R.id.delete_posts_menu:
-                (new DeletePostDialogFragment(this, boardCode, threadNo, postNos))
+                (new DeletePostDialogFragment(boardCode, threadNo, postNos))
                         .show(getSupportFragmentManager(), DeletePostDialogFragment.TAG);
                 return true;
             case R.id.report_posts_menu:
-                (new ReportPostDialogFragment(this, boardCode, threadNo, postNos))
+                (new ReportPostDialogFragment(boardCode, threadNo, postNos))
                         .show(getSupportFragmentManager(), ReportPostDialogFragment.TAG);
                 return true;
             case R.id.block_posts_menu:
                 Map<ChanBlocklist.BlockType, List<String>> blocklist = extractBlocklist(postPos);
-                (new BlocklistSelectToAddDialogFragment(this, blocklist)).show(getSupportFragmentManager(), TAG);
+                (new BlocklistSelectToAddDialogFragment(blocklist)).show(getFragmentManager(), TAG);
                 return true;
             default:
                 return false;
