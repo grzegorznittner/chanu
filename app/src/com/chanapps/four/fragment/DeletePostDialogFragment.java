@@ -45,13 +45,13 @@ public class DeletePostDialogFragment extends DialogFragment {
         this.boardCode = boardCode;
         this.threadNo = threadNo;
         this.postNos = postNos;
-        this.password = PreferenceManager
-                .getDefaultSharedPreferences(getActivity())
-                .getString(SettingsActivity.PREF_USER_PASSWORD, "");
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        this.password = PreferenceManager
+                .getDefaultSharedPreferences(getActivity())
+                .getString(SettingsActivity.PREF_USER_PASSWORD, "");
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View layout = inflater.inflate(R.layout.delete_post_dialog_fragment, null);
         TextView title = (TextView)layout.findViewById(R.id.title);
@@ -95,16 +95,6 @@ public class DeletePostDialogFragment extends DialogFragment {
     public void onActivityCreated(Bundle bundle) {
         super.onActivityCreated(bundle);
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-    }
-
-    @Override
-    public void onCancel(DialogInterface dialog) {
-        //
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        //
     }
 
     private void closeKeyboard() {

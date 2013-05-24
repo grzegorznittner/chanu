@@ -17,11 +17,28 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-		
-	<com.chanapps.four.mColorPicker.views.ColorPickerView
+
+    <TextView android:id="@+id/title"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:minHeight="64dp"
+              android:paddingLeft="16dip"
+              android:paddingRight="16dip"
+              android:textColor="@color/PaletteChanuGreen"
+              android:textSize="22dp"
+              android:text="@string/dialog_color_picker_title"
+              android:gravity="center_vertical|left" />
+    <View android:id="@+id/titleDivider"
+          android:layout_width="match_parent"
+          android:layout_height="2dip"
+          android:layout_below="@+id/title"
+          android:background="@color/PaletteChanuGreen" />
+
+    <com.chanapps.four.mColorPicker.views.ColorPickerView
 		android:id="@+id/color_picker_view"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+        android:layout_below="@+id/titleDivider"
 		android:layout_centerHorizontal="true"
 		android:layout_marginLeft="10dp"
 		android:layout_marginRight="10dp"

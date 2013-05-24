@@ -53,7 +53,6 @@ public class ReportPostDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.report_post_dialog_fragment, null);
         builder
             .setView(view)
-            .setTitle(R.string.report_post_title)
             .setPositiveButton(R.string.report_post, null)
             .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
                 @Override

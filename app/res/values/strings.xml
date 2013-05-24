@@ -66,6 +66,8 @@
     <string name="thread_popup_title">Post %1$d</string>
     <string name="thread_popup_reply">Reply</string>
 
+    <string name="dialog_color_picker_title">Pick a Color</string>
+
     <!-- report post -->
     <string name="report_button">Report Post</string>
     <string name="report_post_title">Report Post</string>
