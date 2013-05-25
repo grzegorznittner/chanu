@@ -40,7 +40,6 @@ public class AboutFragment extends PreferenceFragment
         linkPreference("pref_about_data_uil", "https://github.com/nostra13/Android-Universal-Image-Loader");
         linkPreference("pref_about_data_color", "https://code.google.com/p/color-picker-view/");
         linkPreference("pref_about_developer_chanapps", "http://www.chanapps.com/chanu/");
-        linkPreference("pref_about_developer_rate_us", "market://search?q=pub:Chanapps Software");
 
         /*
         emailPreference("pref_about_developer_burns", getString(R.string.pref_about_developer_burns_sum));
