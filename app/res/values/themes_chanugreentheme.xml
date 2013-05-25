@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="ChanuGreenTheme" parent="android:Theme.Light">
+
+    <item name="android:editTextStyle">@style/EditTextChanuGreenTheme</item>
+
+    <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewChanuGreenTheme</item>
+
+    <item name="android:checkboxStyle">@style/CheckBoxChanuGreenTheme</item>
+
+    <item name="android:radioButtonStyle">@style/RadioButtonChanuGreenTheme</item>
+
+    <item name="android:buttonStyle">@style/ButtonChanuGreenTheme</item>
+
+    <item name="android:imageButtonStyle">@style/ImageButtonChanuGreenTheme</item>
+
+    <item name="android:spinnerStyle">@style/SpinnerChanuGreenTheme</item>
+
+    <item name="android:dropDownSpinnerStyle">@style/SpinnerChanuGreenTheme.DropDown</item>
+
+    <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemChanuGreenTheme</item>
+
+    <item name="android:progressBarStyleHorizontal">@style/ProgressBarChanuGreenTheme</item>
+
+    <item name="android:seekBarStyle">@style/SeekBarChanuGreenTheme</item>
+
+    <item name="android:ratingBarStyle">@style/RatingBarChanuGreenTheme</item>
+
+    <item name="android:ratingBarStyleIndicator">@style/RatingBarBigChanuGreenTheme</item>
+
+    <item name="android:ratingBarStyleSmall">@style/RatingBarSmallChanuGreenTheme</item>
+
+    <item name="android:buttonStyleToggle">@style/ToggleChanuGreenTheme</item>
+
+    <item name="android:listViewStyle">@style/ListViewChanuGreenTheme</item>
+
+    <item name="android:listViewWhiteStyle">@style/ListViewChanuGreenTheme.White</item>
+
+    <item name="android:spinnerItemStyle">@style/SpinnerItemChanuGreenTheme</item>
+
+    <!-- <item name="numberPickerStyle">@style/NumberPickerChanuGreenTheme</item> -->
+
+  </style>
+
+</resources>
