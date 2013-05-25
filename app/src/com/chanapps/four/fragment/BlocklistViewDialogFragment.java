@@ -7,9 +7,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
+import android.view.*;
+import android.widget.*;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.ChanBlocklist;
@@ -24,7 +23,11 @@ import java.util.*;
 * Time: 12:44 PM
 * To change this template use File | Settings | File Templates.
 */
-public class BlocklistViewDialogFragment extends DialogFragment {
+public class BlocklistViewDialogFragment
+        extends ListDialogFragment
+        implements DialogInterface.OnClickListener,
+        ListView.OnItemClickListener
+{
 
     public static final String TAG = BlocklistViewDialogFragment.class.getSimpleName();
 
@@ -69,53 +72,62 @@ public class BlocklistViewDialogFragment extends DialogFragment {
         String[] formattedBlocksArray = new String[formattedBlocks.size()];
         for (int i = 0; i < formattedBlocks.size(); i++)
             formattedBlocksArray[i] = formattedBlocks.get(i);
-
         Log.e(TAG, "formattedBlocks = " + Arrays.toString(formattedBlocksArray));
-        if (formattedBlocksArray.length > 0) {
-            return new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.blocklist_title)
-                    .setMultiChoiceItems(formattedBlocksArray, null, new DialogInterface.OnMultiChoiceClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                            checkedBlocks.put(which, isChecked);
-                        }
-                    })
-                    .setPositiveButton(R.string.dialog_remove, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            List<String> removeBlocks = new ArrayList<String>();
-                            for (int i : checkedBlocks.keySet())
-                                if (checkedBlocks.get(i))
-                                    removeBlocks.add(blocks.get(i));
-                            ChanBlocklist.removeAll(getActivity(), blockType, removeBlocks);
-                        }
-                    })
-                    .setNegativeButton(R.string.dialog_close,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            })
-                    .create();
+
+        String title = String.format(getString(R.string.blocklist_title_with_type), blockType.displayString());
+        Dialog d = createListDialog(title, title, getString(R.string.blocklist_empty), formattedBlocksArray,
+                this,
+                null,
+                getString(R.string.dialog_remove),
+                this);
+        adapter = checkableArrayAdapter();
+        items.setAdapter(adapter);
+        items.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+        return d;
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        if (which == DialogInterface.BUTTON_POSITIVE) {
+            List<String> removeBlocks = new ArrayList<String>();
+            for (int i : checkedBlocks.keySet())
+                if (checkedBlocks.get(i))
+                    removeBlocks.add(blocks.get(i));
+            ChanBlocklist.removeAll(getActivity(), blockType, removeBlocks);
         }
-        else {
-            LayoutInflater inflater = getActivity().getLayoutInflater();
-            View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
-            TextView title = (TextView)layout.findViewById(R.id.title);
-            TextView message = (TextView)layout.findViewById(R.id.message);
-            title.setText(R.string.dialog_blocklist);
-            message.setText(R.string.blocklist_empty);
-            setStyle(STYLE_NO_TITLE, 0);
-            return new AlertDialog.Builder(getActivity())
-                    .setView(layout)
-                    .setNeutralButton(R.string.dismiss,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            })
-                    .create();
+        else if (which >= 0) {
+            if (checkedBlocks.containsKey(which) && checkedBlocks.get(which))
+                setChecked(which, false);
+            else
+                setChecked(which, true);
         }
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        if (checkedBlocks.containsKey(position) && checkedBlocks.get(position))
+            setChecked(position, false);
+        else
+            setChecked(position, true);
+    }
+
+    /*
+    @Override
+    public void onResume() {
+        super.onResume();
+        for (int i : checkedBlocks.keySet())
+            setChecked(i, checkedBlocks.get(i));
+    }
+    */
+    protected void setChecked(int i, boolean checked) {
+        checkedBlocks.put(i, checked);
+        items.setItemChecked(i, checked);
+    }
+
+    ArrayAdapter<String> checkableArrayAdapter() {
+        return new ArrayAdapter(getActivity().getApplicationContext(),
+                R.layout.items_dialog_checkable_item, array);
     }
 
 }

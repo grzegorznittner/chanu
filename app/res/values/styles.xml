@@ -904,6 +904,7 @@
         <item name="android:paddingLeft">@dimen/ItemsDialogItemLayout_paddingLeft</item>
         <item name="android:paddingRight">@dimen/ItemsDialogItemLayout_paddingRight</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:textSize">@dimen/ItemsDialogItemLayout_textSize</item>
         <item name="android:textColor">@color/PaletteBlack</item>
     </style>

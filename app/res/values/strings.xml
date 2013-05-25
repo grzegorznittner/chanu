@@ -35,16 +35,17 @@
     <!-- blocklist -->
     <string name="blocklist_button">Block Posts With Id</string>
     <string name="blocklist_title">Blocklist</string>
+    <string name="blocklist_title_with_type">%1$s Blocklist</string>
     <string name="blocklist_title_remove">Select to remove from blocklist</string>
     <string name="blocklist_message">Select to remove from blocklist</string>
     <string name="blocklist_message_empty">Your blocklist is empty</string>
     <string name="blocklist_removed_id">Removed %1$s from blocklist</string>
     <string name="blocklist_add_id_confirm">Add %1$s%2$s %3$s to blocklist?</string>
     <string name="blocklist_remove_id_confirm">Remove %1$s%2$s %3$s from blocklist?</string>
-    <string name="blocklist_select_view_type">Select block type</string>
-    <string name="blocklist_select_type">Select block type</string>
+    <string name="blocklist_select_view_type">Select Block Type</string>
+    <string name="blocklist_select_type">Select Block Type</string>
     <string name="blocklist_no_types_found">No blockable tripcode, name, email or id found</string>
-    <string name="blocklist_empty">Blocklist is empty, visit threads to select items to block</string>
+    <string name="blocklist_empty">Blocklist is empty, visit threads to select tripcode, name, email or id to block</string>
 
     <!-- delete post -->
     <string name="delete_button">Delete Post</string>
@@ -123,6 +124,7 @@
     <string name="copy_text_menu">Copy text</string>
     <string name="delete_report_posts_menu">Delete/report posts</string>
     <string name="delete_posts_menu">Delete</string>
+    <string name="delete_blocks_menu">Delete</string>
     <string name="report_posts_menu">Report</string>
     <string name="block_posts_menu">Block</string>
     <string name="translate_posts_menu">Translate post</string>
@@ -494,8 +496,8 @@
     <string name="pref_about_title">Chanu</string>
     <string name="pref_about_title_sum">4chan Reloaded</string>
     <string name="pref_about_application_category">Application</string>
-    <string name="pref_about_application_version">Version 1.0 beta 12</string>
-    <string name="pref_about_application_version_sum">Released 23 May 2013</string>
+    <string name="pref_about_application_version">Version 1.0 beta 13</string>
+    <string name="pref_about_application_version_sum">Released 25 May 2013</string>
     <string name="pref_about_application_rate">Rate Us</string>
     <string name="pref_about_application_rate_sum">Visit Chanu on Google Play</string>
     <string name="pref_about_data_category">Uses</string>
