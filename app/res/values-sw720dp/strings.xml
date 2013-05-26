@@ -243,4 +243,9 @@
     <dimen name="tutorial_overlay_dismiss_marginBottom">32dp</dimen>
     <dimen name="tutorial_overlay_dismiss_padding">16dp</dimen>
 
+    <!-- widgets dimension -->
+    <dimen name="widget_board_minWidth">350dp</dimen>
+    <dimen name="widget_board_minHeight">228dp</dimen>
+
+
 </resources>

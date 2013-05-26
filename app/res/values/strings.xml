@@ -47,7 +47,8 @@
     <string name="blocklist_select_view_type">Select Block Type</string>
     <string name="blocklist_select_type">Select Block Type</string>
     <string name="blocklist_no_types_found">No blockable tripcode, name, email or id found</string>
-    <string name="blocklist_empty">Blocklist is empty, visit threads to select tripcode, name, email or id to block</string>
+    <string name="blocklist_empty">Blocklist is empty, visit threads to select tripcode, name, email or id to block
+    </string>
 
     <!-- delete post -->
     <string name="delete_button">Delete Post</string>
@@ -689,7 +690,9 @@
     <string name="board_int">International</string>
     <string name="board_out">Outdoors</string>
     <string name="board_type_creative">Creative</string>
-    <string name="board_type_creative_desc">These boards display art, photography, cooking and other creative activities</string>
+    <string name="board_type_creative_desc">These boards display art, photography, cooking and other creative
+        activities
+    </string>
     <string name="board_i">Oekaki</string>
     <string name="board_po">Papercraft &amp; Origami</string>
     <string name="board_p">Photography</string>
@@ -1414,5 +1417,10 @@
     <dimen name="tutorial_overlay_dismiss_marginRight">16dp</dimen>
     <dimen name="tutorial_overlay_dismiss_marginBottom">16dp</dimen>
     <dimen name="tutorial_overlay_dismiss_padding">8dp</dimen>
+
+    <!-- widgets dimension -->
+    <dimen name="widget_board_minWidth">294dp</dimen>
+    <dimen name="widget_board_minHeight">72dp</dimen>
+
 
 </resources>

@@ -38,11 +38,12 @@ public class UpdateWidgetService extends Service {
 
     public static final String TAG = UpdateWidgetService.class.getSimpleName();
 
-    public static final int NUM_TOP_THREADS = 3;
+    public static final int NUM_TOP_THREADS = 6;
 
     private static final boolean DEBUG = false;
 
     private static DisplayImageOptions optionsWithFakeDisplayer;
+
     static {
         optionsWithFakeDisplayer = new DisplayImageOptions.Builder().displayer(new FakeBitmapDisplayer()).build();
     }
@@ -52,8 +53,7 @@ public class UpdateWidgetService extends Service {
         int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             Log.e(TAG, "Invalid app widget id passed, service terminating");
-        }
-        else {
+        } else {
             if (DEBUG) Log.i(TAG, "starting update widget service for widget=" + appWidgetId);
             WidgetConf widgetConf = BoardWidgetProvider.loadWidgetConf(this, appWidgetId);
             if (widgetConf == null)
@@ -81,7 +81,8 @@ public class UpdateWidgetService extends Service {
                 Log.e(TAG, "Null board code found for widget=" + widgetConf.appWidgetId + " defaulting to /a");
                 widgetConf.boardCode = "a";
             }
-            if (DEBUG) Log.i(TAG, "Found widgetConf.boardCode=" + widgetConf.boardCode + " for widget=" + widgetConf.appWidgetId + " now updating");
+            if (DEBUG)
+                Log.i(TAG, "Found widgetConf.boardCode=" + widgetConf.boardCode + " for widget=" + widgetConf.appWidgetId + " now updating");
         }
 
         @Override
@@ -96,13 +97,12 @@ public class UpdateWidgetService extends Service {
             updateWidgetViews();
         }
 
-       private void loadBoard() {
+        private void loadBoard() {
             try {
                 threads = loadBestWidgetThreads(context, widgetConf.boardCode, NUM_TOP_THREADS);
 
                 if (DEBUG) Log.i(TAG, "Loaded board=" + widgetConf.boardCode + " with widget threads");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Log.e(TAG, "Couldn't load board=" + widgetConf.boardCode + ", defaulting to cached values");
             }
         }
@@ -147,7 +147,7 @@ public class UpdateWidgetService extends Service {
             views.setInt(R.id.configure, "setImageResource", configureDrawable);
             views.setOnClickPendingIntent(R.id.configure, makeConfigureIntent());
 
-            int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
+            int[] imageIds = {R.id.image_left, R.id.image_center, R.id.image_right, R.id.image_left1, R.id.image_center1, R.id.image_right1};
             for (int i = 0; i < imageIds.length; i++) {
                 int imageId = imageIds[i];
                 PendingIntent pendingIntent = makeThreadIntent(threads[i], i);
@@ -184,8 +184,8 @@ public class UpdateWidgetService extends Service {
 
         private PendingIntent makeThreadIntent(ChanPost thread, int i) {
             Intent intent = (thread == null || thread.no < 1)
-                ? BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode))
-                : ThreadActivity.createIntentForActivity(context, new String(thread.board), thread.no);
+                    ? BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode))
+                    : ThreadActivity.createIntentForActivity(context, new String(thread.board), thread.no);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 5 + i;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -205,8 +205,7 @@ public class UpdateWidgetService extends Service {
                         ? BoardSelectorTab.WATCHLIST
                         : BoardSelectorTab.RECENT;
                 intent = BoardSelectorActivity.createIntentForActivity(context, tab);
-            }
-            else {
+            } else {
                 intent = BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode));
             }
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -218,11 +217,9 @@ public class UpdateWidgetService extends Service {
             Intent intent;
             if (ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)) {
                 return null;
-            }
-            else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
+            } else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
                 intent = new Intent(context, FetchPopularThreadsService.class);
-            }
-            else {
+            } else {
                 intent = new Intent(context, FetchChanDataService.class);
                 intent.putExtra(ChanHelper.BOARD_CODE, widgetConf.boardCode);
                 intent.putExtra(ChanHelper.BOARD_CATALOG, 1);

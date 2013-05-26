@@ -21,6 +21,7 @@ import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.mColorPicker.ColorPickerDialog;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,8 +50,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
         if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             Log.e(TAG, "Invalid app widget id received, exiting configuration");
             finish();
-        }
-        else {
+        } else {
             if (DEBUG) Log.i(TAG, "Configuring widget=" + appWidgetId);
         }
         widgetConf = BoardWidgetProvider.loadWidgetConf(this, appWidgetId);
@@ -78,49 +78,42 @@ public class WidgetConfigureActivity extends FragmentActivity {
         boolean adultMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
         int spinnerId = adultMode ? R.id.board_spinner_adult : R.id.board_spinner;
         int otherSpinnerId = adultMode ? R.id.board_spinner : R.id.board_spinner_adult;
-        Spinner spinner = (Spinner)findViewById(spinnerId);
-        Spinner otherSpinner = (Spinner)findViewById(otherSpinnerId);
+        Spinner spinner = (Spinner) findViewById(spinnerId);
+        Spinner otherSpinner = (Spinner) findViewById(otherSpinnerId);
         spinner.setVisibility(View.VISIBLE);
         otherSpinner.setVisibility(View.GONE);
         int position = 0;
         if (widgetConf.boardCode == null || widgetConf.boardCode.isEmpty()) {
             position = 0;
-        }
-        else {
+        } else {
             SpinnerAdapter spinnerAdapter = spinner.getAdapter();
             for (int i = 0; i < spinnerAdapter.getCount(); i++) {
-                String boardText = (String)spinnerAdapter.getItem(i);
+                String boardText = (String) spinnerAdapter.getItem(i);
                 if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                    && ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)
-                    && boardText.matches(getString(R.string.board_watch)))
-                {
+                        && ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)
+                        && boardText.matches(getString(R.string.board_watch))) {
                     position = i;
                     break;
                 }
                 if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                    && ChanBoard.POPULAR_BOARD_CODE.equals(widgetConf.boardCode)
-                    && boardText.matches(getString(R.string.board_popular)))
-                {
+                        && ChanBoard.POPULAR_BOARD_CODE.equals(widgetConf.boardCode)
+                        && boardText.matches(getString(R.string.board_popular))) {
                     position = i;
                     break;
                 }
                 if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                    && ChanBoard.LATEST_BOARD_CODE.equals(widgetConf.boardCode)
-                    && boardText.matches(getString(R.string.board_latest)))
-                {
+                        && ChanBoard.LATEST_BOARD_CODE.equals(widgetConf.boardCode)
+                        && boardText.matches(getString(R.string.board_latest))) {
                     position = i;
                     break;
                 }
                 if (ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                    && ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(widgetConf.boardCode)
-                    && boardText.matches(getString(R.string.board_latest_images)))
-                {
+                        && ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(widgetConf.boardCode)
+                        && boardText.matches(getString(R.string.board_latest_images))) {
                     position = i;
                     break;
-                }
-                else if (!ChanBoard.isVirtualBoard(widgetConf.boardCode)
-                        && boardText.matches("/" + widgetConf.boardCode + "/.*"))
-                {
+                } else if (!ChanBoard.isVirtualBoard(widgetConf.boardCode)
+                        && boardText.matches("/" + widgetConf.boardCode + "/.*")) {
                     position = i;
                     break;
                 }
@@ -131,7 +124,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 final Context context = WidgetConfigureActivity.this.getApplicationContext();
-                updateWidgetConfWithSelectedBoard((String)parent.getItemAtPosition(position));
+                updateWidgetConfWithSelectedBoard((String) parent.getItemAtPosition(position));
                 boolean onDisk = ChanFileStorage.isBoardCachedOnDisk(context, widgetConf.boardCode);
                 boolean freshFetch;
                 if (onDisk) {
@@ -139,15 +132,13 @@ public class WidgetConfigureActivity extends FragmentActivity {
                 } else {
                     if (ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)) {
                         freshFetch = false;
-                    }
-                    else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
+                    } else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
                         freshFetch = FetchPopularThreadsService.schedulePopularFetchWithPriority(context);
-                    }
-                    else {
+                    } else {
                         freshFetch = FetchChanDataService.scheduleBoardFetch(context, widgetConf.boardCode, true, false);
                     }
                 }
-                
+
                 if (freshFetch) {
                     (new Handler()).postDelayed(new Runnable() {
                         @Override
@@ -166,10 +157,10 @@ public class WidgetConfigureActivity extends FragmentActivity {
     }
 
     protected void setupCheckboxes() {
-        CheckBox roundedCorners = (CheckBox)findViewById(R.id.rounded_corners);
-        CheckBox showBoardButton = (CheckBox)findViewById(R.id.show_board);
-        CheckBox showRefreshButton = (CheckBox)findViewById(R.id.show_refresh);
-        CheckBox showConfigureButton = (CheckBox)findViewById(R.id.show_configure);
+        CheckBox roundedCorners = (CheckBox) findViewById(R.id.rounded_corners);
+        CheckBox showBoardButton = (CheckBox) findViewById(R.id.show_board);
+        CheckBox showRefreshButton = (CheckBox) findViewById(R.id.show_refresh);
+        CheckBox showConfigureButton = (CheckBox) findViewById(R.id.show_configure);
         roundedCorners.setChecked(widgetConf.roundedCorners);
         showBoardButton.setChecked(widgetConf.showBoardTitle);
         showRefreshButton.setChecked(widgetConf.showRefreshButton);
@@ -203,7 +194,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
             }
         });
     }
-    
+
     protected void addColorClickHandler() {
         EditText backgroundColorButton = (EditText) findViewById(R.id.board_title_color);
         if (backgroundColorButton == null)
@@ -241,17 +232,13 @@ public class WidgetConfigureActivity extends FragmentActivity {
         String boardCode;
         if (getString(R.string.board_watch).equals(boardSpinnerLine)) {
             boardCode = ChanBoard.WATCHLIST_BOARD_CODE;
-        }
-        else if (getString(R.string.board_popular).equals(boardSpinnerLine)) {
+        } else if (getString(R.string.board_popular).equals(boardSpinnerLine)) {
             boardCode = ChanBoard.POPULAR_BOARD_CODE;
-        }
-        else if (getString(R.string.board_latest).equals(boardSpinnerLine)) {
+        } else if (getString(R.string.board_latest).equals(boardSpinnerLine)) {
             boardCode = ChanBoard.LATEST_BOARD_CODE;
-        }
-        else if (getString(R.string.board_latest_images).equals(boardSpinnerLine)) {
+        } else if (getString(R.string.board_latest_images).equals(boardSpinnerLine)) {
             boardCode = ChanBoard.LATEST_IMAGES_BOARD_CODE;
-        }
-        else {
+        } else {
             Pattern p = Pattern.compile("/([^/]*)/.*");
             Matcher m = p.matcher(boardSpinnerLine);
             if (m.matches())
@@ -271,21 +258,22 @@ public class WidgetConfigureActivity extends FragmentActivity {
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (DEBUG) Log.i(TAG, "Configured widget=" + appWidgetId + " configuring for board=" + widgetConf.boardCode);
+                if (DEBUG)
+                    Log.i(TAG, "Configured widget=" + appWidgetId + " configuring for board=" + widgetConf.boardCode);
                 BoardWidgetProvider.storeWidgetConf(WidgetConfigureActivity.this, widgetConf);
                 Intent intent = new Intent();
                 intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
                 WidgetConfigureActivity.this.setResult(Activity.RESULT_OK, intent);
                 Intent updateWidget = new Intent(WidgetConfigureActivity.this, BoardWidgetProvider.class);
                 updateWidget.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-                int[] ids = { appWidgetId };
+                int[] ids = {appWidgetId};
                 updateWidget.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
                 WidgetConfigureActivity.this.sendBroadcast(updateWidget);
                 WidgetConfigureActivity.this.finish();
             }
         });
     }
-    
+
     protected void initWidgetLayoutState() {
         updateContainerBackgroundState();
         updateBoardTitleState();
@@ -296,7 +284,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
 
     protected void updateContainerBackgroundState() {
         int containerBackground = widgetConf.roundedCorners ? R.drawable.widget_rounded_background : 0;
-        RelativeLayout container = (RelativeLayout)findViewById(R.id.widget_preview);
+        RelativeLayout container = (RelativeLayout) findViewById(R.id.widget_preview);
         container.setBackgroundResource(containerBackground);
     }
 
@@ -309,7 +297,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
                 : board.name + " /" + board.link + "/";
         int boardTitleColor = widgetConf.boardTitleColor;
         int boardTitleVisibility = widgetConf.showBoardTitle ? View.VISIBLE : View.GONE;
-        TextView tv = (TextView)findViewById(R.id.board_title);
+        TextView tv = (TextView) findViewById(R.id.board_title);
         tv.setText(boardTitle);
         tv.setTextColor(boardTitleColor);
         tv.setVisibility(boardTitleVisibility);
@@ -318,7 +306,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
     protected void updateRefreshButtonState() {
         int refreshBackground = widgetConf.showRefreshButton ? R.drawable.widget_refresh_gradient_bg : 0;
         int refreshDrawable = widgetConf.showRefreshButton ? R.drawable.widget_refresh_button_selector : 0;
-        ImageView refresh = (ImageView)findViewById(R.id.refresh);
+        ImageView refresh = (ImageView) findViewById(R.id.refresh);
         refresh.setBackgroundResource(refreshBackground);
         refresh.setImageResource(refreshDrawable);
     }
@@ -326,7 +314,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
     protected void updateConfigButtonState() {
         int configureBackground = widgetConf.showConfigureButton ? R.drawable.widget_configure_gradient_bg : 0;
         int configureDrawable = widgetConf.showConfigureButton ? R.drawable.widget_configure_button_selector : 0;
-        ImageView configure = (ImageView)findViewById(R.id.configure);
+        ImageView configure = (ImageView) findViewById(R.id.configure);
         configure.setBackgroundResource(configureBackground);
         configure.setImageResource(configureDrawable);
     }
@@ -338,14 +326,14 @@ public class WidgetConfigureActivity extends FragmentActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final int[] imageIds = { R.id.image_left, R.id.image_center, R.id.image_right };
+                final int[] imageIds = {R.id.image_left, R.id.image_center, R.id.image_right, R.id.image_left1, R.id.image_center1, R.id.image_right1};
                 final String[] urls = boardThreadUrls(context, boardCode, imageIds.length);
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
                         for (int i = 0; i < imageIds.length; i++) {
                             final int imageResourceId = imageIds[i];
-                            final ImageView iv = (ImageView)findViewById(imageResourceId);
+                            final ImageView iv = (ImageView) findViewById(imageResourceId);
                             iv.setImageBitmap(null);
                             if (DEBUG) Log.i(TAG, "Calling displayImage i=" + i + " url=" + urls[i]);
                             ChanImageLoader.getInstance(context).displayImage(urls[i], iv);
