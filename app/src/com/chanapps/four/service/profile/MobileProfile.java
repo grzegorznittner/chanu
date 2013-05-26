@@ -26,7 +26,7 @@ import com.chanapps.four.widget.BoardWidgetProvider;
 
 public class MobileProfile extends AbstractNetworkProfile {
 	private static final String TAG = MobileProfile.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	private String networkType = "3G";
 	
@@ -146,27 +146,23 @@ public class MobileProfile extends AbstractNetworkProfile {
 	}
 
 	@Override
-	public void onBoardSelectorSelected(Context context, String boardCode) {
-		super.onBoardSelectorSelected(context, boardCode);
+    public void onBoardSelectorSelected(Context context, String boardCode) {
+        super.onBoardSelectorSelected(context, boardCode);
         // prefetch popular in the background if we haven't loaded it yet
-        if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
-                || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
-                || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode)) {
-            Health health = getConnectionHealth();
-            if (health == Health.NO_CONNECTION) {
-                makeHealthStatusToast(context, health);
-                return;
-            }
-            ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-            if (board != null && board.threads != null && board.threads.length > 0) {
-                if (DEBUG) Log.i(TAG, "skipping fetch board selector " + boardCode + " as already have data");
-            }
-            else {
-                if (DEBUG) Log.i(TAG, "fetching board selector " + boardCode + " as no data is present");
-                FetchPopularThreadsService.schedulePopularFetchWithPriority(context);
-            }
+        Health health = getConnectionHealth();
+        if (health == Health.NO_CONNECTION) {
+            makeHealthStatusToast(context, health);
+            return;
         }
-	}
+        ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.POPULAR_BOARD_CODE);
+        if (board != null && !board.defData && board.threads != null && board.threads.length > 1) {
+            if (DEBUG) Log.i(TAG, "skipping fetch board selector " + boardCode + " as already have data");
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "fetching board selector " + boardCode + " as no data is present");
+            FetchPopularThreadsService.schedulePopularFetchWithPriority(context);
+        }
+    }
 
 
     @Override

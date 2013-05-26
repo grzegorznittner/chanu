@@ -16,6 +16,8 @@
         <item name="android:actionBarWidgetTheme">@style/Theme.Chanu.Widget</item>
         <!-- from android-holo-colors theme -->
         <item name="android:editTextStyle">@style/EditTextChanuGreenTheme</item>
+        <item name="android:seekBarStyle">@style/SeekBarChanuGreenTheme</item>
+        <!--
         <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewChanuGreenTheme</item>
         <item name="android:checkboxStyle">@style/CheckBoxChanuGreenTheme</item>
         <item name="android:radioButtonStyle">@style/RadioButtonChanuGreenTheme</item>
@@ -33,6 +35,7 @@
         <item name="android:listViewStyle">@style/ListViewChanuGreenTheme</item>
         <item name="android:listViewWhiteStyle">@style/ListViewChanuGreenTheme.White</item>
         <item name="android:spinnerItemStyle">@style/SpinnerItemChanuGreenTheme</item>
+        -->
     </style>
 
     <!--
