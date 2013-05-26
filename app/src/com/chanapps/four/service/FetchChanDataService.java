@@ -43,19 +43,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     private ChanBoard board;
     private ChanThread thread;
 
-    public static boolean scheduleBoardFetch(Context context, String boardCode) {
-        return scheduleBoardFetchService(context, boardCode, false, false);
-    }
-    
-    public static boolean scheduleBoardFetchWithPriority(Context context, String boardCode) {
-    	return scheduleBoardFetchService(context, boardCode, true, false);
-    }
-
-    public static boolean scheduleBackgroundBoardFetch(Context context, String boardCode) {
-        return scheduleBoardFetchService(context, boardCode, false, true);
-    }
-
-    private static boolean scheduleBoardFetchService(Context context, String boardCode, boolean priority, boolean backgroundLoad) {
+    public static boolean scheduleBoardFetch(Context context, String boardCode, boolean priority, boolean backgroundLoad) {
     	if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode)) {
@@ -67,7 +55,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                     + boardCode + " priority=" + priority);
             return false;
         }
-        if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + " priority=" + priority);
+        if (DEBUG) Log.i(TAG, "Start chan fetch board service /" + boardCode + "/ priority=" + priority);
         Intent intent = new Intent(context, FetchChanDataService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.PAGE, -1);
@@ -194,10 +182,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 
 		priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
 		if (boardHandling) {
-			if (DEBUG) Log.i(TAG, "Handling board " + boardCode + (boardCatalog ? " catalog" : " page=" + pageNo));
+			if (DEBUG) Log.i(TAG, "Handling board " + boardCode + (boardCatalog ? " catalog" : " page=" + pageNo) + " priority=" + priority);
 			handleBoard();
 		} else {
-			if (DEBUG) Log.i(TAG, "Handling thread " + boardCode + "/" + threadNo);
+			if (DEBUG) Log.i(TAG, "Handling thread " + boardCode + "/" + threadNo + " priority=" + priority);
 			handleThread();
 		}
 	}
@@ -227,8 +215,10 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 				board.lastFetched = 0;
 			}
 	        File boardFile = ChanFileStorage.getBoardFile(getBaseContext(), boardCode, pageNo);
-			if (boardFile != null && boardFile.exists() && (new Date().getTime() - boardFile.lastModified() < 10000) ) {
-				Log.e(TAG, "Board file exists, quiting fetch");
+			if (board != null && !board.defData
+                    && boardFile != null && boardFile.exists()
+                    && (new Date().getTime() - boardFile.lastModified() < 10000) ) {
+				if (DEBUG) Log.i(TAG, "Board file exists within last modified time, quiting fetch");
 				return;
 			}
 			

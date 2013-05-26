@@ -1007,8 +1007,8 @@ public class ChanPost {
         };
     }
 
-    public static Object[] makeBoardLinkRow(Context context, ChanBoard board) {
-        int drawableId = board.getRandomImageResourceId();
+    public static Object[] makeBoardLinkRow(Context context, ChanBoard board, long threadNo) {
+        int drawableId = board.getRandomImageResourceId(threadNo);
         return new Object[] {
                 board.link.hashCode(),
                 board.link,
@@ -1073,6 +1073,10 @@ public class ChanPost {
     }
 
     public static Object[] makeTitleRow(String boardCode, String title) {
+        return makeTitleRow(boardCode, title, "");
+    }
+
+    public static Object[] makeTitleRow(String boardCode, String title, String desc) {
         String subject = title;
         return new Object[] {
                 title.hashCode(),
@@ -1083,7 +1087,7 @@ public class ChanPost {
                 "",
                 "",
                 subject,
-                "",
+                desc,
                 "",
                 "",
                 -1,

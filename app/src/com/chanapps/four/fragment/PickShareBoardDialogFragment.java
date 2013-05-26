@@ -32,7 +32,7 @@ public class PickShareBoardDialogFragment extends ListDialogFragment {
 
     public static final String TAG = PickShareBoardDialogFragment.class.getSimpleName();
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private String[] boards;
     private Handler activityHandler;

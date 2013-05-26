@@ -22,7 +22,7 @@ import com.chanapps.four.data.ChanThread;
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected static final String TAG = BoardCursorLoader.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
 
     protected static final double AD_PROBABILITY = 0.20;
     protected static final int MINIMUM_AD_SPACING = 4;
@@ -125,8 +125,11 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 String desc = String.format(context.getString(R.string.board_related_boards_desc), board.link);
                 matrixCursor.addRow(ChanThread.makeTitleRow(boardName,
                         context.getString(R.string.board_related_boards_title), desc));
-                for (ChanBoard relatedBord : board.relatedBoards(context)) {
-                    matrixCursor.addRow(relatedBord.makeRow(context));
+                long threadNo = (board.threads != null && board.threads.length >= 3 && board.threads[3] != null)
+                        ? board.threads[3].no
+                        : 0;
+                for (ChanBoard relatedBord : board.relatedBoards(context, threadNo)) {
+                    matrixCursor.addRow(relatedBord.makeRow(context, threadNo));
                 }
             }
 

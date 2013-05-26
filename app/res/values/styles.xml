@@ -754,6 +754,7 @@
         <item name="android:textSize">@dimen/BoardListTitle</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteChanuGreen</item>
+        <item name="android:textAllCaps">true</item>
         <!--<item name="android:background">@drawable/thread_button_gradient_bg</item>-->
     </style>
 

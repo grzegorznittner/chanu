@@ -144,7 +144,7 @@ public class WidgetConfigureActivity extends FragmentActivity {
                         freshFetch = FetchPopularThreadsService.schedulePopularFetchWithPriority(context);
                     }
                     else {
-                        freshFetch = FetchChanDataService.scheduleBoardFetchWithPriority(context, widgetConf.boardCode);
+                        freshFetch = FetchChanDataService.scheduleBoardFetch(context, widgetConf.boardCode, true, false);
                     }
                 }
                 

@@ -230,10 +230,6 @@ public class ThreadActivity
             startActivity(boardIntent);
             finish();
         }
-        // normal processing resumes
-        if (intent.getBooleanExtra(ChanHelper.TRIGGER_BOARD_REFRESH, false)) {
-            FetchChanDataService.scheduleBoardFetch(getBaseContext(), boardCode);
-        }
         if (DEBUG)
             Log.i(TAG, "Thread intent is: " + intent.getStringExtra(ChanHelper.BOARD_CODE) + "/" + intent.getLongExtra(ChanHelper.THREAD_NO, 0));
         if (DEBUG) Log.i(TAG, "Thread loaded: " + boardCode + "/" + threadNo);
@@ -749,13 +745,23 @@ public class ThreadActivity
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Cursor cursor = (Cursor) parent.getItemAtPosition(position);
             int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+            final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
+            final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
             if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
                 final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
                 ChanHelper.launchUrlInBrowser(ThreadActivity.this, clickUrl);
-            } else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
+            }
+            else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0
+                    && title != null && !title.isEmpty()
+                    && desc != null && !desc.isEmpty()) {
+                (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
+                        .show(getSupportFragmentManager(), ThreadActivity.TAG);
+            }
+            else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
                 final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
                 BoardActivity.startActivity(ThreadActivity.this, boardLink);
-            } else {
+            }
+            else {
                 final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
                 final long threadNoLink = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
                 if (boardCode.equals(boardLink) && threadNo == threadNoLink) { // already on this, do nothing
@@ -777,6 +783,8 @@ public class ThreadActivity
         if (DEBUG) Log.i(TAG, "onItemClick pos=" + position + " flags=" + flags + " view=" + view);
         if ((flags & ChanPost.FLAG_IS_AD) > 0)
             itemAdListener.onClick(view);
+        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
+            itemTitleListener.onClick(view);
         else if ((flags & ChanPost.FLAG_IS_THREADLINK) > 0)
             itemThreadLinkListener.onClick(view);
         else if ((flags & ChanPost.FLAG_IS_BOARDLINK) > 0)
@@ -795,6 +803,25 @@ public class ThreadActivity
         }
     };
 
+    protected View.OnClickListener itemTitleListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = absListView.getPositionForView(v);
+            Cursor cursor = adapter.getCursor();
+            cursor.moveToPosition(pos);
+            int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
+            final String title = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+            final String desc = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+            if ((flags & ChanPost.FLAG_IS_TITLE) > 0
+                    && title != null && !title.isEmpty()
+                    && desc != null && !desc.isEmpty()) {
+                (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
+                        .show(getSupportFragmentManager(), ThreadActivity.TAG);
+            }
+
+        }
+    };
+
     protected View.OnClickListener itemThreadLinkListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -803,6 +830,7 @@ public class ThreadActivity
             cursor.moveToPosition(pos);
             String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
             long linkedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+            absListView.setItemChecked(pos, false); // gets checked for some reason
             if (linkedBoardCode == null || linkedBoardCode.isEmpty() || linkedThreadNo <= 0)
                 return;
             if (absBoardListView != null && boardCode.equals(linkedBoardCode)) {
@@ -821,6 +849,7 @@ public class ThreadActivity
             Cursor cursor = adapter.getCursor();
             cursor.moveToPosition(pos);
             String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+            absListView.setItemChecked(pos, false); // gets checked for some reason
             if (linkedBoardCode != null && !linkedBoardCode.isEmpty())
                 BoardActivity.startActivity(ThreadActivity.this, linkedBoardCode);
         }

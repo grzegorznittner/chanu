@@ -84,14 +84,14 @@ public class MobileProfile extends AbstractNetworkProfile {
                 ChanThread thread = ChanFileStorage.loadThreadData(context, activityId.boardCode, activityId.threadNo);
                 if (thread == null || thread.posts == null || thread.posts.length < 2) {
                     makeToast(R.string.mobile_profile_loading_thread);
-                    FetchChanDataService.scheduleThreadFetch(context, activityId.boardCode, activityId.threadNo);
+                    FetchChanDataService.scheduleThreadFetchWithPriority(context, activityId.boardCode, activityId.threadNo);
                 }
                 break;
             case BOARD_ACTIVITY:
                 ChanBoard board = ChanFileStorage.loadBoardData(context, activityId.boardCode);
                 if (board == null || board.threads == null || board.threads.length == 0) {
                     makeToast(R.string.mobile_profile_loading_board);
-                    FetchChanDataService.scheduleBoardFetch(context, activityId.boardCode);
+                    FetchChanDataService.scheduleBoardFetch(context, activityId.boardCode, true, false);
                 }
                 break;
             case FULL_SCREEN_IMAGE_ACTIVITY:
@@ -106,6 +106,7 @@ public class MobileProfile extends AbstractNetworkProfile {
                 break;
             default:
         }
+
     }
 
     private void makeHealthStatusToast(Context context, Health health) {
@@ -202,9 +203,8 @@ public class MobileProfile extends AbstractNetworkProfile {
             if (DEBUG) Log.i(TAG, "skipping preload board as already have data");
             return;
         }*/
-        boolean canFetch = priority
-            ? FetchChanDataService.scheduleBoardFetchWithPriority(context, boardCode)
-            : FetchChanDataService.scheduleBoardFetch(context, boardCode);
+        if (DEBUG) Log.i(TAG, "onBoardSelected priority=" + priority);
+        boolean canFetch = FetchChanDataService.scheduleBoardFetch(context, boardCode, priority, false);
         if (canFetch && priority)
             NetworkProfileManager.instance().getActivity().startProgress();
         if (canFetch)
@@ -241,7 +241,7 @@ public class MobileProfile extends AbstractNetworkProfile {
             return;
         }
         else {
-            boolean canFetch = FetchChanDataService.scheduleBoardFetchWithPriority(context, boardCode);
+            boolean canFetch = FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false);
             if (!canFetch)
                 postStopMessage(handler, R.string.board_wait_to_refresh);
         }
@@ -298,7 +298,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
         else {
             if (DEBUG) Log.i(TAG, "scheduling board fetch for thread with priority for /" + boardCode + "/");
-            FetchChanDataService.scheduleBoardFetchWithPriority(context, boardCode);
+            FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false);
         }
 
         ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadId);
@@ -395,6 +395,8 @@ public class MobileProfile extends AbstractNetworkProfile {
         } else {
             board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
         }
+        if (DEBUG) Log.i(TAG,  "handleBoardParseSuccess loadedThreads=" + board.loadedThreads.length
+                + " priority=" + data.priority + " defData=" + board.defData);
 
         if (board == null || board.defData) {
             // board data corrupted, we need to reload it
@@ -404,7 +406,6 @@ public class MobileProfile extends AbstractNetworkProfile {
             return;
         }
 
-    	Log.e(TAG,  "updateBoardData " + board.loadedThreads.length + ", priority: " + data.priority + ", defData: " + board.defData);
 		boolean oldEnough = false; //Calendar.getInstance().getTimeInMillis() - board.lastFetched > ChanBoard.MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST;
     	if (data.priority || board.defData || oldEnough) {
     		if (!data.priority) {

@@ -201,11 +201,11 @@ public class ChanBoard {
     }
 
     public static int getRandomImageResourceId(String boardCode, long postNo) {
-        return ChanBoard.getImageResourceId(boardCode, postNo, (int)(Math.random() * NUM_DEFAULT_IMAGES_PER_BOARD));
+        return ChanBoard.getImageResourceId(boardCode, postNo, (int)(postNo % NUM_DEFAULT_IMAGES_PER_BOARD));
     }
 
-    public int getRandomImageResourceId() {
-        return ChanBoard.getRandomImageResourceId(link, 0);
+    public int getRandomImageResourceId(long threadNo) {
+        return ChanBoard.getRandomImageResourceId(link, threadNo);
     }
 
     public static int getImageResourceId(String boardCode, long postNo, int index) { // allows special-casing first (usually sticky) and multiple
@@ -418,7 +418,7 @@ public class ChanBoard {
         for (ChanBoard board : boards) {
             if (!ChanFileStorage.isBoardCachedOnDisk(context, board.link)) { // if user never visited board before
                 if (DEBUG) Log.i(TAG, "Starting load service for uncached board " + board.link);
-                FetchChanDataService.scheduleBackgroundBoardFetch(context, board.link);
+                FetchChanDataService.scheduleBoardFetch(context, board.link, false, true);
                 break; // don't schedule more than one per call to avoid overloading
             }
         }
@@ -504,7 +504,11 @@ public class ChanBoard {
     }
 
     public Object[] makeRow(Context context) { // for board selector
-        return ChanThread.makeBoardRow(context, link, name, getRandomImageResourceId());
+        return makeRow(context, 0);
+    }
+
+    public Object[] makeRow(Context context, long threadNo) { // for board selector
+        return ChanThread.makeBoardRow(context, link, name, getRandomImageResourceId(threadNo));
     }
 
     public Object[] makeThreadAdRow(Context context, int pos) {
@@ -518,11 +522,13 @@ public class ChanBoard {
     }
 
     public Object[] makePostRelatedThreadsHeaderRow(Context context) {
-        return ChanPost.makeTitleRow(link, context.getString(R.string.thread_related_threads_title).toUpperCase());
+        return ChanPost.makeTitleRow(link, context.getString(R.string.thread_related_threads_title),
+                String.format(context.getString(R.string.thread_related_threads_desc), link));
     }
 
     public Object[] makePostRelatedBoardsHeaderRow(Context context) {
-        return ChanPost.makeTitleRow(link, context.getString(R.string.board_related_boards_title).toUpperCase());
+        return ChanPost.makeTitleRow(link, context.getString(R.string.board_related_boards_title),
+                String.format(context.getString(R.string.board_related_boards_desc), link));
     }
 
     public List<Object[]> makePostRelatedThreadsRows(long threadNo) {
@@ -608,8 +614,8 @@ public class ChanBoard {
         return rows;
     }
 
-    public Object[] makePostBoardLinkRow(Context context) {
-        return ChanPost.makeBoardLinkRow(context, this);
+    public Object[] makePostBoardLinkRow(Context context, long threadNo) {
+        return ChanPost.makeBoardLinkRow(context, this, threadNo);
     }
 
     public void updateCountersAfterLoad() {
@@ -759,6 +765,9 @@ public class ChanBoard {
     }
 
     public List<ChanBoard> relatedBoards(Context context) {
+        return relatedBoards(context, 0);
+    }
+    public List<ChanBoard> relatedBoards(Context context, long threadNo) {
         initBoards(context);
         if (isVirtualBoard())
             return new ArrayList<ChanBoard>();
@@ -777,7 +786,10 @@ public class ChanBoard {
                 filteredBoards.add(board);
         }
 
-        Collections.shuffle(filteredBoards);
+        if (threadNo <= 0)
+            Collections.shuffle(filteredBoards);
+        else
+            Collections.rotate(filteredBoards, (int)threadNo); // preserve order
         List<ChanBoard> boardList = new ArrayList<ChanBoard>(NUM_RELATED_BOARDS);
         int j = 0;
         for (ChanBoard relatedBoard : filteredBoards) {

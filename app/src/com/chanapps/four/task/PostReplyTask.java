@@ -299,7 +299,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
                 FetchChanDataService.scheduleThreadFetchWithPriority(activity, activity.boardCode, activity.threadNo);
             } else if (activityId.activity == LastActivity.BOARD_ACTIVITY) {
                 ChanFileStorage.resetLastFetched(activityId.boardCode);
-                FetchChanDataService.scheduleBoardFetchWithPriority(activity, activity.boardCode);
+                FetchChanDataService.scheduleBoardFetch(activity, activity.boardCode, true, false);
             }
         }
 

@@ -98,7 +98,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
             else if (ChanBoard.isVirtualBoard(boardCode))
                 FetchPopularThreadsService.scheduleBackgroundPopularFetchService(context);
             else
-                FetchChanDataService.scheduleBackgroundBoardFetch(context, boardCode);
+                FetchChanDataService.scheduleBoardFetch(context, boardCode, false, true);
         }
     }
 

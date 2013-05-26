@@ -152,11 +152,11 @@ public class ThreadCursorLoader extends BoardCursorLoader {
 
         // put related boards at the bottom
         if (showRelatedBoards) {
-            List<ChanBoard> boardRows = board.relatedBoards(context);
+            List<ChanBoard> boardRows = board.relatedBoards(context, threadNo);
             if (boardRows.size() > 0) {
                 matrixCursor.addRow(board.makePostRelatedBoardsHeaderRow(context));
                 for (ChanBoard relatedBoard : boardRows)
-                    matrixCursor.addRow(relatedBoard.makePostBoardLinkRow(context));
+                    matrixCursor.addRow(relatedBoard.makePostBoardLinkRow(context, threadNo));
             }
         }
 
