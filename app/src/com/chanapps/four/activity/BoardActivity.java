@@ -33,6 +33,7 @@ import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.data.UserStatistics.ChanFeature;
+import com.chanapps.four.fragment.GenericDialogFragment;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -364,11 +365,20 @@ public class BoardActivity
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+        final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
+        final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
         if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
             String[] clickUrls = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL))
                     .split(ChanThread.AD_DELIMITER);
             String clickUrl = viewType == ViewType.AS_GRID ? clickUrls[0] : clickUrls[1];
             ChanHelper.launchUrlInBrowser(this, clickUrl);
+        }
+        else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0
+                && title != null && !title.isEmpty()
+                && desc != null && !desc.isEmpty()) {
+            (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
+                    .show(getSupportFragmentManager(), BoardActivity.TAG);
+            return;
         }
         else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
             String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));

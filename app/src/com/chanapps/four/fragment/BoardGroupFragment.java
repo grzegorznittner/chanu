@@ -1,6 +1,7 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,6 +10,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.Loader;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
@@ -23,6 +25,7 @@ import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.*;
 import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.viewer.BoardGridViewer;
 import com.chanapps.four.viewer.BoardSelectorBoardsViewer;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -291,11 +294,21 @@ public class BoardGroupFragment
 
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
         int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((threadFlags & (ChanThread.THREAD_FLAG_AD | ChanThread.THREAD_FLAG_TITLE)) > 0) {
+        if ((threadFlags & ChanThread.THREAD_FLAG_AD) > 0) {
+            return;
+        }
+        final FragmentActivity activity = getActivity();
+
+        final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
+        final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+        if ((threadFlags & ChanThread.THREAD_FLAG_TITLE) > 0
+                && title != null && !title.isEmpty()
+                && desc != null && !desc.isEmpty()) {
+            (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
+                    .show(activity.getSupportFragmentManager(), BoardGroupFragment.TAG);
             return;
         }
 
-        final Activity activity = getActivity();
         final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         switch (boardSelectorTab) {
             case BOARDLIST:

@@ -76,9 +76,9 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
         if (board.threads != null && !board.defData
                 && board.threads.length > 0 && board.threads[0] != null && !board.threads[0].defData) { // show loading
-            if (!board.isVirtualBoard()) {
-                matrixCursor.addRow(board.makeThreadAdRow(getContext(), 0));
-            }
+            //if (!board.isVirtualBoard()) {
+            //    matrixCursor.addRow(board.makeThreadAdRow(getContext(), 0));
+            //}
 
             if (!query.isEmpty()) {
                 String title = String.format(context.getString(R.string.board_search_results), "<i>" + query + "</i>");
@@ -122,16 +122,17 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             }
 
             if (!board.isVirtualBoard() && i > 0) { // add related boards if any results
+                String desc = String.format(context.getString(R.string.board_related_boards_desc), board.link);
                 matrixCursor.addRow(ChanThread.makeTitleRow(boardName,
-                        context.getString(R.string.board_related_boards_title)));
+                        context.getString(R.string.board_related_boards_title), desc));
                 for (ChanBoard relatedBord : board.relatedBoards(context)) {
                     matrixCursor.addRow(relatedBord.makeRow(context));
                 }
             }
 
             // always put an ad at the bottom
-            if (!board.isVirtualBoard())
-                matrixCursor.addRow(board.makeThreadAdRow(getContext(), i));
+            //if (!board.isVirtualBoard())
+            //    matrixCursor.addRow(board.makeThreadAdRow(getContext(), i));
         }
         registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;

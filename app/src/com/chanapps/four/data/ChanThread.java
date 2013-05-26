@@ -117,16 +117,34 @@ public class ChanThread extends ChanPost {
 
 
     public static Object[] makeBoardTypeRow(Context context, BoardType boardType) {
-        return makeTitleRow("", context.getString(boardType.displayStringId()));
+        return new Object[] {
+                boardType.hashCode(),
+                "",
+                0,
+                context.getString(boardType.displayStringId()),
+                context.getString(boardType.descStringId()),
+                "",
+                "",
+                "",
+                "",
+                "",
+                0,
+                0,
+                THREAD_FLAG_TITLE
+        };
     }
 
     public static Object[] makeTitleRow(String boardCode, String title) {
+        return makeTitleRow(boardCode, title, "");
+    }
+
+    public static Object[] makeTitleRow(String boardCode, String title, String desc) {
         return new Object[] {
                 title.hashCode(),
                 boardCode,
                 0,
                 title,
-                "",
+                desc,
                 "",
                 "",
                 "",
