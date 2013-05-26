@@ -449,7 +449,7 @@ public class ChanPost {
             return "drawable://" + ChanBoard.getImageResourceId(board, no);
         else if (spoiler > 0)
             return ChanBoard.spoilerThumbnailUrl(board);
-        else if (tim > 0 && filedeleted == 0 && tn_w > 2 && tn_h > 2)
+        else if (tim > 0 && filedeleted == 0) // && tn_w > 2 && tn_h > 2)
             return "http://0.thumbs.4chan.org/" + board + "/thumb/" + tim + "s.jpg";
         else if (resto <= 0) // thread default
             return "drawable://" + ChanBoard.getRandomImageResourceId(board, no);

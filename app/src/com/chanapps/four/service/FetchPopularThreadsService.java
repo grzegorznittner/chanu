@@ -256,7 +256,11 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 			String strings[] = popularThreadsStr.split("<li>");
 			for (int i = 1; i < strings.length; i++) {
 				try {
-					threads.add(parseThread(strings[i]));
+                    ChanThread thread = parseThread(strings[i]);
+                    if (DEBUG) Log.v(TAG, "parsed thread /" + thread.board + "/" + thread.no
+                            + " tn_w=" + thread.tn_w + " tn_h=" + thread.tn_h + " tim=" + thread.tim
+                            + " thumbUrl=" + thread.thumbnailUrl());
+					threads.add(thread);
 				} catch (Exception e) {
 					Log.e(TAG, "Problem occured for: " + strings[i], e);
 				}
