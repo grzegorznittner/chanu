@@ -32,7 +32,7 @@ import com.chanapps.four.service.profile.WifiProfile;
  */
 public class NetworkProfileManager {
 	private static final String TAG = NetworkProfileManager.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	private static NetworkProfileManager instance;
 	

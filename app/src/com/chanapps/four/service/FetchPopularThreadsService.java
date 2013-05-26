@@ -36,22 +36,10 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class FetchPopularThreadsService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchPopularThreadsService.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
     private boolean priority;
     private boolean backgroundLoad;
-
-    public static boolean scheduleBackgroundPopularFetchService(Context context) {
-        return schedulePopularFetchService(context, false, true);
-    }
-
-    public static boolean schedulePopularFetchService(Context context) {
-        return schedulePopularFetchService(context, false, false);
-    }
-
-    public static boolean schedulePopularFetchWithPriority(Context context) {
-        return schedulePopularFetchService(context, true, false);
-    }
 
     public static boolean schedulePopularFetchService(Context context, boolean priority, boolean backgroundLoad) {
         if (!boardNeedsRefresh(context, priority)) {
@@ -143,6 +131,10 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
             tc.setConnectTimeout(fetchParams.connectTimeout);
 
 			ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.POPULAR_BOARD_CODE);
+            if (board == null || board.defData || board.threads == null || board.threads.length <= 1) {
+                priority = true;
+                if (DEBUG) Log.i(TAG, "Upping priority for first fetch");
+            }
             if (board != null && board.lastFetched > 0 && !priority) {
             	if (DEBUG) Log.i(TAG, "IfModifiedSince set as last fetch happened "
         				+ ((startTime - board.lastFetched) / 1000) + "s ago");

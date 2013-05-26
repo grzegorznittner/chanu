@@ -96,7 +96,7 @@ public class BoardWidgetProvider extends AppWidgetProvider {
             if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
                 GlobalAlarmReceiver.fetchWatchlistThreads(context);
             else if (ChanBoard.isVirtualBoard(boardCode))
-                FetchPopularThreadsService.scheduleBackgroundPopularFetchService(context);
+                FetchPopularThreadsService.schedulePopularFetchService(context, false, true);
             else
                 FetchChanDataService.scheduleBoardFetch(context, boardCode, false, true);
         }

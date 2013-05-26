@@ -141,9 +141,11 @@ public class WidgetConfigureActivity extends FragmentActivity {
                         freshFetch = false;
                     }
                     else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
-                        freshFetch = FetchPopularThreadsService.schedulePopularFetchWithPriority(context);
+                        if (DEBUG) Log.i(TAG, "scheduling popular fetch for board=" + widgetConf.boardCode);
+                        freshFetch = FetchPopularThreadsService.schedulePopularFetchService(context, true, false);
                     }
                     else {
+                        if (DEBUG) Log.i(TAG, "scheduling fetch for board=" + widgetConf.boardCode);
                         freshFetch = FetchChanDataService.scheduleBoardFetch(context, widgetConf.boardCode, true, false);
                     }
                 }

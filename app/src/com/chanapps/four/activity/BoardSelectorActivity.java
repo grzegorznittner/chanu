@@ -263,8 +263,8 @@ public class BoardSelectorActivity
         // don't call this, instead you have to call the fragment
     }
 
-    public BoardGroupFragment getSelectedFragment() {
-        BoardGroupFragment fragment = (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(mViewPager.getCurrentItem());
+    public BoardGroupFragment getFragment(BoardSelectorTab tab) {
+        BoardGroupFragment fragment = (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(tab.ordinal());
         if (DEBUG) Log.i(TAG, "found fragment=" + fragment + " tab=" + fragment.getArguments().getString(BOARD_SELECTOR_TAB) + " handler=" + fragment.getChanHandler());
         return fragment;
     }

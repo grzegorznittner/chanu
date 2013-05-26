@@ -30,7 +30,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
     private String boardCode;
     private boolean boardCatalog;
@@ -47,6 +47,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     	if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
                 || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode)) {
+            if (DEBUG) Log.i(TAG, "Redirecting refresh request for /" + boardCode + "/ to popular fetch service");
     		return FetchPopularThreadsService.schedulePopularFetchService(context, priority, backgroundLoad);
     	}
     	

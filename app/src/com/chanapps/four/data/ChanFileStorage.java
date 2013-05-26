@@ -308,7 +308,8 @@ public class ChanFileStorage {
 		thread.tn_w = 240;
 		thread.tn_h = 240;
 		thread.defData = true;
-		
+
+        board.defData = true;
 		board.threads = new ChanThread[] { thread };
 		board.lastFetched = 0;
 		
