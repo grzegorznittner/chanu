@@ -285,9 +285,9 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
     protected int updateThreadsAndWatchlist(ChanPostResponse chanPostResponse) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        long tim = activity.tim != 0 ? activity.tim : 1000 * (new Date()).getTime();// approximate until we get it back from the api
+        final long tim = activity.tim != 0 ? activity.tim : 1000 * (new Date()).getTime();// approximate until we get it back from the api
         long postThreadNo = chanPostResponse.getThreadNo(); // direct from 4chan post response parsing
-        long threadNo = postThreadNo != 0 ? postThreadNo : activity.threadNo; // fallback
+        final long threadNo = postThreadNo != 0 ? postThreadNo : activity.threadNo; // fallback
         long postNo = chanPostResponse.getPostNo();
         if (DEBUG) Log.i(TAG, "posted /" + activity.boardCode + "/" + threadNo + ":" + postNo + " tim:" + tim);
 
@@ -304,22 +304,27 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
         }
 
         // auto-add to watchlist
-        ChanThread thread = new ChanThread();
-        thread.no = threadNo;
-        thread.board = activity.boardCode;
-        thread.tim = tim;
-        thread.tn_w = 250;
-        thread.tn_h = 250;
-        thread.sub = activity.getSubject().trim();
-        thread.com = activity.getMessage().trim();
-        try {
-            ChanFileStorage.addWatchedThread(context, thread);
-            BoardGroupFragment.scheduleWatchlistRefresh();
-        }
-        catch (IOException e) {
-            Log.e(TAG, "Couldn't add thread /" + thread.board + "/" + thread.no + " to watchlist", e);
-        }
-        //ChanPostlist.addPost(context, activity.boardCode, threadNo, postNo, password);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ChanThread thread = new ChanThread();
+                thread.no = threadNo;
+                thread.board = activity.boardCode;
+                thread.tim = tim;
+                thread.tn_w = 250;
+                thread.tn_h = 250;
+                thread.sub = activity.getSubject().trim();
+                thread.com = activity.getMessage().trim();
+                try {
+                    ChanFileStorage.addWatchedThread(context, thread);
+                    BoardGroupFragment.refreshWatchlist();
+                }
+                catch (IOException e) {
+                    Log.e(TAG, "Couldn't add thread /" + thread.board + "/" + thread.no + " to watchlist", e);
+                }
+                //ChanPostlist.addPost(context, activity.boardCode, threadNo, postNo, password);
+            }
+        }).start();
 
         activity.imageUri = null; // now we've processed so don't use it again
         return 0;

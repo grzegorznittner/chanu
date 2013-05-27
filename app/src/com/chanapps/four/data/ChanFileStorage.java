@@ -30,7 +30,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanFileStorage {
 	private static final String TAG = ChanFileStorage.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	private static final int MAX_BOARDS_IN_CACHE = 100;
 	private static final int MAX_THREADS_IN_CACHE = 200;
@@ -601,7 +601,7 @@ public class ChanFileStorage {
     		return;
     	}
     	List<ChanPost> newThreads = null;
-    	if (board.defData || (board.threads.length > 0 && board.threads[0].defData)) {
+    	if (board.defData || board.threads == null || board.threads.length == 0 || board.threads[0].defData) {
     		newThreads = new ArrayList<ChanPost>();
     		board.defData = false;
     	} else {

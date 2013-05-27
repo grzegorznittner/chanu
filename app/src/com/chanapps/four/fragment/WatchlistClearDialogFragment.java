@@ -60,15 +60,7 @@ public class WatchlistClearDialogFragment extends DialogFragment {
                                 try {
                                     if (DEBUG) Log.i(TAG, "Clearing watchlist...");
                                     ChanFileStorage.clearWatchedThreads(getActivity().getApplicationContext());
-                                    if (fragmentRef != null && fragmentRef.get() != null && fragmentRef.get().handler != null)
-                                        fragmentRef.get().handler.post(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                fragmentRef.get().refresh();
-                                            }
-                                        });
-                                    else
-                                        BoardGroupFragment.scheduleWatchlistRefresh();
+                                    BoardGroupFragment.refreshWatchlist();
                                     Toast.makeText(getActivity().getApplicationContext(),
                                             R.string.thread_watchlist_cleared, Toast.LENGTH_SHORT).show();
                                 }

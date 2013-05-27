@@ -45,7 +45,6 @@ import com.chanapps.four.fragment.*;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
-import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
@@ -72,7 +71,7 @@ public class ThreadActivity
         MediaScannerConnection.OnScanCompletedListener {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
@@ -557,22 +556,37 @@ public class ThreadActivity
     }
 
     protected void addToWatchlist() {
-        ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
-        if (thread == null) {
-            Log.e(TAG, "Couldn't add null thread /" + boardCode + "/" + threadNo + " to watchlist");
-            Toast.makeText(getApplicationContext(), R.string.thread_not_added_to_watchlist, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        try {
-            ChanFileStorage.addWatchedThread(this.getApplicationContext(), thread);
-            BoardGroupFragment.scheduleWatchlistRefresh();
-            if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/" + threadNo + " to watchlist");
-            Toast.makeText(getApplicationContext(), R.string.thread_added_to_watchlist, Toast.LENGTH_SHORT).show();
-        }
-        catch (IOException e) {
-            Log.e(TAG, "Exception adding /" + boardCode + "/" + threadNo + " to watchlist", e);
-            Toast.makeText(getApplicationContext(), R.string.thread_not_added_to_watchlist, Toast.LENGTH_SHORT).show();
-        }
+        final Context context = getApplicationContext();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int msgId;
+                try {
+                    final ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
+                    if (thread == null) {
+                        Log.e(TAG, "Couldn't add null thread /" + boardCode + "/" + threadNo + " to watchlist");
+                        msgId = R.string.thread_not_added_to_watchlist;
+                    }
+                    else {
+                        ChanFileStorage.addWatchedThread(context, thread);
+                        BoardGroupFragment.refreshWatchlist();
+                        msgId = R.string.thread_added_to_watchlist;
+                        if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/" + threadNo + " to watchlist");
+                    }
+                }
+                catch (IOException e) {
+                    msgId = R.string.thread_not_added_to_watchlist;
+                    Log.e(TAG, "Exception adding /" + boardCode + "/" + threadNo + " to watchlist", e);
+                }
+                final int stringId = msgId;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), stringId, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }).start();
     }
 
     public ChanActivityId getChanActivityId() {

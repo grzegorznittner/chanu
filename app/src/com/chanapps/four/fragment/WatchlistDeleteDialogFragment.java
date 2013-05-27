@@ -53,7 +53,7 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
                                     ChanFileStorage.deleteWatchedThread(getActivity().getApplicationContext(), thread);
-                                    BoardGroupFragment.scheduleWatchlistRefresh();
+                                    BoardGroupFragment.refreshWatchlist();
                                 }
                                 catch (IOException e) {
                                     Log.e(TAG, "Exception deleting watchlist thread=" + thread, e);

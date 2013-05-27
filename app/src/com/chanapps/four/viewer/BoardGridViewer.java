@@ -139,12 +139,13 @@ public class BoardGridViewer {
         }
         else {
             url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
-            if (url == null || url.isEmpty()) {
-                String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-                long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-                int i = (new Long(threadNo % 3)).intValue();
+            String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+            int i = (new Long(threadNo % 3)).intValue();
+            String defaultUrl = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
+            iv.setTag(R.id.BOARD_GRID_VIEW_DEFAULT_DRAWABLE, defaultUrl);
+            if (url == null || url.isEmpty())
                 url = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
-            }
         }
         imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
         return true;
@@ -156,46 +157,66 @@ public class BoardGridViewer {
         }
         @Override
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            displayDefaultItem(imageUri, view);
         }
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            ViewParent parent = view.getParent();
-            if (parent != null && parent instanceof ViewGroup) {
-                ViewGroup parentView = (ViewGroup)parent;
-                ViewGroup wrapper = (ViewGroup)parentView.findViewById(R.id.grid_item_text_wrapper);
-                TextView subject = (TextView)parentView.findViewById(R.id.grid_item_thread_subject);
-                TextView info = (TextView)parentView.findViewById(R.id.grid_item_thread_info);
-                TextView abbrev = (TextView)parentView.findViewById(R.id.grid_item_board_abbrev);
-                ImageView countryFlag = (ImageView)parentView.findViewById(R.id.grid_item_country_flag);
-                if (DEBUG) Log.i(TAG, "onLoadingComplete subject=" + subject.getText() + " info=" + info.getText()
-                        + " abbrev=" + abbrev.getText()
-                        + " url=" + imageUri + " img=" + loadedImage + " byteCount=" + loadedImage.getByteCount());
-                boolean oneVisible = false;
-                boolean overlayDetails = true;
-                if (overlayDetails) {
-                    if (subject != null && subject.getText() != null && subject.getText().length() > 0) {
-                        subject.setVisibility(View.VISIBLE);
-                        oneVisible = true;
-                    }
-                    if (info != null && info.getText() != null && info.getText().length() > 0) {
-                        info.setVisibility(View.VISIBLE);
-                        oneVisible = true;
-                    }
-                    if (wrapper != null && oneVisible)
-                        wrapper.setVisibility(View.VISIBLE);
-                    if (abbrev != null && abbrev.getText() != null
-                            && abbrev.getText().length() > 0
-                            && !abbrev.getText().toString().equals(subject.getText().toString()))
-                        abbrev.setVisibility(View.VISIBLE);
-                    if (countryFlag.getDrawable() != null)
-                        countryFlag.setVisibility(View.VISIBLE);
-                }
-            }
+            displayItem(imageUri, view, loadedImage);
         }
         @Override
         public void onLoadingCancelled(String imageUri, View view) {
         }
     };
+
+    protected static void displayItem(String imageUri, View view, Bitmap loadedImage) {
+        ViewParent parent = view.getParent();
+        if (parent == null || !(parent instanceof  ViewGroup))
+            return;
+
+        ViewGroup parentView = (ViewGroup)parent;
+        ViewGroup wrapper = (ViewGroup)parentView.findViewById(R.id.grid_item_text_wrapper);
+        TextView subject = (TextView)parentView.findViewById(R.id.grid_item_thread_subject);
+        TextView info = (TextView)parentView.findViewById(R.id.grid_item_thread_info);
+        TextView abbrev = (TextView)parentView.findViewById(R.id.grid_item_board_abbrev);
+        ImageView countryFlag = (ImageView)parentView.findViewById(R.id.grid_item_country_flag);
+        if (DEBUG) Log.i(TAG, "onLoadingComplete subject=" + subject.getText() + " info=" + info.getText()
+                + " abbrev=" + abbrev.getText()
+                + " url=" + imageUri
+                + " img=" + loadedImage
+                + " byteCount=" + (loadedImage == null ? 0 : loadedImage.getByteCount()));
+        boolean oneVisible = false;
+
+        boolean overlayDetails = true;
+        if (overlayDetails) {
+            if (subject != null && subject.getText() != null && subject.getText().length() > 0) {
+                subject.setVisibility(View.VISIBLE);
+                oneVisible = true;
+            }
+            if (info != null && info.getText() != null && info.getText().length() > 0) {
+                info.setVisibility(View.VISIBLE);
+                oneVisible = true;
+            }
+            if (wrapper != null && oneVisible)
+                wrapper.setVisibility(View.VISIBLE);
+            if (abbrev != null && abbrev.getText() != null
+                    && abbrev.getText().length() > 0
+                    && !abbrev.getText().toString().equals(subject.getText().toString()))
+                abbrev.setVisibility(View.VISIBLE);
+            if (countryFlag.getDrawable() != null)
+                countryFlag.setVisibility(View.VISIBLE);
+        }
+    }
+
+    protected static void displayDefaultItem(String imageUri, View view) {
+        if (imageUri.matches("drawable://.*")) {
+            displayItem(imageUri, view, null);
+            return;
+        }
+        String defaultUrl = (String)view.getTag(R.id.BOARD_GRID_VIEW_DEFAULT_DRAWABLE);
+        if (defaultUrl == null || defaultUrl.isEmpty())
+            defaultUrl = ChanBoard.getIndexedImageDrawableUrl(ChanBoard.DEFAULT_BOARD_CODE, 0);
+        imageLoader.displayImage(defaultUrl, (ImageView)view, displayImageOptions, thumbLoadingListener);
+    }
 
     protected static boolean setCountryFlag(ImageView iv, Cursor cursor) {
         iv.setVisibility(View.GONE);

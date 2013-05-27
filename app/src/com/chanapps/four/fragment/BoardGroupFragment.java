@@ -49,7 +49,8 @@ public class BoardGroupFragment
 {
 
     private static final String TAG = BoardGroupFragment.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
+    private static WeakReference<BoardGroupFragment> watchlistFragmentRef = null;
 
     private BoardSelectorTab boardSelectorTab;
     private ResourceCursorAdapter adapter;
@@ -62,12 +63,6 @@ public class BoardGroupFragment
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
 
-    protected static boolean scheduledWatchlistRefresh = false;
-
-    public static void scheduleWatchlistRefresh() {
-        scheduledWatchlistRefresh = true;
-    }
-
     public void refresh() {
         if (handler != null)
             handler.post(new Runnable() {
@@ -76,6 +71,18 @@ public class BoardGroupFragment
                     getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
                 }
             });
+    }
+
+    public void backgroundRefresh() {
+        Handler handler = NetworkProfileManager.instance().getActivity().getChanHandler();
+        if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.swapCursor(null);
+                }
+            });
+        //getLoaderManager().destroyLoader(0);
     }
 
     public Context getBaseContext() {
@@ -97,7 +104,29 @@ public class BoardGroupFragment
                 ? BoardSelectorTab.valueOf(selectorString)
                 : BoardSelectorActivity.DEFAULT_BOARD_SELECTOR_TAB;
         setHasOptionsMenu(true);
+        if (boardSelectorTab == BoardSelectorTab.WATCHLIST) {
+            setWatchlist(this);
+        }
         if (DEBUG) Log.v(TAG, "BoardGroupFragment " + boardSelectorTab + " onCreate");
+    }
+
+    protected static void setWatchlist(BoardGroupFragment fragment) {
+        synchronized (BoardGroupFragment.class) {
+            watchlistFragmentRef = new WeakReference<BoardGroupFragment>(fragment);
+        }
+    }
+
+    public static void refreshWatchlist() {
+        synchronized (BoardGroupFragment.class) {
+            BoardGroupFragment fragment;
+            if (watchlistFragmentRef != null && (fragment = watchlistFragmentRef.get()) != null) {
+                ChanActivityId activity = NetworkProfileManager.instance().getActivityId();
+                if (activity != null && activity.activity == ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY)
+                    fragment.refresh();
+                else
+                    fragment.backgroundRefresh();
+            }
+        }
     }
 
     protected void createAbsListView(View contentView) {
@@ -193,15 +222,7 @@ public class BoardGroupFragment
         //    getLoaderManager().restartLoader(0, null, this);
         //}
         if (absListView.getCount() <= 0) {
-            if (boardSelectorTab == BoardSelectorTab.WATCHLIST)
-                scheduledWatchlistRefresh = false;
             if (DEBUG) Log.i(TAG, "No data displayed, starting loader");
-            getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
-        }
-        else if (scheduledWatchlistRefresh) {
-            if (boardSelectorTab == BoardSelectorTab.WATCHLIST)
-                scheduledWatchlistRefresh = false;
-            if (DEBUG) Log.i(TAG, "Refresh scheduled, starting loader");
             getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
         }
         if (boardSelectorTab == BoardSelectorTab.BOARDLIST)
@@ -240,8 +261,6 @@ public class BoardGroupFragment
     public void onDestroy() {
         super.onDestroy();
         if (DEBUG) Log.i(TAG, "onDestroy tab=" + boardSelectorTab);
-        if (boardSelectorTab == BoardSelectorTab.WATCHLIST)
-            scheduledWatchlistRefresh = false;
     }
 
 
