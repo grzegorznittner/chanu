@@ -180,12 +180,16 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
             }
         } catch (IOException e) {
             //toastUI(R.string.board_service_couldnt_read);
-            NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
             Log.e(TAG, "IO Error fetching Chan web page", e);
+            NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
 		} catch (Exception e) {
             //toastUI(R.string.board_service_couldnt_load);
+            Log.e(TAG, "Exception fetching Chan web page", e);
             NetworkProfileManager.instance().failedFetchingData(this, Failure.WRONG_DATA);
-			Log.e(TAG, "Error fetching Chan web page", e);
+		} catch (Error e) {
+            //toastUI(R.string.board_service_couldnt_load);
+            Log.e(TAG, "Error fetching Chan web page", e);
+            NetworkProfileManager.instance().failedFetchingData(this, Failure.WRONG_DATA);
 		} finally {
 			closeConnection(tc);
 		}

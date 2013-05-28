@@ -20,8 +20,10 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.viewer.ThreadListener;
 import com.chanapps.four.viewer.ThreadViewer;
@@ -40,6 +42,8 @@ public class ThreadPopupDialogFragment
         extends DialogFragment
         implements AbstractBoardCursorAdapter.ViewBinder
 {
+    public static final String LAST_POSITION = "lastPosition";
+    public static final String POPUP_TYPE = "popupType";
 
     static public enum PopupType {
         BACKLINKS,
@@ -78,12 +82,12 @@ public class ThreadPopupDialogFragment
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey(ChanHelper.BOARD_CODE)) {
-            boardCode = savedInstanceState.getString(ChanHelper.BOARD_CODE);
-            threadNo = savedInstanceState.getLong(ChanHelper.THREAD_NO);
-            postNo = savedInstanceState.getLong(ChanHelper.POST_NO);
-            pos = savedInstanceState.getInt(ChanHelper.LAST_THREAD_POSITION);
-            popupType = PopupType.valueOf(savedInstanceState.getString(ChanHelper.POPUP_TYPE));
+        if (savedInstanceState != null && savedInstanceState.containsKey(ChanBoard.BOARD_CODE)) {
+            boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
+            threadNo = savedInstanceState.getLong(ChanThread.THREAD_NO);
+            postNo = savedInstanceState.getLong(ChanPost.POST_NO);
+            pos = savedInstanceState.getInt(LAST_POSITION);
+            popupType = PopupType.valueOf(savedInstanceState.getString(POPUP_TYPE));
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -113,11 +117,11 @@ public class ThreadPopupDialogFragment
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString(ChanHelper.BOARD_CODE, boardCode);
-        outState.putLong(ChanHelper.THREAD_NO, threadNo);
-        outState.putLong(ChanHelper.POST_NO, postNo);
-        outState.putInt(ChanHelper.LAST_THREAD_POSITION, pos);
-        outState.putString(ChanHelper.POPUP_TYPE, popupType.toString());
+        outState.putString(ChanBoard.BOARD_CODE, boardCode);
+        outState.putLong(ChanThread.THREAD_NO, threadNo);
+        outState.putLong(ChanPost.POST_NO, postNo);
+        outState.putInt(LAST_POSITION, pos);
+        outState.putString(POPUP_TYPE, popupType.toString());
     }
 
     protected DialogInterface.OnClickListener postReplyListener = new DialogInterface.OnClickListener() {
@@ -125,8 +129,8 @@ public class ThreadPopupDialogFragment
         public void onClick(DialogInterface dialog, int which) {
             String replyText = ">>" + postNo + "\n";
             Intent replyIntent = new Intent(getActivity().getApplicationContext(), PostReplyActivity.class);
-            replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-            replyIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+            replyIntent.putExtra(ChanBoard.BOARD_CODE, boardCode);
+            replyIntent.putExtra(ChanThread.THREAD_NO, threadNo);
             replyIntent.putExtra(ChanPost.POST_NO, 0);
             replyIntent.putExtra(ChanHelper.TEXT, ChanPost.planifyText(replyText));
             startActivity(replyIntent);

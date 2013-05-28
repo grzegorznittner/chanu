@@ -53,7 +53,7 @@ public class BoardActivity
         AbstractBoardCursorAdapter.ViewBinder
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
 
     protected AbstractBoardCursorAdapter adapter;
@@ -64,7 +64,6 @@ public class BoardActivity
     protected BoardCursorLoader cursorLoader;
     protected int scrollOnNextLoaderFinished = -1;
     protected Menu menu;
-    protected SharedPreferences prefs;
     protected long tim;
     protected String boardCode;
     protected String query = "";
@@ -73,43 +72,92 @@ public class BoardActivity
     protected MenuItem searchMenuItem;
     protected ViewType viewType = ViewType.AS_GRID;
 
-    public static void startActivity(Activity from, String boardCode) {
-        from.startActivity(createIntentForActivity(from, boardCode));
-    }
-
-    public static void startActivityForSearch(Activity from, String boardCode, String query) {
-        NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.SEARCH_BOARD);
-        from.startActivity(createIntentForActivity(from, boardCode, query));
-    }
-
-    public static Intent createIntentForActivity(Context context, String boardCode) {
-        return createIntentForActivity(context, boardCode, "");
+    public static void startActivity(Activity from, String boardCode, String query) {
+        if (query != null && !query.isEmpty())
+            NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.SEARCH_BOARD);
+        from.startActivity(createIntentForActivity(from, boardCode, ""));
     }
 
     public static Intent createIntentForActivity(Context context, String boardCode, String query) {
         String intentBoardCode = boardCode == null || boardCode.isEmpty() ? ChanBoard.DEFAULT_BOARD_CODE : boardCode;
         Intent intent = new Intent(context, BoardActivity.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, intentBoardCode);
+        intent.putExtra(ChanBoard.BOARD_CODE, intentBoardCode);
         intent.putExtra(ChanHelper.PAGE, 0);
         intent.putExtra(SearchManager.QUERY, query);
-        intent.putExtra(ChanHelper.LAST_BOARD_POSITION, 0);
-        intent.putExtra(ChanHelper.FROM_PARENT, true);
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-        editor.putInt(ChanHelper.LAST_BOARD_POSITION, 0); // reset it
-        editor.commit();
         return intent;
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-		if (DEBUG) Log.v(TAG, "************ onCreate");
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        if (DEBUG) Log.v(TAG, "onCreate saved boardCode="
+                + (bundle == null ? "null" : bundle.getString(ChanBoard.BOARD_CODE)));
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         query = getIntent().hasExtra(SearchManager.QUERY)
                 ? getIntent().getStringExtra(SearchManager.QUERY)
                 : "";
         createAbsListView();
+        if (bundle != null)
+            onRestoreInstanceState(bundle);
+        else
+            setFromIntent(getIntent());
+        if (boardCode == null || boardCode.isEmpty())
+            redirectToBoardSelector();
         LoaderManager.enableDebugLogging(true);
+    }
+
+    protected void redirectToBoardSelector() { // backup in case we are missing stuff
+        Log.e(TAG, "Empty board code, redirecting to board selector");
+        Intent selectorIntent = new Intent(this, BoardSelectorActivity.class);
+        selectorIntent.putExtra(ChanHelper.BOARD_TYPE, BoardType.JAPANESE_CULTURE.toString());
+        selectorIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
+        selectorIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(selectorIntent);
+        finish();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString(ChanBoard.BOARD_CODE, boardCode);
+        savedInstanceState.putString(SearchManager.QUERY, query);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
+        query = savedInstanceState.getString(SearchManager.QUERY);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (DEBUG) Log.i(TAG, "onNewIntent boardCode=" + intent.getStringExtra(ChanBoard.BOARD_CODE));
+        setIntent(intent);
+        setFromIntent(intent);
+    }
+
+    public void setFromIntent(Intent intent) {
+        Uri data = intent.getData();
+        if (data == null) {
+            boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
+            query = intent.getStringExtra(SearchManager.QUERY);
+        }
+        else {
+            List<String> params = data.getPathSegments();
+            String uriBoardCode = params.get(0);
+            if (ChanBoard.getBoardByCode(this, uriBoardCode) != null) {
+                boardCode = uriBoardCode;
+                query = "";
+                if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from url intent");
+            }
+            else {
+                boardCode = ChanBoard.DEFAULT_BOARD_CODE;
+                query = "";
+                if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, using default board");
+            }
+        }
+        if (DEBUG) Log.i(TAG, "set from intent boardCode=" + boardCode);
     }
 
     protected void sizeGridToDisplay() {
@@ -173,45 +221,22 @@ public class BoardActivity
         super.onStart();
         if (handler == null)
             handler = new LoaderHandler();
-		if (DEBUG) Log.v(TAG, "onStart query=" + query);
+		if (DEBUG) Log.v(TAG, "onStart board=" + boardCode + " query=" + query);
         setActionBarTitle();
     }
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (DEBUG) Log.v(TAG, "onResume query=" + query);
+		if (DEBUG) Log.v(TAG, "onResume board=" + boardCode + " query=" + query);
         if (handler == null)
             handler = new LoaderHandler();
-        restoreInstanceState();
+        handleUpdatedThreads();
+        invalidateOptionsMenu(); // for correct spinner display
 		NetworkProfileManager.instance().activityChange(this);
 		getSupportLoaderManager().restartLoader(0, null, this);
         new TutorialOverlay(layout, Page.BOARD);
 	}
-
-    protected String getLastPositionName() {
-        return ChanHelper.LAST_BOARD_POSITION;
-    }
-
-    protected void scrollToLastPosition() {
-        String intentExtra = getLastPositionName();
-        int lastPosition = getIntent().getIntExtra(intentExtra, -1);
-        if (lastPosition == -1) {
-            lastPosition = ensurePrefs().getInt(intentExtra, -1);
-        }
-        if (lastPosition == -1) {
-            lastPosition = 0;
-        }
-        if (lastPosition <= absListView.getCount()) { // we can scroll now
-            absListView.smoothScrollToPosition(lastPosition);
-            absListView.smoothScrollToPosition(0);
-            scrollOnNextLoaderFinished = -1;
-        }
-        else { // scroll next time when list is loaded
-            scrollOnNextLoaderFinished = lastPosition;
-        }
-        if (DEBUG) Log.v(TAG, "Scrolling to:" + lastPosition);
-    }
 
     @Override
 	public void onWindowFocusChanged (boolean hasFocus) {
@@ -221,85 +246,31 @@ public class BoardActivity
     @Override
 	protected void onPause() {
         super.onPause();
-        if (DEBUG) Log.v(TAG, "onPause query=" + query);
-        saveInstanceState();
+        if (DEBUG) Log.v(TAG, "onPause board=" + boardCode + " query=" + query);
         handler = null;
-    }
-
-    protected SharedPreferences ensurePrefs() {
-        if (prefs == null)
-            prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        return prefs;
-    }
-
-    protected void loadFromIntentOrPrefs() {
-        Intent intent = getIntent();
-        Uri data = intent.getData();
-        if (data != null) {
-            List<String> params = data.getPathSegments();
-            String uriBoardCode = params.get(0);
-            if (ChanBoard.getBoardByCode(this, uriBoardCode) != null) {
-                boardCode = uriBoardCode;
-                if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from url intent");
-            }
-            else {
-                if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, ignoring");
-            }
-        }
-        else if (intent.hasExtra(ChanHelper.BOARD_CODE)) {
-            boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-            if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from board code intent");
-        }
-        else {
-            boardCode = ensurePrefs().getString(ChanHelper.BOARD_CODE, ChanBoard.DEFAULT_BOARD_CODE);
-            if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from prefs or default");
-        }
-        query = intent.hasExtra(SearchManager.QUERY)
-                ? intent.getStringExtra(SearchManager.QUERY)
-                : ensurePrefs().getString(SearchManager.QUERY, "");
-        // backup in case we are missing stuff
-        if (boardCode == null || boardCode.isEmpty()) {
-            Log.e(TAG, "Empty board code, redirecting to board selector");
-            Intent selectorIntent = new Intent(this, BoardSelectorActivity.class);
-            selectorIntent.putExtra(ChanHelper.BOARD_TYPE, BoardType.JAPANESE_CULTURE.toString());
-            selectorIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
-            selectorIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(selectorIntent);
-            finish();
-        }
-    }
-
-    protected void restoreInstanceState() {
-        if (DEBUG) Log.i(TAG, "Restoring instance state... query=" + query);
-        loadFromIntentOrPrefs();
-        handleUpdatedThreads();
-        //scrollToLastPosition();
-        invalidateOptionsMenu(); // for correct spinner display
-    }
-
-    protected void saveInstanceState() {
-        if (DEBUG) Log.i(TAG, "Saving instance state...");
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        editor.putString(ChanHelper.BOARD_CODE, boardCode);
-        editor.putLong(ChanHelper.THREAD_NO, 0);
-        editor.putInt(ChanHelper.LAST_BOARD_POSITION, absListView.getFirstVisiblePosition());
-        editor.commit();
-        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     @Override
     protected void onStop () {
     	super.onStop();
-    	if (DEBUG) Log.v(TAG, "onStop query=" + query);
+    	if (DEBUG) Log.v(TAG, "onStop board=" + boardCode + " query=" + query);
     	getLoaderManager().destroyLoader(0);
     	handler = null;
+        /*
+        adapter = null;
+        layout = null;
+        absListView = null;
+        cursorLoader = null;
+        menu = null;
+        */
     }
 
     @Override
 	protected void onDestroy () {
 		super.onDestroy();
-		if (DEBUG) Log.v(TAG, "onDestroy query=" + query);
-		getLoaderManager().destroyLoader(0);
+		if (DEBUG) Log.v(TAG, "onDestroy board=" + boardCode + " query=" + query);
+		if (cursorLoader != null)
+            getLoaderManager().destroyLoader(0);
 		handler = null;
 	}
 
@@ -322,6 +293,8 @@ public class BoardActivity
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoadFinished count=" + (data == null ? 0 : data.getCount()));
+        if (absListView == null)
+            createAbsListView();
 		adapter.swapCursor(data);
         if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
         if (absListView != null) {
@@ -358,7 +331,8 @@ public class BoardActivity
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
-		adapter.swapCursor(null);
+        if (adapter != null)
+            adapter.swapCursor(null);
 	}
 
     @Override
@@ -382,12 +356,12 @@ public class BoardActivity
         }
         else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
             String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-            startActivity(this, boardLink);
+            startActivity(this, boardLink, "");
         }
         else {
             String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
             long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-            ThreadActivity.startActivity(this, boardLink, threadNo);
+            ThreadActivity.startActivity(this, boardLink, threadNo, "");
         }
     }
 
@@ -395,12 +369,10 @@ public class BoardActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent intent = new Intent(this, BoardSelectorActivity.class);
-                intent.putExtra(ChanHelper.BOARD_TYPE, ChanBoard.getBoardByCode(this, boardCode).boardType.toString());
+                if (DEBUG) Log.i(TAG, "navigating up");
+                Intent intent = BoardSelectorActivity.createIntentForActivity(this, BoardSelectorTab.BOARDLIST);
                 intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
-                //if (!NavUtils.shouldUpRecreateTask(this, intent)) {
-                    NavUtils.navigateUpTo(this, intent);
-                //}
+                NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
@@ -415,7 +387,7 @@ public class BoardActivity
                 return true;
             case R.id.new_thread_menu:
                 Intent replyIntent = new Intent(this, PostReplyActivity.class);
-                replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+                replyIntent.putExtra(ChanBoard.BOARD_CODE, boardCode);
                 replyIntent.putExtra(ChanHelper.THREAD_NO, 0);
                 replyIntent.putExtra(ChanPost.POST_NO, 0);
                 replyIntent.putExtra(ChanHelper.TIM, 0);

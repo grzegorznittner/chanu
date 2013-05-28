@@ -42,7 +42,8 @@
                 android:name=".PostReplyActivity"
                 android:label="@string/post_reply_activity"
                 android:configChanges="orientation"
-                android:exported="false">
+                android:exported="false"
+                android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -54,7 +55,8 @@
                 android:name=".PostReplyShareActivity"
                 android:label="@string/post_reply_share_activity"
                 android:configChanges="orientation"
-                android:exported="true">
+                android:exported="true"
+                android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.SEND"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -63,7 +65,8 @@
         </activity>
 
         <activity android:name=".GalleryViewActivity" android:label="@string/full_screen_image_activity"
-                  android:configChanges="orientation|screenSize">
+                  android:configChanges="orientation|screenSize"
+                  android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -77,6 +80,7 @@
 
         <activity android:name=".BoardActivity" android:label="@string/board_activity"
                   android:taskAffinity=".BoardActivity"
+                  android:launchMode="singleTask"
                 >
             <intent-filter android:priority="100">
                 <action android:name="android.intent.action.VIEW"/>
@@ -96,6 +100,7 @@
 
         <activity android:name=".ThreadActivity" android:label="@string/thread_activity"
                   android:taskAffinity=".ThreadActivity"
+                  android:launchMode="singleTask"
                 >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -110,7 +115,9 @@
                     android:value=".SearchActivity"/>
         </activity>
 
-        <activity android:name=".SearchActivity" android:label="@string/thread_search">
+        <activity android:name=".SearchActivity" android:label="@string/thread_search"
+                  android:launchMode="singleTask"
+                >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
@@ -120,14 +127,18 @@
                     />
         </activity>
 
-        <activity android:name=".SettingsActivity" android:label="@string/settings_activity">
+        <activity android:name=".SettingsActivity" android:label="@string/settings_activity"
+                  android:launchMode="singleTask"
+                >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
 
-        <activity android:name=".AboutActivity" android:label="@string/about_activity">
+        <activity android:name=".AboutActivity" android:label="@string/about_activity"
+                  android:launchMode="singleTask"
+                >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
@@ -136,6 +147,7 @@
 
         <activity android:name=".BoardSelectorActivity" android:label="@string/application_name"
                   android:taskAffinity=".BoardSelectorActivity"
+                  android:launchMode="singleTask"
                 >
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -158,6 +170,7 @@
         <activity android:name="com.chanapps.four.widget.WidgetConfigureActivity"
                   android:excludeFromRecents="true"
                   android:taskAffinity=""
+                  android:launchMode="singleTask"
                   android:label="@string/widget_configure_title">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
@@ -237,13 +250,16 @@
         <!-- camera -->
         <activity android:name=".CameraActivity"
                   android:screenOrientation="portrait"
-                  android:label="@string/application_name">
+                  android:label="@string/application_name"
+                  android:launchMode="singleTask"
+                >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
 
         <activity android:name=".VideoViewActivity"
+                  android:launchMode="singleTask"
                   android:configChanges="orientation|keyboardHidden|screenSize"
                   android:exported="false">
             <intent-filter>
@@ -257,6 +273,7 @@
         <activity android:name="com.android.gallery3d.app.Wallpaper"
                   android:configChanges="keyboardHidden|orientation|screenSize"
                   android:theme="@style/android:Theme.Translucent.NoTitleBar"
+                  android:launchMode="singleTask"
                   android:exported="false">
             <intent-filter android:label="@string/camera_setas_wallpaper">
                 <action android:name="android.intent.action.ATTACH_DATA"/>
@@ -274,7 +291,9 @@
                   android:configChanges="keyboardHidden|orientation|screenSize"
                   android:label="@string/crop_label"
                   android:process=":crop"
-                  android:exported="false">
+                  android:exported="false"
+                  android:launchMode="singleTask"
+                >
             <intent-filter android:label="@string/crop_label">
                 <action android:name="com.android.camera.action.CROP"/>
                 <data android:scheme="http"/>
@@ -293,7 +312,9 @@
                   android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
                   android:configChanges="keyboardHidden|orientation|screenSize"
                   android:hardwareAccelerated="true"
-                  android:exported="false">
+                  android:exported="false"
+                  android:launchMode="singleTask"
+                >
             <intent-filter>
                 <action android:name="android.intent.action.EDIT"/>
                 <data android:mimeType="image/*"/>
@@ -307,7 +328,9 @@
                   android:label="@string/slideshow_dream_name"
                   android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
                   android:hardwareAccelerated="true"
-                  android:exported="false">
+                  android:exported="false"
+                  android:launchMode="singleTask"
+                >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.DEFAULT"/>

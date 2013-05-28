@@ -256,7 +256,8 @@ public class ChanFileStorage {
 				if (boardFile != null && boardFile.exists()) {
 					ObjectMapper mapper = ChanHelper.getJsonMapper();
 					ChanBoard board = mapper.readValue(boardFile, ChanBoard.class);
-					if (DEBUG) Log.i(TAG, "Loaded " + board.threads.length + " threads for board '" + board.link + "'");
+					if (DEBUG) Log.i(TAG, "Loaded " + board.threads.length + " threads for board '" + board.link
+                            + "' isFile=" + boardFile.isFile() + " size=" + boardFile.length()/1000 + "KB");
 					boardCache.put(boardCode, board);
                     return board;
 				} else {

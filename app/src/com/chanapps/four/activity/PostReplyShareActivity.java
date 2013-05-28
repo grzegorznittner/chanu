@@ -51,23 +51,6 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
     }
 
     @Override
-    protected void restoreInstanceState() {
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEND.equals(intent.getAction()))
-            loadFromIntent(getIntent());
-        else
-            loadFromPrefs();
-        refresh();
-    }
-
-    @Override
-    protected void loadFromIntent(Intent intent) {
-        loadFromIntentWithBoardCode(intent,
-                boardCode == null || boardCode.equals("") ? ChanBoard.DEFAULT_BOARD_CODE : boardCode,
-                imageUri == null || imageUri.equals("") ? null : imageUri.toString());
-    }
-
-    @Override
     protected synchronized Handler ensureHandler() {
         if (handler == null && ChanHelper.onUIThread())
             handler = new ShareHandler();
@@ -97,13 +80,12 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
                             return;
                         }
                         setImagePreview();
-                        restoreInstanceState();
                         break;
                     case POST_FINISHED:
                         // go to board to see our new post
                         finish();
                         if (!"".equals(boardCode))
-                            BoardActivity.startActivity(PostReplyShareActivity.this, boardCode);
+                            BoardActivity.startActivity(PostReplyShareActivity.this, boardCode, "");
                     case POST_CANCELLED:
                     default:
                         finish();

@@ -22,6 +22,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,8 +33,8 @@ import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
  */
 public class BoardGridViewer {
 
-    private static boolean DEBUG = false;
     private static String TAG = BoardGridViewer.class.getSimpleName();
+    private static boolean DEBUG = true;
 
     private static ImageLoader imageLoader;
     private static DisplayImageOptions displayImageOptions;
@@ -41,6 +42,7 @@ public class BoardGridViewer {
     private static void initStatics(View view) {
         imageLoader = ChanImageLoader.getInstance(view.getContext());
         displayImageOptions = new DisplayImageOptions.Builder()
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
                 .cacheOnDisc()
                 .cacheInMemory()
                 .resetViewBeforeLoading()
@@ -157,6 +159,7 @@ public class BoardGridViewer {
         }
         @Override
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            if (DEBUG) Log.e(TAG, "Loading failed uri=" + imageUri + " reason=" + failReason.getType());
             displayDefaultItem(imageUri, view);
         }
         @Override
@@ -165,6 +168,7 @@ public class BoardGridViewer {
         }
         @Override
         public void onLoadingCancelled(String imageUri, View view) {
+            if (DEBUG) Log.e(TAG, "Loading cancelled uri=" + imageUri);
         }
     };
 

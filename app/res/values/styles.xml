@@ -65,6 +65,10 @@
         <item name="android:backgroundStacked">@drawable/ab_stacked_solid_chanu</item>
         <item name="android:backgroundSplit">@drawable/ab_bottom_solid_chanu</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Chanu</item>
+        <item name="android:indeterminateProgressStyle">@style/IndeterminateProgress.Chanu</item>
+    </style>
+
+    <style name="IndeterminateProgress.Chanu" parent="@android:style/Widget.ProgressBar.Small">
     </style>
 
     <style name="ActionBar.Transparent.Chanu" parent="@android:style/Widget.Holo.ActionBar">
@@ -667,7 +671,7 @@
         <item name="android:layout_alignParentLeft">true</item>
         <!--<item name="android:maxWidth">@dimen/ThreadListItemImage_maxWidth</item> -->
         <item name="android:gravity">top|left</item>
-        <item name="android:scaleType">fitCenter</item>
+        <item name="android:scaleType">fitStart</item>
         <item name="android:background">@color/PaletteLightGray</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
 

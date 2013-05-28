@@ -285,11 +285,10 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
 
     protected int updateThreadsAndWatchlist(ChanPostResponse chanPostResponse) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        final long tim = activity.tim != 0 ? activity.tim : 1000 * (new Date()).getTime();// approximate until we get it back from the api
         long postThreadNo = chanPostResponse.getThreadNo(); // direct from 4chan post response parsing
         final long threadNo = postThreadNo != 0 ? postThreadNo : activity.threadNo; // fallback
         long postNo = chanPostResponse.getPostNo();
-        if (DEBUG) Log.i(TAG, "posted /" + activity.boardCode + "/" + threadNo + ":" + postNo + " tim:" + tim);
+        if (DEBUG) Log.i(TAG, "posted /" + activity.boardCode + "/" + threadNo + ":" + postNo);
 
         // forcing thread/board refresh
         ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
@@ -310,7 +309,6 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
                 ChanThread thread = new ChanThread();
                 thread.no = threadNo;
                 thread.board = activity.boardCode;
-                thread.tim = tim;
                 thread.tn_w = 250;
                 thread.tn_h = 250;
                 thread.sub = activity.getSubject().trim();

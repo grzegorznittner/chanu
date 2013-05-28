@@ -1,29 +1,13 @@
 package com.chanapps.four.activity;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URLEncoder;
-
 import com.chanapps.four.data.*;
-import org.apache.commons.io.IOUtils;
-
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,7 +20,6 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.android.gallery3d.app.AbstractGalleryActivity;
 import com.android.gallery3d.app.AlbumPage;
 import com.android.gallery3d.app.AlbumSetPage;
@@ -45,14 +28,9 @@ import com.android.gallery3d.app.PhotoPage;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.ui.GLRoot;
 import com.android.gallery3d.ui.GLRootView;
-import com.chanapps.four.component.DispatcherHelper;
-import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.component.ToastRunnable;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
     public static final String TAG = "GalleryViewActivity";
@@ -75,22 +53,13 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	public static final int DOWNLOAD_ERROR_MSG = 3;
 	public static final int UPDATE_POSTNO_MSG = 4;
 
-    private Context ctx;
-
-	private SharedPreferences prefs = null;
-
     private Intent intent;
-
     private String boardCode = null;
     private long threadNo = 0;
     private long postNo = 0;
     private ChanPost post = null;
-    private String imageUrl = null;
-    private String localImageUri = null;
-    private ImageLoader imageLoader;
     private LayoutInflater inflater;
     protected Handler handler;
-    
     private GalleryActionBar actionBar;
 
     public static void startActivity(Context from, AdapterView<?> adapterView, View view, int position, long id) {
@@ -108,7 +77,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
         intent.putExtra(ChanPost.POST_NO, postId);
-        intent.putExtra(ChanHelper.LAST_THREAD_POSITION, position);
         if (DEBUG) Log.i(TAG, "Starting full screen image viewer for: " + boardCode + "/" + threadNo + "/" + postId);
         from.startActivity(intent);
     }
@@ -146,183 +114,85 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         }
         return intent;
     }
-    
-    private boolean loadChanPostData() {
-		try {
-			ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, threadNo);
-            if (thread == null)
-                return false;
-			for (ChanPost post : thread.posts) {
-				if (post.no == postNo) {
-                    this.imageUrl = post.imageUrl();
-					this.post = post;
-					return true;
-				}
-			}
-		} catch (Exception e) {
+
+    private void loadChanPostData() {
+        post = null;
+        try {
+            ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, threadNo);
+            if (thread != null) {
+                for (ChanPost post : thread.posts) {
+                    if (post.no == postNo) {
+                        this.post = post;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
 			Log.e(TAG, "Error load post data. " + e.getMessage(), e);
 		}
-		return false;
+        if (post == null) {
+            post = new ChanPost();
+            post.no = postNo;
+            post.resto = threadNo;
+            post.board = boardCode;
+        }
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle bundle){
+        super.onCreate(bundle);
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
-        ctx = getApplicationContext();
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        
         actionBar = new GalleryActionBar(this);
-
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        
-        imageLoader = ChanImageLoader.getInstance(getApplicationContext());
-
         setContentView(R.layout.gallery_layout);
+
+        if (bundle != null)
+            onRestoreInstanceState(bundle);
+        else
+            setFromIntent(getIntent());
     }
 
-    private File ensureGalleryFolder() {
-        File galleryFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File gallery4chanFolder = new File(galleryFolder, getString(com.chanapps.four.activity.R.string.app_name));
-        if (!gallery4chanFolder.exists()) {
-            if (!gallery4chanFolder.mkdirs()) {
-                return null;
-            }
-        }
-        return gallery4chanFolder;
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        setFromIntent(intent);
     }
 
-    private Integer copyImageFileToGallery() {
-        InputStream boardFile = null;
-        OutputStream newFile = null;
-        try {
-            String galleryFilename = ChanFileStorage.getLocalGalleryImageFilename(post);
-            File gallery4chanFolder = ensureGalleryFolder();
-            File galleryFile = new File(gallery4chanFolder, galleryFilename);
+    @Override
+    protected void onRestoreInstanceState(Bundle bundle) {
+        viewType = ViewType.valueOf(bundle.getString(VIEW_TYPE));
+        boardCode = bundle.getString(ChanBoard.BOARD_CODE);
+        threadNo = bundle.getLong(ChanThread.THREAD_NO, 0);
+        postNo = bundle.getLong(ChanPost.POST_NO, 0);
+    }
 
-            boardFile = new FileInputStream(new File(URI.create(this.localImageUri)));
-            newFile = new FileOutputStream(galleryFile);
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+        bundle.putString(VIEW_TYPE, viewType.toString());
+        bundle.putString(ChanBoard.BOARD_CODE, boardCode);
+        bundle.putLong(ChanThread.THREAD_NO, threadNo);
+        bundle.putLong(ChanPost.POST_NO, postNo);
+    }
 
-            IOUtils.copy(boardFile, newFile);
-
-            MediaScannerConnection.scanFile(this,
-                    new String[] { galleryFile.toString()},
-                    null,
-                    new MediaScannerConnection.OnScanCompletedListener() {
-                        @Override
-                        public void onScanCompleted(String path, Uri uri) {
-                            if (DEBUG) Log.i(TAG, "Scanned file for gallery: " + path + " " + uri);
-                            runOnUiThread(new ToastRunnable(GalleryViewActivity.this, R.string.full_screen_saved_to_gallery));
-                        }
-                    });
-        }
-        catch (Exception e) {
-            Log.e(TAG, "Error saving image file to gallery", e);
-            return R.string.full_screen_save_image_error;
-        }
-        finally {
-            IOUtils.closeQuietly(boardFile);
-            IOUtils.closeQuietly(newFile);
-        }
-        return null;
+    protected void setFromIntent(Intent intent) {
+        if (intent.hasExtra(VIEW_TYPE))
+            viewType = ViewType.valueOf(intent.getStringExtra(VIEW_TYPE));
+        else
+            viewType = ViewType.OFFLINE_ALBUMSET_VIEW;
+        boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
+        threadNo = intent.getLongExtra(ChanThread.THREAD_NO, 0);
+        postNo = intent.getLongExtra(ChanPost.POST_NO, 0);
+        if (DEBUG) Log.i(TAG, "Loaded from intent, viewType: " + viewType.toString() + " boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
     }
 
     @Override
 	protected void onStart() {
 		super.onStart();
 		if (DEBUG) Log.i(TAG, "onStart");
-    }
-
-    private void loadPrefs() {
-        if (intent == null || intent != getIntent()) {
-            intent = getIntent();
-            if (intent.hasExtra(VIEW_TYPE)) {
-                viewType = ViewType.valueOf(intent.getStringExtra(VIEW_TYPE));
-            } else {
-            	viewType = ViewType.OFFLINE_ALBUMSET_VIEW;
-            }
-
-            if (viewType == ViewType.PHOTO_VIEW
-                    && intent.hasExtra(ChanHelper.BOARD_CODE)
-                    && intent.hasExtra(ChanHelper.THREAD_NO)
-                    && intent.hasExtra(ChanPost.POST_NO)) {
-                boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-                threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-                postNo = intent.getLongExtra(ChanPost.POST_NO, 0);
-                if (postNo == 0) {
-                    postNo = threadNo; // for calls from null thread grid items used in header
-                }
-                imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
-            }
-            else if (viewType == ViewType.ALBUM_VIEW
-                    && intent.hasExtra(ChanHelper.BOARD_CODE)
-                    && intent.hasExtra(ChanHelper.THREAD_NO)) {
-                boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-                threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-                postNo = 0;
-                imageUrl = "";
-            }
-            else if (viewType == ViewType.OFFLINE_ALBUM_VIEW
-                    && intent.hasExtra(ChanHelper.BOARD_CODE)) {
-                boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-                threadNo = 0;
-                postNo = 0;
-                imageUrl = "";
-            }
-            else {
-                viewType = ViewType.OFFLINE_ALBUMSET_VIEW;
-                boardCode = "";
-                threadNo = 0;
-                postNo = 0;
-                imageUrl = "";
-            }
-            if (DEBUG) Log.i(TAG, "Loaded from intent, viewType: " + viewType.toString() + " boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
-        }
-        /*
-        if (viewType != ViewType.OFFLINE_ALBUMSET_VIEW && viewType != ViewType.OFFLINE_ALBUM_VIEW && postNo == 0) {
-            viewType = ViewType.valueOf(prefs.getString(VIEW_TYPE, ViewType.PHOTO_VIEW.toString()));
-            boardCode = prefs.getString(ChanHelper.BOARD_CODE, "");
-            threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
-            postNo = prefs.getLong(ChanPost.POST_NO, 0);
-            imageUrl = prefs.getString(ChanHelper.IMAGE_URL, "");
-            if (DEBUG) Log.i(TAG, "Post no " + postNo + " laoded from preferences viewType=" + viewType);
-            if (!boardCode.isEmpty() && threadNo == 0) {
-                viewType = ViewType.OFFLINE_ALBUM_VIEW;
-            }
-            else if (boardCode.isEmpty()) {
-                viewType = ViewType.OFFLINE_ALBUMSET_VIEW;
-            }
-        }
-        */
-        if (!loadChanPostData()) { // fill in the best we can
-            post = new ChanPost();
-            post.no = postNo;
-            post.resto = threadNo;
-            post.board = boardCode;
-        }
-        /*
-        if (imageUrl == null || imageUrl.isEmpty()) {
-            if (DEBUG) Log.i(TAG, "trying to load imageurl from prefs as last-ditch attempt");
-            imageUrl = prefs.getString(ChanHelper.IMAGE_URL, "");
-        }
-        */
-        if (DEBUG) Log.i(TAG, "Loaded viewType: " + viewType.toString() + " boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
+        loadChanPostData();
         setActionBarTitle();
-    }
-
-    private void savePrefs() {
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(VIEW_TYPE, viewType.toString());
-        ed.putString(ChanHelper.BOARD_CODE, boardCode);
-        ed.putLong(ChanHelper.THREAD_NO, threadNo);
-        ed.putLong(ChanPost.POST_NO, postNo);
-        ed.putString(ChanHelper.IMAGE_URL, imageUrl);
-        if (DEBUG) Log.i(TAG, "Stored in prefs, post no: " + postNo);
-        ed.commit();
-        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     @Override
@@ -335,7 +205,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	protected void onResume () {
 		super.onResume();
 		if (DEBUG) Log.i(TAG, "onResume");
-		loadPrefs();
 		prepareGalleryView();
         NetworkProfileManager.instance().activityChange(this);
 	}
@@ -348,12 +217,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	protected void onPause() {
         super.onPause();
         if (DEBUG) Log.i(TAG, "onPause");
-        saveInstanceState();
-    }
-
-    protected void saveInstanceState() {
-        savePrefs();
-        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     @Override
@@ -469,14 +332,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             case R.id.offline_chan_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;
-            /*
-            case R.id.download_image_menu:
-                if (checkLocalImage() != null)
-                    (new CopyImageToGalleryTask(getApplicationContext())).execute();
-                else
-                    Toast.makeText(this, R.string.full_screen_wait_until_downloaded, Toast.LENGTH_SHORT).show();
-                return true;
-            */
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
@@ -497,26 +352,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	    }
     }
 
-
-    private class CopyImageToGalleryTask extends AsyncTask<String, Void, Integer> {
-        private Context context;
-
-        public CopyImageToGalleryTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            return copyImageFileToGallery();
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            if (result != null && !(result.equals(0)))
-                Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void navigateUp() {
     	Intent upIntent = null;
     	switch(viewType) {
@@ -525,20 +360,15 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
             upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
             upIntent.putExtra(ChanPost.POST_NO, postNo);
-            upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
-            upIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_THREAD_POSITION, 0));
     		break;
     	case ALBUM_VIEW:
     		upIntent = new Intent(this, ThreadActivity.class);
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
             upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
-            upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
-            upIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_THREAD_POSITION, 0));
     		break;
     	case OFFLINE_ALBUM_VIEW:
     		upIntent = new Intent(this, BoardActivity.class);
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-            upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
     		break;
     	case OFFLINE_ALBUMSET_VIEW:
     		upIntent = new Intent(this, BoardSelectorActivity.class);
@@ -559,39 +389,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         inflater.inflate(R.menu.gallery_view_menu, menu);
         return true;
     }
-    /*
-    private static final int[] HIDDEN_ALBUM_MENU_ITEMS = {
-            R.id.view_image_gallery_menu,
-            R.id.download_image_menu,
-            R.id.image_search_menu,
-            R.id.anime_image_search_menu
-    };
-
-    private static final int[] HIDDEN_PHOTO_MENU_ITEMS = {
-            R.id.download_all_images_to_gallery_menu
-    };
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        for (int id : HIDDEN_ALBUM_MENU_ITEMS) {
-            MenuItem item = menu.findItem(id);
-            if (item != null) {
-                boolean visible = (viewType != ViewType.ALBUM_VIEW);
-                item.setVisible(visible);
-                item.setEnabled(visible);
-            }
-        }
-        for (int id : HIDDEN_PHOTO_MENU_ITEMS) {
-            MenuItem item = menu.findItem(id);
-            if (item != null) {
-                boolean visible = (viewType != ViewType.PHOTO_VIEW);
-                item.setVisible(visible);
-                item.setEnabled(visible);
-            }
-        }
-        return true;
-    }
-    */
 
     private void setActionBarTitle() {
         if (DEBUG) Log.i(TAG, "setting action bar based on viewType=" + viewType);
@@ -663,7 +460,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             } else if (msg.what == UPDATE_POSTNO_MSG) {
 	            String postNo = (String)msg.obj;
 	            activity.postNo = Long.parseLong(postNo);
-	            activity.savePrefs();
             	if (DEBUG) Log.w(TAG, "Updated last viewed image: " + activity.postNo);
             }
             

@@ -221,12 +221,6 @@ public class BoardGroupFragment
         //else {
         //    getLoaderManager().restartLoader(0, null, this);
         //}
-        if (absListView.getCount() <= 0) {
-            if (DEBUG) Log.i(TAG, "No data displayed, starting loader");
-            getLoaderManager().restartLoader(0, null, BoardGroupFragment.this);
-        }
-        if (boardSelectorTab == BoardSelectorTab.BOARDLIST)
-            new TutorialOverlay(layout, TutorialOverlay.Page.BOARDLIST);
     }
 
     protected Handler createHandler() {
@@ -249,6 +243,12 @@ public class BoardGroupFragment
         if (DEBUG) Log.i(TAG, "onStart");
         if (handler == null)
             handler = createHandler();
+        if (absListView.getCount() <= 0) {
+            if (DEBUG) Log.i(TAG, "No data displayed, starting loader");
+            getLoaderManager().restartLoader(0, null, this);
+        }
+        if (boardSelectorTab == BoardSelectorTab.BOARDLIST)
+            new TutorialOverlay(layout, TutorialOverlay.Page.BOARDLIST);
     }
 
     @Override
@@ -332,14 +332,14 @@ public class BoardGroupFragment
         switch (boardSelectorTab) {
             case BOARDLIST:
                 if (DEBUG) Log.i(TAG, "clicked board " + boardCode);
-                BoardActivity.startActivity(activity, boardCode);
+                BoardActivity.startActivity(activity, boardCode, "");
                 break;
             case WATCHLIST:
             case RECENT:
             default:
                 final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
                 if (DEBUG) Log.i(TAG, "clicked thread " + boardCode + "/" + threadNo);
-                ThreadActivity.startActivity(getActivity(), boardCode, threadNo);
+                ThreadActivity.startActivity(getActivity(), boardCode, threadNo, "");
                 break;
         }
     }

@@ -4,10 +4,8 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -17,7 +15,6 @@ import android.view.MenuItem;
 import android.view.Window;
 
 import com.chanapps.four.adapter.TabsAdapter;
-import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.BoardSelectorTab;
 import com.chanapps.four.data.ChanBoard;
@@ -27,7 +24,8 @@ import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.chanapps.four.service.NetworkProfileManager;
 
-public class BoardSelectorActivity
+public class
+        BoardSelectorActivity
         extends FragmentActivity
         implements ChanIdentifiedActivity
 {
@@ -37,7 +35,6 @@ public class BoardSelectorActivity
 
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
-    private SharedPreferences prefs = null;
     private int menuId;
     public static final BoardSelectorTab DEFAULT_BOARD_SELECTOR_TAB = BoardSelectorTab.BOARDLIST;
 
@@ -53,40 +50,33 @@ public class BoardSelectorActivity
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
         if (DEBUG) Log.v(TAG, "onCreate");
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar
-
+        /*
         Intent intent = getIntent();
         if (!intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
         	if (DEBUG) Log.i(TAG, "Starting dispatch");
             DispatcherHelper.dispatchIfNecessaryFromPrefsState(this);
         }
-        /*
-        if (intent.hasExtra(BOARD_SELECTOR_TAB)) {
-            selectedBoardTab = BoardSelectorTab.valueOf(intent.getStringExtra(BOARD_SELECTOR_TAB));
-            SharedPreferences.Editor ed = ensurePrefs().edit();
-            ed.putString(BOARD_SELECTOR_TAB, selectedBoardTab.toString());
-            ed.commit();
-        }
         */
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.pager);
-        mViewPager.setOffscreenPageLimit(2); // keep all three tabs available
+        mViewPager.setOffscreenPageLimit(0); // keep all three tabs available
         setContentView(mViewPager);
+        ensureTabsAdapter();
+        if (bundle != null)
+            setTabFromBundle(bundle);
+        else
+            setTabFromIntent(getIntent());
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         final ActionBar bar = getActionBar();
-
         bar.setTitle(getString(R.string.application_name));
-        /*
-                + ChanHelper.TITLE_SEPARATOR
-                + getString(R.string.board_selector_boardlist_title));
-        */
         bar.setDisplayShowTitleEnabled(false);
         bar.setDisplayHomeAsUpEnabled(false);
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -110,23 +100,39 @@ public class BoardSelectorActivity
                 BoardGroupFragment.class, bundle, position);
     }
 
-    private SharedPreferences ensurePrefs() {
-        if (prefs == null) {
-            synchronized (this) {
-                if (prefs == null)
-                    prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            }
-        }
-        return prefs;
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        setTabFromIntent(intent);
     }
 
-    private void restoreInstanceState() {
-        ensureTabsAdapter();
-        String tabVal = getIntent().hasExtra(BOARD_SELECTOR_TAB)
-                ? getIntent().getStringExtra(BOARD_SELECTOR_TAB)
-                : ensurePrefs().getString(BOARD_SELECTOR_TAB, DEFAULT_BOARD_SELECTOR_TAB.toString());
+    protected void setTabFromIntent(Intent intent) {
+        if (intent.hasExtra(BOARD_SELECTOR_TAB)) {
+            String tabVal = getIntent().getStringExtra(BOARD_SELECTOR_TAB);
+            BoardSelectorTab tab = BoardSelectorTab.valueOf(tabVal);
+            setTab(tab);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+        int i = mViewPager.getCurrentItem();
+        String tab = BoardSelectorTab.values()[i].toString();
+        bundle.putString(BOARD_SELECTOR_TAB, tab);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle bundle) {
+        setTabFromBundle(bundle);
+    }
+
+    protected void setTabFromBundle(Bundle bundle) {
+        String tabVal = bundle.getString(BOARD_SELECTOR_TAB);
         BoardSelectorTab tab = BoardSelectorTab.valueOf(tabVal);
-        //getActionBar().setSelectedNavigationItem(tab.ordinal());
+        setTab(tab);
+    }
+
+    public void setTab(BoardSelectorTab tab) {
         if (mViewPager.getCurrentItem() != tab.ordinal())
             mViewPager.setCurrentItem(tab.ordinal(), false);
     }
@@ -150,7 +156,6 @@ public class BoardSelectorActivity
     protected void onResume() {
         super.onResume();
         if (DEBUG) Log.i(TAG, "onResume");
-        restoreInstanceState();
         NetworkProfileManager.instance().activityChange(this);
         int newMenuId = ChanBoard.showNSFW(this) ? R.menu.board_selector_menu_adult : R.menu.board_selector_menu;
         if (menuId != newMenuId) {
@@ -162,14 +167,6 @@ public class BoardSelectorActivity
     protected void onPause() {
         super.onPause();
         if (DEBUG) Log.i(TAG, "onPause");
-        saveInstanceState();
-    }
-
-    public void saveInstanceState() {
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        editor.putString(BOARD_SELECTOR_TAB, BoardSelectorTab.values()[mViewPager.getCurrentItem()].toString());
-        editor.commit();
-        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     protected void onDestroy() {
@@ -267,10 +264,6 @@ public class BoardSelectorActivity
         BoardGroupFragment fragment = (BoardGroupFragment)mTabsAdapter.getFragmentAtPosition(tab.ordinal());
         if (DEBUG) Log.i(TAG, "found fragment=" + fragment + " tab=" + fragment.getArguments().getString(BOARD_SELECTOR_TAB) + " handler=" + fragment.getChanHandler());
         return fragment;
-    }
-
-    public void selectTab(BoardSelectorTab tab) {
-        mViewPager.setCurrentItem(tab.ordinal(), true);
     }
 
     @Override

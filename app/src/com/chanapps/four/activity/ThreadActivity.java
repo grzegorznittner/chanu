@@ -17,7 +17,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -27,6 +26,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.Loader;
 import android.util.Log;
@@ -66,7 +66,6 @@ public class ThreadActivity
         LoaderManager.LoaderCallbacks<Cursor>,
         AbstractBoardCursorAdapter.ViewBinder,
         AbsListView.OnItemClickListener,
-        //AbsListView.MultiChoiceModeListener,
         ActionMode.Callback,
         MediaScannerConnection.OnScanCompletedListener {
 
@@ -85,9 +84,7 @@ public class ThreadActivity
     protected Class absListViewClass = GridView.class;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
-    protected int scrollOnNextLoaderFinished = -1;
     protected Menu menu;
-    protected SharedPreferences prefs;
     protected long tim;
     protected String boardCode;
     protected String query = "";
@@ -97,8 +94,6 @@ public class ThreadActivity
     protected long threadNo;
     protected String text;
     protected String imageUrl;
-    protected int imageWidth;
-    protected int imageHeight;
     protected boolean shouldPlayThread = false;
     protected ShareActionProvider shareActionProvider = null;
     protected Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
@@ -112,16 +107,106 @@ public class ThreadActivity
 
     protected ThreadListener threadListener;
 
+    public static void startActivity(Activity from, String boardCode, long threadNo, String query) {
+        if (threadNo <= 0)
+            BoardActivity.startActivity(from, boardCode, query);
+        else
+            from.startActivity(createIntentForActivity(from, boardCode, threadNo, query));
+    }
+
+    public static Intent createIntentForActivity(Context context, final String boardCode, final long threadNo, String query) {
+        Intent intent = new Intent(context, ThreadActivity.class);
+        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(SearchManager.QUERY, query);
+        return intent;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle bundle) {
         if (DEBUG) Log.v(TAG, "************ onCreate");
-        super.onCreate(savedInstanceState);
+        super.onCreate(bundle);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         query = getIntent().hasExtra(SearchManager.QUERY)
                 ? getIntent().getStringExtra(SearchManager.QUERY)
                 : "";
         createAbsListView();
+        if (bundle != null)
+            onRestoreInstanceState(bundle);
+        else
+            setFromIntent(getIntent());
+        if (boardCode == null || boardCode.isEmpty())
+            redirectToBoardSelector();
+        else if (threadNo <= 0)
+            redirectToBoard();
         LoaderManager.enableDebugLogging(true);
+    }
+
+    protected void redirectToBoardSelector() { // backup in case we are missing stuff
+        Log.e(TAG, "Empty board code, redirecting to board selector");
+        Intent selectorIntent = new Intent(this, BoardSelectorActivity.class);
+        selectorIntent.putExtra(ChanHelper.BOARD_TYPE, BoardType.JAPANESE_CULTURE.toString());
+        selectorIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
+        selectorIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(selectorIntent);
+        finish();
+    }
+
+    protected void redirectToBoard() { // backup in case we are missing stuff
+        Log.e(TAG, "Empty board code, redirecting to board /" + boardCode + "/");
+        Intent intent = BoardActivity.createIntentForActivity(this, boardCode, "");
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString(ChanBoard.BOARD_CODE, boardCode);
+        savedInstanceState.putLong(ChanThread.THREAD_NO, threadNo);
+        savedInstanceState.putString(SearchManager.QUERY, query);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
+        threadNo = savedInstanceState.getLong(ChanThread.THREAD_NO, 0);
+        query = savedInstanceState.getString(SearchManager.QUERY);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (DEBUG) Log.i(TAG, "onNewIntent boardCode=" + intent.getStringExtra(ChanBoard.BOARD_CODE));
+        setIntent(intent);
+        setFromIntent(intent);
+    }
+
+    public void setFromIntent(Intent intent) {
+        Uri data = intent.getData();
+        if (data == null) {
+            boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
+            threadNo = intent.getLongExtra(ChanThread.THREAD_NO, 0);
+            query = intent.getStringExtra(SearchManager.QUERY);
+        }
+        else {
+            List<String> params = data.getPathSegments();
+            String uriBoardCode = params.get(0);
+            String uriThreadNo = params.get(1);
+            if (ChanBoard.getBoardByCode(this, uriBoardCode) != null && uriThreadNo != null) {
+                boardCode = uriBoardCode;
+                threadNo = Long.valueOf(uriThreadNo);
+                query = "";
+                if (DEBUG) Log.i(TAG, "loaded /" + boardCode + "/" + threadNo + " from url intent");
+            }
+            else {
+                boardCode = ChanBoard.DEFAULT_BOARD_CODE;
+                threadNo = 0;
+                query = "";
+                if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, using default board");
+            }
+        }
     }
 
     public Cursor getCursor() {
@@ -154,107 +239,6 @@ public class ThreadActivity
         }
     }
 
-    public static void startActivity(Activity from, String boardCode, long threadNo) {
-        if (threadNo <= 0)
-            BoardActivity.startActivity(from, boardCode);
-        else
-            from.startActivity(createIntentForActivity(from, boardCode, threadNo, ""));
-    }
-
-    public static void startActivityForSearch(Activity from, String boardCode, long threadNo, String query) {
-        NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.SEARCH_THREAD);
-        from.startActivity(createIntentForActivity(from, boardCode, threadNo, query));
-    }
-
-    public static Intent createIntentForActivity(Context context, final String boardCode, final long threadNo) {
-        return createIntentForActivity(context, boardCode, threadNo, "");
-    }
-
-    public static Intent createIntentForActivity(Context context, final String boardCode, final long threadNo, String query) {
-        Intent intent = new Intent(context, ThreadActivity.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(SearchManager.QUERY, query);
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-        editor.putInt(ChanHelper.LAST_THREAD_POSITION, 0); // reset it
-        editor.commit();
-        return intent;
-    }
-
-    protected SharedPreferences ensurePrefs() {
-        if (prefs == null)
-            prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        return prefs;
-    }
-
-    protected void loadFromIntentOrPrefs() {
-        ensurePrefs();
-        Intent intent = getIntent();
-        boardCode = intent.hasExtra(ChanHelper.BOARD_CODE)
-                ? intent.getStringExtra(ChanHelper.BOARD_CODE)
-                : prefs.getString(ChanHelper.BOARD_CODE, "a");
-        threadNo = intent.hasExtra(ChanHelper.THREAD_NO)
-                ? intent.getLongExtra(ChanHelper.THREAD_NO, 0)
-                : prefs.getLong(ChanHelper.THREAD_NO, 0);
-        query = intent.hasExtra(SearchManager.QUERY)
-                ? intent.getStringExtra(SearchManager.QUERY)
-                : prefs.getString(SearchManager.QUERY, "");
-        tim = intent.hasExtra(ChanHelper.TIM)
-                ? intent.getLongExtra(ChanHelper.TIM, 0)
-                : prefs.getLong(ChanHelper.TIM, 0);
-        text = intent.hasExtra(ChanHelper.TEXT)
-                ? intent.getStringExtra(ChanHelper.TEXT)
-                : prefs.getString(ChanHelper.TEXT, null);
-        imageUrl = intent.hasExtra(ChanHelper.IMAGE_URL)
-                ? intent.getStringExtra(ChanHelper.IMAGE_URL)
-                : prefs.getString(ChanHelper.IMAGE_URL, null);
-        imageWidth = intent.hasExtra(ChanHelper.IMAGE_WIDTH)
-                ? intent.getIntExtra(ChanHelper.IMAGE_WIDTH, 0)
-                : prefs.getInt(ChanHelper.IMAGE_WIDTH, 0);
-        imageHeight = intent.hasExtra(ChanHelper.IMAGE_HEIGHT)
-                ? intent.getIntExtra(ChanHelper.IMAGE_HEIGHT, 0)
-                : prefs.getInt(ChanHelper.IMAGE_HEIGHT, 0);
-        // backup in case we are missing stuff
-        if (boardCode == null || boardCode.isEmpty()) {
-            Intent selectorIntent = new Intent(this, BoardSelectorActivity.class);
-            selectorIntent.putExtra(ChanHelper.BOARD_TYPE, BoardType.JAPANESE_CULTURE.toString());
-            selectorIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
-            selectorIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(selectorIntent);
-            finish();
-        }
-        if (threadNo == 0) {
-            Intent boardIntent = BoardActivity.createIntentForActivity(this, boardCode, "");
-            boardIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(boardIntent);
-            finish();
-        }
-        if (DEBUG)
-            Log.i(TAG, "Thread intent is: " + intent.getStringExtra(ChanHelper.BOARD_CODE) + "/" + intent.getLongExtra(ChanHelper.THREAD_NO, 0));
-        if (DEBUG) Log.i(TAG, "Thread loaded: " + boardCode + "/" + threadNo);
-    }
-
-    protected void restoreInstanceState() {
-        if (DEBUG) Log.i(TAG, "Restoring instance state... query=" + query);
-        loadFromIntentOrPrefs();
-        //scrollToLastPosition();
-        invalidateOptionsMenu(); // for correct spinner display
-    }
-
-    protected void saveInstanceState() {
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        editor.putString(ChanHelper.BOARD_CODE, boardCode);
-        editor.putLong(ChanHelper.THREAD_NO, threadNo);
-        editor.putInt(ChanHelper.LAST_THREAD_POSITION, absListView.getFirstVisiblePosition());
-        editor.putLong(ChanHelper.TIM, tim);
-        editor.putString(ChanHelper.TEXT, text);
-        editor.putString(ChanHelper.IMAGE_URL, imageUrl);
-        editor.putInt(ChanHelper.IMAGE_WIDTH, imageWidth);
-        editor.putInt(ChanHelper.IMAGE_HEIGHT, imageHeight);
-        editor.commit();
-        DispatcherHelper.saveActivityToPrefs(this);
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -271,7 +255,7 @@ public class ThreadActivity
         if (DEBUG) Log.v(TAG, "onResume query=" + query);
         if (handler == null)
             handler = new LoaderHandler();
-        restoreInstanceState();
+        invalidateOptionsMenu(); // for correct spinner display
         NetworkProfileManager.instance().activityChange(this);
         if (absBoardListView != null)
             getSupportLoaderManager().restartLoader(1, null, this); // board loader for tablet view
@@ -283,13 +267,14 @@ public class ThreadActivity
     protected void onPause() {
         super.onPause();
         if (DEBUG) Log.v(TAG, "onPause query=" + query);
-        saveInstanceState();
         handler = null;
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        if (absListView != null)
+            getLoaderManager().destroyLoader(0);
         if (absBoardListView != null)
             getLoaderManager().destroyLoader(1);
         handler = null;
@@ -321,54 +306,52 @@ public class ThreadActivity
         params.width = columnWidth; // 1-column-wide, no padding
     }
 
+    protected void onThreadLoadFinished(Cursor data) {
+        adapter.swapCursor(data);
+        if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
+        // retry load if maybe data wasn't there yet
+        ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
+        if ((data == null || data.getCount() < 1
+                || (thread != null && thread.replies > 0 && !thread.isDead && data.getCount() <= 2))
+                && handler != null) {
+            NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
+            if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
+                stopProgressBarIfLoadersDone();
+                String msg = String.format(getString(R.string.mobile_profile_health_status),
+                        health.toString().toLowerCase().replaceAll("_", " "));
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            loadingStatusFlags |= THREAD_DONE;
+            stopProgressBarIfLoadersDone();
+        }
+    }
+
+    protected void onBoardsTabletLoadFinished(Cursor data) {
+        this.adapterBoardsTablet.swapCursor(data);
+        // retry load if maybe data wasn't there yet
+        if (data != null && data.getCount() < 1 && handler != null) {
+            NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
+            if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
+                stopProgressBarIfLoadersDone();
+                String msg = String.format(getString(R.string.mobile_profile_health_status),
+                        health.toString().toLowerCase().replaceAll("_", " "));
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            loadingStatusFlags |= BOARD_DONE;
+            stopProgressBarIfLoadersDone();
+        }
+    }
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (loader == this.cursorLoader) {
-            if (DEBUG)
-                Log.v(TAG, ">>>>>>>>>>> onLoadFinished loader=" + loader + " count=" + (data == null ? 0 : data.getCount()));
-            adapter.swapCursor(data);
-            if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
-            if (absListView != null) {
-                if (scrollOnNextLoaderFinished > -1) {
-                    absListView.setSelection(scrollOnNextLoaderFinished);
-                    scrollOnNextLoaderFinished = -1;
-                }
-            }
-
-            // retry load if maybe data wasn't there yet
-            ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
-            if ((data == null || data.getCount() < 1
-                    || (thread != null && thread.replies > 0 && !thread.isDead && data.getCount() <= 2))
-                    && handler != null) {
-                NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
-                if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
-                    stopProgressBarIfLoadersDone();
-                    String msg = String.format(getString(R.string.mobile_profile_health_status),
-                            health.toString().toLowerCase().replaceAll("_", " "));
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                loadingStatusFlags |= THREAD_DONE;
-                stopProgressBarIfLoadersDone();
-            }
-        } else if (loader == this.cursorLoaderBoardsTablet) {
-            this.adapterBoardsTablet.swapCursor(data);
-
-            // retry load if maybe data wasn't there yet
-            if (data != null && data.getCount() < 1 && handler != null) {
-                NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
-                if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
-                    stopProgressBarIfLoadersDone();
-                    String msg = String.format(getString(R.string.mobile_profile_health_status),
-                            health.toString().toLowerCase().replaceAll("_", " "));
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                loadingStatusFlags |= BOARD_DONE;
-                stopProgressBarIfLoadersDone();
-            }
-
-        }
+        if (DEBUG)
+            Log.v(TAG, ">>>>>>>>>>> onLoadFinished loader=" + loader + " count=" + (data == null ? 0 : data.getCount()));
+        if (loader == this.cursorLoader)
+            onThreadLoadFinished(data);
+        else if (loader == this.cursorLoaderBoardsTablet)
+            onBoardsTabletLoadFinished(data);
     }
 
     protected void stopProgressBarIfLoadersDone() {
@@ -396,8 +379,6 @@ public class ThreadActivity
 
     protected void setupContextMenu() {
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        //absListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
-        //absListView.setMultiChoiceModeListener(this);
         absListView.setOnCreateContextMenuListener(this);
     }
 
@@ -441,16 +422,15 @@ public class ThreadActivity
         replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         replyIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
         replyIntent.putExtra(ChanPost.POST_NO, 0);
-        replyIntent.putExtra(ChanHelper.TIM, tim);
         replyIntent.putExtra(ChanHelper.TEXT, ChanPost.planifyText(replyText));
         startActivity(replyIntent);
     }
 
+/*
     protected boolean navigateUp() {
         // FIXME: know that I'm coming from watching and return there
         Intent upIntent = new Intent(this, BoardActivity.class);
         upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
         if (DEBUG) Log.i(TAG, "Made up intent with board=" + boardCode);
 //                if (NavUtils.shouldUpRecreateTask(this, upIntent)) { // needed when calling from widget
 //                    if (DEBUG) Log.i(TAG, "Should recreate task");
@@ -463,7 +443,7 @@ public class ThreadActivity
 //                }
         return true;
     }
-
+*/
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem playMenuItem = menu.findItem(R.id.play_thread_menu);
@@ -477,9 +457,13 @@ public class ThreadActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
             case android.R.id.home:
-                return navigateUp();
+                if (DEBUG) Log.i(TAG, "navigating up");
+                intent = BoardActivity.createIntentForActivity(this, boardCode, "");
+                NavUtils.navigateUpTo(this, intent);
+                return true;
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
@@ -512,7 +496,7 @@ public class ThreadActivity
                 startActivity(settingsIntent);
                 return true;
             case R.id.about_menu:
-                Intent intent = new Intent(this, AboutActivity.class);
+                intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.exit_menu:
@@ -621,14 +605,6 @@ public class ThreadActivity
         updateSharedIntent();
         return true;
     }
-
-    /*
-    @Override
-    public void onItemCheckedStateChanged(final ActionMode mode, final int position, final long id, final boolean checked) {
-        if (DEBUG) Log.i(TAG, "onItemCheckedStateChanged pos=" + position + " checked=" + checked);
-        updateSharedIntent();
-    }
-     */
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
@@ -773,7 +749,7 @@ public class ThreadActivity
             }
             else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
                 final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-                BoardActivity.startActivity(ThreadActivity.this, boardLink);
+                BoardActivity.startActivity(ThreadActivity.this, boardLink, "");
             }
             else {
                 final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
@@ -784,7 +760,7 @@ public class ThreadActivity
                     refreshThread();
                     NetworkProfileManager.instance().activityChange(ThreadActivity.this);
                 } else {
-                    startActivity(ThreadActivity.this, boardLink, threadNoLink);
+                    startActivity(ThreadActivity.this, boardLink, threadNoLink, "");
                 }
             }
         }
@@ -851,7 +827,7 @@ public class ThreadActivity
                 threadNo = linkedThreadNo;
                 refresh();
             } else {
-                ThreadActivity.startActivity(ThreadActivity.this, linkedBoardCode, linkedThreadNo);
+                ThreadActivity.startActivity(ThreadActivity.this, linkedBoardCode, linkedThreadNo, "");
             }
         }
     };
@@ -865,7 +841,7 @@ public class ThreadActivity
             String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
             absListView.setItemChecked(pos, false); // gets checked for some reason
             if (linkedBoardCode != null && !linkedBoardCode.isEmpty())
-                BoardActivity.startActivity(ThreadActivity.this, linkedBoardCode);
+                BoardActivity.startActivity(ThreadActivity.this, linkedBoardCode, "");
         }
     };
 

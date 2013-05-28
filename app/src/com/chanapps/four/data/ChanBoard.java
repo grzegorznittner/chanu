@@ -32,6 +32,7 @@ public class ChanBoard {
     private static final int NUM_RELATED_BOARDS = 3;
     private static final int NUM_RELATED_THREADS = 3;
 
+    public static final String BOARD_CODE = "boardCode";
     public static final String POPULAR_BOARD_CODE = "popular";
     public static final String LATEST_BOARD_CODE = "latest";
     public static final String LATEST_IMAGES_BOARD_CODE = "images";
@@ -691,7 +692,7 @@ public class ChanBoard {
                     spinner.setSelection(0, false);
                 }
                 */
-                ((BoardSelectorActivity)activity).selectTab(tab);
+                ((BoardSelectorActivity)activity).setTab(tab);
             }
             else {
                 BoardSelectorActivity.startActivity(activity, tab);
@@ -724,7 +725,7 @@ public class ChanBoard {
                 String boardCodeForJump = m.group(1);
                 if (boardCodeForJump == null || boardCodeForJump.isEmpty() || boardCodeForJump.equals(createdWithBoardCode))
                     return;
-                BoardActivity.startActivity(activity, boardCodeForJump);
+                BoardActivity.startActivity(activity, boardCodeForJump, "");
             }
         }
 

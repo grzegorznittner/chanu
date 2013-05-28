@@ -35,37 +35,23 @@ public class ChanHelper {
     public static final String BOARD_CODE = "boardCode";
     public static final String BOARD_CATALOG = "boardCatalog";
     public static final String PAGE = "pageNo";
-    public static final String FROM_PARENT = "fromParent";
     public static final String POPUP_TYPE = "popupType";
     public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
     public static final String BACKGROUND_LOAD = "backgroundLoad";
     public static final String TIM = "tim";
     public static final String TEXT = "text";
-    //public static final String QUOTE_TEXT = "quoteText";
     public static final String NAME = "name";
-    public static final String EMAIL = "email";
-    public static final String SUBJECT = "subject";
-    public static final String PASSWORD = "password";
-    public static final String SPOILER = "spoiler";
     public static final String IMAGE_URL = "imageUrl";
-    public static final String POST_REPLY_IMAGE_URL = "postReplyImageUrl";
     public static final String CAMERA_IMAGE_URL = "cameraImageUrl";
-    public static final String IMAGE_WIDTH = "imageWidth";
-    public static final String IMAGE_HEIGHT = "imageHeight";
     public static final String IMAGE_PATH = "imagePath";
     public static final String CONTENT_TYPE = "contentType";
     public static final String ORIENTATION = "orientation";
-    public static final String THREAD_WATCHLIST = "threadWatchlist";
-
-    public static final String LAST_BOARD_POSITION = "lastBoardPosition";
-    public static final String LAST_THREAD_POSITION = "lastThreadPosition";
     public static final String LAST_ACTIVITY = "lastActivity";
     public static final String IGNORE_DISPATCH = "ignoreDispatch";
     public static final String PRIORITY_MESSAGE = "priorityFetch";
     public static final String CLEAR_FETCH_QUEUE = "clearFetchQueue";
     public static final String THREAD_FETCH_TIME = "threadFetchTime";
-
     public static final String USER_POSTS = "userPosts";
 
     public static final String PREF_WIDGET_BOARDS = "prefWidgetBoards";

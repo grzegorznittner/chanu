@@ -184,8 +184,8 @@ public class UpdateWidgetService extends Service {
 
         private PendingIntent makeThreadIntent(ChanPost thread, int i) {
             Intent intent = (thread == null || thread.no < 1)
-                    ? BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode))
-                    : ThreadActivity.createIntentForActivity(context, new String(thread.board), thread.no);
+                    ? BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode), "")
+                    : ThreadActivity.createIntentForActivity(context, new String(thread.board), thread.no, "");
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 5 + i;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -206,7 +206,7 @@ public class UpdateWidgetService extends Service {
                         : BoardSelectorTab.RECENT;
                 intent = BoardSelectorActivity.createIntentForActivity(context, tab);
             } else {
-                intent = BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode));
+                intent = BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode), "");
             }
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 2;

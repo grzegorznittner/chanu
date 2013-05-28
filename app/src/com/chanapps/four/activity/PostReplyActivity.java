@@ -25,7 +25,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.DispatcherHelper;
-import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.*;
@@ -42,6 +41,9 @@ import java.util.Random;
 public class PostReplyActivity extends FragmentActivity implements ChanIdentifiedActivity {
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
+    public static final String POST_REPLY_IMAGE_URL = "postReplyImageUrl";
+    public static final String SUBJECT = "subject";
+    public static final String SPOILER = "spoiler";
 
     public static final int POST_FINISHED = 0x01;
 
@@ -81,36 +83,38 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private EditText subjectText;
     private EditText passwordText;
     private CheckBox spoilerCheckbox;
-
+    private ImageView imagePreview;
     TextView.OnEditorActionListener fastSend;
 
-    private ImageView imagePreview;
-    private int angle = 0;
-
-    public String imagePath;
-    public String contentType;
-    public String orientation;
     public Uri imageUri;
     public String boardCode = null;
     public long threadNo = 0;
     public long postNo = 0;
-    public long tim = 0;
+    public String subject;
+    public String text;
+    public boolean spoilerChecked;
+    public String imagePath = null;
+    public String contentType = null;
+    public String orientation = null;
 
     private SharedPreferences prefs = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-
+    protected void onCreate(Bundle bundle){
+        super.onCreate(bundle);
         res = getResources();
         ctx = getApplicationContext();
-
         setContentView(R.layout.post_reply_layout);
+        createViews();
+        if (bundle != null)
+            onRestoreInstanceState(bundle);
+        else
+            setFromIntent(getIntent());
+    }
 
+    protected void createViews() {
         wrapperLayout = (LinearLayout)findViewById(R.id.post_reply_wrapper);
-
         imagePreview = (ImageView)findViewById(R.id.post_reply_image_preview);
-
         cameraButton = (ImageButton)findViewById(R.id.post_reply_camera_button);
         pictureButton = (ImageButton)findViewById(R.id.post_reply_picture_button);
         deleteButton = (ImageButton)findViewById(R.id.post_reply_delete_button);
@@ -127,7 +131,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 showCommentDialog();
             }
         });
-
         passStatusText = (TextView)findViewById(R.id.post_reply_pass_status);
         nameText = (EditText)findViewById(R.id.post_reply_name);
         emailText = (EditText)findViewById(R.id.post_reply_email);
@@ -197,6 +200,65 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         recaptchaLoading = (ImageView) findViewById(R.id.post_reply_recaptcha_loading);
 
         updatePassRecaptchaViews(isPassEnabled());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        setFromIntent(intent);
+    }
+
+    protected void setFromIntent(Intent intent) {
+        boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
+        threadNo = intent.getLongExtra(ChanThread.THREAD_NO, 0);
+        postNo = intent.getLongExtra(ChanPost.POST_NO, 0);
+        subject = intent.getStringExtra(SUBJECT);
+        text = intent.getStringExtra(ChanHelper.TEXT);
+        imageUri = intent.hasExtra(POST_REPLY_IMAGE_URL)
+                ? Uri.parse(intent.getStringExtra(POST_REPLY_IMAGE_URL))
+                : null;
+        spoilerChecked = intent.getBooleanExtra(SPOILER, false);
+        // these are just reset
+        imagePath = null;
+        contentType = null;
+        orientation = null;
+        if (DEBUG) Log.i(TAG, "loaded from intent " + boardCode + "/" + threadNo + ":" + postNo
+                + " imageUri=" + imageUri + " text=" + text);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle bundle) {
+        boardCode = bundle.getString(ChanBoard.BOARD_CODE);
+        threadNo = bundle.getLong(ChanThread.THREAD_NO, 0);
+        postNo = bundle.getLong(ChanPost.POST_NO, 0);
+        subject = bundle.getString(SUBJECT);
+        text = bundle.getString(ChanHelper.TEXT);
+        imageUri = bundle.getString(POST_REPLY_IMAGE_URL) != null
+                ? Uri.parse(bundle.getString(POST_REPLY_IMAGE_URL))
+                : null;
+        spoilerChecked = bundle.getBoolean(SPOILER, false);
+        imagePath = bundle.getString(ChanHelper.IMAGE_PATH);
+        contentType = bundle.getString(ChanHelper.CONTENT_TYPE);
+        orientation = bundle.getString(ChanHelper.ORIENTATION);
+        if (DEBUG) Log.i(TAG, "loaded from intent " + boardCode + "/" + threadNo + ":" + postNo
+                + " imageUri=" + imageUri + " text=" + text);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+        bundle.putString(ChanBoard.BOARD_CODE, boardCode);
+        bundle.putLong(ChanThread.THREAD_NO, threadNo);
+        bundle.putLong(ChanPost.POST_NO, postNo);
+        bundle.putString(SUBJECT, subject);
+        bundle.putString(ChanHelper.TEXT, text);
+        bundle.putString(POST_REPLY_IMAGE_URL, imageUri.toString());
+        bundle.putBoolean(SPOILER, spoilerChecked);
+        bundle.putString(ChanHelper.IMAGE_PATH, imagePath);
+        bundle.putString(ChanHelper.CONTENT_TYPE, contentType);
+        bundle.putString(ChanHelper.ORIENTATION, orientation);
+        if (DEBUG) Log.i(TAG, "saved to bundle " + boardCode + "/" + threadNo + ":" + postNo
+                + " imageUri=" + imageUri + " text=" + text);
+        saveUserFieldsToPrefs();
     }
 
     private void showCommentDialog() {
@@ -345,27 +407,38 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         return handler;
     }
 
-    private boolean restarted = false;
-
     public void onRestart() {
         super.onRestart();
         if (DEBUG) Log.i(TAG, "onStart");
-        restoreOnRestart();
-        restarted = true;
     }
 
     @Override
     public void onStart() {
         super.onStart();
         if (DEBUG) Log.i(TAG, "onStart");
-        if (restarted)
-            restarted = false;
-        else
-            restoreInstanceState();
         if (threadNo <= 0)
             NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.ADD_THREAD);
         else
             NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.POST);
+        setViews();
+        refresh();
+    }
+
+    protected void setViews() {
+        if (subject != null && !subject.isEmpty())
+            subjectText.setText(subject);
+        if (text != null && !text.isEmpty())
+            messageText.setText(text);
+        else if (postNo != 0)
+            messageText.setText(">>" + postNo + "\n");
+        else
+            messageText.setText("");
+        spoilerCheckbox.setChecked(spoilerChecked);
+        updateBump();
+        adjustFieldVisibility();
+        defaultEmptyUserFieldsFromPrefs();
+        setImagePreview();
+        setActionBarTitle();
     }
 
     @Override
@@ -384,20 +457,20 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     protected void onStop() {
         super.onStop();
         if (DEBUG) Log.i(TAG, "onStop");
-        saveInstanceState();
         handler = null;
     }
 
-    protected void restoreInstanceState() {
-        if (getIntent().hasExtra(ChanHelper.BOARD_CODE))
-            loadFromIntent(getIntent());
-        else
-            loadFromPrefs();
-        refresh();
-    }
-
-    private void restoreOnRestart() {
-        loadFromPrefs();
+    protected void saveUserFieldsToPrefs() {
+        SharedPreferences.Editor ed = ensurePrefs().edit();
+        String name = nameText.getText().toString();
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
+        if (!name.isEmpty())
+            ed.putString(SettingsActivity.PREF_USER_NAME, name);
+        if (!email.isEmpty() && !email.equalsIgnoreCase("sage")) // no sagebombing
+            ed.putString(SettingsActivity.PREF_USER_EMAIL, email);
+        if (!password.isEmpty())
+            ed.putString(SettingsActivity.PREF_USER_PASSWORD, password);
     }
 
     public void refresh() {
@@ -405,21 +478,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (!passEnabled || !isPassAvailable())
             reloadCaptcha();
         updatePassRecaptchaViews(passEnabled);
-    }
-
-    protected void setMessageText(String text, String quoteText) {
-        messageText.setText("");
-        if (text != null && !text.isEmpty()) {
-            messageText.append(text);
-        }
-        else {
-            if (postNo != 0) {
-                messageText.append(">>" + postNo + "\n");
-            }
-            if (quoteText != null && !quoteText.isEmpty())
-                messageText.append(quoteText);
-        }
-        updateBump();
     }
 
     protected void setImageUri(String imageUrl) {
@@ -441,92 +499,26 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         }
     }
 
-    protected void loadFromIntent(Intent intent) {
-        loadFromIntentWithBoardCode(
-                intent,
-                intent.getStringExtra(ChanHelper.BOARD_CODE),
-                intent.getStringExtra(ChanHelper.POST_REPLY_IMAGE_URL)
-        );
-    }
-
-    protected void loadFromIntentWithBoardCode(Intent intent, String boardCode, String imageUrl) {
-        this.boardCode = boardCode;
-        threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-        postNo = intent.getLongExtra(ChanPost.POST_NO, 0);
-        tim = intent.getLongExtra(ChanHelper.TIM, 0);
-        imagePath = null;
-        contentType = null;
-        orientation = null;
-
-        String text = intent.getStringExtra(ChanHelper.TEXT);
-        if (DEBUG) Log.i(TAG, "Intent has text? " + intent.hasExtra(ChanHelper.TEXT));
-        if (DEBUG) Log.i(TAG, "Intent has text=" + text);
-        //String quoteText = ChanPost.quoteText(intent.getStringExtra(ChanHelper.QUOTE_TEXT));
-        setMessageText(text, "");
-        adjustFieldVisibility();
-        loadUserPrefs();
-
-        String subject = intent.getStringExtra(ChanHelper.SUBJECT);
-        if (subject != null && !subject.isEmpty())
-            subjectText.setText(subject);
-        boolean spoilerChecked = intent.getBooleanExtra(ChanHelper.SPOILER, false);
-            spoilerCheckbox.setChecked(spoilerChecked);
-
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            setImageUri(imageUrl);
-            setImagePreview();
-        }
-        else {
-            imagePreview.setVisibility(View.GONE);
-        }
-
-        setActionBarTitle();
-
-        if (DEBUG) Log.i(TAG, "loaded from intent " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " imageUrl=" + imageUrl + " text=" + text);
-    }
-
-    protected void loadFromPrefs() {
+    protected void defaultEmptyUserFieldsFromPrefs() {
         ensurePrefs();
-        boardCode = prefs.getString(ChanHelper.BOARD_CODE, null);
-        threadNo = prefs.getLong(ChanHelper.THREAD_NO, 0);
-        postNo = prefs.getLong(ChanPost.POST_NO, 0);
-        tim = prefs.getLong(ChanHelper.TIM, 0);
-        imagePath = prefs.getString(ChanHelper.IMAGE_PATH, null);
-        contentType = prefs.getString(ChanHelper.CONTENT_TYPE, null);
-        orientation = prefs.getString(ChanHelper.ORIENTATION, null);
-
-        String text = prefs.getString(ChanHelper.TEXT, "");
-        setMessageText(text, "");
-        adjustFieldVisibility();
-        loadUserPrefs();
-
-        String subject = prefs.getString(ChanHelper.SUBJECT, "");
-        if (!subject.isEmpty())
-            subjectText.setText(subject);
-        boolean spoilerChecked = prefs.getBoolean(ChanHelper.SPOILER, false);
-            spoilerCheckbox.setChecked(spoilerChecked);
-
-        loadImageFromPrefs();
-
-        setActionBarTitle();
-        if (DEBUG) Log.i(TAG, "loaded from prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim + " text=" + text);
-    }
-
-
-    protected void loadUserPrefs() {
-        ensurePrefs();
-        String name = prefs.getString(SettingsActivity.PREF_USER_NAME, "");
-        if (!name.isEmpty())
-            nameText.setText(name);
-        String email = prefs.getString(SettingsActivity.PREF_USER_EMAIL, "");
-        if (!email.isEmpty())
-            emailText.setText(email);
-        String password = prefs.getString(SettingsActivity.PREF_USER_PASSWORD, "");
-        if (!password.isEmpty()) {
+        CharSequence existingName = nameText.getText();
+        CharSequence existingEmail = emailText.getText();
+        CharSequence existingPassword = passwordText.getText();
+        if (existingName == null || existingName.length() == 0) {
+            String name = prefs.getString(SettingsActivity.PREF_USER_NAME, "");
+            if (!name.isEmpty())
+                nameText.setText(name);
+        }
+        if (existingEmail == null || existingEmail.length() == 0) {
+            String email = prefs.getString(SettingsActivity.PREF_USER_EMAIL, "");
+            if (!email.isEmpty())
+                emailText.setText(email);
+        }
+        if (existingPassword == null || existingPassword.length() == 0) {
+            String password = prefs.getString(SettingsActivity.PREF_USER_PASSWORD, "");
+            if (password.isEmpty())
+                password = generatePassword();
             passwordText.setText(password);
-        }
-        else {
-            passwordText.setText(generatePassword());
         }
     }
 
@@ -567,47 +559,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         return spoilerCheckbox.isChecked();
     }
 
-    protected void loadImageFromPrefs() {
-        String imageUrl = ensurePrefs().getString(ChanHelper.POST_REPLY_IMAGE_URL, null);
-        if (DEBUG) Log.i(TAG, "Found pref value for imageUrl=" + imageUrl);
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            setImageUri(imageUrl);
-            setImagePreview();
-        }
-        else {
-            imageUri = null;
-        }
-    }
-
-    protected void saveInstanceState() {
-        SharedPreferences.Editor ed = ensurePrefs().edit();
-        ed.putString(ChanHelper.BOARD_CODE, boardCode);
-        ed.putLong(ChanHelper.THREAD_NO, threadNo);
-        ed.putLong(ChanPost.POST_NO, postNo);
-        ed.putString(ChanHelper.TEXT, messageText.getText().toString());
-        ed.putString(ChanHelper.SUBJECT, subjectText.getText().toString());
-        ed.putBoolean(ChanHelper.SPOILER, spoilerCheckbox.isChecked());
-        ed.putLong(ChanHelper.TIM, tim);
-        ed.putString(ChanHelper.POST_REPLY_IMAGE_URL, imageUri == null ? null : imageUri.toString());
-        ed.putString(ChanHelper.IMAGE_PATH, imagePath);
-        ed.putString(ChanHelper.CONTENT_TYPE, contentType);
-        ed.putString(ChanHelper.ORIENTATION, orientation);
-        saveUserPrefs(ed);
-        ed.commit();
-        if (DEBUG) Log.i(TAG, "Saved to prefs " + boardCode + "/" + threadNo + ":" + postNo + " tim=" + tim
-                + " imageUrl=" + (imageUri == null ? "" : imageUri.toString()));
-        DispatcherHelper.saveActivityToPrefs(this);
-    }
-
-    protected void saveUserPrefs(SharedPreferences.Editor ed) {
-        String email = emailText.getText().toString();
-        if (!email.equalsIgnoreCase("sage")) // no sagebombing
-            ed.putString(SettingsActivity.PREF_USER_EMAIL, email);
-        ed.putString(SettingsActivity.PREF_USER_NAME, nameText.getText().toString());
-        ed.putString(SettingsActivity.PREF_USER_PASSWORD, passwordText.getText().toString());
-    }
-
-
     public void reloadCaptcha() {
         recaptchaText.setText("");
         recaptchaText.setHint(R.string.post_reply_recaptcha_hint);
@@ -625,7 +576,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 if (resultCode == RESULT_OK) {
                     msg = res.getString(R.string.post_reply_added_image);
                     imageUri = Uri.parse(intent.getStringExtra(ChanHelper.CAMERA_IMAGE_URL));
-                    ensurePrefs().edit().putString(ChanHelper.POST_REPLY_IMAGE_URL, imageUri.toString()).commit();
+                    ensurePrefs().edit().putString(POST_REPLY_IMAGE_URL, imageUri.toString()).commit();
                     if (DEBUG) Log.i(TAG, "Got camera result for activity url=" + imageUri);
                 }
                 else {
@@ -637,7 +588,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 if (resultCode == RESULT_OK && intent != null && intent.getData() != null) {
                     msg = res.getString(R.string.post_reply_added_image);
                     imageUri = intent.getData();
-                    ensurePrefs().edit().putString(ChanHelper.POST_REPLY_IMAGE_URL, imageUri.toString()).commit();
+                    ensurePrefs().edit().putString(POST_REPLY_IMAGE_URL, imageUri.toString()).commit();
                     if (DEBUG) Log.i(TAG, "Got gallery result for activity imageUri=" + imageUri);
                 }
                 else {
@@ -672,8 +623,11 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         contentType = null;
         orientation = null;
         try {
-            String[] filePathColumn = { MediaStore.Images.ImageColumns.DATA, MediaStore.Images.ImageColumns.MIME_TYPE, MediaStore.Images.ImageColumns.ORIENTATION };
-            Cursor cursor = getContentResolver().query(imageUri, filePathColumn, null, null, null);
+            String[] filePathColumn = {
+                    MediaStore.Images.ImageColumns.DATA,
+                    MediaStore.Images.ImageColumns.MIME_TYPE,
+                    MediaStore.Images.ImageColumns.ORIENTATION };
+            Cursor cursor = getContentResolver().query(imageUri, filePathColumn, null, null, null); // query so image shows up
             if (cursor != null) {
                 cursor.moveToFirst();
                 imagePath = cursor.getString(cursor.getColumnIndexOrThrow(filePathColumn[0]));
@@ -681,7 +635,15 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 orientation = cursor.getString(cursor.getColumnIndexOrThrow(filePathColumn[2]));
                 cursor.close();
             }
-            if (DEBUG) Log.i(TAG, "Got media settings for imageUri=" + imageUri + " path=" + imagePath + " contentType=" + contentType + " orientation=" + orientation);
+            if (DEBUG) {
+                if (cursor == null) {
+                    Log.i(TAG, "null cursor on media resolver for imageUri=" + imageUri);
+                }
+                else {
+                    Log.i(TAG, "media resolver for imageUri=" + imageUri
+                            + " has path=" + imagePath + " type=" + contentType + " orientation=" + orientation);
+                }
+            }
         }
         catch (Exception e) {
             Log.e(TAG, "Couldn't get media information for imageUri=" + imageUri, e);
@@ -723,7 +685,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         deleteButton.setVisibility(View.VISIBLE);
         imagePreview.setVisibility(View.VISIBLE);
         imagePreview.setPadding(0, 0, 0, 16);
-        angle = 0;
     }
 
     protected void setImagePreview() {
@@ -936,13 +897,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             upIntent = new Intent(this, ThreadActivity.class);
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
             upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
-            upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
-            upIntent.putExtra(ChanHelper.LAST_THREAD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_THREAD_POSITION, 0));
         }
         else {
             upIntent = new Intent(this, BoardActivity.class);
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-            upIntent.putExtra(ChanHelper.LAST_BOARD_POSITION, getIntent().getIntExtra(ChanHelper.LAST_BOARD_POSITION, 0));
         }
         NavUtils.navigateUpTo(this, upIntent);
     }

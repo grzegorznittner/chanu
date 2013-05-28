@@ -285,7 +285,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		switch(targetType) {
 		case TO_BOARD:
 		case TO_ZIP:
-			threadActivityIntent = ThreadActivity.createIntentForActivity(context, board, threadNo);
+			threadActivityIntent = ThreadActivity.createIntentForActivity(context, board, threadNo, "");
 			break;
 		case TO_GALLERY:
             threadActivityIntent = GalleryViewActivity.getAlbumViewIntent(context, board, threadNo);
@@ -345,7 +345,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		notifBuilder.setContentText(board + "/" + threadNo);
 		notifBuilder.setSmallIcon(R.drawable.app_icon);
 		
-		Intent threadActivityIntent = ThreadActivity.createIntentForActivity(getApplicationContext(), board, threadNo);
+		Intent threadActivityIntent = ThreadActivity.createIntentForActivity(getApplicationContext(), board, threadNo, "");
 		PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
 				threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
 		notifBuilder.setContentIntent(pendingIntent);

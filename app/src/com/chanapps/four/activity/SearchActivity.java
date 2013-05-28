@@ -53,9 +53,9 @@ public class SearchActivity extends Activity {
         }
         long threadNo = activity.getChanActivityId().threadNo;
         if (threadNo > 0)
-            ThreadActivity.startActivityForSearch(this, boardCode, threadNo, query);
+            ThreadActivity.startActivity(this, boardCode, threadNo, query);
         else
-            BoardActivity.startActivityForSearch(this, boardCode, query);
+            BoardActivity.startActivity(this, boardCode, query);
         finish();
     }
 }
