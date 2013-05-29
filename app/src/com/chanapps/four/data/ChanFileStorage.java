@@ -23,6 +23,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.service.FileSaverService;
 import com.chanapps.four.service.FileSaverService.FileType;
 import com.chanapps.four.widget.BoardWidgetProvider;
@@ -120,7 +121,9 @@ public class ChanFileStorage {
 			ObjectMapper mapper = ChanHelper.getJsonMapper();
 			mapper.writeValue(new File(boardDir, board.link + CACHE_EXT), board);
 			if (DEBUG) Log.i(TAG, "Stored " + board.threads.length + " threads for board '" + board.link + "'");
-			updateWatchedThread(context, board);
+			if (!board.isVirtualBoard()) {
+				updateWatchedThread(context, board);
+			}
 		} else {
 			Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
 		}
@@ -641,18 +644,19 @@ public class ChanFileStorage {
     }
     
     private static void updateWatchedThread(Context context, ChanThread loadedThread) throws IOException {
-    	ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
-    	for (int i = 0; i < board.threads.length; i++) {
-    		ChanPost thread = board.threads[i];
-    		if (thread.no == loadedThread.no && thread.board.equals(loadedThread.board)) {
-    			board.threads[i].updateThreadData(loadedThread);
-    			Log.e(TAG, "Updating watched thread " + thread.board + "/" + thread.no
-    					+ " replies: " + board.threads[i].replies + " images: " + board.threads[i].images);
-    	    	storeBoardData(context, board);
+    	ChanBoard watchlistBoard = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+    	for (int i = 0; i < watchlistBoard.threads.length; i++) {
+    		ChanPost watchedThread = watchlistBoard.threads[i];
+    		if (watchedThread.no == loadedThread.no && watchedThread.board.equals(loadedThread.board)) {
+    			watchlistBoard.threads[i].updateThreadData(loadedThread);
+    			if (DEBUG) Log.i(TAG, "Updating watched thread " + watchedThread.board + "/" + watchedThread.no
+    					+ " replies: " + watchlistBoard.threads[i].replies + " images: " + watchlistBoard.threads[i].images);
+    	    	storeBoardData(context, watchlistBoard);
+    	    	BoardGroupFragment.refreshWatchlist();
     		}
     	}
     }
-
+    
     private static void updateWatchedThread(Context context, ChanBoard loadedBoard) throws IOException {
     	if (loadedBoard.defData || loadedBoard.loadedThreads == null || loadedBoard.loadedThreads.length == 0
     			|| loadedBoard.loadedThreads[0].defData) {
@@ -667,7 +671,7 @@ public class ChanFileStorage {
     				ChanPost loadedThread = loadedBoard.loadedThreads[t];
     	    		if (thread.no == loadedThread.no) {
     	    			board.threads[i].updateThreadDataWithPost(loadedThread);
-    	    			Log.e(TAG, "Updating watched thread " + thread.board + "/" + thread.no
+    	    			if (DEBUG) Log.i(TAG, "Updating watched thread " + thread.board + "/" + thread.no
     	    					+ " replies: " + board.threads[i].replies + " images: " + board.threads[i].images);
     	    			needsToBeStored = true;
     	    		}
@@ -676,6 +680,7 @@ public class ChanFileStorage {
     	}
     	if (needsToBeStored) {
 	    	storeBoardData(context, board);
+	    	BoardGroupFragment.refreshWatchlist();
     	}
     }
     
