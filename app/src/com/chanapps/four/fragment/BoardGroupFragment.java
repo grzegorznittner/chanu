@@ -180,9 +180,12 @@ public class BoardGroupFragment
         switch (boardSelectorTab) {
             default:
             case BOARDLIST:
-                rules.setVisible(true);
-                refresh.setVisible(false);
-                clear.setVisible(false);
+                if (rules != null)
+                    rules.setVisible(true);
+                if (refresh != null)
+                    refresh.setVisible(false);
+                if (clear != null)
+                    clear.setVisible(false);
                 break;
             case RECENT:
                 rules.setVisible(false);

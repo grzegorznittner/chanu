@@ -36,4 +36,8 @@
           android:title="@string/exit_menu"
           android:icon="@drawable/navigation_cancel"
             />
+    <item android:id="@+id/test_menu"
+          android:title="@string/test_menu"
+          android:icon="@drawable/action_about"
+            />
 </menu>

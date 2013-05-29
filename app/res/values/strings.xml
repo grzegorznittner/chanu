@@ -542,6 +542,7 @@
     <!-- Help and about_dialog -->
     <string name="about_menu">About</string>
     <string name="exit_menu">Exit</string>
+    <string name="test_menu">Test</string>
 
     <!-- camera -->
     <string name="camera_capture">Capture picture</string>
@@ -1422,5 +1423,8 @@
     <dimen name="widget_board_minWidth">294dp</dimen>
     <dimen name="widget_board_minHeight">72dp</dimen>
 
+    <!-- drawer -->
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 
 </resources>

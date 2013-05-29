@@ -30,15 +30,8 @@ public class WatchlistClearDialogFragment extends DialogFragment {
     public static final String TAG = WatchlistClearDialogFragment.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    WeakReference<BoardGroupFragment> fragmentRef = null;
-
     public WatchlistClearDialogFragment() {
         super();
-    }
-
-    public WatchlistClearDialogFragment(BoardGroupFragment fragment) {
-        super();
-        fragmentRef = new WeakReference<BoardGroupFragment>(fragment);
     }
 
     @Override
@@ -60,7 +53,7 @@ public class WatchlistClearDialogFragment extends DialogFragment {
                                 try {
                                     if (DEBUG) Log.i(TAG, "Clearing watchlist...");
                                     ChanFileStorage.clearWatchedThreads(getActivity().getApplicationContext());
-                                    BoardGroupFragment.refreshWatchlist();
+                                    WatchlistFragment.refreshWatchlist();
                                     Toast.makeText(getActivity().getApplicationContext(),
                                             R.string.thread_watchlist_cleared, Toast.LENGTH_SHORT).show();
                                 }

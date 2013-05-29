@@ -119,6 +119,7 @@ public class ThreadActivity
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
         intent.putExtra(SearchManager.QUERY, query);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
     }
 

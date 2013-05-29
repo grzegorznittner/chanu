@@ -299,7 +299,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 				threadActivityIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
 				//threadActivityIntent.putExtra("slideshow", true);
 			} else {
-				threadActivityIntent = ThreadActivity.createIntentForActivity(context,
+				threadActivityIntent = ThreadActivity.createIntent(context,
 						board, threadNo,
 		                thread.getThreadNotificationText(),
 		                thread.thumbnailUrl(),

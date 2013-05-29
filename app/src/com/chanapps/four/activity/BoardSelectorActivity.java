@@ -218,7 +218,7 @@ public class
             case R.id.clear_watchlist_menu:
                 BoardGroupFragment fragment = (BoardGroupFragment)mTabsAdapter
                         .getFragmentAtPosition(BoardSelectorTab.WATCHLIST.ordinal());
-                new WatchlistClearDialogFragment(fragment)
+                new WatchlistClearDialogFragment()
                         .show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
                 return true;
             case R.id.settings_menu:

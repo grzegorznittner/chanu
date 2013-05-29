@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -18,10 +19,10 @@ import com.chanapps.four.service.NetworkProfileManager;
  */
 public class TutorialOverlay {
 
-    private static final boolean DEBUG = false;
-
     public enum Page {
         BOARDLIST,
+        POPULAR,
+        WATCHLIST,
         BOARD,
         THREAD;
     }
@@ -33,8 +34,23 @@ public class TutorialOverlay {
     protected Button tutorialOverlayButton;
     protected TextView tutorialOverlayDismiss;
 
+    protected static final String TAG = TutorialOverlay.class.getSimpleName();
+
     public TutorialOverlay(View layout, Page page) {
-        feature = NetworkProfileManager.instance().getUserStatistics().nextTipForPage(page);
+        NetworkProfileManager manager = NetworkProfileManager.instance();
+        if (manager == null) {
+            Log.e(TAG, "no network manager found");
+            return;
+        }
+        UserStatistics stats = manager.getUserStatistics();
+        if (stats == null) {
+            Log.e(TAG, "no user statistics found");
+            return;
+        }
+        feature = stats.nextTipForPage(page);
+        if (feature == null) {
+            Log.e(TAG, "no tutorial feature found");
+        }
         if (feature == UserStatistics.ChanFeature.NONE) {
             return;
         }

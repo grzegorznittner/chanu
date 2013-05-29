@@ -11,14 +11,11 @@ import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.Loader;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.*;
@@ -84,6 +81,7 @@ public class BoardActivity
         intent.putExtra(ChanBoard.BOARD_CODE, intentBoardCode);
         intent.putExtra(ChanHelper.PAGE, 0);
         intent.putExtra(SearchManager.QUERY, query);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
     }
 
@@ -370,9 +368,12 @@ public class BoardActivity
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (DEBUG) Log.i(TAG, "navigating up");
-                Intent intent = BoardSelectorActivity.createIntentForActivity(this, BoardSelectorTab.BOARDLIST);
-                intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
-                NavUtils.navigateUpTo(this, intent);
+                Intent intent = BoardListActivity.createIntent(this);
+                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+                finish();
+                //intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
+                //NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);

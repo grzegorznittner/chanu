@@ -91,7 +91,7 @@
             </intent-filter>
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".BoardSelectorActivity"
+                    android:value=".BoardListActivity"
                     />
             <meta-data
                     android:name="android.app.default_searchable"
@@ -150,7 +150,37 @@
                   android:launchMode="singleTask"
                 >
             <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".BoardListActivity" android:label="@string/application_name"
+                  android:taskAffinity=".BoardListActivity"
+                  android:launchMode="singleTask"
+                >
+            <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".PopularActivity" android:label="@string/board_popular"
+                  android:taskAffinity=".PopularActivity"
+                  android:launchMode="singleTask"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".WatchlistActivity" android:label="@string/board_watch"
+                  android:taskAffinity=".WatchlistActivity"
+                  android:launchMode="singleTask"
+                >
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
