@@ -32,7 +32,7 @@ public class UserStatistics {
 	
 	public static final int MIN_TOP_BOARDS = 5;
 	public static final int MAX_TOP_THREADS = 50;
-	private static final long MIN_STORE_DELAY = 15000;  // 15s
+	private static final long MIN_STORE_DELAY = 5000;  // 15s
 	private static final long MIN_DELAY_FOR_TIPS = 5 * 60 * 1000; // 5min
 
 	public static enum ChanFeature {
@@ -313,12 +313,25 @@ public class UserStatistics {
 	public void tipDisplayed(ChanFeature feature) {
 		displayedTips.add(feature);
 		tipDisplayed = new Date().getTime();
+		
+		Log.e(TAG, "tipDisplayed " + feature);
+		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+		if (activity != null && new Date().getTime() - lastStored > MIN_STORE_DELAY) {
+			FileSaverService.startService(activity.getBaseContext(), FileSaverService.FileType.USER_STATISTICS);
+			Log.e(TAG, "User stats scheduled for save tip " + feature);
+		}
 	}
 
     public void disableTips() {
-        for (ChanFeature feature : ChanFeature.values())
+        for (ChanFeature feature : ChanFeature.values()) {
             displayedTips.add(feature);
+        }
         tipDisplayed = new Date().getTime();
+        
+		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+		if (activity != null && new Date().getTime() - lastStored > MIN_STORE_DELAY) {
+			FileSaverService.startService(activity.getBaseContext(), FileSaverService.FileType.USER_STATISTICS);
+		}
     }
 
     public boolean tipShouldBeDisplayed() {
