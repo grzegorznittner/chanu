@@ -5,16 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.Window;
 import android.widget.ListView;
-import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.data.BoardSelectorTab;
-import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.fragment.BoardGroupFragment;
-import com.chanapps.four.fragment.BoardListFragment;
 import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.chanapps.four.fragment.WatchlistFragment;
 
@@ -34,7 +27,7 @@ public class
     }
 
     @Override
-    protected void createFragment() {
+    protected void createViews(Bundle bundle) {
         Fragment fragment = new WatchlistFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();

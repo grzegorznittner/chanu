@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/board_jump_spinner_menu"
-          android:title="@string/board_select"
-          android:icon="@drawable/collections_view_as_list"
-          android:actionDropDownStyle="@style/BoardJumpDropDown"
-          android:actionLayout="@layout/board_jump_spinner_long"
-          android:showAsAction="ifRoom"
-            />
-
     <item android:id="@+id/search_menu"
           android:title="@string/thread_search"
           android:icon="@drawable/action_search"

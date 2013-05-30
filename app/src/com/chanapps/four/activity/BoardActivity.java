@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.LauncherActivity;
 import android.app.SearchManager;
 import android.os.Message;
 import android.support.v4.app.LoaderManager;
@@ -42,10 +43,9 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class BoardActivity
-        extends FragmentActivity
+        extends AbstractDrawerActivity
         implements ChanIdentifiedActivity,
         OnClickListener,
-        AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor>,
         AbstractBoardCursorAdapter.ViewBinder
 {
@@ -59,7 +59,6 @@ public class BoardActivity
     protected Class absListViewClass = GridView.class;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
-    protected int scrollOnNextLoaderFinished = -1;
     protected Menu menu;
     protected long tim;
     protected String boardCode;
@@ -86,12 +85,12 @@ public class BoardActivity
     }
 
     @Override
-    protected void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        query = getIntent().hasExtra(SearchManager.QUERY)
-                ? getIntent().getStringExtra(SearchManager.QUERY)
-                : "";
+    public boolean isSelfBoard(String boardAsMenu) {
+        return (boardAsMenu != null && boardAsMenu.matches("/" + boardCode + "/.*"));
+    }
+
+    @Override
+    protected void createViews(Bundle bundle) {
         createAbsListView();
         if (bundle != null)
             onRestoreInstanceState(bundle);
@@ -205,12 +204,16 @@ public class BoardActivity
 
     protected void createAbsListView() {
         setAbsListViewClass();
+        // we don't use fragments, but create anything needed
+        FrameLayout contentFrame = (FrameLayout)findViewById(R.id.content_frame);
+        if (contentFrame.getChildCount() > 0)
+            contentFrame.removeAllViews();
         layout = View.inflate(getApplicationContext(), getLayoutId(), null);
-        setContentView(layout);
+        contentFrame.addView(layout);
         initAbsListView();
         initAdapter();
         absListView.setClickable(true);
-        absListView.setOnItemClickListener(this);
+        absListView.setOnItemClickListener(boardItemListener);
         absListView.setLongClickable(false);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
@@ -297,13 +300,6 @@ public class BoardActivity
         if (absListView == null)
             createAbsListView();
 		adapter.swapCursor(data);
-        if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
-        if (absListView != null) {
-            if (scrollOnNextLoaderFinished > -1) {
-                absListView.setSelection(scrollOnNextLoaderFinished);
-                scrollOnNextLoaderFinished = -1;
-            }
-        }
 
         // retry load if maybe data wasn't there yet
         if ((data == null || data.getCount() < 1) && handler != null) {
@@ -336,48 +332,43 @@ public class BoardActivity
             adapter.swapCursor(null);
 	}
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
-        final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
-        if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
-            String[] clickUrls = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL))
-                    .split(ChanThread.AD_DELIMITER);
-            String clickUrl = viewType == ViewType.AS_GRID ? clickUrls[0] : clickUrls[1];
-            ChanHelper.launchUrlInBrowser(this, clickUrl);
+    AbsListView.OnItemClickListener boardItemListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+            int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+            final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
+            final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+            if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
+                String[] clickUrls = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL))
+                        .split(ChanThread.AD_DELIMITER);
+                String clickUrl = viewType == ViewType.AS_GRID ? clickUrls[0] : clickUrls[1];
+                ChanHelper.launchUrlInBrowser(BoardActivity.this, clickUrl);
+            }
+            else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0
+                    && title != null && !title.isEmpty()
+                    && desc != null && !desc.isEmpty()) {
+                (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
+                        .show(getSupportFragmentManager(), BoardActivity.TAG);
+                return;
+            }
+            else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
+                String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+                startActivity(BoardActivity.this, boardLink, "");
+            }
+            else {
+                String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+                long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+                ThreadActivity.startActivity(BoardActivity.this, boardLink, threadNo, "");
+            }
         }
-        else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0
-                && title != null && !title.isEmpty()
-                && desc != null && !desc.isEmpty()) {
-            (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
-                    .show(getSupportFragmentManager(), BoardActivity.TAG);
-            return;
-        }
-        else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
-            String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-            startActivity(this, boardLink, "");
-        }
-        else {
-            String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-            long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-            ThreadActivity.startActivity(this, boardLink, threadNo, "");
-        }
-    }
+    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item))
+            return true;
         switch (item.getItemId()) {
-            case android.R.id.home:
-                if (DEBUG) Log.i(TAG, "navigating up");
-                Intent intent = BoardListActivity.createIntent(this);
-                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-                finish();
-                //intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
-                //NavUtils.navigateUpTo(this, intent);
-                return true;
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
@@ -401,22 +392,8 @@ public class BoardActivity
             case R.id.offline_board_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);
                 return true;
-            case R.id.offline_chan_view_menu:
-            	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
-                return true;
             case R.id.board_rules_menu:
                 displayBoardRules();
-                return true;
-            case R.id.settings_menu:
-                Intent settingsIntent = new Intent(this, SettingsActivity.class);
-                startActivity(settingsIntent);
-                return true;
-            case R.id.about_menu:
-                intent = new Intent(this, AboutActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.exit_menu:
-                ChanHelper.exitApplication(this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -440,13 +417,11 @@ public class BoardActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        int menuId = ChanBoard.showNSFW(this) ? R.menu.board_menu_adult : R.menu.board_menu;
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(menuId, menu);
-        ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
+        inflater.inflate(R.menu.board_menu, menu);
         setupSearch(menu);
         this.menu = menu;
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -468,17 +443,10 @@ public class BoardActivity
     }
 
     public void setActionBarTitle() {
-        final ActionBar a = getActionBar();
-        if (a == null)
-            return;
-        /*
         if (DEBUG) Log.i(TAG, "about to load board data for action bar board=" + boardCode);
         ChanBoard board = loadBoard();
         String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
-        a.setTitle(title);
-        */
-        a.setDisplayShowTitleEnabled(false);
-        a.setDisplayHomeAsUpEnabled(true);
+        getActionBar().setTitle(title);
     }
 
     protected ChanBoard loadBoard() {

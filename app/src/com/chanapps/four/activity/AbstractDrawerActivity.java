@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -17,7 +16,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.fragment.BoardListFragment;
 import com.chanapps.four.service.NetworkProfileManager;
 
 import java.util.regex.Matcher;
@@ -34,8 +32,6 @@ abstract public class
     protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
 
     protected Handler handler;
-    protected String mTitle;
-    protected String mDrawerTitle;
     protected ActionBarDrawerToggle mDrawerToggle;
     protected int mBoardArrayId;
     protected String[] mBoardArray;
@@ -44,16 +40,16 @@ abstract public class
     protected ArrayAdapter<String> mAdapter;
 
     @Override
-    public void onCreate(Bundle bundle) {
+    protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         if (DEBUG) Log.v(TAG, "onCreate");
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar
         setContentView(R.layout.drawer_activity_layout);
         createDrawer();
-        createFragment();
+        createViews(bundle);
     }
 
-    abstract protected void createFragment();
+    abstract protected void createViews(Bundle bundle);
 
     @Override
     protected void onPostCreate(Bundle bundle) {
@@ -67,8 +63,6 @@ abstract public class
     }
 
     protected void createDrawer() {
-        mTitle = getTitle().toString();
-        mDrawerTitle = mTitle;
         mBoardArrayId = ChanBoard.showNSFW(getApplicationContext())
                 ? R.array.long_board_array
                 : R.array.long_board_array_worksafe;
@@ -92,12 +86,10 @@ abstract public class
                 R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(mDrawerTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
@@ -109,9 +101,18 @@ abstract public class
     protected void onStart() {
         super.onStart();
         handler = new Handler();
-        mDrawerList.setItemChecked(0, true);
+        setSelfChecked();
     }
 
+    protected void setSelfChecked() {
+        for (int i = 0; i < mDrawerList.getAdapter().getCount(); i++) {
+            String s = (String)mDrawerList.getItemAtPosition(i);
+            if (isSelfBoard(s)) {
+                mDrawerList.setItemChecked(i, true);
+                break;
+            }
+        }
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -248,7 +249,7 @@ abstract public class
         if (!m.matches())
             return;
         String boardCodeForJump = m.group(1);
-        if (boardCodeForJump == null || boardCodeForJump.isEmpty())
+        if (boardCodeForJump == null || boardCodeForJump.isEmpty() || isSelfBoard(boardCodeForJump))
             return;
         Intent intent = BoardActivity.createIntentForActivity(this, boardCodeForJump, "");
         startActivity(intent);
