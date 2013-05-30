@@ -136,6 +136,7 @@ public class ThreadActivity
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
+        if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/" + threadNo);
         if (boardCode == null || boardCode.isEmpty())
             redirectToBoardSelector();
         else if (threadNo <= 0)
@@ -167,6 +168,7 @@ public class ThreadActivity
         savedInstanceState.putString(ChanBoard.BOARD_CODE, boardCode);
         savedInstanceState.putLong(ChanThread.THREAD_NO, threadNo);
         savedInstanceState.putString(SearchManager.QUERY, query);
+        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/" + threadNo);
     }
 
     @Override
@@ -175,13 +177,16 @@ public class ThreadActivity
         boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
         threadNo = savedInstanceState.getLong(ChanThread.THREAD_NO, 0);
         query = savedInstanceState.getString(SearchManager.QUERY);
+        if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/" + threadNo);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
-        if (DEBUG) Log.i(TAG, "onNewIntent boardCode=" + intent.getStringExtra(ChanBoard.BOARD_CODE));
+        if (DEBUG) Log.i(TAG, "onNewIntent begin /" + intent.getStringExtra(ChanBoard.BOARD_CODE) + "/"
+                + intent.getLongExtra(ChanThread.THREAD_NO, 0));
         setIntent(intent);
         setFromIntent(intent);
+        if (DEBUG) Log.i(TAG, "onNewIntent end /" + boardCode + "/" + threadNo);
     }
 
     public void setFromIntent(Intent intent) {
@@ -208,6 +213,7 @@ public class ThreadActivity
                 if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, using default board");
             }
         }
+        if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/" + threadNo);
     }
 
     public Cursor getCursor() {
@@ -219,7 +225,7 @@ public class ThreadActivity
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader id=" + id);
+        if (DEBUG) Log.v(TAG, "onCreateLoader /" + boardCode + "/ id=" + id);
         if (id == 0) {
             if (threadNo > 0) {
                 loadingStatusFlags &= ~THREAD_DONE;
@@ -243,7 +249,7 @@ public class ThreadActivity
     @Override
     protected void onStart() {
         super.onStart();
-        if (DEBUG) Log.v(TAG, "onStart query=" + query);
+        if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new LoaderHandler();
         threadListener = new ThreadListener(getSupportFragmentManager(), absListView, adapter, handler);
@@ -253,7 +259,7 @@ public class ThreadActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (DEBUG) Log.v(TAG, "onResume query=" + query);
+        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new LoaderHandler();
         invalidateOptionsMenu(); // for correct spinner display
@@ -267,13 +273,14 @@ public class ThreadActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if (DEBUG) Log.v(TAG, "onPause query=" + query);
+        if (DEBUG) Log.i(TAG, "onPause /" + boardCode + "/" + threadNo);
         handler = null;
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/" + threadNo);
         if (absListView != null)
             getLoaderManager().destroyLoader(0);
         if (absBoardListView != null)
@@ -347,8 +354,8 @@ public class ThreadActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (DEBUG)
-            Log.v(TAG, ">>>>>>>>>>> onLoadFinished loader=" + loader + " count=" + (data == null ? 0 : data.getCount()));
+        if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ id=" + loader.getId()
+                + " count=" + (data == null ? 0 : data.getCount()));
         if (loader == this.cursorLoader)
             onThreadLoadFinished(data);
         else if (loader == this.cursorLoaderBoardsTablet)
@@ -1204,7 +1211,7 @@ public class ThreadActivity
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
+        if (DEBUG) Log.i(TAG, "onLoaderReset /" + boardCode + "/ id=" + loader.getId());
         adapter.swapCursor(null);
     }
 
