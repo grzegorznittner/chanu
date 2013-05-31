@@ -61,11 +61,10 @@ import com.nostra13.universalimageloader.core.assist.*;
  * To change this template use File | Settings | File Templates.
  */
 public class ThreadActivity
-        extends FragmentActivity
+        extends AbstractDrawerActivity
         implements ChanIdentifiedActivity,
         LoaderManager.LoaderCallbacks<Cursor>,
         AbstractBoardCursorAdapter.ViewBinder,
-        AbsListView.OnItemClickListener,
         ActionMode.Callback,
         MediaScannerConnection.OnScanCompletedListener {
 
@@ -84,7 +83,6 @@ public class ThreadActivity
     protected Class absListViewClass = GridView.class;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
-    protected Menu menu;
     protected long tim;
     protected String boardCode;
     protected String query = "";
@@ -124,12 +122,12 @@ public class ThreadActivity
     }
 
     @Override
-    protected void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        query = getIntent().hasExtra(SearchManager.QUERY)
-                ? getIntent().getStringExtra(SearchManager.QUERY)
-                : "";
+    public boolean isSelfBoard(String boardAsMenu) {
+        return (boardAsMenu != null && boardAsMenu.matches("/" + boardCode + "/.*"));
+    }
+
+    @Override
+    protected void createViews(Bundle bundle) {
         createAbsListView();
         if (bundle != null)
             onRestoreInstanceState(bundle);
@@ -369,19 +367,40 @@ public class ThreadActivity
 
     protected void createAbsListView() {
         setAbsListViewClass();
+        // we don't use fragments, but create anything needed
+        FrameLayout contentFrame = (FrameLayout)findViewById(R.id.content_frame);
+        if (contentFrame.getChildCount() > 0)
+            contentFrame.removeAllViews();
         layout = View.inflate(getApplicationContext(), getLayoutId(), null);
-        setContentView(layout);
+        contentFrame.addView(layout);
         initAbsListView();
         initAdapter();
         setupContextMenu();
-        absListView.setOnItemClickListener(this);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
+        absListView.setOnItemClickListener(threadItemListener);
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
         if (absBoardListView != null) {
             absBoardListView.setOnItemClickListener(absBoardListViewListener);
             absBoardListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
         }
     }
+
+    protected AbsListView.OnItemClickListener threadItemListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+            int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
+            if (DEBUG) Log.i(TAG, "onItemClick pos=" + position + " flags=" + flags + " view=" + view);
+            if ((flags & ChanPost.FLAG_IS_AD) > 0)
+                itemAdListener.onClick(view);
+            else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
+                itemTitleListener.onClick(view);
+            else if ((flags & ChanPost.FLAG_IS_THREADLINK) > 0)
+                itemThreadLinkListener.onClick(view);
+            else if ((flags & ChanPost.FLAG_IS_BOARDLINK) > 0)
+                itemBoardLinkListener.onClick(view);
+        }
+    };
 
     protected void setupContextMenu() {
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
@@ -458,18 +477,26 @@ public class ThreadActivity
                 playMenuItem.setIcon(shouldPlayThread ? R.drawable.av_stop : R.drawable.av_play);
                 playMenuItem.setTitle(shouldPlayThread ? R.string.play_thread_stop_menu : R.string.play_thread_menu);
             }
-        return true;
+        searchMenuItem = menu.findItem(R.id.search_menu);
+        if (query == null || query.isEmpty()) {
+            SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+            SearchView searchView = (SearchView)searchMenuItem.getActionView();
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        }
+        else {
+            searchMenuItem.setVisible(false);
+            MenuItem refresh = menu.findItem(R.id.refresh_menu);
+            refresh.setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item))
+            return true;
         Intent intent;
         switch (item.getItemId()) {
-            case android.R.id.home:
-                if (DEBUG) Log.i(TAG, "navigating up");
-                intent = BoardActivity.createIntentForActivity(this, boardCode, "");
-                NavUtils.navigateUpTo(this, intent);
-                return true;
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
@@ -496,18 +523,6 @@ public class ThreadActivity
             case R.id.board_rules_menu:
                 displayBoardRules();
                 return true;
-            case R.id.settings_menu:
-                if (DEBUG) Log.i(TAG, "Starting settings activity");
-                Intent settingsIntent = new Intent(this, SettingsActivity.class);
-                startActivity(settingsIntent);
-                return true;
-            case R.id.about_menu:
-                intent = new Intent(this, AboutActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.exit_menu:
-                ChanHelper.exitApplication(this);
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -529,20 +544,9 @@ public class ThreadActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        int menuId = ChanBoard.showNSFW(this) ? R.menu.thread_menu_adult : R.menu.thread_menu;
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(menuId, menu);
-        ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
-        setupSearch(menu);
-        this.menu = menu;
-        return true;
-    }
-
-    protected void setupSearch(Menu menu) {
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchMenuItem = menu.findItem(R.id.search_menu);
-        SearchView searchView = (SearchView) searchMenuItem.getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        inflater.inflate(R.menu.thread_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     protected void addToWatchlist() {
@@ -772,22 +776,7 @@ public class ThreadActivity
         }
     };
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-        if (DEBUG) Log.i(TAG, "onItemClick pos=" + position + " flags=" + flags + " view=" + view);
-        if ((flags & ChanPost.FLAG_IS_AD) > 0)
-            itemAdListener.onClick(view);
-        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
-            itemTitleListener.onClick(view);
-        else if ((flags & ChanPost.FLAG_IS_THREADLINK) > 0)
-            itemThreadLinkListener.onClick(view);
-        else if ((flags & ChanPost.FLAG_IS_BOARDLINK) > 0)
-            itemBoardLinkListener.onClick(view);
-    }
-
-    protected View.OnClickListener itemAdListener = new View.OnClickListener() {
+  protected View.OnClickListener itemAdListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int pos = absListView.getPositionForView(v);
@@ -876,15 +865,17 @@ public class ThreadActivity
     };
 
     public void setActionBarTitle() {
-        final ActionBar a = getActionBar();
-        if (a == null)
+        if (query != null && !query.isEmpty()) {
+            String title = getString(R.string.search_results_title);
+            getActionBar().setTitle(title);
             return;
-        /*
+        }
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board == null)
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         String boardTitle = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
-
+        getActionBar().setTitle(boardTitle);
+        /*
         ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
         String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
                 ? "Thread " + threadNo
@@ -893,10 +884,8 @@ public class ThreadActivity
                 .replaceAll("<[^>]*>", "");
         if (threadTitle == null || threadTitle.isEmpty())
             threadTitle = "Thread " + threadNo;
-        a.setTitle(boardTitle + ChanHelper.TITLE_SEPARATOR + threadTitle);
+        getActionBar().setTitle(boardTitle + ChanHelper.TITLE_SEPARATOR + threadTitle);
         */
-        a.setDisplayShowTitleEnabled(false);
-        a.setDisplayHomeAsUpEnabled(true);
     }
 
     protected Map<ChanBlocklist.BlockType, List<String>> extractBlocklist(SparseBooleanArray postPos) {
