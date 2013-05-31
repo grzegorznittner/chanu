@@ -123,7 +123,7 @@ public class ThreadActivity
 
     @Override
     public boolean isSelfBoard(String boardAsMenu) {
-        return (boardAsMenu != null && boardAsMenu.matches("/" + boardCode + "/.*"));
+        return false; // always jump to board
     }
 
     @Override
@@ -221,7 +221,7 @@ public class ThreadActivity
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (DEBUG) Log.v(TAG, "onCreateLoader /" + boardCode + "/ id=" + id);
+        if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ id=" + id);
         if (id == 0) {
             if (threadNo > 0) {
                 loadingStatusFlags &= ~THREAD_DONE;
@@ -312,7 +312,7 @@ public class ThreadActivity
 
     protected void onThreadLoadFinished(Cursor data) {
         adapter.swapCursor(data);
-        if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
+        if (DEBUG) Log.i(TAG, "listview count=" + absListView.getCount());
         // retry load if maybe data wasn't there yet
         ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
         if ((data == null || data.getCount() < 1
@@ -477,17 +477,6 @@ public class ThreadActivity
                 playMenuItem.setIcon(shouldPlayThread ? R.drawable.av_stop : R.drawable.av_play);
                 playMenuItem.setTitle(shouldPlayThread ? R.string.play_thread_stop_menu : R.string.play_thread_menu);
             }
-        searchMenuItem = menu.findItem(R.id.search_menu);
-        if (query == null || query.isEmpty()) {
-            SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
-            SearchView searchView = (SearchView)searchMenuItem.getActionView();
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        }
-        else {
-            searchMenuItem.setVisible(false);
-            MenuItem refresh = menu.findItem(R.id.refresh_menu);
-            refresh.setVisible(false);
-        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -495,7 +484,6 @@ public class ThreadActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item))
             return true;
-        Intent intent;
         switch (item.getItemId()) {
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
@@ -546,6 +534,8 @@ public class ThreadActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.thread_menu, menu);
+        searchMenuItem = menu.findItem(R.id.search_menu);
+        SearchActivity.createSearchView(this, searchMenuItem);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -865,27 +855,29 @@ public class ThreadActivity
     };
 
     public void setActionBarTitle() {
+        /*
         if (query != null && !query.isEmpty()) {
-            String title = getString(R.string.search_results_title);
+            String title = String.format(getString(R.string.search_results_title_thread), boardCode, threadNo);
             getActionBar().setTitle(title);
             return;
         }
+        */
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board == null)
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         String boardTitle = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
         getActionBar().setTitle(boardTitle);
-        /*
         ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
         String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
-                ? "Thread " + threadNo
+                ? null
                 : thread.posts[0].threadSubject(getApplicationContext())
                 .replaceAll("<br/?>", " ")
                 .replaceAll("<[^>]*>", "");
-        if (threadTitle == null || threadTitle.isEmpty())
-            threadTitle = "Thread " + threadNo;
-        getActionBar().setTitle(boardTitle + ChanHelper.TITLE_SEPARATOR + threadTitle);
-        */
+        if (threadTitle == null || threadTitle.isEmpty() || threadTitle.trim().isEmpty())
+            threadTitle = String.valueOf(threadNo);
+        else
+            threadTitle = " " + threadTitle.trim();
+        getActionBar().setTitle("/" + boardCode + "/" + threadTitle);
     }
 
     protected Map<ChanBlocklist.BlockType, List<String>> extractBlocklist(SparseBooleanArray postPos) {
@@ -998,7 +990,7 @@ public class ThreadActivity
                                     View listItem = absListView.getChildAt(pos - first);
                                     View image = listItem == null ? null : listItem.findViewById(R.id.list_item_image);
                                     Cursor cursor = adapter.getCursor();
-                                    //if (DEBUG) Log.v(TAG, "pos=" + pos + " listItem=" + listItem + " expandButton=" + expandButton);
+                                    //if (DEBUG) Log.i(TAG, "pos=" + pos + " listItem=" + listItem + " expandButton=" + expandButton);
                                     if (listItem != null
                                             && image != null
                                             && image.getVisibility() == View.VISIBLE
@@ -1187,6 +1179,7 @@ public class ThreadActivity
 
     @Override
     public void closeSearch() {
+        if (DEBUG) Log.i(TAG, "closeSearch /" + boardCode + "/" + threadNo + " q=" + query);
         if (searchMenuItem != null)
             searchMenuItem.collapseActionView();
     }

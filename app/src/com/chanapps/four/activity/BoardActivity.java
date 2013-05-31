@@ -83,7 +83,7 @@ public class BoardActivity
 
     @Override
     public boolean isSelfBoard(String boardAsMenu) {
-        return (boardAsMenu != null && boardAsMenu.matches("/" + boardCode + "/.*"));
+        return boardAsMenu != null && boardAsMenu.matches("/" + boardCode + "/.*") && (query == null || query.isEmpty());
     }
 
     @Override
@@ -239,7 +239,7 @@ public class BoardActivity
 
     @Override
 	public void onWindowFocusChanged (boolean hasFocus) {
-		if (DEBUG) Log.v(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
+		if (DEBUG) Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
 	}
 
     @Override
@@ -254,6 +254,7 @@ public class BoardActivity
     	super.onStop();
         if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/ q=" + query);
         getLoaderManager().destroyLoader(0);
+        closeSearch();
     	handler = null;
         /*
         adapter = null;
@@ -415,6 +416,8 @@ public class BoardActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_menu, menu);
+        searchMenuItem = menu.findItem(R.id.search_menu);
+        SearchActivity.createSearchView(this, searchMenuItem);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -426,29 +429,19 @@ public class BoardActivity
             item.setTitle(viewType == ViewType.AS_GRID ? R.string.view_as_list_menu : R.string.view_as_grid_menu);
             item.setVisible(!hasQuery()); // force to list view when has query
         }
-        searchMenuItem = menu.findItem(R.id.search_menu);
-        if (query == null || query.isEmpty()) {
-            SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
-            SearchView searchView = (SearchView)searchMenuItem.getActionView();
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        }
-        else {
-            searchMenuItem.setVisible(false);
-            MenuItem refresh = menu.findItem(R.id.refresh_menu);
-            refresh.setVisible(false);
-        }
         return super.onPrepareOptionsMenu(menu);
     }
 
     public void setActionBarTitle() {
         String title;
-        if (query != null && !query.isEmpty()) {
-            title = getString(R.string.search_results_title);
+        /*if (query != null && !query.isEmpty()) {
+            title = String.format(getString(R.string.search_results_title_board), boardCode);
         }
         else {
-            ChanBoard board = loadBoard();
-            title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
-        }
+        */
+        ChanBoard board = loadBoard();
+        title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
+        //}
         getActionBar().setTitle(title);
     }
 
@@ -582,6 +575,12 @@ public class BoardActivity
     public void startProgress() {
         if (handler != null)
             setProgressBarIndeterminateVisibility(true);
+    }
+
+    @Override
+    public boolean onSearchRequested() {
+        if (DEBUG) Log.i(TAG, "onSearchRequested /" + boardCode + "/ q=" + query);
+        return super.onSearchRequested();
     }
 
 }

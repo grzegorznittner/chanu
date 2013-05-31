@@ -115,8 +115,8 @@
                     android:value=".SearchActivity"/>
         </activity>
 
-        <activity android:name=".SearchActivity" android:label="@string/thread_search"
-                  android:launchMode="standard"
+        <activity android:name=".SearchActivity" android:label="@string/search_title"
+                  android:launchMode="singleTop"
                 >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
