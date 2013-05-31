@@ -125,7 +125,6 @@ public class ThreadActivity
 
     @Override
     protected void onCreate(Bundle bundle) {
-        if (DEBUG) Log.v(TAG, "************ onCreate");
         super.onCreate(bundle);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         query = getIntent().hasExtra(SearchManager.QUERY)
@@ -136,12 +135,11 @@ public class ThreadActivity
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
-        if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/" + threadNo);
+        if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/" + threadNo + " q=" + query);
         if (boardCode == null || boardCode.isEmpty())
             redirectToBoardSelector();
         else if (threadNo <= 0)
             redirectToBoard();
-        LoaderManager.enableDebugLogging(true);
     }
 
     protected void redirectToBoardSelector() { // backup in case we are missing stuff
@@ -460,6 +458,7 @@ public class ThreadActivity
                 playMenuItem.setIcon(shouldPlayThread ? R.drawable.av_stop : R.drawable.av_play);
                 playMenuItem.setTitle(shouldPlayThread ? R.string.play_thread_stop_menu : R.string.play_thread_menu);
             }
+
         return true;
     }
 

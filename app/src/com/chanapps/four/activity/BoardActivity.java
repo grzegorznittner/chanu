@@ -71,7 +71,7 @@ public class BoardActivity
     public static void startActivity(Activity from, String boardCode, String query) {
         if (query != null && !query.isEmpty())
             NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.SEARCH_BOARD);
-        from.startActivity(createIntentForActivity(from, boardCode, ""));
+        from.startActivity(createIntentForActivity(from, boardCode, query));
     }
 
     public static Intent createIntentForActivity(Context context, String boardCode, String query) {
@@ -96,10 +96,9 @@ public class BoardActivity
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
-        if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/");
+        if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/ q=" + query);
         if (boardCode == null || boardCode.isEmpty())
             redirectToBoardSelector();
-        LoaderManager.enableDebugLogging(true);
     }
 
     protected void redirectToBoardSelector() { // backup in case we are missing stuff
@@ -117,7 +116,7 @@ public class BoardActivity
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(ChanBoard.BOARD_CODE, boardCode);
         savedInstanceState.putString(SearchManager.QUERY, query);
-        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/");
+        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/ q=" + query);
     }
 
     @Override
@@ -125,15 +124,15 @@ public class BoardActivity
         super.onRestoreInstanceState(savedInstanceState);
         boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
         query = savedInstanceState.getString(SearchManager.QUERY);
-        if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/");
+        if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/ q=" + query);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
-        if (DEBUG) Log.i(TAG, "onNewIntent begin /" + intent.getStringExtra(ChanBoard.BOARD_CODE) + "/");
+        if (DEBUG) Log.i(TAG, "onNewIntent begin /" + intent.getStringExtra(ChanBoard.BOARD_CODE) + "/ q=" + query);
         setIntent(intent);
         setFromIntent(intent);
-        if (DEBUG) Log.i(TAG, "onNewIntent end /" + boardCode + "/");
+        if (DEBUG) Log.i(TAG, "onNewIntent end /" + boardCode + "/ q=" + query);
     }
 
     public void setFromIntent(Intent intent) {
@@ -156,7 +155,7 @@ public class BoardActivity
                 if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, using default board");
             }
         }
-        if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/");
+        if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/ q=" + query);
     }
 
     protected void sizeGridToDisplay() {
@@ -224,14 +223,14 @@ public class BoardActivity
         super.onStart();
         if (handler == null)
             handler = new LoaderHandler();
-        if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/");
+        if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query);
         setActionBarTitle();
     }
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/");
+        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query);
         if (handler == null)
             handler = new LoaderHandler();
         handleUpdatedThreads();
@@ -249,14 +248,14 @@ public class BoardActivity
     @Override
 	protected void onPause() {
         super.onPause();
-        if (DEBUG) Log.i(TAG, "onPause /" + boardCode + "/");
+        if (DEBUG) Log.i(TAG, "onPause /" + boardCode + "/ q=" + query);
         handler = null;
     }
 
     @Override
     protected void onStop () {
     	super.onStop();
-        if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/");
+        if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/ q=" + query);
         getLoaderManager().destroyLoader(0);
     	handler = null;
         /*
@@ -271,7 +270,7 @@ public class BoardActivity
     @Override
 	protected void onDestroy () {
 		super.onDestroy();
-        if (DEBUG) Log.i(TAG, "onDestroy /" + boardCode + "/");
+        if (DEBUG) Log.i(TAG, "onDestroy /" + boardCode + "/ q=" + query);
         if (cursorLoader != null)
             getLoaderManager().destroyLoader(0);
 		handler = null;
@@ -287,7 +286,7 @@ public class BoardActivity
 
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ id=" + id);
+        if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ q=" + query + " id=" + id);
         setProgressBarIndeterminateVisibility(true);
         cursorLoader = new BoardCursorLoader(this, boardCode, query);
         return cursorLoader;
@@ -295,7 +294,7 @@ public class BoardActivity
 
     @Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ id=" + loader.getId()
+        if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ q=" + query + " id=" + loader.getId()
                 + " count=" + (data == null ? 0 : data.getCount()));
         if (absListView == null)
             createAbsListView();
@@ -327,7 +326,7 @@ public class BoardActivity
 
     @Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-        if (DEBUG) Log.i(TAG, "onLoaderReset /" + boardCode + "/ id=" + loader.getId());
+        if (DEBUG) Log.i(TAG, "onLoaderReset /" + boardCode + "/ q=" + query + " id=" + loader.getId());
         if (adapter != null)
             adapter.swapCursor(null);
 	}
@@ -443,7 +442,6 @@ public class BoardActivity
     }
 
     public void setActionBarTitle() {
-        if (DEBUG) Log.i(TAG, "about to load board data for action bar board=" + boardCode);
         ChanBoard board = loadBoard();
         String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
         getActionBar().setTitle(title);

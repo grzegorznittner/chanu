@@ -17,6 +17,8 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,9 +35,10 @@ public class BoardSelectorBoardsViewer {
     private static void initStatics(View view) {
         imageLoader = ChanImageLoader.getInstance(view.getContext());
         displayImageOptions = new DisplayImageOptions.Builder()
-                .cacheOnDisc()
-                .cacheInMemory()
                 .resetViewBeforeLoading()
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                .cacheInMemory()
+                .cacheOnDisc()
                 .build();
     }
 

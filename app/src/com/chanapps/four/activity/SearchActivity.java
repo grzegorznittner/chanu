@@ -17,11 +17,12 @@ import com.chanapps.four.service.NetworkProfileManager;
 public class SearchActivity extends Activity {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (DEBUG) Log.i(TAG, "onCreate query=" + getIntent().getStringExtra(SearchManager.QUERY));
         handleIntent(getIntent());
     }
 
@@ -52,10 +53,14 @@ public class SearchActivity extends Activity {
             return;
         }
         long threadNo = activity.getChanActivityId().threadNo;
-        if (threadNo > 0)
+        if (threadNo > 0) {
+            if (DEBUG) Log.i(TAG, "handleIntent start search /" + boardCode + "/" + threadNo + " q=" + query);
             ThreadActivity.startActivity(this, boardCode, threadNo, query);
-        else
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "handleIntent start search /" + boardCode + "/" + " q=" + query);
             BoardActivity.startActivity(this, boardCode, query);
+        }
         finish();
     }
 }
