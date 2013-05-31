@@ -418,8 +418,6 @@ public class BoardActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_menu, menu);
-        setupSearch(menu);
-        this.menu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -431,19 +429,29 @@ public class BoardActivity
             item.setTitle(viewType == ViewType.AS_GRID ? R.string.view_as_list_menu : R.string.view_as_grid_menu);
             item.setVisible(!hasQuery()); // force to list view when has query
         }
-        return true;
-    }
-
-    protected void setupSearch(Menu menu) {
-        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
         searchMenuItem = menu.findItem(R.id.search_menu);
-        SearchView searchView = (SearchView)searchMenuItem.getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        if (query == null || query.isEmpty()) {
+            SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+            SearchView searchView = (SearchView)searchMenuItem.getActionView();
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        }
+        else {
+            searchMenuItem.setVisible(false);
+            MenuItem refresh = menu.findItem(R.id.refresh_menu);
+            refresh.setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     public void setActionBarTitle() {
-        ChanBoard board = loadBoard();
-        String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
+        String title;
+        if (query != null && !query.isEmpty()) {
+            title = getString(R.string.search_results_title);
+        }
+        else {
+            ChanBoard board = loadBoard();
+            title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
+        }
         getActionBar().setTitle(title);
     }
 

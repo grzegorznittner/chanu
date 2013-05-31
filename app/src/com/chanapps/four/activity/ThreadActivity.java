@@ -458,7 +458,6 @@ public class ThreadActivity
                 playMenuItem.setIcon(shouldPlayThread ? R.drawable.av_stop : R.drawable.av_play);
                 playMenuItem.setTitle(shouldPlayThread ? R.string.play_thread_stop_menu : R.string.play_thread_menu);
             }
-
         return true;
     }
 
