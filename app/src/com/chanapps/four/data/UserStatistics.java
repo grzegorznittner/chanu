@@ -46,17 +46,11 @@ public class UserStatistics {
 	}
 	
 	public static ChanFeature[] BOARDSELECTOR_FEATURES = new ChanFeature[]{
-		ChanFeature.BOARDSELECTOR_DESC, ChanFeature.BOARD_SELECT, ChanFeature.MANUAL_REFRESH,
-		ChanFeature.ALL_CACHED_IMAGES, ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
-		ChanFeature.SETTINGS_4CHAN_PASS};
+		ChanFeature.BOARDSELECTOR_DESC, ChanFeature.BOARD_SELECT, ChanFeature.ALL_CACHED_IMAGES };
 	public static ChanFeature[] POPULAR_FEATURES = new ChanFeature[]{
-		ChanFeature.POPULAR_DESC, ChanFeature.BOARD_SELECT, ChanFeature.MANUAL_REFRESH,
-		ChanFeature.ALL_CACHED_IMAGES, ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
-		ChanFeature.SETTINGS_4CHAN_PASS};
+		ChanFeature.POPULAR_DESC, ChanFeature.MANUAL_REFRESH };
 	public static ChanFeature[] WATCHLIST_FEATURES = new ChanFeature[]{
-		ChanFeature.WATCHLIST_DESC, ChanFeature.BOARD_SELECT, ChanFeature.MANUAL_REFRESH, ChanFeature.WATCHLIST_CLEAN, ChanFeature.WATCHLIST_DELETE,
-		ChanFeature.ALL_CACHED_IMAGES, ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
-		ChanFeature.SETTINGS_4CHAN_PASS};
+		ChanFeature.WATCHLIST_DESC, ChanFeature.WATCHLIST_CLEAN, ChanFeature.WATCHLIST_DELETE };
 	public static ChanFeature[] BOARD_FEATURES = new ChanFeature[]{
 		ChanFeature.BOARD_DESC, ChanFeature.BOARD_SELECT,
 		ChanFeature.SEARCH_BOARD, ChanFeature.BOARD_LIST_VIEW, ChanFeature.ADD_THREAD, ChanFeature.BOARD_RULES,
@@ -265,6 +259,18 @@ public class UserStatistics {
 				return ChanFeature.BOARDSELECTOR_DESC;
 			}
 			tipSet = BOARDSELECTOR_FEATURES;
+			break;
+		case POPULAR:
+			if (!displayedTips.contains(ChanFeature.POPULAR_DESC)) {
+				return ChanFeature.POPULAR_DESC;
+			}
+			tipSet = POPULAR_FEATURES;
+			break;
+		case WATCHLIST:
+			if (!displayedTips.contains(ChanFeature.WATCHLIST_DESC)) {
+				return ChanFeature.WATCHLIST_DESC;
+			}
+			tipSet = WATCHLIST_FEATURES;
 			break;
 		case BOARD:
 			if (!displayedTips.contains(ChanFeature.BOARD_DESC)) {

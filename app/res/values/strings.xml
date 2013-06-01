@@ -27,9 +27,11 @@
     <string name="thread_related_threads_title">Related Threads</string>
     <string name="thread_related_threads_desc">Threads on /%1$s/ covering a similar topic</string>
     <string name="thread_search">Search</string>
+    <string name="search_title">Search</string>
     <string name="thread_search_results">MATCHING POSTS FOR %1$s</string>
     <string name="thread_search_no_results">&lt;i&gt;no matches&lt;/i&gt;</string>
     <string name="search_hint">Enter text</string>
+    <string name="search_results_title">Search Results</string>
     <string name="board_search_results">MATCHING THREADS FOR %1$s</string>
     <string name="board_related_boards_title">Related Boards</string>
     <string name="board_related_boards_desc">Boards having similar topics to /%1$s/</string>
@@ -542,6 +544,7 @@
     <!-- Help and about_dialog -->
     <string name="about_menu">About</string>
     <string name="exit_menu">Exit</string>
+    <string name="test_menu">Test</string>
 
     <!-- camera -->
     <string name="camera_capture">Capture picture</string>
@@ -1422,5 +1425,8 @@
     <dimen name="widget_board_minWidth">294dp</dimen>
     <dimen name="widget_board_minHeight">72dp</dimen>
 
+    <!-- drawer -->
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 
 </resources>

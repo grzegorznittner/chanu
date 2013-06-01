@@ -54,7 +54,7 @@ public class ChanImageLoader {
                                     .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
                                     //.imageDownloader(new ExtendedImageDownloader(context))
                                     //.threadPriority(Thread.MIN_PRIORITY+1)
-                                    //.threadPoolSize(3)
+                                    .threadPoolSize(5)
                                     .discCacheFileNameGenerator(new FileNameGenerator() {
                                         @Override
                                         public String generate(String imageUri) {

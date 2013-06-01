@@ -157,7 +157,7 @@ public class
         super.onResume();
         if (DEBUG) Log.i(TAG, "onResume");
         NetworkProfileManager.instance().activityChange(this);
-        int newMenuId = ChanBoard.showNSFW(this) ? R.menu.board_selector_menu_adult : R.menu.board_selector_menu;
+        int newMenuId = R.menu.board_selector_menu;
         if (menuId != newMenuId) {
             invalidateOptionsMenu();
         }
@@ -187,7 +187,7 @@ public class
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menuId = ChanBoard.showNSFW(this) ? R.menu.board_selector_menu_adult : R.menu.board_selector_menu;
+        menuId = R.menu.board_selector_menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(menuId, menu);
         ChanBoard.setupActionBarBoardSpinner(this, menu, getSelectedBoardCode());
@@ -218,7 +218,7 @@ public class
             case R.id.clear_watchlist_menu:
                 BoardGroupFragment fragment = (BoardGroupFragment)mTabsAdapter
                         .getFragmentAtPosition(BoardSelectorTab.WATCHLIST.ordinal());
-                new WatchlistClearDialogFragment(fragment)
+                new WatchlistClearDialogFragment()
                         .show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
                 return true;
             case R.id.settings_menu:

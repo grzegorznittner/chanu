@@ -61,11 +61,10 @@ import com.nostra13.universalimageloader.core.assist.*;
  * To change this template use File | Settings | File Templates.
  */
 public class ThreadActivity
-        extends FragmentActivity
+        extends AbstractDrawerActivity
         implements ChanIdentifiedActivity,
         LoaderManager.LoaderCallbacks<Cursor>,
         AbstractBoardCursorAdapter.ViewBinder,
-        AbsListView.OnItemClickListener,
         ActionMode.Callback,
         MediaScannerConnection.OnScanCompletedListener {
 
@@ -84,7 +83,6 @@ public class ThreadActivity
     protected Class absListViewClass = GridView.class;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
-    protected Menu menu;
     protected long tim;
     protected String boardCode;
     protected String query = "";
@@ -119,27 +117,27 @@ public class ThreadActivity
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
         intent.putExtra(SearchManager.QUERY, query);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
     }
 
     @Override
-    protected void onCreate(Bundle bundle) {
-        if (DEBUG) Log.v(TAG, "************ onCreate");
-        super.onCreate(bundle);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        query = getIntent().hasExtra(SearchManager.QUERY)
-                ? getIntent().getStringExtra(SearchManager.QUERY)
-                : "";
+    public boolean isSelfBoard(String boardAsMenu) {
+        return false; // always jump to board
+    }
+
+    @Override
+    protected void createViews(Bundle bundle) {
         createAbsListView();
         if (bundle != null)
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
+        if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/" + threadNo + " q=" + query);
         if (boardCode == null || boardCode.isEmpty())
             redirectToBoardSelector();
         else if (threadNo <= 0)
             redirectToBoard();
-        LoaderManager.enableDebugLogging(true);
     }
 
     protected void redirectToBoardSelector() { // backup in case we are missing stuff
@@ -166,6 +164,7 @@ public class ThreadActivity
         savedInstanceState.putString(ChanBoard.BOARD_CODE, boardCode);
         savedInstanceState.putLong(ChanThread.THREAD_NO, threadNo);
         savedInstanceState.putString(SearchManager.QUERY, query);
+        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/" + threadNo);
     }
 
     @Override
@@ -174,13 +173,16 @@ public class ThreadActivity
         boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
         threadNo = savedInstanceState.getLong(ChanThread.THREAD_NO, 0);
         query = savedInstanceState.getString(SearchManager.QUERY);
+        if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/" + threadNo);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
-        if (DEBUG) Log.i(TAG, "onNewIntent boardCode=" + intent.getStringExtra(ChanBoard.BOARD_CODE));
+        if (DEBUG) Log.i(TAG, "onNewIntent begin /" + intent.getStringExtra(ChanBoard.BOARD_CODE) + "/"
+                + intent.getLongExtra(ChanThread.THREAD_NO, 0));
         setIntent(intent);
         setFromIntent(intent);
+        if (DEBUG) Log.i(TAG, "onNewIntent end /" + boardCode + "/" + threadNo);
     }
 
     public void setFromIntent(Intent intent) {
@@ -207,6 +209,7 @@ public class ThreadActivity
                 if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, using default board");
             }
         }
+        if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/" + threadNo);
     }
 
     public Cursor getCursor() {
@@ -218,7 +221,7 @@ public class ThreadActivity
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onCreateLoader id=" + id);
+        if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ id=" + id);
         if (id == 0) {
             if (threadNo > 0) {
                 loadingStatusFlags &= ~THREAD_DONE;
@@ -242,7 +245,7 @@ public class ThreadActivity
     @Override
     protected void onStart() {
         super.onStart();
-        if (DEBUG) Log.v(TAG, "onStart query=" + query);
+        if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new LoaderHandler();
         threadListener = new ThreadListener(getSupportFragmentManager(), absListView, adapter, handler);
@@ -252,7 +255,7 @@ public class ThreadActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (DEBUG) Log.v(TAG, "onResume query=" + query);
+        if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new LoaderHandler();
         invalidateOptionsMenu(); // for correct spinner display
@@ -266,13 +269,14 @@ public class ThreadActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if (DEBUG) Log.v(TAG, "onPause query=" + query);
+        if (DEBUG) Log.i(TAG, "onPause /" + boardCode + "/" + threadNo);
         handler = null;
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/" + threadNo);
         if (absListView != null)
             getLoaderManager().destroyLoader(0);
         if (absBoardListView != null)
@@ -308,7 +312,7 @@ public class ThreadActivity
 
     protected void onThreadLoadFinished(Cursor data) {
         adapter.swapCursor(data);
-        if (DEBUG) Log.v(TAG, "listview count=" + absListView.getCount());
+        if (DEBUG) Log.i(TAG, "listview count=" + absListView.getCount());
         // retry load if maybe data wasn't there yet
         ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
         if ((data == null || data.getCount() < 1
@@ -346,8 +350,8 @@ public class ThreadActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (DEBUG)
-            Log.v(TAG, ">>>>>>>>>>> onLoadFinished loader=" + loader + " count=" + (data == null ? 0 : data.getCount()));
+        if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ id=" + loader.getId()
+                + " count=" + (data == null ? 0 : data.getCount()));
         if (loader == this.cursorLoader)
             onThreadLoadFinished(data);
         else if (loader == this.cursorLoaderBoardsTablet)
@@ -363,19 +367,40 @@ public class ThreadActivity
 
     protected void createAbsListView() {
         setAbsListViewClass();
+        // we don't use fragments, but create anything needed
+        FrameLayout contentFrame = (FrameLayout)findViewById(R.id.content_frame);
+        if (contentFrame.getChildCount() > 0)
+            contentFrame.removeAllViews();
         layout = View.inflate(getApplicationContext(), getLayoutId(), null);
-        setContentView(layout);
+        contentFrame.addView(layout);
         initAbsListView();
         initAdapter();
         setupContextMenu();
-        absListView.setOnItemClickListener(this);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
+        absListView.setOnItemClickListener(threadItemListener);
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
         if (absBoardListView != null) {
             absBoardListView.setOnItemClickListener(absBoardListViewListener);
             absBoardListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
         }
     }
+
+    protected AbsListView.OnItemClickListener threadItemListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+            Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+            int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
+            if (DEBUG) Log.i(TAG, "onItemClick pos=" + position + " flags=" + flags + " view=" + view);
+            if ((flags & ChanPost.FLAG_IS_AD) > 0)
+                itemAdListener.onClick(view);
+            else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
+                itemTitleListener.onClick(view);
+            else if ((flags & ChanPost.FLAG_IS_THREADLINK) > 0)
+                itemThreadLinkListener.onClick(view);
+            else if ((flags & ChanPost.FLAG_IS_BOARDLINK) > 0)
+                itemBoardLinkListener.onClick(view);
+        }
+    };
 
     protected void setupContextMenu() {
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
@@ -452,18 +477,14 @@ public class ThreadActivity
                 playMenuItem.setIcon(shouldPlayThread ? R.drawable.av_stop : R.drawable.av_play);
                 playMenuItem.setTitle(shouldPlayThread ? R.string.play_thread_stop_menu : R.string.play_thread_menu);
             }
-        return true;
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
+        if (mDrawerToggle.onOptionsItemSelected(item))
+            return true;
         switch (item.getItemId()) {
-            case android.R.id.home:
-                if (DEBUG) Log.i(TAG, "navigating up");
-                intent = BoardActivity.createIntentForActivity(this, boardCode, "");
-                NavUtils.navigateUpTo(this, intent);
-                return true;
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
@@ -490,18 +511,6 @@ public class ThreadActivity
             case R.id.board_rules_menu:
                 displayBoardRules();
                 return true;
-            case R.id.settings_menu:
-                if (DEBUG) Log.i(TAG, "Starting settings activity");
-                Intent settingsIntent = new Intent(this, SettingsActivity.class);
-                startActivity(settingsIntent);
-                return true;
-            case R.id.about_menu:
-                intent = new Intent(this, AboutActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.exit_menu:
-                ChanHelper.exitApplication(this);
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -523,20 +532,11 @@ public class ThreadActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        int menuId = ChanBoard.showNSFW(this) ? R.menu.thread_menu_adult : R.menu.thread_menu;
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(menuId, menu);
-        ChanBoard.setupActionBarBoardSpinner(this, menu, boardCode);
-        setupSearch(menu);
-        this.menu = menu;
-        return true;
-    }
-
-    protected void setupSearch(Menu menu) {
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        inflater.inflate(R.menu.thread_menu, menu);
         searchMenuItem = menu.findItem(R.id.search_menu);
-        SearchView searchView = (SearchView) searchMenuItem.getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        SearchActivity.createSearchView(this, searchMenuItem);
+        return super.onCreateOptionsMenu(menu);
     }
 
     protected void addToWatchlist() {
@@ -766,22 +766,7 @@ public class ThreadActivity
         }
     };
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-        int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-        if (DEBUG) Log.i(TAG, "onItemClick pos=" + position + " flags=" + flags + " view=" + view);
-        if ((flags & ChanPost.FLAG_IS_AD) > 0)
-            itemAdListener.onClick(view);
-        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
-            itemTitleListener.onClick(view);
-        else if ((flags & ChanPost.FLAG_IS_THREADLINK) > 0)
-            itemThreadLinkListener.onClick(view);
-        else if ((flags & ChanPost.FLAG_IS_BOARDLINK) > 0)
-            itemBoardLinkListener.onClick(view);
-    }
-
-    protected View.OnClickListener itemAdListener = new View.OnClickListener() {
+  protected View.OnClickListener itemAdListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int pos = absListView.getPositionForView(v);
@@ -870,27 +855,29 @@ public class ThreadActivity
     };
 
     public void setActionBarTitle() {
-        final ActionBar a = getActionBar();
-        if (a == null)
-            return;
         /*
+        if (query != null && !query.isEmpty()) {
+            String title = String.format(getString(R.string.search_results_title_thread), boardCode, threadNo);
+            getActionBar().setTitle(title);
+            return;
+        }
+        */
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board == null)
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         String boardTitle = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
-
+        getActionBar().setTitle(boardTitle);
         ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
         String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
-                ? "Thread " + threadNo
+                ? null
                 : thread.posts[0].threadSubject(getApplicationContext())
                 .replaceAll("<br/?>", " ")
                 .replaceAll("<[^>]*>", "");
-        if (threadTitle == null || threadTitle.isEmpty())
-            threadTitle = "Thread " + threadNo;
-        a.setTitle(boardTitle + ChanHelper.TITLE_SEPARATOR + threadTitle);
-        */
-        a.setDisplayShowTitleEnabled(false);
-        a.setDisplayHomeAsUpEnabled(true);
+        if (threadTitle == null || threadTitle.isEmpty() || threadTitle.trim().isEmpty())
+            threadTitle = String.valueOf(threadNo);
+        else
+            threadTitle = " " + threadTitle.trim();
+        getActionBar().setTitle("/" + boardCode + "/" + threadTitle);
     }
 
     protected Map<ChanBlocklist.BlockType, List<String>> extractBlocklist(SparseBooleanArray postPos) {
@@ -1003,7 +990,7 @@ public class ThreadActivity
                                     View listItem = absListView.getChildAt(pos - first);
                                     View image = listItem == null ? null : listItem.findViewById(R.id.list_item_image);
                                     Cursor cursor = adapter.getCursor();
-                                    //if (DEBUG) Log.v(TAG, "pos=" + pos + " listItem=" + listItem + " expandButton=" + expandButton);
+                                    //if (DEBUG) Log.i(TAG, "pos=" + pos + " listItem=" + listItem + " expandButton=" + expandButton);
                                     if (listItem != null
                                             && image != null
                                             && image.getVisibility() == View.VISIBLE
@@ -1192,6 +1179,7 @@ public class ThreadActivity
 
     @Override
     public void closeSearch() {
+        if (DEBUG) Log.i(TAG, "closeSearch /" + boardCode + "/" + threadNo + " q=" + query);
         if (searchMenuItem != null)
             searchMenuItem.collapseActionView();
     }
@@ -1203,7 +1191,7 @@ public class ThreadActivity
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        if (DEBUG) Log.v(TAG, ">>>>>>>>>>> onLoaderReset");
+        if (DEBUG) Log.i(TAG, "onLoaderReset /" + boardCode + "/ id=" + loader.getId());
         adapter.swapCursor(null);
     }
 

@@ -107,32 +107,44 @@ public class NetworkProfileManager {
 			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 		//}
 
-
         switch(currentActivityId.activity) {
-		case BOARD_SELECTOR_ACTIVITY:
-            if (currentActivityId == null) {
-				activeProfile.onApplicationStart(newActivity.getBaseContext());
-			} else {
-				activeProfile.onBoardSelectorSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
-			}
-			break;
-		case BOARD_ACTIVITY:
-            activeProfile.onBoardSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
-			break;
-		case THREAD_ACTIVITY:
-            activeProfile.onThreadSelected(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo);
-			break;
-		case FULL_SCREEN_IMAGE_ACTIVITY:
-			activeProfile.onFullImageLoading(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo, currentActivityId.postNo);
-			break;
-		case POST_REPLY_ACTIVITY:
-			break;
-		case SETTINGS_ACTIVITY:
-			break;
-		default:
-			Log.e(TAG, "Not handled activity type: " + currentActivityId.activity, new Exception("Check stack trace!"));
-		}
-	}
+            case BOARD_SELECTOR_ACTIVITY:
+                if (currentActivityId == null) {
+                    activeProfile.onApplicationStart(newActivity.getBaseContext());
+                } else {
+                    activeProfile.onBoardSelectorSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
+                }
+                break;
+            case BOARD_LIST_ACTIVITY:
+                if (currentActivityId == null) {
+                    activeProfile.onApplicationStart(newActivity.getBaseContext());
+                } else {
+                    activeProfile.onBoardSelectorSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
+                }
+                break;
+            case POPULAR_ACTIVITY:
+                activeProfile.onBoardSelectorSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
+                break;
+            case WATCHLIST_ACTIVITY:
+                activeProfile.onBoardSelectorSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
+                break;
+            case BOARD_ACTIVITY:
+                activeProfile.onBoardSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
+                break;
+            case THREAD_ACTIVITY:
+                activeProfile.onThreadSelected(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo);
+                break;
+            case FULL_SCREEN_IMAGE_ACTIVITY:
+                activeProfile.onFullImageLoading(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo, currentActivityId.postNo);
+                break;
+            case POST_REPLY_ACTIVITY:
+                break;
+            case SETTINGS_ACTIVITY:
+                break;
+            default:
+                Log.e(TAG, "Not handled activity type: " + currentActivityId.activity, new Exception("Check stack trace!"));
+        }
+    }
 	
 	public void manualRefresh(ChanIdentifiedActivity newActivity) {
         NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.MANUAL_REFRESH);
