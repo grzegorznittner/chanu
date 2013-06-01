@@ -39,12 +39,15 @@ public class ChanThread extends ChanPost {
     public static final String THREAD_NUM_IMAGES = "threadNumImages";
     public static final String THREAD_FLAGS = "threadFlags";
 
-    public static final int THREAD_FLAG_DEAD = 0x01;
-    public static final int THREAD_FLAG_CLOSED = 0x02;
-    public static final int THREAD_FLAG_STICKY = 0x04;
-    public static final int THREAD_FLAG_AD = 0x08;
-    public static final int THREAD_FLAG_BOARD = 0x10;
-    public static final int THREAD_FLAG_TITLE = 0x20;
+    public static final int THREAD_FLAG_DEAD = 0x001;
+    public static final int THREAD_FLAG_CLOSED = 0x002;
+    public static final int THREAD_FLAG_STICKY = 0x004;
+    public static final int THREAD_FLAG_AD = 0x008;
+    public static final int THREAD_FLAG_BOARD = 0x010;
+    public static final int THREAD_FLAG_TITLE = 0x020;
+    public static final int THREAD_FLAG_POPULAR_THREAD = 0x040;
+    public static final int THREAD_FLAG_LATEST_POST = 0x080;
+    public static final int THREAD_FLAG_RECENT_IMAGE = 0x100;
 
     public static final String[] THREAD_COLUMNS = {
             THREAD_COMPOSITE_ID,
@@ -78,6 +81,10 @@ public class ChanThread extends ChanPost {
     }
 
     public static Object[] makeRow(Context context, ChanPost post, String query) {
+        return makeRow(context, post, query, 0);
+    }
+
+    public static Object[] makeRow(Context context, ChanPost post, String query, int extraFlags) {
         String id = post.board + "/" + post.no;
         String[] textComponents = post.textComponents(query);
         return new Object[] {
@@ -93,7 +100,7 @@ public class ChanThread extends ChanPost {
                 "",
                 post.replies,
                 post.images,
-                threadFlags(post)
+                threadFlags(post) | extraFlags
         };
     }
 

@@ -341,46 +341,66 @@ public class MobileProfile extends AbstractNetworkProfile {
         final ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
         if (DEBUG) Log.i(TAG, "handleBoardSelectorParseSuccess board=" + data.boardCode + " priority=" + data.priority);
         // check if board data corrupted, we need to reload it
-        if (ChanBoard.POPULAR_BOARD_CODE.equals(data.boardCode)) {
-            ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
-            if ((board == null || board.defData)) {
-                if (DEBUG) Log.w(TAG, "Board " + data.boardCode + " is corrupted");
-                NetworkProfileManager.instance().getCurrentProfile().onDataParseFailure(service, Failure.CORRUPT_DATA);
-                //FetchPopularThreadsService.schedulePopularFetchService(service.getApplicationContext());
-                return;
-            }
-        }
+        if (ChanBoard.POPULAR_BOARD_CODE.equals(data.boardCode))
+            handlePopularParseSuccess(service, data, activity, currentActivityId);
+        else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(data.boardCode))
+            handleWatchlistParseSuccess(service, data, activity, currentActivityId);
+    }
 
-        // user is on the same tab and it's a manual refresh, reload it
+    private void handlePopularParseSuccess(final ChanIdentifiedService service,
+                                           final ChanActivityId data,
+                                           final ChanIdentifiedActivity activity,
+                                           final ChanActivityId currentActivityId) {
+        ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
+        if ((board == null || board.defData)) {
+            if (DEBUG) Log.w(TAG, "Board " + data.boardCode + " is corrupted");
+            NetworkProfileManager.instance().getCurrentProfile().onDataParseFailure(service, Failure.CORRUPT_DATA);
+            FetchPopularThreadsService.schedulePopularFetchService(service.getApplicationContext(), true, false);
+            return;
+        }
+        // user is on the same page and it's a manual refresh, reload it
         Handler handler = activity.getChanHandler();
-        if ((currentActivityId.priority || data.priority) &&
-                currentActivityId.activity == LastActivity.BOARD_SELECTOR_ACTIVITY &&
-                data.boardCode != null && !data.boardCode.isEmpty() &&
-                activity instanceof BoardSelectorActivity)
-        {
-            final BoardSelectorActivity bsa = (BoardSelectorActivity)activity;
-            final BoardSelectorTab tab;
-            if (BoardSelectorTab.RECENT.boardCode().equals(data.boardCode))
-                tab = BoardSelectorTab.RECENT;
-            else if (BoardSelectorTab.WATCHLIST.boardCode().equals(data.boardCode))
-                tab = BoardSelectorTab.WATCHLIST;
-            else
-                tab = null;
-            if (tab == null)
-                return;
-            final BoardGroupFragment fragment = bsa.getFragment(tab);
-            if (fragment == null)
-                return;
-            if (handler != null)
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (DEBUG) Log.i(TAG, "Refreshing boardselector fragment boardCode=" + currentActivityId.boardCode + " data boardcode=" + data.boardCode);
-                        fragment.refresh();
-                    }
-                });
-        }
+        boolean hasHandler = handler != null;
+        boolean isPriority = currentActivityId.priority || data.priority;
+        boolean sameActivity = currentActivityId.activity == LastActivity.POPULAR_ACTIVITY;
+        if (hasHandler && isPriority && sameActivity)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (DEBUG) Log.i(TAG, "Refreshing boardCode=" + currentActivityId.boardCode
+                            + " data boardcode=" + data.boardCode);
+                    activity.refresh();
+                }
+            });
+        // tell it to refresh widgets for board if any are configured
+        if (DEBUG) Log.i(TAG, "Calling widget provider update for boardCode=" + data.boardCode);
+        BoardWidgetProvider.updateAll(activity.getBaseContext(), data.boardCode);
+    }
 
+    private void handleWatchlistParseSuccess(final ChanIdentifiedService service,
+                                           final ChanActivityId data,
+                                           final ChanIdentifiedActivity activity,
+                                           final ChanActivityId currentActivityId) {
+        ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
+        if ((board == null || board.defData)) {
+            if (DEBUG) Log.w(TAG, "Board " + data.boardCode + " is corrupted");
+            NetworkProfileManager.instance().getCurrentProfile().onDataParseFailure(service, Failure.CORRUPT_DATA);
+            return;
+        }
+        // user is on the same page and it's a manual refresh, reload it
+        Handler handler = activity.getChanHandler();
+        boolean hasHandler = handler != null;
+        boolean isPriority = currentActivityId.priority || data.priority;
+        boolean sameActivity = currentActivityId.activity == LastActivity.WATCHLIST_ACTIVITY;
+        if (hasHandler && isPriority && sameActivity)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (DEBUG) Log.i(TAG, "Refreshing boardCode=" + currentActivityId.boardCode
+                            + " data boardcode=" + data.boardCode);
+                    activity.refresh();
+                }
+            });
         // tell it to refresh widgets for board if any are configured
         if (DEBUG) Log.i(TAG, "Calling widget provider update for boardCode=" + data.boardCode);
         BoardWidgetProvider.updateAll(activity.getBaseContext(), data.boardCode);

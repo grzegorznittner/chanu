@@ -263,8 +263,9 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 if (DEBUG) Log.i(TAG, "Wrong content type returned board=" + board + " contentType='" + contentType + "' responseCode=" + tc.getResponseCode() + " content=" + tc.getContent().toString());
             }
             else {
-            	long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, new InputStreamReader(tc.getInputStream()));
-            	int fetchTime = (int)(new Date().getTime() - startTime);
+                board.lastFetched = new Date().getTime();
+                long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, new InputStreamReader(tc.getInputStream()));
+            	int fetchTime = (int)(board.lastFetched - startTime);
                 
                 if (DEBUG) Log.w(TAG, "Fetched and stored " + chanApi + " in " + fetchTime + "ms, size " + fileSize);
                 if (DEBUG) Log.i(TAG, "Calling finishedFetchingData priority=" + priority);

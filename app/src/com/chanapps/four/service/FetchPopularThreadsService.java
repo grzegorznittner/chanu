@@ -158,20 +158,21 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
             } else {
             	// long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, new InputStreamReader(tc.getInputStream()));
             	String response = IOUtils.toString(tc.getInputStream());
-            	int fetchTime = (int)(new Date().getTime() - startTime);
-            	
+            	long lastFetched = new Date().getTime();
+            	int fetchTime = (int)(lastFetched - startTime);
+
             	parsePopularThreads(board, response);
-            	board.lastFetched = fetchTime;
+            	board.lastFetched = lastFetched;
             	ChanFileStorage.storeBoardData(getBaseContext(), board);
             	
             	ChanBoard latestBoard = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.LATEST_BOARD_CODE);
             	parseLatestPosts(latestBoard, response);
-            	latestBoard.lastFetched = fetchTime;
+            	latestBoard.lastFetched = lastFetched;
             	ChanFileStorage.storeBoardData(getBaseContext(), latestBoard);
             	
             	ChanBoard imagesBoard = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.LATEST_IMAGES_BOARD_CODE);
             	parseLatestImages(imagesBoard, response);
-            	imagesBoard.lastFetched = fetchTime;
+            	imagesBoard.lastFetched = lastFetched;
             	ChanFileStorage.storeBoardData(getBaseContext(), imagesBoard);
                 
                 if (DEBUG) Log.w(TAG, "Fetched and stored " + chanApi + " in " + fetchTime + "ms, size " + response.length());

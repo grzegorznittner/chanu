@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/popular_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/thread_post_image"
+            />
+    <LinearLayout
+            android:id="@+id/text_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@drawable/board_subject_gradient_bg"
+            android:paddingTop="@dimen/PopularItem_paddingTop"
+            android:paddingLeft="@dimen/PopularItem_paddingLeft"
+            android:paddingRight="@dimen/PopularItem_paddingRight"
+            android:paddingBottom="@dimen/PopularItem_paddingBottom"
+            >
+        <TextView
+                android:id="@+id/subject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/PopularItem_textSize"
+                android:textStyle="bold"
+                android:textColor="@color/PaletteWhite"
+                android:maxLines="2"
+                />
+        <TextView
+                android:id="@+id/board_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/PopularItem_textSize"
+                android:textColor="@color/PaletteWhite"
+                />
+    </LinearLayout>
+    <View android:id="@+id/click_target"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@drawable/board_grid_selector_bg"
+            />
+</RelativeLayout>

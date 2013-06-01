@@ -517,7 +517,7 @@ public class ThreadActivity
     }
 
     protected void displayBoardRules() {
-        NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_RULES);
+        //NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_RULES);
         int boardRulesId = R.raw.global_rules_detail;
         try {
             boardRulesId = R.raw.class.getField("board_" + boardCode + "_rules").getInt(null);
@@ -946,7 +946,7 @@ public class ThreadActivity
     }
 
     protected boolean playThreadMenu() {
-        NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.PLAY_THREAD);
+        //NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.PLAY_THREAD);
         synchronized (this) {
             shouldPlayThread = !shouldPlayThread; // user clicked, invert play status
             invalidateOptionsMenu();

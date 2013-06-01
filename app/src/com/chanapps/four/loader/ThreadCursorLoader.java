@@ -39,7 +39,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         this.context = context;
         this.boardName = boardName;
         this.threadNo = threadNo;
-        this.query = query.toLowerCase().trim();
+        this.query = query == null ? "" : query.toLowerCase().trim();
         this.showRelatedBoards = showRelatedBoards;
         initRandomGenerator();
         if (threadNo <= 0)

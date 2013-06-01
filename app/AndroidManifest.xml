@@ -145,6 +145,7 @@
             </intent-filter>
         </activity>
 
+        <!--
         <activity android:name=".BoardSelectorActivity" android:label="@string/application_name"
                   android:taskAffinity=".BoardSelectorActivity"
                   android:launchMode="standard"
@@ -154,23 +155,24 @@
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
+        -->
 
         <activity android:name=".BoardListActivity" android:label="@string/application_name"
                   android:taskAffinity=".BoardListActivity"
                   android:launchMode="standard"
                 >
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
 
-        <activity android:name=".PopularActivity" android:label="@string/board_popular"
+        <activity android:name=".PopularActivity" android:label="@string/app_name"
                   android:taskAffinity=".PopularActivity"
                   android:launchMode="standard"
                 >
             <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER"/>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>

@@ -1,52 +1,39 @@
 package com.chanapps.four.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.text.Html;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import com.chanapps.four.activity.*;
-import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
-import com.chanapps.four.adapter.BoardGridCursorAdapter;
-import com.chanapps.four.adapter.BoardSelectorGridCursorAdapter;
-import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.*;
-import com.chanapps.four.loader.BoardCursorLoader;
-import com.chanapps.four.loader.BoardSelectorCursorLoader;
-import com.chanapps.four.loader.BoardTypeRecentCursorLoader;
+import com.chanapps.four.loader.PopularCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
-import com.chanapps.four.viewer.BoardGridViewer;
-import com.chanapps.four.viewer.BoardSelectorBoardsViewer;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
-
-import java.lang.ref.WeakReference;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
 public class PopularFragment
     extends Fragment
-    implements
-        AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<Cursor>,
-        AbstractBoardCursorAdapter.ViewBinder
+    implements LoaderManager.LoaderCallbacks<Cursor>,
+        View.OnClickListener
 {
 
     private static final String TAG = PopularFragment.class.getSimpleName();
     private static final boolean DEBUG = true;
 
-    private ResourceCursorAdapter adapter;
     private View layout;
-    private AbsListView absListView;
     private TextView emptyText;
-    private int columnWidth = 0;
-    private int columnHeight = 0;
 
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
@@ -67,7 +54,7 @@ public class PopularFragment
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    adapter.swapCursor(null);
+                    getLoaderManager().restartLoader(0, null, PopularFragment.this);
                 }
             });
     }
@@ -79,29 +66,14 @@ public class PopularFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    protected void createAbsListView(View contentView) {
-        absListView = (GridView)contentView.findViewById(R.id.board_grid_view);
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.SELECTOR);
-        cg.sizeGridToDisplay();
-        columnWidth = cg.getColumnWidth();
-        columnHeight = cg.getColumnHeight();
-        adapter = new BoardGridCursorAdapter(getActivity().getApplicationContext(), this, columnWidth, columnHeight);
-        absListView.setAdapter(adapter);
-        absListView.setClickable(true);
-        absListView.setOnItemClickListener(this);
-        ImageLoader imageLoader = ChanImageLoader.getInstance(getBaseContext());
-        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        layout = inflater.inflate(R.layout.board_selector_grid_layout, container, false);
+        layout = inflater.inflate(R.layout.popular_layout, container, false);
         emptyText = (TextView)layout.findViewById(R.id.board_empty_text);
-        createAbsListView(layout);
         return layout;
     }
 
@@ -128,10 +100,10 @@ public class PopularFragment
         if (DEBUG) Log.i(TAG, "onStart");
         if (handler == null)
             handler = new Handler();
-        if (absListView.getCount() <= 0) {
-            if (DEBUG) Log.i(TAG, "No data displayed, starting loader");
-            getLoaderManager().restartLoader(0, null, this);
-        }
+        //if (absListView.getCount() <= 0) {
+        //    if (DEBUG) Log.i(TAG, "No data displayed, starting loader");
+        //    getLoaderManager().restartLoader(0, null, this);
+        //}
         new TutorialOverlay(layout, TutorialOverlay.Page.POPULAR);
     }
 
@@ -143,14 +115,14 @@ public class PopularFragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        cursorLoader = new BoardTypeRecentCursorLoader(getBaseContext());
+        cursorLoader = new PopularCursorLoader(getBaseContext());
         getActivity().setProgressBarIndeterminateVisibility(true);
         return cursorLoader;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        adapter.swapCursor(data);
+        swapCursor(data);
         if (data.getCount() > 0) {
             emptyText.setVisibility(View.GONE);
         }
@@ -163,9 +135,9 @@ public class PopularFragment
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        adapter.swapCursor(null);
     }
 
+    /*
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
@@ -190,10 +162,133 @@ public class PopularFragment
         if (DEBUG) Log.i(TAG, "clicked thread " + boardCode + "/" + threadNo);
         ThreadActivity.startActivity(getActivity(), boardCode, threadNo, "");
     }
+    */
+
+    protected void swapCursor(Cursor cursor) {
+        setLastFetchedText();
+        cursor.moveToPosition(-1);
+        int popular = 0;
+        int latest = 0;
+        int recent = 0;
+        while (cursor.moveToNext()) {
+            int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+            View item;
+            if ((flags & ChanThread.THREAD_FLAG_POPULAR_THREAD) > 0) {
+                item = layout.findViewById(getPopularViewId(popular++));
+            }
+            else if ((flags & ChanThread.THREAD_FLAG_LATEST_POST) > 0) {
+                item = layout.findViewById(getLatestViewId(latest++));
+            }
+            else if ((flags & ChanThread.THREAD_FLAG_RECENT_IMAGE) > 0) {
+                item = layout.findViewById(getRecentViewId(recent++));
+            }
+            else {
+                item = null;
+            }
+            if (item != null)
+                setViewValue(item, cursor);
+        }
+    }
+
+    protected void setLastFetchedText() {
+        ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.POPULAR_BOARD_CODE);
+        TextView lastFetchedView = (TextView)layout.findViewById(R.id.last_fetched);
+        if (board != null && board.lastFetched > 0) {
+            long now = System.currentTimeMillis();
+            if (DEBUG) Log.i(TAG, "lastFetched=" + board.lastFetched);
+            CharSequence lastFetched = Math.abs(now - board.lastFetched) < 60000
+                    ? getString(R.string.board_just_now)
+                    : DateUtils.getRelativeTimeSpanString(board.lastFetched, now, DateUtils.SECOND_IN_MILLIS);
+            lastFetchedView.setText(lastFetched);
+        }
+        else {
+            lastFetchedView.setText("");
+        }
+    }
+
+    protected int getPopularViewId(int i) {
+        switch(i) {
+            case 0: return R.id.popular_item_0;
+            case 1: return R.id.popular_item_1;
+            case 2: return R.id.popular_item_2;
+            case 3: return R.id.popular_item_3;
+            case 4: return R.id.popular_item_4;
+            case 5: return R.id.popular_item_5;
+            case 6: return R.id.popular_item_6;
+            case 7: return R.id.popular_item_7;
+            case 8: return R.id.popular_item_8;
+            case 9: return R.id.popular_item_9;
+            default: return 0;
+        }
+    }
+
+    protected int getLatestViewId(int i) {
+        switch(i) {
+            case 0: return R.id.latest_item_0;
+            case 1: return R.id.latest_item_1;
+            case 2: return R.id.latest_item_2;
+            case 3: return R.id.latest_item_3;
+            case 4: return R.id.latest_item_4;
+            case 5: return R.id.latest_item_5;
+            case 6: return R.id.latest_item_6;
+            case 7: return R.id.latest_item_7;
+            case 8: return R.id.latest_item_8;
+            case 9: return R.id.latest_item_9;
+            default: return 0;
+        }
+    }
+
+    protected int getRecentViewId(int i) {
+        switch(i) {
+            case 0: return R.id.recent_item_0;
+            case 1: return R.id.recent_item_1;
+            case 2: return R.id.recent_item_2;
+            default: return 0;
+        }
+    }
+
+    protected void setViewValue(View item, Cursor cursor) {
+        String subject = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+        String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+        String thumbUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
+        String boardName = ChanBoard.getBoardByCode(getBaseContext(), boardCode).name;
+        long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+
+        TextView boardNameView = (TextView)item.findViewById(R.id.board_name);
+        TextView subjectView = (TextView)item.findViewById(R.id.subject);
+        final View textWrapperView = item.findViewById(R.id.text_wrapper);
+        View clickTargetView = item.findViewById(R.id.click_target);
+
+        ImageView imageView = (ImageView)item.findViewById(R.id.image);
+        boardNameView.setText(boardName);
+        subjectView.setText(Html.fromHtml(subject));
+        imageView.setImageDrawable(null);
+        textWrapperView.setVisibility(View.GONE);
+        ChanImageLoader.getInstance(imageView.getContext()).displayImage(thumbUrl, imageView, new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {}
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {}
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                textWrapperView.setVisibility(View.VISIBLE);
+            }
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {}
+        });
+
+        clickTargetView.setTag(R.id.BOARD_CODE, boardCode);
+        clickTargetView.setTag(R.id.THREAD_NO, threadNo);
+        clickTargetView.setOnClickListener(this);
+    }
 
     @Override
-    public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        return BoardGridViewer.setViewValue(view, cursor, ChanBoard.POPULAR_BOARD_CODE);
+    public void onClick(View view) {
+        String boardCode = (String)view.getTag(R.id.BOARD_CODE);
+        Long threadNo = (Long)view.getTag(R.id.THREAD_NO);
+        Activity activity = getActivity();
+        if (boardCode != null && threadNo != null && activity != null)
+            ThreadActivity.startActivity(activity, boardCode, threadNo, "");
     }
 
 }
