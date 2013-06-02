@@ -32,7 +32,6 @@ import java.util.Set;
  * User: johnarleyburns
  * Date: 1/13/13
  * Time: 10:54 PM
- * To change this template use File | Settings | File Templates.
  */
 public class UpdateWidgetService extends Service {
 
@@ -55,7 +54,7 @@ public class UpdateWidgetService extends Service {
             Log.e(TAG, "Invalid app widget id passed, service terminating");
         } else {
             if (DEBUG) Log.i(TAG, "starting update widget service for widget=" + appWidgetId);
-            WidgetConf widgetConf = BoardWidgetProvider.loadWidgetConf(this, appWidgetId);
+            WidgetConf widgetConf = WidgetProviderUtils.loadWidgetConf(this, appWidgetId);
             if (widgetConf == null)
                 widgetConf = new WidgetConf(appWidgetId); // new widget or no config;
             (new WidgetUpdateTask(getApplicationContext(), widgetConf)).execute();
@@ -94,7 +93,15 @@ public class UpdateWidgetService extends Service {
 
         @Override
         public void onPostExecute(Void result) {
-            updateWidgetViews();
+            if (WidgetConstants.WIDGET_TYPE_BOARD.equalsIgnoreCase(widgetConf.widgetType)) {
+                int[] imageIds = {R.id.image_left, R.id.image_center, R.id.image_right, R.id.image_left1, R.id.image_center1, R.id.image_right1};
+                updateWidgetViews(R.layout.widget_board_layout, R.id.widget_board_container, imageIds);
+
+            }
+            if (WidgetConstants.WIDGET_TYPE_COVER_FLOW.equalsIgnoreCase(widgetConf.widgetType)) {
+                int[] imageIdsCoverFlow = {R.id.image_left1};
+                updateWidgetViews(R.layout.widget_board_coverflow_layout, R.id.widget_board_coverflow_container, imageIdsCoverFlow);
+            }
         }
 
         private void loadBoard() {
@@ -107,11 +114,11 @@ public class UpdateWidgetService extends Service {
             }
         }
 
-        private void updateWidgetViews() {
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_board_layout);
+        private void updateWidgetViews(int widgetLayout, int widgetContainer, int[] imageIds) {
+            RemoteViews views = new RemoteViews(context.getPackageName(), widgetLayout);
 
             int containerBackground = widgetConf.roundedCorners ? R.drawable.widget_rounded_background : 0;
-            views.setInt(R.id.widget_board_container, "setBackgroundResource", containerBackground);
+            views.setInt(widgetContainer, "setBackgroundResource", containerBackground);
 
             ChanBoard board = ChanBoard.getBoardByCode(context, widgetConf.boardCode);
             if (board == null)
@@ -147,7 +154,7 @@ public class UpdateWidgetService extends Service {
             views.setInt(R.id.configure, "setImageResource", configureDrawable);
             views.setOnClickPendingIntent(R.id.configure, makeConfigureIntent());
 
-            int[] imageIds = {R.id.image_left, R.id.image_center, R.id.image_right, R.id.image_left1, R.id.image_center1, R.id.image_right1};
+
             for (int i = 0; i < imageIds.length; i++) {
                 int imageId = imageIds[i];
                 PendingIntent pendingIntent = makeThreadIntent(threads[i], i);
@@ -233,7 +240,13 @@ public class UpdateWidgetService extends Service {
         }
 
         private PendingIntent makeConfigureIntent() {
-            Intent intent = new Intent(context, WidgetConfigureActivity.class);
+            Intent intent = null;
+            if (WidgetConstants.WIDGET_TYPE_COVER_FLOW.equalsIgnoreCase(widgetConf.widgetType)) {
+                intent = new Intent(context, WidgetConfigureCoverFlowActivity.class);
+            }
+            if (WidgetConstants.WIDGET_TYPE_BOARD.equalsIgnoreCase(widgetConf.widgetType)) {
+                intent = new Intent(context, WidgetConfigureActivity.class);
+            }
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
             int uniqueId = (100 * widgetConf.appWidgetId) + 4;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);

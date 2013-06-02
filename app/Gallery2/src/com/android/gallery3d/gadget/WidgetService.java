@@ -41,13 +41,11 @@ public class WidgetService extends RemoteViewsService {
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        int id = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                AppWidgetManager.INVALID_APPWIDGET_ID);
+        int id = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         int type = intent.getIntExtra(EXTRA_WIDGET_TYPE, 0);
         String albumPath = intent.getStringExtra(EXTRA_ALBUM_PATH);
 
-        return new PhotoRVFactory((GalleryApp) getApplicationContext(),
-                id, type, albumPath);
+        return new PhotoRVFactory((GalleryApp) getApplicationContext(), id, type, albumPath);
     }
 
     private static class EmptySource implements WidgetSource {
@@ -68,13 +66,16 @@ public class WidgetService extends RemoteViewsService {
         }
 
         @Override
-        public void setContentListener(ContentListener listener) {}
+        public void setContentListener(ContentListener listener) {
+        }
 
         @Override
-        public void reload() {}
+        public void reload() {
+        }
 
         @Override
-        public void close() {}
+        public void close() {
+        }
     }
 
     private static class PhotoRVFactory implements
@@ -109,7 +110,7 @@ public class WidgetService extends RemoteViewsService {
             mSource.setContentListener(this);
             AppWidgetManager.getInstance(mApp.getAndroidContext())
                     .notifyAppWidgetViewDataChanged(
-                    mAppWidgetId, R.id.appwidget_stack_view);
+                            mAppWidgetId, R.id.appwidget_stack_view);
         }
 
         @Override
@@ -164,7 +165,7 @@ public class WidgetService extends RemoteViewsService {
         public void onContentDirty() {
             AppWidgetManager.getInstance(mApp.getAndroidContext())
                     .notifyAppWidgetViewDataChanged(
-                    mAppWidgetId, R.id.appwidget_stack_view);
+                            mAppWidgetId, R.id.appwidget_stack_view);
         }
     }
 }

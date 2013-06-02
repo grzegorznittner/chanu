@@ -1,6 +1,5 @@
 package com.chanapps.four.widget;
 
-import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
 
 import java.io.Serializable;
@@ -10,7 +9,6 @@ import java.io.Serializable;
  * User: johnarleyburns
  * Date: 4/17/13
  * Time: 6:18 PM
- * To change this template use File | Settings | File Templates.
  */
 
 public class WidgetConf implements Serializable {
@@ -24,13 +22,18 @@ public class WidgetConf implements Serializable {
     boolean showBoardTitle;
     boolean showRefreshButton;
     boolean showConfigureButton;
+    String widgetType;
 
     public WidgetConf(String serializedConf) {
         deserialize(serializedConf);
     }
 
     public WidgetConf(int appWidgetId) {
-        this(appWidgetId, ChanBoard.DEFAULT_BOARD_CODE, 0xffffffff, true, true, true, true);
+        this(appWidgetId, ChanBoard.DEFAULT_BOARD_CODE, 0xffffffff, true, true, true, true, WidgetConstants.WIDGET_TYPE_EMPTY);
+    }
+
+    public WidgetConf(int appWidgetId, String widgetType) {
+        this(appWidgetId, ChanBoard.DEFAULT_BOARD_CODE, 0xffffffff, true, true, true, true, widgetType);
     }
 
     public WidgetConf(int appWidgetId,
@@ -39,8 +42,8 @@ public class WidgetConf implements Serializable {
                       boolean roundedCorners,
                       boolean showBoardTitle,
                       boolean showRefreshButton,
-                      boolean showConfigureButton)
-    {
+                      boolean showConfigureButton,
+                      String widgetType) {
         this.appWidgetId = appWidgetId;
         this.boardCode = boardCode;
         this.boardTitleColor = boardTitleColor;
@@ -48,6 +51,7 @@ public class WidgetConf implements Serializable {
         this.showBoardTitle = showBoardTitle;
         this.showRefreshButton = showRefreshButton;
         this.showConfigureButton = showConfigureButton;
+        this.widgetType = widgetType;
     }
 
     public String serialize() {
@@ -57,7 +61,8 @@ public class WidgetConf implements Serializable {
                 roundedCorners + DELIM +
                 showBoardTitle + DELIM +
                 showRefreshButton + DELIM +
-                showConfigureButton + DELIM;
+                showConfigureButton + DELIM +
+                widgetType + DELIM;
     }
 
     public void deserialize(String s) {
@@ -71,6 +76,7 @@ public class WidgetConf implements Serializable {
         showBoardTitle = c.length > 4 ? Boolean.parseBoolean(c[4]) : true;
         showRefreshButton = c.length > 5 ? Boolean.parseBoolean(c[5]) : true;
         showConfigureButton = c.length > 6 ? Boolean.parseBoolean(c[6]) : true;
+        widgetType = c.length > 7 ? c[7] : WidgetConstants.WIDGET_TYPE_EMPTY;
     }
 
 }
