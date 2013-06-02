@@ -20,23 +20,61 @@ import com.chanapps.four.data.*;
 import com.chanapps.four.loader.PopularCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class PopularFragment
-    extends Fragment
-    implements LoaderManager.LoaderCallbacks<Cursor>,
-        View.OnClickListener
-{
+public class PopularFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
     private static final String TAG = PopularFragment.class.getSimpleName();
     private static final boolean DEBUG = true;
+
+    private static ImageLoader imageLoader = null;
+    private static DisplayImageOptions displayImageOptions;
+
+    private static void initStatics(View view) {
+        imageLoader = ChanImageLoader.getInstance(view.getContext());
+        displayImageOptions = new DisplayImageOptions.Builder()
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                .cacheOnDisc()
+                .cacheInMemory()
+                .resetViewBeforeLoading()
+                .build();
+    }
 
     private View layout;
     private TextView emptyText;
 
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
+
+    protected ImageLoadingListener imageLoadingListener = new ImageLoadingListener() {
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {}
+        @Override
+        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            makeTextWrapperVisible(view, false);
+        }
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            makeTextWrapperVisible(view, true);
+        }
+        @Override
+        public void onLoadingCancelled(String imageUri, View view) {
+            makeTextWrapperVisible(view, false);
+        }
+    };
+
+    protected void makeTextWrapperVisible(View imageView, boolean imageLoaded) {
+        ViewParent parent = imageView.getParent();
+        View parentView = (View)parent;
+        View textWrapperView = parentView.findViewById(R.id.text_wrapper);
+        textWrapperView.setVisibility(View.VISIBLE);
+        if (!imageLoaded)
+            textWrapperView.setBackgroundColor(R.color.PaletteBlack);
+    }
 
     public void refresh() {
         if (handler != null)
@@ -74,6 +112,8 @@ public class PopularFragment
         super.onCreateView(inflater, container, savedInstanceState);
         layout = inflater.inflate(R.layout.popular_layout, container, false);
         emptyText = (TextView)layout.findViewById(R.id.board_empty_text);
+        if (imageLoader == null)
+            initStatics(layout);
         return layout;
     }
 
@@ -264,18 +304,7 @@ public class PopularFragment
         subjectView.setText(Html.fromHtml(subject));
         imageView.setImageDrawable(null);
         textWrapperView.setVisibility(View.GONE);
-        ChanImageLoader.getInstance(imageView.getContext()).displayImage(thumbUrl, imageView, new ImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String imageUri, View view) {}
-            @Override
-            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {}
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                textWrapperView.setVisibility(View.VISIBLE);
-            }
-            @Override
-            public void onLoadingCancelled(String imageUri, View view) {}
-        });
+        imageLoader.displayImage(thumbUrl, imageView, displayImageOptions, imageLoadingListener);
 
         clickTargetView.setTag(R.id.BOARD_CODE, boardCode);
         clickTargetView.setTag(R.id.THREAD_NO, threadNo);
