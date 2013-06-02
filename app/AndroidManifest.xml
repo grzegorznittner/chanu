@@ -208,6 +208,15 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
         </activity>
+        <activity android:name="com.chanapps.four.widget.WidgetConfigureCoverFlowActivity"
+                  android:excludeFromRecents="true"
+                  android:taskAffinity=""
+                  android:launchMode="standard"
+                  android:label="@string/widget_configure_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
+        </activity>
         <receiver android:name="com.chanapps.four.widget.BoardWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
@@ -216,6 +225,15 @@
                 <action android:name="android.appwidget.action.APPWIDGET_DELETED"/>
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_board_info"/>
+        </receiver>
+        <receiver android:name="com.chanapps.four.widget.BoardCoverFlowWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_board_coverflow_info"/>
         </receiver>
         <receiver android:name="com.chanapps.four.component.GlobalAlarmReceiver">
             <intent-filter>
