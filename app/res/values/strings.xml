@@ -1271,11 +1271,11 @@
     <dimen name="BoardListText_paddingBottom">8dp</dimen>
     <dimen name="BoardListText_textSize">16sp</dimen>
 
-    <dimen name="ThreadListHeaderImage_layout_marginTop">8dp</dimen>
+    <dimen name="ThreadListHeaderImage_layout_marginTop">0dp</dimen>
     <dimen name="ThreadListHeaderImage_layout_marginBottom">0dp</dimen>
 
     <dimen name="ThreadListHeaderSubject_layout_marginLeft">0dp</dimen>
-    <dimen name="ThreadListHeaderSubject_layout_marginRight">0dp</dimen>
+    <dimen name="ThreadListHeaderSubject_layout_marginRight">16dp</dimen>
     <dimen name="ThreadListHeaderSubject_paddingTop">8dp</dimen>
 
     <dimen name="ThreadListHeaderHeadWrapper_paddingBottom">8dp</dimen>
@@ -1284,10 +1284,10 @@
     <dimen name="ThreadListHeaderCountryFlag_layout_width">18dp</dimen>
     <dimen name="ThreadListHeaderCountryFlag_layout_height">12dp</dimen>
     <dimen name="ThreadListHeaderCountryFlag_layout_marginTop">4dp</dimen>
-    <dimen name="ThreadListHeaderCountryFlag_layout_marginLeft">8dp</dimen>
+    <dimen name="ThreadListHeaderCountryFlag_layout_marginRight">16dp</dimen>
 
     <dimen name="ThreadListHeaderHead_layout_marginLeft">0dp</dimen>
-    <dimen name="ThreadListHeaderHead_layout_marginRight">0dp</dimen>
+    <dimen name="ThreadListHeaderHead_layout_marginRight">16dp</dimen>
 
     <dimen name="ThreadListHeaderExifText_layout_marginLeft">16dp</dimen>
     <dimen name="ThreadListHeaderExifText_layout_marginRight">16dp</dimen>
@@ -1303,6 +1303,8 @@
 
     <dimen name="ThreadListHeaderBar_layout_height">2dp</dimen>
 
+    <dimen name="ThreadListLinkLayout_paddingTop">0dp</dimen>
+    <dimen name="ThreadListLinkLayout_paddingBottom">0dp</dimen>
     <dimen name="ThreadListLayout_paddingTop">8dp</dimen>
     <dimen name="ThreadListLayout_paddingBottom">8dp</dimen>
     <dimen name="ThreadListLayout_paddingLeft">0dp</dimen>
@@ -1338,8 +1340,7 @@
     <dimen name="ThreadListItemCountryFlag_layout_width">18dp</dimen>
     <dimen name="ThreadListItemCountryFlag_layout_height">12dp</dimen>
     <dimen name="ThreadListItemCountryFlag_marginTop">4dp</dimen>
-    <dimen name="ThreadListItemCountryFlag_marginLeft">8dp</dimen>
-    <dimen name="ThreadListItemCountryFlag_marginBottom">8dp</dimen>
+    <dimen name="ThreadListItemCountryFlag_marginRight">0dp</dimen>
 
     <dimen name="ThreadListItemHead_marginLeft">0dp</dimen>
     <dimen name="ThreadListItemHead_marginRight">0dp</dimen>

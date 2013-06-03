@@ -506,6 +506,17 @@
         <item name="android:textSize">@dimen/ThreadListLayout</item>
     </style>
 
+    <style name="ThreadListLinkLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/ThreadListLinkLayout_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/ThreadListLinkLayout_paddingBottom</item>
+        <item name="android:paddingLeft">@dimen/ThreadListLayout_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/ThreadListLayout_paddingRight</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:textSize">@dimen/ThreadListLayout</item>
+    </style>
+
     <style name="ThreadListAdLayout" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -558,6 +569,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginLeft">@dimen/ThreadListHeaderSubject_layout_marginLeft</item>
         <item name="android:layout_marginRight">@dimen/ThreadListHeaderSubject_layout_marginRight</item>
+        <item name="android:layout_toLeftOf">@+id/list_item_country_flag</item>
         <item name="android:paddingTop">@dimen/ThreadListHeaderSubject_paddingTop</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textStyle">bold</item>
@@ -577,11 +589,10 @@
     <style name="ThreadListHeaderCountryFlag" parent="AppTheme">
         <item name="android:layout_width">@dimen/ThreadListHeaderCountryFlag_layout_width</item>
         <item name="android:layout_height">@dimen/ThreadListHeaderCountryFlag_layout_height</item>
-        <item name="android:layout_marginTop">@dimen/ThreadListHeaderCountryFlag_layout_marginTop</item>
-        <item name="android:layout_marginLeft">@dimen/ThreadListHeaderCountryFlag_layout_marginLeft</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:gravity">top|left</item>
+        <item name="android:layout_marginTop">@dimen/ThreadListHeaderSubject_paddingTop</item>
+        <item name="android:layout_marginRight">@dimen/ThreadListHeaderCountryFlag_layout_marginRight</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:gravity">top|right</item>
         <item name="android:scaleType">fitXY</item>
         <item name="android:contentDescription">@string/popup_country_flag</item>
     </style>
@@ -589,8 +600,7 @@
     <style name="ThreadListHeaderHead" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:layout_toRightOf">@+id/list_item_country_flag</item>
+        <item name="android:layout_below">@+id/list_item_subject</item>
         <item name="android:layout_marginLeft">@dimen/ThreadListHeaderHead_layout_marginLeft</item>
         <item name="android:layout_marginRight">@dimen/ThreadListHeaderHead_layout_marginRight</item>
         <item name="android:gravity">top|left</item>
@@ -707,6 +717,7 @@
         <item name="android:layout_marginLeft">@dimen/ThreadListItemSubject_marginLeft</item>
         <item name="android:paddingRight">@dimen/ThreadListItemSubject_paddingRight</item>
         <item name="android:layout_toRightOf">@+id/list_item_image_wrapper</item>
+        <item name="android:layout_toLeftOf">@+id/list_item_country_flag</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:textStyle">bold</item>
@@ -720,11 +731,11 @@
         <item name="android:layout_width">@dimen/ThreadListItemCountryFlag_layout_width</item>
         <item name="android:layout_height">@dimen/ThreadListItemCountryFlag_layout_height</item>
         <item name="android:layout_marginTop">@dimen/ThreadListItemCountryFlag_marginTop</item>
-        <item name="android:layout_marginLeft">@dimen/ThreadListItemCountryFlag_marginLeft</item>
-        <item name="android:layout_marginBottom">@dimen/ThreadListItemCountryFlag_marginBottom</item>
-        <item name="android:layout_toRightOf">@+id/list_item_image_wrapper</item>
-        <item name="android:layout_below">@+id/list_item_subject</item>
-        <item name="android:gravity">top|left</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListItemImageWrapper_layout_marginRight</item>
+        <item name="android:layout_marginRight">@dimen/ThreadListItemCountryFlag_marginRight</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:gravity">top|right</item>
         <item name="android:scaleType">fitXY</item>
         <item name="android:contentDescription">@string/popup_country_flag</item>
     </style>
@@ -732,7 +743,7 @@
     <style name="ThreadListItemHead" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_toRightOf">@+id/list_item_country_flag</item>
+        <item name="android:layout_toRightOf">@+id/list_item_image_wrapper</item>
         <item name="android:layout_below">@+id/list_item_subject</item>
         <item name="android:layout_marginLeft">@dimen/ThreadListItemHead_marginLeft</item>
         <item name="android:layout_marginRight">@dimen/ThreadListItemHead_marginRight</item>
