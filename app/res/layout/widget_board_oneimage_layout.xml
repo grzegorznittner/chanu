@@ -19,7 +19,7 @@
                    android:layout_height="match_parent"
                    android:layout_width="0dp"
                    android:contentDescription="Left Thumbnail Image"
-                   android:scaleType="fitCenter"
+                   android:scaleType="centerInside"
                    android:layout_weight="1"
                    android:src="@drawable/a"
                 />
