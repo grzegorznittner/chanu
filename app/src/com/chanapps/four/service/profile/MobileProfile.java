@@ -10,60 +10,59 @@ import android.util.Log;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.fragment.BoardGroupFragment;
 import com.chanapps.four.service.CleanUpService;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
 import com.chanapps.four.service.NetworkProfileManager;
-import com.chanapps.four.widget.BoardWidgetProvider;
+import com.chanapps.four.widget.WidgetProviderUtils;
 
 public class MobileProfile extends AbstractNetworkProfile {
-	private static final String TAG = MobileProfile.class.getSimpleName();
-	private static final boolean DEBUG = true;
-	
-	private String networkType = "3G";
-	
-	private static final Map<Health, FetchParams> REFRESH_TIME = new HashMap<Health, FetchParams> ();
-	
-	static {
-		/* Mapping between connection health and fetch params
-		 *               HEALTH  ----->   REFRESH_DELAY, FORCE_REFRESH_DELAY, READ_TIMEOUT, CONNECT_TIMEOUT
-		 */
-		REFRESH_TIME.put(Health.BAD,       new FetchParams(660L,  10L, 20, 15));
-		REFRESH_TIME.put(Health.VERY_SLOW, new FetchParams(600L,  10L, 20, 15));
-		REFRESH_TIME.put(Health.SLOW,      new FetchParams(180L,  10L, 20, 10));
-		REFRESH_TIME.put(Health.GOOD,      new FetchParams( 90L,  10L, 12,  8));
-		REFRESH_TIME.put(Health.PERFECT,   new FetchParams( 60L,  10L,  8,  4));
-	}
-	
-	@Override
-	public Type getConnectionType() {
-		return Type.MOBILE;
-	}
+    private static final String TAG = MobileProfile.class.getSimpleName();
+    private static final boolean DEBUG = true;
 
-	@Override
-	public FetchParams getFetchParams() {
-		return REFRESH_TIME.get(getConnectionHealth());
-	}
+    private String networkType = "3G";
 
-	public void setNetworkType(String networkType) {
-		this.networkType = networkType;
-	}
+    private static final Map<Health, FetchParams> REFRESH_TIME = new HashMap<Health, FetchParams>();
 
-	@Override
-	public Health getDefaultConnectionHealth() {
-		if ("2G".equalsIgnoreCase(networkType)) {
-			return Health.VERY_SLOW;
-		} else {
-			return Health.SLOW;
-		}
-	}
-	
-	@Override
-	public void onProfileActivated(Context context) {
-		super.onProfileActivated(context);
-		
-		Health health = getConnectionHealth();
+    static {
+        /* Mapping between connection health and fetch params
+           *               HEALTH  ----->   REFRESH_DELAY, FORCE_REFRESH_DELAY, READ_TIMEOUT, CONNECT_TIMEOUT
+           */
+        REFRESH_TIME.put(Health.BAD, new FetchParams(660L, 10L, 20, 15));
+        REFRESH_TIME.put(Health.VERY_SLOW, new FetchParams(600L, 10L, 20, 15));
+        REFRESH_TIME.put(Health.SLOW, new FetchParams(180L, 10L, 20, 10));
+        REFRESH_TIME.put(Health.GOOD, new FetchParams(90L, 10L, 12, 8));
+        REFRESH_TIME.put(Health.PERFECT, new FetchParams(60L, 10L, 8, 4));
+    }
+
+    @Override
+    public Type getConnectionType() {
+        return Type.MOBILE;
+    }
+
+    @Override
+    public FetchParams getFetchParams() {
+        return REFRESH_TIME.get(getConnectionHealth());
+    }
+
+    public void setNetworkType(String networkType) {
+        this.networkType = networkType;
+    }
+
+    @Override
+    public Health getDefaultConnectionHealth() {
+        if ("2G".equalsIgnoreCase(networkType)) {
+            return Health.VERY_SLOW;
+        } else {
+            return Health.SLOW;
+        }
+    }
+
+    @Override
+    public void onProfileActivated(Context context) {
+        super.onProfileActivated(context);
+
+        Health health = getConnectionHealth();
         if (health == Health.NO_CONNECTION)
             return;
 
@@ -121,25 +120,25 @@ public class MobileProfile extends AbstractNetworkProfile {
         */
     }
 
-	@Override
-	public void onProfileDeactivated(Context context) {
-		super.onProfileDeactivated(context);
-	}
+    @Override
+    public void onProfileDeactivated(Context context) {
+        super.onProfileDeactivated(context);
+    }
 
-	@Override
-	public void onApplicationStart(Context context) {
-		super.onApplicationStart(context);
+    @Override
+    public void onApplicationStart(Context context) {
+        super.onApplicationStart(context);
         CleanUpService.startService(context);
         Health health = getConnectionHealth();
-        BoardWidgetProvider.asyncUpdateWidgetsAndWatchlist(context);
+        WidgetProviderUtils.asyncUpdateWidgetsAndWatchlist(context);
         if (health != Health.BAD && health != Health.VERY_SLOW) {
-        //    prefetchDefaultBoards(context);
+            //    prefetchDefaultBoards(context);
         } else {
             makeHealthStatusToast(context, health);
         }
-	}
+    }
 
-	@Override
+    @Override
     public void onBoardSelectorSelected(Context context, String boardCode) {
         super.onBoardSelectorSelected(context, boardCode);
         // prefetch popular in the background if we haven't loaded it yet
@@ -152,8 +151,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         if (board != null && !board.defData && board.threads != null && board.threads.length > 1) {
             if (DEBUG) Log.i(TAG, "skipping fetch board selector board=" + ChanBoard.POPULAR_BOARD_CODE
                     + " as already have " + board.threads.length + " threads");
-        }
-        else {
+        } else {
             if (DEBUG) Log.i(TAG, "fetching board selector " + boardCode + " as no data is present");
             FetchPopularThreadsService.schedulePopularFetchService(context, true, false);
         }
@@ -179,8 +177,8 @@ public class MobileProfile extends AbstractNetworkProfile {
     }
 
     @Override
-	public void onBoardSelected(Context context, String boardCode) {
-		super.onBoardSelected(context, boardCode);
+    public void onBoardSelected(Context context, String boardCode) {
+        super.onBoardSelected(context, boardCode);
         Health health = getConnectionHealth();
         if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
@@ -200,71 +198,68 @@ public class MobileProfile extends AbstractNetworkProfile {
             NetworkProfileManager.instance().getActivity().startProgress();
         if (canFetch)
             if (DEBUG) Log.i(TAG, "auto-fetching selected board=" + boardCode);
-        else
-            if (DEBUG) Log.i(TAG, "skipping fresh selected board=" + boardCode);
+            else if (DEBUG) Log.i(TAG, "skipping fresh selected board=" + boardCode);
 
-		/*if (health == Health.GOOD || health == Health.PERFECT) {
-			ChanBoard boardObj = ChanFileStorage.loadBoardData(context, boardCode);
-			int threadPrefechCounter = health == Health.GOOD ? 3 : 7;
-			if (boardObj != null) {
-				for(ChanPost post : boardObj.threads) {
-					if (threadPrefechCounter <= 0) {
-						break;
-					}
-					if (post.closed == 0 && post.sticky == 0 && post.replies > 5 && post.images > 1) {
-						threadPrefechCounter--;
-						FetchChanDataService.scheduleThreadFetch(context, boardCode, post.no);
-					}
-				}
-			}
-		}*/
-	}
+        /*if (health == Health.GOOD || health == Health.PERFECT) {
+              ChanBoard boardObj = ChanFileStorage.loadBoardData(context, boardCode);
+              int threadPrefechCounter = health == Health.GOOD ? 3 : 7;
+              if (boardObj != null) {
+                  for(ChanPost post : boardObj.threads) {
+                      if (threadPrefechCounter <= 0) {
+                          break;
+                      }
+                      if (post.closed == 0 && post.sticky == 0 && post.replies > 5 && post.images > 1) {
+                          threadPrefechCounter--;
+                          FetchChanDataService.scheduleThreadFetch(context, boardCode, post.no);
+                      }
+                  }
+              }
+          }*/
+    }
 
-	@Override
-	public void onBoardRefreshed(final Context context, Handler handler, String boardCode) {
-		super.onBoardRefreshed(context, handler, boardCode);
+    @Override
+    public void onBoardRefreshed(final Context context, Handler handler, String boardCode) {
+        super.onBoardRefreshed(context, handler, boardCode);
         Health health = getConnectionHealth();
         if (ChanFileStorage.hasNewBoardData(context, boardCode)) {
             onUpdateViewData(context, handler, boardCode);
-        }
-        else if (health == Health.NO_CONNECTION) {
+        } else if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
-        }
-        else {
+        } else {
             boolean canFetch = FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false);
             if (!canFetch)
                 postStopMessage(handler, R.string.board_wait_to_refresh);
         }
         if (DEBUG) {
-			UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
-			int i = 1;
-			for (ChanBoardStat stat : userStats.topBoards()) {
-				Log.i(TAG, "Top boards: " + i++  + ". " + stat);
-			}
-			i = 1;
-			for (ChanThreadStat stat : userStats.topThreads()) {
-				Log.i(TAG, "Top threads: " + i++ + ". " + stat);
-			}
-		}
-	}
+            UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
+            int i = 1;
+            for (ChanBoardStat stat : userStats.topBoards()) {
+                Log.i(TAG, "Top boards: " + i++ + ". " + stat);
+            }
+            i = 1;
+            for (ChanThreadStat stat : userStats.topThreads()) {
+                Log.i(TAG, "Top threads: " + i++ + ". " + stat);
+            }
+        }
+    }
 
-	@Override
-	public void onUpdateViewData(Context baseContext, Handler handler, String boardCode) {
-		super.onUpdateViewData(baseContext, handler, boardCode);
-		
-		final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		final ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
+    @Override
+    public void onUpdateViewData(Context baseContext, Handler handler, String boardCode) {
+        super.onUpdateViewData(baseContext, handler, boardCode);
+
+        final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        final ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
 
         if (ChanFileStorage.hasNewBoardData(baseContext, boardCode))
-		    ChanFileStorage.loadFreshBoardData(baseContext, boardCode);
+            ChanFileStorage.loadFreshBoardData(baseContext, boardCode);
 
-		boolean boardActivity = currentActivityId != null
-				&& currentActivityId.boardCode != null
-				&& currentActivityId.boardCode.equals(boardCode);
-		
-		if (boardActivity && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY
-				&& currentActivityId.threadNo == 0 && handler != null)
+        boolean boardActivity = currentActivityId != null
+                && currentActivityId.boardCode != null
+                && currentActivityId.boardCode.equals(boardCode);
+
+        if (boardActivity && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY
+                && currentActivityId.threadNo == 0 && handler != null)
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -273,21 +268,19 @@ public class MobileProfile extends AbstractNetworkProfile {
             });
     }
 
-	@Override
-	public void onThreadSelected(Context context, String boardCode, long threadId) {
-		if(DEBUG) Log.d(TAG, "onThreadSelected");
-		super.onThreadSelected(context, boardCode, threadId);
+    @Override
+    public void onThreadSelected(Context context, String boardCode, long threadId) {
+        if (DEBUG) Log.d(TAG, "onThreadSelected");
+        super.onThreadSelected(context, boardCode, threadId);
         Health health = getConnectionHealth();
 
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
         if (board != null && board.threads != null && board.threads.length > 1) {
             if (DEBUG) Log.i(TAG, "board already loaded for thread, skipping load");
-        }
-        else if (health == Health.NO_CONNECTION) {
+        } else if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
-        }
-        else {
+        } else {
             if (DEBUG) Log.i(TAG, "scheduling board fetch for thread with priority for /" + boardCode + "/");
             FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false);
         }
@@ -295,20 +288,18 @@ public class MobileProfile extends AbstractNetworkProfile {
         ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadId);
         if (thread != null && thread.posts != null && (thread.replies == 0 || thread.posts.length > 1)) {
             if (DEBUG) Log.i(TAG, "thread already loading, skipping load");
-        }
-        else if (health == Health.NO_CONNECTION) {
+        } else if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
-        }
-        else {
+        } else {
             if (DEBUG) Log.i(TAG, "scheduling thread fetch with priority for /" + boardCode + "/" + threadId);
             FetchChanDataService.scheduleThreadFetchWithPriority(context, boardCode, threadId);
         }
-	}
-	
-	@Override
-	public void onThreadRefreshed(Context context, Handler handler, String board, long threadNo) {
-		super.onThreadRefreshed(context, handler, board, threadNo);
+    }
+
+    @Override
+    public void onThreadRefreshed(Context context, Handler handler, String board, long threadNo) {
+        super.onThreadRefreshed(context, handler, board, threadNo);
         Health health = getConnectionHealth();
         if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
@@ -329,11 +320,11 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
     }
 
-	@Override
-	public void onDataFetchSuccess(ChanIdentifiedService service, int time, int size) {
-		// default behaviour is to parse properly loaded item
-		super.onDataFetchSuccess(service, time, size);
-	}
+    @Override
+    public void onDataFetchSuccess(ChanIdentifiedService service, int time, int size) {
+        // default behaviour is to parse properly loaded item
+        super.onDataFetchSuccess(service, time, size);
+    }
 
     private void handleBoardSelectorParseSuccess(ChanIdentifiedService service) {
         final ChanActivityId data = service.getChanActivityId();
@@ -341,49 +332,69 @@ public class MobileProfile extends AbstractNetworkProfile {
         final ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
         if (DEBUG) Log.i(TAG, "handleBoardSelectorParseSuccess board=" + data.boardCode + " priority=" + data.priority);
         // check if board data corrupted, we need to reload it
-        if (ChanBoard.POPULAR_BOARD_CODE.equals(data.boardCode)) {
-            ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
-            if ((board == null || board.defData)) {
-                if (DEBUG) Log.w(TAG, "Board " + data.boardCode + " is corrupted");
-                NetworkProfileManager.instance().getCurrentProfile().onDataParseFailure(service, Failure.CORRUPT_DATA);
-                //FetchPopularThreadsService.schedulePopularFetchService(service.getApplicationContext());
-                return;
-            }
-        }
+        if (ChanBoard.POPULAR_BOARD_CODE.equals(data.boardCode))
+            handlePopularParseSuccess(service, data, activity, currentActivityId);
+        else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(data.boardCode))
+            handleWatchlistParseSuccess(service, data, activity, currentActivityId);
+    }
 
-        // user is on the same tab and it's a manual refresh, reload it
+    private void handlePopularParseSuccess(final ChanIdentifiedService service,
+                                           final ChanActivityId data,
+                                           final ChanIdentifiedActivity activity,
+                                           final ChanActivityId currentActivityId) {
+        ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
+        if ((board == null || board.defData)) {
+            if (DEBUG) Log.w(TAG, "Board " + data.boardCode + " is corrupted");
+            NetworkProfileManager.instance().getCurrentProfile().onDataParseFailure(service, Failure.CORRUPT_DATA);
+            FetchPopularThreadsService.schedulePopularFetchService(service.getApplicationContext(), true, false);
+            return;
+        }
+        // user is on the same page and it's a manual refresh, reload it
         Handler handler = activity.getChanHandler();
-        if ((currentActivityId.priority || data.priority) &&
-                currentActivityId.activity == LastActivity.BOARD_SELECTOR_ACTIVITY &&
-                data.boardCode != null && !data.boardCode.isEmpty() &&
-                activity instanceof BoardSelectorActivity)
-        {
-            final BoardSelectorActivity bsa = (BoardSelectorActivity)activity;
-            final BoardSelectorTab tab;
-            if (BoardSelectorTab.RECENT.boardCode().equals(data.boardCode))
-                tab = BoardSelectorTab.RECENT;
-            else if (BoardSelectorTab.WATCHLIST.boardCode().equals(data.boardCode))
-                tab = BoardSelectorTab.WATCHLIST;
-            else
-                tab = null;
-            if (tab == null)
-                return;
-            final BoardGroupFragment fragment = bsa.getFragment(tab);
-            if (fragment == null)
-                return;
-            if (handler != null)
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (DEBUG) Log.i(TAG, "Refreshing boardselector fragment boardCode=" + currentActivityId.boardCode + " data boardcode=" + data.boardCode);
-                        fragment.refresh();
-                    }
-                });
-        }
-
+        boolean hasHandler = handler != null;
+        boolean isPriority = currentActivityId.priority || data.priority;
+        boolean sameActivity = currentActivityId.activity == LastActivity.POPULAR_ACTIVITY;
+        if (hasHandler && isPriority && sameActivity)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (DEBUG) Log.i(TAG, "Refreshing boardCode=" + currentActivityId.boardCode
+                            + " data boardcode=" + data.boardCode);
+                    activity.refresh();
+                }
+            });
         // tell it to refresh widgets for board if any are configured
         if (DEBUG) Log.i(TAG, "Calling widget provider update for boardCode=" + data.boardCode);
-        BoardWidgetProvider.updateAll(activity.getBaseContext(), data.boardCode);
+        WidgetProviderUtils.updateAll(activity.getBaseContext(), data.boardCode);
+    }
+
+    private void handleWatchlistParseSuccess(final ChanIdentifiedService service,
+                                             final ChanActivityId data,
+                                             final ChanIdentifiedActivity activity,
+                                             final ChanActivityId currentActivityId) {
+        ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
+        if ((board == null || board.defData)) {
+            if (DEBUG) Log.w(TAG, "Board " + data.boardCode + " is corrupted");
+            NetworkProfileManager.instance().getCurrentProfile().onDataParseFailure(service, Failure.CORRUPT_DATA);
+            return;
+        }
+        // user is on the same page and it's a manual refresh, reload it
+        Handler handler = activity.getChanHandler();
+        boolean hasHandler = handler != null;
+        boolean isPriority = currentActivityId.priority || data.priority;
+        boolean sameActivity = currentActivityId.activity == LastActivity.WATCHLIST_ACTIVITY;
+        if (hasHandler && isPriority && sameActivity)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (DEBUG) Log.i(TAG, "Refreshing boardCode=" + currentActivityId.boardCode
+                            + " data boardcode=" + data.boardCode);
+                    activity.refresh();
+                }
+            });
+        // tell it to refresh widgets for board if any are configured
+        if (DEBUG) Log.i(TAG, "Calling widget provider update for boardCode=" + data.boardCode);
+        WidgetProviderUtils.updateAll(activity.getBaseContext(), data.boardCode);
     }
 
     private void handleBoardParseSuccess(ChanIdentifiedService service) {
@@ -395,7 +406,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         } else {
             board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
         }
-        if (DEBUG) Log.i(TAG,  "handleBoardParseSuccess loadedThreads=" + board.loadedThreads.length
+        if (DEBUG) Log.i(TAG, "handleBoardParseSuccess loadedThreads=" + board.loadedThreads.length
                 + " priority=" + data.priority + " defData=" + board.defData);
 
         if (board == null || board.defData) {
@@ -406,15 +417,15 @@ public class MobileProfile extends AbstractNetworkProfile {
             return;
         }
 
-		boolean oldEnough = false; //Calendar.getInstance().getTimeInMillis() - board.lastFetched > ChanBoard.MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST;
-    	if (data.priority || board.defData || oldEnough || board.isVirtualBoard()) {
-    		if (!data.priority) {
-    			// priority requests do this above (see call to ChanFileStorage.loadFreshBoardData)
-	    		board.threads = board.loadedThreads;
-	    		board.loadedThreads = new ChanThread[0];
-	    		board.newThreads = 0;
-	    		board.updatedThreads = 0;
-    		}
+        boolean oldEnough = false; //Calendar.getInstance().getTimeInMillis() - board.lastFetched > ChanBoard.MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST;
+        if (data.priority || board.defData || oldEnough || board.isVirtualBoard()) {
+            if (!data.priority) {
+                // priority requests do this above (see call to ChanFileStorage.loadFreshBoardData)
+                board.threads = board.loadedThreads;
+                board.loadedThreads = new ChanThread[0];
+                board.newThreads = 0;
+                board.updatedThreads = 0;
+            }
 
             final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
             ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
@@ -422,21 +433,21 @@ public class MobileProfile extends AbstractNetworkProfile {
                     && currentActivityId.boardCode != null
                     && currentActivityId.boardCode.equals(data.boardCode)
                     && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY;
-    		// user is on the board page, we need to be reloaded it
-	        Handler handler = activity.getChanHandler();
-	        if (isBoardActivity && handler != null) {        	
-	            handler.post(new Runnable() {
-		            @Override
-		            public void run() {
-		                activity.refresh();
-		            }
-		        });
-	        }
-    	}
+            // user is on the board page, we need to be reloaded it
+            Handler handler = activity.getChanHandler();
+            if (isBoardActivity && handler != null) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.refresh();
+                    }
+                });
+            }
+        }
 
         // tell it to refresh widgets for board if any are configured
         if (DEBUG) Log.i(TAG, "Calling widget provider update for boardCode=" + data.boardCode);
-        BoardWidgetProvider.updateAll(service.getApplicationContext(), data.boardCode);
+        WidgetProviderUtils.updateAll(service.getApplicationContext(), data.boardCode);
     }
 
     private void handleThreadParseSuccess(ChanIdentifiedService service) {
@@ -462,7 +473,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
 
         Handler handler = activity.getChanHandler();
-        if(DEBUG) Log.i(TAG, "Check reload thread " + thread.board + "/" + thread.no
+        if (DEBUG) Log.i(TAG, "Check reload thread " + thread.board + "/" + thread.no
                 + " isThreadActivity=" + isThreadActivity
                 + " handler=" + handler);
 
@@ -477,26 +488,26 @@ public class MobileProfile extends AbstractNetworkProfile {
 
     }
 
-	@Override
-	public void onDataParseSuccess(ChanIdentifiedService service) {
-		super.onDataParseSuccess(service);
-		ChanActivityId data = service.getChanActivityId();
+    @Override
+    public void onDataParseSuccess(ChanIdentifiedService service) {
+        super.onDataParseSuccess(service);
+        ChanActivityId data = service.getChanActivityId();
         if (ChanBoard.isVirtualBoard(data.boardCode))
             handleBoardSelectorParseSuccess(service);
-		else if (data.threadNo == 0)
+        else if (data.threadNo == 0)
             handleBoardParseSuccess(service);
         else if (data.postNo == 0)
             handleThreadParseSuccess(service);
         // otherwise image fetching, ignore
-	}
-
-	@Override
-	public void onDataFetchFailure(final ChanIdentifiedService service, Failure failure) {
-		super.onDataFetchFailure(service, failure);
     }
 
-	@Override
-	public void onDataParseFailure(final ChanIdentifiedService service, Failure failure) {
+    @Override
+    public void onDataFetchFailure(final ChanIdentifiedService service, Failure failure) {
         super.onDataFetchFailure(service, failure);
-	}
+    }
+
+    @Override
+    public void onDataParseFailure(final ChanIdentifiedService service, Failure failure) {
+        super.onDataFetchFailure(service, failure);
+    }
 }

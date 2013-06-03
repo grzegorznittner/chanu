@@ -562,11 +562,11 @@ public class ChanPost {
             if (replies > 0) {
                 text += replies
                         + " "
-                        + (replies == 1 ? "reply" : "replies")
+                        + (replies == 1 ? "post" : "posts")
                         + " "
                         + (images > 0 ? images : "no")
-                        + " image"
-                        + (images == 1 ? "" : "s");
+                        + " "
+                        + (images == 1 ? "image" : "images");
             }
             else {
                 text += "no replies";

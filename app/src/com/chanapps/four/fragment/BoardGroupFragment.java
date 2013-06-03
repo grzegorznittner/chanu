@@ -1,6 +1,5 @@
 package com.chanapps.four.fragment;
 
-import android.app.Activity;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
@@ -8,10 +7,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.Loader;
-import android.text.Html;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
@@ -24,14 +20,10 @@ import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.*;
-import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.viewer.BoardGridViewer;
 import com.chanapps.four.viewer.BoardSelectorBoardsViewer;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 import java.lang.ref.WeakReference;
@@ -276,7 +268,7 @@ public class BoardGroupFragment
                 return new BoardCursorLoader(getBaseContext(), boardSelectorTab.boardCode(), "");
             case RECENT:
             default:
-                return new BoardTypeRecentCursorLoader(getBaseContext());
+                return new PopularCursorLoader(getBaseContext());
         }
     }
 

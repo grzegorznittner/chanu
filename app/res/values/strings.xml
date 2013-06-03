@@ -179,6 +179,7 @@
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
     <string name="board_end_of_board">End of Board</string>
     <string name="board_click_for_more">(click for more)</string>
+    <string name="board_just_now">just now</string>
     <string name="board_last_updated">Last updated %s</string>
     <string name="board_wait_to_refresh">Min 10 sec between refresh</string>
     <string name="board_offline_refresh">Cannot refresh, network offline</string>
@@ -218,8 +219,8 @@
 
     <plurals name="thread_num_replies">
         <item quantity="zero">no replies</item>
-        <item quantity="one">1 reply</item>
-        <item quantity="other">%1$d replies</item>
+        <item quantity="one">1 post</item>
+        <item quantity="other">%1$d posts</item>
     </plurals>
     <plurals name="thread_num_images">
         <item quantity="zero">no images</item>
@@ -504,8 +505,8 @@
     <string name="pref_about_title">Chanu</string>
     <string name="pref_about_title_sum">4chan Reloaded</string>
     <string name="pref_about_application_category">Application</string>
-    <string name="pref_about_application_version">Version 1.0 beta 13</string>
-    <string name="pref_about_application_version_sum">Released 25 May 2013</string>
+    <string name="pref_about_application_version">Version 1.0 beta 15</string>
+    <string name="pref_about_application_version_sum">Released 2 Jun 2013</string>
     <string name="pref_about_application_rate">Rate Us</string>
     <string name="pref_about_application_rate_sum">Visit Chanu on Google Play</string>
     <string name="pref_about_data_category">Uses</string>
@@ -938,9 +939,8 @@
     </string-array>
 
     <string-array name="long_board_array">
-        <item>@string/board_select</item>
-        <item>@string/board_watch</item>
         <item>@string/board_type_recent</item>
+        <item>@string/board_watch</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -1006,9 +1006,8 @@
     </string-array>
 
     <string-array name="long_board_array_worksafe">
-        <item>@string/board_select</item>
-        <item>@string/board_watch</item>
         <item>@string/board_type_recent</item>
+        <item>@string/board_watch</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -1057,11 +1056,10 @@
     </string-array>
 
     <string-array name="widget_board_array">
-        <item>@string/board_select</item>
-        <item>@string/board_watch</item>
         <item>@string/board_popular</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
+        <item>@string/board_watch</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -1127,11 +1125,10 @@
     </string-array>
 
     <string-array name="widget_board_array_worksafe">
-        <item>@string/board_select</item>
-        <item>@string/board_watch</item>
         <item>@string/board_popular</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
+        <item>@string/board_watch</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -1182,14 +1179,14 @@
     <!-- Font sizes -->
     <dimen name="BoardTypeText">18sp</dimen>
     <dimen name="WidgetConfigureOkButton">18sp</dimen>
-    <dimen name="BoardSelectorOverlay">12sp</dimen>
-    <dimen name="BoardGridSubject">12sp</dimen>
+    <dimen name="BoardSelectorOverlay">14sp</dimen>
+    <dimen name="BoardGridSubject">14sp</dimen>
     <dimen name="BoardGridInfo">12sp</dimen>
     <dimen name="BoardGridNumReplies">12sp</dimen>
     <dimen name="BoardGridAbbrev">12sp</dimen>
     <dimen name="BoardGridNumImages">12sp</dimen>
-    <dimen name="BoardGridTextImageOverlay">12sp</dimen>
-    <dimen name="BoardListTextImageTopOverlay">12sp</dimen>
+    <dimen name="BoardGridTextImageOverlay">14sp</dimen>
+    <dimen name="BoardListTextImageTopOverlay">14sp</dimen>
     <dimen name="BoardListTitle">16sp</dimen>
     <dimen name="BoardListSubject">18sp</dimen>
     <dimen name="BoardListHeadline">16sp</dimen>
@@ -1274,11 +1271,11 @@
     <dimen name="BoardListText_paddingBottom">8dp</dimen>
     <dimen name="BoardListText_textSize">16sp</dimen>
 
-    <dimen name="ThreadListHeaderImage_layout_marginTop">8dp</dimen>
+    <dimen name="ThreadListHeaderImage_layout_marginTop">0dp</dimen>
     <dimen name="ThreadListHeaderImage_layout_marginBottom">0dp</dimen>
 
     <dimen name="ThreadListHeaderSubject_layout_marginLeft">0dp</dimen>
-    <dimen name="ThreadListHeaderSubject_layout_marginRight">0dp</dimen>
+    <dimen name="ThreadListHeaderSubject_layout_marginRight">16dp</dimen>
     <dimen name="ThreadListHeaderSubject_paddingTop">8dp</dimen>
 
     <dimen name="ThreadListHeaderHeadWrapper_paddingBottom">8dp</dimen>
@@ -1287,10 +1284,10 @@
     <dimen name="ThreadListHeaderCountryFlag_layout_width">18dp</dimen>
     <dimen name="ThreadListHeaderCountryFlag_layout_height">12dp</dimen>
     <dimen name="ThreadListHeaderCountryFlag_layout_marginTop">4dp</dimen>
-    <dimen name="ThreadListHeaderCountryFlag_layout_marginLeft">8dp</dimen>
+    <dimen name="ThreadListHeaderCountryFlag_layout_marginRight">16dp</dimen>
 
     <dimen name="ThreadListHeaderHead_layout_marginLeft">0dp</dimen>
-    <dimen name="ThreadListHeaderHead_layout_marginRight">0dp</dimen>
+    <dimen name="ThreadListHeaderHead_layout_marginRight">16dp</dimen>
 
     <dimen name="ThreadListHeaderExifText_layout_marginLeft">16dp</dimen>
     <dimen name="ThreadListHeaderExifText_layout_marginRight">16dp</dimen>
@@ -1306,6 +1303,8 @@
 
     <dimen name="ThreadListHeaderBar_layout_height">2dp</dimen>
 
+    <dimen name="ThreadListLinkLayout_paddingTop">0dp</dimen>
+    <dimen name="ThreadListLinkLayout_paddingBottom">0dp</dimen>
     <dimen name="ThreadListLayout_paddingTop">8dp</dimen>
     <dimen name="ThreadListLayout_paddingBottom">8dp</dimen>
     <dimen name="ThreadListLayout_paddingLeft">0dp</dimen>
@@ -1341,8 +1340,7 @@
     <dimen name="ThreadListItemCountryFlag_layout_width">18dp</dimen>
     <dimen name="ThreadListItemCountryFlag_layout_height">12dp</dimen>
     <dimen name="ThreadListItemCountryFlag_marginTop">4dp</dimen>
-    <dimen name="ThreadListItemCountryFlag_marginLeft">8dp</dimen>
-    <dimen name="ThreadListItemCountryFlag_marginBottom">8dp</dimen>
+    <dimen name="ThreadListItemCountryFlag_marginRight">0dp</dimen>
 
     <dimen name="ThreadListItemHead_marginLeft">0dp</dimen>
     <dimen name="ThreadListItemHead_marginRight">0dp</dimen>
@@ -1420,6 +1418,17 @@
     <dimen name="tutorial_overlay_dismiss_marginRight">16dp</dimen>
     <dimen name="tutorial_overlay_dismiss_marginBottom">16dp</dimen>
     <dimen name="tutorial_overlay_dismiss_padding">8dp</dimen>
+
+    <!-- popular / home -->
+    <dimen name="PopularTitle_paddingTop">16dp</dimen>
+    <dimen name="PopularItem_paddingTop">16dp</dimen>
+    <dimen name="PopularItem_paddingLeft">16dp</dimen>
+    <dimen name="PopularItem_paddingRight">16dp</dimen>
+    <dimen name="PopularItem_paddingBottom">8dp</dimen>
+    <dimen name="PopularItem_textSize">14sp</dimen>
+    <dimen name="PopularItem_layout_height">125dp</dimen>
+    <dimen name="PopularLargeItem_layout_height">250dp</dimen>
+    <dimen name="PopularLargeItem_textSize">22sp</dimen>
 
     <!-- widgets dimension -->
     <dimen name="widget_board_minWidth">294dp</dimen>

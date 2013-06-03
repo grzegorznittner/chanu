@@ -66,8 +66,8 @@ public class BoardActivity
     protected ViewType viewType = ViewType.AS_GRID;
 
     public static void startActivity(Activity from, String boardCode, String query) {
-        if (query != null && !query.isEmpty())
-            NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.SEARCH_BOARD);
+        //if (query != null && !query.isEmpty())
+        //    NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.SEARCH_BOARD);
         from.startActivity(createIntentForActivity(from, boardCode, query));
     }
 
@@ -371,7 +371,7 @@ public class BoardActivity
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.toggle_view_type_menu:
-            	NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_LIST_VIEW);
+            	//NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_LIST_VIEW);
                 viewType = viewType == ViewType.AS_GRID ? ViewType.AS_LIST : ViewType.AS_GRID;
                 invalidateOptionsMenu();
                 createAbsListView();
@@ -398,7 +398,7 @@ public class BoardActivity
     }
 
     protected void displayBoardRules() {
-        NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_RULES);
+        //NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_RULES);
         int boardRulesId = R.raw.global_rules_detail;
         try {
             boardRulesId = R.raw.class.getField("board_" + boardCode + "_rules").getInt(null);

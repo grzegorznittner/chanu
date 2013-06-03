@@ -701,15 +701,13 @@ public class ChanBoard {
 
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) { // for action bar spinner
-            NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.BOARD_SELECT);
+            //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.BOARD_SELECT);
             if (position < 0)
                 return;
             String boardAsMenu = (String) parent.getItemAtPosition(position);
             if (DEBUG) Log.i(BoardSelectorActivity.TAG, "onItemSelected boardSelected=" + boardAsMenu + " created with board=" + createdWithBoardCode);
             if (boardAsMenu == null
-                    || boardAsMenu.isEmpty()
-                    || boardAsMenu.equals(activity.getString(R.string.board_select))
-                    || boardAsMenu.equals(activity.getString(R.string.board_select_abbrev)))
+                    || boardAsMenu.isEmpty())
                 return;
             else if (boardAsMenu.equals(activity.getString(R.string.board_watch))
                     || boardAsMenu.equals(activity.getString(R.string.board_watch_abbrev)))

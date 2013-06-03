@@ -82,16 +82,16 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     public static void startAlbumViewActivity(Context from, String boardCode, long threadNo) {
-        NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.GALLERY_VIEW);
+        //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.GALLERY_VIEW);
         if (DEBUG) Log.i(TAG, "Starting gallery folder viewer for: " + boardCode + "/" + threadNo);
         from.startActivity(getAlbumViewIntent(from, boardCode, threadNo));
     }
     
     public static void startOfflineAlbumViewActivity(Context from, String boardCode) {
-        if (boardCode == null || boardCode.isEmpty())
-            NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.ALL_CACHED_IMAGES);
-        else
-            NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.CACHED_BOARD_IMAGES);
+        //if (boardCode == null || boardCode.isEmpty())
+        //    NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.ALL_CACHED_IMAGES);
+        //else
+        //    NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.CACHED_BOARD_IMAGES);
         if (DEBUG) Log.i(TAG, "Starting offline gallery viewer for " + (boardCode != null ? "board " + boardCode : "whole cache"));
         from.startActivity(getOfflineAlbumViewIntent(from, boardCode));
     }

@@ -37,30 +37,40 @@ public class UserStatistics {
 
 	public static enum ChanFeature {
 		NONE,
-		BOARDSELECTOR_DESC, POPULAR_DESC, WATCHLIST_DESC, BOARD_DESC, THREAD_DESC,
-        WATCHLIST_CLEAN, WATCHLIST_DELETE,
-		BOARD_SELECT, MANUAL_REFRESH, SEARCH_BOARD, SEARCH_THREAD, BOARD_LIST_VIEW, ADD_THREAD, POST,
-		CACHED_BOARD_IMAGES, ALL_CACHED_IMAGES, BOARD_RULES, WATCH_THREAD, GALLERY_VIEW,
-		PLAY_THREAD, PRELOAD_ALL_IMAGES, DOWNLOAD_ALL_IMAGES_TO_GALLERY,
-		SETTINGS_NAMES, SETTINGS_4CHAN_PASS, SETTINGS_CACHE_SIZE, SETTINGS_WATCHLIST
+		//BOARDSELECTOR_DESC,
+        POPULAR_DESC, WATCHLIST_DESC, BOARD_DESC, THREAD_DESC
+        //,WATCHLIST_CLEAN, WATCHLIST_DELETE,
+		//BOARD_SELECT, MANUAL_REFRESH, SEARCH_BOARD, SEARCH_THREAD, BOARD_LIST_VIEW, ADD_THREAD, POST,
+		//CACHED_BOARD_IMAGES, ALL_CACHED_IMAGES, BOARD_RULES, WATCH_THREAD, GALLERY_VIEW,
+		//PLAY_THREAD, PRELOAD_ALL_IMAGES, DOWNLOAD_ALL_IMAGES_TO_GALLERY,
+		//SETTINGS_NAMES, SETTINGS_4CHAN_PASS, SETTINGS_CACHE_SIZE, SETTINGS_WATCHLIST
 	}
 	
-	public static ChanFeature[] BOARDSELECTOR_FEATURES = new ChanFeature[]{
-		ChanFeature.BOARDSELECTOR_DESC, ChanFeature.BOARD_SELECT, ChanFeature.ALL_CACHED_IMAGES };
+	//public static ChanFeature[] BOARDSELECTOR_FEATURES = new ChanFeature[]{
+	//	ChanFeature.BOARDSELECTOR_DESC, ChanFeature.BOARD_SELECT, ChanFeature.ALL_CACHED_IMAGES };
 	public static ChanFeature[] POPULAR_FEATURES = new ChanFeature[]{
-		ChanFeature.POPULAR_DESC, ChanFeature.MANUAL_REFRESH };
+            ChanFeature.POPULAR_DESC
+            //,ChanFeature.MANUAL_REFRESH
+    };
 	public static ChanFeature[] WATCHLIST_FEATURES = new ChanFeature[]{
-		ChanFeature.WATCHLIST_DESC, ChanFeature.WATCHLIST_CLEAN, ChanFeature.WATCHLIST_DELETE };
+            ChanFeature.WATCHLIST_DESC
+            //, ChanFeature.WATCHLIST_CLEAN, ChanFeature.WATCHLIST_DELETE
+    };
 	public static ChanFeature[] BOARD_FEATURES = new ChanFeature[]{
-		ChanFeature.BOARD_DESC, ChanFeature.BOARD_SELECT,
-		ChanFeature.SEARCH_BOARD, ChanFeature.BOARD_LIST_VIEW, ChanFeature.ADD_THREAD, ChanFeature.BOARD_RULES,
-		ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
-		ChanFeature.SETTINGS_4CHAN_PASS};
-	public static ChanFeature[] THREAD_FEATURES = new ChanFeature[]{ChanFeature.BOARD_SELECT, ChanFeature.MANUAL_REFRESH,
-		ChanFeature.SEARCH_THREAD, ChanFeature.POST, ChanFeature.GALLERY_VIEW, ChanFeature.PLAY_THREAD,
-		ChanFeature.WATCH_THREAD, ChanFeature.PRELOAD_ALL_IMAGES, ChanFeature.DOWNLOAD_ALL_IMAGES_TO_GALLERY,
-		ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
-		ChanFeature.SETTINGS_4CHAN_PASS};
+            ChanFeature.BOARD_DESC
+            //, ChanFeature.BOARD_SELECT,
+            //ChanFeature.SEARCH_BOARD, ChanFeature.BOARD_LIST_VIEW, ChanFeature.ADD_THREAD, ChanFeature.BOARD_RULES,
+            //ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
+            //ChanFeature.SETTINGS_4CHAN_PASS
+    };
+    public static ChanFeature[] THREAD_FEATURES = new ChanFeature[]{
+            ChanFeature.THREAD_DESC
+            //ChanFeature.SEARCH_THREAD
+            //, ChanFeature.POST, ChanFeature.GALLERY_VIEW, ChanFeature.PLAY_THREAD,
+            //ChanFeature.WATCH_THREAD, ChanFeature.PRELOAD_ALL_IMAGES, ChanFeature.DOWNLOAD_ALL_IMAGES_TO_GALLERY,
+            //ChanFeature.SETTINGS_CACHE_SIZE, ChanFeature.SETTINGS_NAMES, ChanFeature.SETTINGS_WATCHLIST,
+            //ChanFeature.SETTINGS_4CHAN_PASS
+    };
 	public static ChanFeature[] GALLERY_FEATURES = new ChanFeature[]{};
 
 	/**
@@ -254,12 +264,14 @@ public class UserStatistics {
 	public ChanFeature nextTipForPage(TutorialOverlay.Page tutorialPage) {		
 		ChanFeature[] tipSet = null;
 		switch (tutorialPage) {
-		case BOARDLIST:
+		    /*
+            case BOARDLIST:
 			if (!displayedTips.contains(ChanFeature.BOARDSELECTOR_DESC)) {
 				return ChanFeature.BOARDSELECTOR_DESC;
 			}
 			tipSet = BOARDSELECTOR_FEATURES;
 			break;
+			*/
 		case POPULAR:
 			if (!displayedTips.contains(ChanFeature.POPULAR_DESC)) {
 				return ChanFeature.POPULAR_DESC;

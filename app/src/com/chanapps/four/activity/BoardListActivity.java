@@ -65,7 +65,7 @@ public class
 
     @Override
     public boolean isSelfBoard(String boardAsMenu) {
-        return isBoardList(boardAsMenu);
+        return false;
     }
 
 }

@@ -5,18 +5,13 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.data.*;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
-import com.chanapps.four.widget.BoardWidgetProvider;
-
-import java.util.HashSet;
+import com.chanapps.four.widget.WidgetProviderUtils;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,14 +47,13 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
                     scheduleGlobalAlarm(context);
                 }
             }).start();
-        }
-        else {
+        } else {
             Log.e(TAG, "Received unknown action: " + action);
         }
     }
 
     private static void updateAndFetch(Context context) {
-        BoardWidgetProvider.updateAll(context);
+        WidgetProviderUtils.updateAll(context);
         fetchAll(context);
     }
 
@@ -70,14 +64,12 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.NO_CONNECTION
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.BAD
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.VERY_SLOW
-                && currentProfile.getConnectionHealth() != NetworkProfile.Health.SLOW)
-        {
+                && currentProfile.getConnectionHealth() != NetworkProfile.Health.SLOW) {
             if (DEBUG) Log.i(TAG, "fetchAll fetching widgets, watchlists, and uncached boards");
             fetchWatchlistThreads(context);
-            BoardWidgetProvider.fetchAllWidgets(context);
+            WidgetProviderUtils.fetchAllWidgets(context);
             ChanBoard.preloadUncachedBoards(context);
-        }
-        else {
+        } else {
             if (DEBUG) Log.i(TAG, "fetchAll no connection, skipping fetch");
         }
     }
@@ -93,11 +85,12 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
 
     private static void scheduleGlobalAlarm(Context context) {
         if (DEBUG) Log.i(TAG, "scheduleGlobalAlarm interval ms=" + WIDGET_UPDATE_INTERVAL_MS);
-        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         long scheduleAt = SystemClock.elapsedRealtime() + WIDGET_UPDATE_INTERVAL_MS / 2; // at least wait a while before scheduling
         PendingIntent pendingIntent = getPendingIntentForGlobalAlarm(context);
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, scheduleAt, WIDGET_UPDATE_INTERVAL_MS, pendingIntent);
-        if (DEBUG) Log.i(TAG, "Scheduled UpdateWidgetService at t=" + scheduleAt + " repeating every delta=" + WIDGET_UPDATE_INTERVAL_MS + "ms");
+        if (DEBUG)
+            Log.i(TAG, "Scheduled UpdateWidgetService at t=" + scheduleAt + " repeating every delta=" + WIDGET_UPDATE_INTERVAL_MS + "ms");
     }
 
     private static PendingIntent getPendingIntentForGlobalAlarm(Context context) {
@@ -109,7 +102,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
 
     public static void cancelGlobalAlarm(Context context) {
         if (DEBUG) Log.i(TAG, "cancelGlobalAlarm");
-        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = getPendingIntentForGlobalAlarm(context);
         alarmManager.cancel(pendingIntent);
         if (DEBUG) Log.i(TAG, "Canceled alarms for UpdateWidgetService");

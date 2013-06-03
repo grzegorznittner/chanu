@@ -14,17 +14,13 @@ import android.widget.*;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
-import com.chanapps.four.adapter.BoardSelectorGridCursorAdapter;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.BoardCursorLoader;
-import com.chanapps.four.loader.BoardSelectorCursorLoader;
-import com.chanapps.four.loader.BoardTypeRecentCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.viewer.BoardGridViewer;
-import com.chanapps.four.viewer.BoardSelectorBoardsViewer;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 

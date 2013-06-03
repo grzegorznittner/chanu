@@ -147,7 +147,7 @@ public class NetworkProfileManager {
     }
 	
 	public void manualRefresh(ChanIdentifiedActivity newActivity) {
-        NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.MANUAL_REFRESH);
+        //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.MANUAL_REFRESH);
         if (DEBUG) Log.i(TAG, "manualRefresh " + newActivity.getChanActivityId(), new Exception("manualRefresh"));
 		if (newActivity == null) {
 			return;
@@ -161,6 +161,9 @@ public class NetworkProfileManager {
         if (DEBUG) Log.i(TAG, "activeProfile=" + activeProfile);
 		switch(currentActivityId.activity) {
 		case BOARD_SELECTOR_ACTIVITY:
+            activeProfile.onBoardSelectorRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
+			break;
+		case POPULAR_ACTIVITY:
             activeProfile.onBoardSelectorRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
 			break;
 		case BOARD_ACTIVITY:

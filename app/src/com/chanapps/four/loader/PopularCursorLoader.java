@@ -1,26 +1,21 @@
 package com.chanapps.four.loader;
 
 import android.content.Context;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 import com.chanapps.four.data.*;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
 
 //import android.content.AsyncTaskLoader;
 
-public class BoardTypeRecentCursorLoader extends BoardCursorLoader {
+public class PopularCursorLoader extends BoardCursorLoader {
 
-    protected static final String TAG = BoardTypeRecentCursorLoader.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final String TAG = PopularCursorLoader.class.getSimpleName();
+    protected static final boolean DEBUG = true;
 
-    public BoardTypeRecentCursorLoader(Context context) {
+    public PopularCursorLoader(Context context) {
         super(context);
         this.context = context;
         this.boardName = "";
@@ -31,11 +26,8 @@ public class BoardTypeRecentCursorLoader extends BoardCursorLoader {
     public Cursor loadInBackground() {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
-        matrixCursor.addRow(ChanThread.makeBoardTypeRow(context, BoardType.POPULAR));
         loadBoard(matrixCursor, ChanBoard.POPULAR_BOARD_CODE);
-        matrixCursor.addRow(ChanThread.makeBoardTypeRow(context, BoardType.LATEST));
         loadBoard(matrixCursor, ChanBoard.LATEST_BOARD_CODE);
-        matrixCursor.addRow(ChanThread.makeBoardTypeRow(context, BoardType.LATEST_IMAGES));
         loadBoard(matrixCursor, ChanBoard.LATEST_IMAGES_BOARD_CODE);
         registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;
@@ -62,12 +54,23 @@ public class BoardTypeRecentCursorLoader extends BoardCursorLoader {
                 if (DEBUG) Log.i(TAG, "Skipped thread: " + thread.no);
                 continue;
             }
-            Object[] row = ChanThread.makeRow(context, thread, "");
+            Object[] row = ChanThread.makeRow(context, thread, "", threadFlag(boardCode));
             matrixCursor.addRow(row);
             i++;
             if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
         }
         if (DEBUG) Log.i(TAG, "Loaded " + i + " threads");
+    }
+
+    protected int threadFlag(String boardCode) {
+        if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode))
+            return ChanThread.THREAD_FLAG_POPULAR_THREAD;
+        else if (ChanBoard.LATEST_BOARD_CODE.equals(boardCode))
+            return ChanThread.THREAD_FLAG_LATEST_POST;
+        else if (ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode))
+            return ChanThread.THREAD_FLAG_RECENT_IMAGE;
+        else
+            return 0;
     }
 
 }

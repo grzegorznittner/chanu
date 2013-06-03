@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.chanapps.four.activity"
-          android:versionCode="13"
-          android:versionName="1.0beta13">
+          android:versionCode="14"
+          android:versionName="1.0beta14">
 
     <uses-sdk
             android:minSdkVersion="15"/>
@@ -145,6 +145,7 @@
             </intent-filter>
         </activity>
 
+        <!--
         <activity android:name=".BoardSelectorActivity" android:label="@string/application_name"
                   android:taskAffinity=".BoardSelectorActivity"
                   android:launchMode="standard"
@@ -154,23 +155,24 @@
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
+        -->
 
         <activity android:name=".BoardListActivity" android:label="@string/application_name"
                   android:taskAffinity=".BoardListActivity"
                   android:launchMode="standard"
                 >
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
 
-        <activity android:name=".PopularActivity" android:label="@string/board_popular"
+        <activity android:name=".PopularActivity" android:label="@string/app_name"
                   android:taskAffinity=".PopularActivity"
                   android:launchMode="standard"
                 >
             <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER"/>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -206,6 +208,15 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
         </activity>
+        <activity android:name="com.chanapps.four.widget.WidgetConfigureCoverFlowActivity"
+                  android:excludeFromRecents="true"
+                  android:taskAffinity=""
+                  android:launchMode="standard"
+                  android:label="@string/widget_configure_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
+        </activity>
         <receiver android:name="com.chanapps.four.widget.BoardWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
@@ -214,6 +225,15 @@
                 <action android:name="android.appwidget.action.APPWIDGET_DELETED"/>
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_board_info"/>
+        </receiver>
+        <receiver android:name="com.chanapps.four.widget.BoardCoverFlowWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_board_coverflow_info"/>
         </receiver>
         <receiver android:name="com.chanapps.four.component.GlobalAlarmReceiver">
             <intent-filter>

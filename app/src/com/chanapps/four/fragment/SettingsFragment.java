@@ -96,7 +96,7 @@ public class SettingsFragment
         Preference.OnPreferenceClickListener namesListener = new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.SETTINGS_NAMES);
+                //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.SETTINGS_NAMES);
                 return false;
             }
         };

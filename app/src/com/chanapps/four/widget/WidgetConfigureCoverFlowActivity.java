@@ -18,20 +18,15 @@ import com.chanapps.four.loader.ChanImageLoader;
  * Date: 1/15/13
  * Time: 11:07 PM
  */
-public class WidgetConfigureActivity extends AbstractWidgetConfigureActivity {
+public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureActivity {
 
-    public static final String TAG = WidgetConfigureActivity.class.getSimpleName();
+    public static final String TAG = WidgetConfigureCoverFlowActivity.class.getSimpleName();
     private static final boolean DEBUG = false;
     private static final long DELAY_BOARD_IMAGE_MS = 5 * 1000; // give board fetch time to finish
 
     @Override
     protected int getContentViewLayout() {
-        return R.layout.widget_configure_layout;
-    }
-
-    @Override
-    protected String getWidgetType() {
-        return WidgetConstants.WIDGET_TYPE_BOARD;
+        return R.layout.widget_configure_coverflow_layout;
     }
 
     protected void setBoardImages() {
@@ -41,7 +36,7 @@ public class WidgetConfigureActivity extends AbstractWidgetConfigureActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final int[] imageIds = {R.id.image_left, R.id.image_center, R.id.image_right, R.id.image_left1, R.id.image_center1, R.id.image_right1};
+                final int[] imageIds = {R.id.image_left1};
                 final String[] urls = boardThreadUrls(context, boardCode, imageIds.length);
                 handler.post(new Runnable() {
                     @Override
@@ -60,6 +55,11 @@ public class WidgetConfigureActivity extends AbstractWidgetConfigureActivity {
     }
 
     @Override
+    protected String getWidgetType() {
+        return WidgetConstants.WIDGET_TYPE_COVER_FLOW;
+    }
+
+    @Override
     protected void addDoneClickHandler() {
         Button doneButton = (Button) findViewById(R.id.done);
         if (doneButton == null)
@@ -69,20 +69,21 @@ public class WidgetConfigureActivity extends AbstractWidgetConfigureActivity {
             public void onClick(View v) {
                 if (DEBUG)
                     Log.i(TAG, "Configured widget=" + appWidgetId + " configuring for board=" + widgetConf.boardCode);
-                WidgetProviderUtils.storeWidgetConf(WidgetConfigureActivity.this, widgetConf);
+                WidgetProviderUtils.storeWidgetConf(WidgetConfigureCoverFlowActivity.this, widgetConf);
                 Intent intent = new Intent();
                 intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-                intent.putExtra(WidgetProviderUtils.WIDGET_PROVIDER_UTILS, WidgetConfigureActivity.this.getWidgetType());
-                WidgetConfigureActivity.this.setResult(Activity.RESULT_OK, intent);
-                Intent updateWidget = new Intent(WidgetConfigureActivity.this, BoardWidgetProvider.class);
+                intent.putExtra(WidgetProviderUtils.WIDGET_PROVIDER_UTILS, WidgetConfigureCoverFlowActivity.this.getWidgetType());
+                WidgetConfigureCoverFlowActivity.this.setResult(Activity.RESULT_OK, intent);
+                Intent updateWidget = new Intent(WidgetConfigureCoverFlowActivity.this, BoardCoverFlowWidgetProvider.class);
                 updateWidget.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
                 int[] ids = {appWidgetId};
                 updateWidget.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
-                updateWidget.putExtra(WidgetProviderUtils.WIDGET_PROVIDER_UTILS, WidgetConfigureActivity.this.getWidgetType());
-                WidgetConfigureActivity.this.sendBroadcast(updateWidget);
-                WidgetConfigureActivity.this.finish();
+                updateWidget.putExtra(WidgetProviderUtils.WIDGET_PROVIDER_UTILS, WidgetConfigureCoverFlowActivity.this.getWidgetType());
+                WidgetConfigureCoverFlowActivity.this.sendBroadcast(updateWidget);
+                WidgetConfigureCoverFlowActivity.this.finish();
             }
         });
+
 
     }
 }

@@ -209,10 +209,6 @@ abstract public class
 
     abstract public boolean isSelfBoard(String boardAsMenu);
 
-    public boolean isBoardList(String boardAsMenu) {
-        return (boardAsMenu.equals(getString(R.string.board_select))
-                || boardAsMenu.equals(getString(R.string.board_select_abbrev)));
-    }
     public boolean isPopular(String boardAsMenu) {
         return (boardAsMenu.equals(getString(R.string.board_popular))
                 || boardAsMenu.equals(getString(R.string.board_popular_abbrev)));
@@ -229,11 +225,6 @@ abstract public class
         if (DEBUG) Log.i(BoardSelectorActivity.TAG, "onItemClick boardAsMenu=" + boardAsMenu);
         if (isSelfBoard(boardAsMenu))
             return;
-        if (isBoardList(boardAsMenu)) {
-            Intent intent = BoardListActivity.createIntent(this);
-            startActivity(intent);
-            return;
-        }
         if (isPopular(boardAsMenu)) {
             Intent intent = PopularActivity.createIntent(this);
             startActivity(intent);
