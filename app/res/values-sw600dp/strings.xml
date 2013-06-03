@@ -90,11 +90,6 @@
     <dimen name="BoardListButton_paddingRight">16dp</dimen>
     <dimen name="BoardListButton_paddingBottom">16dp</dimen>
 
-    <dimen name="BoardListButton_paddingTop">16dp</dimen>
-    <dimen name="BoardListButton_paddingLeft">16dp</dimen>
-    <dimen name="BoardListButton_paddingRight">16dp</dimen>
-    <dimen name="BoardListButton_paddingBottom">16dp</dimen>
-
     <dimen name="BoardListSubject_paddingTop">2dp</dimen>
     <dimen name="BoardListSubject_paddingLeft">8dp</dimen>
     <dimen name="BoardListSubject_paddingRight">16dp</dimen>

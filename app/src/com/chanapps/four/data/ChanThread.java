@@ -16,6 +16,7 @@ import com.chanapps.four.activity.R;
 
 public class ChanThread extends ChanPost {
     private static final boolean DEBUG = false;
+    public static final double MAX_THUMBNAIL_PX = 250;
 
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingLongDeserializer.class)
     public long lastFetched = 0;
@@ -37,6 +38,8 @@ public class ChanThread extends ChanPost {
     public static final String THREAD_CLICK_URL = "threadClick";
     public static final String THREAD_NUM_REPLIES = "threadNumReplies";
     public static final String THREAD_NUM_IMAGES = "threadNumImages";
+    public static final String THREAD_TN_W = "threadThumbWidth";
+    public static final String THREAD_TN_H = "threadThumbHeight";
     public static final String THREAD_FLAGS = "threadFlags";
 
     public static final int THREAD_FLAG_DEAD = 0x001;
@@ -63,6 +66,8 @@ public class ChanThread extends ChanPost {
             THREAD_CLICK_URL,
             THREAD_NUM_REPLIES,
             THREAD_NUM_IMAGES,
+            THREAD_TN_W,
+            THREAD_TN_H,
             THREAD_FLAGS
     };
 
@@ -101,6 +106,8 @@ public class ChanThread extends ChanPost {
                 "",
                 post.replies,
                 post.images,
+                post.tn_w > 0 ? post.tn_w : MAX_THUMBNAIL_PX,
+                post.tn_h > 0 ? post.tn_h : MAX_THUMBNAIL_PX,
                 threadFlags(post) | extraFlags
         };
     }
@@ -119,6 +126,8 @@ public class ChanThread extends ChanPost {
                 "",
                 0,
                 0,
+                MAX_THUMBNAIL_PX,
+                MAX_THUMBNAIL_PX,
                 THREAD_FLAG_BOARD
         };
     }
@@ -136,6 +145,8 @@ public class ChanThread extends ChanPost {
                 "",
                 "",
                 "",
+                0,
+                0,
                 0,
                 0,
                 THREAD_FLAG_TITLE
@@ -160,6 +171,8 @@ public class ChanThread extends ChanPost {
                 "",
                 0,
                 0,
+                0,
+                0,
                 THREAD_FLAG_TITLE
         };
     }
@@ -176,6 +189,8 @@ public class ChanThread extends ChanPost {
                 "",
                 "",
                 "",
+                0,
+                0,
                 0,
                 0,
                 THREAD_FLAG_BUTTON
@@ -197,6 +212,8 @@ public class ChanThread extends ChanPost {
                 ad.clickUrl() + AD_DELIMITER + ad.bannerClickUrl(),
                 0,
                 0,
+                MAX_THUMBNAIL_PX,
+                MAX_THUMBNAIL_PX,
                 THREAD_FLAG_AD
         };
     }

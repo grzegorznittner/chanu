@@ -275,7 +275,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 		if (DEBUG) Log.i(TAG, "board " + board.name + " has " + board.threads.length + " threads\n\n");
 	}
 
-	private ChanThread parseThread(String threadStr) {
+    private ChanThread parseThread(String threadStr) {
 		ChanThread thread = new ChanThread();
 		ParsableString str = new ParsableString();
 		str.str = threadStr;
@@ -306,7 +306,15 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 					String dimStr[] = parts[1].trim().split("x");
 					thread.w = Integer.parseInt(dimStr[0]);
 					thread.h = Integer.parseInt(dimStr[1]);
-				} catch (Exception e) {
+                    double w = thread.w;
+                    double h = thread.h;
+                    double aspectRatio = w / h;
+                    double biggestDimension = aspectRatio >= 1 ? w : h;
+                    double scale = ChanThread.MAX_THUMBNAIL_PX / biggestDimension;
+				    thread.tn_w = (int)(scale * (double)thread.w);
+                    thread.tn_h = (int)(scale * (double)thread.h);
+
+                } catch (Exception e) {
 					if (DEBUG) Log.i(TAG, "Exception parsing popular thread dimensions", e);
 				}
 				try {
@@ -323,8 +331,6 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 			int sIdx = thumb.indexOf("s");
 			if (sIdx > 0) {
 				thread.tim = Long.parseLong(thumb.substring(0, sIdx));
-				thread.tn_w = 0;
-				thread.tn_h = 0;
 			}
 		}
 		if (str.moveTo("</a>")) {
@@ -335,7 +341,8 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 
         if (DEBUG) Log.i(TAG, "Board: " + thread.board + ", no: " + thread.no + ", tim: " + thread.tim
         		+ ", sub: " + thread.sub + ", com: " + thread.com
-        		+ ", size: " + thread.fsize + ", " + thread.w + "x" + thread.h
+        		+ ", size: " + thread.fsize + ", wXh=" + thread.w + "x" + thread.h
+        		+ ", tn_wXtn_h=" + thread.tn_w + "x" + thread.tn_h
 				+ ", img: " + thread.imageUrl() + ", thumb: " + thread.thumbnailUrl()
 				+ ", topic: " + thread.sub);
 		return thread;

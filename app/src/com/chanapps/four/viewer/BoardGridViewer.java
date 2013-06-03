@@ -42,7 +42,7 @@ public class BoardGridViewer {
     private static void initStatics(View view) {
         imageLoader = ChanImageLoader.getInstance(view.getContext());
         displayImageOptions = new DisplayImageOptions.Builder()
-                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                .imageScaleType(ImageScaleType.NONE)
                 .cacheOnDisc()
                 .cacheInMemory()
                 .resetViewBeforeLoading()
