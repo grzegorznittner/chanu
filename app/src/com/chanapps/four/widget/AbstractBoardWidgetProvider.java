@@ -32,6 +32,7 @@ public abstract class AbstractBoardWidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int i = 0; i < appWidgetIds.length; i++)
             WidgetProviderUtils.update(context, appWidgetIds[i], getWidgetType());
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
     @Override

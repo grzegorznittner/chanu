@@ -11,6 +11,7 @@ import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
 
@@ -192,6 +193,69 @@ public final class WidgetProviderUtils {
         Intent intent = new Intent(context, GlobalAlarmReceiver.class);
         intent.setAction(GlobalAlarmReceiver.GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION);
         context.startService(intent);
-        if (DEBUG) Log.i(WidgetProviderUtils.TAG, "Scheduled global alarm");
+        if (DEBUG) Log.i(TAG, "Scheduled global alarm");
+    }
+
+    public static ChanPost[] loadBestWidgetThreads(Context context, String boardCode, int numThreads) {
+        ChanPost[] widgetThreads = new ChanPost[numThreads];
+
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        if (board == null) {
+            Log.e(TAG, "Couldn't load widget null board for boardCode=" + boardCode);
+            return widgetThreads;
+        }
+
+        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
+                ? board.loadedThreads
+                : board.threads;
+        if (boardThreads == null || boardThreads.length == 0) {
+            Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode);
+            return widgetThreads;
+        }
+
+        // try to load what we can
+        int threadIndex = 0;
+        int filledCount = 0;
+        Set<Integer> threadsUsed = new HashSet<Integer>(numThreads);
+        for (int i = 0; i < numThreads; i++) {
+            ChanPost thread = null;
+            while (threadIndex < boardThreads.length) {
+                ChanPost test = boardThreads[threadIndex];
+                threadIndex++;
+                if (test != null && test.sticky <= 0 && test.tim > 0 && test.no > 0) {
+                    thread = test;
+                    break;
+                }
+            }
+            if (thread != null) {
+                widgetThreads[i] = thread;
+                threadsUsed.add(threadIndex - 1);
+                filledCount = i + 1;
+            }
+        }
+
+        // what if we are missing threads? for instance no images with latest threads
+        threadIndex = 0;
+        if (filledCount < numThreads) {
+            for (int i = 0; i < numThreads; i++) {
+                if (widgetThreads[i] != null)
+                    continue;
+                ChanPost thread = null;
+                while (threadIndex < boardThreads.length) {
+                    ChanPost test = boardThreads[threadIndex];
+                    threadIndex++;
+                    if (test != null && !threadsUsed.contains(threadIndex) && test.sticky <= 0 && test.no > 0) {
+                        thread = test;
+                        break;
+                    }
+                }
+                if (thread != null) {
+                    widgetThreads[i] = thread;
+                    threadsUsed.add(threadIndex - 1);
+                }
+            }
+        }
+
+        return widgetThreads;
     }
 }

@@ -21,7 +21,7 @@ import com.chanapps.four.loader.ChanImageLoader;
 public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureActivity {
 
     public static final String TAG = WidgetConfigureCoverFlowActivity.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final long DELAY_BOARD_IMAGE_MS = 5 * 1000; // give board fetch time to finish
 
     @Override
@@ -30,28 +30,7 @@ public class WidgetConfigureCoverFlowActivity extends AbstractWidgetConfigureAct
     }
 
     protected void setBoardImages() {
-        final Context context = getApplicationContext();
-        final String boardCode = widgetConf.boardCode;
-        final Handler handler = new Handler();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final int[] imageIds = {R.id.image_left1};
-                final String[] urls = boardThreadUrls(context, boardCode, imageIds.length);
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < imageIds.length; i++) {
-                            final int imageResourceId = imageIds[i];
-                            final ImageView iv = (ImageView) findViewById(imageResourceId);
-                            iv.setImageBitmap(null);
-                            if (DEBUG) Log.i(TAG, "Calling displayImage i=" + i + " url=" + urls[i]);
-                            ChanImageLoader.getInstance(context).displayImage(urls[i], iv);
-                        }
-                    }
-                });
-            }
-        }).start();
+        Log.d(TAG,"Set Board Images");
     }
 
     @Override
