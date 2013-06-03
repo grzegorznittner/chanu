@@ -4,9 +4,8 @@
                     android:minWidth="@dimen/widget_board_minWidth"
                     android:minHeight="@dimen/widget_board_minHeight"
                     android:updatePeriodMillis="0"
-                    android:previewImage="@drawable/a"
-                    android:initialLayout="@layout/widget_board_coverflow_layout"
+                    android:previewImage="@drawable/a_3"
+                    android:initialLayout="@layout/widget_board_oneimage_layout"
                     android:resizeMode="none"
-                    android:configure="com.chanapps.four.widget.WidgetConfigureCoverFlowActivity"
-                    android:autoAdvanceViewId="@id/stack_view_coverflow"
+                    android:configure="com.chanapps.four.widget.WidgetConfigureOneImageActivity"
         />

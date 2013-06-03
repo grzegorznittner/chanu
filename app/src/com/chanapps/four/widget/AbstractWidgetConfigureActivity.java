@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -306,7 +305,7 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
 
     protected String[] boardThreadUrls(Context context, String boardCode, int numThreads) {
         String[] urls = new String[numThreads];
-        ChanPost[] threads = UpdateWidgetService.loadBestWidgetThreads(this, boardCode, numThreads);
+        ChanPost[] threads = WidgetProviderUtils.loadBestWidgetThreads(this, boardCode, numThreads);
         for (int i = 0; i < numThreads; i++) {
             ChanPost thread = threads[i];
             String url = ChanBoard.getBestWidgetImageUrl(thread, boardCode, i);

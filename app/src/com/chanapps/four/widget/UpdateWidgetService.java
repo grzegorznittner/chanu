@@ -5,12 +5,15 @@ import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.RemoteViewsService;
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
@@ -24,27 +27,30 @@ import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Created with IntelliJ IDEA.
  * User: johnarleyburns
  * Date: 1/13/13
  * Time: 10:54 PM
  */
-public class UpdateWidgetService extends Service {
+public class UpdateWidgetService extends RemoteViewsService {
 
     public static final String TAG = UpdateWidgetService.class.getSimpleName();
 
     public static final int NUM_TOP_THREADS = 6;
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static DisplayImageOptions optionsWithFakeDisplayer;
 
     static {
         optionsWithFakeDisplayer = new DisplayImageOptions.Builder().displayer(new FakeBitmapDisplayer()).build();
+    }
+
+    @Override
+    public RemoteViewsFactory onGetViewFactory(Intent intent) {
+        Log.d(TAG, "onGetViewFactory");
+        return new StackRemoteViewsFactory(this.getApplicationContext(), intent);
     }
 
     @Override
@@ -94,19 +100,38 @@ public class UpdateWidgetService extends Service {
         @Override
         public void onPostExecute(Void result) {
             if (WidgetConstants.WIDGET_TYPE_BOARD.equalsIgnoreCase(widgetConf.widgetType)) {
+                RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_board_layout);
                 int[] imageIds = {R.id.image_left, R.id.image_center, R.id.image_right, R.id.image_left1, R.id.image_center1, R.id.image_right1};
-                updateWidgetViews(R.layout.widget_board_layout, R.id.widget_board_container, imageIds);
+                updateWidgetViews(R.layout.widget_board_layout, R.id.widget_board_container, remoteViews);
+                updateImageWidgetsView(imageIds, remoteViews);
 
             }
+            if (WidgetConstants.WIDGET_TYPE_ONE_IMAGE.equalsIgnoreCase(widgetConf.widgetType)) {
+                int[] imageIds = {R.id.image_left1};
+                RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_board_oneimage_layout);
+                updateWidgetViews(R.layout.widget_board_oneimage_layout, R.id.widget_board_oneimage_container, remoteViews );
+                updateImageWidgetsView(imageIds, remoteViews);
+            }
+
             if (WidgetConstants.WIDGET_TYPE_COVER_FLOW.equalsIgnoreCase(widgetConf.widgetType)) {
-                int[] imageIdsCoverFlow = {R.id.image_left1};
-                updateWidgetViews(R.layout.widget_board_coverflow_layout, R.id.widget_board_coverflow_container, imageIdsCoverFlow);
+                final Intent intent = new Intent(context, UpdateWidgetService.class);
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
+                intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+
+                RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_board_coverflow_layout);
+                remoteViews.setRemoteAdapter(widgetConf.appWidgetId, R.id.stack_view_coverflow, intent);
+                remoteViews.setEmptyView(R.id.stack_view_coverflow, R.id.stack_view_empty);
+
+                updateWidgetViews(R.layout.widget_board_coverflow_layout, R.id.widget_board_coverflow_container, remoteViews );
+
+                AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, remoteViews);
+
             }
         }
 
         private void loadBoard() {
             try {
-                threads = loadBestWidgetThreads(context, widgetConf.boardCode, NUM_TOP_THREADS);
+                threads = WidgetProviderUtils.loadBestWidgetThreads(context, widgetConf.boardCode, NUM_TOP_THREADS);
 
                 if (DEBUG) Log.i(TAG, "Loaded board=" + widgetConf.boardCode + " with widget threads");
             } catch (Exception e) {
@@ -114,8 +139,7 @@ public class UpdateWidgetService extends Service {
             }
         }
 
-        private void updateWidgetViews(int widgetLayout, int widgetContainer, int[] imageIds) {
-            RemoteViews views = new RemoteViews(context.getPackageName(), widgetLayout);
+        private void updateWidgetViews(int widgetLayout, int widgetContainer, RemoteViews views) {
 
             int containerBackground = widgetConf.roundedCorners ? R.drawable.widget_rounded_background : 0;
             views.setInt(widgetContainer, "setBackgroundResource", containerBackground);
@@ -155,6 +179,11 @@ public class UpdateWidgetService extends Service {
             views.setOnClickPendingIntent(R.id.configure, makeConfigureIntent());
 
 
+
+            if (DEBUG) Log.i(TAG, "Updated widgetId=" + widgetConf.appWidgetId + " for board=" + widgetConf.boardCode);
+        }
+
+        private void updateImageWidgetsView(int [] imageIds, RemoteViews views) {
             for (int i = 0; i < imageIds.length; i++) {
                 int imageId = imageIds[i];
                 PendingIntent pendingIntent = makeThreadIntent(threads[i], i);
@@ -169,8 +198,6 @@ public class UpdateWidgetService extends Service {
                 String url = ChanBoard.getBestWidgetImageUrl(thread, widgetConf.boardCode, i);
                 asyncUpdateWidgetImageView(views, imageId, url);
             }
-
-            if (DEBUG) Log.i(TAG, "Updated widgetId=" + widgetConf.appWidgetId + " for board=" + widgetConf.boardCode);
         }
 
         private void asyncUpdateWidgetImageView(final RemoteViews views, final int imageId, final String url) {
@@ -191,8 +218,8 @@ public class UpdateWidgetService extends Service {
 
         private PendingIntent makeThreadIntent(ChanPost thread, int i) {
             Intent intent = (thread == null || thread.no < 1)
-                    ? BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode), "")
-                    : ThreadActivity.createIntentForActivity(context, new String(thread.board), thread.no, "");
+                    ? BoardActivity.createIntentForActivity(context, widgetConf.boardCode, "")
+                    : ThreadActivity.createIntentForActivity(context, thread.board, thread.no, "");
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 5 + i;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -213,7 +240,7 @@ public class UpdateWidgetService extends Service {
                         : BoardSelectorTab.RECENT;
                 intent = BoardSelectorActivity.createIntentForActivity(context, tab);
             } else {
-                intent = BoardActivity.createIntentForActivity(context, new String(widgetConf.boardCode), "");
+                intent = BoardActivity.createIntentForActivity(context, widgetConf.boardCode, "");
             }
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 2;
@@ -222,6 +249,8 @@ public class UpdateWidgetService extends Service {
 
         private PendingIntent makeRefreshIntent() {
             Intent intent;
+
+            if (WidgetConstants.WIDGET_TYPE_COVER_FLOW.equalsIgnoreCase(widgetConf.widgetType)) return null;
             if (ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)) {
                 return null;
             } else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
@@ -241,11 +270,14 @@ public class UpdateWidgetService extends Service {
 
         private PendingIntent makeConfigureIntent() {
             Intent intent = null;
-            if (WidgetConstants.WIDGET_TYPE_COVER_FLOW.equalsIgnoreCase(widgetConf.widgetType)) {
-                intent = new Intent(context, WidgetConfigureCoverFlowActivity.class);
+            if (WidgetConstants.WIDGET_TYPE_ONE_IMAGE.equalsIgnoreCase(widgetConf.widgetType)) {
+                intent = new Intent(context, WidgetConfigureOneImageActivity.class);
             }
             if (WidgetConstants.WIDGET_TYPE_BOARD.equalsIgnoreCase(widgetConf.widgetType)) {
                 intent = new Intent(context, WidgetConfigureActivity.class);
+            }
+            if (WidgetConstants.WIDGET_TYPE_COVER_FLOW.equalsIgnoreCase(widgetConf.widgetType)) {
+                intent = new Intent(context, WidgetConfigureCoverFlowActivity.class);
             }
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
             int uniqueId = (100 * widgetConf.appWidgetId) + 4;
@@ -254,67 +286,75 @@ public class UpdateWidgetService extends Service {
 
     }
 
-    public static ChanPost[] loadBestWidgetThreads(Context context, String boardCode, int numThreads) {
-        ChanPost[] widgetThreads = new ChanPost[numThreads];
+    public static class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
-        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        if (board == null) {
-            Log.e(TAG, "Couldn't load widget null board for boardCode=" + boardCode);
-            return widgetThreads;
+        public static final String TAG = StackRemoteViewsFactory.class.getSimpleName();
+        private static final boolean DEBUG = true;
+
+        private Context mContext;
+        private Cursor mCursor;
+        private int mAppWidgetId;
+
+        public StackRemoteViewsFactory(Context context, Intent intent) {
+            mContext = context;
+            mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,AppWidgetManager.INVALID_APPWIDGET_ID);
         }
 
-        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
-                ? board.loadedThreads
-                : board.threads;
-        if (boardThreads == null || boardThreads.length == 0) {
-            Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode);
-            return widgetThreads;
+        public void onCreate() {
+            Log.d(TAG, "OnCreate method");
+            // Since we reload the cursor in onDataSetChanged() which gets called immediately after
+            // onCreate(), we do nothing here.
         }
 
-        // try to load what we can
-        int threadIndex = 0;
-        int filledCount = 0;
-        Set<Integer> threadsUsed = new HashSet<Integer>(numThreads);
-        for (int i = 0; i < numThreads; i++) {
-            ChanPost thread = null;
-            while (threadIndex < boardThreads.length) {
-                ChanPost test = boardThreads[threadIndex];
-                threadIndex++;
-                if (test != null && test.sticky <= 0 && test.tim > 0 && test.no > 0) {
-                    thread = test;
-                    break;
-                }
-            }
-            if (thread != null) {
-                widgetThreads[i] = thread;
-                threadsUsed.add(threadIndex - 1);
-                filledCount = i + 1;
+        public void onDestroy() {
+            Log.d(TAG, "onDestroy method");
+            if (mCursor != null) {
+                mCursor.close();
             }
         }
 
-        // what if we are missing threads? for instance no images with latest threads
-        threadIndex = 0;
-        if (filledCount < numThreads) {
-            for (int i = 0; i < numThreads; i++) {
-                if (widgetThreads[i] != null)
-                    continue;
-                ChanPost thread = null;
-                while (threadIndex < boardThreads.length) {
-                    ChanPost test = boardThreads[threadIndex];
-                    threadIndex++;
-                    if (test != null && !threadsUsed.contains(threadIndex) && test.sticky <= 0 && test.no > 0) {
-                        thread = test;
-                        break;
-                    }
-                }
-                if (thread != null) {
-                    widgetThreads[i] = thread;
-                    threadsUsed.add(threadIndex - 1);
-                }
-            }
+        public int getCount() {
+            Log.d(TAG, "getCount method");
+            return 2;
         }
 
-        return widgetThreads;
+        public RemoteViews getViewAt(int position) {
+            Log.d(TAG, "getViewAt method" + position);
+            // Get the data for this position from the content provider
+            int imageId = position == 0 ? R.drawable.a_2 : R.drawable.a_3;
+
+
+            // Return a proper item with the proper day and temperature
+            RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_coverflow_item);
+            rv.setImageViewResource(R.id.image_coverflow_item, imageId);
+            return rv;
+        }
+        public RemoteViews getLoadingView() {
+            // We aren't going to return a default loading view in this sample
+            return null;
+        }
+
+        public int getViewTypeCount() {
+            // Technically, we have two types of views (the dark and light background views)
+            return 1;
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        public boolean hasStableIds() {
+            return true;
+        }
+
+        public void onDataSetChanged() {
+            // Refresh the cursor
+            if (mCursor != null) {
+                mCursor.close();
+            }
+            Log.d(TAG, "onDataSetChanged method");
+            //todo - initialize cursor
+        }
     }
 
 }
