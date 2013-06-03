@@ -39,6 +39,11 @@
             style="@style/BoardTypeText"
             />
 
+    <TextView
+            android:id="@+id/grid_item_thread_button"
+            style="@style/BoardButtonText"
+            />
+
     <View
         android:id="@+id/grid_item_click_effect"
         android:layout_width="match_parent"

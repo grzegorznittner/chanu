@@ -111,6 +111,7 @@
     <string name="refresh_board_menu">Refresh board</string>
     <string name="refresh_thread_menu">Refresh thread</string>
     <string name="new_thread_menu">New thread</string>
+    <string name="new_thread_short">New thread</string>
     <string name="prefetch_board_menu">Preload threads</string>
     <string name="watch_thread_menu">Watch thread</string>
     <string name="view_as_grid_menu">View as grid</string>
@@ -341,7 +342,8 @@
     <string name="dialog_authorizing_pass">Authorizing Pass...</string>
     <string name="dialog_report_post">Report Post</string>
     <string name="dialog_post">Post Reply</string>
-    <string name="dialog_posting_reply">Uploading post...</string>
+    <string name="dialog_new_thread">New Thread</string>
+    <string name="dialog_posting_reply">Posting...</string>
     <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
     <string name="dialog_clear_watchlist">Delete watchlist?</string>
     <string name="dialog_clean_watchlist">Clean dead threads?</string>

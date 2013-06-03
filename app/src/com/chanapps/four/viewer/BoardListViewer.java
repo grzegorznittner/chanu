@@ -53,6 +53,9 @@ public class BoardListViewer {
         if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) { // special case it to avoid needing a separate item layout
             return setTitleView(view, cursor, flags);
         }
+        else if ((flags & ChanThread.THREAD_FLAG_BUTTON) > 0) {
+            return setButtonView(view, cursor, flags);
+        }
         else if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
             return setBannerAdView(view, cursor, flags);
         }
@@ -65,6 +68,8 @@ public class BoardListViewer {
                 return setTitle((TextView) view, cursor, flags);
             case R.id.list_item_thread_title_bar:
                 return setGone(view);
+            case R.id.list_item_thread_button:
+                return setButton((TextView) view, cursor, flags);
             case R.id.list_item_thread_subject:
                 return setListSubject((TextView) view, cursor);
             case R.id.list_item_thread_headline:
@@ -94,6 +99,19 @@ public class BoardListViewer {
 
     protected static boolean setTitle(TextView tv, Cursor cursor, int flags) {
         if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
+            String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
+            text = text.toUpperCase();
+            tv.setText(Html.fromHtml(text));
+            tv.setVisibility(View.VISIBLE);
+        }
+        else {
+            tv.setVisibility(View.GONE);
+        }
+        return true;
+    }
+
+    protected static boolean setButton(TextView tv, Cursor cursor, int flags) {
+        if ((flags & ChanThread.THREAD_FLAG_BUTTON) > 0) {
             String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
             text = text.toUpperCase();
             tv.setText(Html.fromHtml(text));
@@ -186,6 +204,23 @@ public class BoardListViewer {
             view.setVisibility(View.VISIBLE);
         }
         else if (view.getId() == R.id.list_item_thread_title_bar) {
+            view.setVisibility(View.VISIBLE);
+        }
+        else if (view.getId() == R.id.list_item) {
+            view.setVisibility(View.VISIBLE);
+            View v = view.findViewById(R.id.list_item_thread_image_wrapper);
+            if (v != null)
+                v.setVisibility(View.GONE);
+        }
+        else {
+            view.setVisibility(View.GONE);
+        }
+        return true;
+    }
+
+    protected static boolean setButtonView(View view, Cursor cursor, int flags) {
+        if (view.getId() == R.id.list_item_thread_button) {
+            setButton((TextView) view, cursor, flags);
             view.setVisibility(View.VISIBLE);
         }
         else if (view.getId() == R.id.list_item) {

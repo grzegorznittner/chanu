@@ -284,6 +284,20 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <style name="BoardButtonText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">@dimen/BoardTypeText_padding</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/BoardTypeText</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:background">@drawable/thread_button_selector_bg</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
     <style name="BoardTypeBannerAd" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -428,6 +442,21 @@
         <item name="android:textSize">@dimen/BoardListTitle</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteChanuGreen</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="BoardListButton" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/BoardListButton_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardListButton_paddingRight</item>
+        <item name="android:paddingTop">@dimen/BoardListButton_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardListButton_paddingBottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/BoardListTitle</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:textColor">@drawable/thread_button_selector_bg</item>
         <item name="android:visibility">gone</item>
     </style>
 

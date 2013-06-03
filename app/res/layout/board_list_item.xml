@@ -4,6 +4,8 @@
               android:orientation="vertical"
         >
 
+    <TextView android:id="@+id/list_item_thread_button" style="@style/BoardListButton"/>
+
     <TextView android:id="@+id/list_item_thread_title" style="@style/BoardListTitle"/>
 
     <View android:id="@+id/list_item_thread_title_bar" style="@style/BoardListTitleBar"/>

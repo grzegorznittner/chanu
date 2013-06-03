@@ -349,6 +349,10 @@ public class BoardActivity
                         .show(getSupportFragmentManager(), BoardActivity.TAG);
                 return;
             }
+            else if ((flags & ChanThread.THREAD_FLAG_BUTTON) > 0) {
+                PostReplyActivity.startActivity(BoardActivity.this, boardCode, 0, 0, "");
+                return;
+            }
             else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
                 String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
                 startActivity(BoardActivity.this, boardLink, "");

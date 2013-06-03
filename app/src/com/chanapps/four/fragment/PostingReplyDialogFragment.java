@@ -21,9 +21,11 @@ import com.chanapps.four.task.PostReplyTask;
 public class PostingReplyDialogFragment extends DialogFragment {
     public static final String TAG = PostingReplyDialogFragment.class.getSimpleName();
     PostReplyTask task;
-    public PostingReplyDialogFragment(PostReplyTask task) {
+    long threadNo;
+    public PostingReplyDialogFragment(PostReplyTask task, long threadNo) {
         super();
         this.task = task;
+        this.threadNo = threadNo;
     }
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -31,7 +33,8 @@ public class PostingReplyDialogFragment extends DialogFragment {
         View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
         TextView title = (TextView)layout.findViewById(R.id.title);
         TextView message = (TextView)layout.findViewById(R.id.message);
-        title.setText(R.string.dialog_post);
+        int titleId = threadNo <= 0 ? R.string.dialog_new_thread : R.string.dialog_post;
+        title.setText(titleId);
         message.setText(R.string.dialog_posting_reply);
         setStyle(STYLE_NO_TITLE, 0);
         return (new AlertDialog.Builder(getActivity()))

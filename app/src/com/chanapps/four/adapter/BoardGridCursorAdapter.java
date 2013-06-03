@@ -31,6 +31,7 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
                 viewBinder,
                 new String[] {
                         ChanThread.THREAD_TITLE,
+                        ChanThread.THREAD_TITLE,
                         ChanThread.THREAD_SUBJECT,
                         ChanThread.THREAD_NUM_REPLIES,
                         ChanThread.THREAD_NUM_IMAGES,
@@ -40,6 +41,7 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
                 },
                 new int[] {
                         R.id.grid_item_thread_title,
+                        R.id.grid_item_thread_button,
                         R.id.grid_item_thread_subject,
                         R.id.grid_item_thread_info,
                         R.id.grid_item_text_wrapper,

@@ -77,7 +77,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private EditText recaptchaText;
     private LoadCaptchaTask loadCaptchaTask;
 
-    private TextView messageText;
+    private EditText messageText;
     private TextView passStatusText;
     private EditText nameText;
     private EditText emailText;
@@ -132,15 +132,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         sageButton = (ImageButton)findViewById(R.id.post_reply_sage_button);
         passEnableButton = (ImageButton)findViewById(R.id.post_reply_pass_enable_button);
         passDisableButton = (ImageButton)findViewById(R.id.post_reply_pass_disable_button);
-
-        // do this popup jazz because android doesn't really handle multiline edit text views very well
-        messageText = (TextView)findViewById(R.id.post_reply_text);
-        messageText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showCommentDialog();
-            }
-        });
+        messageText = (EditText)findViewById(R.id.post_reply_text);
         passStatusText = (TextView)findViewById(R.id.post_reply_pass_status);
         nameText = (EditText)findViewById(R.id.post_reply_name);
         emailText = (EditText)findViewById(R.id.post_reply_email);
@@ -261,7 +253,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         bundle.putLong(ChanPost.POST_NO, postNo);
         bundle.putString(SUBJECT, subject);
         bundle.putString(ChanHelper.TEXT, text);
-        bundle.putString(POST_REPLY_IMAGE_URL, imageUri.toString());
+        if (imageUri != null)
+            bundle.putString(POST_REPLY_IMAGE_URL, imageUri.toString());
         bundle.putBoolean(SPOILER, spoilerChecked);
         bundle.putString(ChanHelper.IMAGE_PATH, imagePath);
         bundle.putString(ChanHelper.CONTENT_TYPE, contentType);
@@ -269,10 +262,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (DEBUG) Log.i(TAG, "saved to bundle " + boardCode + "/" + threadNo + ":" + postNo
                 + " imageUri=" + imageUri + " text=" + text);
         saveUserFieldsToPrefs();
-    }
-
-    private void showCommentDialog() {
-        (new EditMessageTextDialogFragment()).show(getSupportFragmentManager(), EditMessageTextDialogFragment.TAG);
     }
 
     private void showPassFragment() {
@@ -770,7 +759,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         else {
             closeKeyboard();
             PostReplyTask postReplyTask = new PostReplyTask(this);
-            PostingReplyDialogFragment dialogFragment = new PostingReplyDialogFragment(postReplyTask);
+            PostingReplyDialogFragment dialogFragment = new PostingReplyDialogFragment(postReplyTask, threadNo);
             dialogFragment.show(getSupportFragmentManager(), PostingReplyDialogFragment.TAG);
             if (!postReplyTask.isCancelled()) {
                 postReplyTask.execute(dialogFragment);
@@ -923,17 +912,10 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     }
 
     private void setActionBarTitle() {
-        if (getActionBar() == null)
-            return;
-        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        if (board == null)
-            board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         String replyTitle = threadNo > 0
                 ? getString(R.string.post_reply_title)
                 : getString(R.string.post_reply_thread_title);
-        String title = (board == null ? "Board" : board.name) + " /" + boardCode + "/"
-                + ChanHelper.TITLE_SEPARATOR + replyTitle;
-        getActionBar().setDisplayHomeAsUpEnabled(false);
+        String title = "/" + boardCode + "/ " + replyTitle;
         getActionBar().setTitle(title);
     }
 

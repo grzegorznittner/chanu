@@ -26,7 +26,7 @@
                 >
         </EditText>
 
-        <TextView
+        <EditText
                 android:id="@+id/post_reply_text"
                 style="@style/PostReplyEditText"
                 android:hint="@string/post_reply_text_hint"
@@ -34,7 +34,7 @@
                 android:layout_marginTop="8dp"
                 android:scrollbars="none"
                 >
-        </TextView>
+        </EditText>
 
         <FrameLayout
                 android:id="@+id/post_reply_recaptcha_frame"
@@ -76,6 +76,7 @@
         <TextView
                 android:id="@+id/post_reply_pass_status"
                 style="@style/PostReplyEditText"
+                android:textStyle="bold"
             >
         </TextView>
 

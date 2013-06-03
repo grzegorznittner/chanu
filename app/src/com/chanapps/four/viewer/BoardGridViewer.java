@@ -57,11 +57,16 @@ public class BoardGridViewer {
         if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) { // special case it to avoid needing a separate item layout
             return setTitleView(view, cursor, flags);
         }
+        if ((flags & ChanThread.THREAD_FLAG_BUTTON) > 0) { // special case it to avoid needing a separate item layout
+            return setButtonView(view, cursor, flags);
+        }
         switch (view.getId()) {
             case R.id.grid_item_board_abbrev:
                 return setBoardAbbrev((TextView) view, cursor, groupBoardCode, flags);
             case R.id.grid_item_thread_title:
                 return setTitle((TextView) view, cursor, flags);
+            case R.id.grid_item_thread_button:
+                return setButton((TextView) view, cursor, flags);
             case R.id.grid_item_text_wrapper:
                 return setGone(view);
             case R.id.grid_item_thread_subject:
@@ -100,6 +105,18 @@ public class BoardGridViewer {
     protected static boolean setTitle(TextView tv, Cursor cursor, int flags) {
         tv.setVisibility(View.GONE);
         if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
+            String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
+            tv.setText(Html.fromHtml(text));
+        }
+        else {
+            tv.setText("");
+        }
+        return true;
+    }
+
+    protected static boolean setButton(TextView tv, Cursor cursor, int flags) {
+        tv.setVisibility(View.GONE);
+        if ((flags & ChanThread.THREAD_FLAG_BUTTON) > 0) {
             String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
             tv.setText(Html.fromHtml(text));
         }
@@ -258,6 +275,20 @@ public class BoardGridViewer {
     protected static boolean setTitleView(View view, Cursor cursor, int flags) {
         if (view.getId() == R.id.grid_item_thread_title) {
             setTitle((TextView) view, cursor, flags);
+            view.setVisibility(View.VISIBLE);
+        }
+        else if (view.getId() == R.id.grid_item) {
+            view.setVisibility(View.VISIBLE);
+        }
+        else {
+            view.setVisibility(View.GONE);
+        }
+        return true;
+    }
+
+    protected static boolean setButtonView(View view, Cursor cursor, int flags) {
+        if (view.getId() == R.id.grid_item_thread_button) {
+            setButton((TextView) view, cursor, flags);
             view.setVisibility(View.VISIBLE);
         }
         else if (view.getId() == R.id.grid_item) {

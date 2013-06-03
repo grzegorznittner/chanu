@@ -47,7 +47,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         this(context);
         this.context = context;
         this.boardName = boardName;
-        this.query = query.toLowerCase().trim();
+        this.query = query == null ? "" : query.toLowerCase().trim();
         initRandomGenerator();
     }
 
@@ -122,6 +122,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             }
 
             if (!board.isVirtualBoard() && i > 0) { // add related boards if any results
+                matrixCursor.addRow(ChanThread.makeButtonRow(boardName, context.getString(R.string.new_thread_short).toUpperCase()));
                 String desc = String.format(context.getString(R.string.board_related_boards_desc), board.link);
                 matrixCursor.addRow(ChanThread.makeTitleRow(boardName,
                         context.getString(R.string.board_related_boards_title), desc));

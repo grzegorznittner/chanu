@@ -45,9 +45,10 @@ public class ChanThread extends ChanPost {
     public static final int THREAD_FLAG_AD = 0x008;
     public static final int THREAD_FLAG_BOARD = 0x010;
     public static final int THREAD_FLAG_TITLE = 0x020;
-    public static final int THREAD_FLAG_POPULAR_THREAD = 0x040;
-    public static final int THREAD_FLAG_LATEST_POST = 0x080;
-    public static final int THREAD_FLAG_RECENT_IMAGE = 0x100;
+    public static final int THREAD_FLAG_BUTTON = 0x040;
+    public static final int THREAD_FLAG_POPULAR_THREAD = 0x080;
+    public static final int THREAD_FLAG_LATEST_POST = 0x100;
+    public static final int THREAD_FLAG_RECENT_IMAGE = 0x200;
 
     public static final String[] THREAD_COLUMNS = {
             THREAD_COMPOSITE_ID,
@@ -163,6 +164,23 @@ public class ChanThread extends ChanPost {
         };
     }
 
+    public static Object[] makeButtonRow(String boardCode, String title) {
+        return new Object[] {
+                title.hashCode(),
+                boardCode,
+                0,
+                title,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                0,
+                0,
+                THREAD_FLAG_BUTTON
+        };
+    }
     public static final String AD_DELIMITER = "\t";
 
     public static Object[] makeAdRow(Context context, String boardCode, ChanAd ad) {
