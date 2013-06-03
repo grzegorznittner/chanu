@@ -395,6 +395,8 @@ public class ThreadActivity
                 itemAdListener.onClick(view);
             else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
                 itemTitleListener.onClick(view);
+            else if ((flags & ChanPost.FLAG_IS_BUTTON) > 0)
+                itemButtonListener.onClick(view);
             else if ((flags & ChanPost.FLAG_IS_THREADLINK) > 0)
                 itemThreadLinkListener.onClick(view);
             else if ((flags & ChanPost.FLAG_IS_BOARDLINK) > 0)
@@ -443,12 +445,7 @@ public class ThreadActivity
     }
 
     private void postReply(String replyText) {
-        Intent replyIntent = new Intent(getApplicationContext(), PostReplyActivity.class);
-        replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        replyIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        replyIntent.putExtra(ChanPost.POST_NO, 0);
-        replyIntent.putExtra(ChanHelper.TEXT, ChanPost.planifyText(replyText));
-        startActivity(replyIntent);
+        PostReplyActivity.startActivity(this, boardCode, threadNo, 0, ChanPost.planifyText(replyText));
     }
 
 /*
@@ -794,6 +791,19 @@ public class ThreadActivity
                         .show(getSupportFragmentManager(), ThreadActivity.TAG);
             }
 
+        }
+    };
+
+    // we only support reply button currently
+    protected View.OnClickListener itemButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = absListView.getPositionForView(v);
+            Cursor cursor = adapter.getCursor();
+            cursor.moveToPosition(pos);
+            int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
+            if ((flags & ChanPost.FLAG_IS_BUTTON) > 0)
+                PostReplyActivity.startActivity(ThreadActivity.this, boardCode, threadNo, 0, "");
         }
     };
 

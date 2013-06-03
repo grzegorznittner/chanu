@@ -103,6 +103,8 @@ public class ThreadViewer {
             return setUrlLinkView(view, cursor);
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
             return setTitleView(view, cursor);
+        else if ((flags & ChanPost.FLAG_IS_BUTTON) > 0)
+            return setButtonView(view, cursor);
         else if ((flags & ChanPost.FLAG_IS_AD) > 0)
             return setBannerAdView(view, cursor, isTablet);
         else if ((flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0)
@@ -532,6 +534,15 @@ public class ThreadViewer {
 
     protected static boolean setTitleView(View view, Cursor cursor) {
         if (view.getId() == R.id.list_item_title) {
+            String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+            Spanned spanned = Html.fromHtml(text);
+            ((TextView)view).setText(spanned);
+        }
+        return true;
+    }
+
+    protected static boolean setButtonView(View view, Cursor cursor) {
+        if (view.getId() == R.id.list_item_button) {
             String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
             Spanned spanned = Html.fromHtml(text);
             ((TextView)view).setText(spanned);

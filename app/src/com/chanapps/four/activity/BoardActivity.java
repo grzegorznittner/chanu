@@ -378,13 +378,7 @@ public class BoardActivity
                 getSupportLoaderManager().restartLoader(0, null, this);
                 return true;
             case R.id.new_thread_menu:
-                Intent replyIntent = new Intent(this, PostReplyActivity.class);
-                replyIntent.putExtra(ChanBoard.BOARD_CODE, boardCode);
-                replyIntent.putExtra(ChanHelper.THREAD_NO, 0);
-                replyIntent.putExtra(ChanPost.POST_NO, 0);
-                replyIntent.putExtra(ChanHelper.TIM, 0);
-                replyIntent.putExtra(ChanHelper.TEXT, "");
-                startActivity(replyIntent);
+                PostReplyActivity.startActivity(this, boardCode, 0, 0, "");
                 return true;
             case R.id.offline_board_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);

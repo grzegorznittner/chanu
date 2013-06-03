@@ -1,5 +1,6 @@
 package com.chanapps.four.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -98,6 +99,15 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     public String orientation = null;
 
     private SharedPreferences prefs = null;
+
+    public static void startActivity(Activity activity, String boardCode, long threadNo, long postNo, String replyText) {
+        Intent replyIntent = new Intent(activity, PostReplyActivity.class);
+        replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        replyIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        replyIntent.putExtra(ChanPost.POST_NO, postNo);
+        replyIntent.putExtra(ChanHelper.TEXT, replyText);
+        activity.startActivity(replyIntent);
+    }
 
     @Override
     protected void onCreate(Bundle bundle){

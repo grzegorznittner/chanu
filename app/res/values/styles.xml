@@ -528,6 +528,13 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <style name="ThreadListButtonLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@drawable/thread_button_selector_bg</item>
+    </style>
+
     <!-- THREAD LIST HEADER -->
 
     <style name="ThreadListHeaderImage" parent="AppTheme">
@@ -784,6 +791,21 @@
         <item name="android:textSize">@dimen/BoardListTitle</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteBlue</item>
+    </style>
+
+    <style name="ThreadListButton" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:paddingLeft">@dimen/BoardListButton_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/BoardListButton_paddingRight</item>
+        <item name="android:paddingTop">@dimen/BoardListButton_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/BoardListButton_paddingBottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/BoardListTitle</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
     </style>
 
     <style name="ThreadListItemExifText" parent="AppTheme">

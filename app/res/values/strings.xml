@@ -312,6 +312,7 @@
     <string name="translate">Translate</string>
     <string name="report">Report Post</string>
     <string name="reply">Post Reply</string>
+    <string name="reply_short">Reply</string>
     <string name="quote">Quote</string>
     <string name="dismiss">Close</string>
     <string name="dead_thread_reply">Dead Thread No Reply</string>
@@ -1250,10 +1251,15 @@
     <dimen name="BoardListTextImageTopOverlay_paddingTop">2dp</dimen>
     <dimen name="BoardListTextImageTopOverlay_paddingBottom">2dp</dimen>
 
-    <dimen name="BoardListTitle_paddingTop">12dp</dimen>
+    <dimen name="BoardListTitle_paddingTop">28dp</dimen>
     <dimen name="BoardListTitle_paddingLeft">16dp</dimen>
     <dimen name="BoardListTitle_paddingRight">8dp</dimen>
     <dimen name="BoardListTitle_paddingBottom">4dp</dimen>
+
+    <dimen name="BoardListButton_paddingTop">16dp</dimen>
+    <dimen name="BoardListButton_paddingLeft">16dp</dimen>
+    <dimen name="BoardListButton_paddingRight">16dp</dimen>
+    <dimen name="BoardListButton_paddingBottom">16dp</dimen>
 
     <dimen name="BoardListSubject_paddingTop">2dp</dimen>
     <dimen name="BoardListSubject_paddingLeft">8dp</dimen>
