@@ -565,6 +565,8 @@ public class ChanBoard {
                 continue; // it's me!
             if (relatedThread.sticky > 0)
                 continue;
+            if (relatedThread.isDead)
+                continue;
             int relatedCount = relatedThread.keywordRelevance(keywords);
             if (relatedCount > 0) {
                 relatedList.add(relatedThread);
@@ -606,11 +608,13 @@ public class ChanBoard {
         if (threadPos == -1) { // didn't find it, default to first item
             threadPos = 0;
         }
-
-        // find prev and next if any
-        for (int i = threadPos + 1; i < threads.length && i < threadPos + numThreads + 1; i++) {
-            ChanPost nextThread = threads[i];
-            rows.add(nextThread.makeThreadLinkRow());
+        int threadsLeft = numThreads;
+        for (int i = threadPos + 1; i < threads.length && threadsLeft > 0; i++) {
+            ChanPost thread = threads[i];
+            if (thread.isDead || thread.defData)
+                continue;
+            rows.add(thread.makeThreadLinkRow());
+            threadsLeft--;
         }
         return rows;
     }

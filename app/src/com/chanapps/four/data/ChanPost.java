@@ -70,11 +70,12 @@ public class ChanPost {
     public static final int FLAG_IS_CLOSED = 0x080;
     public static final int FLAG_IS_AD = 0x100;
     public static final int FLAG_IS_TITLE = 0x200;
-    public static final int FLAG_IS_THREADLINK = 0x400;
-    public static final int FLAG_IS_BOARDLINK = 0x800;
-    public static final int FLAG_IS_HEADER = 0x1000;
-    public static final int FLAG_IS_URLLINK = 0x2000;
-    public static final int FLAG_NO_EXPAND = 0x4000;
+    public static final int FLAG_IS_BUTTON = 0x400;
+    public static final int FLAG_IS_THREADLINK = 0x800;
+    public static final int FLAG_IS_BOARDLINK = 0x1000;
+    public static final int FLAG_IS_HEADER = 0x2000;
+    public static final int FLAG_IS_URLLINK = 0x4000;
+    public static final int FLAG_NO_EXPAND = 0x8000;
 
     public static String planifyText(String text) {
         return text.replaceAll("<br/?>", "\n").replaceAll("<[^>]*>", "");
@@ -1106,6 +1107,39 @@ public class ChanPost {
                 null,
                 null,
                 FLAG_HAS_SUBJECT | FLAG_IS_TITLE
+        };
+    }
+
+    public static Object[] makeButtonRow(String boardCode, String title) {
+        String subject = title;
+        return new Object[] {
+                title.hashCode(),
+                boardCode,
+                0,
+                "",
+                "",
+                "",
+                "",
+                subject,
+                "",
+                "",
+                "",
+                -1,
+                -1,
+                0,
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                null,
+                null,
+                null,
+                FLAG_HAS_SUBJECT | FLAG_IS_BUTTON
         };
     }
 

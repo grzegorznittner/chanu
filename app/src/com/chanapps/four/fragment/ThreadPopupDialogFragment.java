@@ -128,12 +128,7 @@ public class ThreadPopupDialogFragment
         @Override
         public void onClick(DialogInterface dialog, int which) {
             String replyText = ">>" + postNo + "\n";
-            Intent replyIntent = new Intent(getActivity().getApplicationContext(), PostReplyActivity.class);
-            replyIntent.putExtra(ChanBoard.BOARD_CODE, boardCode);
-            replyIntent.putExtra(ChanThread.THREAD_NO, threadNo);
-            replyIntent.putExtra(ChanPost.POST_NO, 0);
-            replyIntent.putExtra(ChanHelper.TEXT, ChanPost.planifyText(replyText));
-            startActivity(replyIntent);
+            PostReplyActivity.startActivity(getActivity(), boardCode, threadNo, 0, ChanPost.planifyText(replyText));
         }
     };
 

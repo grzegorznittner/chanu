@@ -27,6 +27,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected static final String TITLE = "title";
     protected static final String LINK = "link";
     protected static final String URLLINK = "urlLink";
+    protected static final String BUTTON = "button";
 
     protected ThreadListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
@@ -47,6 +48,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
+                        ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_TEXT,
                         ChanPost.POST_COUNTRY_URL,
                         ChanPost.POST_IMAGE_URL,
@@ -63,6 +65,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         R.id.list_item_header,
                         R.id.list_item_subject,
                         R.id.list_item_title,
+                        R.id.list_item_button,
                         R.id.list_item_urllink,
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
@@ -96,6 +99,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             newTag = URLLINK;
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
             newTag = TITLE;
+        else if ((flags & ChanPost.FLAG_IS_BUTTON) > 0)
+            newTag = BUTTON;
         else if ((flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0)
             newTag = LINK;
         else
@@ -124,6 +129,8 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             id = R.layout.thread_list_urllink;
         else if (TITLE.equals(tag))
             id = R.layout.thread_list_title;
+        else if (BUTTON.equals(tag))
+            id = R.layout.thread_list_button;
         else if (LINK.equals(tag))
             id = R.layout.thread_list_link;
         else
