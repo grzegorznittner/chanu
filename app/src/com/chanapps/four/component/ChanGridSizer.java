@@ -21,7 +21,7 @@ public class ChanGridSizer {
     private static final boolean DEBUG = false;
 
     //private static final int MAX_COLUMN_WIDTH = 90;
-    private static final int MAX_COLUMN_WIDTH = 110;
+    private static final int MAX_COLUMN_WIDTH = 140;
     private static final int MAX_COLUMN_WIDTH_LARGE = 140;
     //private static final int MAX_COLUMN_WIDTH = 150;
     private static final int MAX_COLUMN_WIDTH_XLARGE = 170;

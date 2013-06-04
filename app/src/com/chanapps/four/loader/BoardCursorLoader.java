@@ -121,7 +121,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                         context.getString(R.string.thread_search_no_results)));
             }
 
-            if (!board.isVirtualBoard() && i > 0) { // add related boards if any results
+            if (!board.isVirtualBoard()) { // add related boards
                 matrixCursor.addRow(ChanThread.makeButtonRow(boardName, context.getString(R.string.new_thread_short).toUpperCase()));
                 String desc = String.format(context.getString(R.string.board_related_boards_desc), board.link);
                 matrixCursor.addRow(ChanThread.makeTitleRow(boardName,

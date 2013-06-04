@@ -48,7 +48,7 @@
             android:orientation="horizontal"
             android:weightSum="2.6"
             >
-        <include layout="@layout/popular_large_item"
+        <include layout="@layout/popular_item"
                  android:id="@+id/popular_item_0"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularLargeItem_layout_height"
@@ -56,7 +56,7 @@
 
         <View android:layout_width="2dp" android:layout_height="match_parent" />
 
-        <include layout="@layout/popular_tall_item"
+        <include layout="@layout/popular_item"
                  android:id="@+id/popular_item_1"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularLargeItem_layout_height"
@@ -173,7 +173,7 @@
             android:orientation="horizontal"
             android:weightSum="2.6"
             >
-        <include layout="@layout/popular_large_item"
+        <include layout="@layout/popular_item"
                  android:id="@+id/latest_item_0"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularLargeItem_layout_height"
@@ -181,7 +181,7 @@
 
         <View android:layout_width="2dp" android:layout_height="match_parent" />
 
-        <include layout="@layout/popular_tall_item"
+        <include layout="@layout/popular_item"
                  android:id="@+id/latest_item_1"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularLargeItem_layout_height"

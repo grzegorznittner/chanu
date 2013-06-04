@@ -297,10 +297,11 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     protected void setViewValue(View item, Cursor cursor) {
+        int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         String subject = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         String thumbUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
-        String boardName = ChanBoard.getBoardByCode(getBaseContext(), boardCode).name;
+        //String boardName = ChanBoard.getBoardByCode(getBaseContext(), boardCode).name;
         long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
 
         TextView boardNameView = (TextView)item.findViewById(R.id.board_name);
@@ -309,8 +310,12 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
         View clickTargetView = item.findViewById(R.id.click_target);
 
         ImageView imageView = (ImageView)item.findViewById(R.id.image);
-        boardNameView.setText(boardName);
-        subjectView.setText(Html.fromHtml(subject));
+        //boardNameView.setText(boardName);
+        boardNameView.setText("/" + boardCode + "/");
+        if ((flags & ChanThread.THREAD_FLAG_RECENT_IMAGE) > 0)
+            subjectView.setText("");
+        else
+            subjectView.setText(Html.fromHtml(subject));
         imageView.setImageDrawable(null);
         textWrapperView.setVisibility(View.GONE);
         imageLoader.displayImage(thumbUrl, imageView, displayImageOptions, imageLoadingListener);
