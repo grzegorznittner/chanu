@@ -12,6 +12,7 @@ import android.support.v4.content.Loader;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.*;
 import android.widget.*;
 import com.chanapps.four.activity.*;
@@ -25,6 +26,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+
+import java.util.*;
 
 public class PopularFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
@@ -207,14 +210,18 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
     protected void swapCursor(Cursor cursor) {
         setLastFetchedText();
         cursor.moveToPosition(-1);
+        int i = 0;
         int popular = 0;
         int latest = 0;
         int recent = 0;
+        List<Integer> popularList = new ArrayList<Integer>(NUM_POPULAR);
         while (cursor.moveToNext()) {
             int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
             View item;
             if ((flags & ChanThread.THREAD_FLAG_POPULAR_THREAD) > 0) {
-                item = layout.findViewById(getPopularViewId(popular++));
+                //item = layout.findViewById(getPopularViewId(popular++));
+                popularList.add(i);
+                item = null;
             }
             else if ((flags & ChanThread.THREAD_FLAG_LATEST_POST) > 0) {
                 item = layout.findViewById(getLatestViewId(latest++));
@@ -227,7 +234,9 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
             }
             if (item != null)
                 setViewValue(item, cursor);
+            i++;
         }
+        displayPopular(cursor, popularList);
     }
 
     protected void setLastFetchedText() {
@@ -311,6 +320,8 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
         clickTargetView.setOnClickListener(this);
     }
 
+    private static final int NUM_POPULAR = 10;
+
     @Override
     public void onClick(View view) {
         String boardCode = (String)view.getTag(R.id.BOARD_CODE);
@@ -320,4 +331,58 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
             ThreadActivity.startActivity(activity, boardCode, threadNo, "");
     }
 
+    protected void displayPopular(Cursor cursor, List<Integer> popularList) {
+        List<Pair<Integer, Double>> aspectList = new ArrayList<Pair<Integer, Double>>(NUM_POPULAR - 1);
+        for (int i : popularList) {
+            cursor.moveToPosition(i);
+            long tn_w = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_TN_W));
+            long tn_h = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_TN_H));
+            double aspectRatio = (double)tn_w / (double)tn_h;
+            aspectList.add(new Pair<Integer, Double>(i, aspectRatio));
+        }
+        Collections.sort(aspectList, new Comparator<Pair<Integer, Double>>() {
+            @Override
+            public int compare(Pair<Integer, Double> lhs, Pair<Integer, Double> rhs) {
+                double diff = lhs.second - rhs.second;
+                if (diff == 0)
+                    return 0;
+                else if (diff < 0)
+                    return -1;
+                else
+                    return 1;
+            }
+        });
+
+        int popular = 0;
+        displayTargetRatio(cursor, aspectList, 1, getPopularViewId(popular++));
+        
+        Pair<Integer, Double> mostTall = aspectList.get(0);
+        View tallItem = layout.findViewById(getPopularViewId(popular++));
+        cursor.moveToPosition(mostTall.first);
+        setViewValue(tallItem, cursor);
+        aspectList.remove(mostTall);
+
+        for (int i = 0; i < 4; i++)
+            displayTargetRatio(cursor, aspectList, 1.6, getPopularViewId(popular++));
+
+        Collections.reverse(aspectList);
+        for (Pair<Integer, Double> p : aspectList) {
+            View item = layout.findViewById(getPopularViewId(popular++));
+            cursor.moveToPosition(p.first);
+            setViewValue(item, cursor);
+        }
+    }
+
+    protected void displayTargetRatio(Cursor cursor, List<Pair<Integer, Double>> aspectList,
+                                      double targetRatio, int viewId) {
+        Pair<Integer, Double> bestFit = null;
+        for (Pair<Integer, Double> p : aspectList)
+            if (bestFit == null || Math.abs(p.second - targetRatio) < Math.abs(bestFit.second - targetRatio))
+                bestFit = p;
+        View item = layout.findViewById(viewId);
+        cursor.moveToPosition(bestFit.first);
+        setViewValue(item, cursor);
+        aspectList.remove(bestFit);
+    }
+    
 }

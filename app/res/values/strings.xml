@@ -1429,13 +1429,13 @@
 
     <!-- popular / home -->
     <dimen name="PopularTitle_paddingTop">16dp</dimen>
-    <dimen name="PopularItem_paddingTop">16dp</dimen>
-    <dimen name="PopularItem_paddingLeft">16dp</dimen>
-    <dimen name="PopularItem_paddingRight">16dp</dimen>
+    <dimen name="PopularItem_paddingTop">8dp</dimen>
+    <dimen name="PopularItem_paddingLeft">8dp</dimen>
+    <dimen name="PopularItem_paddingRight">8dp</dimen>
     <dimen name="PopularItem_paddingBottom">8dp</dimen>
-    <dimen name="PopularItem_textSize">14sp</dimen>
-    <dimen name="PopularItem_layout_height">125dp</dimen>
-    <dimen name="PopularLargeItem_layout_height">250dp</dimen>
+    <dimen name="PopularItem_textSize">16sp</dimen>
+    <dimen name="PopularItem_layout_height">140dp</dimen>
+    <dimen name="PopularLargeItem_layout_height">224dp</dimen>
     <dimen name="PopularLargeItem_textSize">22sp</dimen>
 
     <!-- widgets dimension -->
