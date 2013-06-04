@@ -33,6 +33,7 @@ abstract public class
 
     protected Handler handler;
     protected ActionBarDrawerToggle mDrawerToggle;
+    protected boolean mShowNSFW = false;
     protected int mBoardArrayId;
     protected String[] mBoardArray;
     protected ListView mDrawerList;
@@ -62,18 +63,23 @@ abstract public class
         mDrawerToggle.onConfigurationChanged(config);
     }
 
-    protected void createDrawer() {
-        mBoardArrayId = ChanBoard.showNSFW(getApplicationContext())
+    protected void setAdapter() {
+        mBoardArrayId = mShowNSFW
                 ? R.array.long_board_array
                 : R.array.long_board_array_worksafe;
         mBoardArray = getResources().getStringArray(mBoardArrayId);
+        mAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, mBoardArray);
+        mDrawerList.setAdapter(mAdapter);
+    }
+
+    protected void createDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        mAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, mBoardArray);
-        mDrawerList.setAdapter(mAdapter);
         mDrawerList.setOnItemClickListener(this);
+        mShowNSFW = ChanBoard.showNSFW(getApplicationContext());
+        setAdapter();
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
@@ -101,6 +107,11 @@ abstract public class
     protected void onStart() {
         super.onStart();
         handler = new Handler();
+        boolean newShowNSFW = ChanBoard.showNSFW(getApplicationContext());
+        if (newShowNSFW != mShowNSFW) {
+            mShowNSFW = newShowNSFW;
+            setAdapter();
+        }
         setSelfChecked();
     }
 
