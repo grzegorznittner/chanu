@@ -253,4 +253,19 @@
     <dimen name="widget_board_minWidth">350dp</dimen>
     <dimen name="widget_board_minHeight">270dp</dimen>
 
+    <!-- popular / home -->
+    <dimen name="PopularTitle_paddingTop">28dp</dimen>
+    <dimen name="PopularTitle_paddingLeft">16dp</dimen>
+    <dimen name="PopularTitle_paddingRight">16dp</dimen>
+    <dimen name="PopularTitle_paddingBottom">8dp</dimen>
+    <dimen name="PopularTitle_textSize">32sp</dimen>
+    <dimen name="PopularItemText_paddingTop">4dp</dimen>
+    <dimen name="PopularItemText_paddingLeft">16dp</dimen>
+    <dimen name="PopularItemText_paddingRight">16dp</dimen>
+    <dimen name="PopularItemText_paddingBottom">4dp</dimen>
+    <dimen name="PopularItemSubject_paddingRight">4dp</dimen>
+    <dimen name="PopularItem_textSize">16sp</dimen>
+    <dimen name="PopularItem_layout_height">140dp</dimen>
+    <dimen name="PopularLargeItem_layout_height">200dp</dimen>
+
 </resources>

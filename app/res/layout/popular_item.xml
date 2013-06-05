@@ -31,11 +31,11 @@
                 android:textSize="@dimen/PopularItem_textSize"
                 android:textStyle="bold"
                 android:textColor="@color/PaletteWhite"
-                android:maxLines="1"
-                android:paddingLeft="8dp"
-                android:paddingTop="4dp"
-                android:paddingRight="0dp"
-                android:paddingBottom="4dp"
+                android:lines="1"
+                android:paddingTop="@dimen/PopularItemText_paddingTop"
+                android:paddingLeft="@dimen/PopularItemText_paddingLeft"
+                android:paddingRight="@dimen/PopularItemSubject_paddingRight"
+                android:paddingBottom="@dimen/PopularItemText_paddingBottom"
                 />
         <TextView
                 android:id="@+id/board_name"
@@ -45,11 +45,12 @@
                 android:textSize="@dimen/PopularItem_textSize"
                 android:textStyle="bold"
                 android:textColor="@color/PaletteWhite"
+                android:lines="1"
                 android:background="@color/PaletteBlackMostlyOpaque"
-                android:paddingLeft="8dp"
-                android:paddingTop="4dp"
-                android:paddingRight="8dp"
-                android:paddingBottom="4dp"
+                android:paddingTop="@dimen/PopularItemText_paddingTop"
+                android:paddingLeft="@dimen/PopularItemText_paddingLeft"
+                android:paddingRight="@dimen/PopularItemText_paddingRight"
+                android:paddingBottom="@dimen/PopularItemText_paddingBottom"
                 />
     </RelativeLayout>
     <View android:id="@+id/click_target"

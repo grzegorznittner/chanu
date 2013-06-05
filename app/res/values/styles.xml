@@ -237,6 +237,8 @@
         <item name="android:smoothScrollbar">true</item>
         <item name="android:cacheColorHint">#00000000</item>
         <item name="android:fastScrollEnabled">true</item>
+        <item name="android:horizontalSpacing">2dp</item>
+        <item name="android:verticalSpacing">2dp</item>
         <!-- <item name="android:background">@drawable/board_view_gradient_bg</item>  -->
     </style>
 

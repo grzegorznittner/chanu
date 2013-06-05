@@ -46,21 +46,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="2.6"
+            android:weightSum="3.6"
             >
         <include layout="@layout/popular_item"
                  android:id="@+id/popular_item_0"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularLargeItem_layout_height"
-                 android:layout_weight="1.6"/>
-
-        <View android:layout_width="2dp" android:layout_height="match_parent" />
-
+                 android:layout_weight="1.58"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
         <include layout="@layout/popular_item"
                  android:id="@+id/popular_item_1"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularLargeItem_layout_height"
-                 android:layout_weight="1"/>
+                 android:layout_weight="0.98"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
+        <include layout="@layout/popular_item"
+                 android:id="@+id/popular_item_2"
+                 android:layout_width="0dp"
+                 android:layout_height="@dimen/PopularLargeItem_layout_height"
+                 android:layout_weight="0.98"/>
     </LinearLayout>
 
     <View android:layout_width="match_parent" android:layout_height="2dp" />
@@ -70,41 +74,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="2.6"
+            android:weightSum="3.6"
             >
         <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_6"
+                 android:id="@+id/popular_item_9"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.6"/>
-        <View android:layout_width="2dp" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_2"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1"/>
-    </LinearLayout>
-
-    <View android:layout_width="match_parent" android:layout_height="2dp" />
-
-    <LinearLayout
-            android:id="@+id/popular_row_3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2.6"
-            >
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_7"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.6"/>
-        <View android:layout_width="2dp" android:layout_height="match_parent" />
+                 android:layout_weight="1.58"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
         <include layout="@layout/popular_item"
                  android:id="@+id/popular_item_3"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1"/>
+                 android:layout_weight="0.98"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
+        <include layout="@layout/popular_item"
+                 android:id="@+id/popular_item_4"
+                 android:layout_width="0dp"
+                 android:layout_height="@dimen/PopularItem_layout_height"
+                 android:layout_weight="0.98"/>
     </LinearLayout>
 
     <View android:layout_width="match_parent" android:layout_height="2dp" />
@@ -114,19 +102,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="2.6"
+            android:weightSum="3.6"
             >
         <include layout="@layout/popular_item"
                  android:id="@+id/popular_item_8"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.6"/>
-        <View android:layout_width="2dp" android:layout_height="match_parent" />
+                 android:layout_weight="1.58"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
         <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_4"
+                 android:id="@+id/popular_item_5"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1"/>
+                 android:layout_weight="0.98"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
+        <include layout="@layout/popular_item"
+                 android:id="@+id/popular_item_6"
+                 android:layout_width="0dp"
+                 android:layout_height="@dimen/PopularItem_layout_height"
+                 android:layout_weight="0.98"/>
     </LinearLayout>
 
     <View android:layout_width="match_parent" android:layout_height="2dp" />
@@ -136,19 +130,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="2.6"
+            android:weightSum="3.6"
             >
         <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_9"
+                 android:id="@+id/popular_item_7"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.6"/>
-        <View android:layout_width="2dp" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_5"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1"/>
+                 android:layout_weight="1.58"/>
     </LinearLayout>
 
     <!-- LATEST POSTS -->
@@ -171,21 +159,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="2.6"
+            android:weightSum="3.6"
             >
         <include layout="@layout/popular_item"
                  android:id="@+id/latest_item_0"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularLargeItem_layout_height"
-                 android:layout_weight="1.6"/>
-
-        <View android:layout_width="2dp" android:layout_height="match_parent" />
-
+                 android:layout_weight="1.58"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
         <include layout="@layout/popular_item"
                  android:id="@+id/latest_item_1"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularLargeItem_layout_height"
-                 android:layout_weight="1"/>
+                 android:layout_weight="0.98"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
+        <include layout="@layout/popular_item"
+                 android:id="@+id/latest_item_2"
+                 android:layout_width="0dp"
+                 android:layout_height="@dimen/PopularLargeItem_layout_height"
+                 android:layout_weight="0.98"/>
     </LinearLayout>
 
     <View android:layout_width="match_parent" android:layout_height="2dp" />
@@ -195,41 +187,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="2.6"
+            android:weightSum="3.6"
             >
         <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_2"
+                 android:id="@+id/latest_item_9"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.6"/>
-        <View android:layout_width="2dp" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_6"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1"/>
-    </LinearLayout>
-
-    <View android:layout_width="match_parent" android:layout_height="2dp" />
-
-    <LinearLayout
-            android:id="@+id/latest_row_3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2.6"
-            >
+                 android:layout_weight="1.58"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
         <include layout="@layout/popular_item"
                  android:id="@+id/latest_item_3"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.6"/>
-        <View android:layout_width="2dp" android:layout_height="match_parent" />
+                 android:layout_weight="0.98"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
         <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_7"
+                 android:id="@+id/latest_item_4"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1"/>
+                 android:layout_weight="0.98"/>
     </LinearLayout>
 
     <View android:layout_width="match_parent" android:layout_height="2dp" />
@@ -239,19 +215,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="2.6"
+            android:weightSum="3.6"
             >
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_4"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.6"/>
-        <View android:layout_width="2dp" android:layout_height="match_parent" />
         <include layout="@layout/popular_item"
                  android:id="@+id/latest_item_8"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1"/>
+                 android:layout_weight="1.58"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
+        <include layout="@layout/popular_item"
+                 android:id="@+id/latest_item_5"
+                 android:layout_width="0dp"
+                 android:layout_height="@dimen/PopularItem_layout_height"
+                 android:layout_weight="0.98"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
+        <include layout="@layout/popular_item"
+                 android:id="@+id/latest_item_6"
+                 android:layout_width="0dp"
+                 android:layout_height="@dimen/PopularItem_layout_height"
+                 android:layout_weight="0.98"/>
     </LinearLayout>
 
     <View android:layout_width="match_parent" android:layout_height="2dp" />
@@ -261,19 +243,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="2.6"
+            android:weightSum="3.6"
             >
         <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_5"
+                 android:id="@+id/latest_item_7"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.6"/>
-        <View android:layout_width="2dp" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_9"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1"/>
+                 android:layout_weight="1.58"/>
     </LinearLayout>
 
 <!-- RECENT IMAGES -->
@@ -292,29 +268,29 @@
             android:text="Recent Images"/>
     
     <LinearLayout
-            android:id="@+id/recent_row_1"
+            android:id="@+id/recent_row_0"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="3"
+            android:weightSum="3.6"
             >
         <include layout="@layout/popular_item"
                  android:id="@+id/recent_item_0"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1"/>
-        <View android:layout_width="2dp" android:layout_height="match_parent" />
+                 android:layout_weight="1.58"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
         <include layout="@layout/popular_item"
                  android:id="@+id/recent_item_1"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1"/>
-        <View android:layout_width="2dp" android:layout_height="match_parent" />
+                 android:layout_weight="0.98"/>
+        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
         <include layout="@layout/popular_item"
                  android:id="@+id/recent_item_2"
                  android:layout_width="0dp"
                  android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1"/>
+                 android:layout_weight="0.98"/>
     </LinearLayout>
-    
+
 </LinearLayout>

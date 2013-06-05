@@ -361,21 +361,8 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
         int popular = 0;
         displayTargetRatio(cursor, aspectList, 1, getPopularViewId(popular++));
         
-        Pair<Integer, Double> mostTall = aspectList.get(0);
-        View tallItem = layout.findViewById(getPopularViewId(popular++));
-        cursor.moveToPosition(mostTall.first);
-        setViewValue(tallItem, cursor);
-        aspectList.remove(mostTall);
-
-        for (int i = 0; i < 4; i++)
-            displayTargetRatio(cursor, aspectList, 1.6, getPopularViewId(popular++));
-
-        Collections.reverse(aspectList);
-        for (Pair<Integer, Double> p : aspectList) {
-            View item = layout.findViewById(getPopularViewId(popular++));
-            cursor.moveToPosition(p.first);
-            setViewValue(item, cursor);
-        }
+        while (!aspectList.isEmpty())
+            displayItem(cursor, aspectList, aspectList.get(0), getPopularViewId(popular++));
     }
 
     protected void displayTargetRatio(Cursor cursor, List<Pair<Integer, Double>> aspectList,
@@ -384,6 +371,11 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
         for (Pair<Integer, Double> p : aspectList)
             if (bestFit == null || Math.abs(p.second - targetRatio) < Math.abs(bestFit.second - targetRatio))
                 bestFit = p;
+        displayItem(cursor, aspectList, bestFit, viewId);
+    }
+
+    protected void displayItem(Cursor cursor, List<Pair<Integer, Double>> aspectList, Pair<Integer, Double> bestFit,
+                               int viewId) {
         View item = layout.findViewById(viewId);
         cursor.moveToPosition(bestFit.first);
         setViewValue(item, cursor);
