@@ -333,20 +333,19 @@
     <style name="BoardGridOverlay" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/BoardGridOverlay_paddingLeft</item>
         <item name="android:paddingTop">@dimen/BoardGridOverlay_paddingTop</item>
+        <item name="android:paddingRight">@dimen/BoardGridOverlay_paddingRight</item>
         <item name="android:paddingBottom">@dimen/BoardGridOverlay_paddingBottom</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:background">@drawable/board_subject_gradient_bg</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="BoardGridSubject" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/BoardGridSubject_paddingTop</item>
-        <item name="android:paddingLeft">@dimen/BoardGridSubject_paddingLeft</item>
-        <item name="android:paddingRight">@dimen/BoardGridSubject_paddingRight</item>
-        <item name="android:paddingBottom">@dimen/BoardGridSubject_paddingBottom</item>
         <item name="android:gravity">center_horizontal|top</item>
         <item name="android:textSize">@dimen/BoardGridSubject</item>
         <item name="android:textColor">@color/PaletteWhite</item>
@@ -357,13 +356,9 @@
     <style name="BoardGridInfo" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/BoardGridInfo_paddingTop</item>
-        <item name="android:paddingLeft">@dimen/BoardGridInfo_paddingLeft</item>
-        <item name="android:paddingRight">@dimen/BoardGridInfo_paddingRight</item>
-        <item name="android:paddingBottom">@dimen/BoardGridInfo_paddingBottom</item>
         <item name="android:gravity">center_horizontal|top</item>
         <item name="android:textSize">@dimen/BoardGridInfo</item>
-        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:textColor">@color/PaletteChanuGreen</item>
         <item name="android:textStyle">bold</item>
     </style>
 

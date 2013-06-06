@@ -264,8 +264,9 @@
     <dimen name="PopularItemText_paddingRight">16dp</dimen>
     <dimen name="PopularItemText_paddingBottom">4dp</dimen>
     <dimen name="PopularItemSubject_paddingRight">4dp</dimen>
+    <dimen name="PopularLargeItem_textSize">22sp</dimen>
     <dimen name="PopularItem_textSize">16sp</dimen>
     <dimen name="PopularItem_layout_height">140dp</dimen>
-    <dimen name="PopularLargeItem_layout_height">200dp</dimen>
+    <dimen name="PopularLargeItem_layout_height">224dp</dimen>
 
 </resources>

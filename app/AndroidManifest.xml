@@ -78,11 +78,12 @@
                     />
         </activity>
 
-        <activity android:name=".BoardActivity" android:label="@string/board_activity"
+        <activity android:name=".BoardActivity" android:label="@string/app_name"
                   android:taskAffinity=".BoardActivity"
                   android:launchMode="standard"
                 >
             <intent-filter android:priority="100">
+                <category android:name="android.intent.category.LAUNCHER"/>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -91,7 +92,7 @@
             </intent-filter>
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".BoardListActivity"
+                    android:value=""
                     />
             <meta-data
                     android:name="android.app.default_searchable"
@@ -106,10 +107,6 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
-            <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".BoardActivity"
-                    />
             <meta-data
                     android:name="android.app.default_searchable"
                     android:value=".SearchActivity"/>
@@ -167,12 +164,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PopularActivity" android:label="@string/app_name"
+        <activity android:name=".PopularActivity"
                   android:taskAffinity=".PopularActivity"
                   android:launchMode="standard"
                 >
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>

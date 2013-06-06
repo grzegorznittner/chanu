@@ -224,6 +224,14 @@ abstract public class
         return (boardAsMenu.equals(getString(R.string.board_popular))
                 || boardAsMenu.equals(getString(R.string.board_popular_abbrev)));
     }
+    public boolean isLatest(String boardAsMenu) {
+        return (boardAsMenu.equals(getString(R.string.board_latest))
+                || boardAsMenu.equals(getString(R.string.board_latest_abbrev)));
+    }
+    public boolean isLatestImages(String boardAsMenu) {
+        return (boardAsMenu.equals(getString(R.string.board_latest_images))
+                || boardAsMenu.equals(getString(R.string.board_latest_images_abbrev)));
+    }
     public boolean isWatchlist(String boardAsMenu) {
         return (boardAsMenu.equals(getString(R.string.board_watch))
                 || boardAsMenu.equals(getString(R.string.board_watch_abbrev)));
@@ -237,7 +245,17 @@ abstract public class
         if (isSelfBoard(boardAsMenu))
             return;
         if (isPopular(boardAsMenu)) {
-            Intent intent = PopularActivity.createIntent(this);
+            Intent intent = BoardActivity.createIntent(this, ChanBoard.POPULAR_BOARD_CODE, "");
+            startActivity(intent);
+            return;
+        }
+        if (isLatest(boardAsMenu)) {
+            Intent intent = BoardActivity.createIntent(this, ChanBoard.LATEST_BOARD_CODE, "");
+            startActivity(intent);
+            return;
+        }
+        if (isLatestImages(boardAsMenu)) {
+            Intent intent = BoardActivity.createIntent(this, ChanBoard.LATEST_IMAGES_BOARD_CODE, "");
             startActivity(intent);
             return;
         }
@@ -253,7 +271,7 @@ abstract public class
         String boardCodeForJump = m.group(1);
         if (boardCodeForJump == null || boardCodeForJump.isEmpty() || isSelfBoard(boardCodeForJump))
             return;
-        Intent intent = BoardActivity.createIntentForActivity(this, boardCodeForJump, "");
+        Intent intent = BoardActivity.createIntent(this, boardCodeForJump, "");
         startActivity(intent);
     }
 

@@ -4,18 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.Html;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.*;
 import android.widget.*;
 import com.chanapps.four.activity.*;
+import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.PopularCursorLoader;
@@ -26,6 +27,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 import java.util.*;
 
@@ -33,11 +35,14 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
 
     private static final String TAG = PopularFragment.class.getSimpleName();
     private static final boolean DEBUG = true;
+    private static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static ImageLoader imageLoader = null;
     private static DisplayImageOptions displayImageOptions;
+    private static Typeface subjectTypeface = null;
 
     private static void initStatics(View view) {
+        subjectTypeface = Typeface.createFromAsset(view.getResources().getAssets(), SUBJECT_FONT);
         imageLoader = ChanImageLoader.getInstance(view.getContext());
         displayImageOptions = new DisplayImageOptions.Builder()
                 .imageScaleType(ImageScaleType.NONE)
@@ -117,7 +122,32 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
         emptyText = (TextView)layout.findViewById(R.id.board_empty_text);
         if (imageLoader == null)
             initStatics(layout);
+        createAbsListView();
         return layout;
+    }
+
+    protected AbsListView absListView;
+    int columnWidth;
+    int columnHeight;
+
+    protected void createAbsListView() {
+        /*
+        absListView = (GridView)layout.findViewById(R.id.board_grid_view);
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.BOARDLIST);
+        cg.sizeGridToDisplay();
+        columnWidth = cg.getColumnWidth();
+        columnHeight = cg.getColumnHeight();
+
+        assignCursorAdapter();
+        absListView.setAdapter(adapter);
+        absListView.setClickable(true);
+        absListView.setOnItemClickListener(this);
+        absListView.setLongClickable(true);
+        absListView.setOnItemLongClickListener(this);
+        ImageLoader imageLoader = ChanImageLoader.getInstance(getBaseContext());
+        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+        */
     }
 
     @Override
@@ -210,36 +240,40 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
     protected void swapCursor(Cursor cursor) {
         setLastFetchedText();
         cursor.moveToPosition(-1);
-        int i = 0;
+        //int i = 0;
         int popular = 0;
         int latest = 0;
         int recent = 0;
-        List<Integer> popularList = new ArrayList<Integer>(NUM_POPULAR);
+        int recommended = 0;
+        //List<Integer> popularList = new ArrayList<Integer>(NUM_POPULAR);
+        //boolean isFirst = false;
         while (cursor.moveToNext()) {
             int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-            View item;
             if ((flags & ChanThread.THREAD_FLAG_POPULAR_THREAD) > 0) {
-                //item = layout.findViewById(getPopularViewId(popular++));
-                popularList.add(i);
-                item = null;
+                View item = layout.findViewById(getPopularViewId(popular++));
+                setViewValue(item, cursor);
+                //popularList.add(i);
             }
             else if ((flags & ChanThread.THREAD_FLAG_LATEST_POST) > 0) {
-                item = layout.findViewById(getLatestViewId(latest++));
+                View item = layout.findViewById(getLatestViewId(latest++));
+                setViewValue(item, cursor);
             }
             else if ((flags & ChanThread.THREAD_FLAG_RECENT_IMAGE) > 0) {
-                item = layout.findViewById(getRecentViewId(recent++));
-            }
-            else {
-                item = null;
-            }
-            if (item != null)
+                View item = layout.findViewById(getRecentViewId(recent++));
                 setViewValue(item, cursor);
-            i++;
+            }
+            else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
+                View item = layout.findViewById(getRecommendedViewId(recommended++));
+                if (item != null)
+                    setViewValue(item, cursor);
+            }
+            //i++;
         }
-        displayPopular(cursor, popularList);
+        //displayPopular(cursor, popularList);
     }
 
     protected void setLastFetchedText() {
+    /*
         ChanBoard board = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.POPULAR_BOARD_CODE);
         TextView lastFetchedView = (TextView)layout.findViewById(R.id.last_fetched);
         if (board != null && board.lastFetched > 0) {
@@ -253,6 +287,7 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
         else {
             lastFetchedView.setText("");
         }
+        */
     }
 
     protected int getPopularViewId(int i) {
@@ -296,12 +331,29 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
         }
     }
 
+    protected int getRecommendedViewId(int i) {
+        switch(i) {
+            case 0: return R.id.recommended_item_0;
+            case 1: return R.id.recommended_item_1;
+            case 2: return R.id.recommended_item_2;
+            case 3: return R.id.recommended_item_3;
+            /*
+            case 4: return R.id.recommended_item_4;
+            case 5: return R.id.recommended_item_5;
+            case 6: return R.id.recommended_item_6;
+            case 7: return R.id.recommended_item_7;
+            case 8: return R.id.recommended_item_8;
+            */
+            default: return 0;
+        }
+    }
+
     protected void setViewValue(View item, Cursor cursor) {
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         String subject = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         String thumbUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
-        //String boardName = ChanBoard.getBoardByCode(getBaseContext(), boardCode).name;
+        String boardName = ChanBoard.getBoardByCode(getBaseContext(), boardCode).name;
         long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
 
         TextView boardNameView = (TextView)item.findViewById(R.id.board_name);
@@ -310,12 +362,15 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
         View clickTargetView = item.findViewById(R.id.click_target);
 
         ImageView imageView = (ImageView)item.findViewById(R.id.image);
-        //boardNameView.setText(boardName);
-        boardNameView.setText("/" + boardCode + "/");
-        if ((flags & ChanThread.THREAD_FLAG_RECENT_IMAGE) > 0)
+        boardNameView.setText(boardName);
+        if ((flags & (ChanThread.THREAD_FLAG_RECENT_IMAGE | ChanThread.THREAD_FLAG_BOARD)) > 0) {
+            subjectView.setVisibility(View.GONE);
             subjectView.setText("");
-        else
+        }
+        else {
             subjectView.setText(Html.fromHtml(subject));
+            subjectView.setVisibility(View.VISIBLE);
+        }
         imageView.setImageDrawable(null);
         textWrapperView.setVisibility(View.GONE);
         imageLoader.displayImage(thumbUrl, imageView, displayImageOptions, imageLoadingListener);

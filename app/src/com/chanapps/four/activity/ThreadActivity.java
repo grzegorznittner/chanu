@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -23,11 +22,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -40,7 +35,6 @@ import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.UserStatistics.ChanFeature;
 import com.chanapps.four.fragment.*;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -152,7 +146,7 @@ public class ThreadActivity
 
     protected void redirectToBoard() { // backup in case we are missing stuff
         Log.e(TAG, "Empty board code, redirecting to board /" + boardCode + "/");
-        Intent intent = BoardActivity.createIntentForActivity(this, boardCode, "");
+        Intent intent = BoardActivity.createIntent(this, boardCode, "");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();

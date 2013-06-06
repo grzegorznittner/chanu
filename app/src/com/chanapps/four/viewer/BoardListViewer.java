@@ -73,7 +73,7 @@ public class BoardListViewer {
             case R.id.list_item_thread_subject:
                 return setListSubject((TextView) view, cursor);
             case R.id.list_item_thread_headline:
-                return setHeadline((TextView) view, cursor);
+                return setHeadline((TextView) view, cursor, groupBoardCode);
             case R.id.list_item_thread_text:
                 return setText((TextView) view, cursor);
             case R.id.list_item_thread_thumb:
@@ -136,9 +136,13 @@ public class BoardListViewer {
         return true;
     }
 
-    protected static boolean setHeadline(TextView tv, Cursor cursor) {
+    protected static boolean setHeadline(TextView tv, Cursor cursor, String groupBoardCode) {
+        String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_HEADLINE));
         if (text != null && !text.isEmpty()) {
+            ChanBoard board = ChanBoard.getBoardByCode(tv.getContext(), groupBoardCode);
+            if (board.isVirtualBoard())
+                text = text.replace("no replies", ChanBoard.getBoardByCode(tv.getContext(), boardCode).name);
             String subj = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
             if (DEBUG) Log.i(TAG, "subj=" + subj + " head=" + text);
             if (subj != null && !subj.isEmpty())

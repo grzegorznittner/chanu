@@ -218,7 +218,7 @@ public class UpdateWidgetService extends RemoteViewsService {
 
         private PendingIntent makeThreadIntent(ChanPost thread, int i) {
             Intent intent = (thread == null || thread.no < 1)
-                    ? BoardActivity.createIntentForActivity(context, widgetConf.boardCode, "")
+                    ? BoardActivity.createIntent(context, widgetConf.boardCode, "")
                     : ThreadActivity.createIntentForActivity(context, thread.board, thread.no, "");
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 5 + i;
@@ -240,7 +240,7 @@ public class UpdateWidgetService extends RemoteViewsService {
                         : BoardSelectorTab.RECENT;
                 intent = BoardSelectorActivity.createIntentForActivity(context, tab);
             } else {
-                intent = BoardActivity.createIntentForActivity(context, widgetConf.boardCode, "");
+                intent = BoardActivity.createIntent(context, widgetConf.boardCode, "");
             }
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 2;

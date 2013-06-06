@@ -7,19 +7,21 @@
           android:showAsAction="collapseActionView|ifRoom"
           android:actionViewClass="android.widget.SearchView"/>
 
-    <item android:id="@+id/refresh_menu"
-          android:title="@string/refresh_thread_menu"
-          android:icon="@drawable/navigation_refresh"
+    <item android:id="@+id/view_image_gallery_menu"
+          android:title="@string/view_image_gallery_menu"
+          android:icon="@drawable/content_picture"
+          android:showAsAction="ifRoom"
             />
 
     <item android:id="@+id/watch_thread_menu"
           android:title="@string/watch_thread_menu"
           android:icon="@drawable/rating_important"
+          android:showAsAction="ifRoom"
             />
 
-    <item android:id="@+id/view_image_gallery_menu"
-          android:title="@string/view_image_gallery_menu"
-          android:icon="@drawable/content_picture"
+    <item android:id="@+id/refresh_menu"
+          android:title="@string/refresh_thread_menu"
+          android:icon="@drawable/navigation_refresh"
             />
 
     <item android:id="@+id/post_reply_menu"
@@ -41,7 +43,6 @@
     <item android:id="@+id/play_thread_menu"
           android:title="@string/play_thread_menu"
           android:icon="@drawable/av_play"
-          android:showAsAction="ifRoom"
             />
 
     <item android:id="@+id/settings_menu"

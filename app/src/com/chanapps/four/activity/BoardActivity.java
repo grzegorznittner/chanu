@@ -27,7 +27,6 @@ import com.chanapps.four.component.*;
 import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.UserStatistics.ChanFeature;
 import com.chanapps.four.fragment.GenericDialogFragment;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -68,11 +67,11 @@ public class BoardActivity
     public static void startActivity(Activity from, String boardCode, String query) {
         //if (query != null && !query.isEmpty())
         //    NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.SEARCH_BOARD);
-        from.startActivity(createIntentForActivity(from, boardCode, query));
+        from.startActivity(createIntent(from, boardCode, query));
     }
 
-    public static Intent createIntentForActivity(Context context, String boardCode, String query) {
-        String intentBoardCode = boardCode == null || boardCode.isEmpty() ? ChanBoard.DEFAULT_BOARD_CODE : boardCode;
+    public static Intent createIntent(Context context, String boardCode, String query) {
+        String intentBoardCode = boardCode == null || boardCode.isEmpty() ? ChanBoard.POPULAR_BOARD_CODE : boardCode;
         Intent intent = new Intent(context, BoardActivity.class);
         intent.putExtra(ChanBoard.BOARD_CODE, intentBoardCode);
         intent.putExtra(ChanHelper.PAGE, 0);
@@ -93,19 +92,9 @@ public class BoardActivity
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
-        if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/ q=" + query);
         if (boardCode == null || boardCode.isEmpty())
-            redirectToBoardSelector();
-    }
-
-    protected void redirectToBoardSelector() { // backup in case we are missing stuff
-        Log.e(TAG, "Empty board code, redirecting to board selector");
-        Intent selectorIntent = new Intent(this, BoardSelectorActivity.class);
-        selectorIntent.putExtra(ChanHelper.BOARD_TYPE, BoardType.JAPANESE_CULTURE.toString());
-        selectorIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
-        selectorIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(selectorIntent);
-        finish();
+            boardCode = ChanBoard.POPULAR_BOARD_CODE;
+        if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/ q=" + query);
     }
 
     @Override
@@ -147,7 +136,7 @@ public class BoardActivity
                 if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from url intent");
             }
             else {
-                boardCode = ChanBoard.DEFAULT_BOARD_CODE;
+                boardCode = ChanBoard.POPULAR_BOARD_CODE;
                 query = "";
                 if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, using default board");
             }
@@ -212,7 +201,7 @@ public class BoardActivity
         absListView.setOnItemClickListener(boardItemListener);
         absListView.setLongClickable(false);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
-        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
     }
 
     @Override
@@ -427,19 +416,21 @@ public class BoardActivity
             item.setTitle(viewType == ViewType.AS_GRID ? R.string.view_as_list_menu : R.string.view_as_grid_menu);
             item.setVisible(!hasQuery()); // force to list view when has query
         }
+        ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
+        item = menu.findItem(R.id.search_menu);
+        if (board.isVirtualBoard())
+            item.setVisible(false);
+        else
+            item.setVisible(true);
         return super.onPrepareOptionsMenu(menu);
     }
 
     public void setActionBarTitle() {
         String title;
-        /*if (query != null && !query.isEmpty()) {
-            title = String.format(getString(R.string.search_results_title_board), boardCode);
-        }
-        else {
-        */
         ChanBoard board = loadBoard();
-        title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
-        //}
+        title = (board == null ? "Board" : board.name);
+        if (!board.isVirtualBoard())
+            title += " /" + boardCode + "/";
         getActionBar().setTitle(title);
     }
 

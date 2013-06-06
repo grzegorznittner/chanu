@@ -31,7 +31,8 @@ public class ChanGridSizer {
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH,
             ServiceType.BOARDTHREAD.ordinal(), MAX_COLUMN_WIDTH,
             ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH,
-            ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH
+            ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH,
+            ServiceType.BOARDLIST.ordinal(), 300
     };
 
     private static final int[] MAX_COLUMN_WIDTHS_LARGE = {
@@ -39,7 +40,8 @@ public class ChanGridSizer {
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
             ServiceType.BOARDTHREAD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
             ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
-            ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_LARGE
+            ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_LARGE,
+            ServiceType.BOARDLIST.ordinal(), 300
     };
 
     private static final int[] MAX_COLUMN_WIDTHS_XLARGE = {
@@ -47,7 +49,8 @@ public class ChanGridSizer {
             ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
             ServiceType.BOARDTHREAD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
             ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
-            ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_XLARGE
+            ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
+            ServiceType.BOARDLIST.ordinal(), 300
     };
 
     private GridView g;
@@ -136,6 +139,7 @@ public class ChanGridSizer {
         BOARD,
         BOARDTHREAD,
         THREAD,
-        WATCHLIST
+        WATCHLIST,
+        BOARDLIST
     }
 }

@@ -12,42 +12,22 @@
             style="@style/BoardGridAbbrev"
             />
 
-    <RelativeLayout
+    <LinearLayout
             android:id="@+id/grid_item_text_wrapper"
             style="@style/BoardGridOverlay"
-            android:background="@color/PaletteBlack34Opacity"
-            android:padding="0dp"
             >
 
         <TextView
                 android:id="@+id/grid_item_thread_subject"
                 style="@style/BoardGridSubject"
-                android:layout_width="match_parent"
-                android:layout_toLeftOf="@+id/grid_item_thread_info"
-                android:layout_alignParentLeft="true"
-                android:maxLines="1"
-                android:gravity="top|left"
-                android:paddingLeft="8dp"
-                android:paddingTop="4dp"
-                android:paddingRight="0dp"
-                android:paddingBottom="4dp"
                 />
 
         <TextView
                 android:id="@+id/grid_item_thread_info"
-                style="@style/BoardGridSubject"
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:maxLines="1"
-                android:gravity="top|right"
-                android:background="@color/PaletteBlackMostlyOpaque"
-                android:paddingLeft="8dp"
-                android:paddingTop="4dp"
-                android:paddingRight="8dp"
-                android:paddingBottom="4dp"
+                style="@style/BoardGridInfo"
                 />
 
-    </RelativeLayout>
+    </LinearLayout>
 
     <ImageView
             android:id="@+id/grid_item_country_flag"

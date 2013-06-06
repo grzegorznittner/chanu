@@ -112,7 +112,7 @@ public class BoardCoverFlowWidgetProvider extends AbstractBoardWidgetProvider {
                     : BoardSelectorTab.RECENT;
             intent = BoardSelectorActivity.createIntentForActivity(context, tab);
         } else {
-            intent = BoardActivity.createIntentForActivity(context, widgetConf.boardCode, "");
+            intent = BoardActivity.createIntent(context, widgetConf.boardCode, "");
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         int uniqueId = (100 * widgetConf.appWidgetId) + 2;

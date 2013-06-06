@@ -6,7 +6,10 @@ import android.database.MatrixCursor;
 import android.util.Log;
 import com.chanapps.four.data.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 //import android.content.AsyncTaskLoader;
 
@@ -29,6 +32,7 @@ public class PopularCursorLoader extends BoardCursorLoader {
         loadBoard(matrixCursor, ChanBoard.POPULAR_BOARD_CODE);
         loadBoard(matrixCursor, ChanBoard.LATEST_BOARD_CODE);
         loadBoard(matrixCursor, ChanBoard.LATEST_IMAGES_BOARD_CODE);
+        addRecommendedBoardLink(matrixCursor);
         registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;
     }
@@ -71,6 +75,16 @@ public class PopularCursorLoader extends BoardCursorLoader {
             return ChanThread.THREAD_FLAG_RECENT_IMAGE;
         else
             return 0;
+    }
+
+    protected void addRecommendedBoardLink(MatrixCursor matrixCursor) {
+        String[] boardCodes = { "a", "v", "vg", "fit", "mu", "sp", "co", "g", "tv" }; // b s gif
+        List<String> boardCodeList = new ArrayList<String>(Arrays.asList(boardCodes));
+        Collections.shuffle(boardCodeList);
+        for (String boardCode : boardCodeList) {
+            ChanBoard board = ChanBoard.getBoardByCode(getContext(), boardCode);
+            matrixCursor.addRow(board.makeRow(context, 0));
+        }
     }
 
 }

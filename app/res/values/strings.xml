@@ -754,6 +754,7 @@
     <string name="board_latest">Latest</string>
     <string name="board_latest_abbrev">Latest</string>
     <string name="board_latest_images">Latest Images</string>
+    <string name="board_latest_images_abbrev">Latest Imgs</string>
     <string name="board_select">Chanu</string>
     <string name="board_select_abbrev">Chanu</string>
 
@@ -943,6 +944,8 @@
 
     <string-array name="long_board_array">
         <item>@string/board_type_recent</item>
+        <item>@string/board_latest</item>
+        <item>@string/board_latest_images</item>
         <item>@string/board_watch</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
@@ -1010,6 +1013,8 @@
 
     <string-array name="long_board_array_worksafe">
         <item>@string/board_type_recent</item>
+        <item>@string/board_latest</item>
+        <item>@string/board_latest_images</item>
         <item>@string/board_watch</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
@@ -1183,8 +1188,8 @@
     <dimen name="BoardTypeText">18sp</dimen>
     <dimen name="WidgetConfigureOkButton">18sp</dimen>
     <dimen name="BoardSelectorOverlay">14sp</dimen>
-    <dimen name="BoardGridSubject">14sp</dimen>
-    <dimen name="BoardGridInfo">12sp</dimen>
+    <dimen name="BoardGridSubject">16sp</dimen>
+    <dimen name="BoardGridInfo">16sp</dimen>
     <dimen name="BoardGridNumReplies">12sp</dimen>
     <dimen name="BoardGridAbbrev">12sp</dimen>
     <dimen name="BoardGridNumImages">12sp</dimen>
@@ -1223,8 +1228,10 @@
     <dimen name="BoardSelectorOverlay_paddingRight">2dp</dimen>
     <dimen name="BoardSelectorOverlay_paddingBottom">4dp</dimen>
 
-    <dimen name="BoardGridOverlay_paddingTop">12dp</dimen>
-    <dimen name="BoardGridOverlay_paddingBottom">8dp</dimen>
+    <dimen name="BoardGridOverlay_paddingLeft">8dp</dimen>
+    <dimen name="BoardGridOverlay_paddingTop">16dp</dimen>
+    <dimen name="BoardGridOverlay_paddingRight">8dp</dimen>
+    <dimen name="BoardGridOverlay_paddingBottom">4dp</dimen>
 
     <dimen name="BoardGridSubject_paddingTop">0dp</dimen>
     <dimen name="BoardGridSubject_paddingLeft">4dp</dimen>
@@ -1428,18 +1435,22 @@
     <dimen name="tutorial_overlay_dismiss_padding">8dp</dimen>
 
     <!-- popular / home -->
-    <dimen name="PopularTitle_paddingTop">16dp</dimen>
+    <string name="popular_title_popular">POPULAR THREADS</string>
+    <string name="popular_title_latest">LATEST POSTS</string>
+    <string name="popular_title_recent">RECENT IMAGES</string>
+    <string name="popular_title_recommended">RECOMMENDED</string>
+    <dimen name="PopularTitle_paddingTop">8dp</dimen>
     <dimen name="PopularTitle_paddingLeft">8dp</dimen>
     <dimen name="PopularTitle_paddingRight">8dp</dimen>
     <dimen name="PopularTitle_paddingBottom">8dp</dimen>
-    <dimen name="PopularTitle_textSize">22sp</dimen>
+    <dimen name="PopularTitle_textSize">16sp</dimen>
     <dimen name="PopularItemText_paddingTop">4dp</dimen>
     <dimen name="PopularItemText_paddingLeft">8dp</dimen>
     <dimen name="PopularItemText_paddingRight">8dp</dimen>
     <dimen name="PopularItemText_paddingBottom">4dp</dimen>
-    <dimen name="PopularItemSubject_paddingRight">4dp</dimen>
     <dimen name="PopularItem_textSize">16sp</dimen>
     <dimen name="PopularItem_layout_height">140dp</dimen>
+    <dimen name="PopularRecentItem_layout_height">120dp</dimen>
     <dimen name="PopularLargeItem_layout_height">224dp</dimen>
 
     <!-- widgets dimension -->

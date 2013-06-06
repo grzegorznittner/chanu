@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:id="@+id/thread_context_share_action_menu"
+          android:icon="@drawable/ic_menu_share_holo_light"
+          android:title="@string/share_image"
+          android:enabled="true"
+          android:actionProviderClass="android.widget.ShareActionProvider"
+          android:showAsAction="always" />
+
     <item android:id="@+id/post_reply_all_menu"
           android:title="@string/post_reply_all_menu"
-          android:icon="@drawable/social_reply_all"
-          android:showAsAction="ifRoom"
+          android:icon="@drawable/social_reply"
             />
+
     <item android:id="@+id/post_reply_all_quote_menu"
           android:title="@string/post_reply_all_quote_menu"
           android:icon="@drawable/social_chat"
@@ -47,12 +54,5 @@
           android:title="@string/block_posts_menu"
           android:icon="@drawable/content_remove"
             />
-
-    <item android:id="@+id/thread_context_share_action_menu"
-          android:icon="@drawable/ic_menu_share_holo_light"
-          android:title="@string/share_image"
-          android:enabled="true"
-          android:actionProviderClass="android.widget.ShareActionProvider"
-          android:showAsAction="ifRoom" />
 
 </menu>

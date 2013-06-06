@@ -6,272 +6,427 @@
               android:orientation="vertical"
         >
 
-<!-- POPULAR THREADS -->
+    <!-- ROW 1 -->
 
-    <RelativeLayout
-            android:id="@+id/popular_row_0"
+    <LinearLayout
+            android:id="@+id/row_1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            >
 
-        <TextView
-                android:layout_width="wrap_content"
+        <!-- POPULAR THREADS -->
+
+        <LinearLayout
+                android:id="@+id/left_col"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/PopularTitle_paddingTop"
-                android:paddingLeft="@dimen/PopularTitle_paddingLeft"
-                android:paddingRight="@dimen/PopularTitle_paddingRight"
-                android:paddingBottom="@dimen/PopularTitle_paddingBottom"
-                android:textSize="@dimen/PopularTitle_textSize"
-                android:textStyle="bold"
-                android:textColor="@color/PaletteChanuGreen"
-                android:text="What's Popular"/>
+                android:layout_weight="1"
+                android:orientation="vertical"
+                >
 
-        <TextView
-                android:id="@+id/last_fetched"
-                android:layout_width="wrap_content"
+            <TextView
+                    android:id="@+id/popular_title_popular"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/PopularTitle_paddingTop"
+                    android:paddingLeft="@dimen/PopularTitle_paddingLeft"
+                    android:paddingRight="@dimen/PopularTitle_paddingRight"
+                    android:paddingBottom="@dimen/PopularTitle_paddingBottom"
+                    android:textSize="@dimen/PopularTitle_textSize"
+                    android:textStyle="bold"
+                    android:textColor="@color/PaletteWhite"
+                    android:background="@color/PaletteDarkGray"
+                    android:gravity="center"
+                    android:text="@string/popular_title_popular"/>
+
+            <LinearLayout
+                    android:id="@+id/popular_row_0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/popular_item_0"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/popular_item_1"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+
+            <LinearLayout
+                    android:id="@+id/popular_row_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/popular_item_2"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/popular_item_3"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+
+            <LinearLayout
+                    android:id="@+id/popular_row_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/popular_item_4"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/popular_item_5"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+
+            <LinearLayout
+                    android:id="@+id/popular_row_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/popular_item_6"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/popular_item_7"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+
+            <LinearLayout
+                    android:id="@+id/popular_row_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/popular_item_8"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/popular_item_9"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View android:layout_width="2dp" android:layout_height="match_parent" />
+
+        <!-- LATEST POSTS -->
+
+        <LinearLayout
+                android:id="@+id/right_col"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"
-                android:paddingTop="@dimen/PopularTitle_paddingTop"
-                android:paddingLeft="@dimen/PopularTitle_paddingLeft"
-                android:paddingRight="@dimen/PopularTitle_paddingRight"
-                android:paddingBottom="@dimen/PopularTitle_paddingBottom"
-                android:textSize="@dimen/PopularItem_textSize"
-                android:textColor="@color/PaletteDarkGray"
-                android:gravity="right"
-                />
-    </RelativeLayout>
+                android:layout_weight="1"
+                android:orientation="vertical"
+                >
 
-    <LinearLayout
-            android:id="@+id/popular_row_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="4.6"
-            >
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_0"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularLargeItem_layout_height"
-                 android:layout_weight="1.58"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_1"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularLargeItem_layout_height"
-                 android:layout_weight="0.98"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_2"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularLargeItem_layout_height"
-                 android:layout_weight="0.98"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_3"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularLargeItem_layout_height"
-                 android:layout_weight="0.98"/>
+            <TextView
+                    android:id="@+id/popular_title_latest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/PopularTitle_paddingTop"
+                    android:paddingLeft="@dimen/PopularTitle_paddingLeft"
+                    android:paddingRight="@dimen/PopularTitle_paddingRight"
+                    android:paddingBottom="@dimen/PopularTitle_paddingBottom"
+                    android:textSize="@dimen/PopularTitle_textSize"
+                    android:textStyle="bold"
+                    android:textColor="@color/PaletteWhite"
+                    android:background="@color/PaletteDarkGray"
+                    android:gravity="center"
+                    android:text="@string/popular_title_latest"/>
+
+            <LinearLayout
+                    android:id="@+id/latest_row_0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/latest_item_0"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/latest_item_1"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+
+            <LinearLayout
+                    android:id="@+id/latest_row_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/latest_item_2"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/latest_item_3"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+
+            <LinearLayout
+                    android:id="@+id/latest_row_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/latest_item_4"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/latest_item_5"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+
+            <LinearLayout
+                    android:id="@+id/latest_row_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/latest_item_6"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/latest_item_7"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="2dp" />
+
+            <LinearLayout
+                    android:id="@+id/latest_row_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/latest_item_8"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/latest_item_9"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
     </LinearLayout>
+
+    <!-- DIVIDER -->
 
     <View android:layout_width="match_parent" android:layout_height="2dp" />
 
+    <!-- RECENT IMAGES -->
+
     <LinearLayout
-            android:id="@+id/popular_row_2"
+            android:id="@+id/row_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="4.6"
+            android:weightSum="2"
             >
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_8"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.58"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_4"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="0.98"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_5"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="0.98"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_6"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="0.98"/>
+
+        <LinearLayout
+                android:id="@+id/recent_col_0"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                >
+            <TextView
+                    android:id="@+id/popular_title_recent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/PopularTitle_paddingTop"
+                    android:paddingLeft="@dimen/PopularTitle_paddingLeft"
+                    android:paddingRight="@dimen/PopularTitle_paddingRight"
+                    android:paddingBottom="@dimen/PopularTitle_paddingBottom"
+                    android:textSize="@dimen/PopularTitle_textSize"
+                    android:textStyle="bold"
+                    android:textColor="@color/PaletteWhite"
+                    android:background="@color/PaletteDarkGray"
+                    android:gravity="center"
+                    android:text="@string/popular_title_recent"/>
+
+            <LinearLayout
+                    android:id="@+id/recent_row_0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/recent_item_0"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/recent_item_1"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:id="@+id/recent_row_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/recent_item_2"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View android:layout_width="2dp" android:layout_height="match_parent" />
+
+        <LinearLayout
+                android:id="@+id/recent_col_1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                >
+            <TextView
+                    android:id="@+id/popular_title_recommended"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/PopularTitle_paddingTop"
+                    android:paddingLeft="@dimen/PopularTitle_paddingLeft"
+                    android:paddingRight="@dimen/PopularTitle_paddingRight"
+                    android:paddingBottom="@dimen/PopularTitle_paddingBottom"
+                    android:textSize="@dimen/PopularTitle_textSize"
+                    android:textStyle="bold"
+                    android:textColor="@color/PaletteWhite"
+                    android:background="@color/PaletteDarkGray"
+                    android:gravity="center"
+                    android:text="@string/popular_title_recommended"/>
+
+            <LinearLayout
+                    android:id="@+id/recommended_row_0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/recommended_item_0"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/recommended_item_1"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:id="@+id/recommended_row_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    >
+                <include layout="@layout/popular_item"
+                         android:id="@+id/recommended_item_2"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+                <View android:layout_width="2dp" android:layout_height="match_parent" />
+                <include layout="@layout/popular_item"
+                         android:id="@+id/recommended_item_3"
+                         android:layout_width="0dp"
+                         android:layout_height="@dimen/PopularItem_layout_height"
+                         android:layout_weight="1"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
     </LinearLayout>
 
-    <View android:layout_width="match_parent" android:layout_height="2dp" />
-
-    <LinearLayout
-            android:id="@+id/popular_row_3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="4.6"
-            >
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_9"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.58"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/popular_item_7"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="0.98"/>
-    </LinearLayout>
-
-    <!-- LATEST POSTS -->
-
-    <TextView
-            android:id="@+id/latest_row_0"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/PopularTitle_paddingTop"
-            android:paddingLeft="@dimen/PopularTitle_paddingLeft"
-            android:paddingRight="@dimen/PopularTitle_paddingRight"
-            android:paddingBottom="@dimen/PopularTitle_paddingBottom"
-            android:textSize="@dimen/PopularTitle_textSize"
-            android:textColor="@color/PaletteChanuGreen"
-            android:textStyle="bold"
-            android:text="Latest Posts"/>
-
-    <LinearLayout
-            android:id="@+id/latest_row_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="4.6"
-            >
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_0"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularLargeItem_layout_height"
-                 android:layout_weight="1.58"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_1"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularLargeItem_layout_height"
-                 android:layout_weight="0.98"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_2"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularLargeItem_layout_height"
-                 android:layout_weight="0.98"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_3"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularLargeItem_layout_height"
-                 android:layout_weight="0.98"/>
-    </LinearLayout>
-
-    <View android:layout_width="match_parent" android:layout_height="2dp" />
-
-    <LinearLayout
-            android:id="@+id/latest_row_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="4.6"
-            >
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_8"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.58"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_4"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="0.98"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_5"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="0.98"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_6"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="0.98"/>
-    </LinearLayout>
-
-    <View android:layout_width="match_parent" android:layout_height="2dp" />
-
-    <LinearLayout
-            android:id="@+id/popular_row_3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="4.6"
-            >
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_9"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.58"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/latest_item_7"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="0.98"/>
-    </LinearLayout>
-
-
-<!-- RECENT IMAGES -->
-
-    <TextView
-            android:id="@+id/images_row_0"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="@dimen/PopularTitle_paddingTop"
-            android:paddingLeft="@dimen/PopularTitle_paddingLeft"
-            android:paddingRight="@dimen/PopularTitle_paddingRight"
-            android:paddingBottom="@dimen/PopularTitle_paddingBottom"
-            android:textSize="@dimen/PopularTitle_textSize"
-            android:textStyle="bold"
-            android:textColor="@color/PaletteChanuGreen"
-            android:text="Recent Images"/>
-    
-    <LinearLayout
-            android:id="@+id/recent_row_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="4.6"
-            >
-        <include layout="@layout/popular_item"
-                 android:id="@+id/recent_item_0"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="1.58"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/recent_item_1"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="0.98"/>
-        <View android:layout_width="0dp" android:layout_weight="0.02" android:layout_height="match_parent" />
-        <include layout="@layout/popular_item"
-                 android:id="@+id/recent_item_2"
-                 android:layout_width="0dp"
-                 android:layout_height="@dimen/PopularItem_layout_height"
-                 android:layout_weight="0.98"/>
-    </LinearLayout>
-    
 </LinearLayout>
