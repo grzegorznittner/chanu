@@ -16,7 +16,6 @@ import android.util.Pair;
 import android.view.*;
 import android.widget.*;
 import com.chanapps.four.activity.*;
-import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.PopularCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -31,7 +30,7 @@ import java.util.*;
 
 public class CoverPageFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
-    private static final String TAG = CoverPageFragment.class.getSimpleName();
+    public static final String TAG = CoverPageFragment.class.getSimpleName();
     private static final boolean DEBUG = true;
     private static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
@@ -116,36 +115,11 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        layout = inflater.inflate(R.layout.popular_layout, container, false);
+        layout = inflater.inflate(R.layout.cover_page_layout, container, false);
         emptyText = (TextView)layout.findViewById(R.id.board_empty_text);
         if (imageLoader == null)
             initStatics(layout);
-        createAbsListView();
         return layout;
-    }
-
-    protected AbsListView absListView;
-    int columnWidth;
-    int columnHeight;
-
-    protected void createAbsListView() {
-        /*
-        absListView = (GridView)layout.findViewById(R.id.board_grid_view);
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.BOARDLIST);
-        cg.sizeGridToDisplay();
-        columnWidth = cg.getColumnWidth();
-        columnHeight = cg.getColumnHeight();
-
-        assignCursorAdapter();
-        absListView.setAdapter(adapter);
-        absListView.setClickable(true);
-        absListView.setOnItemClickListener(this);
-        absListView.setLongClickable(true);
-        absListView.setOnItemLongClickListener(this);
-        ImageLoader imageLoader = ChanImageLoader.getInstance(getBaseContext());
-        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
-        */
     }
 
     @Override
@@ -171,11 +145,7 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
         if (DEBUG) Log.i(TAG, "onStart");
         if (handler == null)
             handler = new Handler();
-        //if (absListView.getCount() <= 0) {
-        //    if (DEBUG) Log.i(TAG, "No data displayed, starting loader");
-        //    getLoaderManager().restartLoader(0, null, this);
-        //}
-        new TutorialOverlay(layout, TutorialOverlay.Page.POPULAR);
+        //new TutorialOverlay(layout, TutorialOverlay.Page.POPULAR);
     }
 
     @Override
@@ -194,13 +164,6 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         swapCursor(data);
-        if (data.getCount() > 0) {
-            emptyText.setVisibility(View.GONE);
-        }
-        else {
-            emptyText.setText(R.string.board_empty_popular);
-            emptyText.setVisibility(View.VISIBLE);
-        }
         getActivity().setProgressBarIndeterminateVisibility(false);
     }
 
@@ -237,35 +200,84 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
 
     protected void swapCursor(Cursor cursor) {
         setLastFetchedText();
+
+        View topItem = layout.findViewById(R.id.cover_page_top_item);
+        setTitleTypeface(topItem);
+        setClickTarget(topItem, ChanBoard.POPULAR_BOARD_CODE);
+
+        View leftItem = layout.findViewById(R.id.cover_page_left_item);
+        setTitleTypeface(leftItem);
+        setClickTarget(leftItem, ChanBoard.LATEST_BOARD_CODE);
+
+        View rightItem = layout.findViewById(R.id.cover_page_right_item);
+        setTitleTypeface(rightItem);
+        setClickTarget(rightItem, ChanBoard.LATEST_IMAGES_BOARD_CODE);
+
         cursor.moveToPosition(-1);
         //int i = 0;
         int popular = 0;
         int latest = 0;
         int recent = 0;
+        String popularText = "";
+        String latestText = "";
+        String recentText = "";
         int recommended = 0;
         //List<Integer> popularList = new ArrayList<Integer>(NUM_POPULAR);
         //boolean isFirst = false;
         while (cursor.moveToNext()) {
             int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
             if ((flags & ChanThread.THREAD_FLAG_POPULAR_THREAD) > 0) {
-                View item = layout.findViewById(getPopularViewId(popular++));
-                setViewValue(item, cursor);
+                ImageView item = (ImageView)topItem.findViewById(getPopularImageViewId(popular++));
+                if (item != null)
+                    setImageValue(item, cursor);
+                String subject = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+                if (subject != null && !subject.isEmpty())
+                    popularText += (popularText.isEmpty() ? "" : " - ") + subject;
                 //popularList.add(i);
             }
             else if ((flags & ChanThread.THREAD_FLAG_LATEST_POST) > 0) {
-                View item = layout.findViewById(getLatestViewId(latest++));
-                setViewValue(item, cursor);
+                ImageView item = (ImageView)leftItem.findViewById(getLatestImageViewId(latest++));
+                if (item != null)
+                    setImageValue(item, cursor);
+                String subject = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+                if (DEBUG) Log.i(TAG, "Latest subject=[" + subject + "]");
+                if (subject != null && !subject.isEmpty())
+                    latestText += (latestText.isEmpty() ? "" : " - ") + subject;
             }
             else if ((flags & ChanThread.THREAD_FLAG_RECENT_IMAGE) > 0) {
-                View item = layout.findViewById(getRecentViewId(recent++));
-                setViewValue(item, cursor);
-            }
-            else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
-                View item = layout.findViewById(getRecommendedViewId(recommended++));
+                ImageView item = (ImageView)rightItem.findViewById(getRecentImageViewId(recent++));
                 if (item != null)
-                    setViewValue(item, cursor);
+                    setImageValue(item, cursor);
+                String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+                if (boardCode != null && !boardCode.isEmpty()) {
+                    String boardName = ChanBoard.getBoardByCode(getBaseContext(), boardCode).name;
+                    recentText += (recentText.isEmpty() ? "" : " - ") + boardName;
+                }
+            }/*
+            else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
+                ImageView item = (ImageView)layout.findViewById(getImageViewId(recommended++));
+                if (item != null)
+                    setImageValue(item, cursor);
             }
+            */
             //i++;
+        }
+        if (!popularText.isEmpty()) {
+            TextView tv = (TextView)topItem.findViewById(R.id.popular_subject);
+            if (tv != null)
+                tv.setText(popularText);
+        }
+        if (DEBUG) Log.i(TAG, "Latest text=[" + latestText + "]");
+        if (!latestText.isEmpty()) {
+            TextView tv = (TextView)leftItem.findViewById(R.id.latest_subject);
+            if (tv != null)
+                tv.setText(latestText);
+            if (DEBUG) Log.i(TAG, "Latest tv=[" + tv + "]");
+        }
+        if (!recentText.isEmpty()) {
+            TextView tv = (TextView)rightItem.findViewById(R.id.recent_subject);
+            if (tv != null)
+                tv.setText(recentText);
         }
         //displayPopular(cursor, popularList);
     }
@@ -288,79 +300,68 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
         */
     }
 
-    protected int getPopularViewId(int i) {
+    protected void setClickTarget(View item, String boardCode) {
+        View clickTargetView = item.findViewById(R.id.click_target);
+        clickTargetView.setTag(R.id.BOARD_CODE, boardCode);
+        clickTargetView.setOnClickListener(this);
+    }
+
+    protected int getPopularImageViewId(int i) {
         switch(i) {
-            case 0: return R.id.popular_item_0;
-            case 1: return R.id.popular_item_1;
-            case 2: return R.id.popular_item_2;
-            case 3: return R.id.popular_item_3;
-            case 4: return R.id.popular_item_4;
-            case 5: return R.id.popular_item_5;
-            case 6: return R.id.popular_item_6;
-            case 7: return R.id.popular_item_7;
-            case 8: return R.id.popular_item_8;
-            case 9: return R.id.popular_item_9;
+            case 0: return R.id.popular_image_0;
+            case 1: return R.id.popular_image_1;
+            case 2: return R.id.popular_image_2;
+            case 3: return R.id.popular_image_3;
+            case 4: return R.id.popular_image_4;
+            case 5: return R.id.popular_image_5;
+            case 6: return R.id.popular_image_6;
+            case 7: return R.id.popular_image_7;
+            case 8: return R.id.popular_image_8;
             default: return 0;
         }
     }
 
-    protected int getLatestViewId(int i) {
+    protected int getLatestImageViewId(int i) {
         switch(i) {
-            case 0: return R.id.latest_item_0;
-            case 1: return R.id.latest_item_1;
-            case 2: return R.id.latest_item_2;
-            case 3: return R.id.latest_item_3;
-            case 4: return R.id.latest_item_4;
-            case 5: return R.id.latest_item_5;
-            case 6: return R.id.latest_item_6;
-            case 7: return R.id.latest_item_7;
-            case 8: return R.id.latest_item_8;
-            case 9: return R.id.latest_item_9;
+            case 0: return R.id.latest_image_0;
+            case 1: return R.id.latest_image_1;
+            case 2: return R.id.latest_image_2;
+            case 3: return R.id.latest_image_3;
+            case 4: return R.id.latest_image_4;
+            case 5: return R.id.latest_image_5;
+            case 6: return R.id.latest_image_6;
+            case 7: return R.id.latest_image_7;
+            case 8: return R.id.latest_image_8;
             default: return 0;
         }
     }
 
-    protected int getRecentViewId(int i) {
+    protected int getRecentImageViewId(int i) {
         switch(i) {
-            case 0: return R.id.recent_item_0;
-            case 1: return R.id.recent_item_1;
-            case 2: return R.id.recent_item_2;
+            case 0: return R.id.recent_image_0;
+            case 1: return R.id.recent_image_1;
+            case 2: return R.id.recent_image_2;
             default: return 0;
         }
     }
 
-    protected int getRecommendedViewId(int i) {
-        switch(i) {
-            /*
-            case 0: return R.id.recommended_item_0;
-            case 1: return R.id.recommended_item_1;
-            case 2: return R.id.recommended_item_2;
-            case 3: return R.id.recommended_item_3;
-            /*
-            case 4: return R.id.recommended_item_4;
-            case 5: return R.id.recommended_item_5;
-            case 6: return R.id.recommended_item_6;
-            case 7: return R.id.recommended_item_7;
-            case 8: return R.id.recommended_item_8;
-            */
-            default: return 0;
-        }
+    protected void setTitleTypeface(View item) {
+        TextView title = (TextView)item.findViewById(R.id.title);
+        if (title != null)
+            title.setTypeface(subjectTypeface);
     }
 
-    protected void setViewValue(View item, Cursor cursor) {
+    protected void setImageValue(ImageView imageView, Cursor cursor) {
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         String subject = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         String thumbUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
-        String boardName = ChanBoard.getBoardByCode(getBaseContext(), boardCode).name;
-        long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+        //String boardName = ChanBoard.getBoardByCode(getBaseContext(), boardCode).name;
 
-        TextView boardNameView = (TextView)item.findViewById(R.id.board_name);
-        TextView subjectView = (TextView)item.findViewById(R.id.subject);
-        final View textWrapperView = item.findViewById(R.id.text_wrapper);
-        View clickTargetView = item.findViewById(R.id.click_target);
-
-        ImageView imageView = (ImageView)item.findViewById(R.id.image);
+        //TextView boardNameView = (TextView)item.findViewById(R.id.board_name);
+        //TextView subjectView = (TextView)item.findViewById(R.id.subject);
+        //final View textWrapperView = item.findViewById(R.id.text_wrapper);
+        /*
         boardNameView.setText(boardName);
         if ((flags & (ChanThread.THREAD_FLAG_RECENT_IMAGE | ChanThread.THREAD_FLAG_BOARD)) > 0) {
             subjectView.setVisibility(View.GONE);
@@ -370,26 +371,23 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
             subjectView.setText(Html.fromHtml(subject));
             subjectView.setVisibility(View.VISIBLE);
         }
-        imageView.setImageDrawable(null);
         textWrapperView.setVisibility(View.GONE);
-        imageLoader.displayImage(thumbUrl, imageView, displayImageOptions, imageLoadingListener);
-
-        clickTargetView.setTag(R.id.BOARD_CODE, boardCode);
-        clickTargetView.setTag(R.id.THREAD_NO, threadNo);
-        clickTargetView.setOnClickListener(this);
+        */
+        imageLoader.displayImage(thumbUrl, imageView, displayImageOptions, null);
+        //if (DEBUG) Log.i(TAG, "/" + boardCode + " sub=[" + subject + "] url=[" + thumbUrl + "]");
     }
 
-    private static final int NUM_POPULAR = 10;
+    //private static final int NUM_POPULAR = 10;
 
     @Override
     public void onClick(View view) {
         String boardCode = (String)view.getTag(R.id.BOARD_CODE);
-        Long threadNo = (Long)view.getTag(R.id.THREAD_NO);
         Activity activity = getActivity();
-        if (boardCode != null && threadNo != null && activity != null)
-            ThreadActivity.startActivity(activity, boardCode, threadNo, "");
+        if (boardCode != null && activity != null)
+            BoardActivity.startActivity(activity, boardCode, "");
     }
 
+    /*
     protected void displayPopular(Cursor cursor, List<Integer> popularList) {
         List<Pair<Integer, Double>> aspectList = new ArrayList<Pair<Integer, Double>>(NUM_POPULAR - 1);
         for (int i : popularList) {
@@ -413,10 +411,10 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
         });
 
         int popular = 0;
-        displayTargetRatio(cursor, aspectList, 1, getPopularViewId(popular++));
+        displayTargetRatio(cursor, aspectList, 1, getPopularImageViewId(popular++));
         
         while (!aspectList.isEmpty())
-            displayItem(cursor, aspectList, aspectList.get(0), getPopularViewId(popular++));
+            displayItem(cursor, aspectList, aspectList.get(0), getPopularImageViewId(popular++));
     }
 
     protected void displayTargetRatio(Cursor cursor, List<Pair<Integer, Double>> aspectList,
@@ -430,10 +428,10 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
 
     protected void displayItem(Cursor cursor, List<Pair<Integer, Double>> aspectList, Pair<Integer, Double> bestFit,
                                int viewId) {
-        View item = layout.findViewById(viewId);
+        ImageView item = (ImageView)layout.findViewById(viewId);
         cursor.moveToPosition(bestFit.first);
-        setViewValue(item, cursor);
+        setImageValue(item, cursor);
         aspectList.remove(bestFit);
     }
-    
+    */
 }

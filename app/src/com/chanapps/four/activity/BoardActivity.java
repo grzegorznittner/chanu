@@ -28,6 +28,7 @@ import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.GenericDialogFragment;
+import com.chanapps.four.fragment.PickNewThreadBoardDialogFragment;
 import com.chanapps.four.fragment.PickShareBoardDialogFragment;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -373,13 +374,11 @@ public class BoardActivity
                 return true;
             case R.id.new_thread_menu:
                 ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
-                if (board == null || board.isVirtualBoard()) {
-                    new PickShareBoardDialogFragment(handler).show(getFragmentManager(), PickShareBoardDialogFragment.TAG);
-
-                }
-                else {
+                if (board == null || board.isVirtualBoard())
+                    new PickNewThreadBoardDialogFragment(handler)
+                            .show(getFragmentManager(), PickNewThreadBoardDialogFragment.TAG);
+                else
                     PostReplyActivity.startActivity(this, boardCode, 0, 0, "");
-                }
                 return true;
             case R.id.offline_board_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);

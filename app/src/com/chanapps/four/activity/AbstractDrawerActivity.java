@@ -220,6 +220,10 @@ abstract public class
 
     abstract public boolean isSelfBoard(String boardAsMenu);
 
+    public boolean isCoverPage(String boardAsMenu) {
+        return (boardAsMenu.equals(getString(R.string.app_name_title))
+                || boardAsMenu.equals(getString(R.string.app_name_title)));
+    }
     public boolean isPopular(String boardAsMenu) {
         return (boardAsMenu.equals(getString(R.string.board_popular))
                 || boardAsMenu.equals(getString(R.string.board_popular_abbrev)));
@@ -244,6 +248,11 @@ abstract public class
         if (DEBUG) Log.i(BoardSelectorActivity.TAG, "onItemClick boardAsMenu=" + boardAsMenu);
         if (isSelfBoard(boardAsMenu))
             return;
+        if (isCoverPage(boardAsMenu)) {
+            Intent intent = CoverPageActivity.createIntent(this);
+            startActivity(intent);
+            return;
+        }
         if (isPopular(boardAsMenu)) {
             Intent intent = BoardActivity.createIntent(this, ChanBoard.POPULAR_BOARD_CODE, "");
             startActivity(intent);

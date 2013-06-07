@@ -122,7 +122,7 @@ public class NetworkProfileManager {
                     activeProfile.onBoardSelectorSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
                 }
                 break;
-            case POPULAR_ACTIVITY:
+            case COVER_PAGE_ACTIVITY:
                 activeProfile.onBoardSelectorSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
                 break;
             case WATCHLIST_ACTIVITY:
@@ -163,7 +163,7 @@ public class NetworkProfileManager {
 		case BOARD_SELECTOR_ACTIVITY:
             activeProfile.onBoardSelectorRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
 			break;
-		case POPULAR_ACTIVITY:
+		case COVER_PAGE_ACTIVITY:
             activeProfile.onBoardSelectorRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
 			break;
 		case BOARD_ACTIVITY:

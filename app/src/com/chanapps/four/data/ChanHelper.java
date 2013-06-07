@@ -95,7 +95,7 @@ public class ChanHelper {
     public enum LastActivity {
         BOARD_SELECTOR_ACTIVITY,
         BOARD_LIST_ACTIVITY,
-        POPULAR_ACTIVITY,
+        COVER_PAGE_ACTIVITY,
         WATCHLIST_ACTIVITY,
         BOARD_ACTIVITY,
         THREAD_ACTIVITY,

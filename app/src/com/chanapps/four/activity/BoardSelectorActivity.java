@@ -190,7 +190,7 @@ public class
         menuId = R.menu.board_selector_menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(menuId, menu);
-        ChanBoard.setupActionBarBoardSpinner(this, menu, getSelectedBoardCode());
+        //ChanBoard.setupActionBarBoardSpinner(this, menu, getSelectedBoardCode());
         return true;
     }
 

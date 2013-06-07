@@ -646,6 +646,7 @@ public class ChanBoard {
     	if (DEBUG) Log.i(TAG, "Updated board " + name + ", " + newThreads + " new threads, " + updatedThreads + " updated threads.");
     }
 
+    /*
     public static void setupActionBarBoardSpinner(final Activity activity, final Menu menu, final String currentBoardCode) {
         if (DEBUG) Log.i(BoardSelectorActivity.TAG, "setupActionBarSpinner " + activity + " " + menu + " boardCode=" + currentBoardCode);
         MenuItem item = menu.findItem(R.id.board_jump_spinner_menu);
@@ -690,12 +691,10 @@ public class ChanBoard {
         protected void dispatchToBoardSelector(AdapterView<?> parent, BoardSelectorTab tab) {
             if (activity instanceof BoardSelectorActivity)
             { // special case change tab
-                /*
                 if (parent instanceof Spinner) {
                     Spinner spinner = (Spinner)parent;
                     spinner.setSelection(0, false);
                 }
-                */
                 ((BoardSelectorActivity)activity).setTab(tab);
             }
             else {
@@ -736,7 +735,7 @@ public class ChanBoard {
         }
 
     }
-
+    */
     public boolean isVirtualBoard() {
         return isVirtualBoard(link);
     }

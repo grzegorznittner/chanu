@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.fragment.PopularFragment;
+import com.chanapps.four.fragment.CoverPageFragment;
 import com.chanapps.four.service.NetworkProfileManager;
 
 public class
@@ -31,15 +31,15 @@ public class
 
     @Override
     protected void createViews(Bundle bundle) {
-        Fragment fragment = new PopularFragment();
+        Fragment fragment = new CoverPageFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, ChanBoard.POPULAR_BOARD_CODE).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, CoverPageFragment.TAG).commit();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.popular_activity_menu, menu);
+        inflater.inflate(R.menu.cover_page_activity_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -59,18 +59,18 @@ public class
 
     @Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(LastActivity.POPULAR_ACTIVITY, ChanBoard.POPULAR_BOARD_CODE);
+		return new ChanActivityId(LastActivity.COVER_PAGE_ACTIVITY, CoverPageFragment.TAG);
 	}
 
     @Override
     public boolean isSelfBoard(String boardAsMenu) {
-        return isPopular(boardAsMenu);
+        return isCoverPage(boardAsMenu);
     }
 
     @Override
     public void refresh() {
-        PopularFragment fragment = (PopularFragment)getSupportFragmentManager()
-                .findFragmentByTag(ChanBoard.POPULAR_BOARD_CODE);
+        CoverPageFragment fragment = (CoverPageFragment)getSupportFragmentManager()
+                .findFragmentByTag(CoverPageFragment.TAG);
         if (fragment != null)
             fragment.refresh();
     }

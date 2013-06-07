@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="0dp"
@@ -10,16 +10,16 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:layout_width="match_parent"
                   android:layout_height="match_parent"
-                  android:orientation="vertical"
+                  android:orientation="horizontal"
                   android:weightSum="3"
             >
 
         <!-- POPULAR THREADS -->
 
         <RelativeLayout
-                android:id="@+id/row_0"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:id="@+id/col_0"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="2"
                 >
 
@@ -27,27 +27,27 @@
 
         </RelativeLayout>
 
-        <View android:layout_width="match_parent" android:layout_height="2dp"/>
+        <View android:layout_width="2dp" android:layout_height="match_parent"/>
 
         <LinearLayout
-                android:id="@+id/row_1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:id="@+id/col_1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:weightSum="2"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 >
 
             <include layout="@layout/cover_page_left_item"
-                     android:layout_width="0dp"
-                     android:layout_height="match_parent"
+                     android:layout_width="match_parent"
+                     android:layout_height="0dp"
                      android:layout_weight="1"/>
 
-            <View android:layout_width="2dp" android:layout_height="match_parent"/>
+            <View android:layout_width="match_parent" android:layout_height="2dp"/>
 
             <include layout="@layout/cover_page_right_item"
-                     android:layout_width="0dp"
-                     android:layout_height="match_parent"
+                     android:layout_width="match_parent"
+                     android:layout_height="0dp"
                      android:layout_weight="1"/>
 
         </LinearLayout>
@@ -56,7 +56,7 @@
     <!--
     <LinearLayout
             android:id="@+id/board_grid_advert"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"

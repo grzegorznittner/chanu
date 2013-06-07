@@ -360,7 +360,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         Handler handler = activity.getChanHandler();
         boolean hasHandler = handler != null;
         boolean isPriority = currentActivityId.priority || data.priority;
-        boolean sameActivity = (currentActivityId.activity == LastActivity.POPULAR_ACTIVITY
+        boolean sameActivity = (currentActivityId.activity == LastActivity.COVER_PAGE_ACTIVITY
                 || (currentActivityId.activity == LastActivity.BOARD_ACTIVITY && board.isVirtualBoard()));
         if (hasHandler && isPriority && sameActivity)
             handler.post(new Runnable() {
