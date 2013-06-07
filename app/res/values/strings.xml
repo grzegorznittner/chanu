@@ -2,6 +2,7 @@
 
     <!-- titles -->
     <string name="app_name">Chanu</string>
+    <string name="app_name_title">Chanu</string>
     <string name="app_name_home">Go to Chanu</string>
     <string name="application_name">Chanu</string>
     <string name="application_tagname">4chan Reloaded</string>
@@ -422,8 +423,10 @@
     <string name="post_reply_posted_reply">Posted reply</string>
     <string name="post_reply_posted_thread">Posted new thread</string>
     <string name="post_reply_send">Send</string>
-    <string name="post_reply_share_error">Couldn\'t share image to 4chan</string>
+    <string name="post_reply_share_error">Couldn\'t share image to Chanu</string>
+    <string name="post_reply_new_thread_error">Couldn\'t post new thread</string>
     <string name="post_reply_share_pick_board">Pick Board for New Thread</string>
+    <string name="post_reply_new_thread_pick_board">Pick Board</string>
 
     <!-- preferences -->
     <string name="pref_about_category">About</string>
@@ -823,6 +826,7 @@
     <string name="board_desc_y">Softcore animated gay images</string>
 
     <!-- spinner dropdown -->
+    <!--
     <string-array name="board_array">
         <item>@string/board_select_abbrev</item>
         <item>@string/board_watch_abbrev</item>
@@ -941,8 +945,9 @@
         <item>/wsg/</item>
         <item>/x/</item>
     </string-array>
-
+    -->
     <string-array name="long_board_array">
+        <item>@string/app_name_title</item>
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
@@ -1012,6 +1017,7 @@
     </string-array>
 
     <string-array name="long_board_array_worksafe">
+        <item>@string/app_name_title</item>
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
@@ -1435,19 +1441,20 @@
     <dimen name="tutorial_overlay_dismiss_padding">8dp</dimen>
 
     <!-- popular / home -->
-    <string name="popular_title_popular">POPULAR THREADS</string>
-    <string name="popular_title_latest">LATEST POSTS</string>
-    <string name="popular_title_recent">RECENT IMAGES</string>
+    <string name="popular_title_popular">Popular Threads</string>
+    <string name="popular_title_latest">Latest Posts</string>
+    <string name="popular_title_recent">Recent Images</string>
     <string name="popular_title_recommended">RECOMMENDED</string>
-    <dimen name="PopularTitle_paddingTop">8dp</dimen>
-    <dimen name="PopularTitle_paddingLeft">8dp</dimen>
-    <dimen name="PopularTitle_paddingRight">8dp</dimen>
+    <dimen name="PopularTitle_paddingTop">24dp</dimen>
+    <dimen name="PopularTitle_paddingLeft">16dp</dimen>
+    <dimen name="PopularTitle_paddingRight">16dp</dimen>
     <dimen name="PopularTitle_paddingBottom">8dp</dimen>
-    <dimen name="PopularTitle_textSize">16sp</dimen>
-    <dimen name="PopularItemText_paddingTop">4dp</dimen>
-    <dimen name="PopularItemText_paddingLeft">8dp</dimen>
-    <dimen name="PopularItemText_paddingRight">8dp</dimen>
-    <dimen name="PopularItemText_paddingBottom">4dp</dimen>
+    <dimen name="PopularTitle_textSize">36sp</dimen>
+    <dimen name="PopularSmallTitle_textSize">18sp</dimen>
+    <dimen name="PopularItemText_paddingTop">8dp</dimen>
+    <dimen name="PopularItemText_paddingLeft">16dp</dimen>
+    <dimen name="PopularItemText_paddingRight">16dp</dimen>
+    <dimen name="PopularItemText_paddingBottom">24dp</dimen>
     <dimen name="PopularItem_textSize">16sp</dimen>
     <dimen name="PopularItem_layout_height">140dp</dimen>
     <dimen name="PopularRecentItem_layout_height">120dp</dimen>

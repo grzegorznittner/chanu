@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="0dp"
+        >
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical"
+                  android:weightSum="3"
+            >
+
+        <!-- POPULAR THREADS -->
+
+        <RelativeLayout
+                android:id="@+id/row_0"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="2"
+                >
+
+            <include layout="@layout/cover_page_top_item" />
+
+        </RelativeLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="2dp"/>
+
+        <LinearLayout
+                android:id="@+id/row_1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:weightSum="2"
+                >
+
+            <include layout="@layout/cover_page_left_item"
+                     android:layout_width="0dp"
+                     android:layout_height="match_parent"
+                     android:layout_weight="1"/>
+
+            <View android:layout_width="2dp" android:layout_height="match_parent"/>
+
+            <include layout="@layout/cover_page_right_item"
+                     android:layout_width="0dp"
+                     android:layout_height="match_parent"
+                     android:layout_weight="1"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <!--
+    <LinearLayout
+            android:id="@+id/board_grid_advert"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal|center_vertical"
+            android:background="#121212"
+                xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+            >
+        <com.google.ads.AdView
+                android:id="@+id/adView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                ads:adUnitId="a150e4b6d4be55e"
+                ads:adSize="BANNER"
+                ads:testDevices="42f758079ab89f7f"
+                ads:loadAdOnCreate="true"/>
+    </LinearLayout>
+        -->
+
+    <include layout="@layout/tutorial_overlay"/>
+
+</RelativeLayout>

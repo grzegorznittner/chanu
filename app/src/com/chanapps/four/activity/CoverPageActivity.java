@@ -15,16 +15,16 @@ import com.chanapps.four.fragment.PopularFragment;
 import com.chanapps.four.service.NetworkProfileManager;
 
 public class
-        PopularActivity
+        CoverPageActivity
         extends AbstractDrawerActivity
         implements ChanIdentifiedActivity,
         ListView.OnItemClickListener
 {
-    public static final String TAG = PopularActivity.class.getSimpleName();
+    public static final String TAG = CoverPageActivity.class.getSimpleName();
     public static final boolean DEBUG = false;
 
     public static Intent createIntent(Context context) {
-        Intent intent = new Intent(context, PopularActivity.class);
+        Intent intent = new Intent(context, CoverPageActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
     }

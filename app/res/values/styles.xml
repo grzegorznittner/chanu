@@ -1044,6 +1044,7 @@
 
     <color name="pressed_chanu">#CC16B206</color>
     <color name="PaletteChanuGreen">#16b206</color>
+    <color name="PaletteChanuGreenHalfOpacity">#8816b206</color>
     <color name="PaletteLightGreen">#58b75a</color>
     <color name="PaletteDarkGreen">#58675a</color>
     <color name="PaletteDarkGreenHalfOpacity">#8058675a</color>

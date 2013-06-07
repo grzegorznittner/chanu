@@ -16,7 +16,6 @@ import android.util.Pair;
 import android.view.*;
 import android.widget.*;
 import com.chanapps.four.activity.*;
-import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.TutorialOverlay;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.PopularCursorLoader;
@@ -27,13 +26,12 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 import java.util.*;
 
-public class PopularFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+public class CoverPageFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
-    private static final String TAG = PopularFragment.class.getSimpleName();
+    private static final String TAG = CoverPageFragment.class.getSimpleName();
     private static final boolean DEBUG = true;
     private static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
@@ -89,7 +87,7 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    getLoaderManager().restartLoader(0, null, PopularFragment.this);
+                    getLoaderManager().restartLoader(0, null, CoverPageFragment.this);
                 }
             });
     }
@@ -100,7 +98,7 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    getLoaderManager().restartLoader(0, null, PopularFragment.this);
+                    getLoaderManager().restartLoader(0, null, CoverPageFragment.this);
                 }
             });
     }
@@ -226,7 +224,7 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
                 && title != null && !title.isEmpty()
                 && desc != null && !desc.isEmpty()) {
             (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
-                    .show(activity.getSupportFragmentManager(), PopularFragment.TAG);
+                    .show(activity.getSupportFragmentManager(), CoverPageFragment.TAG);
             return;
         }
 
@@ -333,6 +331,7 @@ public class PopularFragment extends Fragment implements LoaderManager.LoaderCal
 
     protected int getRecommendedViewId(int i) {
         switch(i) {
+            /*
             case 0: return R.id.recommended_item_0;
             case 1: return R.id.recommended_item_1;
             case 2: return R.id.recommended_item_2;
