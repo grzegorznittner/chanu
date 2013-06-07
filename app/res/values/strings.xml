@@ -428,6 +428,12 @@
     <string name="post_reply_share_pick_board">Pick Board for New Thread</string>
     <string name="post_reply_new_thread_pick_board">Pick Board</string>
 
+    <!-- cover page -->
+    <string name="popular_title_popular">Popular Threads</string>
+    <string name="popular_title_latest">Latest Posts</string>
+    <string name="popular_title_recent">Recent Images</string>
+    <string name="popular_title_recommended">RECOMMENDED</string>
+
     <!-- preferences -->
     <string name="pref_about_category">About</string>
     <string name="pref_advanced_category">Advanced</string>
@@ -1276,6 +1282,9 @@
     <dimen name="BoardListButton_paddingRight">16dp</dimen>
     <dimen name="BoardListButton_paddingBottom">16dp</dimen>
 
+    <dimen name="BoardListImage_layout_width">140dp</dimen>
+    <dimen name="BoardListImage_layout_height">140dp</dimen>
+
     <dimen name="BoardListSubject_paddingTop">2dp</dimen>
     <dimen name="BoardListSubject_paddingLeft">8dp</dimen>
     <dimen name="BoardListSubject_paddingRight">16dp</dimen>
@@ -1332,11 +1341,11 @@
     <dimen name="ThreadListHeaderInnerLayout_paddingLeft">16dp</dimen>
     <dimen name="ThreadListLayout_paddingRight">0dp</dimen>
 
-    <dimen name="ItemsDialogItemLayout_paddingTop">8dp</dimen>
-    <dimen name="ItemsDialogItemLayout_paddingBottom">8dp</dimen>
-    <dimen name="ItemsDialogItemLayout_paddingLeft">16dp</dimen>
-    <dimen name="ItemsDialogItemLayout_paddingRight">16dp</dimen>
-    <dimen name="ItemsDialogItemLayout_textSize">16sp</dimen>
+    <dimen name="ItemsDialogItemLayout_paddingTop">16dp</dimen>
+    <dimen name="ItemsDialogItemLayout_paddingBottom">16dp</dimen>
+    <dimen name="ItemsDialogItemLayout_paddingLeft">24dp</dimen>
+    <dimen name="ItemsDialogItemLayout_paddingRight">24dp</dimen>
+    <dimen name="ItemsDialogItemLayout_textSize">18sp</dimen>
 
     <dimen name="ThreadListItemHeaderWrapper_paddingLeft">0dp</dimen>
     <dimen name="ThreadListItemHeaderWrapper_paddingRight">16dp</dimen>
@@ -1441,10 +1450,6 @@
     <dimen name="tutorial_overlay_dismiss_padding">8dp</dimen>
 
     <!-- popular / home -->
-    <string name="popular_title_popular">Popular Threads</string>
-    <string name="popular_title_latest">Latest Posts</string>
-    <string name="popular_title_recent">Recent Images</string>
-    <string name="popular_title_recommended">RECOMMENDED</string>
     <dimen name="PopularTitle_paddingTop">24dp</dimen>
     <dimen name="PopularTitle_paddingLeft">16dp</dimen>
     <dimen name="PopularTitle_paddingRight">16dp</dimen>
@@ -1456,9 +1461,6 @@
     <dimen name="PopularItemText_paddingRight">16dp</dimen>
     <dimen name="PopularItemText_paddingBottom">24dp</dimen>
     <dimen name="PopularItem_textSize">16sp</dimen>
-    <dimen name="PopularItem_layout_height">140dp</dimen>
-    <dimen name="PopularRecentItem_layout_height">120dp</dimen>
-    <dimen name="PopularLargeItem_layout_height">224dp</dimen>
 
     <!-- widgets dimension -->
     <dimen name="widget_board_minWidth">294dp</dimen>
@@ -1467,5 +1469,10 @@
     <!-- drawer -->
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+
+    <dimen name="ItemsDialogFragment_title_minHeight">64dp</dimen>
+    <dimen name="ItemsDialogFragment_title_paddingLeft">16dp</dimen>
+    <dimen name="ItemsDialogFragment_title_paddingRight">16dp</dimen>
+    <dimen name="ItemsDialogFragment_title_textSize">22sp</dimen>
 
 </resources>

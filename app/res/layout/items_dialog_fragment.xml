@@ -7,19 +7,19 @@
         android:layout_height="match_parent"
         android:padding="0dp"
         android:orientation="vertical">
-                                                          <!-- style="?android:attr/windowTitleStyle" -->
+
     <TextView android:id="@+id/title"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:minHeight="64dp"
-              android:paddingLeft="16dip"
-              android:paddingRight="16dip"
+              android:minHeight="@dimen/ItemsDialogFragment_title_minHeight"
+              android:paddingLeft="@dimen/ItemsDialogFragment_title_paddingLeft"
+              android:paddingRight="@dimen/ItemsDialogFragment_title_paddingRight"
               android:textColor="@color/PaletteChanuGreen"
-              android:textSize="22dp"
+              android:textSize="@dimen/ItemsDialogFragment_title_textSize"
               android:gravity="center_vertical|left" />
     <View android:id="@+id/titleDivider"
           android:layout_width="match_parent"
-          android:layout_height="2dip"
+          android:layout_height="2dp"
           android:background="@color/PaletteChanuGreen" />
 
     <ListView

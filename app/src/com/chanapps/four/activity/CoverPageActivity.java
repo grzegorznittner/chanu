@@ -9,9 +9,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ListView;
+import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.CoverPageFragment;
+import com.chanapps.four.fragment.PickNewThreadBoardDialogFragment;
 import com.chanapps.four.service.NetworkProfileManager;
 
 public class
@@ -51,6 +53,18 @@ public class
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
+                return true;
+            case R.id.new_thread_menu:
+                new PickNewThreadBoardDialogFragment(handler)
+                        .show(getFragmentManager(), PickNewThreadBoardDialogFragment.TAG);
+                return true;
+            case R.id.offline_chan_view_menu:
+                GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
+                return true;
+            case R.id.global_rules_menu:
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this,
+                        R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
+                rawResourceDialog.show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
