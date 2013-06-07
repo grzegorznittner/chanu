@@ -28,6 +28,7 @@ import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.GenericDialogFragment;
+import com.chanapps.four.fragment.PickShareBoardDialogFragment;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -371,13 +372,28 @@ public class BoardActivity
                 getSupportLoaderManager().restartLoader(0, null, this);
                 return true;
             case R.id.new_thread_menu:
-                PostReplyActivity.startActivity(this, boardCode, 0, 0, "");
+                ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
+                if (board == null || board.isVirtualBoard()) {
+                    new PickShareBoardDialogFragment(handler).show(getFragmentManager(), PickShareBoardDialogFragment.TAG);
+
+                }
+                else {
+                    PostReplyActivity.startActivity(this, boardCode, 0, 0, "");
+                }
                 return true;
             case R.id.offline_board_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);
                 return true;
             case R.id.board_rules_menu:
                 displayBoardRules();
+                return true;
+            case R.id.offline_chan_view_menu:
+                GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
+                return true;
+            case R.id.global_rules_menu:
+                RawResourceDialog rawResourceDialog = new RawResourceDialog(this,
+                        R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
+                rawResourceDialog.show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -410,18 +426,29 @@ public class BoardActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
         MenuItem item = menu.findItem(R.id.toggle_view_type_menu);
         if (item != null) {
             item.setIcon(viewType == ViewType.AS_GRID ? R.drawable.collections_view_as_list : R.drawable.collections_view_as_grid);
             item.setTitle(viewType == ViewType.AS_GRID ? R.string.view_as_list_menu : R.string.view_as_grid_menu);
             item.setVisible(!hasQuery()); // force to list view when has query
         }
-        ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
-        item = menu.findItem(R.id.search_menu);
-        if (board.isVirtualBoard())
-            item.setVisible(false);
-        else
-            item.setVisible(true);
+        if (board == null || board.isVirtualBoard()) {
+            menu.findItem(R.id.refresh_menu).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            menu.findItem(R.id.search_menu).setVisible(false);
+            menu.findItem(R.id.offline_board_view_menu).setVisible(false);
+            menu.findItem(R.id.board_rules_menu).setVisible(false);
+            menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
+            menu.findItem(R.id.global_rules_menu).setVisible(true);
+        }
+        else {
+            menu.findItem(R.id.refresh_menu).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            menu.findItem(R.id.search_menu).setVisible(true);
+            menu.findItem(R.id.offline_board_view_menu).setVisible(true);
+            menu.findItem(R.id.board_rules_menu).setVisible(true);
+            menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
+            menu.findItem(R.id.global_rules_menu).setVisible(false);
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 

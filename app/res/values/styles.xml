@@ -358,7 +358,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_horizontal|top</item>
         <item name="android:textSize">@dimen/BoardGridInfo</item>
-        <item name="android:textColor">@color/PaletteChanuGreen</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:textStyle">bold</item>
     </style>
 

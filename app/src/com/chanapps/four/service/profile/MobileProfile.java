@@ -226,6 +226,13 @@ public class MobileProfile extends AbstractNetworkProfile {
         } else if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
+        } else if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
+                    || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
+                    || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode)) {
+                if (DEBUG) Log.i(TAG, "Manual refresh board=" + boardCode);
+                boolean canFetch = FetchPopularThreadsService.schedulePopularFetchService(context, true, false);
+                if (!canFetch)
+                    postStopMessage(handler, R.string.board_wait_to_refresh);
         } else {
             boolean canFetch = FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false);
             if (!canFetch)
@@ -353,7 +360,8 @@ public class MobileProfile extends AbstractNetworkProfile {
         Handler handler = activity.getChanHandler();
         boolean hasHandler = handler != null;
         boolean isPriority = currentActivityId.priority || data.priority;
-        boolean sameActivity = currentActivityId.activity == LastActivity.POPULAR_ACTIVITY;
+        boolean sameActivity = (currentActivityId.activity == LastActivity.POPULAR_ACTIVITY
+                || (currentActivityId.activity == LastActivity.BOARD_ACTIVITY && board.isVirtualBoard()));
         if (hasHandler && isPriority && sameActivity)
             handler.post(new Runnable() {
                 @Override

@@ -1189,7 +1189,7 @@
     <dimen name="WidgetConfigureOkButton">18sp</dimen>
     <dimen name="BoardSelectorOverlay">14sp</dimen>
     <dimen name="BoardGridSubject">16sp</dimen>
-    <dimen name="BoardGridInfo">16sp</dimen>
+    <dimen name="BoardGridInfo">14sp</dimen>
     <dimen name="BoardGridNumReplies">12sp</dimen>
     <dimen name="BoardGridAbbrev">12sp</dimen>
     <dimen name="BoardGridNumImages">12sp</dimen>
