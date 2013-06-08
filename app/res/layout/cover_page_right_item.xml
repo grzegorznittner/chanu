@@ -13,11 +13,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/board_abbrev_gradient_bg"
+            android:background="@drawable/cover_page_bottom_text_wrapper_selector_bg"
             android:paddingTop="@dimen/PopularItemText_paddingTop"
             android:paddingLeft="@dimen/PopularItemText_paddingLeft"
             android:paddingRight="@dimen/PopularItemText_paddingRight"
             android:paddingBottom="@dimen/PopularItemText_paddingBottom"
+            android:visibility="gone"
             >
         <TextView
                 android:id="@+id/title"
@@ -40,9 +41,4 @@
                 android:maxLines="2"
                 />
     </LinearLayout>
-    <View android:id="@+id/click_target"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:background="@drawable/board_grid_selector_bg"
-            />
 </RelativeLayout>

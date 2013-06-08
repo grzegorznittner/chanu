@@ -50,6 +50,8 @@ public class BoardActivity
 	public static final String TAG = BoardActivity.class.getSimpleName();
 	public static final boolean DEBUG = true;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
+    protected static final String FIRST_VISIBLE_POSITION = "firstVisiblePosition";
+    protected static final String FIRST_VISIBLE_POSITION_OFFSET = "firstVisiblePositionOffset";
 
     protected AbstractBoardCursorAdapter adapter;
     protected View layout;
@@ -65,6 +67,8 @@ public class BoardActivity
     protected int columnHeight = 0;
     protected MenuItem searchMenuItem;
     protected ViewType viewType = ViewType.AS_GRID;
+    protected int firstVisiblePosition = -1;
+    protected int firstVisiblePositionOffset = -1;
 
     public static void startActivity(Activity from, String boardCode, String query) {
         //if (query != null && !query.isEmpty())
@@ -104,7 +108,12 @@ public class BoardActivity
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(ChanBoard.BOARD_CODE, boardCode);
         savedInstanceState.putString(SearchManager.QUERY, query);
-        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/ q=" + query);
+        int pos = absListView == null ? -1 : absListView.getFirstVisiblePosition();
+        View view = absListView == null ? null : absListView.getChildAt(0);
+        int offset = view == null ? 0 : view.getTop();
+        savedInstanceState.putInt(FIRST_VISIBLE_POSITION, pos);
+        savedInstanceState.putInt(FIRST_VISIBLE_POSITION_OFFSET, offset);
+        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/ q=" + query + " pos=" + pos);
     }
 
     @Override
@@ -112,7 +121,9 @@ public class BoardActivity
         super.onRestoreInstanceState(savedInstanceState);
         boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
         query = savedInstanceState.getString(SearchManager.QUERY);
-        if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/ q=" + query);
+        firstVisiblePosition = savedInstanceState.getInt(FIRST_VISIBLE_POSITION);
+        firstVisiblePositionOffset = savedInstanceState.getInt(FIRST_VISIBLE_POSITION_OFFSET);
+        if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/ q=" + query + " pos=" + firstVisiblePosition);
     }
 
     @Override
@@ -128,6 +139,8 @@ public class BoardActivity
         if (data == null) {
             boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
             query = intent.getStringExtra(SearchManager.QUERY);
+            firstVisiblePosition = -1;
+            firstVisiblePositionOffset = -1;
         }
         else {
             List<String> params = data.getPathSegments();
@@ -135,11 +148,15 @@ public class BoardActivity
             if (ChanBoard.getBoardByCode(this, uriBoardCode) != null) {
                 boardCode = uriBoardCode;
                 query = "";
+                firstVisiblePosition = -1;
+                firstVisiblePositionOffset = -1;
                 if (DEBUG) Log.i(TAG, "loaded boardCode=" + boardCode + " from url intent");
             }
             else {
                 boardCode = ChanBoard.POPULAR_BOARD_CODE;
                 query = "";
+                firstVisiblePosition = -1;
+                firstVisiblePositionOffset = -1;
                 if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, using default board");
             }
         }
@@ -293,7 +310,6 @@ public class BoardActivity
         if ((data == null || data.getCount() < 1) && handler != null) {
             NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
             if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
-                stopProgressBarIfLoadersDone();
                 String msg = String.format(getString(R.string.mobile_profile_health_status),
                         health.toString().toLowerCase().replaceAll("_", " "));
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
@@ -303,10 +319,18 @@ public class BoardActivity
             //}
         }
         else {
+            if (firstVisiblePosition >= 0) {
+                if (absListView instanceof ListView)
+                    ((ListView)absListView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
+                else
+                    absListView.setSelection(firstVisiblePosition);
+                firstVisiblePosition = -1;
+                firstVisiblePositionOffset = -1;
+            }
             handleUpdatedThreads(); // see if we need to update
             setActionBarTitle(); // to reflect updated time
-            stopProgressBarIfLoadersDone();
         }
+        stopProgressBarIfLoadersDone();
     }
 
     protected void stopProgressBarIfLoadersDone() {

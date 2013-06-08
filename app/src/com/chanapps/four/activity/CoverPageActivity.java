@@ -73,7 +73,7 @@ public class
 
     @Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(LastActivity.COVER_PAGE_ACTIVITY, CoverPageFragment.TAG);
+		return new ChanActivityId(LastActivity.COVER_PAGE_ACTIVITY, ChanBoard.POPULAR_BOARD_CODE);
 	}
 
     @Override

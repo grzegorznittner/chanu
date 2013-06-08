@@ -70,13 +70,16 @@ public class ThreadActivity
     protected static final int THREAD_DONE = 0x1;
     protected static final int BOARD_DONE = 0x2;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
+    protected static final String FIRST_VISIBLE_POSITION = "firstVisiblePosition";
+    protected static final String FIRST_VISIBLE_POSITION_OFFSET = "firstVisiblePositionOffset";
+    protected static final String FIRST_VISIBLE_BOARD_POSITION = "firstVisibleBoardPosition";
+    protected static final String FIRST_VISIBLE_BOARD_POSITION_OFFSET = "firstVisibleBoardPositionOffset";
 
     protected AbstractBoardCursorAdapter adapter;
     protected View layout;
     protected AbsListView absListView;
     protected Class absListViewClass = GridView.class;
     protected Handler handler;
-    protected BoardCursorLoader cursorLoader;
     protected long tim;
     protected String boardCode;
     protected String query = "";
@@ -84,32 +87,48 @@ public class ThreadActivity
     protected int columnHeight = 0;
     protected MenuItem searchMenuItem;
     protected long threadNo;
+    protected long postNo; // for direct jumps from latest post / recent images
     protected String text;
     protected String imageUrl;
     protected boolean shouldPlayThread = false;
     protected ShareActionProvider shareActionProvider = null;
     protected Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
     protected ActionMode actionMode = null;
+    protected int firstVisiblePosition = -1;
+    protected int firstVisiblePositionOffset = -1;
+    protected int firstVisibleBoardPosition = -1;
+    protected int firstVisibleBoardPositionOffset = -1;
 
     //tablet layout
     protected AbstractBoardCursorAdapter adapterBoardsTablet;
-    protected BoardCursorLoader cursorLoaderBoardsTablet;
     protected AbsListView absBoardListView;
     protected int loadingStatusFlags = 0;
 
     protected ThreadListener threadListener;
 
     public static void startActivity(Activity from, String boardCode, long threadNo, String query) {
+        startActivity(from, boardCode, threadNo, 0, query);
+    }
+
+    public static void startActivity(Activity from, String boardCode, long threadNo, long postNo, String query) {
         if (threadNo <= 0)
             BoardActivity.startActivity(from, boardCode, query);
-        else
+        else if (postNo <= 0)
             from.startActivity(createIntentForActivity(from, boardCode, threadNo, query));
+        else
+            from.startActivity(createIntentForActivity(from, boardCode, threadNo, postNo, query));
     }
 
     public static Intent createIntentForActivity(Context context, final String boardCode, final long threadNo, String query) {
+        return createIntentForActivity(context, boardCode, threadNo, 0, query);
+    }
+
+    public static Intent createIntentForActivity(Context context, final String boardCode,
+                                                 final long threadNo, final long postNo, String query) {
         Intent intent = new Intent(context, ThreadActivity.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(ChanHelper.POST_NO, postNo);
         intent.putExtra(SearchManager.QUERY, query);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
@@ -158,7 +177,20 @@ public class ThreadActivity
         savedInstanceState.putString(ChanBoard.BOARD_CODE, boardCode);
         savedInstanceState.putLong(ChanThread.THREAD_NO, threadNo);
         savedInstanceState.putString(SearchManager.QUERY, query);
-        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/" + threadNo);
+
+        int pos = absListView == null ? -1 : absListView.getFirstVisiblePosition();
+        View view = absListView == null ? null : absListView.getChildAt(0);
+        int offset = view == null ? 0 : view.getTop();
+        savedInstanceState.putInt(FIRST_VISIBLE_POSITION, pos);
+        savedInstanceState.putInt(FIRST_VISIBLE_POSITION_OFFSET, offset);
+
+        int boardPos = absBoardListView == null ? -1 : absBoardListView.getFirstVisiblePosition();
+        View boardView = absBoardListView == null ? null : absBoardListView.getChildAt(0);
+        int boardOffset = boardView == null ? 0 : view.getTop();
+        savedInstanceState.putInt(FIRST_VISIBLE_BOARD_POSITION, boardPos);
+        savedInstanceState.putInt(FIRST_VISIBLE_BOARD_POSITION_OFFSET, boardOffset);
+
+        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/" + threadNo + " pos=" + pos);
     }
 
     @Override
@@ -167,7 +199,11 @@ public class ThreadActivity
         boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
         threadNo = savedInstanceState.getLong(ChanThread.THREAD_NO, 0);
         query = savedInstanceState.getString(SearchManager.QUERY);
-        if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/" + threadNo);
+        firstVisiblePosition = savedInstanceState.getInt(FIRST_VISIBLE_POSITION);
+        firstVisiblePositionOffset = savedInstanceState.getInt(FIRST_VISIBLE_POSITION_OFFSET);
+        firstVisibleBoardPosition = savedInstanceState.getInt(FIRST_VISIBLE_BOARD_POSITION);
+        firstVisibleBoardPositionOffset = savedInstanceState.getInt(FIRST_VISIBLE_BOARD_POSITION_OFFSET);
+        if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/" + threadNo + " pos=" + firstVisiblePosition);
     }
 
     @Override
@@ -184,7 +220,12 @@ public class ThreadActivity
         if (data == null) {
             boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
             threadNo = intent.getLongExtra(ChanThread.THREAD_NO, 0);
+            postNo = intent.getLongExtra(ChanThread.POST_NO, 0);
             query = intent.getStringExtra(SearchManager.QUERY);
+            firstVisiblePosition = -1;
+            firstVisiblePositionOffset = -1;
+            firstVisibleBoardPosition = -1;
+            firstVisibleBoardPositionOffset = -1;
         }
         else {
             List<String> params = data.getPathSegments();
@@ -193,13 +234,23 @@ public class ThreadActivity
             if (ChanBoard.getBoardByCode(this, uriBoardCode) != null && uriThreadNo != null) {
                 boardCode = uriBoardCode;
                 threadNo = Long.valueOf(uriThreadNo);
+                postNo = 0;
                 query = "";
+                firstVisiblePosition = -1;
+                firstVisiblePositionOffset = -1;
+                firstVisibleBoardPosition = -1;
+                firstVisibleBoardPositionOffset = -1;
                 if (DEBUG) Log.i(TAG, "loaded /" + boardCode + "/" + threadNo + " from url intent");
             }
             else {
                 boardCode = ChanBoard.DEFAULT_BOARD_CODE;
                 threadNo = 0;
+                postNo = 0;
                 query = "";
+                firstVisiblePosition = -1;
+                firstVisiblePositionOffset = -1;
+                firstVisibleBoardPosition = -1;
+                firstVisibleBoardPositionOffset = -1;
                 if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, using default board");
             }
         }
@@ -216,23 +267,19 @@ public class ThreadActivity
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ id=" + id);
-        if (id == 0) {
-            if (threadNo > 0) {
-                loadingStatusFlags &= ~THREAD_DONE;
-                cursorLoader = new ThreadCursorLoader(this, boardCode, threadNo, query, absBoardListView == null);
-                if (DEBUG) Log.i(TAG, "Started loader for thread /" + boardCode + "/" + threadNo);
-                setProgressBarIndeterminateVisibility(true);
-            } else {
-                cursorLoader = null;
-                setProgressBarIndeterminateVisibility(false);
-            }
-            return cursorLoader;
+        if (id == 0 && threadNo > 0) {
+            loadingStatusFlags &= ~THREAD_DONE;
+            if (DEBUG) Log.i(TAG, "onCreateLoader returning ThreadCursorLoader /" + boardCode + "/" + threadNo);
+            setProgressBarIndeterminateVisibility(true);
+            return new ThreadCursorLoader(this, boardCode, threadNo, query, absBoardListView == null);
+        } else if (id == 0) {
+            setProgressBarIndeterminateVisibility(false);
+            return null;
         } else {
             loadingStatusFlags &= ~BOARD_DONE;
-            if (DEBUG) Log.i(TAG, "Started loader for board /" + boardCode + "/");
-            cursorLoaderBoardsTablet = new BoardCursorLoader(this, boardCode, "");
+            if (DEBUG) Log.i(TAG, "onCreateLoder returning BoardCursorLoader /" + boardCode + "/");
             setProgressBarIndeterminateVisibility(true);
-            return cursorLoaderBoardsTablet;
+            return new BoardCursorLoader(this, boardCode, "");
         }
     }
 
@@ -306,7 +353,7 @@ public class ThreadActivity
 
     protected void onThreadLoadFinished(Cursor data) {
         adapter.swapCursor(data);
-        if (DEBUG) Log.i(TAG, "listview count=" + absListView.getCount());
+        if (DEBUG) Log.i(TAG, "onThreadLoadFinished listView count=" + absListView.getCount());
         // retry load if maybe data wasn't there yet
         ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
         if ((data == null || data.getCount() < 1
@@ -314,15 +361,39 @@ public class ThreadActivity
                 && handler != null) {
             NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
             if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
-                stopProgressBarIfLoadersDone();
                 String msg = String.format(getString(R.string.mobile_profile_health_status),
                         health.toString().toLowerCase().replaceAll("_", " "));
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
             }
-        } else {
-            loadingStatusFlags |= THREAD_DONE;
-            stopProgressBarIfLoadersDone();
         }
+        else if (postNo > 0) {
+            Cursor cursor = adapter.getCursor();
+            cursor.moveToPosition(-1);
+            boolean found = false;
+            int pos = 0;
+            while (cursor.moveToNext()) {
+                long postNoAtPos = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+                if (postNoAtPos == postNo) {
+                    found = true;
+                    break;
+                }
+                pos++;
+            }
+            if (found) {
+                absListView.setSelection(pos);
+                postNo = -1;
+            }
+        }
+        else if (firstVisiblePosition >= 0) {
+            if (absListView instanceof ListView)
+                ((ListView)absListView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
+            else
+                absListView.setSelection(firstVisiblePosition);
+            firstVisiblePosition = -1;
+            firstVisiblePositionOffset = -1;
+        }
+        loadingStatusFlags |= THREAD_DONE;
+        stopProgressBarIfLoadersDone();
     }
 
     protected void onBoardsTabletLoadFinished(Cursor data) {
@@ -331,24 +402,47 @@ public class ThreadActivity
         if (data != null && data.getCount() < 1 && handler != null) {
             NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
             if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
-                stopProgressBarIfLoadersDone();
                 String msg = String.format(getString(R.string.mobile_profile_health_status),
                         health.toString().toLowerCase().replaceAll("_", " "));
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
             }
-        } else {
-            loadingStatusFlags |= BOARD_DONE;
-            stopProgressBarIfLoadersDone();
         }
+        else if (firstVisibleBoardPosition >= 0) {
+            if (absBoardListView instanceof ListView)
+                ((ListView)absBoardListView).setSelectionFromTop(firstVisibleBoardPosition, firstVisibleBoardPositionOffset);
+            else
+                absBoardListView.setSelection(firstVisibleBoardPosition);
+            firstVisibleBoardPosition = -1;
+            firstVisibleBoardPositionOffset = -1;
+        }
+        else if (threadNo > 0) {
+            Cursor cursor = adapter.getCursor();
+            cursor.moveToPosition(-1);
+            boolean found = false;
+            int pos = 0;
+            while (cursor.moveToNext()) {
+                long threadNoAtPos = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+                if (threadNoAtPos == threadNo) {
+                    found = true;
+                    break;
+                }
+                pos++;
+            }
+            if (found) {
+                absBoardListView.setSelection(pos);
+            }
+        }
+        loadingStatusFlags |= BOARD_DONE;
+        stopProgressBarIfLoadersDone();
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ id=" + loader.getId()
-                + " count=" + (data == null ? 0 : data.getCount()));
-        if (loader == this.cursorLoader)
+                + " count=" + (data == null ? 0 : data.getCount()) + " loader=" + loader);
+        if (loader instanceof ThreadCursorLoader)
             onThreadLoadFinished(data);
-        else if (loader == this.cursorLoaderBoardsTablet)
+        else
             onBoardsTabletLoadFinished(data);
     }
 

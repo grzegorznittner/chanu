@@ -227,6 +227,9 @@ public class ChanPost {
     @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingBooleanDeserializer.class)
     public boolean useFriendlyIds = true;
 
+    // to support latest posts and recent images direct jump to post number
+    @JsonDeserialize(using=JacksonNonBlockingObjectMapperFactory.NonBlockingLongDeserializer.class)
+    public long jumpToPostNo = 0;
 
     public static final String quoteText(String in) {
         if (in == null || in.isEmpty())

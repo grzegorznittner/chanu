@@ -10,9 +10,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.text.Html;
 import android.util.Log;
-import android.util.Pair;
 import android.view.*;
 import android.widget.*;
 import com.chanapps.four.activity.*;
@@ -26,8 +24,6 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-import java.util.*;
-
 public class CoverPageFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
     public static final String TAG = CoverPageFragment.class.getSimpleName();
@@ -37,6 +33,9 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
     private static ImageLoader imageLoader = null;
     private static DisplayImageOptions displayImageOptions;
     private static Typeface subjectTypeface = null;
+    private View topTextWrapper = null;
+    private View leftTextWrapper = null;
+    private View rightTextWrapper = null;
 
     private static void initStatics(View view) {
         subjectTypeface = Typeface.createFromAsset(view.getResources().getAssets(), SUBJECT_FONT);
@@ -55,30 +54,36 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
 
-    protected ImageLoadingListener imageLoadingListener = new ImageLoadingListener() {
-        @Override
-        public void onLoadingStarted(String imageUri, View view) {}
-        @Override
-        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-            makeTextWrapperVisible(view, false);
-        }
-        @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            makeTextWrapperVisible(view, true);
-        }
-        @Override
-        public void onLoadingCancelled(String imageUri, View view) {
-            makeTextWrapperVisible(view, false);
-        }
-    };
+    protected ImageLoadingListener topImageLoadingListener = null;
+    protected ImageLoadingListener leftImageLoadingListener = null;
+    protected ImageLoadingListener rightImageLoadingListener = null;
 
-    protected void makeTextWrapperVisible(View imageView, boolean imageLoaded) {
-        ViewParent parent = imageView.getParent();
-        View parentView = (View)parent;
-        View textWrapperView = parentView.findViewById(R.id.text_wrapper);
-        textWrapperView.setVisibility(View.VISIBLE);
-        if (!imageLoaded)
-            textWrapperView.setBackgroundColor(R.color.PaletteBlack);
+    protected ImageLoadingListener createImageLoadingListener(final View textWrapperView) {
+        return new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {}
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                makeTextWrapperVisible(textWrapperView, false);
+            }
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                makeTextWrapperVisible(textWrapperView, true);
+            }
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+                makeTextWrapperVisible(textWrapperView, false);
+            }
+        };
+    }
+
+    protected void makeTextWrapperVisible(View textWrapperView, boolean imageLoaded) {
+        if (textWrapperView == null)
+            return;
+        if (imageLoaded && textWrapperView.getVisibility() != View.VISIBLE)
+            textWrapperView.setVisibility(View.VISIBLE);
+        //if (!imageLoaded)
+        //    textWrapperView.setBackgroundColor(R.color.PaletteBlack);
     }
 
     public void refresh() {
@@ -203,15 +208,24 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
 
         View topItem = layout.findViewById(R.id.cover_page_top_item);
         setTitleTypeface(topItem);
-        setClickTarget(topItem, ChanBoard.POPULAR_BOARD_CODE);
+        topTextWrapper = topItem.findViewById(R.id.text_wrapper);
+        topTextWrapper.setVisibility(View.GONE);
+        topImageLoadingListener = createImageLoadingListener(topTextWrapper);
+        setClickTarget(topTextWrapper, ChanBoard.POPULAR_BOARD_CODE);
 
         View leftItem = layout.findViewById(R.id.cover_page_left_item);
         setTitleTypeface(leftItem);
-        setClickTarget(leftItem, ChanBoard.LATEST_BOARD_CODE);
+        leftTextWrapper = leftItem.findViewById(R.id.text_wrapper);
+        leftTextWrapper.setVisibility(View.GONE);
+        leftImageLoadingListener = createImageLoadingListener(leftTextWrapper);
+        setClickTarget(leftTextWrapper, ChanBoard.LATEST_BOARD_CODE);
 
         View rightItem = layout.findViewById(R.id.cover_page_right_item);
         setTitleTypeface(rightItem);
-        setClickTarget(rightItem, ChanBoard.LATEST_IMAGES_BOARD_CODE);
+        rightTextWrapper = rightItem.findViewById(R.id.text_wrapper);
+        rightTextWrapper.setVisibility(View.GONE);
+        rightImageLoadingListener = createImageLoadingListener(rightTextWrapper);
+        setClickTarget(rightTextWrapper, ChanBoard.LATEST_IMAGES_BOARD_CODE);
 
         cursor.moveToPosition(-1);
         //int i = 0;
@@ -229,7 +243,7 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
             if ((flags & ChanThread.THREAD_FLAG_POPULAR_THREAD) > 0) {
                 ImageView item = (ImageView)topItem.findViewById(getPopularImageViewId(popular++));
                 if (item != null)
-                    setImageValue(item, cursor);
+                    setImageValue(item, cursor, topImageLoadingListener);
                 String subject = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
                 if (subject != null && !subject.isEmpty())
                     popularText += (popularText.isEmpty() ? "" : " - ") + subject;
@@ -238,7 +252,7 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
             else if ((flags & ChanThread.THREAD_FLAG_LATEST_POST) > 0) {
                 ImageView item = (ImageView)leftItem.findViewById(getLatestImageViewId(latest++));
                 if (item != null)
-                    setImageValue(item, cursor);
+                    setImageValue(item, cursor, leftImageLoadingListener);
                 String subject = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
                 if (DEBUG) Log.i(TAG, "Latest subject=[" + subject + "]");
                 if (subject != null && !subject.isEmpty())
@@ -247,7 +261,7 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
             else if ((flags & ChanThread.THREAD_FLAG_RECENT_IMAGE) > 0) {
                 ImageView item = (ImageView)rightItem.findViewById(getRecentImageViewId(recent++));
                 if (item != null)
-                    setImageValue(item, cursor);
+                    setImageValue(item, cursor, rightImageLoadingListener);
                 String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
                 if (boardCode != null && !boardCode.isEmpty()) {
                     String boardName = ChanBoard.getBoardByCode(getBaseContext(), boardCode).name;
@@ -301,9 +315,21 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     protected void setClickTarget(View item, String boardCode) {
-        View clickTargetView = item.findViewById(R.id.click_target);
-        clickTargetView.setTag(R.id.BOARD_CODE, boardCode);
-        clickTargetView.setOnClickListener(this);
+        item.setTag(R.id.BOARD_CODE, boardCode);
+        item.setOnClickListener(this);
+    }
+
+    protected void setClickTarget(View item, String boardCode, long threadNo) {
+        item.setTag(R.id.BOARD_CODE, boardCode);
+        item.setTag(R.id.THREAD_NO, threadNo);
+        item.setOnClickListener(this);
+    }
+
+    protected void setClickTarget(View item, String boardCode, long threadNo, long postNo) {
+        item.setTag(R.id.BOARD_CODE, boardCode);
+        item.setTag(R.id.THREAD_NO, threadNo);
+        item.setTag(R.id.POST_NO, postNo);
+        item.setOnClickListener(this);
     }
 
     protected int getPopularImageViewId(int i) {
@@ -351,10 +377,12 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
             title.setTypeface(subjectTypeface);
     }
 
-    protected void setImageValue(ImageView imageView, Cursor cursor) {
-        int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        String subject = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+    protected void setImageValue(ImageView imageView, Cursor cursor, ImageLoadingListener imageLoadingListener) {
+        //int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+        //String subject = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+        long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+        long postNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_JUMP_TO_POST_NO));
         String thumbUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
         //String boardName = ChanBoard.getBoardByCode(getBaseContext(), boardCode).name;
 
@@ -373,7 +401,11 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
         }
         textWrapperView.setVisibility(View.GONE);
         */
-        imageLoader.displayImage(thumbUrl, imageView, displayImageOptions, null);
+        imageLoader.displayImage(thumbUrl, imageView, displayImageOptions, imageLoadingListener);
+        if (postNo > 0)
+            setClickTarget(imageView, boardCode, threadNo, postNo);
+        else
+            setClickTarget(imageView, boardCode, threadNo);
         //if (DEBUG) Log.i(TAG, "/" + boardCode + " sub=[" + subject + "] url=[" + thumbUrl + "]");
     }
 
@@ -382,9 +414,19 @@ public class CoverPageFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onClick(View view) {
         String boardCode = (String)view.getTag(R.id.BOARD_CODE);
+        Long threadNoObj = (Long)view.getTag(R.id.THREAD_NO);
+        long threadNo = threadNoObj == null ? 0 : threadNoObj;
+        Long postNoObj = (Long)view.getTag(R.id.POST_NO);
+        long postNo = postNoObj == null ? 0 : postNoObj;
         Activity activity = getActivity();
-        if (boardCode != null && activity != null)
-            BoardActivity.startActivity(activity, boardCode, "");
+        if (activity == null)
+            return;
+        if (boardCode != null && threadNo > 0 && postNo > 0)
+            ThreadActivity.startActivity(activity, boardCode, threadNo, postNo, ""); // FIXME: add post no
+        else if (boardCode != null && threadNo > 0)
+            ThreadActivity.startActivity(activity, boardCode, threadNo, ""); // FIXME: add post no
+        else if (boardCode != null)
+            BoardActivity.startActivity(activity, boardCode, ""); // FIXME: add post no
     }
 
     /*

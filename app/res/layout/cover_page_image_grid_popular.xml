@@ -22,6 +22,7 @@
                 android:layout_weight="1"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
                 />
         <ImageView
                 android:id="@+id/popular_image_1"
@@ -30,6 +31,7 @@
                 android:layout_weight="1"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
                 />
         <ImageView
                 android:id="@+id/popular_image_2"
@@ -38,6 +40,7 @@
                 android:layout_weight="1"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
                 />
     </LinearLayout>
     <LinearLayout
@@ -54,6 +57,7 @@
                 android:layout_weight="1"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
                 />
         <ImageView
                 android:id="@+id/popular_image_4"
@@ -62,6 +66,7 @@
                 android:layout_weight="1"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
                 />
         <ImageView
                 android:id="@+id/popular_image_5"
@@ -70,6 +75,7 @@
                 android:layout_weight="1"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
                 />
     </LinearLayout>
     <LinearLayout
@@ -86,6 +92,7 @@
                 android:layout_weight="1"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
                 />
         <ImageView
                 android:id="@+id/popular_image_7"
@@ -94,6 +101,7 @@
                 android:layout_weight="1"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
                 />
         <ImageView
                 android:id="@+id/popular_image_8"
@@ -102,6 +110,7 @@
                 android:layout_weight="1"
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/thread_post_image"
+                android:background="@drawable/board_grid_selector_bg"
                 />
 
     </LinearLayout>

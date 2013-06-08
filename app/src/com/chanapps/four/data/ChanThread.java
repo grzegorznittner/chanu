@@ -40,6 +40,7 @@ public class ChanThread extends ChanPost {
     public static final String THREAD_NUM_IMAGES = "threadNumImages";
     public static final String THREAD_TN_W = "threadThumbWidth";
     public static final String THREAD_TN_H = "threadThumbHeight";
+    public static final String THREAD_JUMP_TO_POST_NO = "threadJumpToPostNo";
     public static final String THREAD_FLAGS = "threadFlags";
 
     public static final int THREAD_FLAG_DEAD = 0x001;
@@ -68,6 +69,7 @@ public class ChanThread extends ChanPost {
             THREAD_NUM_IMAGES,
             THREAD_TN_W,
             THREAD_TN_H,
+            THREAD_JUMP_TO_POST_NO,
             THREAD_FLAGS
     };
 
@@ -108,6 +110,7 @@ public class ChanThread extends ChanPost {
                 post.images,
                 post.tn_w > 0 ? post.tn_w : MAX_THUMBNAIL_PX,
                 post.tn_h > 0 ? post.tn_h : MAX_THUMBNAIL_PX,
+                post.jumpToPostNo,
                 threadFlags(post) | extraFlags
         };
     }
@@ -128,6 +131,7 @@ public class ChanThread extends ChanPost {
                 0,
                 MAX_THUMBNAIL_PX,
                 MAX_THUMBNAIL_PX,
+                0,
                 THREAD_FLAG_BOARD
         };
     }
@@ -145,6 +149,7 @@ public class ChanThread extends ChanPost {
                 "",
                 "",
                 "",
+                0,
                 0,
                 0,
                 0,
@@ -173,6 +178,7 @@ public class ChanThread extends ChanPost {
                 0,
                 0,
                 0,
+                0,
                 THREAD_FLAG_TITLE
         };
     }
@@ -189,6 +195,7 @@ public class ChanThread extends ChanPost {
                 "",
                 "",
                 "",
+                0,
                 0,
                 0,
                 0,
@@ -214,6 +221,7 @@ public class ChanThread extends ChanPost {
                 0,
                 MAX_THUMBNAIL_PX,
                 MAX_THUMBNAIL_PX,
+                0,
                 THREAD_FLAG_AD
         };
     }
@@ -294,6 +302,7 @@ public class ChanThread extends ChanPost {
     	t.omitted_images = omitted_images;
     	t.omitted_posts = omitted_posts;
     	t.resto = resto;
+        t.jumpToPostNo = jumpToPostNo;
     	t.defData = false;
 
     	if (posts.length > 0 && posts[0] != null) {
@@ -323,6 +332,7 @@ public class ChanThread extends ChanPost {
 	    	t.trip = posts[0].trip;
 	    	t.useFriendlyIds = posts[0].useFriendlyIds;
 	    	t.w = posts[0].w;
+            t.jumpToPostNo = posts[0].jumpToPostNo;
     	}
     	
     	return t;

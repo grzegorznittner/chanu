@@ -14,11 +14,12 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="vertical"
-            android:background="@drawable/board_subject_gradient_bg"
+            android:background="@drawable/cover_page_top_text_wrapper_selector_bg"
             android:paddingTop="@dimen/PopularTitle_paddingTop"
             android:paddingLeft="@dimen/PopularTitle_paddingLeft"
             android:paddingRight="@dimen/PopularTitle_paddingRight"
             android:paddingBottom="@dimen/PopularTitle_paddingBottom"
+            android:visibility="gone"
             >
         <TextView
                 android:id="@+id/title"
@@ -28,6 +29,10 @@
                 android:textStyle="bold"
                 android:textColor="@color/PaletteWhite"
                 android:gravity="left|top"
+                android:shadowColor="@color/PaletteBlack"
+                android:shadowDx="3"
+                android:shadowDy="3"
+                android:shadowRadius="3"
                 android:text="@string/popular_title_popular"
                 />
         <TextView
@@ -41,9 +46,4 @@
                 android:maxLines="2"
                 />
     </LinearLayout>
-    <View android:id="@+id/click_target"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:background="@drawable/board_grid_selector_bg"
-            />
 </RelativeLayout>

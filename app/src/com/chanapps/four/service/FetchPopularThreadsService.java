@@ -283,6 +283,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 		
 		thread.board = str.extract(".4chan.org/", "/");
 		thread.no = Long.parseLong(str.extract("res/", "#p"));
+        thread.jumpToPostNo = Long.parseLong(str.extract("#p", "\""));
         //String image = str.extract("&lt;a href=&quot;#&quot;&gt;", "&lt;/a&gt;");
 		
 		if (str.moveTo(")&lt;")) {
