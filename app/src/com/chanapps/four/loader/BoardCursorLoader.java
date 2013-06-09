@@ -3,7 +3,9 @@ package com.chanapps.four.loader;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import android.content.Context;
 import android.database.ContentObserver;
@@ -121,25 +123,56 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                         context.getString(R.string.thread_search_no_results)));
             }
 
-            if (!board.isVirtualBoard()) { // add related boards
-                matrixCursor.addRow(ChanThread.makeButtonRow(boardName, context.getString(R.string.new_thread_short).toUpperCase()));
-                String desc = String.format(context.getString(R.string.board_related_boards_desc), board.link);
-                matrixCursor.addRow(ChanThread.makeTitleRow(boardName,
-                        context.getString(R.string.board_related_boards_title), desc));
-                long threadNo = (board.threads != null && board.threads.length >= 3 && board.threads[3] != null)
-                        ? board.threads[3].no
-                        : 0;
-                for (ChanBoard relatedBord : board.relatedBoards(context, threadNo)) {
-                    matrixCursor.addRow(relatedBord.makeRow(context, threadNo));
-                }
-            }
-
+            addRelatedBoards(matrixCursor, board);
             // always put an ad at the bottom
             //if (!board.isVirtualBoard())
             //    matrixCursor.addRow(board.makeThreadAdRow(getContext(), i));
         }
         registerContentObserver(matrixCursor, mObserver);
         return matrixCursor;
+    }
+
+    protected void addRelatedBoards(MatrixCursor matrixCursor, ChanBoard board) {
+        long threadNo = (board.threads != null && board.threads.length >= 3 && board.threads[3] != null)
+                ? board.threads[3].no
+                : 0; // used to cause stable but random related board images
+        int stringId;
+        if (ChanBoard.POPULAR_BOARD_CODE.equals(board.link))
+            stringId = R.string.board_related_boards_title_popular_format;
+        else if (ChanBoard.LATEST_BOARD_CODE.equals(board.link))
+            stringId = R.string.board_related_boards_title_latest_format;
+        else if (ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(board.link))
+            stringId = R.string.board_related_boards_title_recent_format;
+        else
+            stringId = R.string.board_related_boards_title_format;
+        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(board.link)) {
+            // skip until we figure out how to do it
+        }
+        else if (board.isVirtualBoard()) {
+            Set<String> relatedCodes = new HashSet<String>();
+            for (ChanPost thread : board.threads)
+                if (thread != null && thread.board != null && !thread.board.isEmpty())
+                    relatedCodes.add(thread.board);
+            for (String relatedCode : relatedCodes) {
+                ChanBoard relatedBoard = ChanBoard.getBoardByCode(context, relatedCode);
+                if (relatedBoard != null) {
+                    ChanBoard addBoard = relatedBoard.copy();
+                    addBoard.name = context.getString(stringId);
+                    matrixCursor.addRow(addBoard.makeRow(context, threadNo));
+                }
+            }
+        }
+        else { // add related boards
+            //matrixCursor.addRow(ChanThread.makeButtonRow(boardName, context.getString(R.string.new_thread_short).toUpperCase()));
+            //String desc = String.format(context.getString(R.string.board_related_boards_desc), board.link);
+            //matrixCursor.addRow(ChanThread.makeTitleRow(boardName,
+            //        context.getString(R.string.board_related_boards_title), desc));
+            for (ChanBoard relatedBoard : board.relatedBoards(context, threadNo)) {
+                ChanBoard addBoard = relatedBoard.copy();
+                addBoard.name = context.getString(stringId);
+                matrixCursor.addRow(addBoard.makeRow(context, threadNo));
+            }
+        }
     }
 
     /**

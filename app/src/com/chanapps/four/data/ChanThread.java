@@ -29,7 +29,6 @@ public class ChanThread extends ChanPost {
     public static final String THREAD_COMPOSITE_ID = "_id";
     public static final String THREAD_BOARD_CODE = "threadBoardCode";
     public static final String THREAD_NO = "threadNo";
-    public static final String THREAD_TITLE = "threadTitle";
     public static final String THREAD_SUBJECT = "threadSub";
     public static final String THREAD_HEADLINE = "threadHeadline";
     public static final String THREAD_TEXT = "threadText";
@@ -58,7 +57,6 @@ public class ChanThread extends ChanPost {
             THREAD_COMPOSITE_ID,
             THREAD_BOARD_CODE,
             THREAD_NO,
-            THREAD_TITLE,
             THREAD_SUBJECT,
             THREAD_HEADLINE,
             THREAD_TEXT,
@@ -99,7 +97,6 @@ public class ChanThread extends ChanPost {
                 id.hashCode(),
                 post.board,
                 post.no,
-                "",
                 textComponents[0],
                 post.headline(query, true, null),
                 textComponents[1],
@@ -120,7 +117,6 @@ public class ChanThread extends ChanPost {
                 boardCode.hashCode(),
                 boardCode,
                 0,
-                "",
                 boardName,
                 ChanBoard.getDescription(context, boardCode),
                 "",
@@ -144,7 +140,6 @@ public class ChanThread extends ChanPost {
                 0,
                 context.getString(boardType.displayStringId()),
                 context.getString(boardType.descStringId()),
-                "",
                 "",
                 "",
                 "",
@@ -173,7 +168,6 @@ public class ChanThread extends ChanPost {
                 "",
                 "",
                 "",
-                "",
                 0,
                 0,
                 0,
@@ -183,26 +177,6 @@ public class ChanThread extends ChanPost {
         };
     }
 
-    public static Object[] makeButtonRow(String boardCode, String title) {
-        return new Object[] {
-                title.hashCode(),
-                boardCode,
-                0,
-                title,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                0,
-                0,
-                0,
-                0,
-                0,
-                THREAD_FLAG_BUTTON
-        };
-    }
     public static final String AD_DELIMITER = "\t";
 
     public static Object[] makeAdRow(Context context, String boardCode, ChanAd ad) {
@@ -210,7 +184,6 @@ public class ChanThread extends ChanPost {
                 ad.hashCode(),
                 boardCode,
                 0,
-                "",
                 context.getResources().getString(R.string.board_advert_full),
                 "",
                 context.getResources().getString(R.string.board_advert_info),

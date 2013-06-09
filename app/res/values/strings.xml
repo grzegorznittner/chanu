@@ -35,6 +35,10 @@
     <string name="search_results_title">Search Results</string>
     <string name="board_search_results">MATCHING THREADS FOR %1$s</string>
     <string name="board_related_boards_title">Related Boards</string>
+    <string name="board_related_boards_title_format">Related Board</string>
+    <string name="board_related_boards_title_popular_format">Popular Board</string>
+    <string name="board_related_boards_title_latest_format">Latest Post Board</string>
+    <string name="board_related_boards_title_recent_format">Latest Image Board</string>
     <string name="board_related_boards_desc">Boards having similar topics to /%1$s/</string>
 
     <!-- blocklist -->
@@ -425,8 +429,8 @@
     <string name="post_reply_send">Send</string>
     <string name="post_reply_share_error">Couldn\'t share image to Chanu</string>
     <string name="post_reply_new_thread_error">Couldn\'t post new thread</string>
-    <string name="post_reply_share_pick_board">Pick Board for New Thread</string>
-    <string name="post_reply_new_thread_pick_board">Pick Board</string>
+    <string name="post_reply_share_pick_board">New Thread - Pick Board</string>
+    <string name="post_reply_new_thread_pick_board">New Thread - Pick Board</string>
 
     <!-- cover page -->
     <string name="popular_title_popular">Popular Threads</string>
@@ -1200,7 +1204,7 @@
     <dimen name="BoardTypeText">18sp</dimen>
     <dimen name="WidgetConfigureOkButton">18sp</dimen>
     <dimen name="BoardSelectorOverlay">14sp</dimen>
-    <dimen name="BoardGridSubject">16sp</dimen>
+    <dimen name="BoardGridSubject">22sp</dimen>
     <dimen name="BoardGridInfo">14sp</dimen>
     <dimen name="BoardGridNumReplies">12sp</dimen>
     <dimen name="BoardGridAbbrev">12sp</dimen>

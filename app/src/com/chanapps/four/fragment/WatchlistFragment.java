@@ -43,7 +43,7 @@ public class WatchlistFragment
     private AbsListView absListView;
     private TextView emptyText;
     private int columnWidth = 0;
-    private int columnHeight = 0;
+    //private int columnHeight = 0;
 
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
@@ -104,8 +104,8 @@ public class WatchlistFragment
         ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.SELECTOR);
         cg.sizeGridToDisplay();
         columnWidth = cg.getColumnWidth();
-        columnHeight = cg.getColumnHeight();
-        adapter = new BoardGridCursorAdapter(getActivity().getApplicationContext(), this, columnWidth, columnHeight);
+        //columnHeight = cg.getColumnHeight();
+        adapter = new BoardGridCursorAdapter(getActivity().getApplicationContext(), this);//, columnWidth);//, columnHeight);
         absListView.setAdapter(adapter);
         absListView.setClickable(true);
         absListView.setOnItemClickListener(this);
@@ -196,8 +196,8 @@ public class WatchlistFragment
         }
         final FragmentActivity activity = getActivity();
 
-        final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
-        final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+        final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+        final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
         if ((threadFlags & ChanThread.THREAD_FLAG_TITLE) > 0
                 && title != null && !title.isEmpty()
                 && desc != null && !desc.isEmpty()) {

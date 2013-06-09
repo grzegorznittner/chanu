@@ -22,23 +22,17 @@ import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
-import com.chanapps.four.adapter.BoardListCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.GenericDialogFragment;
 import com.chanapps.four.fragment.PickNewThreadBoardDialogFragment;
-import com.chanapps.four.fragment.PickShareBoardDialogFragment;
 import com.chanapps.four.loader.BoardCursorLoader;
-import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.viewer.BoardGridViewer;
-import com.chanapps.four.viewer.BoardListViewer;
 import com.chanapps.four.viewer.ViewType;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class BoardActivity
         extends AbstractDrawerActivity
@@ -55,16 +49,13 @@ public class BoardActivity
 
     protected AbstractBoardCursorAdapter adapter;
     protected View layout;
-    protected AbsListView absListView;
-    protected Class absListViewClass = GridView.class;
+    protected StaggeredGridView staggeredGridView;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
     protected Menu menu;
     protected long tim;
     protected String boardCode;
     protected String query = "";
-    protected int columnWidth = 0;
-    protected int columnHeight = 0;
     protected MenuItem searchMenuItem;
     protected ViewType viewType = ViewType.AS_GRID;
     protected int firstVisiblePosition = -1;
@@ -101,6 +92,7 @@ public class BoardActivity
         if (boardCode == null || boardCode.isEmpty())
             boardCode = ChanBoard.POPULAR_BOARD_CODE;
         if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/ q=" + query);
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -108,12 +100,14 @@ public class BoardActivity
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(ChanBoard.BOARD_CODE, boardCode);
         savedInstanceState.putString(SearchManager.QUERY, query);
-        int pos = absListView == null ? -1 : absListView.getFirstVisiblePosition();
-        View view = absListView == null ? null : absListView.getChildAt(0);
+        /*
+        int pos = staggeredGridView == null ? -1 : staggeredGridView.getFirstVisiblePosition();
+        View view = staggeredGridView == null ? null : staggeredGridView.getChildAt(0);
         int offset = view == null ? 0 : view.getTop();
         savedInstanceState.putInt(FIRST_VISIBLE_POSITION, pos);
         savedInstanceState.putInt(FIRST_VISIBLE_POSITION_OFFSET, offset);
-        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/ q=" + query + " pos=" + pos);
+        */
+        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/ q=" + query);
     }
 
     @Override
@@ -121,9 +115,9 @@ public class BoardActivity
         super.onRestoreInstanceState(savedInstanceState);
         boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
         query = savedInstanceState.getString(SearchManager.QUERY);
-        firstVisiblePosition = savedInstanceState.getInt(FIRST_VISIBLE_POSITION);
-        firstVisiblePositionOffset = savedInstanceState.getInt(FIRST_VISIBLE_POSITION_OFFSET);
-        if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/ q=" + query + " pos=" + firstVisiblePosition);
+        //firstVisiblePosition = savedInstanceState.getInt(FIRST_VISIBLE_POSITION);
+        //firstVisiblePositionOffset = savedInstanceState.getInt(FIRST_VISIBLE_POSITION_OFFSET);
+        if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/ q=" + query);
     }
 
     @Override
@@ -163,32 +157,8 @@ public class BoardActivity
         if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/ q=" + query);
     }
 
-    protected void sizeGridToDisplay() {
-        Display display = getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.BOARD);
-        cg.sizeGridToDisplay();
-        columnWidth = cg.getColumnWidth();
-        columnHeight = cg.getColumnHeight();
-    }
-
-    protected void initAdapter() {
-        if (absListView instanceof GridView)
-            adapter = new BoardGridCursorAdapter(this, this, columnWidth, columnHeight);
-        else
-            adapter = new BoardListCursorAdapter(this, this);
-        absListView.setAdapter(adapter);
-    }
-
     protected int getLayoutId() {
-        if (GridView.class.equals(absListViewClass))
-            return R.layout.board_grid_layout;
-        else
-            return R.layout.board_list_layout;
-    }
-
-    protected void setAbsListViewClass() { // override to change
-        if (hasQuery()) viewType = ViewType.AS_LIST;
-        absListViewClass = viewType == ViewType.AS_LIST ? ListView.class : GridView.class;
+        return R.layout.board_grid_layout;
     }
 
     protected boolean hasQuery() {
@@ -196,31 +166,29 @@ public class BoardActivity
         return searchQuery != null && !searchQuery.isEmpty();
     }
 
-    protected void initAbsListView() {
-        if (GridView.class.equals(absListViewClass)) {
-            absListView = (GridView)findViewById(R.id.board_grid_view);
-            sizeGridToDisplay();
-        }
-        else {
-            absListView = (ListView)findViewById(R.id.board_list_view);
-        }
-    }
+    protected int ITEM_MARGIN_DP = 8;
 
     protected void createAbsListView() {
-        setAbsListViewClass();
         // we don't use fragments, but create anything needed
         FrameLayout contentFrame = (FrameLayout)findViewById(R.id.content_frame);
         if (contentFrame.getChildCount() > 0)
             contentFrame.removeAllViews();
         layout = View.inflate(getApplicationContext(), getLayoutId(), null);
         contentFrame.addView(layout);
-        initAbsListView();
-        initAdapter();
-        absListView.setClickable(true);
-        absListView.setOnItemClickListener(boardItemListener);
-        absListView.setLongClickable(false);
-        ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
-        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
+        adapter = new BoardGridCursorAdapter(this, this);//, columnWidth); //, columnHeight);
+        staggeredGridView = (StaggeredGridView)findViewById(R.id.board_grid_view);
+        staggeredGridView.setItemMargin(ChanGridSizer.dpToPx(getResources().getDisplayMetrics(), ITEM_MARGIN_DP));
+        staggeredGridView.setAdapter(adapter);
+        staggeredGridView.setClickable(true);
+        staggeredGridView.setOnItemClickListener(boardItemListener);
+        staggeredGridView.setLongClickable(false);
+        staggeredGridView.setDrawSelectorOnTop(true);
+        staggeredGridView.setSelector(R.drawable.board_grid_selector_bg);
+        staggeredGridView.setScrollbarFadingEnabled(true);
+        staggeredGridView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+
+        //ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
+        //staggeredGridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
     }
 
     @Override
@@ -241,7 +209,8 @@ public class BoardActivity
         handleUpdatedThreads();
         invalidateOptionsMenu(); // for correct spinner display
 		NetworkProfileManager.instance().activityChange(this);
-		getSupportLoaderManager().restartLoader(0, null, this);
+        if (adapter == null || adapter.getCount() == 0)
+            getSupportLoaderManager().restartLoader(0, null, this);
         new TutorialOverlay(layout, Page.BOARD);
     }
 
@@ -267,7 +236,7 @@ public class BoardActivity
         /*
         adapter = null;
         layout = null;
-        absListView = null;
+        staggeredGridView = null;
         cursorLoader = null;
         menu = null;
         */
@@ -284,10 +253,7 @@ public class BoardActivity
 
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        if (viewType == ViewType.AS_GRID)
-            return BoardGridViewer.setViewValue(view, cursor, boardCode);
-        else
-            return BoardListViewer.setViewValue(view, cursor, boardCode);
+        return BoardGridViewer.setViewValue(view, cursor, boardCode);
     }
 
     @Override
@@ -302,7 +268,7 @@ public class BoardActivity
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ q=" + query + " id=" + loader.getId()
                 + " count=" + (data == null ? 0 : data.getCount()));
-        if (absListView == null)
+        if (staggeredGridView == null)
             createAbsListView();
 		adapter.swapCursor(data);
 
@@ -318,18 +284,20 @@ public class BoardActivity
             //    handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
             //}
         }
+        /*
         else {
             if (firstVisiblePosition >= 0) {
-                if (absListView instanceof ListView)
-                    ((ListView)absListView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
-                else
-                    absListView.setSelection(firstVisiblePosition);
+                //if (staggeredGridView instanceof ListView)
+                //    ((ListView) staggeredGridView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
+                //else
+                staggeredGridView.setSelection(firstVisiblePosition);
                 firstVisiblePosition = -1;
                 firstVisiblePositionOffset = -1;
             }
             handleUpdatedThreads(); // see if we need to update
             setActionBarTitle(); // to reflect updated time
         }
+        */
         stopProgressBarIfLoadersDone();
     }
 
@@ -344,13 +312,14 @@ public class BoardActivity
             adapter.swapCursor(null);
 	}
 
-    AbsListView.OnItemClickListener boardItemListener = new AdapterView.OnItemClickListener() {
+    StaggeredGridView.OnItemClickListener boardItemListener = new StaggeredGridView.OnItemClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+        public void onItemClick(StaggeredGridView adapterView, View view, int position, long id) {
+            Cursor cursor = adapter.getCursor();
+            cursor.moveToPosition(position);
             int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-            final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
-            final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+            final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+            final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
             if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
                 String[] clickUrls = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL))
                         .split(ChanThread.AD_DELIMITER);
@@ -388,13 +357,8 @@ public class BoardActivity
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
-                return true;
-            case R.id.toggle_view_type_menu:
-            	//NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_LIST_VIEW);
-                viewType = viewType == ViewType.AS_GRID ? ViewType.AS_LIST : ViewType.AS_GRID;
-                invalidateOptionsMenu();
-                createAbsListView();
-                getSupportLoaderManager().restartLoader(0, null, this);
+                if (staggeredGridView != null)
+                    staggeredGridView.setSelectionToTop();
                 return true;
             case R.id.new_thread_menu:
                 ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
@@ -450,12 +414,6 @@ public class BoardActivity
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
-        MenuItem item = menu.findItem(R.id.toggle_view_type_menu);
-        if (item != null) {
-            item.setIcon(viewType == ViewType.AS_GRID ? R.drawable.collections_view_as_list : R.drawable.collections_view_as_grid);
-            item.setTitle(viewType == ViewType.AS_GRID ? R.string.view_as_list_menu : R.string.view_as_grid_menu);
-            item.setVisible(!hasQuery()); // force to list view when has query
-        }
         if (board == null || board.isVirtualBoard()) {
             menu.findItem(R.id.refresh_menu).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
             menu.findItem(R.id.search_menu).setVisible(false);
@@ -560,7 +518,7 @@ public class BoardActivity
         handleUpdatedThreads();
         setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
-        //if (absListView == null || absListView.getCount() < 1)
+        //if (staggeredGridView == null || staggeredGridView.getCount() < 1)
         //    createAbsListView();
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board == null) {

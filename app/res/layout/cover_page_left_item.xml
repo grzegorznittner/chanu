@@ -28,6 +28,10 @@
                 android:textStyle="bold"
                 android:textColor="@color/PaletteWhite"
                 android:gravity="left|top"
+                android:shadowColor="@color/PaletteBlack"
+                android:shadowDx="3"
+                android:shadowDy="3"
+                android:shadowRadius="3"
                 android:text="@string/popular_title_latest"
                 />
         <TextView
@@ -39,6 +43,10 @@
                 android:textColor="@color/PaletteWhite"
                 android:gravity="left|top"
                 android:maxLines="2"
+                android:shadowColor="@color/PaletteBlack"
+                android:shadowDx="3"
+                android:shadowDy="3"
+                android:shadowRadius="3"
                 />
     </LinearLayout>
 </RelativeLayout>

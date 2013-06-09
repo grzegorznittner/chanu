@@ -17,39 +17,38 @@ import com.chanapps.four.data.ChanThread;
 public class BoardSelectorGridCursorAdapter extends AbstractBoardCursorAdapter {
 
     private int columnWidth;
-    private int columnHeight;
+    //private int columnHeight;
 
-    protected BoardSelectorGridCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to, int columnWidth, int columnHeight) {
+    protected BoardSelectorGridCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to, int columnWidth){//}, int columnHeight) {
         super(context, layout, viewBinder, from, to);
         this.columnWidth = columnWidth;
-        this.columnHeight = columnHeight;
+        //this.columnHeight = columnHeight;
     }
 
-    public BoardSelectorGridCursorAdapter(Context context, ViewBinder viewBinder, int columnWidth, int columnHeight) {
+    public BoardSelectorGridCursorAdapter(Context context, ViewBinder viewBinder, int columnWidth){//}, int columnHeight) {
         this(context,
                 R.layout.board_selector_grid_item,
                 viewBinder,
                 new String[] {
-                        ChanThread.THREAD_TITLE,
                         ChanThread.THREAD_SUBJECT,
                         ChanThread.THREAD_THUMBNAIL_URL
                 },
                 new int[] {
-                        R.id.grid_item_thread_title,
                         R.id.grid_item_thread_subject,
                         R.id.grid_item_thread_thumb
                 },
-                columnWidth,
-                columnHeight);
+                columnWidth
+                //,columnHeight
+        );
     }
 
     protected View newView(Context context, ViewGroup parent, String tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
         View view = mInflater.inflate(R.layout.board_selector_grid_item, parent, false);
         ViewGroup.LayoutParams params = view.getLayoutParams();
-        if (params != null && columnWidth > 0 && columnHeight > 0) {
+        if (params != null && columnWidth > 0){// && columnHeight > 0) {
             params.width = columnWidth;
-            params.height = columnHeight;
+            //params.height = columnHeight;
         }
         return view;
     }

@@ -1,39 +1,77 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/grid_item"
-    style="@style/BoardGridLayout">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+        >
 
-    <ImageView
-            android:id="@+id/grid_item_thread_thumb"
-            style="@style/BoardGridImage"
-            />
-
+    <!--
     <TextView
             android:id="@+id/grid_item_board_abbrev"
             style="@style/BoardGridAbbrev"
             />
-
     <LinearLayout
             android:id="@+id/grid_item_text_wrapper"
             style="@style/BoardGridOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/PaletteTransparent"
+            >
+    -->
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="28dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:background="@drawable/card_background_shadow"
+            android:orientation="vertical"
             >
 
         <TextView
                 android:id="@+id/grid_item_thread_subject"
-                style="@style/BoardGridSubject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/PaletteBlack"
+                android:textSize="@dimen/BoardGridSubject"
+                />
+
+        <TextView
+                android:id="@+id/grid_item_board_abbrev"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/PaletteMedLightGray"
+                android:textSize="@dimen/BoardGridInfo"
                 />
 
         <TextView
                 android:id="@+id/grid_item_thread_info"
-                style="@style/BoardGridInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/PaletteMedLightGray"
+                android:textSize="@dimen/BoardGridInfo"
                 />
 
-    </LinearLayout>
+        <ImageView
+                android:id="@+id/grid_item_country_flag"
+                android:layout_width="@dimen/BoardGridCountryFlag_layout_width"
+                android:layout_height="@dimen/BoardGridCountryFlag_layout_height"
+                android:scaleType="fitXY"
+                android:contentDescription="@string/thread_country_flag"
+                />
 
-    <ImageView
-            android:id="@+id/grid_item_country_flag"
-            style="@style/BoardGridCountryFlag"
-            />
+        <com.chanapps.four.component.StretchyImageView
+                android:id="@+id/grid_item_thread_thumb"
+                android:scaleType="fitCenter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="@string/thread_post_image"
+                />
 
+    <!--
     <TextView
             android:id="@+id/grid_item_thread_title"
             style="@style/BoardTypeText"
@@ -43,11 +81,13 @@
             android:id="@+id/grid_item_thread_button"
             style="@style/BoardButtonText"
             />
-
+    -->
+    <!--
     <View
         android:id="@+id/grid_item_click_effect"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/board_grid_selector_bg"/>
-
-</RelativeLayout>
+    -->
+        </LinearLayout>
+</LinearLayout>

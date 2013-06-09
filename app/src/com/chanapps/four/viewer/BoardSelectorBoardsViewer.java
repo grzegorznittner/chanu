@@ -48,8 +48,6 @@ public class BoardSelectorBoardsViewer {
         switch (view.getId()) {
             case R.id.grid_item_thread_subject:
                 return setThreadSubject((TextView) view, cursor);
-            case R.id.grid_item_thread_title:
-                return setThreadTitle((TextView) view, cursor);
             case R.id.grid_item_thread_thumb:
                 return setThreadThumb((ImageView) view, cursor);
             case R.id.grid_item_country_flag:
@@ -66,19 +64,6 @@ public class BoardSelectorBoardsViewer {
         }
         else {
             tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT))));
-        }
-        return true;
-    }
-
-    static protected boolean setThreadTitle(TextView tv, Cursor cursor) {
-        int threadFlags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        if ((threadFlags & ChanThread.THREAD_FLAG_TITLE) > 0) {
-            tv.setText(Html.fromHtml(cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE))));
-            tv.setVisibility(View.VISIBLE);
-        }
-        else {
-            tv.setVisibility(View.GONE);
-            tv.setText("");
         }
         return true;
     }

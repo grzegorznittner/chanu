@@ -11,11 +11,6 @@
           android:title="@string/refresh_board_menu"
           android:icon="@drawable/navigation_refresh"
             />
-    <item android:id="@+id/toggle_view_type_menu"
-          android:title="@string/view_as_list_menu"
-          android:icon="@drawable/collections_view_as_list"
-          android:showAsAction="ifRoom"
-            />
     <item android:id="@+id/new_thread_menu"
           android:title="@string/new_thread_menu"
           android:icon="@drawable/content_new"

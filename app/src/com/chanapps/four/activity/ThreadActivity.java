@@ -84,7 +84,7 @@ public class ThreadActivity
     protected String boardCode;
     protected String query = "";
     protected int columnWidth = 0;
-    protected int columnHeight = 0;
+    //protected int columnHeight = 0;
     protected MenuItem searchMenuItem;
     protected long threadNo;
     protected long postNo; // for direct jumps from latest post / recent images
@@ -329,7 +329,7 @@ public class ThreadActivity
         adapter = new ThreadListCursorAdapter(this, this);
         absListView.setAdapter(adapter);
         if (absBoardListView != null && absBoardListView instanceof GridView) {
-            adapterBoardsTablet = new BoardGridCursorAdapter(this, this, columnWidth, columnHeight);
+            adapterBoardsTablet = new BoardGridCursorAdapter(this, this);//, columnWidth);//, columnHeight);
             absBoardListView.setAdapter(adapterBoardsTablet);
         }
     }
@@ -346,7 +346,7 @@ public class ThreadActivity
         ChanGridSizer cg = new ChanGridSizer(absBoardListView, display, ChanGridSizer.ServiceType.BOARDTHREAD);
         cg.sizeGridToDisplay();
         columnWidth = cg.getColumnWidth();
-        columnHeight = cg.getColumnHeight();
+        //columnHeight = cg.getColumnHeight();
         ViewGroup.LayoutParams params = absBoardListView.getLayoutParams();
         params.width = columnWidth; // 1-column-wide, no padding
     }
@@ -820,8 +820,8 @@ public class ThreadActivity
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Cursor cursor = (Cursor) parent.getItemAtPosition(position);
             int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-            final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
-            final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+            final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+            final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
             if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
                 final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
                 ChanHelper.launchUrlInBrowser(ThreadActivity.this, clickUrl);
@@ -1076,8 +1076,8 @@ public class ThreadActivity
                                     if (absListView == null || adapter == null)
                                         return;
                                     /*
-                                    int first = absListView.getFirstVisiblePosition();
-                                    int last = absListView.getLastVisiblePosition();
+                                    int first = staggeredGridView.getFirstVisiblePosition();
+                                    int last = staggeredGridView.getLastVisiblePosition();
                                     for (int pos = first; pos <= last; pos++)
                                         expandVisibleItem(first, pos);
                                     */
@@ -1085,7 +1085,7 @@ public class ThreadActivity
                                 }
                                 /*
                                 private void expandVisibleItem(int first, int pos) {
-                                    View listItem = absListView.getChildAt(pos - first);
+                                    View listItem = staggeredGridView.getChildAt(pos - first);
                                     View image = listItem == null ? null : listItem.findViewById(R.id.list_item_image);
                                     Cursor cursor = adapter.getCursor();
                                     //if (DEBUG) Log.i(TAG, "pos=" + pos + " listItem=" + listItem + " expandButton=" + expandButton);
@@ -1096,7 +1096,7 @@ public class ThreadActivity
                                             && cursor.moveToPosition(pos))
                                     {
                                         long id = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-                                        absListView.performItemClick(image, pos, id);
+                                        staggeredGridView.performItemClick(image, pos, id);
                                     }
                                 }
                                 */
@@ -1130,7 +1130,7 @@ public class ThreadActivity
             return false;
         if (absListView == null || adapter == null || adapter.getCount() <= 0)
             return false;
-        //if (absListView.getLastVisiblePosition() == adapter.getCount() - 1)
+        //if (staggeredGridView.getLastVisiblePosition() == adapter.getCount() - 1)
         //    return false; // stop
         //It is scrolled all the way down here
         if (absListView.getLastVisiblePosition() >= absListView.getAdapter().getCount() - 1)

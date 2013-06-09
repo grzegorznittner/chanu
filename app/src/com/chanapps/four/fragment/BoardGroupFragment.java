@@ -50,7 +50,7 @@ public class BoardGroupFragment
     private AbsListView absListView;
     private TextView emptyText;
     private int columnWidth = 0;
-    private int columnHeight = 0;
+    //private int columnHeight = 0;
 
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
@@ -127,7 +127,7 @@ public class BoardGroupFragment
         ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.SELECTOR);
         cg.sizeGridToDisplay();
         columnWidth = cg.getColumnWidth();
-        columnHeight = cg.getColumnHeight();
+        //columnHeight = cg.getColumnHeight();
 
         assignCursorAdapter();
         absListView.setAdapter(adapter);
@@ -143,11 +143,11 @@ public class BoardGroupFragment
         switch (boardSelectorTab) {
             default:
             case BOARDLIST:
-                adapter = new BoardSelectorGridCursorAdapter(getActivity().getApplicationContext(), this, columnWidth, columnHeight);
+                adapter = new BoardSelectorGridCursorAdapter(getActivity().getApplicationContext(), this, columnWidth);//, columnHeight);
                 break;
             case WATCHLIST:
             case RECENT:
-                adapter = new BoardGridCursorAdapter(getActivity().getApplicationContext(), this, columnWidth, columnHeight);
+                adapter = new BoardGridCursorAdapter(getActivity().getApplicationContext(), this);//, columnWidth);//, columnHeight);
                 break;
         }
     }
@@ -210,7 +210,7 @@ public class BoardGroupFragment
         }, 250);
         */
         //if (boardSelectorTab == BoardSelectorTab.BOARDLIST) { // doesn't change except for NSFW switch
-        //    //if (absListView != null && absListView.getCount() <= 0)
+        //    //if (staggeredGridView != null && staggeredGridView.getCount() <= 0)
         //    //    getLoaderManager().restartLoader(0, null, this);
         //}
         //else {
@@ -313,8 +313,8 @@ public class BoardGroupFragment
         }
         final FragmentActivity activity = getActivity();
 
-        final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TITLE));
-        final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+        final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+        final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
         if ((threadFlags & ChanThread.THREAD_FLAG_TITLE) > 0
                 && title != null && !title.isEmpty()
                 && desc != null && !desc.isEmpty()) {

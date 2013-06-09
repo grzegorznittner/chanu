@@ -7,9 +7,11 @@
         android:layout_height="match_parent"
         android:padding="0dp">
         
-	<GridView
+	<com.chanapps.four.component.StaggeredGridView
             android:id="@+id/board_grid_view"
             style="@style/BoardGridView"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             />
 
     <include layout="@layout/board_refresh_bar"/>

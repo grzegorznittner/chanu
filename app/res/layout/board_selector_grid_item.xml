@@ -16,12 +16,12 @@
             android:id="@+id/grid_item_country_flag"
             style="@style/BoardSelectorGridCountryFlag"
             />
-
+    <!--
     <TextView
             android:id="@+id/grid_item_thread_title"
             style="@style/BoardTypeText"
             />
-
+    -->
     <View
             android:id="@+id/grid_item_click_effect"
             android:layout_width="match_parent"
