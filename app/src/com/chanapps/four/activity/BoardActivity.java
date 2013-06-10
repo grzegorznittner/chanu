@@ -177,15 +177,15 @@ public class BoardActivity
         contentFrame.addView(layout);
         adapter = new BoardGridCursorAdapter(this, this);//, columnWidth); //, columnHeight);
         staggeredGridView = (StaggeredGridView)findViewById(R.id.board_grid_view);
-        staggeredGridView.setItemMargin(ChanGridSizer.dpToPx(getResources().getDisplayMetrics(), ITEM_MARGIN_DP));
         staggeredGridView.setAdapter(adapter);
         staggeredGridView.setClickable(true);
         staggeredGridView.setOnItemClickListener(boardItemListener);
         staggeredGridView.setLongClickable(false);
-        staggeredGridView.setDrawSelectorOnTop(true);
-        staggeredGridView.setSelector(R.drawable.board_grid_selector_bg);
         staggeredGridView.setScrollbarFadingEnabled(true);
         staggeredGridView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+
+        //staggeredGridView.setItemMargin(ChanGridSizer.dpToPx(getResources().getDisplayMetrics(), ITEM_MARGIN_DP));
+        staggeredGridView.setSelector(R.drawable.board_grid_selector_bg);
 
         //ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         //staggeredGridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));

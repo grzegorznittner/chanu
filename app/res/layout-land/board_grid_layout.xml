@@ -17,7 +17,7 @@
             android:paddingLeft="@dimen/StaggeredGridView.Board.paddingLeft"
             android:paddingRight="@dimen/StaggeredGridView.Board.paddingRight"
             chanapps:itemMargin="@dimen/StaggeredGridView.Board.itemMargin"
-            chanapps:numColumns="2"
+            chanapps:numColumns="3"
             chanapps:drawSelectorOnTop="true"
             />
 

@@ -1479,4 +1479,9 @@
     <dimen name="ItemsDialogFragment_title_paddingRight">16dp</dimen>
     <dimen name="ItemsDialogFragment_title_textSize">22sp</dimen>
 
+    <dimen name="StaggeredGridView.Board.paddingLeft">12px</dimen>
+    <dimen name="StaggeredGridView.Board.paddingRight">12px</dimen>
+    <dimen name="StaggeredGridView.Board.itemMargin">12px</dimen>
+    <string name="StaggeredGridView.Board.numColumns">2</string>
+
 </resources>

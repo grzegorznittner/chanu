@@ -136,7 +136,7 @@ public class BoardGridViewer {
     }
 
     protected static boolean setGridThumb(ImageView iv, Cursor cursor, int flags) {
-        iv.setImageDrawable(null);
+        iv.setVisibility(View.GONE);
         String url;
         if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
             url = "";
@@ -167,7 +167,7 @@ public class BoardGridViewer {
         @Override
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
             if (DEBUG) Log.e(TAG, "Loading failed uri=" + imageUri + " reason=" + failReason.getType());
-            displayDefaultItem(imageUri, view);
+            //displayDefaultItem(imageUri, view);
         }
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
@@ -180,21 +180,22 @@ public class BoardGridViewer {
     };
 
     protected static void displayItem(String imageUri, View view, Bitmap loadedImage) {
-        ViewParent parent = view.getParent();
-        if (parent == null || !(parent instanceof  ViewGroup))
-            return;
+        view.setVisibility(View.VISIBLE);
+        //ViewParent parent = view.getParent();
+        //if (parent == null || !(parent instanceof  ViewGroup))
+        //    return;
 
-        ViewGroup parentView = (ViewGroup)parent;
+        //ViewGroup parentView = (ViewGroup)parent;
         //ViewGroup wrapper = (ViewGroup)parentView.findViewById(R.id.grid_item_text_wrapper);
-        TextView subject = (TextView)parentView.findViewById(R.id.grid_item_thread_subject);
-        TextView info = (TextView)parentView.findViewById(R.id.grid_item_thread_info);
-        TextView abbrev = (TextView)parentView.findViewById(R.id.grid_item_board_abbrev);
-        ImageView countryFlag = (ImageView)parentView.findViewById(R.id.grid_item_country_flag);
-        if (DEBUG) Log.i(TAG, "onLoadingComplete subject=" + subject.getText() + " info=" + info.getText()
-                + " abbrev=" + abbrev.getText()
-                + " url=" + imageUri
-                + " img=" + loadedImage
-                + " byteCount=" + (loadedImage == null ? 0 : loadedImage.getByteCount()));
+        //TextView subject = (TextView)parentView.findViewById(R.id.grid_item_thread_subject);
+        //TextView info = (TextView)parentView.findViewById(R.id.grid_item_thread_info);
+        //TextView abbrev = (TextView)parentView.findViewById(R.id.grid_item_board_abbrev);
+        //ImageView countryFlag = (ImageView)parentView.findViewById(R.id.grid_item_country_flag);
+        //if (DEBUG) Log.i(TAG, "onLoadingComplete subject=" + subject.getText() + " info=" + info.getText()
+        //        + " abbrev=" + abbrev.getText()
+        //        + " url=" + imageUri
+        //        + " img=" + loadedImage
+        //        + " byteCount=" + (loadedImage == null ? 0 : loadedImage.getByteCount()));
         /*
         boolean oneVisible = false;
 

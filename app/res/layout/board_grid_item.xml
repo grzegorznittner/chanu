@@ -21,10 +21,10 @@
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="28dp"
-            android:paddingBottom="8dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
+            android:paddingTop="48px"
+            android:paddingBottom="24px"
+            android:paddingLeft="12px"
+            android:paddingRight="12px"
             android:background="@drawable/card_background_shadow"
             android:orientation="vertical"
             >
@@ -66,8 +66,6 @@
                 android:scaleType="fitCenter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:contentDescription="@string/thread_post_image"
                 />
 

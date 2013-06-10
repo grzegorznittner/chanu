@@ -310,10 +310,13 @@ public class StaggeredGridView extends ViewGroup {
             TypedArray a=getContext().obtainStyledAttributes(attrs, R.styleable.StaggeredGridView);
             mColCount = a.getInteger(R.styleable.StaggeredGridView_numColumns, 2);
             mDrawSelectorOnTop = a.getBoolean(R.styleable.StaggeredGridView_drawSelectorOnTop, false);
+            mItemMargin = a.getDimensionPixelSize(R.styleable.StaggeredGridView_itemMargin, 0);
         }else{
             mColCount = 2;
             mDrawSelectorOnTop = false;
+            mItemMargin = 0;
         }
+        Log.e(TAG, "StaggeredGridView() numColumns=" + mColCount + " itemMargin=" + mItemMargin + "px");
 
         final ViewConfiguration vc = ViewConfiguration.get(context);
         mTouchSlop = vc.getScaledTouchSlop();
@@ -770,6 +773,8 @@ public class StaggeredGridView extends ViewGroup {
 
                 final int colEnd = lp.column + Math.min(mColCount, lp.span);
                 for (int col = lp.column; col < colEnd; col++) {
+                    if (rec == null || lp == null)
+                        break;
                     final int colTop = top - rec.getMarginAbove(col - lp.column);
                     final int colBottom = bottom + rec.getMarginBelow(col - lp.column);
                     if (colTop < mItemTops[col]) {
@@ -959,6 +964,9 @@ public class StaggeredGridView extends ViewGroup {
         }
 
         final int top = getPaddingTop();
+        if (mRestoreOffsets != null && mRestoreOffsets.length != colCount) { // reset offsets in case colCount changed due to orientation
+            mRestoreOffsets = null;
+        }
         for(int i = 0; i<colCount; i++){
             final int offset =  top + ((mRestoreOffsets != null)? Math.min(mRestoreOffsets[i], 0) : 0);
             mItemTops[i] = (offset == 0) ? mItemTops[i] : offset;
