@@ -5,6 +5,7 @@
     <dimen name="BoardSelectorOverlay">18sp</dimen>
     <dimen name="BoardGridSubject">16sp</dimen>
     <dimen name="BoardGridInfo">16sp</dimen>
+    <dimen name="BoardGridAction">18sp</dimen>
     <dimen name="BoardGridNumReplies">16sp</dimen>
     <dimen name="BoardGridAbbrev">16sp</dimen>
     <dimen name="BoardGridNumImages">16sp</dimen>
@@ -275,4 +276,5 @@
     <dimen name="ItemsDialogFragment_title_paddingRight">24dp</dimen>
     <dimen name="ItemsDialogFragment_title_textSize">28sp</dimen>
 
+    <integer name="BoardGridView.numColumns">4</integer>
 </resources>

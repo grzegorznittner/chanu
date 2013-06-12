@@ -1,12 +1,14 @@
 package com.chanapps.four.component;
 
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.GridView;
+import com.chanapps.four.activity.R;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,85 +20,7 @@ import android.widget.GridView;
 public class ChanGridSizer {
 
     private static final String TAG = ChanGridSizer.class.getSimpleName();
-    private static final boolean DEBUG = false;
-
-    //private static final int MAX_COLUMN_WIDTH = 90;
-    private static final int MAX_COLUMN_WIDTH = 140;
-    private static final int MAX_COLUMN_WIDTH_LARGE = 140;
-    //private static final int MAX_COLUMN_WIDTH = 150;
-    private static final int MAX_COLUMN_WIDTH_XLARGE = 170;
-
-    private static final int[] MAX_COLUMN_WIDTHS = {
-            ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH,
-            ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH,
-            ServiceType.BOARDTHREAD.ordinal(), MAX_COLUMN_WIDTH,
-            ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH,
-            ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH,
-            ServiceType.BOARDLIST.ordinal(), 300
-    };
-
-    private static final int[] MAX_COLUMN_WIDTHS_LARGE = {
-            ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH_LARGE,
-            ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
-            ServiceType.BOARDTHREAD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
-            ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH_LARGE,
-            ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_LARGE,
-            ServiceType.BOARDLIST.ordinal(), 300
-    };
-
-    private static final int[] MAX_COLUMN_WIDTHS_XLARGE = {
-            ServiceType.SELECTOR.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
-            ServiceType.BOARD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
-            ServiceType.BOARDTHREAD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
-            ServiceType.THREAD.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
-            ServiceType.WATCHLIST.ordinal(), MAX_COLUMN_WIDTH_XLARGE,
-            ServiceType.BOARDLIST.ordinal(), 300
-    };
-
-    private GridView g;
-    private Display d;
-    private ServiceType serviceType;
-    private int numColumns = 0;
-    private int columnWidth = 0;
-    //private int columnHeight = 0;
-    private int maxColumnWidth = 200;
-    private int paddingTop = 0;
-    private int paddingLeft = 0;
-    private int paddingRight = 0;
-    private int paddingBottom = 0;
-
-    public ChanGridSizer(View g, Display d, ServiceType serviceType) {
-        this.serviceType = serviceType;
-    	if (g instanceof GridView) {
-    		this.g = (GridView)g;
-    	}
-        else if (g != null) { // we support padding only on container views, not on the grid view itself
-            paddingTop = g.getPaddingTop();
-            paddingLeft = g.getPaddingLeft();
-            paddingRight = g.getPaddingRight();
-            paddingBottom = g.getPaddingBottom();
-        }
-        this.d = d;
-        int layoutMask = g.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
-        int[] columnWidthArray;
-        switch (layoutMask) {
-            case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-                columnWidthArray = MAX_COLUMN_WIDTHS_XLARGE;
-                break;
-            case Configuration.SCREENLAYOUT_SIZE_LARGE:
-                columnWidthArray = MAX_COLUMN_WIDTHS_LARGE;
-                break;
-            default:
-                columnWidthArray = MAX_COLUMN_WIDTHS;
-        }
-        for (int i = 0; i < columnWidthArray.length; i += 2) {
-            if (serviceType.ordinal() == columnWidthArray[i]) {
-                int dp = columnWidthArray[i + 1];
-                maxColumnWidth = dpToPx(d, dp);
-                return;
-            }
-        }
-    }
+    private static final boolean DEBUG = true;
 
     static public int dpToPx(Display d, int dp) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -109,37 +33,14 @@ public class ChanGridSizer {
         return pixels;
     }
 
-    public void sizeGridToDisplay() {
-        Point size = new Point();
-        d.getSize(size);
-        int width = size.x - paddingLeft - paddingRight;
-        int height = size.y - paddingTop - paddingBottom;
-        numColumns = width / maxColumnWidth == 1 ? 2 : width / maxColumnWidth;
-        columnWidth = width / numColumns;
-        //columnHeight = columnWidth;
-        if (serviceType == ServiceType.BOARDTHREAD)
-            numColumns = 1; // force after sizing so sizing is consistent with board view
-        if (DEBUG) Log.i(TAG, "sizeGridToDisplay width: " + width + ", height: " + height + ", numCols: " + numColumns);
-        if (g != null) {
-        	g.setNumColumns(numColumns);
-        	g.setColumnWidth(columnWidth);
-        }
-    }
-
-    public int getColumnWidth() {
+    static public int getCalculatedWidth(DisplayMetrics d, int numColumns, int requestedHorizontalSpacing) {
+        int availableSpace = d.widthPixels - requestedHorizontalSpacing * (numColumns + 1);
+        int columnWidth = availableSpace / numColumns;
+        if (DEBUG) Log.i(TAG, "sizeGridToDisplay availableSpace=" + availableSpace
+                + " density=" + d.density
+                + " numColumns=" + numColumns
+                + " columnWidth=" + columnWidth);
         return columnWidth;
     }
 
-    //public int getColumnHeight() {
-    //    return columnHeight;
-    //}
-
-    public enum ServiceType {
-        SELECTOR,
-        BOARD,
-        BOARDTHREAD,
-        THREAD,
-        WATCHLIST,
-        BOARDLIST
-    }
 }

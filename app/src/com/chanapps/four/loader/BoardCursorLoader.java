@@ -101,7 +101,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                     continue;
                 if (!query.isEmpty())
                     numQueryMatches++;
-                Object[] row = ChanThread.makeRow(context, thread, query);
+                Object[] row = ChanThread.makeRow(context, thread, query, 0, !board.isVirtualBoard());
                 matrixCursor.addRow(row);
                 i++;
                 if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
@@ -133,9 +133,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     }
 
     protected void addRelatedBoards(MatrixCursor matrixCursor, ChanBoard board) {
-        long threadNo = (board.threads != null && board.threads.length >= 3 && board.threads[3] != null)
-                ? board.threads[3].no
+        long threadNo = (board.threads != null && board.threads.length >= 3 && board.threads[2] != null)
+                ? board.threads[2].no // skip over stickies
                 : 0; // used to cause stable but random related board images
+        /*
         int stringId;
         if (ChanBoard.POPULAR_BOARD_CODE.equals(board.link))
             stringId = R.string.board_related_boards_title_popular_format;
@@ -145,6 +146,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             stringId = R.string.board_related_boards_title_recent_format;
         else
             stringId = R.string.board_related_boards_title_format;
+        */
         if (ChanBoard.WATCHLIST_BOARD_CODE.equals(board.link)) {
             // skip until we figure out how to do it
         }
@@ -157,7 +159,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 ChanBoard relatedBoard = ChanBoard.getBoardByCode(context, relatedCode);
                 if (relatedBoard != null) {
                     ChanBoard addBoard = relatedBoard.copy();
-                    addBoard.name = context.getString(stringId);
+                    //addBoard.name = context.getString(stringId);
                     matrixCursor.addRow(addBoard.makeRow(context, threadNo));
                 }
             }
@@ -169,7 +171,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             //        context.getString(R.string.board_related_boards_title), desc));
             for (ChanBoard relatedBoard : board.relatedBoards(context, threadNo)) {
                 ChanBoard addBoard = relatedBoard.copy();
-                addBoard.name = context.getString(stringId);
+                //addBoard.name = context.getString(stringId);
                 matrixCursor.addRow(addBoard.makeRow(context, threadNo));
             }
         }

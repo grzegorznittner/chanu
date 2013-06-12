@@ -58,7 +58,7 @@ public class PopularCursorLoader extends BoardCursorLoader {
                 if (DEBUG) Log.i(TAG, "Skipped thread: " + thread.no);
                 continue;
             }
-            Object[] row = ChanThread.makeRow(context, thread, "", threadFlag(boardCode));
+            Object[] row = ChanThread.makeRow(context, thread, "", threadFlag(boardCode), false);
             matrixCursor.addRow(row);
             i++;
             if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));

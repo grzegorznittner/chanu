@@ -35,10 +35,6 @@
     <string name="search_results_title">Search Results</string>
     <string name="board_search_results">MATCHING THREADS FOR %1$s</string>
     <string name="board_related_boards_title">Related Boards</string>
-    <string name="board_related_boards_title_format">Related Board</string>
-    <string name="board_related_boards_title_popular_format">Popular Board</string>
-    <string name="board_related_boards_title_latest_format">Latest Post Board</string>
-    <string name="board_related_boards_title_recent_format">Latest Image Board</string>
     <string name="board_related_boards_desc">Boards having similar topics to /%1$s/</string>
 
     <!-- blocklist -->
@@ -222,6 +218,25 @@
     <string name="thread_image_download_error">Error downloading thread images</string>
     <string name="thread_no_start_play">Can\'t start play, already at end</string>
     <string name="thread_post_title">Post</string>
+
+    <string name="board_grid_item_no_replies">No replies</string>
+    <plurals name="board_grid_item_num_replies">
+        <item quantity="zero">No replies</item>
+        <item quantity="one">View 1 post</item>
+        <item quantity="other">View %1$d posts</item>
+    </plurals>
+    <string name="board_grid_item_no_images">No images</string>
+    <plurals name="board_grid_item_num_imgs">
+        <item quantity="zero"></item>
+        <item quantity="one">View 1 img</item>
+        <item quantity="other">View %1$d imgs</item>
+    </plurals>
+    <string name="board_grid_item_no_threads">View threads</string>
+    <plurals name="board_grid_item_num_threads">
+        <item quantity="zero">View threads</item>
+        <item quantity="one">View 1 thread</item>
+        <item quantity="other">View %1$d threads</item>
+    </plurals>
 
     <plurals name="thread_num_replies">
         <item quantity="zero">no replies</item>
@@ -596,6 +611,11 @@
     <string name="mobile_profile_parse_board_fail">Couldn\'t parse /%1$s/</string>
     <string name="mobile_profile_parse_thread_fail">Couldn\'t parse /%1$s/%2$d</string>
     <string name="no_connection_profile">Offline mode</string>
+
+    <string name="board_grid_item_view_thread_desc">View thread</string>
+    <string name="board_grid_item_view_posts_desc">View posts</string>
+    <string name="board_grid_item_view_images_desc">View images</string>
+    <string name="board_grid_item_view_board_desc">View board</string>
 
     <!-- tutorial -->
     <string name="tutorial_overlay_button">Got It</string>
@@ -1204,8 +1224,12 @@
     <dimen name="BoardTypeText">18sp</dimen>
     <dimen name="WidgetConfigureOkButton">18sp</dimen>
     <dimen name="BoardSelectorOverlay">14sp</dimen>
-    <dimen name="BoardGridSubject">22sp</dimen>
-    <dimen name="BoardGridInfo">14sp</dimen>
+    <dimen name="BoardGridSubject">14sp</dimen>
+    <dimen name="BoardGridInfo">12sp</dimen>
+    <dimen name="BoardGridAction">12sp</dimen>
+    <dimen name="BoardGridInfoPaddingBottom">4dp</dimen>
+    <dimen name="BoardGridImagePaddingBottom">4dp</dimen>
+    <dimen name="BoardGridActionPaddingTop">4dp</dimen>
     <dimen name="BoardGridNumReplies">12sp</dimen>
     <dimen name="BoardGridAbbrev">12sp</dimen>
     <dimen name="BoardGridNumImages">12sp</dimen>
@@ -1479,9 +1503,15 @@
     <dimen name="ItemsDialogFragment_title_paddingRight">16dp</dimen>
     <dimen name="ItemsDialogFragment_title_textSize">22sp</dimen>
 
-    <dimen name="StaggeredGridView.Board.paddingLeft">12px</dimen>
-    <dimen name="StaggeredGridView.Board.paddingRight">12px</dimen>
-    <dimen name="StaggeredGridView.Board.itemMargin">12px</dimen>
-    <string name="StaggeredGridView.Board.numColumns">2</string>
+    <dimen name="StaggeredGridView.Board.paddingLeft">8dp</dimen>
+    <dimen name="StaggeredGridView.Board.paddingRight">8dp</dimen>
+    <dimen name="StaggeredGridView.Board.itemMargin">8dp</dimen>
+    <integer name="StaggeredGridView.Board.numColumns">1</integer>
+    <dimen name="StaggeredGridView.Board.Item.paddingTop">8dp</dimen>
+    <dimen name="StaggeredGridView.Board.Item.paddingBottom">8dp</dimen>
 
+    <integer name="BoardGridView.numColumns">3</integer>
+    <integer name="BoardTabletGridView.numColumns">1</integer>
+    <dimen name="BoardGridView.spacing">8dp</dimen>
+    <dimen name="BoardGridViewTablet.spacing">8dp</dimen>
 </resources>

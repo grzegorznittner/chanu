@@ -16,35 +16,33 @@ import com.chanapps.four.data.ChanThread;
  */
 public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
 
-    //private int columnWidth;
-    //private int columnHeight;
+    private int columnWidth;
+    private int columnHeight;
 
-    protected BoardGridCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to){//}, int columnWidth){//}, int columnHeight) {
+    protected BoardGridCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to, int columnWidth, int columnHeight) {
         super(context, layout, viewBinder, from, to);
-        //this.columnWidth = columnWidth;
-        //this.columnHeight = columnHeight;
+        this.columnWidth = columnWidth;
+        this.columnHeight = columnHeight;
     }
 
-    public BoardGridCursorAdapter(Context context, ViewBinder viewBinder){//, int columnWidth) { //, int columnHeight) {
+    public BoardGridCursorAdapter(Context context, ViewBinder viewBinder, int columnWidth, int columnHeight) {
         this(context,
                 R.layout.board_grid_item,
                 viewBinder,
                 new String[] {
                         ChanThread.THREAD_SUBJECT,
-                        ChanThread.THREAD_NUM_REPLIES,
-                        ChanThread.THREAD_FLAGS,
+                        ChanThread.THREAD_HEADLINE,
                         ChanThread.THREAD_COUNTRY_FLAG_URL,
                         ChanThread.THREAD_THUMBNAIL_URL
                 },
                 new int[] {
                         R.id.grid_item_thread_subject,
                         R.id.grid_item_thread_info,
-                        R.id.grid_item_board_abbrev,
                         R.id.grid_item_country_flag,
                         R.id.grid_item_thread_thumb
-                }
-                //,columnWidth
-                //,columnHeight
+                },
+                columnWidth,
+                columnHeight
         );
     }
 
@@ -55,7 +53,23 @@ public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
         ViewGroup.LayoutParams params = view.getLayoutParams();
         if (params != null && columnWidth > 0) { // && columnHeight > 0) {
             params.width = columnWidth;
-            //params.height = columnHeight;
+            params.height = columnHeight;
+        }
+        View image = view.findViewById(R.id.grid_item_thread_image_wrap);
+        if (image != null) {
+            ViewGroup.LayoutParams params2 = image.getLayoutParams();
+            if (params2 != null && columnWidth > 0) {
+                params.width = columnWidth;
+                params.height = columnWidth; // force square images
+            }
+        }
+        View image2 = view.findViewById(R.id.grid_item_thread_thumb);
+        if (image2 != null) {
+            ViewGroup.LayoutParams params2 = image.getLayoutParams();
+            if (params2 != null && columnWidth > 0) {
+                params.width = columnWidth;
+                params.height = columnWidth; // force square images
+            }
         }
         */
         return view;

@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.view.View.OnClickListener;
@@ -29,10 +30,13 @@ import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.GenericDialogFragment;
 import com.chanapps.four.fragment.PickNewThreadBoardDialogFragment;
 import com.chanapps.four.loader.BoardCursorLoader;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.viewer.BoardGridViewer;
 import com.chanapps.four.viewer.ViewType;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
 public class BoardActivity
         extends AbstractDrawerActivity
@@ -49,7 +53,9 @@ public class BoardActivity
 
     protected AbstractBoardCursorAdapter adapter;
     protected View layout;
-    protected StaggeredGridView staggeredGridView;
+    protected GridView gridView;
+    protected int columnWidth;
+    protected int columnHeight;
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
     protected Menu menu;
@@ -101,8 +107,8 @@ public class BoardActivity
         savedInstanceState.putString(ChanBoard.BOARD_CODE, boardCode);
         savedInstanceState.putString(SearchManager.QUERY, query);
         /*
-        int pos = staggeredGridView == null ? -1 : staggeredGridView.getFirstVisiblePosition();
-        View view = staggeredGridView == null ? null : staggeredGridView.getChildAt(0);
+        int pos = gridView == null ? -1 : gridView.getFirstVisiblePosition();
+        View view = gridView == null ? null : gridView.getChildAt(0);
         int offset = view == null ? 0 : view.getTop();
         savedInstanceState.putInt(FIRST_VISIBLE_POSITION, pos);
         savedInstanceState.putInt(FIRST_VISIBLE_POSITION_OFFSET, offset);
@@ -161,13 +167,6 @@ public class BoardActivity
         return R.layout.board_grid_layout;
     }
 
-    protected boolean hasQuery() {
-        String searchQuery = getIntent() == null ? null : getIntent().getStringExtra(SearchManager.QUERY);
-        return searchQuery != null && !searchQuery.isEmpty();
-    }
-
-    protected int ITEM_MARGIN_DP = 8;
-
     protected void createAbsListView() {
         // we don't use fragments, but create anything needed
         FrameLayout contentFrame = (FrameLayout)findViewById(R.id.content_frame);
@@ -175,20 +174,20 @@ public class BoardActivity
             contentFrame.removeAllViews();
         layout = View.inflate(getApplicationContext(), getLayoutId(), null);
         contentFrame.addView(layout);
-        adapter = new BoardGridCursorAdapter(this, this);//, columnWidth); //, columnHeight);
-        staggeredGridView = (StaggeredGridView)findViewById(R.id.board_grid_view);
-        staggeredGridView.setAdapter(adapter);
-        staggeredGridView.setClickable(true);
-        staggeredGridView.setOnItemClickListener(boardItemListener);
-        staggeredGridView.setLongClickable(false);
-        staggeredGridView.setScrollbarFadingEnabled(true);
-        staggeredGridView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        adapter = new BoardGridCursorAdapter(this, this, columnWidth, columnHeight);
+        gridView = (GridView)findViewById(R.id.board_grid_view);
+        columnWidth = ChanGridSizer.getCalculatedWidth(getResources().getDisplayMetrics(),
+                getResources().getInteger(R.integer.BoardGridView_numColumns),
+                getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
+        columnHeight = 2 * columnWidth;
+        gridView.setAdapter(adapter);
+        gridView.setClickable(true);
+        gridView.setOnItemClickListener(boardItemListener);
+        //gridView.setLongClickable(false);
+        gridView.setSelector(R.drawable.board_grid_selector_bg);
 
-        //staggeredGridView.setItemMargin(ChanGridSizer.dpToPx(getResources().getDisplayMetrics(), ITEM_MARGIN_DP));
-        staggeredGridView.setSelector(R.drawable.board_grid_selector_bg);
-
-        //ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
-        //staggeredGridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
+        ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
+        gridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
     }
 
     @Override
@@ -236,7 +235,7 @@ public class BoardActivity
         /*
         adapter = null;
         layout = null;
-        staggeredGridView = null;
+        gridView = null;
         cursorLoader = null;
         menu = null;
         */
@@ -251,9 +250,25 @@ public class BoardActivity
 		handler = null;
 	}
 
+    protected View.OnClickListener viewActionListener = new View.OnClickListener(){
+        public void onClick(View view) {
+            String boardCode = (String)view.getTag(R.id.BOARD_CODE);
+            Long threadNo = (Long)view.getTag(R.id.THREAD_NO);
+            Long postNo = (Long)view.getTag(R.id.POST_NO);
+            Boolean isImage = (Boolean)view.getTag(R.id.BOARD_GRID_IMAGE);
+            if (threadNo == 0)
+                BoardActivity.startActivity(BoardActivity.this, boardCode, "");
+            else if (isImage)
+                GalleryViewActivity.startAlbumViewActivity(BoardActivity.this, boardCode, threadNo);
+            else
+                ThreadActivity.startActivity(BoardActivity.this, boardCode, threadNo, postNo, "");
+        }
+    };
+
+
     @Override
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        return BoardGridViewer.setViewValue(view, cursor, boardCode);
+        return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight);
     }
 
     @Override
@@ -268,7 +283,7 @@ public class BoardActivity
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ q=" + query + " id=" + loader.getId()
                 + " count=" + (data == null ? 0 : data.getCount()));
-        if (staggeredGridView == null)
+        if (gridView == null)
             createAbsListView();
 		adapter.swapCursor(data);
 
@@ -287,10 +302,10 @@ public class BoardActivity
         /*
         else {
             if (firstVisiblePosition >= 0) {
-                //if (staggeredGridView instanceof ListView)
-                //    ((ListView) staggeredGridView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
+                //if (gridView instanceof ListView)
+                //    ((ListView) gridView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
                 //else
-                staggeredGridView.setSelection(firstVisiblePosition);
+                gridView.setSelection(firstVisiblePosition);
                 firstVisiblePosition = -1;
                 firstVisiblePositionOffset = -1;
             }
@@ -312,9 +327,9 @@ public class BoardActivity
             adapter.swapCursor(null);
 	}
 
-    StaggeredGridView.OnItemClickListener boardItemListener = new StaggeredGridView.OnItemClickListener() {
+    AbsListView.OnItemClickListener boardItemListener = new AbsListView.OnItemClickListener() {
         @Override
-        public void onItemClick(StaggeredGridView adapterView, View view, int position, long id) {
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             Cursor cursor = adapter.getCursor();
             cursor.moveToPosition(position);
             int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
@@ -357,8 +372,8 @@ public class BoardActivity
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
-                if (staggeredGridView != null)
-                    staggeredGridView.setSelectionToTop();
+                if (gridView != null)
+                    gridView.setSelection(0);
                 return true;
             case R.id.new_thread_menu:
                 ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
@@ -518,7 +533,7 @@ public class BoardActivity
         handleUpdatedThreads();
         setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
-        //if (staggeredGridView == null || staggeredGridView.getCount() < 1)
+        //if (gridView == null || gridView.getCount() < 1)
         //    createAbsListView();
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board == null) {

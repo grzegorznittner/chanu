@@ -520,27 +520,36 @@ public class ChanPost {
     }
 
     public String headline(String query, boolean boardLevel, byte[] repliesBlob) {
+        return headline(query, boardLevel, repliesBlob, true);
+    }
+
+    public String headline(String query, boolean boardLevel, byte[] repliesBlob, boolean showNumReplies) {
         List<String> items = new ArrayList<String>();
-        if (!boardLevel && !hidePostNumbers)
-            items.add(Long.toString(no));
-        if (email != null && !email.isEmpty() && email.equals("sage"))
-            items.add("<b>sage</b>");
-        if (id != null && !id.isEmpty() && id.equals(SAGE_POST_ID))
-            items.add("<b>sage</b>");
-        if (id != null && !id.isEmpty())
-            items.add("Id: " + formattedUserId());
-        if (name != null && !name.isEmpty() && !name.equals("Anonymous"))
-            items.add(name);
-        if (trip != null && !trip.isEmpty())
-            items.add(formattedUserTrip());
-        if (email != null && !email.isEmpty() && !email.equals("sage"))
-            items.add(email);
-        if (country_name != null && !country_name.isEmpty())
-            items.add(country_name);
-        if (!boardLevel && fsize > 0)
-            items.add(imageDimensions());
-        if (resto <= 0)
-            items.add(threadInfoLine());
+        if (!boardLevel) {
+            if (!hidePostNumbers)
+                items.add(Long.toString(no));
+            if (email != null && !email.isEmpty() && email.equals("sage"))
+                items.add("<b>sage</b>");
+            if (id != null && !id.isEmpty() && id.equals(SAGE_POST_ID))
+                items.add("<b>sage</b>");
+            if (id != null && !id.isEmpty())
+                items.add("Id: " + formattedUserId());
+            if (name != null && !name.isEmpty() && !name.equals("Anonymous"))
+                items.add(name);
+            if (trip != null && !trip.isEmpty())
+                items.add(formattedUserTrip());
+            if (email != null && !email.isEmpty() && !email.equals("sage"))
+                items.add(email);
+            if (country_name != null && !country_name.isEmpty())
+                items.add(country_name);
+            if (fsize > 0)
+                items.add(imageDimensions());
+        }
+        if (resto <= 0) {
+            String s = threadInfoLine(boardLevel, showNumReplies);
+            if (!s.isEmpty())
+                items.add(s);
+        }
         items.add(dateText());
         if (repliesBlob != null && repliesBlob.length > 0) {
             HashSet<Long> hashSet = (HashSet<Long>)parseBlob(repliesBlob);
@@ -557,24 +566,23 @@ public class ChanPost {
         return highlightComponent(component, query);
     }
 
-    public String threadInfoLine() {
+    public String threadInfoLine(boolean boardLevel, boolean showNumReplies) {
+        if (sticky > 0 && replies == 0)
+            return "STICKY";
         String text = "";
-        if (sticky > 0 && replies == 0) {
-            text += "STICKY";
-        }
-        else {
-            if (replies > 0) {
+        if (showNumReplies) {
+            if (replies > 0)
                 text += replies
                         + " "
                         + (replies == 1 ? "post" : "posts")
-                        + " "
+                        + HEADLINE_DELIMITER
                         + (images > 0 ? images : "no")
                         + " "
                         + (images == 1 ? "image" : "images");
-            }
-            else {
-                text += "no replies";
-            }
+            else
+                text += "no posts";
+        }
+        if (!boardLevel) {
             if (imagelimit == 1)
                 text += " (IL)";
             if (bumplimit == 1)

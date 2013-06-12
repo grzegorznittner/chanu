@@ -42,7 +42,7 @@ public class BoardListFragment
     private AbsListView absListView;
     private TextView emptyText;
     private int columnWidth = 0;
-    //private int columnHeight = 0;
+    private int columnHeight = 0;
 
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
@@ -79,11 +79,10 @@ public class BoardListFragment
 
     protected void createAbsListView(View contentView) {
         absListView = (GridView)contentView.findViewById(R.id.board_grid_view);
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.SELECTOR);
-        cg.sizeGridToDisplay();
-        columnWidth = cg.getColumnWidth();
-        //columnHeight = cg.getColumnHeight();
+        columnWidth = ChanGridSizer.getCalculatedWidth(getResources().getDisplayMetrics(),
+                getResources().getInteger(R.integer.BoardGridView_numColumns),
+                getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
+        columnHeight = 2 * columnWidth;
         adapter = new BoardSelectorGridCursorAdapter(getActivity().getApplicationContext(), this, columnWidth);//, columnHeight);
         absListView.setAdapter(adapter);
         absListView.setClickable(true);

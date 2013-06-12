@@ -8,17 +8,9 @@
         android:layout_height="match_parent"
         android:padding="0dp">
         
-	<com.chanapps.four.component.StaggeredGridView
+	<GridView
             android:id="@+id/board_grid_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="0px"
-            android:paddingBottom="0px"
-            android:paddingLeft="@dimen/StaggeredGridView.Board.paddingLeft"
-            android:paddingRight="@dimen/StaggeredGridView.Board.paddingRight"
-            chanapps:itemMargin="@dimen/StaggeredGridView.Board.itemMargin"
-            chanapps:numColumns="2"
-            chanapps:drawSelectorOnTop="true"
+            style="@style/BoardGridView"
             />
 
     <include layout="@layout/board_refresh_bar"/>

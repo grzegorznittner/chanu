@@ -84,7 +84,7 @@ public class ThreadActivity
     protected String boardCode;
     protected String query = "";
     protected int columnWidth = 0;
-    //protected int columnHeight = 0;
+    protected int columnHeight = 0;
     protected MenuItem searchMenuItem;
     protected long threadNo;
     protected long postNo; // for direct jumps from latest post / recent images
@@ -329,7 +329,7 @@ public class ThreadActivity
         adapter = new ThreadListCursorAdapter(this, this);
         absListView.setAdapter(adapter);
         if (absBoardListView != null && absBoardListView instanceof GridView) {
-            adapterBoardsTablet = new BoardGridCursorAdapter(this, this);//, columnWidth);//, columnHeight);
+            adapterBoardsTablet = new BoardGridCursorAdapter(this, this, columnWidth, columnHeight);
             absBoardListView.setAdapter(adapterBoardsTablet);
         }
     }
@@ -342,11 +342,10 @@ public class ThreadActivity
     }
 
     protected void sizeTabletGridToDisplay() {
-        Display display = getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(absBoardListView, display, ChanGridSizer.ServiceType.BOARDTHREAD);
-        cg.sizeGridToDisplay();
-        columnWidth = cg.getColumnWidth();
-        //columnHeight = cg.getColumnHeight();
+        columnWidth = ChanGridSizer.getCalculatedWidth(getResources().getDisplayMetrics(),
+                getResources().getInteger(R.integer.BoardTabletGridView_numColumns),
+                getResources().getDimensionPixelSize(R.dimen.BoardGridViewTablet_spacing));
+        columnHeight = 2 * columnWidth;
         ViewGroup.LayoutParams params = absBoardListView.getLayoutParams();
         params.width = columnWidth; // 1-column-wide, no padding
     }
@@ -501,6 +500,8 @@ public class ThreadActivity
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
         return ThreadViewer.setViewValue(view, cursor, boardCode,
                 isTablet(),
+                columnWidth,
+                columnHeight,
                 threadListener.imageOnClickListener,
                 threadListener.backlinkOnClickListener,
                 threadListener.repliesOnClickListener,
@@ -1076,8 +1077,8 @@ public class ThreadActivity
                                     if (absListView == null || adapter == null)
                                         return;
                                     /*
-                                    int first = staggeredGridView.getFirstVisiblePosition();
-                                    int last = staggeredGridView.getLastVisiblePosition();
+                                    int first = gridView.getFirstVisiblePosition();
+                                    int last = gridView.getLastVisiblePosition();
                                     for (int pos = first; pos <= last; pos++)
                                         expandVisibleItem(first, pos);
                                     */
@@ -1085,7 +1086,7 @@ public class ThreadActivity
                                 }
                                 /*
                                 private void expandVisibleItem(int first, int pos) {
-                                    View listItem = staggeredGridView.getChildAt(pos - first);
+                                    View listItem = gridView.getChildAt(pos - first);
                                     View image = listItem == null ? null : listItem.findViewById(R.id.list_item_image);
                                     Cursor cursor = adapter.getCursor();
                                     //if (DEBUG) Log.i(TAG, "pos=" + pos + " listItem=" + listItem + " expandButton=" + expandButton);
@@ -1096,7 +1097,7 @@ public class ThreadActivity
                                             && cursor.moveToPosition(pos))
                                     {
                                         long id = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-                                        staggeredGridView.performItemClick(image, pos, id);
+                                        gridView.performItemClick(image, pos, id);
                                     }
                                 }
                                 */
@@ -1130,7 +1131,7 @@ public class ThreadActivity
             return false;
         if (absListView == null || adapter == null || adapter.getCount() <= 0)
             return false;
-        //if (staggeredGridView.getLastVisiblePosition() == adapter.getCount() - 1)
+        //if (gridView.getLastVisiblePosition() == adapter.getCount() - 1)
         //    return false; // stop
         //It is scrolled all the way down here
         if (absListView.getLastVisiblePosition() >= absListView.getAdapter().getCount() - 1)

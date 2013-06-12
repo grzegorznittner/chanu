@@ -6,12 +6,11 @@
             <solid android:color="@color/PaletteChanuGreenHalfOpacity"/>
         </shape>
     </item>
+    <!--
     <item android:state_selected="true">
         <shape>
-            <!-- <solid android:color="@color/blue_base"/>  -->
             <stroke android:width="2dp" android:color="@color/PaletteChanuGreenHalfOpacity"/>
-            <!-- <corners android:radius="3dp"/> -->
-            <!-- <padding android:left="40dp" android:right="40dp"/> -->
         </shape>
     </item>
+        -->
 </selector>

@@ -249,6 +249,8 @@ public class ThreadPopupDialogFragment
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
         return ThreadViewer.setViewValue(view, cursor, boardCode,
                 false, // never show board list at fragment pop-up level
+                0,
+                0,
                 threadListener.imageOnClickListener,
                 null, //threadListener.backlinkOnClickListener,
                 null, //threadListener.repliesOnClickListener,

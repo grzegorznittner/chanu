@@ -5,6 +5,7 @@
     <dimen name="BoardSelectorOverlay">18sp</dimen>
     <dimen name="BoardGridSubject">16sp</dimen>
     <dimen name="BoardGridInfo">16sp</dimen>
+    <dimen name="BoardGridAction">18sp</dimen>
     <dimen name="BoardGridNumReplies">18sp</dimen>
     <dimen name="BoardGridAbbrev">18sp</dimen>
     <dimen name="BoardGridNumImages">18sp</dimen>
@@ -256,5 +257,6 @@
     <dimen name="widget_board_minWidth">350dp</dimen>
     <dimen name="widget_board_minHeight">228dp</dimen>
 
+    <integer name="BoardGridView.numColumns">6</integer>
 
 </resources>

@@ -230,7 +230,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         	if (getStateManager().getStateCount() > 1) {
         		getStateManager().onBackPressed();
         	} else {
-        		navigateUp();
+                finish();
+        		//navigateUp();
         	}
         } finally {
             root.unlockRenderThread();

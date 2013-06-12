@@ -50,7 +50,7 @@ public class BoardGroupFragment
     private AbsListView absListView;
     private TextView emptyText;
     private int columnWidth = 0;
-    //private int columnHeight = 0;
+    private int columnHeight = 0;
 
     protected Handler handler;
     protected Loader<Cursor> cursorLoader;
@@ -123,12 +123,10 @@ public class BoardGroupFragment
 
     protected void createAbsListView(View contentView) {
         absListView = (GridView)contentView.findViewById(R.id.board_grid_view);
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        ChanGridSizer cg = new ChanGridSizer(absListView, display, ChanGridSizer.ServiceType.SELECTOR);
-        cg.sizeGridToDisplay();
-        columnWidth = cg.getColumnWidth();
-        //columnHeight = cg.getColumnHeight();
-
+        columnWidth = ChanGridSizer.getCalculatedWidth(getResources().getDisplayMetrics(),
+                getResources().getInteger(R.integer.BoardGridView_numColumns),
+                getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
+        columnHeight = 2 * columnWidth;
         assignCursorAdapter();
         absListView.setAdapter(adapter);
         absListView.setClickable(true);
@@ -147,7 +145,7 @@ public class BoardGroupFragment
                 break;
             case WATCHLIST:
             case RECENT:
-                adapter = new BoardGridCursorAdapter(getActivity().getApplicationContext(), this);//, columnWidth);//, columnHeight);
+                adapter = new BoardGridCursorAdapter(getActivity().getApplicationContext(), this, columnWidth, columnHeight);
                 break;
         }
     }
@@ -210,7 +208,7 @@ public class BoardGroupFragment
         }, 250);
         */
         //if (boardSelectorTab == BoardSelectorTab.BOARDLIST) { // doesn't change except for NSFW switch
-        //    //if (staggeredGridView != null && staggeredGridView.getCount() <= 0)
+        //    //if (gridView != null && gridView.getCount() <= 0)
         //    //    getLoaderManager().restartLoader(0, null, this);
         //}
         //else {
@@ -371,7 +369,7 @@ public class BoardGroupFragment
             case WATCHLIST:
             case RECENT:
             default:
-                return BoardGridViewer.setViewValue(view, cursor, boardSelectorTab.boardCode());
+                return BoardGridViewer.setViewValue(view, cursor, boardSelectorTab.boardCode(), columnWidth, columnHeight);
         }
     }
 

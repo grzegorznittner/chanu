@@ -91,6 +91,10 @@ public class ChanThread extends ChanPost {
     }
 
     public static Object[] makeRow(Context context, ChanPost post, String query, int extraFlags) {
+        return makeRow(context, post, query, extraFlags, true);
+    }
+
+    public static Object[] makeRow(Context context, ChanPost post, String query, int extraFlags, boolean showNumReplies) {
         String id = post.board + "/" + post.no;
         String[] textComponents = post.textComponents(query);
         return new Object[] {
@@ -98,7 +102,7 @@ public class ChanThread extends ChanPost {
                 post.board,
                 post.no,
                 textComponents[0],
-                post.headline(query, true, null),
+                post.headline(query, true, null, showNumReplies),
                 textComponents[1],
                 post.thumbnailUrl(),
                 post.countryFlagUrl(),
