@@ -136,7 +136,7 @@ public class ChanThread extends ChanPost {
 
     public static Object[] makeBoardTypeRow(Context context, BoardType boardType) {
         List<ChanBoard> sourceBoards = ChanBoard.getBoardsByType(context, boardType);
-        if (DEBUG) Log.i(TAG, "makeBoardTypeRow boardType=" + boardType.toString() + " size=" + sourceBoards.size());
+        if (DEBUG) Log.i(TAG, "makeBoardTypeRow boardType=" + boardType.boardCode() + " size=" + sourceBoards.size());
         List<ChanBoard> boards = new ArrayList<ChanBoard>(sourceBoards);
         if (boards.get(0).isMetaBoard() && boards.size() > 1)
             boards.remove(0);
@@ -144,7 +144,7 @@ public class ChanThread extends ChanPost {
         int boardImageResourceId = boards.get(0).getRandomImageResourceId();
         return new Object[] {
                 boardType.hashCode(),
-                boardType.toString(),
+                boardType.boardCode(),
                 0,
                 context.getString(boardType.displayStringId()),
                 context.getString(boardType.descStringId()),

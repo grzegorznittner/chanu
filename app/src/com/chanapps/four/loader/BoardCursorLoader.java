@@ -56,7 +56,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     /* Runs on a worker thread */
     @Override
     public Cursor loadInBackground() {
-    	if (DEBUG) Log.i(TAG, "loadInBackground");
+    	if (DEBUG) Log.i(TAG, "loadInBackground /" + boardName + "/");
         MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
         if (ChanBoard.META_BOARD_CODE.equals(boardName))
             loadMetaBoard(matrixCursor);
@@ -69,7 +69,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     }
 
     protected void loadMetaBoard(MatrixCursor matrixCursor) {
-        if (DEBUG) Log.i(TAG, "loadInBackground");
+        if (DEBUG) Log.i(TAG, "loadMetaBoard");
         boolean showNSFWBoards = PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
@@ -78,7 +78,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             //    continue;
             if (!boardType.isSFW() && !showNSFWBoards)
                 continue;
-            if (boardName.equals(boardType.toString()))
+            if (boardName.equals(boardType.boardCode()))
                 continue;
             Object[] row = ChanThread.makeBoardTypeRow(context, boardType);
             matrixCursor.addRow(row);
@@ -88,7 +88,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     }
 
     protected void loadMetaTypeBoard(MatrixCursor matrixCursor) {
-        if (DEBUG) Log.i(TAG, "loadInBackground");
+        if (DEBUG) Log.i(TAG, "loadMetaTypeBoard");
         boolean showNSFWBoards = PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
@@ -97,9 +97,9 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 continue;
             if (!boardType.isSFW() && !showNSFWBoards)
                 continue;
-            if (!ChanBoard.isMetaBoard(boardType.toString()))
+            if (!ChanBoard.isMetaBoard(boardType.boardCode()))
                 continue;
-            if (!boardName.equals(boardType.toString()))
+            if (!boardName.equals(boardType.boardCode()))
                 continue;
             List<ChanBoard> boards = ChanBoard.getBoardsByType(context, boardType);
             if (boards == null || boards.isEmpty())
@@ -120,9 +120,9 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     protected void loadBoard(MatrixCursor matrixCursor) {
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         if (DEBUG)  {
-            Log.i(TAG, "loadBoard boardCode=" + boardName);
-            Log.i(TAG, "board " + board.link + ", threadcount=" + (board.threads != null ? board.threads.length : 0));
-            Log.i(TAG, "board loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0));
+            Log.i(TAG, "loadBoard /" + boardName + "/");
+            Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0
+                    + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
         }
         
         if (board.shouldSwapThreads())

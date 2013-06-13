@@ -3,7 +3,12 @@ package com.chanapps.four.service.profile;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.FetchParams;
+import com.chanapps.four.service.FetchChanDataService;
 
 
 public class WifiProfile extends MobileProfile {
@@ -29,5 +34,27 @@ public class WifiProfile extends MobileProfile {
 	public FetchParams getFetchParams() {
 		return REFRESH_TIME.get(getConnectionHealth());
 	}
+
+    @Override
+    public void onBoardSelected(Context context, String boardCode) {
+        super.onBoardSelected(context, boardCode);
+        Health health = getConnectionHealth();
+        if (health == Health.GOOD || health == Health.PERFECT) {
+            ChanBoard boardObj = ChanFileStorage.loadBoardData(context, boardCode);
+            int threadPrefechCounter = health == Health.GOOD ? 3 : 7;
+            if (boardObj != null) {
+                for(ChanPost post : boardObj.threads) {
+                    if (threadPrefechCounter <= 0) {
+                        break;
+                    }
+                    if (post.closed == 0 && post.sticky == 0 && post.replies > 5 && post.images > 1) {
+                        threadPrefechCounter--;
+                        FetchChanDataService.scheduleThreadFetch(context, boardCode, post.no);
+                    }
+                }
+            }
+        }
+
+    }
 
 }

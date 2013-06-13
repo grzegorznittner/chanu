@@ -260,7 +260,14 @@ public class ChanFileStorage {
                     ChanBoard board = mapper.readValue(boardFile, ChanBoard.class);
                     if (DEBUG) Log.i(TAG, "Loaded " + board.threads.length + " threads for board '" + board.link
                             + "' isFile=" + boardFile.isFile() + " size=" + boardFile.length() / 1000 + "KB");
-                    boardCache.put(boardCode, board);
+                    if (board.hasNewBoardData()) {
+                        board.swapLoadedThreads();
+                        boardCache.put(boardCode, board);
+                        FileSaverService.startService(context, FileType.BOARD_SAVE, boardCode);
+                    }
+                    else {
+                        boardCache.put(boardCode, board);
+                    }
                     return board;
                 } else {
                     if (DEBUG) Log.i(TAG, "File for board '" + boardCode + "' doesn't exist");

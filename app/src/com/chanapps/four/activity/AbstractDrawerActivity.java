@@ -276,7 +276,7 @@ abstract public class
         }
         BoardType boardType = BoardType.valueOfDisplayString(this, boardAsMenu);
         if (boardType != null) {
-            String boardCode = boardType.toString();
+            String boardCode = boardType.boardCode();
             Intent intent = BoardActivity.createIntent(this, boardCode, "");
             startActivity(intent);
             return;

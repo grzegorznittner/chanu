@@ -33,17 +33,17 @@ public class ChanBoard {
     private static final int NUM_RELATED_THREADS = 3;
 
     public static final String BOARD_CODE = "boardCode";
-    public static final String POPULAR_BOARD_CODE = "popular";
-    public static final String LATEST_BOARD_CODE = "latest";
-    public static final String LATEST_IMAGES_BOARD_CODE = "images";
-    public static final String WATCHLIST_BOARD_CODE = "watchlist";
-    public static final String META_BOARD_CODE = BoardType.META.toString();
-    public static final String META_JAPANESE_CULTURE_BOARD_CODE = BoardType.JAPANESE_CULTURE.toString();
-    public static final String META_INTERESTS_BOARD_CODE = BoardType.INTERESTS.toString();
-    public static final String META_CREATIVE_BOARD_CODE = BoardType.CREATIVE.toString();
-    public static final String META_OTHER_BOARD_CODE = BoardType.OTHER.toString();
-    public static final String META_ADULT_BOARD_CODE = BoardType.ADULT.toString();
-    public static final String META_MISC_BOARD_CODE = BoardType.MISC.toString();
+    public static final String POPULAR_BOARD_CODE = BoardType.POPULAR.boardCode();
+    public static final String LATEST_BOARD_CODE = BoardType.LATEST.boardCode();
+    public static final String LATEST_IMAGES_BOARD_CODE = BoardType.LATEST_IMAGES.boardCode();
+    public static final String WATCHLIST_BOARD_CODE = BoardType.WATCHLIST.boardCode();
+    public static final String META_BOARD_CODE = BoardType.META.boardCode();
+    public static final String META_JAPANESE_CULTURE_BOARD_CODE = BoardType.JAPANESE_CULTURE.boardCode();
+    public static final String META_INTERESTS_BOARD_CODE = BoardType.INTERESTS.boardCode();
+    public static final String META_CREATIVE_BOARD_CODE = BoardType.CREATIVE.boardCode();
+    public static final String META_OTHER_BOARD_CODE = BoardType.OTHER.boardCode();
+    public static final String META_ADULT_BOARD_CODE = BoardType.ADULT.boardCode();
+    public static final String META_MISC_BOARD_CODE = BoardType.MISC.boardCode();
 
     public static final String[] VIRTUAL_BOARDS = { POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE, WATCHLIST_BOARD_CODE,
             META_BOARD_CODE, META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE, META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
@@ -160,7 +160,7 @@ public class ChanBoard {
                 boardByCode.put(boardCode, b);
             }
             boardsByType.put(boardType, boardsForType);
-            if (DEBUG) Log.i(TAG, "Put boardsByType(" + boardType.toString() + ") as " + Arrays.toString(boardsForType.toArray()));
+            if (DEBUG) Log.i(TAG, "Put boardsByType(" + boardType.boardCode() + ") as " + Arrays.toString(boardsForType.toArray()));
         }
         /*
         Collections.sort(boards, new Comparator<ChanBoard>() {

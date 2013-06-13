@@ -198,27 +198,12 @@ public class MobileProfile extends AbstractNetworkProfile {
         }*/
         if (DEBUG) Log.i(TAG, "onBoardSelected priority=" + priority);
         boolean canFetch = FetchChanDataService.scheduleBoardFetch(context, boardCode, priority, false);
-        if (canFetch && priority)
-            NetworkProfileManager.instance().getActivity().startProgress();
-        if (canFetch)
-            if (DEBUG) Log.i(TAG, "auto-fetching selected board=" + boardCode);
-            else if (DEBUG) Log.i(TAG, "skipping fresh selected board=" + boardCode);
-
-        /*if (health == Health.GOOD || health == Health.PERFECT) {
-              ChanBoard boardObj = ChanFileStorage.loadBoardData(context, boardCode);
-              int threadPrefechCounter = health == Health.GOOD ? 3 : 7;
-              if (boardObj != null) {
-                  for(ChanPost post : boardObj.threads) {
-                      if (threadPrefechCounter <= 0) {
-                          break;
-                      }
-                      if (post.closed == 0 && post.sticky == 0 && post.replies > 5 && post.images > 1) {
-                          threadPrefechCounter--;
-                          FetchChanDataService.scheduleThreadFetch(context, boardCode, post.no);
-                      }
-                  }
-              }
-          }*/
+        if (!canFetch) {
+            if (DEBUG) Log.i(TAG, "skipping fresh selected board=" + boardCode);
+            return;
+        }
+        if (DEBUG) Log.i(TAG, "auto-fetching selected board=" + boardCode);
+        startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
     }
 
     @Override
@@ -347,7 +332,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         final ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
         if (DEBUG) Log.i(TAG, "handleBoardSelectorParseSuccess board=" + data.boardCode + " priority=" + data.priority);
         // check if board data corrupted, we need to reload it
-        if (ChanBoard.POPULAR_BOARD_CODE.equals(data.boardCode))
+        if (ChanBoard.isPopularBoard(data.boardCode))
             handlePopularParseSuccess(service, data, activity, currentActivityId);
         else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(data.boardCode))
             handleWatchlistParseSuccess(service, data, activity, currentActivityId);
