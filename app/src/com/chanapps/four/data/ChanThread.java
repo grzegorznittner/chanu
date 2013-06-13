@@ -1,12 +1,8 @@
 package com.chanapps.four.data;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import android.util.Log;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import android.content.Context;
@@ -47,6 +43,7 @@ public class ChanThread extends ChanPost {
     public static final int THREAD_FLAG_STICKY = 0x004;
     public static final int THREAD_FLAG_AD = 0x008;
     public static final int THREAD_FLAG_BOARD = 0x010;
+    public static final int THREAD_FLAG_BOARD_TYPE = 0x010;
     public static final int THREAD_FLAG_TITLE = 0x020;
     public static final int THREAD_FLAG_BUTTON = 0x040;
     public static final int THREAD_FLAG_POPULAR_THREAD = 0x080;
@@ -138,22 +135,29 @@ public class ChanThread extends ChanPost {
 
 
     public static Object[] makeBoardTypeRow(Context context, BoardType boardType) {
+        List<ChanBoard> sourceBoards = ChanBoard.getBoardsByType(context, boardType);
+        if (DEBUG) Log.i(TAG, "makeBoardTypeRow boardType=" + boardType.toString() + " size=" + sourceBoards.size());
+        List<ChanBoard> boards = new ArrayList<ChanBoard>(sourceBoards);
+        if (boards.get(0).isMetaBoard() && boards.size() > 1)
+            boards.remove(0);
+        Collections.shuffle(boards);
+        int boardImageResourceId = boards.get(0).getRandomImageResourceId();
         return new Object[] {
                 boardType.hashCode(),
-                "",
+                boardType.toString(),
                 0,
                 context.getString(boardType.displayStringId()),
                 context.getString(boardType.descStringId()),
                 "",
+                "drawable://" + boardImageResourceId,
                 "",
                 "",
-                "",
                 0,
                 0,
                 0,
                 0,
                 0,
-                THREAD_FLAG_TITLE
+                THREAD_FLAG_BOARD | THREAD_FLAG_BOARD_TYPE
         };
     }
 

@@ -27,7 +27,7 @@ public class ChanBoard {
 
 	public static final String TAG = ChanBoard.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
     private static final int NUM_RELATED_BOARDS = 3;
     private static final int NUM_RELATED_THREADS = 3;
@@ -37,6 +37,21 @@ public class ChanBoard {
     public static final String LATEST_BOARD_CODE = "latest";
     public static final String LATEST_IMAGES_BOARD_CODE = "images";
     public static final String WATCHLIST_BOARD_CODE = "watchlist";
+    public static final String META_BOARD_CODE = BoardType.META.toString();
+    public static final String META_JAPANESE_CULTURE_BOARD_CODE = BoardType.JAPANESE_CULTURE.toString();
+    public static final String META_INTERESTS_BOARD_CODE = BoardType.INTERESTS.toString();
+    public static final String META_CREATIVE_BOARD_CODE = BoardType.CREATIVE.toString();
+    public static final String META_OTHER_BOARD_CODE = BoardType.OTHER.toString();
+    public static final String META_ADULT_BOARD_CODE = BoardType.ADULT.toString();
+    public static final String META_MISC_BOARD_CODE = BoardType.MISC.toString();
+
+    public static final String[] VIRTUAL_BOARDS = { POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE, WATCHLIST_BOARD_CODE,
+            META_BOARD_CODE, META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE, META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
+            META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
+    public static final String[] META_BOARDS = { META_BOARD_CODE,
+            META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE, META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
+            META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
+    public static final String[] POPULAR_BOARDS = { POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE };
 
     public static final String DEFAULT_BOARD_CODE = "a";
 
@@ -137,6 +152,7 @@ public class ChanBoard {
                 boolean workSafe = !(boardType == BoardType.ADULT || boardType == BoardType.MISC);
                 int iconId = getImageResourceId(boardCode);
                 ChanBoard b = new ChanBoard(boardType, boardName, boardCode, iconId, workSafe, true, false);
+                if (DEBUG) Log.i(TAG, "Added board /" + boardCode + "/ " + boardName);
                 boardsForType.add(b);
                 boards.add(b);
                 if (workSafe)
@@ -144,8 +160,9 @@ public class ChanBoard {
                 boardByCode.put(boardCode, b);
             }
             boardsByType.put(boardType, boardsForType);
+            if (DEBUG) Log.i(TAG, "Put boardsByType(" + boardType.toString() + ") as " + Arrays.toString(boardsForType.toArray()));
         }
-
+        /*
         Collections.sort(boards, new Comparator<ChanBoard>() {
             @Override
             public int compare(ChanBoard lhs, ChanBoard rhs) {
@@ -158,7 +175,7 @@ public class ChanBoard {
                 return lhs.link.compareToIgnoreCase(rhs.link);
             }
         });
-
+        */
         String[][] relatedBoardCodes = initRelatedBoards();
         for (String[] relatedBoardCodeArray : relatedBoardCodes) {
             String boardCode = relatedBoardCodeArray[0];
@@ -199,6 +216,14 @@ public class ChanBoard {
     }
     public static int getImageResourceId(String boardCode, long postNo) {
         return getImageResourceId(boardCode, postNo, -1);
+    }
+
+    public int getRandomImageResourceId() {
+        return getRandomImageResourceId(link);
+    }
+
+    public static int getRandomImageResourceId(String boardCode) {
+        return ChanBoard.getImageResourceId(boardCode, 0, (int)Math.floor(Math.random() * NUM_DEFAULT_IMAGES_PER_BOARD));
     }
 
     public static int getRandomImageResourceId(String boardCode, long postNo) {
@@ -322,7 +347,10 @@ public class ChanBoard {
 
     private static String[][] initBoardCodes(Context ctx) {
         String[][] boardCodesByType = {
-
+                {
+                    BoardType.META.toString(),
+                        META_BOARD_CODE, ctx.getString(R.string.board_meta),
+                },
                 {   BoardType.WATCHLIST.toString(),
                         WATCHLIST_BOARD_CODE, ctx.getString(R.string.board_watch),
                 },
@@ -336,6 +364,7 @@ public class ChanBoard {
                         LATEST_IMAGES_BOARD_CODE, ctx.getString(R.string.board_latest_images)
                 },
                 {   BoardType.JAPANESE_CULTURE.toString(),
+                        META_JAPANESE_CULTURE_BOARD_CODE, ctx.getString(R.string.board_type_japanese_culture),
                         "a", ctx.getString(R.string.board_a),
                         "c", ctx.getString(R.string.board_c),
                         "w", ctx.getString(R.string.board_w),
@@ -347,6 +376,7 @@ public class ChanBoard {
                         "vp", ctx.getString(R.string.board_vp)
                 },
                 {   BoardType.INTERESTS.toString(),
+                        META_INTERESTS_BOARD_CODE, ctx.getString(R.string.board_type_interests),
                         "v", ctx.getString(R.string.board_v),
                         "vg", ctx.getString(R.string.board_vg),
                         "vr", ctx.getString(R.string.board_vr),
@@ -364,6 +394,7 @@ public class ChanBoard {
                         "out", ctx.getString(R.string.board_out)
                 },
                 {   BoardType.CREATIVE.toString(),
+                        META_CREATIVE_BOARD_CODE, ctx.getString(R.string.board_type_creative),
                         "i", ctx.getString(R.string.board_i),
                         "po", ctx.getString(R.string.board_po),
                         "p", ctx.getString(R.string.board_p),
@@ -379,6 +410,7 @@ public class ChanBoard {
                         "wsg", ctx.getString(R.string.board_wsg)
                 },
                 {   BoardType.OTHER.toString(),
+                        META_OTHER_BOARD_CODE, ctx.getString(R.string.board_type_other),
                         "q", ctx.getString(R.string.board_q),
                         "trv", ctx.getString(R.string.board_trv),
                         "fit", ctx.getString(R.string.board_fit),
@@ -389,6 +421,7 @@ public class ChanBoard {
                         "mlp", ctx.getString(R.string.board_mlp)
                 },
                 {   BoardType.ADULT.toString(),
+                        META_ADULT_BOARD_CODE, ctx.getString(R.string.board_type_adult),
                         "s", ctx.getString(R.string.board_s),
                         "hc", ctx.getString(R.string.board_hc),
                         "hm", ctx.getString(R.string.board_hm),
@@ -402,6 +435,7 @@ public class ChanBoard {
                         "gif", ctx.getString(R.string.board_gif)
                 },
                 {   BoardType.MISC.toString(),
+                        META_MISC_BOARD_CODE, ctx.getString(R.string.board_type_misc),
                         "b", ctx.getString(R.string.board_b),
                         "r", ctx.getString(R.string.board_r),
                         "r9k", ctx.getString(R.string.board_r9k),
@@ -417,7 +451,7 @@ public class ChanBoard {
     public static void preloadUncachedBoards(Context context) {
         List<ChanBoard> boards = ChanBoard.getBoards(context);
         for (ChanBoard board : boards) {
-            if (!ChanFileStorage.isBoardCachedOnDisk(context, board.link)) { // if user never visited board before
+            if (!board.isMetaBoard() && !ChanFileStorage.isBoardCachedOnDisk(context, board.link)) { // if user never visited board before
                 if (DEBUG) Log.i(TAG, "Starting load service for uncached board " + board.link);
                 FetchChanDataService.scheduleBoardFetch(context, board.link, false, true);
                 break; // don't schedule more than one per call to avoid overloading
@@ -736,15 +770,38 @@ public class ChanBoard {
 
     }
     */
+
     public boolean isVirtualBoard() {
         return isVirtualBoard(link);
     }
 
     public static boolean isVirtualBoard(String boardCode) {
-        return WATCHLIST_BOARD_CODE.equals(boardCode)
-                || POPULAR_BOARD_CODE.equals(boardCode)
-                || LATEST_BOARD_CODE.equals(boardCode)
-                || LATEST_IMAGES_BOARD_CODE.equals(boardCode);
+        for (String virtualBoardCode : VIRTUAL_BOARDS)
+            if (virtualBoardCode.equals(boardCode))
+                return true;
+        return false;
+    }
+
+    public boolean isMetaBoard() {
+        return isMetaBoard(link);
+    }
+
+    public static boolean isMetaBoard(String boardCode) {
+        for (String metaBoardCode : META_BOARDS)
+            if (metaBoardCode.equals(boardCode))
+                return true;
+        return false;
+    }
+
+    public boolean isPopularBoard() {
+        return isPopularBoard(link);
+    }
+
+    public static boolean isPopularBoard(String boardCode) {
+        for (String popularBoardCode : POPULAR_BOARDS)
+            if (popularBoardCode.equals(boardCode))
+                return true;
+        return false;
     }
 
     private static final String[] fastBoards = { "a", "b", "v", "vr" };

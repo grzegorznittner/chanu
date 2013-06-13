@@ -92,8 +92,10 @@ public final class WidgetProviderUtils {
             if (DEBUG) Log.i(WidgetProviderUtils.TAG, "fetchAllWidgets board=" + boardCode + " scheduling fetch");
             if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
                 GlobalAlarmReceiver.fetchWatchlistThreads(context);
-            else if (ChanBoard.isVirtualBoard(boardCode))
+            else if (ChanBoard.isPopularBoard(boardCode))
                 FetchPopularThreadsService.schedulePopularFetchService(context, false, true);
+            else if (ChanBoard.isVirtualBoard(boardCode))
+                ;// skip
             else
                 FetchChanDataService.scheduleBoardFetch(context, boardCode, false, true);
         }

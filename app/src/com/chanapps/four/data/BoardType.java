@@ -1,5 +1,6 @@
 package com.chanapps.four.data;
 
+import android.content.Context;
 import com.chanapps.four.activity.R;
 
 /**
@@ -11,7 +12,7 @@ import com.chanapps.four.activity.R;
 */
 public enum BoardType {
 
-    WATCHLIST (R.string.board_watch, R.string.board_watch_desc, 0, false, true),
+    META (R.string.board_meta, R.string.board_meta_desc, 0, false, true),
     POPULAR (R.string.board_selector_popular_title, R.string.board_selector_popular_desc, 0, false, true),
     LATEST (R.string.board_selector_latest_title, R.string.board_selector_latest_desc, 0, false, true),
     LATEST_IMAGES (R.string.board_selector_latest_images_title, R.string.board_selector_latest_images_desc, 0, false, true),
@@ -20,7 +21,8 @@ public enum BoardType {
     CREATIVE (R.string.board_type_creative, R.string.board_type_creative_desc, 0, true, true),
     OTHER (R.string.board_type_other, R.string.board_type_other_desc, 0, true, true),
     ADULT (R.string.board_type_adult, R.string.board_type_adult_desc, 0, true, false),
-    MISC (R.string.board_type_misc, R.string.board_type_misc_desc, 0, true, false);
+    MISC (R.string.board_type_misc, R.string.board_type_misc_desc, 0, true, false),
+    WATCHLIST (R.string.board_watch, R.string.board_watch_desc, 0, false, true);
 
     private final int displayStringId;
     private final int descStringId;
@@ -34,6 +36,13 @@ public enum BoardType {
         this.drawableId = drawableId;
         this.isCategory = isCategory;
         this.isSFW = isSFW;
+    }
+
+    public static final BoardType valueOfDisplayString(Context context, String displayString) {
+        for (BoardType boardType : BoardType.values())
+            if (context.getString(boardType.displayStringId).equals(displayString))
+                return boardType;
+        return null;
     }
 
     public int displayStringId() {

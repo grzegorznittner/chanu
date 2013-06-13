@@ -2,24 +2,19 @@ package com.chanapps.four.loader;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.preference.PreferenceManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanBlocklist;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.data.*;
 
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
@@ -62,8 +57,70 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     @Override
     public Cursor loadInBackground() {
     	if (DEBUG) Log.i(TAG, "loadInBackground");
+        MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
+        if (ChanBoard.META_BOARD_CODE.equals(boardName))
+            loadMetaBoard(matrixCursor);
+        else if (ChanBoard.isMetaBoard(boardName))
+            loadMetaTypeBoard(matrixCursor);
+        else
+            loadBoard(matrixCursor);
+        registerContentObserver(matrixCursor, mObserver);
+        return matrixCursor;
+    }
+
+    protected void loadMetaBoard(MatrixCursor matrixCursor) {
+        if (DEBUG) Log.i(TAG, "loadInBackground");
+        boolean showNSFWBoards = PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
+        for (BoardType boardType : BoardType.values()) {
+            //if (!boardType.isCategory())
+            //    continue;
+            if (!boardType.isSFW() && !showNSFWBoards)
+                continue;
+            if (boardName.equals(boardType.toString()))
+                continue;
+            Object[] row = ChanThread.makeBoardTypeRow(context, boardType);
+            matrixCursor.addRow(row);
+            if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));
+        }
+        if (DEBUG) Log.i(TAG, "Loading meta board complete");
+    }
+
+    protected void loadMetaTypeBoard(MatrixCursor matrixCursor) {
+        if (DEBUG) Log.i(TAG, "loadInBackground");
+        boolean showNSFWBoards = PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
+        for (BoardType boardType : BoardType.values()) {
+            if (!boardType.isCategory())
+                continue;
+            if (!boardType.isSFW() && !showNSFWBoards)
+                continue;
+            if (!ChanBoard.isMetaBoard(boardType.toString()))
+                continue;
+            if (!boardName.equals(boardType.toString()))
+                continue;
+            List<ChanBoard> boards = ChanBoard.getBoardsByType(context, boardType);
+            if (boards == null || boards.isEmpty())
+                break;
+            if (DEBUG) Log.i(TAG, "Found " + boards.size() + " boards = " + Arrays.toString(boards.toArray()));
+            for (ChanBoard board : boards) {
+                if (board.isMetaBoard())
+                    continue;
+                Object[] row = board.makeRow(context);
+                matrixCursor.addRow(row);
+                if (DEBUG) Log.i(TAG, "Added board row: " + Arrays.toString(row));
+            }
+            break;
+        }
+        if (DEBUG) Log.i(TAG, "Loading boards complete");
+    }
+
+    protected void loadBoard(MatrixCursor matrixCursor) {
         ChanBoard board = ChanFileStorage.loadBoardData(getContext(), boardName);
         if (DEBUG)  {
+            Log.i(TAG, "loadBoard boardCode=" + boardName);
             Log.i(TAG, "board " + board.link + ", threadcount=" + (board.threads != null ? board.threads.length : 0));
             Log.i(TAG, "board loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0));
         }
@@ -73,8 +130,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             if (DEBUG) Log.i(TAG, "auto-swapping loaded threads since empty");
             board.swapLoadedThreads();
         }
-
-        MatrixCursor matrixCursor = ChanThread.buildMatrixCursor();
 
         if (board.threads != null && !board.defData
                 && board.threads.length > 0 && board.threads[0] != null && !board.threads[0].defData) { // show loading
@@ -123,13 +178,11 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                         context.getString(R.string.thread_search_no_results)));
             }
 
-            addRelatedBoards(matrixCursor, board);
+            //addRelatedBoards(matrixCursor, board);
             // always put an ad at the bottom
             //if (!board.isVirtualBoard())
             //    matrixCursor.addRow(board.makeThreadAdRow(getContext(), i));
         }
-        registerContentObserver(matrixCursor, mObserver);
-        return matrixCursor;
     }
 
     protected void addRelatedBoards(MatrixCursor matrixCursor, ChanBoard board) {
@@ -151,6 +204,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             // skip until we figure out how to do it
         }
         else if (board.isVirtualBoard()) {
+            /*
             Set<String> relatedCodes = new HashSet<String>();
             for (ChanPost thread : board.threads)
                 if (thread != null && thread.board != null && !thread.board.isEmpty())
@@ -163,17 +217,20 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                     matrixCursor.addRow(addBoard.makeRow(context, threadNo));
                 }
             }
+            */
         }
         else { // add related boards
             //matrixCursor.addRow(ChanThread.makeButtonRow(boardName, context.getString(R.string.new_thread_short).toUpperCase()));
             //String desc = String.format(context.getString(R.string.board_related_boards_desc), board.link);
             //matrixCursor.addRow(ChanThread.makeTitleRow(boardName,
             //        context.getString(R.string.board_related_boards_title), desc));
+            /*
             for (ChanBoard relatedBoard : board.relatedBoards(context, threadNo)) {
                 ChanBoard addBoard = relatedBoard.copy();
                 //addBoard.name = context.getString(stringId);
                 matrixCursor.addRow(addBoard.makeRow(context, threadNo));
             }
+            */
         }
     }
 

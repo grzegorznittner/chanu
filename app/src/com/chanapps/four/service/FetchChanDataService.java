@@ -44,13 +44,15 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     private ChanThread thread;
 
     public static boolean scheduleBoardFetch(Context context, String boardCode, boolean priority, boolean backgroundLoad) {
-    	if (ChanBoard.POPULAR_BOARD_CODE.equals(boardCode)
-                || ChanBoard.LATEST_BOARD_CODE.equals(boardCode)
-                || ChanBoard.LATEST_IMAGES_BOARD_CODE.equals(boardCode)) {
+        if (ChanBoard.isPopularBoard(boardCode)) {
             if (DEBUG) Log.i(TAG, "Redirecting refresh request for /" + boardCode + "/ to popular fetch service");
-    		return FetchPopularThreadsService.schedulePopularFetchService(context, priority, backgroundLoad);
-    	}
-    	
+            return FetchPopularThreadsService.schedulePopularFetchService(context, priority, backgroundLoad);
+        }
+        else if (ChanBoard.isVirtualBoard(boardCode)) {
+            if (DEBUG) Log.i(TAG, "non-popular virtual board /" + boardCode + "/ received, skipping");
+            return false;
+        }
+
     	if (!boardNeedsRefresh(context, boardCode, priority)) {
             if (DEBUG) Log.i(TAG, "Skipping not needing refresh normal board fetch service for "
                     + boardCode + " priority=" + priority);

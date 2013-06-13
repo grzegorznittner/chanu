@@ -135,9 +135,12 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
                 } else {
                     if (ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)) {
                         freshFetch = false;
-                    } else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
+                    } else if (ChanBoard.isPopularBoard(widgetConf.boardCode)) {
                         if (DEBUG) Log.i(TAG, "scheduling popular fetch for board=" + widgetConf.boardCode);
                         freshFetch = FetchPopularThreadsService.schedulePopularFetchService(context, true, false);
+                    } else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
+                        if (DEBUG) Log.i(TAG, "skipping fetch for non-popular virtual board=" + widgetConf.boardCode);
+                        freshFetch = false;
                     } else {
                         if (DEBUG) Log.i(TAG, "scheduling fetch for board=" + widgetConf.boardCode);
                         freshFetch = FetchChanDataService.scheduleBoardFetch(context, widgetConf.boardCode, true, false);

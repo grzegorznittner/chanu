@@ -282,6 +282,20 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
         NetworkProfileManager.instance().makeToast(id);
 	}
 
+    protected void startProgress(Handler handler) {
+        if (handler == null)
+            return;
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                if (activity instanceof Activity) {
+                    ((Activity)activity).setProgressBarIndeterminateVisibility(true);
+                }
+            }
+        });
+    }
+
     protected void postStopMessage(Handler handler, final String string) {
         if (handler == null)
             return;

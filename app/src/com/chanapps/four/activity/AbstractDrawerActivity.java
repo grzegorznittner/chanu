@@ -14,6 +14,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -270,6 +271,13 @@ abstract public class
         }
         if (isWatchlist(boardAsMenu)) {
             Intent intent = WatchlistActivity.createIntent(this);
+            startActivity(intent);
+            return;
+        }
+        BoardType boardType = BoardType.valueOfDisplayString(this, boardAsMenu);
+        if (boardType != null) {
+            String boardCode = boardType.toString();
+            Intent intent = BoardActivity.createIntent(this, boardCode, "");
             startActivity(intent);
             return;
         }

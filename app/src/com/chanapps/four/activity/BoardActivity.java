@@ -96,7 +96,7 @@ public class BoardActivity
         else
             setFromIntent(getIntent());
         if (boardCode == null || boardCode.isEmpty())
-            boardCode = ChanBoard.POPULAR_BOARD_CODE;
+            boardCode = ChanBoard.META_BOARD_CODE;
         if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/ q=" + query);
         getSupportLoaderManager().initLoader(0, null, this);
     }
@@ -370,6 +370,10 @@ public class BoardActivity
             return true;
         switch (item.getItemId()) {
             case R.id.refresh_menu:
+                if (ChanBoard.isVirtualBoard(boardCode) && !ChanBoard.isPopularBoard(boardCode)) {
+                    if (DEBUG) Log.i(TAG, "manual refresh skipped for non-popular virtual board /" + boardCode + "/");
+                    return true;
+                }
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 if (gridView != null)
@@ -429,8 +433,21 @@ public class BoardActivity
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
-        if (board == null || board.isVirtualBoard()) {
+        if (board == null) {
+            ; // ignore
+        }
+        else if (board.isPopularBoard()) {
             menu.findItem(R.id.refresh_menu).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+            menu.findItem(R.id.refresh_menu).setVisible(true);
+            menu.findItem(R.id.search_menu).setVisible(false);
+            menu.findItem(R.id.offline_board_view_menu).setVisible(false);
+            menu.findItem(R.id.board_rules_menu).setVisible(false);
+            menu.findItem(R.id.offline_chan_view_menu).setVisible(true);
+            menu.findItem(R.id.global_rules_menu).setVisible(true);
+        }
+        else if (board.isVirtualBoard()) {
+            menu.findItem(R.id.refresh_menu).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
             menu.findItem(R.id.offline_board_view_menu).setVisible(false);
             menu.findItem(R.id.board_rules_menu).setVisible(false);
@@ -439,6 +456,7 @@ public class BoardActivity
         }
         else {
             menu.findItem(R.id.refresh_menu).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(true);
             menu.findItem(R.id.offline_board_view_menu).setVisible(true);
             menu.findItem(R.id.board_rules_menu).setVisible(true);
