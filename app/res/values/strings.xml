@@ -170,11 +170,11 @@
     <string name="board_selector_watchlist_title">Watchlist</string>
     <string name="board_selector_recent_title">Popular</string>
     <string name="board_selector_popular_title">Popular&lt;br/&gt;Threads</string>
-    <string name="board_selector_popular_desc">The top ten most popular threads at this instant</string>
+    <string name="board_selector_popular_desc">The current top ten threads</string>
     <string name="board_selector_latest_title">Latest&lt;br/&gt;Posts</string>
-    <string name="board_selector_latest_desc">The ten latest posts made on the site</string>
+    <string name="board_selector_latest_desc">The ten latest posts</string>
     <string name="board_selector_latest_images_title">Recent&lt;br/&gt;Images</string>
-    <string name="board_selector_latest_images_desc">The three most recent uploaded images on the site</string>
+    <string name="board_selector_latest_images_desc">The three latest uploaded images</string>
     <string name="board_selector_boardlist_title">Boards</string>
 
     <!-- board activity -->
@@ -267,10 +267,12 @@
     <!-- watchlist -->
     <string name="board_end_of_watchlist">End of Watchlist</string>
     <string name="board_empty_watchlist">Watchlist empty\n\nWatch a thread to add it here</string>
-    <string name="board_empty_recent">Unable to load recent threads</string>
+    <string name="board_empty_recent">Unable to load latest images</string>
     <string name="board_empty_popular">Unable to load popular threads</string>
     <string name="board_empty_latest">Unable to load latest posts</string>
-    <string name="board_empty_default">Unable to load board list</string>
+    <string name="board_empty_meta">Unable to load boards</string>
+    <string name="board_empty_images">Unable to load latest images</string>
+    <string name="board_empty_default">Unable to load board</string>
     <string name="thread_already_in_watchlist">Thread already in watchlist</string>
     <string name="thread_not_added_to_watchlist">Couldn\'t add thread to watchlist</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
@@ -702,7 +704,7 @@
     <!-- board names -->
     <string name="board_type_worksafe">Worksafe</string>
     <string name="board_type_japanese_culture">Japanese Culture</string>
-    <string name="board_type_japanese_culture_desc">These boards cover anime, cosplay, and the culture of Japan</string>
+    <string name="board_type_japanese_culture_desc">Anime, cosplay and Japan</string>
     <string name="board_a">Anime &amp; Manga</string>
     <string name="board_c">Anime/Cute</string>
     <string name="board_w">Anime/Wallpapers</string>
@@ -713,7 +715,7 @@
     <string name="board_jp">Otaku Culture</string>
     <string name="board_vp">Pokemon</string>
     <string name="board_type_interests">Interests</string>
-    <string name="board_type_interests_desc">These boards encompass video games, media, sports and culture</string>
+    <string name="board_type_interests_desc">Video games, media, sports and culture</string>
     <string name="board_v">Video Games</string>
     <string name="board_vg">Video Game Generals</string>
     <string name="board_vr">Retro Games</string>
@@ -730,9 +732,7 @@
     <string name="board_int">International</string>
     <string name="board_out">Outdoors</string>
     <string name="board_type_creative">Creative</string>
-    <string name="board_type_creative_desc">These boards display art, photography, cooking and other creative
-        activities
-    </string>
+    <string name="board_type_creative_desc">Art, photography, cooking and projects</string>
     <string name="board_i">Oekaki</string>
     <string name="board_po">Papercraft &amp; Origami</string>
     <string name="board_p">Photography</string>
@@ -747,7 +747,7 @@
     <string name="board_diy">Do-It-Yourself</string>
     <string name="board_wsg">Worksafe GIF</string>
     <string name="board_type_adult">Adult</string>
-    <string name="board_type_adult_desc">These boards provide adult-themed images and content</string>
+    <string name="board_type_adult_desc">Not-safe-for-work images and content</string>
     <string name="board_s">Sexy Beautiful Women</string>
     <string name="board_hc">Hardcore</string>
     <string name="board_hm">Handsome Men</string>
@@ -760,7 +760,7 @@
     <string name="board_hr">High Resolution</string>
     <string name="board_gif">Animated GIF</string>
     <string name="board_type_other">Other</string>
-    <string name="board_type_other_desc">These boards discuss travel, fitness, and other topics</string>
+    <string name="board_type_other_desc">Books, travel, fitness and discussion</string>
     <string name="board_q">4chan Discussion</string>
     <string name="board_trv">Travel</string>
     <string name="board_fit">Health &amp; Fitness</string>
@@ -770,7 +770,7 @@
     <string name="board_lgbt">LGBT</string>
     <string name="board_mlp">Pony</string>
     <string name="board_type_misc">Misc</string>
-    <string name="board_type_misc_desc">These not-safe-for-work boards contain a variety of craziness</string>
+    <string name="board_type_misc_desc">Politics, camwhores, and /b/</string>
     <string name="board_b">Random</string>
     <string name="board_r">Request</string>
     <string name="board_r9k">ROBOT9001</string>
@@ -778,7 +778,7 @@
     <string name="board_s4s">Shit 4chan Says</string>
     <string name="board_soc">Social</string>
     <string name="board_watch">Watchlist</string>
-    <string name="board_watch_desc">Use the watchlist to keep track of interesting threads</string>
+    <string name="board_watch_desc">Keep track of interesting threads</string>
     <string name="board_watch_abbrev">Watch</string>
     <string name="board_type_recent">Popular</string>
     <string name="board_type_recent_abbrev">Popular</string>
@@ -983,12 +983,14 @@
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
+        <!--
         <item>@string/board_type_japanese_culture</item>
         <item>@string/board_type_interests</item>
         <item>@string/board_type_creative</item>
         <item>@string/board_type_other</item>
         <item>@string/board_type_adult</item>
         <item>@string/board_type_misc</item>
+        -->
         <item>@string/board_watch</item>
     </string-array>
         <!--
@@ -1061,10 +1063,12 @@
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
+        <!--
         <item>@string/board_type_japanese_culture</item>
         <item>@string/board_type_interests</item>
         <item>@string/board_type_creative</item>
         <item>@string/board_type_other</item>
+        -->
         <item>@string/board_watch</item>
     </string-array>
         <!--

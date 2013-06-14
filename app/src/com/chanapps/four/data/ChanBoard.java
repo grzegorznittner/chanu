@@ -17,7 +17,6 @@ import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import com.chanapps.four.activity.BoardActivity;
-import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.service.FetchChanDataService;

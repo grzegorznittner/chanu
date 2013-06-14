@@ -6,7 +6,7 @@ import java.util.*;
 import android.os.Message;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.data.*;
-import com.chanapps.four.fragment.BoardGroupFragment;
+import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.multipartmime.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
@@ -315,7 +315,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
                 thread.com = activity.getMessage().trim();
                 try {
                     ChanFileStorage.addWatchedThread(context, thread);
-                    BoardGroupFragment.refreshWatchlist();
+                    BoardActivity.refreshWatchlist();
                 }
                 catch (IOException e) {
                     Log.e(TAG, "Couldn't add thread /" + thread.board + "/" + thread.no + " to watchlist", e);

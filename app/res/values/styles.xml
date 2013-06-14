@@ -126,10 +126,11 @@
         <item name="android:verticalSpacing">0dp</item>
         <item name="android:horizontalSpacing">0dp</item>
         <item name="android:stretchMode">none</item>
-        <item name="android:divider">@color/PaletteLighterGray</item>
+        <item name="android:divider">@color/PaletteLightGray</item>
         <item name="android:dividerHeight">1dp</item>
         <item name="android:cacheColorHint">#00000000</item>
         <item name="android:fastScrollEnabled">true</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
     </style>
 
     <!--
@@ -224,16 +225,17 @@
     <style name="BoardGridView" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingLeft">@dimen/BoardGridView.spacing</item>
-        <item name="android:paddingRight">@dimen/BoardGridView.spacing</item>
+        <item name="android:padding">@dimen/BoardGridView.spacing</item>
+        <item name="android:clipToPadding">false</item>
         <item name="android:gravity">top|left</item>
         <item name="android:smoothScrollbar">true</item>
         <item name="android:cacheColorHint">#00000000</item>
         <item name="android:fastScrollEnabled">true</item>
         <item name="android:horizontalSpacing">@dimen/BoardGridView.spacing</item>
-        <item name="android:verticalSpacing">0dp</item>
+        <item name="android:verticalSpacing">@dimen/BoardGridView.spacing</item>
         <item name="android:numColumns">@integer/BoardGridView.numColumns</item>
         <item name="android:stretchMode">columnWidth</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
     </style>
 
     <style name="BoardGridViewTablet" parent="AppTheme">
@@ -502,6 +504,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
         <item name="android:textSize">@dimen/ThreadListLayout</item>
+        <item name="android:background">@color/PaletteBlack</item>
     </style>
 
     <style name="ThreadListHeaderInnerLayout" parent="AppTheme">
@@ -513,6 +516,7 @@
         <item name="android:paddingRight">@dimen/ThreadListLayout_paddingRight</item>
         <item name="android:orientation">vertical</item>
         <item name="android:textSize">@dimen/ThreadListLayout</item>
+        <item name="android:background">@color/PaletteBlack</item>
     </style>
 
     <style name="ThreadListItemLayout" parent="AppTheme">
@@ -566,7 +570,7 @@
         <item name="android:gravity">center</item>
         <item name="android:scaleType">center</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
-        <item name="android:background">@color/PaletteLightGray</item>
+        <item name="android:background">@color/PaletteBlack</item>
     </style>
 
     <style name="ThreadListHeaderImageExpanded" parent="AppTheme">
@@ -578,6 +582,7 @@
         <item name="android:gravity">center</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
+        <item name="android:background">@color/PaletteBlack</item>
     </style>
 
     <style name="ThreadListHeaderImageExpandedClickEffect" parent="AppTheme">
@@ -605,12 +610,14 @@
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
         <item name="android:textColorLink">@color/PaletteChanuGreen</item>
+        <item name="android:background">@color/PaletteBlack</item>
     </style>
 
     <style name="ThreadListHeaderHeadWrapper" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/PaletteBlack</item>
     </style>
 
     <style name="ThreadListHeaderCountryFlag" parent="AppTheme">
@@ -636,6 +643,7 @@
         <item name="android:autoLink">email</item>
         <item name="android:linksClickable">true</item>
         <item name="android:textColorLink">@color/PaletteChanuGreen</item>
+        <item name="android:background">@color/PaletteBlack</item>
     </style>
 
     <style name="ThreadListHeaderExifText" parent="AppTheme">
@@ -705,7 +713,7 @@
         <!--<item name="android:maxWidth">@dimen/ThreadListItemImage_maxWidth</item> -->
         <item name="android:gravity">top|left</item>
         <item name="android:scaleType">fitStart</item>
-        <item name="android:background">@color/PaletteLightGray</item>
+        <item name="android:background">@color/PaletteYellowWhite</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
 
     </style>
@@ -717,6 +725,7 @@
         <item name="android:indeterminate">true</item>
         <item name="android:indeterminateOnly">true</item>
         <item name="android:visibility">gone</item>
+        <item name="android:background">@color/PaletteBlack</item>
     </style>
 
     <style name="ThreadListItemImageExpanded" parent="AppTheme">
@@ -810,7 +819,7 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/BoardListTitle</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/PaletteBlue</item>
+        <item name="android:textColor">@color/PaletteChanuGreen</item>
     </style>
 
     <style name="ThreadListButton" parent="AppTheme">
@@ -1031,49 +1040,25 @@
     </style>
 
     <!-- colors -->
-
+    <!--
     <color name="HoloDimForegroundInverse">#323232</color>
     <color name="DimDivider">#666</color>
-
+    -->
+    <color name="PaletteTransparent">#00000000</color>
     <color name="pressed_chanu">#CC16B206</color>
     <color name="PaletteChanuGreen">#16b206</color>
     <color name="PaletteChanuGreenHalfOpacity">#8816b206</color>
-    <color name="PaletteLightGreen">#58b75a</color>
-    <color name="PaletteDarkGreen">#58675a</color>
-    <color name="PaletteDarkGreenHalfOpacity">#8058675a</color>
-    <color name="PaletteDarkPink">#ca707c</color>
-    <color name="PaletteDarkPinkHalfOpacity">#80ca707c</color>
-    <color name="PaletteBlue">#33b5e5</color>
-    <color name="PaletteBlueHalfOpacity">#b033b5e5</color>
-    <color name="PaletteLightBlue">#397ce4</color>
-    <color name="PaletteLightBlueHalfOpacity">#8079ccd4</color>
-    <color name="PaletteLightGreenHalfOpacity">#8077b496</color>
-    <color name="PaletteOffWhite">#ddd9d7</color>
-    <color name="PaletteOffWhiteHalfOpacity">#80ddd9d7</color>
-    <color name="PaletteWhite">#fefefe</color>
-    <color name="PaletteTransparent">#00000000</color>
-    <color name="PaletteSemiOpaqueMedGray">#aa666666</color>
-    <color name="PaletteSemiOpaqueDarkGray">#aa444444</color>
-    <color name="PaletteSemiOpaqueDarkerGray">#aa222222</color>
-    <color name="PaletteLightestGray">#eee</color>
-    <color name="PaletteLighterGray">#ddd</color>
-    <color name="PaletteLightGray">#ccc</color>
-    <color name="PaletteMedLightGray">#aaa</color>
-    <color name="PaletteMedGray">#888</color>
-    <color name="PaletteDarkGray">#444</color>
-    <color name="PaletteLighterGrayHalfOpacity">#80dddddd</color>
-    <color name="PaletteLightBlack">#ff333333</color>
-    <color name="PaletteJetBlack">#ff000000</color>
-    <color name="PaletteBlack">#ff222222</color>
-    <color name="PaletteBlackHalfOpacity">#80222222</color>
-    <color name="PaletteBlack34Opacity">#d0222222</color>
-    <color name="PaletteBlackMostlyOpaque">#ec222222</color>
-    <color name="PaletteTextOverlayBackground">#a0222222</color>
-    <color name="popupbackground">#fff0f0f0</color>
+    <color name="PaletteYellowWhite">#ecebe7</color>
+    <color name="PaletteWhite">#f7f7f7</color>
+    <color name="PaletteOffWhite">#e4e4e4</color>
+    <color name="PaletteLightGray">#bababa</color>
+    <color name="PaletteDarkGray">#414141</color>
+    <color name="PaletteBlack">#ff2d2d2d</color>
+    <color name="PaletteBlackHalfOpacity">#802d2d2d</color>
+    <color name="PaletteBlack34Opacity">#d02d2d2d</color>
 
     <color name="blue_base">#449def</color>
     <color name="blue_base_half">#80449def</color>
-    <color name="blue_base_34">#c0449def</color>
     <color name="blue_stroke">#2f6699</color>
     <color name="blue_gradientS">#00a2e2</color>
     <color name="blue_gradientE">#0767a4</color>

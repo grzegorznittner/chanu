@@ -4,7 +4,7 @@
 
         <item
                 android:state_pressed="true"
-                android:drawable="@color/PaletteSemiOpaqueDarkerGray"
+                android:drawable="@color/PaletteBlackHalfOpacity"
                 />
         <item
                 android:state_pressed="false"

@@ -16,10 +16,10 @@
 
     <ListView
             android:id="@+id/thread_list_view" style="@style/ListViewTemplateWithGridTabletsThreads"
-            android:background="@color/PaletteOffWhite"/>
+            android:background="@color/PaletteYellowWhite"/>
 
     <include layout="@layout/board_refresh_bar"/>
-
+    <!--
     <include layout="@layout/tutorial_overlay"/>
-
+    -->
 </RelativeLayout>

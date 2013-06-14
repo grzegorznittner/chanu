@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.gallery3d.ui.Log;
+import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.UserStatistics;
@@ -53,7 +54,7 @@ public class WatchlistClearDialogFragment extends DialogFragment {
                                 try {
                                     if (DEBUG) Log.i(TAG, "Clearing watchlist...");
                                     ChanFileStorage.clearWatchedThreads(getActivity().getApplicationContext());
-                                    WatchlistFragment.refreshWatchlist();
+                                    BoardActivity.refreshWatchlist();
                                     Toast.makeText(getActivity().getApplicationContext(),
                                             R.string.thread_watchlist_cleared, Toast.LENGTH_SHORT).show();
                                 }

@@ -12,8 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
-
-import com.chanapps.four.activity.BoardSelectorActivity;
 import com.nostra13.universalimageloader.core.download.URLConnectionImageDownloader;
 
 /**
@@ -65,7 +63,7 @@ public class ExtendedImageDownloader extends URLConnectionImageDownloader {
         int drawableId = Integer.parseInt(drawableIdString);
         BitmapDrawable drawable = (BitmapDrawable) context.getResources().getDrawable(drawableId);
         Bitmap bitmap = drawable.getBitmap();
-        if (DEBUG) Log.d(BoardSelectorActivity.TAG, "Getting drawable from stream: " + imageUri + " has value " + drawable);
+        if (DEBUG) Log.d(TAG, "Getting drawable from stream: " + imageUri + " has value " + drawable);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         bitmap.compress(CompressFormat.PNG, 0, os);
         return new ByteArrayInputStream(os.toByteArray());

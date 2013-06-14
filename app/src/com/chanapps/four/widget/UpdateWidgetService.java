@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import com.chanapps.four.activity.BoardActivity;
-import com.chanapps.four.activity.BoardSelectorActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.*;
@@ -163,8 +162,8 @@ public class UpdateWidgetService extends RemoteViewsService {
             if (widgetConf.showBoardTitle)
                 views.setOnClickPendingIntent(R.id.board_title, makeBoardIntent());
 
-            views.setInt(R.id.home_button, "setImageResource", R.drawable.app_icon);
-            views.setOnClickPendingIntent(R.id.home_button, makeHomeIntent());
+            //views.setInt(R.id.home_button, "setImageResource", R.drawable.app_icon);
+            //views.setOnClickPendingIntent(R.id.home_button, makeHomeIntent());
 
             int refreshBackground = widgetConf.showRefreshButton ? R.drawable.widget_refresh_gradient_bg : 0;
             int refreshDrawable = widgetConf.showRefreshButton ? R.drawable.widget_refresh_button_selector : 0;
@@ -226,22 +225,14 @@ public class UpdateWidgetService extends RemoteViewsService {
         }
 
         private PendingIntent makeHomeIntent() {
-            Intent intent = BoardSelectorActivity.createIntentForActivity(context, BoardSelectorTab.BOARDLIST);
+            Intent intent = BoardActivity.createIntent(context, ChanBoard.META_BOARD_CODE, "");
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 1;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         private PendingIntent makeBoardIntent() {
-            Intent intent;
-            if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
-                BoardSelectorTab tab = ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)
-                        ? BoardSelectorTab.WATCHLIST
-                        : BoardSelectorTab.RECENT;
-                intent = BoardSelectorActivity.createIntentForActivity(context, tab);
-            } else {
-                intent = BoardActivity.createIntent(context, widgetConf.boardCode, "");
-            }
+            Intent intent = BoardActivity.createIntent(context, widgetConf.boardCode, "");
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 2;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);

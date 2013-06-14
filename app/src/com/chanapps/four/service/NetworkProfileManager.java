@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.util.Log;
+import android.view.ViewConfiguration;
 import android.widget.Toast;
 
 import com.chanapps.four.activity.ChanActivityId;
@@ -24,6 +25,8 @@ import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 import com.chanapps.four.service.profile.NoConnectionProfile;
 import com.chanapps.four.service.profile.WifiProfile;
+
+import java.lang.reflect.Field;
 
 /**
  * Class manages network profile switching.
@@ -84,8 +87,24 @@ public class NetworkProfileManager {
 		return userStats;
 	}
 
+    protected void forceMenuKey(Context context) {
+        try {
+            ViewConfiguration config = ViewConfiguration.get(context);
+            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+            if(menuKeyField != null) {
+                menuKeyField.setAccessible(true);
+                menuKeyField.setBoolean(config, false);
+            }
+        } catch (Exception ex) {
+            // Ignore
+        }
+    }
+
     public void activityChange(ChanIdentifiedActivity newActivity) {
 		if (DEBUG) Log.i(TAG, "activity change to " + newActivity.getChanActivityId() + " receiver=" + receiver + " activity=" + currentActivity);
+
+        forceMenuKey(newActivity.getBaseContext());
+
 		if (receiver == null) {
 			// we need to register network changes receiver
 			receiver = new NetworkBroadcastReceiver();

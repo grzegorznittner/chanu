@@ -24,7 +24,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
-import com.chanapps.four.fragment.BoardGroupFragment;
+import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.service.FileSaverService;
 import com.chanapps.four.service.FileSaverService.FileType;
 import com.nostra13.universalimageloader.utils.StorageUtils;
@@ -655,7 +655,7 @@ public class ChanFileStorage {
                 if (DEBUG) Log.i(TAG, "Updating watched thread " + watchedThread.board + "/" + watchedThread.no
                         + " replies: " + watchlistBoard.threads[i].replies + " images: " + watchlistBoard.threads[i].images);
                 storeBoardData(context, watchlistBoard);
-                BoardGroupFragment.refreshWatchlist();
+                BoardActivity.refreshWatchlist();
             }
         }
     }
@@ -683,7 +683,7 @@ public class ChanFileStorage {
         }
         if (needsToBeStored) {
             storeBoardData(context, board);
-            BoardGroupFragment.refreshWatchlist();
+            BoardActivity.refreshWatchlist();
         }
     }
 

@@ -1,5 +1,6 @@
 package com.chanapps.four.activity;
 
+import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.List;
 
@@ -15,7 +16,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.*;
 import android.view.View.OnClickListener;
@@ -29,6 +29,7 @@ import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.fragment.GenericDialogFragment;
 import com.chanapps.four.fragment.PickNewThreadBoardDialogFragment;
+import com.chanapps.four.fragment.WatchlistDeleteDialogFragment;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -50,9 +51,11 @@ public class BoardActivity
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
     protected static final String FIRST_VISIBLE_POSITION = "firstVisiblePosition";
     protected static final String FIRST_VISIBLE_POSITION_OFFSET = "firstVisiblePositionOffset";
+    private static WeakReference<BoardActivity> watchlistActivityRef = null;
 
     protected AbstractBoardCursorAdapter adapter;
     protected View layout;
+    protected TextView emptyText;
     protected GridView gridView;
     protected int columnWidth;
     protected int columnHeight;
@@ -85,7 +88,15 @@ public class BoardActivity
 
     @Override
     public boolean isSelfBoard(String boardAsMenu) {
-        return boardAsMenu != null && boardAsMenu.matches("/" + boardCode + "/.*") && (query == null || query.isEmpty());
+        if (boardAsMenu == null || boardAsMenu.isEmpty())
+            return false;
+        BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
+        if (boardType != null && boardType.boardCode().equals(boardCode))
+            return true;
+        if (boardAsMenu.matches("/" + boardCode + "/.*")
+                && (query == null || query.isEmpty()))
+            return true;
+        return false;
     }
 
     @Override
@@ -97,8 +108,31 @@ public class BoardActivity
             setFromIntent(getIntent());
         if (boardCode == null || boardCode.isEmpty())
             boardCode = ChanBoard.META_BOARD_CODE;
+        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
+            setWatchlist(this);
         if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/ q=" + query);
         getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    protected static void setWatchlist(BoardActivity fragment) {
+        synchronized (BoardActivity.class) {
+            watchlistActivityRef = new WeakReference<BoardActivity>(fragment);
+        }
+    }
+
+    public static void refreshWatchlist() {
+        synchronized (BoardActivity.class) {
+            BoardActivity watchlist;
+            if (watchlistActivityRef != null && (watchlist = watchlistActivityRef.get()) != null) {
+                ChanActivityId activity = NetworkProfileManager.instance().getActivityId();
+                if (activity != null
+                        && activity.activity == LastActivity.BOARD_ACTIVITY
+                        && ChanBoard.WATCHLIST_BOARD_CODE.equals(activity.boardCode))
+                    watchlist.refresh();
+                else
+                    watchlist.backgroundRefresh();
+            }
+        }
     }
 
     @Override
@@ -163,17 +197,14 @@ public class BoardActivity
         if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/ q=" + query);
     }
 
-    protected int getLayoutId() {
-        return R.layout.board_grid_layout;
-    }
-
     protected void createAbsListView() {
         // we don't use fragments, but create anything needed
         FrameLayout contentFrame = (FrameLayout)findViewById(R.id.content_frame);
         if (contentFrame.getChildCount() > 0)
             contentFrame.removeAllViews();
-        layout = View.inflate(getApplicationContext(), getLayoutId(), null);
+        layout = View.inflate(getApplicationContext(), R.layout.board_grid_layout, null);
         contentFrame.addView(layout);
+        emptyText = (TextView)layout.findViewById(R.id.board_grid_empty_text);
         adapter = new BoardGridCursorAdapter(this, this, columnWidth, columnHeight);
         gridView = (GridView)findViewById(R.id.board_grid_view);
         columnWidth = ChanGridSizer.getCalculatedWidth(getResources().getDisplayMetrics(),
@@ -183,7 +214,10 @@ public class BoardActivity
         gridView.setAdapter(adapter);
         gridView.setClickable(true);
         gridView.setOnItemClickListener(boardItemListener);
-        //gridView.setLongClickable(false);
+        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
+            gridView.setLongClickable(true);
+            gridView.setOnItemLongClickListener(boardItemLongListener);
+        }
         gridView.setSelector(R.drawable.board_grid_selector_bg);
 
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
@@ -295,6 +329,9 @@ public class BoardActivity
                         health.toString().toLowerCase().replaceAll("_", " "));
                 Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
             }
+            showEmptyText();
+            stopProgressBarIfLoadersDone();
+            return;
             //else {
             //    handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
             //}
@@ -313,7 +350,20 @@ public class BoardActivity
             setActionBarTitle(); // to reflect updated time
         }
         */
+
+        hideEmptyText();
         stopProgressBarIfLoadersDone();
+    }
+
+    protected void showEmptyText() {
+        BoardType boardType = BoardType.valueOfBoardCode(boardCode);
+        int emptyStringId = (boardType != null) ? boardType.emptyStringId(): R.string.board_empty_default;
+        emptyText.setText(emptyStringId);
+        emptyText.setVisibility(View.VISIBLE);
+    }
+
+    protected void hideEmptyText() {
+        emptyText.setVisibility(View.GONE);
     }
 
     protected void stopProgressBarIfLoadersDone() {
@@ -360,6 +410,24 @@ public class BoardActivity
                 String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
                 long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
                 ThreadActivity.startActivity(BoardActivity.this, boardLink, threadNo, "");
+            }
+        }
+    };
+
+    protected AbsListView.OnItemLongClickListener boardItemLongListener = new AbsListView.OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+            final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+            ChanThread thread = ChanFileStorage.loadThreadData(BoardActivity.this, boardCode, threadNo);
+            if (thread != null && thread.posts != null && thread.posts[0] != null && thread.posts[0].tim > 0) {
+                WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, thread);
+                d.show(getSupportFragmentManager(), WatchlistDeleteDialogFragment.TAG);
+                return true;
+            }
+            else {
+                return false;
             }
         }
     };
@@ -437,7 +505,6 @@ public class BoardActivity
             ; // ignore
         }
         else if (board.isPopularBoard()) {
-            menu.findItem(R.id.refresh_menu).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
             menu.findItem(R.id.offline_board_view_menu).setVisible(false);
@@ -446,7 +513,6 @@ public class BoardActivity
             menu.findItem(R.id.global_rules_menu).setVisible(true);
         }
         else if (board.isVirtualBoard()) {
-            menu.findItem(R.id.refresh_menu).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
             menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
             menu.findItem(R.id.offline_board_view_menu).setVisible(false);
@@ -455,7 +521,6 @@ public class BoardActivity
             menu.findItem(R.id.global_rules_menu).setVisible(true);
         }
         else {
-            menu.findItem(R.id.refresh_menu).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(true);
             menu.findItem(R.id.offline_board_view_menu).setVisible(true);
@@ -562,6 +627,18 @@ public class BoardActivity
 	        	handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
 	        }
         }
+    }
+
+    public void backgroundRefresh() {
+        Handler handler = NetworkProfileManager.instance().getActivity().getChanHandler();
+        if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.swapCursor(null);
+                }
+            });
+        //getLoaderManager().destroyLoader(0);
     }
 
     @Override

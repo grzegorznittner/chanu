@@ -42,7 +42,7 @@
             android:textSize="12sp"
             android:text="@string/board_a"
             />
-
+    <!--
     <ImageButton
             android:id="@+id/home_button"
             android:layout_height="48dp"
@@ -58,7 +58,7 @@
             android:background="@color/PaletteTransparent"
             android:contentDescription="@string/app_name_home"
             />
-
+    -->
     <ImageButton
             android:id="@+id/refresh"
             android:layout_height="48dp"

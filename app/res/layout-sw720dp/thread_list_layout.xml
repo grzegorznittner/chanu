@@ -7,7 +7,8 @@
         android:layout_height="match_parent"
         android:padding="0dp"
         android:background="@color/PaletteBlack">
-    <GridView android:id="@+id/board_grid_view_tablet" style="@style/BoardGridViewTablet"/>
+    <GridView android:id="@+id/board_grid_view_tablet" style="@style/BoardGridViewTablet"
+            android:background="@color/PaletteYellowWhite"/>
 
     <!--View
         android:layout_width="1dp"
@@ -16,10 +17,10 @@
 
     <ListView
             android:id="@+id/thread_list_view" style="@style/ListViewTemplateWithGridTabletsThreads"
-            android:background="@color/PaletteOffWhite"/>
+            android:background="@color/PaletteYellowWhite"/>
 
     <include layout="@layout/board_refresh_bar"/>
-
+    <!--
     <include layout="@layout/tutorial_overlay"/>
-
+    -->
 </RelativeLayout>

@@ -2,11 +2,13 @@
 <com.chanapps.four.component.CheckableLinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         style="@style/ThreadListHeaderLayout"
-        android:id="@+id/list_item">
+        android:id="@+id/list_item"
+        >
 
     <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/PaletteBlack"
             >
 
         <ImageView style="@style/ThreadListHeaderImage" android:id="@+id/list_item_image"/>
@@ -29,21 +31,27 @@
             >
 
         <RelativeLayout style="@style/ThreadListHeaderHeadWrapper" android:id="@+id/list_item_header_wrapper">
-            <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
+            <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"
+                    android:textColor="@color/PaletteWhite"
+                    />
             <ImageView style="@style/ThreadListHeaderCountryFlag" android:id="@+id/list_item_country_flag"/>
-            <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"/>
+            <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"
+                      android:textColor="@color/PaletteLightGray"
+                    />
         </RelativeLayout>
 
         <TextView style="@style/ThreadListItemFullText"
                   android:paddingLeft="@dimen/ThreadListItemFullTextHeader_paddingLeft"
+                  android:textColor="@color/PaletteWhite"
+                  android:background="@color/PaletteBlack"
                   android:id="@+id/list_item_text"/>
 
         <TextView style="@style/ThreadListItemExifText"
                   android:paddingLeft="@dimen/ThreadListItemFullTextHeader_paddingLeft"
+                  android:textColor="@color/PaletteLightGray"
+                  android:background="@color/PaletteBlack"
                   android:id="@+id/list_item_image_exif"/>
 
     </LinearLayout>
-
-    <View style="@style/ThreadListHeaderBar" android:id="@+id/list_item_header_bar"/>
 
 </com.chanapps.four.component.CheckableLinearLayout>

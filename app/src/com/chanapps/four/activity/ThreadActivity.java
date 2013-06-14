@@ -148,19 +148,13 @@ public class ThreadActivity
             setFromIntent(getIntent());
         if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/" + threadNo + " q=" + query);
         if (boardCode == null || boardCode.isEmpty())
-            redirectToBoardSelector();
-        else if (threadNo <= 0)
+            boardCode = ChanBoard.META_BOARD_CODE;
+        if (threadNo <= 0)
             redirectToBoard();
-    }
+        if (absBoardListView != null)
+            getSupportLoaderManager().initLoader(1, null, this); // board loader for tablet view
+        getSupportLoaderManager().initLoader(0, null, this);
 
-    protected void redirectToBoardSelector() { // backup in case we are missing stuff
-        Log.e(TAG, "Empty board code, redirecting to board selector");
-        Intent selectorIntent = new Intent(this, BoardSelectorActivity.class);
-        selectorIntent.putExtra(ChanHelper.BOARD_TYPE, BoardType.JAPANESE_CULTURE.toString());
-        selectorIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
-        selectorIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(selectorIntent);
-        finish();
     }
 
     protected void redirectToBoard() { // backup in case we are missing stuff
@@ -301,9 +295,12 @@ public class ThreadActivity
             handler = new LoaderHandler();
         invalidateOptionsMenu(); // for correct spinner display
         NetworkProfileManager.instance().activityChange(this);
-        if (absBoardListView != null)
+
+        if (adapter == null || adapter.getCount() == 0)
+            getSupportLoaderManager().restartLoader(0, null, this);
+        if (absBoardListView != null && (adapterBoardsTablet == null || adapterBoardsTablet.getCount() == 0))
             getSupportLoaderManager().restartLoader(1, null, this); // board loader for tablet view
-        getSupportLoaderManager().restartLoader(0, null, this); // thread loader
+
         new TutorialOverlay(layout, tutorialPage());
     }
 
@@ -639,7 +636,7 @@ public class ThreadActivity
                     }
                     else {
                         ChanFileStorage.addWatchedThread(context, thread);
-                        BoardGroupFragment.refreshWatchlist();
+                        BoardActivity.refreshWatchlist();
                         msgId = R.string.thread_added_to_watchlist;
                         if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/" + threadNo + " to watchlist");
                     }

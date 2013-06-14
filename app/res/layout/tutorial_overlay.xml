@@ -17,7 +17,7 @@
             android:layout_margin="@dimen/tutorial_overlay_subject_layout_margin"
             android:textSize="@dimen/tutorial_overlay_subject_textSize"
             android:textStyle="bold"
-            android:textColor="@color/PaletteLightGreen"
+            android:textColor="@color/PaletteChanuGreen"
             />
 
     <TextView
@@ -29,7 +29,7 @@
             android:layout_marginRight="@dimen/tutorial_overlay_detail_marginRight"
             android:layout_marginBottom="@dimen/tutorial_overlay_detail_marginBottom"
             android:layout_below="@+id/tutorial_overlay_subject"
-            android:textColor="@color/PaletteLighterGray"
+            android:textColor="@color/PaletteWhite"
             android:textSize="@dimen/tutorial_overlay_detail_textSize"
             />
 
@@ -64,7 +64,7 @@
             android:layout_alignParentRight="true"
             android:padding="@dimen/tutorial_overlay_dismiss_padding"
             android:background="@drawable/tutorial_overlay_dismiss_bg"
-            android:textColor="@color/PaletteMedGray"
+            android:textColor="@color/PaletteDarkGray"
             android:textStyle="italic"
             android:textSize="@dimen/tutorial_overlay_detail_textSize"
             android:text="@string/tutorial_overlay_dismiss"

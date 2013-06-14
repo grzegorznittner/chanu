@@ -9,8 +9,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/card_background"
-            android:layout_marginTop="8dp"
-            android:paddingBottom="4dp"
             android:orientation="vertical"
             >
 
@@ -65,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-                    android:textColor="@color/PaletteMedLightGray"
+                    android:textColor="@color/PaletteLightGray"
                     android:textSize="@dimen/BoardGridInfo"
                     android:maxLines="3"
                     />

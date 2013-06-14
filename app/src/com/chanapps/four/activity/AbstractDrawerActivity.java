@@ -29,7 +29,7 @@ abstract public class
         ListView.OnItemClickListener
 {
     public static final String TAG = AbstractDrawerActivity.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
 
     protected Handler handler;
@@ -221,74 +221,36 @@ abstract public class
 
     abstract public boolean isSelfBoard(String boardAsMenu);
 
-    public boolean isCoverPage(String boardAsMenu) {
-        return (boardAsMenu.equals(getString(R.string.app_name_title))
-                || boardAsMenu.equals(getString(R.string.app_name_title)));
-    }
-    public boolean isPopular(String boardAsMenu) {
-        return (boardAsMenu.equals(getString(R.string.board_popular))
-                || boardAsMenu.equals(getString(R.string.board_popular_abbrev)));
-    }
-    public boolean isLatest(String boardAsMenu) {
-        return (boardAsMenu.equals(getString(R.string.board_latest))
-                || boardAsMenu.equals(getString(R.string.board_latest_abbrev)));
-    }
-    public boolean isLatestImages(String boardAsMenu) {
-        return (boardAsMenu.equals(getString(R.string.board_latest_images))
-                || boardAsMenu.equals(getString(R.string.board_latest_images_abbrev)));
-    }
-    public boolean isWatchlist(String boardAsMenu) {
-        return (boardAsMenu.equals(getString(R.string.board_watch))
-                || boardAsMenu.equals(getString(R.string.board_watch_abbrev)));
-    }
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mDrawerLayout.closeDrawer(mDrawerList);
         String boardAsMenu = (String) parent.getItemAtPosition(position);
-        if (DEBUG) Log.i(BoardSelectorActivity.TAG, "onItemClick boardAsMenu=" + boardAsMenu);
-        if (isSelfBoard(boardAsMenu))
-            return;
-        if (isCoverPage(boardAsMenu)) {
-            Intent intent = CoverPageActivity.createIntent(this);
-            startActivity(intent);
+        if (DEBUG) Log.i(TAG, "onItemClick boardAsMenu=" + boardAsMenu);
+        if (isSelfBoard(boardAsMenu)) {
+            if (DEBUG) Log.i(TAG, "self board, returning");
             return;
         }
-        if (isPopular(boardAsMenu)) {
-            Intent intent = BoardActivity.createIntent(this, ChanBoard.POPULAR_BOARD_CODE, "");
-            startActivity(intent);
-            return;
-        }
-        if (isLatest(boardAsMenu)) {
-            Intent intent = BoardActivity.createIntent(this, ChanBoard.LATEST_BOARD_CODE, "");
-            startActivity(intent);
-            return;
-        }
-        if (isLatestImages(boardAsMenu)) {
-            Intent intent = BoardActivity.createIntent(this, ChanBoard.LATEST_IMAGES_BOARD_CODE, "");
-            startActivity(intent);
-            return;
-        }
-        if (isWatchlist(boardAsMenu)) {
-            Intent intent = WatchlistActivity.createIntent(this);
-            startActivity(intent);
-            return;
-        }
-        BoardType boardType = BoardType.valueOfDisplayString(this, boardAsMenu);
+        BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
         if (boardType != null) {
             String boardCode = boardType.boardCode();
+            if (DEBUG) Log.i(TAG, "matched board type /" + boardCode + "/, starting");
             Intent intent = BoardActivity.createIntent(this, boardCode, "");
             startActivity(intent);
             return;
         }
         Pattern p = Pattern.compile(BOARD_CODE_PATTERN);
         Matcher m = p.matcher(boardAsMenu);
-        if (!m.matches())
+        if (!m.matches()) {
+            if (DEBUG) Log.i(TAG, "matched nothing, bailing");
             return;
+        }
         String boardCodeForJump = m.group(1);
-        if (boardCodeForJump == null || boardCodeForJump.isEmpty() || isSelfBoard(boardCodeForJump))
+        if (boardCodeForJump == null || boardCodeForJump.isEmpty() || isSelfBoard(boardCodeForJump)) {
+            if (DEBUG) Log.i(TAG, "null match, bailing");
             return;
+        }
         Intent intent = BoardActivity.createIntent(this, boardCodeForJump, "");
+        if (DEBUG) Log.i(TAG, "matched board /" + boardCodeForJump + "/, starting");
         startActivity(intent);
     }
 

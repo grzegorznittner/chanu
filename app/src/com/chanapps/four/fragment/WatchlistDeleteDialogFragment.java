@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.android.gallery3d.ui.Log;
+import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanThread;
@@ -53,7 +54,7 @@ public class WatchlistDeleteDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
                                     ChanFileStorage.deleteWatchedThread(getActivity().getApplicationContext(), thread);
-                                    BoardGroupFragment.refreshWatchlist();
+                                    BoardActivity.refreshWatchlist();
                                 }
                                 catch (IOException e) {
                                     Log.e(TAG, "Exception deleting watchlist thread=" + thread, e);

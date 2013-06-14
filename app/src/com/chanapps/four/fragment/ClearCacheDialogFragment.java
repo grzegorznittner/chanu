@@ -12,9 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.chanapps.four.activity.BoardSelectorActivity;
+import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ChanNotificationManager;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 
 /**
@@ -134,7 +135,7 @@ public class ClearCacheDialogFragment extends DialogFragment {
         }
 
         private Notification makeNotification(String contentText) {
-            Intent intent = new Intent(context, BoardSelectorActivity.class);
+            Intent intent = BoardActivity.createIntent(context, ChanBoard.META_BOARD_CODE, "");
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             Notification notification = new NotificationCompat.Builder(context)

@@ -142,10 +142,18 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         if (!query.isEmpty() && numQueryMatches == 0)
             matrixCursor.addRow(ChanPost.makeTitleRow(boardName, context.getString(R.string.thread_search_no_results)));
 
+        /*
         if (!thread.isDead)
             matrixCursor.addRow(ChanPost.makeButtonRow(boardName, context.getString(R.string.reply_short).toUpperCase()));
         else
             matrixCursor.addRow(ChanPost.makeTitleRow(boardName, context.getString(R.string.dead_thread_reply).toUpperCase()));
+        */
+
+        if (thread.defData)
+            return;
+
+        if (!thread.isDead && (thread.posts != null && thread.replies > thread.posts.length))
+            return;
 
         // put related threads at the bottom
         List<Object[]> rows = board.makePostRelatedThreadsRows(threadNo);

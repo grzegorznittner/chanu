@@ -14,11 +14,18 @@
     <include layout="@layout/tutorial_overlay"/>
     <!-- The navigation drawer -->
     <ListView android:id="@+id/left_drawer"
-              android:layout_width="240dp"
+              android:layout_width="192dp"
               android:layout_height="match_parent"
               android:layout_gravity="start"
               android:choiceMode="singleChoice"
-              android:divider="@android:color/transparent"
-              android:dividerHeight="0dp"
-              android:background="#111"/>
+              android:divider="@drawable/drawer_divider"
+              android:dividerHeight="1dp"
+              android:background="@color/PaletteBlack"/>
 </android.support.v4.widget.DrawerLayout>
+
+        <!--
+              android:divider="@color/PaletteDarkGray"
+              android:dividerHeight="1dp"
+        android:divider="@android:color/transparent"
+                      android:dividerHeight="0dp"
+-->

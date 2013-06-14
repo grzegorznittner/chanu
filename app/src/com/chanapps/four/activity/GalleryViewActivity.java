@@ -372,11 +372,9 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
     		break;
     	case OFFLINE_ALBUMSET_VIEW:
-    		upIntent = new Intent(this, BoardSelectorActivity.class);
-    		ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
-    		if (board != null) {
-    			upIntent.putExtra(ChanHelper.BOARD_TYPE, board.boardType.boardCode());
-    		}
+            if (boardCode == null || boardCode.isEmpty())
+                boardCode = ChanBoard.META_BOARD_CODE;
+    		upIntent = BoardActivity.createIntent(this, boardCode, "");
     		upIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
             break;
     	}

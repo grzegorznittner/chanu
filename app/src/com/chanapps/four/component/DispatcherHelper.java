@@ -18,6 +18,7 @@ import com.chanapps.four.data.ChanHelper;
  */
 public class DispatcherHelper {
 
+    private static final String TAG = DispatcherHelper.class.getSimpleName();
     private static final boolean DEBUG = false;
 
     public static void saveActivityToPrefs(Activity activity) {
@@ -52,9 +53,6 @@ public class DispatcherHelper {
             case FULL_SCREEN_IMAGE_ACTIVITY:
                 activityClass = GalleryViewActivity.class;
                 break;
-            case BOARD_ACTIVITY:
-                activityClass = BoardActivity.class;
-                break;
             case THREAD_ACTIVITY:
                 activityClass = ThreadActivity.class;
                 break;
@@ -64,18 +62,18 @@ public class DispatcherHelper {
             case SETTINGS_ACTIVITY:
                 activityClass = SettingsActivity.class;
                 break;
-            case BOARD_SELECTOR_ACTIVITY:
+            case BOARD_ACTIVITY:
             default:
-                activityClass = BoardSelectorActivity.class;
+                activityClass = BoardActivity.class;
         }
         if (activity.getClass() != activityClass) {
-            if (DEBUG) Log.i(BoardSelectorActivity.TAG, "Dispatching to activity:" + lastActivity);
+            if (DEBUG) Log.i(TAG, "Dispatching to activity:" + lastActivity);
             Intent intent = new Intent(activity, activityClass);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             activity.startActivity(intent);
         }
         else {
-            if (DEBUG) Log.i(BoardSelectorActivity.TAG, "Activity already active, not dispatching");
+            if (DEBUG) Log.i(TAG, "Activity already active, not dispatching");
         }
     }
 
