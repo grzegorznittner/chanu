@@ -45,6 +45,8 @@ public class ChanPost {
     public static final String POST_TN_H = "tn_h";
     public static final String POST_RESTO = "resto";
     public static final String POST_HEADLINE_TEXT = "headlineText"; // we construct and filter this
+    public static final String POST_NUM_REPLIES = "numReplies";
+    public static final String POST_NUM_IMAGES = "numImages";
     public static final String POST_SUBJECT_TEXT = "subjectText"; // we construct and filter this // NOT USED
     public static final String POST_TEXT = "text"; // we construct and filter this
     public static final String POST_IMAGE_URL = "imageUrl"; // we construct this from board and tim
@@ -114,6 +116,8 @@ public class ChanPost {
             POST_FULL_IMAGE_URL,
             POST_COUNTRY_URL,
             POST_HEADLINE_TEXT,
+            POST_NUM_REPLIES,
+            POST_NUM_IMAGES,
             POST_SUBJECT_TEXT,
             POST_TEXT,
             POST_TN_W,
@@ -545,7 +549,7 @@ public class ChanPost {
             if (fsize > 0)
                 items.add(imageDimensions());
         }
-        if (resto <= 0) {
+        if (boardLevel && resto <= 0) {
             String s = threadInfoLine(boardLevel, showNumReplies);
             if (!s.isEmpty())
                 items.add(s);
@@ -961,6 +965,8 @@ public class ChanPost {
                 imageUrl(),
                 countryFlagUrl(),
                 headline(query, false, repliesBlob),
+                replies,
+                images,
                 textComponents[0],
                 textComponents[1],
                 tn_w,
@@ -996,6 +1002,8 @@ public class ChanPost {
                 "",
                 countryFlagUrl(),
                 headline("", false, null),
+                replies,
+                images,
                 textComponents[0],
                 "",
                 tn_w,
@@ -1029,6 +1037,8 @@ public class ChanPost {
                 "",
                 "",
                 board.getDescription(context),
+                0,
+                0,
                 board.name,
                 "",
                 250,
@@ -1061,6 +1071,8 @@ public class ChanPost {
                 "",
                 "",
                 "",
+                0,
+                0,
                 "",
                 ad.bannerClickUrl(),
                 ad.tn_w_banner(),
@@ -1098,6 +1110,8 @@ public class ChanPost {
                 "",
                 "",
                 "",
+                0,
+                0,
                 subject,
                 desc,
                 "",
@@ -1118,39 +1132,6 @@ public class ChanPost {
                 null,
                 null,
                 FLAG_HAS_SUBJECT | FLAG_IS_TITLE
-        };
-    }
-
-    public static Object[] makeButtonRow(String boardCode, String title) {
-        String subject = title;
-        return new Object[] {
-                title.hashCode(),
-                boardCode,
-                0,
-                "",
-                "",
-                "",
-                "",
-                subject,
-                "",
-                "",
-                "",
-                -1,
-                -1,
-                0,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                null,
-                null,
-                null,
-                FLAG_HAS_SUBJECT | FLAG_IS_BUTTON
         };
     }
 

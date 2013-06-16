@@ -1,5 +1,6 @@
 package com.chanapps.four.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
@@ -45,6 +47,7 @@ abstract public class
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         if (DEBUG) Log.v(TAG, "onCreate");
+        NetworkProfileManager.instance().ensureInitialized(this);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar
         setContentView(R.layout.drawer_activity_layout);
         createDrawer();
@@ -135,6 +138,7 @@ abstract public class
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
         super.onSaveInstanceState(bundle);
+        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     @Override

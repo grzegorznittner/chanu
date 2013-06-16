@@ -31,26 +31,34 @@
             >
 
         <RelativeLayout style="@style/ThreadListHeaderHeadWrapper" android:id="@+id/list_item_header_wrapper">
-            <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"
-                    android:textColor="@color/PaletteWhite"
-                    />
+            <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
             <ImageView style="@style/ThreadListHeaderCountryFlag" android:id="@+id/list_item_country_flag"/>
-            <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"
+
+            <TextView style="@style/ThreadListItemFullText"
+                      android:id="@+id/list_item_text"
+                      android:layout_below="@+id/list_item_subject"
+                      android:textColor="@color/PaletteWhite"
+                      android:background="@color/PaletteBlack"/>
+
+            <TextView style="@style/ThreadListItemExifText"
+                      android:id="@+id/list_item_image_exif"
+                      android:layout_below="@+id/list_item_text"
                       android:textColor="@color/PaletteLightGray"
+                      android:background="@color/PaletteBlack"
                     />
+
+            <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"/>
+            <LinearLayout style="@style/ThreadListHeaderNumReplies" android:id="@+id/list_item_num_replies">
+                <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_replies_text"/>
+                <TextView style="@style/ThreadListHeaderNumLabel"
+                        android:text="POSTS"/>
+            </LinearLayout>
+            <LinearLayout style="@style/ThreadListHeaderNumImages" android:id="@+id/list_item_num_images">
+                <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_images_text"/>
+                <TextView style="@style/ThreadListHeaderNumLabel"
+                        android:text="IMAGES"/>
+            </LinearLayout>
         </RelativeLayout>
-
-        <TextView style="@style/ThreadListItemFullText"
-                  android:paddingLeft="@dimen/ThreadListItemFullTextHeader_paddingLeft"
-                  android:textColor="@color/PaletteWhite"
-                  android:background="@color/PaletteBlack"
-                  android:id="@+id/list_item_text"/>
-
-        <TextView style="@style/ThreadListItemExifText"
-                  android:paddingLeft="@dimen/ThreadListItemFullTextHeader_paddingLeft"
-                  android:textColor="@color/PaletteLightGray"
-                  android:background="@color/PaletteBlack"
-                  android:id="@+id/list_item_image_exif"/>
 
     </LinearLayout>
 

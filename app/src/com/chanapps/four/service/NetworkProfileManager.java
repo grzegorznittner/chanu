@@ -3,6 +3,7 @@
  */
 package com.chanapps.four.service;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.data.UserStatistics;
@@ -100,20 +102,36 @@ public class NetworkProfileManager {
         }
     }
 
+    private static boolean initialized = false;
+
+    public void ensureInitialized(ChanIdentifiedActivity newActivity) {
+        if (!initialized) {
+            initialized = true;
+
+            forceMenuKey(newActivity.getBaseContext()); // i think it's nicer
+
+            if (receiver == null) {
+                // we need to register network changes receiver
+                receiver = new NetworkBroadcastReceiver();
+                newActivity.getBaseContext().getApplicationContext()
+                        .registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+                if (DEBUG) Log.i(TAG, ConnectivityManager.CONNECTIVITY_ACTION + " receiver registered");
+            }
+
+            NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
+
+            activeProfile.onApplicationStart(newActivity.getBaseContext());
+            DispatcherHelper.dispatchIfNecessaryFromPrefsState((Activity)newActivity);
+        }
+    }
+
     public void activityChange(ChanIdentifiedActivity newActivity) {
 		if (DEBUG) Log.i(TAG, "activity change to " + newActivity.getChanActivityId() + " receiver=" + receiver + " activity=" + currentActivity);
 
-        forceMenuKey(newActivity.getBaseContext());
+        ensureInitialized(newActivity);
+        NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 
-		if (receiver == null) {
-			// we need to register network changes receiver
-			receiver = new NetworkBroadcastReceiver();
-			newActivity.getBaseContext().getApplicationContext()
-				.registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-			if (DEBUG) Log.i(TAG, ConnectivityManager.CONNECTIVITY_ACTION + " receiver registered");
-		}
-		
-		currentActivityId = newActivity.getChanActivityId();
+        currentActivityId = newActivity.getChanActivityId();
 		currentActivity = newActivity;
 
 		if (userStats == null) {
@@ -121,39 +139,14 @@ public class NetworkProfileManager {
 		}
 		userStats.registerActivity(newActivity);
 
-        // always do this because otherwise receiver is not always called
-		//if (activeProfile == null) {
-			NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
-		//}
-
         switch(currentActivityId.activity) {
-            case BOARD_SELECTOR_ACTIVITY:
-                if (currentActivityId == null) {
-                    activeProfile.onApplicationStart(newActivity.getBaseContext());
-                } else {
-                    activeProfile.onBoardSelectorSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
-                }
-                break;
-            case BOARD_LIST_ACTIVITY:
-                if (currentActivityId == null) {
-                    activeProfile.onApplicationStart(newActivity.getBaseContext());
-                } else {
-                    activeProfile.onBoardSelectorSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
-                }
-                break;
-            case COVER_PAGE_ACTIVITY:
-                activeProfile.onBoardSelectorSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
-                break;
-            case WATCHLIST_ACTIVITY:
-                activeProfile.onBoardSelectorSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
-                break;
             case BOARD_ACTIVITY:
                 activeProfile.onBoardSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
                 break;
             case THREAD_ACTIVITY:
                 activeProfile.onThreadSelected(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo);
                 break;
-            case FULL_SCREEN_IMAGE_ACTIVITY:
+            case GALLERY_ACTIVITY:
                 activeProfile.onFullImageLoading(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo, currentActivityId.postNo);
                 break;
             case POST_REPLY_ACTIVITY:
@@ -162,6 +155,7 @@ public class NetworkProfileManager {
                 break;
             default:
                 Log.e(TAG, "Not handled activity type: " + currentActivityId.activity, new Exception("Check stack trace!"));
+                activeProfile.onApplicationStart(newActivity.getBaseContext());
         }
     }
 	
@@ -179,19 +173,13 @@ public class NetworkProfileManager {
 		}
         if (DEBUG) Log.i(TAG, "activeProfile=" + activeProfile);
 		switch(currentActivityId.activity) {
-		case BOARD_SELECTOR_ACTIVITY:
-            activeProfile.onBoardSelectorRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
-			break;
-		case COVER_PAGE_ACTIVITY:
-            activeProfile.onBoardSelectorRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
-			break;
 		case BOARD_ACTIVITY:
 			activeProfile.onBoardRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode);
 			break;
 		case THREAD_ACTIVITY:
 			activeProfile.onThreadRefreshed(newActivity.getBaseContext(), newActivity.getChanHandler(), currentActivityId.boardCode, currentActivityId.threadNo);
 			break;
-		case FULL_SCREEN_IMAGE_ACTIVITY:
+		case GALLERY_ACTIVITY:
 			activeProfile.onFullImageLoading(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo, currentActivityId.postNo);
 			break;
 		case POST_REPLY_ACTIVITY:

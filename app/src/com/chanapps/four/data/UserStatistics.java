@@ -121,7 +121,7 @@ public class UserStatistics {
 			boardUse(activityId.boardCode);
 			break;
 		case THREAD_ACTIVITY:
-		case FULL_SCREEN_IMAGE_ACTIVITY:
+		case GALLERY_ACTIVITY:
 		case POST_REPLY_ACTIVITY:
 			boardUse(activityId.boardCode);
 			threadUse(activityId.boardCode, activityId.threadNo);

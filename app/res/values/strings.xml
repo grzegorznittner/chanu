@@ -983,14 +983,12 @@
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
-        <!--
         <item>@string/board_type_japanese_culture</item>
         <item>@string/board_type_interests</item>
         <item>@string/board_type_creative</item>
         <item>@string/board_type_other</item>
         <item>@string/board_type_adult</item>
         <item>@string/board_type_misc</item>
-        -->
         <item>@string/board_watch</item>
     </string-array>
         <!--
@@ -1063,12 +1061,10 @@
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
-        <!--
         <item>@string/board_type_japanese_culture</item>
         <item>@string/board_type_interests</item>
         <item>@string/board_type_creative</item>
         <item>@string/board_type_other</item>
-        -->
         <item>@string/board_watch</item>
     </string-array>
         <!--

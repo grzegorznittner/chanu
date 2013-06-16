@@ -185,7 +185,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 	private void notifyDownloadProgress(int fileLength) {
 		/*
 		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
+		if (activity != null && activity.getChanActivityId().activity == LastActivity.GALLERY_ACTIVITY) {
 			Handler handler = activity.getChanHandler();
 			if (handler != null) {
 				Message msg = handler.obtainMessage(GalleryViewActivity.PROGRESS_REFRESH_MSG, fileLength, 0);

@@ -1,5 +1,6 @@
 package com.chanapps.four.activity;
 
+import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.data.*;
 import android.content.Context;
 import android.content.Intent;
@@ -174,6 +175,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         bundle.putString(ChanBoard.BOARD_CODE, boardCode);
         bundle.putLong(ChanThread.THREAD_NO, threadNo);
         bundle.putLong(ChanPost.POST_NO, postNo);
+        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     protected void setFromIntent(Intent intent) {
@@ -476,7 +478,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     
     @Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(LastActivity.FULL_SCREEN_IMAGE_ACTIVITY);
+		return new ChanActivityId(LastActivity.GALLERY_ACTIVITY);
 	}
 
 	@Override

@@ -219,6 +219,7 @@ public class UpdateWidgetService extends RemoteViewsService {
             Intent intent = (thread == null || thread.no < 1)
                     ? BoardActivity.createIntent(context, widgetConf.boardCode, "")
                     : ThreadActivity.createIntentForActivity(context, thread.board, thread.no, "");
+            intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 5 + i;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -226,6 +227,7 @@ public class UpdateWidgetService extends RemoteViewsService {
 
         private PendingIntent makeHomeIntent() {
             Intent intent = BoardActivity.createIntent(context, ChanBoard.META_BOARD_CODE, "");
+            intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 1;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -233,6 +235,7 @@ public class UpdateWidgetService extends RemoteViewsService {
 
         private PendingIntent makeBoardIntent() {
             Intent intent = BoardActivity.createIntent(context, widgetConf.boardCode, "");
+            intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 2;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -255,6 +258,7 @@ public class UpdateWidgetService extends RemoteViewsService {
             }
             intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
             intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
+            intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
             int uniqueId = (100 * widgetConf.appWidgetId) + 3;
             return PendingIntent.getService(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }
@@ -271,6 +275,7 @@ public class UpdateWidgetService extends RemoteViewsService {
                 intent = new Intent(context, WidgetConfigureCoverFlowActivity.class);
             }
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
+            intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
             int uniqueId = (100 * widgetConf.appWidgetId) + 4;
             return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         }

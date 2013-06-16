@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.chanapps.four.activity.*;
+import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.data.*;
 import com.chanapps.four.service.BoardParserService;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -123,7 +124,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	public void onApplicationStart(Context context) {
 		if (DEBUG) Log.d(TAG, "onApplicationStart called");
 		usageCounter++;
-	}
+    }
 
 	@Override
 	public void onBoardSelectorSelected(Context context, String boardCode) {

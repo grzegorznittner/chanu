@@ -57,7 +57,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.GetChars;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -229,7 +228,7 @@ public class PhotoPage extends ActivityState
 				private void notifyPhotoChanged(Path item) {
 					ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
                     if (DEBUG) Log.i(TAG, "Current activity: " + activity.getChanActivityId());
-            		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
+            		if (activity != null && activity.getChanActivityId().activity == LastActivity.GALLERY_ACTIVITY) {
             			Handler handler = activity.getChanHandler();
             			if (handler != null && item != null) {
             				String[] pathParts = item.split();

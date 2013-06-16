@@ -3,11 +3,13 @@ package com.chanapps.four.service.profile;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
 import com.chanapps.four.activity.*;
+import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.ChanHelper.LastActivity;
 import com.chanapps.four.service.CleanUpService;
@@ -86,7 +88,7 @@ public class MobileProfile extends AbstractNetworkProfile {
                     FetchChanDataService.scheduleBoardFetch(context, activityId.boardCode, true, false);
                 }
                 break;
-            case FULL_SCREEN_IMAGE_ACTIVITY:
+            case GALLERY_ACTIVITY:
                 Handler handler = activity.getChanHandler();
                 if (handler != null) {
                     makeToast(R.string.mobile_profile_loading_image);
@@ -353,8 +355,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         Handler handler = activity.getChanHandler();
         boolean hasHandler = handler != null;
         boolean isPriority = currentActivityId.priority || data.priority;
-        boolean sameActivity = (currentActivityId.activity == LastActivity.COVER_PAGE_ACTIVITY
-                || (currentActivityId.activity == LastActivity.BOARD_ACTIVITY && board.isVirtualBoard()));
+        boolean sameActivity = (currentActivityId.activity == LastActivity.BOARD_ACTIVITY && board.isVirtualBoard());
         if (hasHandler && isPriority && sameActivity)
             handler.post(new Runnable() {
                 @Override
@@ -383,7 +384,8 @@ public class MobileProfile extends AbstractNetworkProfile {
         Handler handler = activity.getChanHandler();
         boolean hasHandler = handler != null;
         boolean isPriority = currentActivityId.priority || data.priority;
-        boolean sameActivity = currentActivityId.activity == LastActivity.WATCHLIST_ACTIVITY;
+        boolean sameActivity = currentActivityId.activity == LastActivity.BOARD_ACTIVITY
+                && ChanBoard.WATCHLIST_BOARD_CODE.equals(currentActivityId.boardCode);
         if (hasHandler && isPriority && sameActivity)
             handler.post(new Runnable() {
                 @Override

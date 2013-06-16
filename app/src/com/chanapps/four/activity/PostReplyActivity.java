@@ -262,6 +262,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (DEBUG) Log.i(TAG, "saved to bundle " + boardCode + "/" + threadNo + ":" + postNo
                 + " imageUri=" + imageUri + " text=" + text);
         saveUserFieldsToPrefs();
+        DispatcherHelper.saveActivityToPrefs(this);
     }
 
     private void showPassFragment() {

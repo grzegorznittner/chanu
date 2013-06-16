@@ -197,6 +197,12 @@ public class ThreadViewer {
         ViewGroup itemHeaderWrapper = (ViewGroup) item.findViewById(R.id.list_item_header_wrapper);
         ViewGroup.LayoutParams params = itemHeaderWrapper.getLayoutParams();
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
+            TextView numReplies = (TextView)item.findViewById(R.id.list_item_num_replies_text);
+            TextView numImages = (TextView)item.findViewById(R.id.list_item_num_images_text);
+            numReplies.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES))));
+            numImages.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_IMAGES))));
+        }
         item.setVisibility(View.VISIBLE);
         return true;
     }

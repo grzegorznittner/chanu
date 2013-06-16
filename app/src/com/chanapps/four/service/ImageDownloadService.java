@@ -138,7 +138,7 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 
 	private void notifyDownloadProgress(int fileLength) {
 		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
+		if (activity != null && activity.getChanActivityId().activity == LastActivity.GALLERY_ACTIVITY) {
 			Handler handler = activity.getChanHandler();
 			if (handler != null) {
 				Message msg = handler.obtainMessage(GalleryViewActivity.PROGRESS_REFRESH_MSG, fileLength, 0);
@@ -149,7 +149,7 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 	
 	private void notifyDownloadFinished(int fileLength) {
 		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
+		if (activity != null && activity.getChanActivityId().activity == LastActivity.GALLERY_ACTIVITY) {
 			Handler handler = activity.getChanHandler();
 			if (handler != null) {
 				Message msg = handler.obtainMessage(GalleryViewActivity.FINISHED_DOWNLOAD_MSG, fileLength, 0);
@@ -160,7 +160,7 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 	
 	private void notifyDownloadError() {
 		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		if (activity != null && activity.getChanActivityId().activity == LastActivity.FULL_SCREEN_IMAGE_ACTIVITY) {
+		if (activity != null && activity.getChanActivityId().activity == LastActivity.GALLERY_ACTIVITY) {
 			Handler handler = activity.getChanHandler();
 			if (handler != null) {
 				Message msg = handler.obtainMessage(GalleryViewActivity.DOWNLOAD_ERROR_MSG);

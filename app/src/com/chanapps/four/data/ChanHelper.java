@@ -93,16 +93,13 @@ public class ChanHelper {
     }
 
     public enum LastActivity {
-        BOARD_SELECTOR_ACTIVITY,
-        BOARD_LIST_ACTIVITY,
-        COVER_PAGE_ACTIVITY,
-        WATCHLIST_ACTIVITY,
         BOARD_ACTIVITY,
         THREAD_ACTIVITY,
-        FULL_SCREEN_IMAGE_ACTIVITY,
+        GALLERY_ACTIVITY,
         POST_REPLY_ACTIVITY,
         SETTINGS_ACTIVITY,
-        ABOUT_ACTIVITY
+        ABOUT_ACTIVITY,
+        INVALID_ACTIVITY
     }
 
     public static final Orientation getOrientation(Context context) {

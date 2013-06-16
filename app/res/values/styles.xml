@@ -605,11 +605,11 @@
         <item name="android:paddingTop">@dimen/ThreadListHeaderSubject_paddingTop</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/PaletteBlack</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
-        <item name="android:textColorLink">@color/PaletteChanuGreen</item>
+        <!-- <item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
         <item name="android:background">@color/PaletteBlack</item>
     </style>
 
@@ -617,6 +617,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:textColor">@color/PaletteLightGray</item>
         <item name="android:background">@color/PaletteBlack</item>
     </style>
 
@@ -633,16 +634,53 @@
 
     <style name="ThreadListHeaderHead" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">96dp</item>
         <item name="android:layout_below">@+id/list_item_subject</item>
         <item name="android:layout_marginLeft">@dimen/ThreadListHeaderHead_layout_marginLeft</item>
         <item name="android:layout_marginRight">@dimen/ThreadListHeaderHead_layout_marginRight</item>
+        <item name="android:layout_toLeftOf">@+id/list_item_num_replies</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
-        <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
         <item name="android:autoLink">email</item>
         <item name="android:linksClickable">true</item>
-        <item name="android:textColorLink">@color/PaletteChanuGreen</item>
+        <!--<item name="android:textColorLink">@color/PaletteChanuGreen</item>-->
+        <item name="android:background">@color/PaletteBlack</item>
+    </style>
+
+    <style name="ThreadListHeaderNumReplies" parent="AppTheme">
+        <item name="android:layout_width">96dp</item>
+        <item name="android:layout_height">96dp</item>
+        <item name="android:layout_below">@+id/list_item_image_exif</item>
+        <item name="android:layout_toLeftOf">@+id/list_item_num_images</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/PaletteBlack</item>
+    </style>
+
+    <style name="ThreadListHeaderNumImages" parent="AppTheme">
+        <item name="android:layout_width">96dp</item>
+        <item name="android:layout_height">96dp</item>
+        <item name="android:layout_below">@+id/list_item_image_exif</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/PaletteBlack</item>
+    </style>
+
+    <style name="ThreadListHeaderNumNum" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
+        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:background">@color/PaletteBlack</item>
+    </style>
+
+    <style name="ThreadListHeaderNumLabel" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
+        <item name="android:textColor">@color/PaletteLightGray</item>
         <item name="android:background">@color/PaletteBlack</item>
     </style>
 
@@ -669,7 +707,7 @@
         <item name="android:textSize">@dimen/ThreadListHeaderFullText</item>
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
-        <item name="android:textColorLink">@color/PaletteChanuGreen</item>
+        <!--<item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
     </style>
 
     <style name="ThreadListHeaderTitle" parent="AppTheme">
@@ -760,7 +798,7 @@
         <item name="android:textSize">@dimen/ThreadListItemSubject</item>
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
-        <item name="android:textColorLink">@color/PaletteChanuGreen</item>
+        <!-- <item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
     </style>
 
     <style name="ThreadListItemCountryFlag" parent="AppTheme">
@@ -789,7 +827,7 @@
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
         <item name="android:autoLink">email</item>
         <item name="android:linksClickable">true</item>
-        <item name="android:textColorLink">@color/PaletteChanuGreen</item>
+        <!--<item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
     </style>
 
     <style name="ThreadListTitle" parent="AppTheme">
@@ -864,7 +902,7 @@
         <item name="android:textSize">@dimen/ThreadListItemFullText</item>
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
-        <item name="android:textColorLink">@color/PaletteChanuGreen</item>
+        <!-- <item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
     </style>
 
     <style name="ThreadListBannerAd" parent="AppTheme">

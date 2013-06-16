@@ -25,17 +25,15 @@ public class DispatcherHelper {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(activity).edit();
         ChanHelper.LastActivity lastActivity;
         if (activity instanceof GalleryViewActivity)
-            lastActivity = ChanHelper.LastActivity.FULL_SCREEN_IMAGE_ACTIVITY;
+            lastActivity = ChanHelper.LastActivity.GALLERY_ACTIVITY;
         else if (activity instanceof ThreadActivity)
             lastActivity = ChanHelper.LastActivity.THREAD_ACTIVITY;
-        else if (activity instanceof BoardActivity)
-            lastActivity = ChanHelper.LastActivity.BOARD_ACTIVITY;
         else if (activity instanceof PostReplyActivity)
             lastActivity = ChanHelper.LastActivity.POST_REPLY_ACTIVITY;
         else if (activity instanceof SettingsActivity)
             lastActivity = ChanHelper.LastActivity.SETTINGS_ACTIVITY;
         else
-            lastActivity = ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY;
+            lastActivity = ChanHelper.LastActivity.BOARD_ACTIVITY;
         editor.putString(ChanHelper.LAST_ACTIVITY, lastActivity.toString());
         editor.commit();
     }
@@ -43,14 +41,17 @@ public class DispatcherHelper {
     public static ChanHelper.LastActivity getLastActivity(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return ChanHelper.LastActivity.valueOf(
-            prefs.getString(ChanHelper.LAST_ACTIVITY, ChanHelper.LastActivity.BOARD_SELECTOR_ACTIVITY.toString()));
+            prefs.getString(ChanHelper.LAST_ACTIVITY, ChanHelper.LastActivity.INVALID_ACTIVITY.toString()));
     }
 
     public static void dispatchIfNecessaryFromPrefsState(Activity activity) {
+        Intent intent = activity.getIntent();
+        if (intent.hasExtra(ChanHelper.IGNORE_DISPATCH) && intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false))
+            return;
         ChanHelper.LastActivity lastActivity = getLastActivity(activity);
         Class activityClass;
         switch (lastActivity) {
-            case FULL_SCREEN_IMAGE_ACTIVITY:
+            case GALLERY_ACTIVITY:
                 activityClass = GalleryViewActivity.class;
                 break;
             case THREAD_ACTIVITY:
@@ -68,9 +69,10 @@ public class DispatcherHelper {
         }
         if (activity.getClass() != activityClass) {
             if (DEBUG) Log.i(TAG, "Dispatching to activity:" + lastActivity);
-            Intent intent = new Intent(activity, activityClass);
+            intent = new Intent(activity, activityClass);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             activity.startActivity(intent);
+            activity.finish();
         }
         else {
             if (DEBUG) Log.i(TAG, "Activity already active, not dispatching");
