@@ -504,7 +504,17 @@ public class BoardActivity
         if (board == null) {
             ; // ignore
         }
+        else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
+            menu.findItem(R.id.clear_watchlist_menu).setVisible(true);
+            menu.findItem(R.id.refresh_menu).setVisible(false);
+            menu.findItem(R.id.search_menu).setVisible(false);
+            menu.findItem(R.id.offline_board_view_menu).setVisible(false);
+            menu.findItem(R.id.board_rules_menu).setVisible(false);
+            menu.findItem(R.id.offline_chan_view_menu).setVisible(false);
+            menu.findItem(R.id.global_rules_menu).setVisible(false);
+        }
         else if (board.isPopularBoard()) {
+            menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(false);
             menu.findItem(R.id.offline_board_view_menu).setVisible(false);
@@ -513,6 +523,7 @@ public class BoardActivity
             menu.findItem(R.id.global_rules_menu).setVisible(true);
         }
         else if (board.isVirtualBoard()) {
+            menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
             menu.findItem(R.id.offline_board_view_menu).setVisible(false);
@@ -521,6 +532,7 @@ public class BoardActivity
             menu.findItem(R.id.global_rules_menu).setVisible(true);
         }
         else {
+            menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.refresh_menu).setVisible(true);
             menu.findItem(R.id.search_menu).setVisible(true);
             menu.findItem(R.id.offline_board_view_menu).setVisible(true);

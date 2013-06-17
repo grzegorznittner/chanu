@@ -32,6 +32,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import org.xml.sax.XMLReader;
 
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -122,7 +123,7 @@ public class ThreadViewer {
     public static boolean setListLinkView(final View view, final Cursor cursor, int flags) {
         switch (view.getId()) {
             case R.id.list_item:
-                return setItem((ViewGroup) view, cursor, flags);
+                return setItem((ViewGroup) view, cursor, flags, null, null);
             case R.id.list_item_header_wrapper:
                 return setHeaderWrapper((ViewGroup) view, flags);
             case R.id.list_item_image_wrapper:
@@ -151,7 +152,7 @@ public class ThreadViewer {
             view.setOnLongClickListener(startActionModeListener);
         switch (view.getId()) {
             case R.id.list_item:
-                return setItem((ViewGroup) view, cursor, flags);
+                return setItem((ViewGroup) view, cursor, flags, backlinkOnClickListener, repliesOnClickListener);
             case R.id.list_item_header_wrapper:
                 return setHeaderWrapper((ViewGroup) view, flags);
             case R.id.list_item_image_expanded_wrapper:
@@ -174,7 +175,7 @@ public class ThreadViewer {
                 return setSubject((TextView) view, cursor, flags, backlinkOnClickListener);
             case R.id.list_item_text:
                 return setText((TextView) view, cursor, flags, backlinkOnClickListener, exifOnClickListener);
-            case R.id.list_item_image_exif:
+            case R.id.list_item_exif_text:
                 return setImageExifValue((TextView) view);
             default:
                 return false;
@@ -189,7 +190,9 @@ public class ThreadViewer {
     }
      */
 
-    static protected boolean setItem(ViewGroup item, Cursor cursor, int flags) {
+    static protected boolean setItem(ViewGroup item, Cursor cursor, int flags,
+                                     View.OnClickListener backlinkOnClickListener,
+                                     View.OnClickListener repliesOnClickListener) {
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         item.setTag((flags | ChanPost.FLAG_IS_AD) > 0 ? null : postId);
         item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, new Boolean(false));
@@ -197,14 +200,18 @@ public class ThreadViewer {
         ViewGroup itemHeaderWrapper = (ViewGroup) item.findViewById(R.id.list_item_header_wrapper);
         ViewGroup.LayoutParams params = itemHeaderWrapper.getLayoutParams();
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
-            TextView numReplies = (TextView)item.findViewById(R.id.list_item_num_replies_text);
-            TextView numImages = (TextView)item.findViewById(R.id.list_item_num_images_text);
-            numReplies.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES))));
-            numImages.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_IMAGES))));
-        }
+        if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
+            displayHeaderCountFields(item, cursor, repliesOnClickListener);
         item.setVisibility(View.VISIBLE);
         return true;
+    }
+
+    static protected void displayHeaderCountFields(View item, Cursor cursor,
+                                                   View.OnClickListener repliesOnClickListener) {
+        TextView numReplies = (TextView)item.findViewById(R.id.list_item_num_replies_text);
+        TextView numImages = (TextView)item.findViewById(R.id.list_item_num_images_text);
+        numReplies.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES))));
+        numImages.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_IMAGES))));
     }
 
     static protected boolean setHeaderWrapper(ViewGroup wrapper, int flags) {
@@ -227,7 +234,7 @@ public class ThreadViewer {
             tv.setMovementMethod(LinkMovementMethod.getInstance());
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text));
         if (repliesOnClickListener != null)
-            addLinkedSpans(spannable, POST_PATTERN, repliesOnClickListener);
+            addLinkedSpans(spannable, REPLY_PATTERN, repliesOnClickListener);
         if (cursor.getBlob(cursor.getColumnIndex(ChanPost.POST_SAME_IDS_BLOB)) != null
                 && sameIdOnClickListener != null)
             addLinkedSpans(spannable, ID_PATTERN, sameIdOnClickListener);
@@ -319,6 +326,7 @@ public class ThreadViewer {
     }
 
     static private final Pattern POST_PATTERN = Pattern.compile("(>>\\d+)");
+    static private final Pattern REPLY_PATTERN = Pattern.compile("(1 Reply|\\d+ Replies)");
     static private final Pattern ID_PATTERN = Pattern.compile("Id: ([A-Za-z0-9+./_:!-]+)");
 
     static private void addLinkedSpans(Spannable spannable, Pattern pattern,
@@ -595,6 +603,7 @@ public class ThreadViewer {
 
     static private final Html.TagHandler spoilerTagHandler = new Html.TagHandler() {
         static private final String SPOILER_TAG = "s";
+        public static final int PALETTE_BLACK = 0xFF2D2D2D;
         class SpoilerSpan extends ClickableSpan {
             private int start = 0;
             private int end = 0;
@@ -625,7 +634,7 @@ public class ThreadViewer {
             }
             @Override
             public void updateDrawState(TextPaint ds) {
-                ds.bgColor = blackout ? Color.BLACK : 0;
+                ds.bgColor = blackout ? PALETTE_BLACK : 0; // palette black 2d2d2d
             }
         }
         class SpanFactory {

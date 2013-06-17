@@ -69,7 +69,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         R.id.list_item_urllink,
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
-                        R.id.list_item_image_exif,
+                        R.id.list_item_exif_text,
                         R.id.list_item_thread_banner_ad,
                         R.id.list_item_thread_banner_ad_click_effect
                 });

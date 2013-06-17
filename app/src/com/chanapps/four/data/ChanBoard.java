@@ -105,12 +105,22 @@ public class ChanBoard {
 
     public static List<ChanBoard> getBoards(Context context) {
         initBoards(context);
-		return boards;
+		return new ArrayList<ChanBoard>(boards);
 	}
 
     public static List<ChanBoard> getBoardsRespectingNSFW(Context context) {
         initBoards(context);
-        return showNSFW(context) ? boards : safeBoards;
+        return new ArrayList<ChanBoard>(showNSFW(context) ? boards : safeBoards);
+    }
+
+    public static List<ChanBoard> getNewThreadBoardsRespectingNSFW(Context context) {
+        initBoards(context);
+        List<ChanBoard> source = new ArrayList<ChanBoard>(showNSFW(context) ? boards : safeBoards);
+        List<ChanBoard> filtered = new ArrayList<ChanBoard>();
+        for (ChanBoard b : source)
+            if (!b.isVirtualBoard())
+                filtered.add(b);
+        return filtered;
     }
 
     public static boolean showNSFW(Context context) {
@@ -120,7 +130,7 @@ public class ChanBoard {
 
     public static List<ChanBoard> getBoardsByType(Context context, BoardType boardType) {
         initBoards(context);
-        return boardsByType.get(boardType);
+        return new ArrayList<ChanBoard>(boardsByType.get(boardType));
 	}
 
 	public static ChanBoard getBoardByCode(Context context, String boardCode) {

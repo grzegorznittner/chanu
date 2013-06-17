@@ -29,7 +29,7 @@ public class ThreadExifOnClickListener implements View.OnClickListener {
         if (parent == null || !(parent instanceof CheckableLinearLayout))
             return;
         CheckableLinearLayout layout = (CheckableLinearLayout)parent;
-        TextView listItemText = (TextView)layout.findViewById(R.id.list_item_image_exif);
+        TextView listItemText = (TextView)layout.findViewById(R.id.list_item_exif_text);
         listItemText.setText(Html.fromHtml(exifText));
         listItemText.setVisibility(View.VISIBLE);
         v.setVisibility(View.GONE);

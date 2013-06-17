@@ -69,7 +69,7 @@ public class ThreadExpandExifOnClickListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (DEBUG) Log.i(TAG, "expanding pos=" + listPosition);
-        itemExifView = (TextView)v.findViewById(R.id.list_item_image_exif);
+        itemExifView = (TextView)v.findViewById(R.id.list_item_exif_text);
         if ((flags & ChanPost.FLAG_HAS_EXIF) > 0)
             expandExif();
     }

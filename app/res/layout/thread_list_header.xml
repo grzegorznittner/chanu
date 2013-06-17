@@ -34,30 +34,30 @@
             <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
             <ImageView style="@style/ThreadListHeaderCountryFlag" android:id="@+id/list_item_country_flag"/>
 
-            <TextView style="@style/ThreadListItemFullText"
-                      android:id="@+id/list_item_text"
-                      android:layout_below="@+id/list_item_subject"
-                      android:textColor="@color/PaletteWhite"
-                      android:background="@color/PaletteBlack"/>
-
-            <TextView style="@style/ThreadListItemExifText"
-                      android:id="@+id/list_item_image_exif"
-                      android:layout_below="@+id/list_item_text"
-                      android:textColor="@color/PaletteLightGray"
-                      android:background="@color/PaletteBlack"
-                    />
+            <TextView style="@style/ThreadListHeaderFullText" android:id="@+id/list_item_text"/>
 
             <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"/>
-            <LinearLayout style="@style/ThreadListHeaderNumReplies" android:id="@+id/list_item_num_replies">
-                <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_replies_text"/>
-                <TextView style="@style/ThreadListHeaderNumLabel"
-                        android:text="POSTS"/>
+
+            <TextView style="@style/ThreadListHeaderExifText" android:id="@+id/list_item_exif_text"/>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/list_item_exif_text"
+                    android:weightSum="2">
+
+                <LinearLayout style="@style/ThreadListHeaderNumReplies" android:id="@+id/list_item_num_replies">
+                    <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_replies_text"/>
+                    <TextView style="@style/ThreadListHeaderNumLabel" android:text="POSTS"/>
+                </LinearLayout>
+
+                <LinearLayout style="@style/ThreadListHeaderNumImages" android:id="@+id/list_item_num_images">
+                    <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_images_text"/>
+                    <TextView style="@style/ThreadListHeaderNumLabel" android:text="IMAGES"/>
+                </LinearLayout>
+
             </LinearLayout>
-            <LinearLayout style="@style/ThreadListHeaderNumImages" android:id="@+id/list_item_num_images">
-                <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_images_text"/>
-                <TextView style="@style/ThreadListHeaderNumLabel"
-                        android:text="IMAGES"/>
-            </LinearLayout>
+
         </RelativeLayout>
 
     </LinearLayout>

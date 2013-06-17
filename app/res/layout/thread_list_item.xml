@@ -44,21 +44,12 @@
                          android:layout_centerInParent="true"
                          android:id="@+id/list_item_expanded_progress_bar"/>
         </RelativeLayout>
-        <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"
-                android:textColor="@color/PaletteBlack"
-                />
+        <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"/>
         <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
-        <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"
-                  android:textColor="@color/PaletteLightGray"
-                />
     </RelativeLayout>
 
-    <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"
-              android:textColor="@color/PaletteBlack"
-            />
-
-    <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_image_exif"
-              android:textColor="@color/PaletteLightGray"
-            />
+    <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
+    <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"/>
+    <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_exif_text"/>
 
 </com.chanapps.four.component.CheckableLinearLayout>

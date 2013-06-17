@@ -24,8 +24,8 @@ public class ChanPost {
 	public static final String TAG = ChanPost.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    public static final String HEADLINE_DELIMITER = "<br/>";
-    public static final int MAX_SINGLELINE_TEXT_LEN = 20;
+    public static final String HEADLINE_BOARDLEVEL_DELIMITER = "<br/>";
+    public static final String HEADLINE_THREADLEVEL_DELIMITER = " &middot; ";
     private static final int MIN_LINE = 30;
     private static final int MAX_LINE = 40;
     private static final int MAX_THREAD_SUBJECT_LEN = 100;
@@ -297,12 +297,11 @@ public class ChanPost {
         String comText = sanitizeText(com, false, showSpoiler);
         String subject = subText != null ? subText : "";
         String message = comText != null ? comText : "";
-
+        /*
         if (!subject.isEmpty() || message.isEmpty()) { // we have a subject or can't extract from message
             if (DEBUG) Log.v(TAG, "provided subject=" + subject + " message=" + message);
             return highlightComponents(cleanSubject(subject), cleanMessage(message), query);
         }
-
         if (comText.length() <= MAX_SUBJECT_LEN) { // just make message the subject
             subject = cleanSubject(message);
             message = "";
@@ -334,7 +333,7 @@ public class ChanPost {
             if (DEBUG) Log.v(TAG, "cutoff subject=" + subject + " message=" + message);
             return highlightComponents(subject, message, query);
         }
-
+        */
         // default
         if (DEBUG) Log.v(TAG, "default subject=" + subject + " message=" + message);
         return highlightComponents(cleanSubject(subject), cleanMessage(message), query);
@@ -529,9 +528,10 @@ public class ChanPost {
 
     public String headline(String query, boolean boardLevel, byte[] repliesBlob, boolean showNumReplies) {
         List<String> items = new ArrayList<String>();
+        items.add(dateText());
         if (!boardLevel) {
             if (!hidePostNumbers)
-                items.add(Long.toString(no));
+                items.add("No. " + Long.toString(no));
             if (email != null && !email.isEmpty() && email.equals("sage"))
                 items.add("<b>sage</b>");
             if (id != null && !id.isEmpty() && id.equals(SAGE_POST_ID))
@@ -554,19 +554,16 @@ public class ChanPost {
             if (!s.isEmpty())
                 items.add(s);
         }
-        items.add(dateText());
-        if (repliesBlob != null && repliesBlob.length > 0) {
+        if (repliesBlob != null && repliesBlob.length > 0) { // don't show text for threads
             HashSet<Long> hashSet = (HashSet<Long>)parseBlob(repliesBlob);
-            if (hashSet != null && hashSet.size() > 0) {
-                List<Long> replies = new ArrayList<Long>(hashSet);
-                Collections.sort(replies);
-                String s = "Replies:";
-                for (Long l : replies)
-                    s += " >>" + l;
+            int n = hashSet != null ? hashSet.size() : 0;
+            if (n > 0) {
+                String s = hashSet.size() + (n == 1 ? " Reply" : " Replies");
                 items.add(s);
             }
         }
-        String component = ChanHelper.join(items, HEADLINE_DELIMITER);
+        String delim = boardLevel ? HEADLINE_BOARDLEVEL_DELIMITER : HEADLINE_THREADLEVEL_DELIMITER;
+        String component = ChanHelper.join(items, delim);
         return highlightComponent(component, query);
     }
 
@@ -579,7 +576,7 @@ public class ChanPost {
                 text += replies
                         + " "
                         + (replies == 1 ? "post" : "posts")
-                        + HEADLINE_DELIMITER
+                        + (boardLevel ? HEADLINE_BOARDLEVEL_DELIMITER : HEADLINE_THREADLEVEL_DELIMITER)
                         + (images > 0 ? images : "no")
                         + " "
                         + (images == 1 ? "image" : "images");
