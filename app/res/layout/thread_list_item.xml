@@ -32,24 +32,35 @@
             android:paddingLeft="@dimen/ThreadListItemHeaderWrapper_paddingLeft"
             android:paddingRight="@dimen/ThreadListItemHeaderWrapper_paddingRight"
             >
-        <View android:layout_width="@dimen/ThreadListItemImageSpacer_layout_width"
-              android:layout_height="match_parent"
-              android:id="@+id/list_item_image_spacer"/>
         <RelativeLayout style="@style/ThreadListItemImageWrapper"
                         android:layout_toRightOf="@+id/list_item_image_spacer"
                         android:id="@+id/list_item_image_wrapper">
-            <ImageView
-                    style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
+            <ImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
             <ProgressBar style="@style/ThreadListItemExpandedProgressBar"
                          android:layout_centerInParent="true"
                          android:id="@+id/list_item_expanded_progress_bar"/>
         </RelativeLayout>
-        <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"/>
+        <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"/>
         <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
     </RelativeLayout>
 
+    <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"/>
     <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
-    <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"/>
     <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_exif_text"/>
+
+    <LinearLayout
+            android:id="@+id/list_item_num_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/ThreadListItemFullText_paddingLeft"
+            android:paddingTop="@dimen/ThreadListItemFullText_paddingTop"
+            android:paddingRight="@dimen/ThreadListItemFullText_paddingLeft"
+            android:weightSum="1">
+        <LinearLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_direct_replies">
+            <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_direct_replies_text"
+                      android:textColor="@color/blue_base"/>
+            <TextView style="@style/ThreadListHeaderNumLabel" android:text="REPLIES"/>
+        </LinearLayout>
+    </LinearLayout>
 
 </com.chanapps.four.component.CheckableLinearLayout>

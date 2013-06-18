@@ -202,6 +202,8 @@ public class ThreadViewer {
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
             displayHeaderCountFields(item, cursor, repliesOnClickListener);
+        else
+            displayItemCountFields(item, cursor, backlinkOnClickListener, repliesOnClickListener);
         item.setVisibility(View.VISIBLE);
         return true;
     }
@@ -210,8 +212,92 @@ public class ThreadViewer {
                                                    View.OnClickListener repliesOnClickListener) {
         TextView numReplies = (TextView)item.findViewById(R.id.list_item_num_replies_text);
         TextView numImages = (TextView)item.findViewById(R.id.list_item_num_images_text);
-        numReplies.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES))));
-        numImages.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_IMAGES))));
+        if (numReplies != null)
+            numReplies.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES))));
+        if (numImages != null)
+            numImages.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_IMAGES))));
+        displayNumDirectReplies(item, cursor, repliesOnClickListener, false);
+    }
+
+    static protected void displayItemCountFields(View item, Cursor cursor,
+                                                 View.OnClickListener backlinkOnClickListener,
+                                                 View.OnClickListener repliesOnClickListener) {
+        int n = 0;
+        //n += displayNumRefs(item, cursor, backlinkOnClickListener);
+        n += displayNumDirectReplies(item, cursor, repliesOnClickListener, true);
+        View wrapper = item.findViewById(R.id.list_item_num_wrapper);
+        if (wrapper == null)
+            return;
+        if (n > 0) {
+            wrapper.setVisibility(View.VISIBLE);
+        }
+        else {
+            wrapper.setVisibility(View.GONE);
+        }
+    }
+
+    static protected int displayNumDirectReplies(View item, Cursor cursor,
+                                                  View.OnClickListener repliesOnClickListener,
+                                                  boolean markVisibility) {
+        View wrapper = item.findViewById(R.id.list_item_num_direct_replies);
+        if (wrapper == null)
+            return 0;
+        TextView numDirectReplies = (TextView)item.findViewById(R.id.list_item_num_direct_replies_text);
+        if (numDirectReplies == null)
+            return 0;
+        int directReplies = numDirectReplies(cursor);
+
+        numDirectReplies.setText(String.valueOf(directReplies));
+        if (directReplies > 0) {
+            wrapper.setOnClickListener(repliesOnClickListener);
+            if (markVisibility)
+                wrapper.setVisibility(View.VISIBLE);
+        }
+        else {
+            wrapper.setOnClickListener(null);
+            if (markVisibility)
+                wrapper.setVisibility(View.GONE);
+        }
+        return directReplies;
+    }
+    /*
+    static protected int displayNumRefs(View item, Cursor cursor,
+                                                  View.OnClickListener backlinkOnClickListener) {
+        View wrapper = item.findViewById(R.id.list_item_num_refs);
+        TextView numRefs = (TextView)item.findViewById(R.id.list_item_num_refs_text);
+
+        int refs = numRefs(cursor);
+
+        numRefs.setText(String.valueOf(refs));
+        if (refs > 0) {
+            wrapper.setOnClickListener(backlinkOnClickListener);
+            wrapper.setVisibility(View.VISIBLE);
+        }
+        else {
+            wrapper.setOnClickListener(null);
+            wrapper.setVisibility(View.GONE);
+        }
+        return refs;
+    }
+    */
+    static protected int numDirectReplies(Cursor cursor) {
+        byte[] b = cursor.getBlob(cursor.getColumnIndex(ChanPost.POST_REPLIES_BLOB));
+        if (b == null || b.length == 0)
+            return 0;
+        HashSet<?> links = ChanPost.parseBlob(b);
+        if (links == null || links.size() <= 0)
+            return 0;
+        return links.size();
+    }
+
+    static protected int numRefs(Cursor cursor) {
+        byte[] b = cursor.getBlob(cursor.getColumnIndex(ChanPost.POST_BACKLINKS_BLOB));
+        if (b == null || b.length == 0)
+            return 0;
+        HashSet<?> links = ChanPost.parseBlob(b);
+        if (links == null || links.size() <= 0)
+            return 0;
+        return links.size();
     }
 
     static protected boolean setHeaderWrapper(ViewGroup wrapper, int flags) {
@@ -253,12 +339,14 @@ public class ThreadViewer {
         String text = "";
         if ((flags & ChanPost.FLAG_HAS_SUBJECT) > 0)
             text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+        /*
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
             if ((flags & ChanPost.FLAG_IS_CLOSED) > 0)
                 text = tv.getResources().getString(R.string.thread_is_closed) + (text.isEmpty() ? "" : " ") + text;
             if ((flags & ChanPost.FLAG_IS_DEAD) > 0)
                 text = tv.getResources().getString(R.string.thread_is_dead) + (text.isEmpty() ? "" : " ") + text;
         }
+        */
         if (DEBUG) Log.i(TAG, "setSubject text=" + text);
         if (backlinkOnClickListener != null)
             tv.setMovementMethod(LinkMovementMethod.getInstance());

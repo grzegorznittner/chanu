@@ -151,7 +151,7 @@
 
     <dimen name="ThreadListHeaderBar_layout_height">2dp</dimen>
 
-    <dimen name="ThreadListItemHeaderWrapper_paddingLeft">0dp</dimen>
+    <dimen name="ThreadListItemHeaderWrapper_paddingLeft">16dp</dimen>
     <dimen name="ThreadListItemHeaderWrapper_paddingRight">0dp</dimen>
 
     <dimen name="ThreadListItemImageSpacer_layout_width">0dp</dimen>

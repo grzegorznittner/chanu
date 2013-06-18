@@ -516,7 +516,7 @@
         <item name="android:paddingRight">@dimen/ThreadListLayout_paddingRight</item>
         <item name="android:orientation">vertical</item>
         <item name="android:textSize">@dimen/ThreadListLayout</item>
-        <item name="android:background">@color/PaletteBlack</item>
+        <item name="android:background">@color/PaletteLightBlack</item>
     </style>
 
     <style name="ThreadListItemLayout" parent="AppTheme">
@@ -610,7 +610,7 @@
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
         <!-- <item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
-        <item name="android:background">@color/PaletteBlack</item>
+        <item name="android:background">@color/PaletteLightBlack</item>
     </style>
 
     <style name="ThreadListHeaderHeadWrapper" parent="AppTheme">
@@ -618,7 +618,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
         <item name="android:textColor">@color/PaletteLightGray</item>
-        <item name="android:background">@color/PaletteBlack</item>
+        <item name="android:background">@color/PaletteLightBlack</item>
     </style>
 
     <style name="ThreadListHeaderCountryFlag" parent="AppTheme">
@@ -634,35 +634,26 @@
 
     <style name="ThreadListHeaderHead" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">96dp</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_below">@+id/list_item_text</item>
         <item name="android:layout_marginLeft">@dimen/ThreadListHeaderHead_layout_marginLeft</item>
         <item name="android:layout_marginRight">@dimen/ThreadListHeaderHead_layout_marginRight</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
-        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:textColor">@color/PaletteLightGray</item>
         <item name="android:autoLink">email</item>
         <item name="android:linksClickable">true</item>
         <!--<item name="android:textColorLink">@color/PaletteChanuGreen</item>-->
-        <item name="android:background">@color/PaletteBlack</item>
+        <item name="android:background">@color/PaletteLightBlack</item>
     </style>
 
-    <style name="ThreadListHeaderNumReplies" parent="AppTheme">
+    <style name="ThreadListHeaderNumWrap" parent="AppTheme">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
         <item name="android:gravity">top|left</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:background">@color/PaletteBlack</item>
-    </style>
-
-    <style name="ThreadListHeaderNumImages" parent="AppTheme">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:gravity">top|left</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:background">@color/PaletteBlack</item>
+        <!--<item name="android:background">@color/PaletteLightBlack</item> -->
     </style>
 
     <style name="ThreadListHeaderNumNum" parent="AppTheme">
@@ -670,7 +661,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
         <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:background">@color/PaletteBlack</item>
+        <!--<item name="android:background">@color/PaletteLightBlack</item>-->
     </style>
 
     <style name="ThreadListHeaderNumLabel" parent="AppTheme">
@@ -678,7 +669,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/ThreadListHeaderLabel</item>
         <item name="android:textColor">@color/PaletteLightGray</item>
-        <item name="android:background">@color/PaletteBlack</item>
+        <!--<item name="android:background">@color/PaletteLightBlack</item>-->
     </style>
 
     <style name="ThreadListHeaderFullText" parent="AppTheme">
@@ -691,7 +682,7 @@
         <item name="android:paddingRight">@dimen/ThreadListItemFullText_paddingLeft</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textColor">@color/PaletteWhite</item>
-        <item name="android:background">@color/PaletteBlack</item>
+        <item name="android:background">@color/PaletteLightBlack</item>
         <item name="android:textSize">@dimen/ThreadListItemFullText</item>
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
@@ -708,7 +699,7 @@
         <item name="android:paddingRight">@dimen/ThreadListItemFullText_paddingLeft</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textColor">@color/PaletteLightGray</item>
-        <item name="android:background">@color/PaletteBlack</item>
+        <item name="android:background">@color/PaletteLightBlack</item>
         <item name="android:textSize">@dimen/ThreadListItemExifText</item>
         <item name="android:visibility">gone</item>
     </style>
@@ -786,7 +777,7 @@
         <item name="android:background">@drawable/board_grid_selector_bg</item>
     </style>
 
-    <style name="ThreadListItemSubject" parent="AppTheme">
+    <style name="ThreadListItemHead" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- <item name="android:layout_marginRight">16dp</item> -->
@@ -796,12 +787,28 @@
         <item name="android:layout_toRightOf">@+id/list_item_image_wrapper</item>
         <item name="android:layout_toLeftOf">@+id/list_item_country_flag</item>
         <item name="android:gravity">top|left</item>
-        <item name="android:textColor">@color/PaletteBlack</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textSize">@dimen/ThreadListItemSubject</item>
-        <item name="android:autoLink">web|email</item>
+        <item name="android:textColor">@color/PaletteLightGray</item>
+        <item name="android:textSize">@dimen/ThreadListItemHead</item>
+        <item name="android:autoLink">email</item>
         <item name="android:linksClickable">true</item>
         <!-- <item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
+    </style>
+
+    <style name="ThreadListItemSubject" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListItemHead_marginLeft</item>
+        <item name="android:layout_marginRight">@dimen/ThreadListItemHead_marginRight</item>
+        <item name="android:paddingTop">@dimen/ThreadListItemFullText_paddingTop</item>
+        <item name="android:paddingLeft">@dimen/ThreadListItemFullText_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/ThreadListItemFullText_paddingLeft</item>
+        <item name="android:paddingBottom">@dimen/ThreadListItemHead_paddingBottom</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textSize">@dimen/ThreadListItemSubject</item>
+        <item name="android:textColor">@color/PaletteBlack</item>
+        <item name="android:autoLink">web|email</item>
+        <item name="android:linksClickable">true</item>
+        <!--<item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
     </style>
 
     <style name="ThreadListItemCountryFlag" parent="AppTheme">
@@ -815,23 +822,6 @@
         <item name="android:gravity">top|right</item>
         <item name="android:scaleType">fitXY</item>
         <item name="android:contentDescription">@string/popup_country_flag</item>
-    </style>
-
-    <style name="ThreadListItemHead" parent="AppTheme">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginLeft">@dimen/ThreadListItemHead_marginLeft</item>
-        <item name="android:layout_marginRight">@dimen/ThreadListItemHead_marginRight</item>
-        <item name="android:paddingTop">@dimen/ThreadListItemFullText_paddingTop</item>
-        <item name="android:paddingLeft">@dimen/ThreadListItemFullText_paddingLeft</item>
-        <item name="android:paddingRight">@dimen/ThreadListItemFullText_paddingLeft</item>
-        <item name="android:paddingBottom">@dimen/ThreadListItemHead_paddingBottom</item>
-        <item name="android:gravity">top|left</item>
-        <item name="android:textSize">@dimen/ThreadListItemHead</item>
-        <item name="android:textColor">@color/PaletteLightGray</item>
-        <item name="android:autoLink">email</item>
-        <item name="android:linksClickable">true</item>
-        <!--<item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
     </style>
 
     <!-- FOO -->
@@ -1131,13 +1121,15 @@
     -->
     <color name="PaletteTransparent">#00000000</color>
     <color name="pressed_chanu">#CC16B206</color>
-    <color name="PaletteChanuGreen">#16b206</color>
-    <color name="PaletteChanuGreenHalfOpacity">#8816b206</color>
+    <!-- <color name="PaletteChanuGreen">#16b206</color> -->
+    <color name="PaletteChanuGreen">#98b92e</color>
+    <color name="PaletteChanuGreenHalfOpacity">#8898b92e</color>
     <color name="PaletteYellowWhite">#ecebe7</color>
     <color name="PaletteWhite">#f7f7f7</color>
     <color name="PaletteOffWhite">#e4e4e4</color>
-    <color name="PaletteLightGray">#bababa</color>
+    <color name="PaletteLightGray">#aaa</color>
     <color name="PaletteDarkGray">#414141</color>
+    <color name="PaletteLightBlack">#414141</color>
     <color name="PaletteBlack">#ff2d2d2d</color>
     <color name="PaletteBlackHalfOpacity">#802d2d2d</color>
     <color name="PaletteBlack34Opacity">#d02d2d2d</color>

@@ -25,7 +25,8 @@ public class ChanPost {
     private static final boolean DEBUG = false;
 
     public static final String HEADLINE_BOARDLEVEL_DELIMITER = "<br/>";
-    public static final String HEADLINE_THREADLEVEL_DELIMITER = " &middot; ";
+    public static final String HEADLINE_THREADLEVEL_DELIMITER = "<br/>";
+    //public static final String HEADLINE_THREADLEVEL_DELIMITER = " &middot; ";
     private static final int MIN_LINE = 30;
     private static final int MAX_LINE = 40;
     private static final int MAX_THREAD_SUBJECT_LEN = 100;
@@ -297,7 +298,12 @@ public class ChanPost {
         String comText = sanitizeText(com, false, showSpoiler);
         String subject = subText != null ? subText : "";
         String message = comText != null ? comText : "";
-        /*
+
+        if (resto > 0) {
+            if (DEBUG) Log.v(TAG, "default subject=" + subject + " message=" + message);
+            return highlightComponents(cleanSubject(subject), cleanMessage(message), query);
+        }
+
         if (!subject.isEmpty() || message.isEmpty()) { // we have a subject or can't extract from message
             if (DEBUG) Log.v(TAG, "provided subject=" + subject + " message=" + message);
             return highlightComponents(cleanSubject(subject), cleanMessage(message), query);
@@ -333,7 +339,7 @@ public class ChanPost {
             if (DEBUG) Log.v(TAG, "cutoff subject=" + subject + " message=" + message);
             return highlightComponents(subject, message, query);
         }
-        */
+
         // default
         if (DEBUG) Log.v(TAG, "default subject=" + subject + " message=" + message);
         return highlightComponents(cleanSubject(subject), cleanMessage(message), query);
@@ -522,10 +528,6 @@ public class ChanPost {
         return "";
     }
 
-    public String headline(String query, boolean boardLevel, byte[] repliesBlob) {
-        return headline(query, boardLevel, repliesBlob, true);
-    }
-
     public String headline(String query, boolean boardLevel, byte[] repliesBlob, boolean showNumReplies) {
         List<String> items = new ArrayList<String>();
         items.add(dateText());
@@ -549,11 +551,12 @@ public class ChanPost {
             if (fsize > 0)
                 items.add(imageDimensions());
         }
-        if (boardLevel && resto <= 0) {
+        //if (boardLevel && resto <= 0) {
             String s = threadInfoLine(boardLevel, showNumReplies);
             if (!s.isEmpty())
                 items.add(s);
-        }
+        //}
+        /*
         if (repliesBlob != null && repliesBlob.length > 0) { // don't show text for threads
             HashSet<Long> hashSet = (HashSet<Long>)parseBlob(repliesBlob);
             int n = hashSet != null ? hashSet.size() : 0;
@@ -562,6 +565,7 @@ public class ChanPost {
                 items.add(s);
             }
         }
+        */
         String delim = boardLevel ? HEADLINE_BOARDLEVEL_DELIMITER : HEADLINE_THREADLEVEL_DELIMITER;
         String component = ChanHelper.join(items, delim);
         return highlightComponent(component, query);
@@ -583,7 +587,7 @@ public class ChanPost {
             else
                 text += "no posts";
         }
-        if (!boardLevel) {
+        if (!boardLevel && resto == 0) {
             if (imagelimit == 1)
                 text += " (IL)";
             if (bumplimit == 1)
@@ -961,7 +965,7 @@ public class ChanPost {
                 thumbnailUrl(),
                 imageUrl(),
                 countryFlagUrl(),
-                headline(query, false, repliesBlob),
+                headline(query, false, repliesBlob, false),
                 replies,
                 images,
                 textComponents[0],
@@ -998,7 +1002,7 @@ public class ChanPost {
                 thumbnailUrl(),
                 "",
                 countryFlagUrl(),
-                headline("", false, null),
+                headline("", false, null, false),
                 replies,
                 images,
                 textComponents[0],
@@ -1135,7 +1139,7 @@ public class ChanPost {
     public static final int MIN_TOKEN_LENGTH = 5;
 
     public Set<String> keywords() {
-        String text = (sub == null ? "" : sub) + (com == null ? "" : com) + headline("", false, null);
+        String text = (sub == null ? "" : sub) + (com == null ? "" : com) + headline("", false, null, false);
         String stripped = text.replaceAll("<[^>]*>|\\W+", " ");
         String[] tokens = stripped.split("\\s+");
         if (DEBUG) Log.v(TAG, "threadNo=" + no + " tokens=" + Arrays.toString(tokens));

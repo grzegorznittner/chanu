@@ -963,6 +963,7 @@ public class ThreadActivity
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         String boardTitle = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
         getActionBar().setTitle(boardTitle);
+        /*
         ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
         String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
                 ? null
@@ -974,6 +975,7 @@ public class ThreadActivity
         else
             threadTitle = " " + threadTitle.trim();
         getActionBar().setTitle("/" + boardCode + "/" + threadTitle);
+        */
     }
 
     protected Map<ChanBlocklist.BlockType, List<String>> extractBlocklist(SparseBooleanArray postPos) {

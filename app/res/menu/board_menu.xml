@@ -4,7 +4,7 @@
     <item android:id="@+id/search_menu"
           android:title="@string/thread_search"
           android:icon="@drawable/action_search"
-          android:showAsAction="collapseActionView|ifRoom"
+          android:showAsAction="collapseActionView"
           android:actionViewClass="android.widget.SearchView"/>
 
     <item android:id="@+id/clear_watchlist_menu"
