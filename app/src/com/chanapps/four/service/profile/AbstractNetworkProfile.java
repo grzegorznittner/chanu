@@ -13,7 +13,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.chanapps.four.activity.*;
-import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.data.*;
 import com.chanapps.four.service.BoardParserService;
 import com.chanapps.four.service.NetworkProfileManager;

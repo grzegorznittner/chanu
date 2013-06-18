@@ -3,16 +3,16 @@ package com.chanapps.four.viewer;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.*;
 import android.text.method.LinkMovementMethod;
 import android.text.style.*;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -21,7 +21,6 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.ThreadImageOnClickListener;
 import com.chanapps.four.data.ChanAd;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -593,7 +592,7 @@ public class ThreadViewer {
     }
 
     static private boolean setImageExpanded(final ImageView iv) {
-        ChanHelper.clearBigImageView(iv);
+        clearBigImageView(iv);
         iv.setVisibility(View.GONE);
         return true;
     }
@@ -781,4 +780,32 @@ public class ThreadViewer {
         }
     };
 
+    public static void safeClearImageView(ImageView v) {
+        /*
+        Drawable d = v.getDrawable();
+        if (d != null && d instanceof BitmapDrawable) {
+            BitmapDrawable bd = (BitmapDrawable)d;
+            Bitmap b = bd.getBitmap();
+            if (b != null)
+                b.recycle();
+        }
+        */
+        v.setImageBitmap(null);
+    }
+
+    public static void clearBigImageView(final ImageView v) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Drawable d = v.getDrawable();
+                if (d != null && d instanceof BitmapDrawable) {
+                    BitmapDrawable bd = (BitmapDrawable)d;
+                    Bitmap b = bd.getBitmap();
+                    if (b != null)
+                        b.recycle();
+                }
+            }
+        }).start();
+        v.setImageBitmap(null);
+    }
 }

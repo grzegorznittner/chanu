@@ -44,7 +44,7 @@ import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.VideoViewActivity;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.service.NetworkProfileManager;
 
 import android.app.ActionBar;

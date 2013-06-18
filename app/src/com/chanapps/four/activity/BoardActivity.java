@@ -26,7 +26,7 @@ import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.*;
-import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.GenericDialogFragment;
 import com.chanapps.four.fragment.PickNewThreadBoardDialogFragment;
 import com.chanapps.four.fragment.WatchlistDeleteDialogFragment;
@@ -615,7 +615,7 @@ public class BoardActivity
 
 	@Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(LastActivity.BOARD_ACTIVITY, boardCode);
+		return new ChanActivityId(LastActivity.BOARD_ACTIVITY, boardCode, query);
 	}
 
 	@Override

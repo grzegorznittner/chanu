@@ -218,7 +218,7 @@ public class UpdateWidgetService extends RemoteViewsService {
         private PendingIntent makeThreadIntent(ChanPost thread, int i) {
             Intent intent = (thread == null || thread.no < 1)
                     ? BoardActivity.createIntent(context, widgetConf.boardCode, "")
-                    : ThreadActivity.createIntentForActivity(context, thread.board, thread.no, "");
+                    : ThreadActivity.createIntent(context, thread.board, thread.no, "");
             intent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 5 + i;

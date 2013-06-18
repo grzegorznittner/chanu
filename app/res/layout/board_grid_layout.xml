@@ -29,6 +29,8 @@
             android:visibility="gone"
             />
 
+    <include layout="@layout/tutorial_overlay"/>
+
     <!--
     <ProgressBar
             android:id="@+id/board_progress_bar"

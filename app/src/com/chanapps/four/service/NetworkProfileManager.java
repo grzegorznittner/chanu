@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.data.UserStatistics;
@@ -121,7 +121,7 @@ public class NetworkProfileManager {
             NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 
             activeProfile.onApplicationStart(newActivity.getBaseContext());
-            DispatcherHelper.dispatchIfNecessaryFromPrefsState((Activity)newActivity);
+            ActivityDispatcher.dispatch(newActivity);
         }
     }
 

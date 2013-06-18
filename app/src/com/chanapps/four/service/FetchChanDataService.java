@@ -63,9 +63,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.PAGE, -1);
         intent.putExtra(ChanHelper.BOARD_CATALOG, 1);
-        if (priority) {
-            intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
-        }
+        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, priority ? 1 : 0);
         if (backgroundLoad) {
             intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
         }
@@ -99,9 +97,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         Intent intent = new Intent(context, FetchChanDataService.class);
         intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        if (priority) {
-            intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
-        }
+        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, priority ? 1 : 0);
         if (backgroundLoad) {
             intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
         }
@@ -177,14 +173,31 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             return;
         }
 
-		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
-		pageNo = boardCatalog ? -1 : intent.getIntExtra(ChanHelper.PAGE, 0);
-		threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-		boardHandling = threadNo == 0;
+		String iboardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+		boolean iboardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
+		int ipageNo = iboardCatalog ? -1 : intent.getIntExtra(ChanHelper.PAGE, 0);
+		long ithreadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+		boolean iboardHandling = ithreadNo == 0;
+		boolean ipriority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
+		if (boardCode != null && boardCode.equals(iboardCode)
+            && boardCatalog == iboardCatalog
+            && pageNo == ipageNo
+            && threadNo == ithreadNo
+            && boardHandling == iboardHandling
+            && priority == ipriority) {
+            if (DEBUG) Log.i(TAG, "Already fetching /" + boardCode + "/" + threadNo + ", skipping");
+            return;
+        }
+        else {
+            boardCode = iboardCode;
+            boardCatalog = iboardCatalog;
+            pageNo = ipageNo;
+            threadNo = ithreadNo;
+            boardHandling = iboardHandling;
+            priority = ipriority;
+        }
 
-		priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
-		if (boardHandling) {
+        if (boardHandling) {
 			if (DEBUG) Log.i(TAG, "Handling board " + boardCode + (boardCatalog ? " catalog" : " page=" + pageNo) + " priority=" + priority);
 			handleBoard();
 		} else {
@@ -228,7 +241,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 			URL chanApi = null;
 			if (boardCatalog) {
 				chanApi = new URL("http://api.4chan.org/" + boardCode + "/catalog.json");
-				if (DEBUG) Log.i(TAG, "Fetching board " + boardCode + " catalog.");
+				if (DEBUG) Log.i(TAG, "Fetching board " + boardCode + " catalog priority=" + priority);
 			} else {
 				chanApi = new URL("http://api.4chan.org/" + boardCode + "/" + pageNo + ".json");
 				if (DEBUG) Log.i(TAG, "Fetching board " + boardCode + " page " + pageNo);
@@ -262,11 +275,13 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             }
             else if (contentType == null || !contentType.contains("json")) {
                 // happens if 4chan is temporarily down or when access requires authentication to wifi router
-                if (DEBUG) Log.i(TAG, "Wrong content type returned board=" + board + " contentType='" + contentType + "' responseCode=" + tc.getResponseCode() + " content=" + tc.getContent().toString());
+                if (DEBUG) Log.i(TAG, "Wrong content type returned board=" + board + " contentType='" + contentType
+                        + "' responseCode=" + tc.getResponseCode() + " content=" + tc.getContent().toString());
             }
             else {
                 board.lastFetched = new Date().getTime();
-                long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, new InputStreamReader(tc.getInputStream()));
+                long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo,
+                        new InputStreamReader(tc.getInputStream()));
             	int fetchTime = (int)(board.lastFetched - startTime);
                 
                 if (DEBUG) Log.w(TAG, "Fetched and stored " + chanApi + " in " + fetchTime + "ms, size " + fileSize);

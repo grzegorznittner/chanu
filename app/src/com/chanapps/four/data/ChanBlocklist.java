@@ -83,7 +83,10 @@ public class ChanBlocklist {
     public static boolean contains(Context context, BlockType blockType, String block) {
         if (blocklist == null)
             initBlocklist(context);
-        return blocklist.get(blockType).contains(block);
+        Set<String> typeList = blocklist.get(blockType);
+        if (typeList == null)
+            return false;
+        return typeList.contains(block);
     }
 
     public static boolean isBlocked(Context context, ChanPost post) {

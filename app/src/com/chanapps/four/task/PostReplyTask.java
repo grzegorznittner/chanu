@@ -22,7 +22,7 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
-import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.PostingReplyDialogFragment;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;

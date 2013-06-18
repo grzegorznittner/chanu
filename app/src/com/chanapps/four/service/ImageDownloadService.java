@@ -26,7 +26,7 @@ import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 

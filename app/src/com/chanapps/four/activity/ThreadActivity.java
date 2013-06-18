@@ -34,7 +34,7 @@ import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
-import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.*;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -63,6 +63,10 @@ public class ThreadActivity
         MediaScannerConnection.OnScanCompletedListener {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
+    public static final String BOARD_CODE = "boardCode";
+    public static final String THREAD_NO = "threadNo";
+    public static final String POST_NO = "postNo";
+    
     public static final boolean DEBUG = true;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
@@ -114,21 +118,21 @@ public class ThreadActivity
         if (threadNo <= 0)
             BoardActivity.startActivity(from, boardCode, query);
         else if (postNo <= 0)
-            from.startActivity(createIntentForActivity(from, boardCode, threadNo, query));
+            from.startActivity(createIntent(from, boardCode, threadNo, query));
         else
-            from.startActivity(createIntentForActivity(from, boardCode, threadNo, postNo, query));
+            from.startActivity(createIntent(from, boardCode, threadNo, postNo, query));
     }
 
-    public static Intent createIntentForActivity(Context context, final String boardCode, final long threadNo, String query) {
-        return createIntentForActivity(context, boardCode, threadNo, 0, query);
+    public static Intent createIntent(Context context, final String boardCode, final long threadNo, String query) {
+        return createIntent(context, boardCode, threadNo, 0, query);
     }
 
-    public static Intent createIntentForActivity(Context context, final String boardCode,
-                                                 final long threadNo, final long postNo, String query) {
+    public static Intent createIntent(Context context, final String boardCode,
+                                      final long threadNo, final long postNo, String query) {
         Intent intent = new Intent(context, ThreadActivity.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(ChanHelper.POST_NO, postNo);
+        intent.putExtra(BOARD_CODE, boardCode);
+        intent.putExtra(THREAD_NO, threadNo);
+        intent.putExtra(POST_NO, postNo);
         intent.putExtra(SearchManager.QUERY, query);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
@@ -538,7 +542,7 @@ public class ThreadActivity
     protected boolean navigateUp() {
         // FIXME: know that I'm coming from watching and return there
         Intent upIntent = new Intent(this, BoardActivity.class);
-        upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        upIntent.putExtra(BOARD_CODE, boardCode);
         if (DEBUG) Log.i(TAG, "Made up intent with board=" + boardCode);
 //                if (NavUtils.shouldUpRecreateTask(this, upIntent)) { // needed when calling from widget
 //                    if (DEBUG) Log.i(TAG, "Should recreate task");
@@ -657,7 +661,7 @@ public class ThreadActivity
     }
 
     public ChanActivityId getChanActivityId() {
-        return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo);
+        return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo, postNo, query);
     }
 
     protected int getLayoutId() {

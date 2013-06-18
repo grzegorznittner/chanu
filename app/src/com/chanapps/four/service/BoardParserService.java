@@ -7,16 +7,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import com.chanapps.four.data.*;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.MappingJsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -30,11 +33,6 @@ import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
-import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanHelper.LastActivity;
-import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
 /**
@@ -82,8 +80,43 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     protected BoardParserService(String name) {
    		super(name);
    	}
-	
-	@Override
+
+    public static void configureJsonParser(JsonParser jp) throws IOException, JsonParseException {
+        jp.configure(JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
+        jp.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+        jp.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
+        jp.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+        jp.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+        jp.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+        jp.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
+    }
+
+    /*
+    public enum Orientation {
+        PORTRAIT,
+        LANDSCAPE
+    }
+
+    public static final Orientation getOrientation(Context context) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        if (metrics.widthPixels > metrics.heightPixels) {
+            return Orientation.LANDSCAPE;
+        }
+        else {
+            return Orientation.PORTRAIT;
+        }
+    }
+    */
+    public static ObjectMapper getJsonMapper() {
+        JacksonNonBlockingObjectMapperFactory factory = new JacksonNonBlockingObjectMapperFactory();
+        ObjectMapper mapper = factory.createObjectMapper();
+    	mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    	// "Jan 15, 2013 10:16:20 AM"
+    	mapper.setDateFormat(new SimpleDateFormat("MMM d, yyyy h:mm:ss aaa"));
+    	return mapper;
+    }
+
+    @Override
 	protected void onHandleIntent(Intent intent) {
 		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
 		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
@@ -158,7 +191,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
             }
         }
 
-        ObjectMapper mapper = ChanHelper.getJsonMapper();
+        ObjectMapper mapper = getJsonMapper();
         JsonNode rootNode = mapper.readValue(in, JsonNode.class);
         for (JsonNode threadValue : rootNode.path("threads")) { // iterate over threads
             JsonNode postValue = threadValue.path("posts").get(0); // first object is the thread post
@@ -189,9 +222,9 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     	}
 
     	try {
-	        ObjectMapper mapper = ChanHelper.getJsonMapper();
+	        ObjectMapper mapper = getJsonMapper();
 	        JsonParser jp = new MappingJsonFactory().createJsonParser(in);
-	    	ChanHelper.configureJsonParser(jp);
+	    	configureJsonParser(jp);
 	    	JsonToken current = jp.nextToken(); // will return JsonToken.START_ARRAY
 	    	while (jp.nextToken() != JsonToken.END_ARRAY) {
         		current = jp.nextToken(); // should be JsonToken.START_OBJECT

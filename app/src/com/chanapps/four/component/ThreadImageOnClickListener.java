@@ -42,7 +42,7 @@ public class ThreadImageOnClickListener implements View.OnClickListener {
     public void onClick(View v) {
         ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         if (activity != null && activity instanceof Activity) {
-            GalleryViewActivity.startActivity((Activity)activity, boardCode, threadNo, postId, position);
+            GalleryViewActivity.startActivity((Activity)activity, boardCode, threadNo, postId);
         }
     }
 

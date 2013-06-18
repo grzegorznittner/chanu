@@ -1,18 +1,19 @@
 package com.chanapps.four.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.AboutFragment;
-import com.chanapps.four.fragment.SettingsFragment;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,6 +25,10 @@ import com.chanapps.four.fragment.SettingsFragment;
 public class AboutActivity extends Activity implements ChanIdentifiedActivity {
 
     public static final String TAG = AboutActivity.class.getSimpleName();
+
+    public static Intent createIntent(Context from) {
+        return new Intent(from, AboutActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +43,12 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
-        DispatcherHelper.saveActivityToPrefs(this);
+        ActivityDispatcher.store(this);
     }
 
     @Override
     public ChanActivityId getChanActivityId() {
-        return new ChanActivityId(ChanHelper.LastActivity.ABOUT_ACTIVITY);
+        return new ChanActivityId(LastActivity.ABOUT_ACTIVITY);
     }
 
     @Override

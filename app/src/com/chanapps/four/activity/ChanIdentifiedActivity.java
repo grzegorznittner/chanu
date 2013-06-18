@@ -1,6 +1,7 @@
 package com.chanapps.four.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 
 public interface ChanIdentifiedActivity {

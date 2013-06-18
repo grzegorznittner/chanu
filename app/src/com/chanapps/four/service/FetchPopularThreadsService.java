@@ -49,7 +49,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
         if (DEBUG) Log.i(TAG, "Start popular threads fetch service priority=" + priority + " background=" + backgroundLoad);
         Intent intent = new Intent(context, FetchPopularThreadsService.class);
         if (priority)
-            intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+            intent.putExtra(ChanHelper.PRIORITY_MESSAGE, priority ? 1 : 0);
         if (backgroundLoad)
             intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
         context.startService(intent);

@@ -3,15 +3,13 @@ package com.chanapps.four.service.profile;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
 import com.chanapps.four.activity.*;
-import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.data.*;
-import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.service.CleanUpService;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
@@ -181,6 +179,7 @@ public class MobileProfile extends AbstractNetworkProfile {
     @Override
     public void onBoardSelected(Context context, String boardCode) {
         super.onBoardSelected(context, boardCode);
+        if (DEBUG) Log.i(TAG, "onBoardSelected");
         Health health = getConnectionHealth();
         if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
@@ -188,7 +187,7 @@ public class MobileProfile extends AbstractNetworkProfile {
             return;
         }
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        if (board.isVirtualBoard() && !board.isPopularBoard()) {
+        if (board != null && board.isVirtualBoard() && !board.isPopularBoard()) {
             if (DEBUG) Log.i(TAG, "skipping non-popular virtual board /" + boardCode + "/");
             return;
         }
@@ -257,7 +256,7 @@ public class MobileProfile extends AbstractNetworkProfile {
                 && currentActivityId.boardCode != null
                 && currentActivityId.boardCode.equals(boardCode);
 
-        if (boardActivity && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY
+        if (boardActivity && currentActivityId.activity == LastActivity.BOARD_ACTIVITY
                 && currentActivityId.threadNo == 0 && handler != null)
             handler.post(new Runnable() {
                 @Override
@@ -435,7 +434,7 @@ public class MobileProfile extends AbstractNetworkProfile {
             boolean isBoardActivity = currentActivityId != null
                     && currentActivityId.boardCode != null
                     && currentActivityId.boardCode.equals(data.boardCode)
-                    && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY;
+                    && currentActivityId.activity == LastActivity.BOARD_ACTIVITY;
             // user is on the board page, we need to be reloaded it
             Handler handler = activity.getChanHandler();
             if (isBoardActivity && handler != null) {

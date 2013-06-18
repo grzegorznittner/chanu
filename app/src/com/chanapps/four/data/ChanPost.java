@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.text.Editable;
 import android.text.format.DateUtils;
 import android.util.Log;
 
@@ -82,6 +81,31 @@ public class ChanPost {
 
     public static String planifyText(String text) {
         return text.replaceAll("<br/?>", "\n").replaceAll("<[^>]*>", "");
+    }
+
+    public static String join(List<String> list, String delimiter) {
+        String text = "";
+        boolean first = true;
+        for (String item : list) {
+            if (first) {
+                text += item;
+                first = false;
+                continue;
+            }
+            text += delimiter + item;
+        }
+        return text;
+    }
+
+    public static int countLines(String s) {
+        if (s == null || s.isEmpty())
+            return 0;
+        int i = 1;
+        int idx = -1;
+        while ((idx = s.indexOf('\n', idx + 1)) != -1) {
+            i++;
+        }
+        return i;
     }
 
     private int postFlags(boolean isAd, boolean isThreadLink, String subject, String text, String exifText) {
@@ -567,7 +591,7 @@ public class ChanPost {
         }
         */
         String delim = boardLevel ? HEADLINE_BOARDLEVEL_DELIMITER : HEADLINE_THREADLEVEL_DELIMITER;
-        String component = ChanHelper.join(items, delim);
+        String component = join(items, delim);
         return highlightComponent(component, query);
     }
 

@@ -5,19 +5,13 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
-import android.text.Html;
-import android.text.Layout;
-import android.text.StaticLayout;
-import android.text.TextPaint;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -325,7 +319,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
     private void clearImage() {
         if (DEBUG) Log.i(TAG, "Clearing existing image");
-        ChanHelper.clearBigImageView(itemExpandedImage); // clear old image
+        ThreadViewer.clearBigImageView(itemExpandedImage); // clear old image
         if (DEBUG) Log.i(TAG, "Existing image cleared");
     }
 

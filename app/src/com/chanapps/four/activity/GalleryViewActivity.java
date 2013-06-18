@@ -1,6 +1,7 @@
 package com.chanapps.four.activity;
 
-import com.chanapps.four.component.DispatcherHelper;
+import com.android.gallery3d.app.*;
+import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.data.*;
 import android.content.Context;
 import android.content.Intent;
@@ -21,21 +22,22 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import com.android.gallery3d.app.AbstractGalleryActivity;
-import com.android.gallery3d.app.AlbumPage;
-import com.android.gallery3d.app.AlbumSetPage;
-import com.android.gallery3d.app.GalleryActionBar;
-import com.android.gallery3d.app.PhotoPage;
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.ui.GLRoot;
 import com.android.gallery3d.ui.GLRootView;
-import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
+
     public static final String TAG = "GalleryViewActivity";
-    private static final boolean DEBUG = false;
+
+    public static final String BOARD_CODE = "boardCode";
+    public static final String THREAD_NO = "threadNo";
+    public static final String POST_NO = "postNo";
+
+    private static final boolean DEBUG = true;
 
     public static final String VIEW_TYPE = "viewType";
 
@@ -49,12 +51,10 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     private ViewType viewType = ViewType.PHOTO_VIEW; // default single image view
 
     public static final int PROGRESS_REFRESH_MSG = 0;
-	public static final int START_DOWNLOAD_MSG = 1;
 	public static final int FINISHED_DOWNLOAD_MSG = 2;
 	public static final int DOWNLOAD_ERROR_MSG = 3;
 	public static final int UPDATE_POSTNO_MSG = 4;
 
-    private Intent intent;
     private String boardCode = null;
     private long threadNo = 0;
     private long postNo = 0;
@@ -69,17 +69,23 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         final String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
         final long resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
         final long threadNo = resto <= 0 ? postId : resto;
-        startActivity(from, boardCode, threadNo, postId, adapterView.getFirstVisiblePosition());
+        startActivity(from, boardCode, threadNo, postId);
     }
 
-    public static void startActivity(Context from, String boardCode, long threadNo, long postId, int position) {
-        Intent intent = new Intent(from, GalleryViewActivity.class);
-        intent.putExtra(VIEW_TYPE, ViewType.PHOTO_VIEW.toString());
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(ChanPost.POST_NO, postId);
+    public static void startActivity(Context from, String boardCode, long threadNo, long postId) {
+        Intent intent = createIntent(from, boardCode, threadNo, postId, ViewType.PHOTO_VIEW);
         if (DEBUG) Log.i(TAG, "Starting full screen image viewer for: " + boardCode + "/" + threadNo + "/" + postId);
         from.startActivity(intent);
+    }
+
+    public static Intent createIntent(Context from, String boardCode, long threadNo, long postId, ViewType viewType) {
+        if (DEBUG) Log.i(TAG, "createIntent() viewType=" + viewType);
+        Intent intent = new Intent(from, GalleryViewActivity.class);
+        intent.putExtra(VIEW_TYPE, viewType.toString());
+        intent.putExtra(BOARD_CODE, boardCode);
+        intent.putExtra(THREAD_NO, threadNo);
+        intent.putExtra(POST_NO, postId);
+        return intent;
     }
 
     public static void startAlbumViewActivity(Context from, String boardCode, long threadNo) {
@@ -99,8 +105,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     public static Intent getAlbumViewIntent(Context from, String boardCode, long threadNo) {
         Intent intent = new Intent(from, GalleryViewActivity.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(BOARD_CODE, boardCode);
+        intent.putExtra(THREAD_NO, threadNo);
         intent.putExtra(VIEW_TYPE, ViewType.ALBUM_VIEW.toString());
         return intent;
     }
@@ -110,7 +116,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         if (boardCode == null || boardCode.isEmpty()) {
         	intent.putExtra(VIEW_TYPE, ViewType.OFFLINE_ALBUMSET_VIEW.toString());
         } else {
-        	intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+        	intent.putExtra(BOARD_CODE, boardCode);
         	intent.putExtra(VIEW_TYPE, ViewType.OFFLINE_ALBUM_VIEW.toString());
         }
         return intent;
@@ -175,18 +181,21 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         bundle.putString(ChanBoard.BOARD_CODE, boardCode);
         bundle.putLong(ChanThread.THREAD_NO, threadNo);
         bundle.putLong(ChanPost.POST_NO, postNo);
-        DispatcherHelper.saveActivityToPrefs(this);
+        ActivityDispatcher.store(this);
     }
 
     protected void setFromIntent(Intent intent) {
-        if (intent.hasExtra(VIEW_TYPE))
-            viewType = ViewType.valueOf(intent.getStringExtra(VIEW_TYPE));
+        String s = intent.getStringExtra(VIEW_TYPE);
+        if (DEBUG) Log.i(TAG, "setFromIntent viewType=" + s);
+        if (s != null && !s.isEmpty())
+            viewType = ViewType.valueOf(s);
         else
             viewType = ViewType.OFFLINE_ALBUMSET_VIEW;
         boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
         threadNo = intent.getLongExtra(ChanThread.THREAD_NO, 0);
         postNo = intent.getLongExtra(ChanPost.POST_NO, 0);
-        if (DEBUG) Log.i(TAG, "Loaded from intent, viewType: " + viewType.toString() + " boardCode: " + boardCode + ", threadNo: " + threadNo + ", postNo: " + postNo);
+        if (DEBUG) Log.i(TAG, "setFromIntent() loaded /" + boardCode + "/" + threadNo + "#" + postNo
+                + " viewType=" + viewType.toString());
     }
 
     @Override
@@ -276,22 +285,26 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	    				Path.fromString("/chan/" + boardCode + "/" + threadNo).toString());
 	    		data.putString(PhotoPage.KEY_MEDIA_ITEM_PATH, 
 	    				Path.fromString("/chan/" + boardCode + "/" + threadNo + "/" + postNo).toString());
+                if (DEBUG) Log.i(TAG, "starting photo state");
 	    		getStateManager().startState(PhotoPage.class, data);
 	    		break;
 	    	case ALBUM_VIEW:
 	    		data.putString(AlbumPage.KEY_MEDIA_PATH,
 	    				Path.fromString("/chan/" + boardCode + "/" + threadNo).toString());
-	    		getStateManager().startState(AlbumPage.class, data);
+                if (DEBUG) Log.i(TAG, "starting album state");
+                getStateManager().startState(AlbumPage.class, data);
 	    		break;
 	    	case OFFLINE_ALBUM_VIEW:
 	    		data.putString(AlbumPage.KEY_MEDIA_PATH,
 	    				Path.fromString("/chan-offline/" + boardCode).toString());
-	    		getStateManager().startState(AlbumPage.class, data);
+                if (DEBUG) Log.i(TAG, "starting offline album state");
+                getStateManager().startState(AlbumPage.class, data);
 	    		break;
 	    	case OFFLINE_ALBUMSET_VIEW:
 	    		data.putString(AlbumSetPage.KEY_MEDIA_PATH,
 	    				Path.fromString("/chan-offline").toString());
-	    		getStateManager().startState(AlbumSetPage.class, data);
+                if (DEBUG) Log.i(TAG, "starting offline albumset state");
+                getStateManager().startState(AlbumSetPage.class, data);
 	    		break;
 	    	}
     	} catch (Exception e) {
@@ -360,18 +373,18 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     	switch(viewType) {
     	case PHOTO_VIEW:
     		upIntent = new Intent(this, ThreadActivity.class);
-            upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-            upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+            upIntent.putExtra(BOARD_CODE, boardCode);
+            upIntent.putExtra(THREAD_NO, threadNo);
             upIntent.putExtra(ChanPost.POST_NO, postNo);
     		break;
     	case ALBUM_VIEW:
     		upIntent = new Intent(this, ThreadActivity.class);
-            upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-            upIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
+            upIntent.putExtra(BOARD_CODE, boardCode);
+            upIntent.putExtra(THREAD_NO, threadNo);
     		break;
     	case OFFLINE_ALBUM_VIEW:
     		upIntent = new Intent(this, BoardActivity.class);
-            upIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
+            upIntent.putExtra(BOARD_CODE, boardCode);
     		break;
     	case OFFLINE_ALBUMSET_VIEW:
             if (boardCode == null || boardCode.isEmpty())
@@ -401,6 +414,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
             }
             title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
+            /*
             if (threadNo > 0) {
                 String threadTitle = "";
                 ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
@@ -408,8 +422,9 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                     threadTitle = thread.threadSubject(getApplicationContext());
                 if (threadTitle.isEmpty())
                     threadTitle = "Thread " + threadNo;
-                title += ChanHelper.TITLE_SEPARATOR + threadTitle;
+                title += TITLE_SEPARATOR + threadTitle;
             }
+            */
         }
         if (getActionBar() == null) {
             if (DEBUG) Log.i(TAG, "Action bar was null");
@@ -478,8 +493,29 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     
     @Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(LastActivity.GALLERY_ACTIVITY);
+		return new ChanActivityId(LastActivity.GALLERY_ACTIVITY, boardCode, threadNo, postNo, currentViewType());
 	}
+
+    protected ViewType currentViewType() {
+        ActivityState activityState = getStateManager().getTopState();
+        ViewType t;
+        if (activityState == null)
+            return ViewType.OFFLINE_ALBUMSET_VIEW;
+        if (activityState instanceof PhotoPage)
+            return ViewType.PHOTO_VIEW;
+        if (activityState instanceof AlbumPage) {
+            Bundle data = activityState.getData();
+            if (data == null)
+                return ViewType.OFFLINE_ALBUM_VIEW;
+            String path = data.getString(AlbumPage.KEY_MEDIA_PATH);
+            if (path == null || path.isEmpty())
+                return ViewType.OFFLINE_ALBUM_VIEW;
+            if (path.matches("/chan-offline/.*"))
+                return ViewType.OFFLINE_ALBUM_VIEW;
+            return ViewType.ALBUM_VIEW;
+        }
+        return ViewType.OFFLINE_ALBUMSET_VIEW;
+    }
 
 	@Override
 	public Handler getChanHandler() {

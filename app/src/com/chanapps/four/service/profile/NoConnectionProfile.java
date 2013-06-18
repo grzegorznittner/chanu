@@ -4,11 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 
-import android.util.Log;
 import android.widget.Toast;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 
@@ -103,7 +102,7 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
                 && currentActivityId.boardCode.equals(boardCode);
 
         if (boardActivity
-                && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY
+                && currentActivityId.activity == LastActivity.BOARD_ACTIVITY
                 && currentActivityId.threadNo == 0 && handler != null)
             handler.post(new Runnable() {
                 @Override
@@ -144,7 +143,7 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
 			boolean boardActivity = currentActivityId != null
 					&& currentActivityId.boardCode != null
 					&& currentActivityId.boardCode.equals(data.boardCode);
-			if (boardActivity && currentActivityId.activity == ChanHelper.LastActivity.BOARD_ACTIVITY
+			if (boardActivity && currentActivityId.activity == LastActivity.BOARD_ACTIVITY
 					&& currentActivityId.threadNo == 0) {
 				// user is on the board page, we need to be reloaded it
 				Handler handler = activity.getChanHandler();
@@ -157,7 +156,7 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
 			boolean threadActivity = currentActivityId != null && currentActivityId.boardCode != null
 					&& currentActivityId.boardCode.equals(data.boardCode)
 					&& currentActivityId.threadNo == data.threadNo;
-			if (currentActivityId != null && threadActivity && currentActivityId.activity == ChanHelper.LastActivity.THREAD_ACTIVITY
+			if (currentActivityId != null && threadActivity && currentActivityId.activity == LastActivity.THREAD_ACTIVITY
 					&& currentActivityId.postNo == 0) {
 				// user is on the thread page, we need to reload it
 				Handler handler = activity.getChanHandler();

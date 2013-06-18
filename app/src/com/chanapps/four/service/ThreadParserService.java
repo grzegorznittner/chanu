@@ -144,7 +144,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
     	if (DEBUG) Log.i(TAG, "starting parsing thread " + boardCode + "/" + threadNo);
 
     	List<ChanPost> posts = new ArrayList<ChanPost>();
-    	ObjectMapper mapper = ChanHelper.getJsonMapper();
+    	ObjectMapper mapper = BoardParserService.getJsonMapper();
         JsonNode rootNode = mapper.readValue(in, JsonNode.class);
 
         for (JsonNode postValue : rootNode.path("posts")) { // first object is the thread post

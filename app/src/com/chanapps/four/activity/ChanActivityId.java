@@ -3,14 +3,34 @@
  */
 package com.chanapps.four.activity;
 
-import com.chanapps.four.data.ChanHelper;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Base64;
+import android.util.Log;
+import com.chanapps.four.data.LastActivity;
+
+import java.io.*;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
  *
  */
-public class ChanActivityId {
-	public ChanActivityId (String boardCode, int pageNo, boolean priority) {
+public class ChanActivityId implements Serializable {
+
+    public static final String TAG = ChanActivityId.class.getSimpleName();
+    public static final boolean DEBUG = true;
+
+    public LastActivity activity;
+    public String boardCode = null;
+    public int pageNo = -1;
+    public long threadNo = 0;
+    public long postNo = 0;
+    public int position = 0;
+    public GalleryViewActivity.ViewType viewType = null;
+    public String text = "";
+    public boolean priority = false;
+
+    public ChanActivityId (String boardCode, int pageNo, boolean priority) {
 		this.activity = null;
 		this.boardCode = boardCode;
 		this.pageNo = pageNo;
@@ -22,32 +42,47 @@ public class ChanActivityId {
 		this.threadNo = threadNo;
 		this.priority = priority;
 	}
-	public ChanActivityId (ChanHelper.LastActivity activity) {
+	public ChanActivityId (LastActivity activity) {
 		this.activity = activity;
 	}
-	public ChanActivityId (ChanHelper.LastActivity activity, String boardCode) {
+	public ChanActivityId (LastActivity activity, String boardCode) {
 		this.activity = activity;
 		this.boardCode = boardCode;
 	}
-	public ChanActivityId (ChanHelper.LastActivity activity, String boardCode, long threadNo) {
+	public ChanActivityId (LastActivity activity, String boardCode, String text) {
+		this.activity = activity;
+		this.boardCode = boardCode;
+        this.text = text;
+	}
+	public ChanActivityId (LastActivity activity, String boardCode, long threadNo) {
 		this.activity = activity;
 		this.boardCode = boardCode;
 		this.threadNo = threadNo;
 	}
-	public ChanActivityId (ChanHelper.LastActivity activity, String boardCode, long threadNo, long postNo) {
+	public ChanActivityId (LastActivity activity, String boardCode, long threadNo, long postNo) {
+		this.activity = activity;
+		this.boardCode = boardCode;
+		this.threadNo = threadNo;
+        this.postNo = postNo;
+	}
+	public ChanActivityId (LastActivity activity, String boardCode, long threadNo, long postNo,
+                           GalleryViewActivity.ViewType viewType) {
 		this.activity = activity;
 		this.boardCode = boardCode;
 		this.threadNo = threadNo;
 		this.postNo = postNo;
+        this.viewType = viewType;
+        if (DEBUG) Log.i(TAG, "set viewType=" + viewType);
 	}
-	
-	public ChanHelper.LastActivity activity;
-	public String boardCode = null;
-	public int pageNo = -1;
-    public long threadNo = 0;
-    public long postNo = 0;
-    public boolean priority = false;
-    
+
+    public ChanActivityId (LastActivity activity, String boardCode, long threadNo, long postNo, String text) {
+        this.activity = activity;
+        this.boardCode = boardCode;
+        this.threadNo = threadNo;
+        this.postNo = postNo;
+        this.text = text;
+    }
+
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof ChanActivityId) {
@@ -62,13 +97,17 @@ public class ChanActivityId {
 				} else if (pageNo != obj.pageNo) {
 					return false;
 				}
-				
+
 				if (obj.threadNo != threadNo) {
 					return false;
 				}
 				if (obj.postNo != postNo) {
 					return false;
 				}
+                if (obj.viewType != viewType) {
+                    return false;
+                }
+
 				return true;
 			}
 		}
@@ -78,20 +117,116 @@ public class ChanActivityId {
 	@Override
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
-		if (activity != null) {
+		if (activity != null)
 			buffer.append(activity);
-		} else {
-			buffer.append("Service for ");
-		}
-		if (boardCode != null) {
-			buffer.append(" ").append(boardCode);
-			if (threadNo != 0) {
-				buffer.append("/").append(threadNo);
-				if (postNo != 0) {
-					buffer.append(" post: ").append(postNo);
-				}
-			}
-		}
-		return buffer.toString();
+		else
+            buffer.append("Service for ");
+        if (boardCode != null)
+            buffer.append("/").append(boardCode);
+        if (threadNo != 0)
+            buffer.append("/").append(threadNo);
+        if (postNo != 0)
+            buffer.append("#").append(postNo);
+        if (viewType != null)
+            buffer.append(" viewType=" + viewType);
+        if (text != null && !text.isEmpty())
+            buffer.append(" text=" + text);
+        return buffer.toString();
 	}
+
+    public Intent createIntent(Context context) {
+        switch (activity) {
+            case ABOUT_ACTIVITY:
+                return AboutActivity.createIntent(context);
+            case SETTINGS_ACTIVITY:
+                return SettingsActivity.createIntent(context);
+            case GALLERY_ACTIVITY:
+                return GalleryViewActivity.createIntent(
+                        context,
+                        boardCode,
+                        threadNo,
+                        postNo,
+                        viewType);
+            case POST_REPLY_ACTIVITY:
+                return PostReplyActivity.createIntent(
+                        context,
+                        boardCode,
+                        threadNo,
+                        postNo,
+                        text);
+            case THREAD_ACTIVITY:
+                return ThreadActivity.createIntent(
+                        context,
+                        boardCode,
+                        threadNo,
+                        postNo,
+                        text);
+            case BOARD_ACTIVITY:
+            default:
+                return BoardActivity.createIntent(
+                        context,
+                        boardCode,
+                        text);
+        }
+    }
+
+    public String serialize() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            oos.close();
+            byte[] bytes = baos.toByteArray();
+            byte[] encodedBytes = Base64.encode(bytes, Base64.DEFAULT);
+            return new String(encodedBytes);
+        }
+        catch (IOException e) {
+            if (DEBUG) Log.e(TAG, "serialize() io exception " + this, e);
+            return null;
+        }
+        finally {
+            try {
+                if (oos != null)
+                    oos.close();
+            }
+            catch (IOException e) {
+                if (DEBUG) Log.e(TAG, "serialize() close io exception " + this);
+            }
+        }
+    }
+
+    public static ChanActivityId deserialize(String s) {
+        byte[] data = Base64.decode(s, Base64.DEFAULT);
+        ByteArrayInputStream bais = new ByteArrayInputStream(data);
+        ObjectInputStream ois = null;
+        try {
+            ois = new ObjectInputStream(bais);
+            Object o = ois.readObject();
+            ois.close();
+            if (!(o instanceof ChanActivityId)) {
+                if (DEBUG) Log.e(TAG, "deserialize() wrong class " + o.getClass());
+                return null;
+            }
+            return (ChanActivityId)o;
+        }
+        catch (IOException e) {
+            if (DEBUG) Log.e(TAG, "deseriliaze() io exception " + s, e);
+            return null;
+        }
+        catch (ClassNotFoundException e) {
+            if (DEBUG) Log.e(TAG, "deseriliaze() class not found exception " + s, e);
+            return null;
+        }
+        finally {
+            try {
+                if (ois != null)
+                    ois.close();
+            }
+            catch (IOException e) {
+                if (DEBUG) Log.e(TAG, "deserialize() close io exception " + s);
+            }
+        }
+    }
+
 }

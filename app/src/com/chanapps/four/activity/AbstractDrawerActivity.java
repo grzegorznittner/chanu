@@ -1,6 +1,5 @@
 package com.chanapps.four.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -15,7 +14,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
@@ -138,7 +137,7 @@ abstract public class
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
         super.onSaveInstanceState(bundle);
-        DispatcherHelper.saveActivityToPrefs(this);
+        ActivityDispatcher.store(this);
     }
 
     @Override

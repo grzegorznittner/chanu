@@ -1,19 +1,19 @@
 package com.chanapps.four.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import com.chanapps.four.component.DispatcherHelper;
+import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.SettingsFragment;
 
 /**
@@ -41,6 +41,10 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_PASS_PIN = "pref_pass_pin";
     public static final String PREF_PASS_ENABLED = "pref_pass_enabled";
 
+    public static Intent createIntent(Context context) {
+        return new Intent(context, SettingsActivity.class);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +58,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
 
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
-        DispatcherHelper.saveActivityToPrefs(this);
+        ActivityDispatcher.store(this);
     }
 
     @Override

@@ -24,10 +24,10 @@ import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
+import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.DispatcherHelper;
 import com.chanapps.four.data.*;
-import com.chanapps.four.data.ChanHelper.LastActivity;
+import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.*;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
@@ -100,13 +100,18 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     private SharedPreferences prefs = null;
 
-    public static void startActivity(Activity activity, String boardCode, long threadNo, long postNo, String replyText) {
-        Intent replyIntent = new Intent(activity, PostReplyActivity.class);
+    public static void startActivity(Context context, String boardCode, long threadNo, long postNo, String replyText) {
+        Intent intent = createIntent(context, boardCode, threadNo, postNo, replyText);
+        context.startActivity(intent);
+    }
+
+    public static Intent createIntent(Context context, String boardCode, long threadNo, long postNo, String replyText) {
+        Intent replyIntent = new Intent(context, PostReplyActivity.class);
         replyIntent.putExtra(ChanHelper.BOARD_CODE, boardCode);
         replyIntent.putExtra(ChanHelper.THREAD_NO, threadNo);
         replyIntent.putExtra(ChanPost.POST_NO, postNo);
         replyIntent.putExtra(ChanHelper.TEXT, replyText);
-        activity.startActivity(replyIntent);
+        return replyIntent;
     }
 
     @Override
@@ -262,7 +267,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (DEBUG) Log.i(TAG, "saved to bundle " + boardCode + "/" + threadNo + ":" + postNo
                 + " imageUri=" + imageUri + " text=" + text);
         saveUserFieldsToPrefs();
-        DispatcherHelper.saveActivityToPrefs(this);
+        ActivityDispatcher.store(this);
     }
 
     private void showPassFragment() {
@@ -922,7 +927,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     @Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(LastActivity.POST_REPLY_ACTIVITY);
+		return new ChanActivityId(LastActivity.POST_REPLY_ACTIVITY, boardCode, threadNo, postNo, text);
 	}
 
 	@Override

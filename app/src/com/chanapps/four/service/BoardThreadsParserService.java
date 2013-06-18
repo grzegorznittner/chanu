@@ -111,7 +111,7 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
     private void parseBoard(BufferedReader in) throws IOException {
     	List<ChanPost> threads = new ArrayList<ChanPost>();
 
-        ObjectMapper mapper = ChanHelper.getJsonMapper();
+        ObjectMapper mapper = BoardParserService.getJsonMapper();
         JsonNode rootNode = mapper.readValue(in, JsonNode.class);
         for (JsonNode threadValue : rootNode.path("threads")) { // iterate over threads
             ChanThread thread = null;
@@ -159,9 +159,9 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
     private void parseBoardCatalog(BufferedReader in) throws IOException {
     	int updatedThreads = 0;
     	try {
-	        ObjectMapper mapper = ChanHelper.getJsonMapper();
+	        ObjectMapper mapper = BoardParserService.getJsonMapper();
 	        JsonParser jp = new MappingJsonFactory().createJsonParser(in);
-	    	ChanHelper.configureJsonParser(jp);
+	    	BoardParserService.configureJsonParser(jp);
 	    	jp.nextToken(); // will return JsonToken.START_ARRAY
 	    	while (jp.nextToken() != JsonToken.END_ARRAY) {
         		jp.nextToken(); // should be JsonToken.START_OBJECT

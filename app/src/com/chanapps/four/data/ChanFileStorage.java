@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import com.chanapps.four.service.BoardParserService;
 import com.chanapps.four.widget.WidgetProviderUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -117,7 +118,7 @@ public class ChanFileStorage {
         }
         File boardDir = getBoardCacheDirectory(context, board.link);
         if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
-            ObjectMapper mapper = ChanHelper.getJsonMapper();
+            ObjectMapper mapper = BoardParserService.getJsonMapper();
             mapper.writeValue(new File(boardDir, board.link + CACHE_EXT), board);
             if (DEBUG) Log.i(TAG, "Stored " + board.threads.length + " threads for board '" + board.link + "'");
             if (!board.isVirtualBoard()) {
@@ -213,7 +214,7 @@ public class ChanFileStorage {
         if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
             File threadFile = new File(boardDir, "t_" + thread.no + CACHE_EXT);
             try {
-                ObjectMapper mapper = ChanHelper.getJsonMapper();
+                ObjectMapper mapper = BoardParserService.getJsonMapper();
                 mapper.writeValue(threadFile, thread);
             } finally {
             }
@@ -256,7 +257,7 @@ public class ChanFileStorage {
             if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
                 boardFile = new File(boardDir, boardCode + CACHE_EXT);
                 if (boardFile != null && boardFile.exists()) {
-                    ObjectMapper mapper = ChanHelper.getJsonMapper();
+                    ObjectMapper mapper = BoardParserService.getJsonMapper();
                     ChanBoard board = mapper.readValue(boardFile, ChanBoard.class);
                     if (DEBUG) Log.i(TAG, "Loaded " + board.threads.length + " threads for board '" + board.link
                             + "' isFile=" + boardFile.isFile() + " size=" + boardFile.length() / 1000 + "KB");
@@ -350,7 +351,7 @@ public class ChanFileStorage {
                 if (DEBUG) Log.d(TAG, "Thread '" + boardCode + FILE_SEP + threadNo + "' doesn't exist.");
                 return getThreadFromBoard(context, boardCode, threadNo);
             }
-            ObjectMapper mapper = ChanHelper.getJsonMapper();
+            ObjectMapper mapper = BoardParserService.getJsonMapper();
             ChanThread thread = mapper.readValue(threadFile, ChanThread.class);
             thread.loadedFromBoard = false;
             if (DEBUG)
@@ -458,7 +459,7 @@ public class ChanFileStorage {
                 try {
                     userStats.compactThreads();
                     userStats.lastStored = new Date().getTime();
-                    ObjectMapper mapper = ChanHelper.getJsonMapper();
+                    ObjectMapper mapper = BoardParserService.getJsonMapper();
                     mapper.writeValue(userPrefsFile, userStats);
                 } catch (Exception e) {
                     Log.e(TAG, "Exception while writing user preferences", e);
@@ -476,7 +477,7 @@ public class ChanFileStorage {
         try {
             File userStatsFile = getUserStatsFile(context);
             if (userStatsFile != null && userStatsFile.exists()) {
-                ObjectMapper mapper = ChanHelper.getJsonMapper();
+                ObjectMapper mapper = BoardParserService.getJsonMapper();
                 UserStatistics userPrefs = mapper.readValue(userStatsFile, UserStatistics.class);
                 if (userPrefs == null) {
                     Log.e(TAG, "Couldn't load user statistics, null returned");
