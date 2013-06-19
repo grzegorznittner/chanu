@@ -85,7 +85,6 @@ public class ThreadActivity
     protected Class absListViewClass = GridView.class;
     protected Handler handler;
     protected long tim;
-    protected String boardCode;
     protected String query = "";
     protected int columnWidth = 0;
     protected int columnHeight = 0;
@@ -288,7 +287,7 @@ public class ThreadActivity
         if (handler == null)
             handler = new LoaderHandler();
         threadListener = new ThreadListener(getSupportFragmentManager(), absListView, adapter, handler);
-        setActionBarTitle();
+        //setActionBarTitle();
     }
 
     @Override
@@ -951,7 +950,7 @@ public class ThreadActivity
             return true;
         }
     };
-
+    /*
     public void setActionBarTitle() {
         /*
         if (query != null && !query.isEmpty()) {
@@ -960,11 +959,11 @@ public class ThreadActivity
             return;
         }
         */
-        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        if (board == null)
-            board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
-        String boardTitle = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
-        getActionBar().setTitle(boardTitle);
+        //ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+        //if (board == null)
+        //    board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
+        //String boardTitle = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
+        //getActionBar().setTitle(boardTitle);
         /*
         ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
         String threadTitle = (thread == null || thread.posts == null || thread.posts.length == 0 || thread.posts[0] == null)
@@ -978,7 +977,7 @@ public class ThreadActivity
             threadTitle = " " + threadTitle.trim();
         getActionBar().setTitle("/" + boardCode + "/" + threadTitle);
         */
-    }
+    //}
 
     protected Map<ChanBlocklist.BlockType, List<String>> extractBlocklist(SparseBooleanArray postPos) {
         Map<ChanBlocklist.BlockType, List<String>> blocklist = new HashMap<ChanBlocklist.BlockType, List<String>>();

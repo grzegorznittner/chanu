@@ -871,6 +871,11 @@ public class ChanBoard {
         return boardList;
     }
 
+    public static boolean boardHasData(Context context, String boardCode) {
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        return board != null && !board.defData && board.threads != null && board.threads.length > 0;
+    }
+
     public boolean hasNewBoardData() {
         if (defData)
             return false;

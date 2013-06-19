@@ -1,5 +1,6 @@
 package com.chanapps.four.activity;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
@@ -27,19 +27,31 @@ abstract public class
         AbstractDrawerActivity
         extends FragmentActivity
         implements ChanIdentifiedActivity,
-        ListView.OnItemClickListener
+        ListView.OnItemClickListener,
+        ActionBar.OnNavigationListener
 {
-    public static final String TAG = AbstractDrawerActivity.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    protected static final String TAG = AbstractDrawerActivity.class.getSimpleName();
+    protected static final boolean DEBUG = true;
     protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
+    protected static final String STATE_SELECTED_NAVIGATION_ITEM = "selectedNavigationItem";
 
-    protected ActionBarDrawerToggle mDrawerToggle;
+    protected String boardCode;
+
     protected boolean mShowNSFW = false;
-    protected int mBoardArrayId;
-    protected String[] mBoardArray;
+
+    protected int mDrawerArrayId;
+    protected String[] mDrawerArray;
     protected ListView mDrawerList;
     protected DrawerLayout mDrawerLayout;
-    protected ArrayAdapter<String> mAdapter;
+    protected ArrayAdapter<String> mDrawerAdapter;
+    protected ActionBarDrawerToggle mDrawerToggle;
+
+    protected ActionBar actionBar;
+    protected int mSpinnerArrayId;
+    protected String[] mSpinnerArray;
+    protected ListView mSpinnerList;
+    protected DrawerLayout mSpinnerLayout;
+    protected ArrayAdapter<String> mSpinnerAdapter;
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -48,8 +60,17 @@ abstract public class
         NetworkProfileManager.instance().ensureInitialized(this);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar
         setContentView(R.layout.drawer_activity_layout);
+        mShowNSFW = ChanBoard.showNSFW(getApplicationContext());
+        createActionBar();
         createDrawer();
         createViews(bundle);
+    }
+
+    protected void createActionBar() {
+        actionBar = getActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        setSpinnerAdapter();
     }
 
     abstract protected void createViews(Bundle bundle);
@@ -65,13 +86,24 @@ abstract public class
         mDrawerToggle.onConfigurationChanged(config);
     }
 
-    protected void setAdapter() {
-        mBoardArrayId = mShowNSFW
+    protected void setSpinnerAdapter() {
+        mSpinnerArrayId = mShowNSFW
                 ? R.array.long_board_array
                 : R.array.long_board_array_worksafe;
-        mBoardArray = getResources().getStringArray(mBoardArrayId);
-        mAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, mBoardArray);
-        mDrawerList.setAdapter(mAdapter);
+        mSpinnerArray = getResources().getStringArray(mSpinnerArrayId);
+        mSpinnerAdapter = new ArrayAdapter<String>(actionBar.getThemedContext(),
+                android.R.layout.simple_spinner_item, android.R.id.text1, mSpinnerArray);
+        mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        actionBar.setListNavigationCallbacks(mSpinnerAdapter, this);
+    }
+
+    protected void setDrawerAdapter() {
+        mDrawerArrayId = mShowNSFW
+                ? R.array.long_drawer_array
+                : R.array.long_drawer_array_worksafe;
+        mDrawerArray = getResources().getStringArray(mDrawerArrayId);
+        mDrawerAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerArray);
+        mDrawerList.setAdapter(mDrawerAdapter);
     }
 
     protected void createDrawer() {
@@ -80,8 +112,7 @@ abstract public class
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         mDrawerList.setOnItemClickListener(this);
-        mShowNSFW = ChanBoard.showNSFW(getApplicationContext());
-        setAdapter();
+        setDrawerAdapter();
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
@@ -111,12 +142,12 @@ abstract public class
         boolean newShowNSFW = ChanBoard.showNSFW(getApplicationContext());
         if (newShowNSFW != mShowNSFW) {
             mShowNSFW = newShowNSFW;
-            setAdapter();
+            setSpinnerAdapter();
+            setDrawerAdapter();
         }
-        setSelfChecked();
     }
 
-    protected void setSelfChecked() {
+    protected void selectDrawerItem() {
         for (int i = 0; i < mDrawerList.getAdapter().getCount(); i++) {
             String s = (String)mDrawerList.getItemAtPosition(i);
             if (isSelfBoard(s)) {
@@ -175,32 +206,90 @@ abstract public class
         mDrawerLayout.closeDrawer(mDrawerList);
         String boardAsMenu = (String) parent.getItemAtPosition(position);
         if (DEBUG) Log.i(TAG, "onItemClick boardAsMenu=" + boardAsMenu);
+        handleSelectItem(boardAsMenu);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(int position, long id) {
+        String item = mSpinnerAdapter.getItem(position);
+        return handleSelectItem(item);
+    }
+
+    protected boolean handleSelectItem(String boardAsMenu) {
         if (isSelfBoard(boardAsMenu)) {
             if (DEBUG) Log.i(TAG, "self board, returning");
-            return;
+            return false;
         }
         BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
         if (boardType != null) {
-            String boardCode = boardType.boardCode();
-            if (DEBUG) Log.i(TAG, "matched board type /" + boardCode + "/, starting");
-            Intent intent = BoardActivity.createIntent(this, boardCode, "");
+            String boardTypeCode = boardType.boardCode();
+            if (boardTypeCode.equals(boardCode)) {
+                if (DEBUG) Log.i(TAG, "matched existing board code, exiting");
+                return false;
+            }
+            if (DEBUG) Log.i(TAG, "matched board type /" + boardTypeCode + "/, starting");
+            Intent intent = BoardActivity.createIntent(this, boardTypeCode, "");
             startActivity(intent);
-            return;
+            return true;
         }
         Pattern p = Pattern.compile(BOARD_CODE_PATTERN);
         Matcher m = p.matcher(boardAsMenu);
         if (!m.matches()) {
             if (DEBUG) Log.i(TAG, "matched nothing, bailing");
-            return;
+            return false;
         }
         String boardCodeForJump = m.group(1);
         if (boardCodeForJump == null || boardCodeForJump.isEmpty() || isSelfBoard(boardCodeForJump)) {
             if (DEBUG) Log.i(TAG, "null match, bailing");
-            return;
+            return false;
+        }
+        if (boardCodeForJump.equals(boardCode)) {
+            if (DEBUG) Log.i(TAG, "matched same board code, no jump done");
+            return false;
         }
         Intent intent = BoardActivity.createIntent(this, boardCodeForJump, "");
         if (DEBUG) Log.i(TAG, "matched board /" + boardCodeForJump + "/, starting");
         startActivity(intent);
+        return true;
+    }
+    /*
+    @Override
+    protected void onRestoreInstanceState(Bundle bundle) {
+        if (bundle.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
+            int pos = bundle.getInt(STATE_SELECTED_NAVIGATION_ITEM);
+            actionBar.setSelectedNavigationItem(pos);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+        int pos = actionBar.getSelectedNavigationIndex();
+        bundle.putInt(STATE_SELECTED_NAVIGATION_ITEM, pos);
+    }
+    */
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        selectActionBarNavigationItem();
+        selectDrawerItem();
+    }
+
+    protected void selectActionBarNavigationItem() {
+        int pos = 0;
+        for (int i = 0; i < mSpinnerAdapter.getCount(); i++) {
+            String boardText = mSpinnerAdapter.getItem(i);
+            BoardType type = BoardType.valueOfDrawerString(this, boardText);
+            if (type != null && type.boardCode().equals(boardCode)) {
+                pos = i;
+                break;
+            }
+            else if (boardText.matches("/" + boardCode + "/.*")) {
+                pos = i;
+                break;
+            }
+        }
+        actionBar.setSelectedNavigationItem(pos);
     }
 
 }

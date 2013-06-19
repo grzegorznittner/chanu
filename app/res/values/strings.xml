@@ -978,7 +978,8 @@
         <item>/x/</item>
     </string-array>
     -->
-    <string-array name="long_board_array">
+
+    <string-array name="long_drawer_array">
         <item>@string/board_meta</item>
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
@@ -993,7 +994,19 @@
         -->
         <item>@string/board_watch</item>
     </string-array>
-        <!--
+
+    <string-array name="long_board_array">
+        <item>@string/board_meta</item>
+        <item>@string/board_type_recent</item>
+        <item>@string/board_latest</item>
+        <item>@string/board_latest_images</item>
+        <item>@string/board_watch</item>
+        <item>@string/board_type_japanese_culture</item>
+        <item>@string/board_type_interests</item>
+        <item>@string/board_type_creative</item>
+        <item>@string/board_type_other</item>
+        <item>@string/board_type_adult</item>
+        <item>@string/board_type_misc</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -1057,13 +1070,13 @@
         <item>/x/ Paranormal</item>
         <item>/y/ Yaoi</item>
     </string-array>
-    -->
-    <string-array name="long_board_array_worksafe">
+
+    <string-array name="long_drawer_array_worksafe">
         <item>@string/board_meta</item>
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
-<!--
+        <!--
         <item>@string/board_type_japanese_culture</item>
         <item>@string/board_type_interests</item>
         <item>@string/board_type_creative</item>
@@ -1071,7 +1084,17 @@
         -->
         <item>@string/board_watch</item>
     </string-array>
-        <!--
+
+    <string-array name="long_board_array_worksafe">
+        <item>@string/board_meta</item>
+        <item>@string/board_type_recent</item>
+        <item>@string/board_latest</item>
+        <item>@string/board_latest_images</item>
+        <item>@string/board_watch</item>
+        <item>@string/board_type_japanese_culture</item>
+        <item>@string/board_type_interests</item>
+        <item>@string/board_type_creative</item>
+        <item>@string/board_type_other</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -1118,7 +1141,7 @@
         <item>/wsg/ Worksafe GIF</item>
         <item>/x/ Paranormal</item>
     </string-array>
-    -->
+
     <string-array name="widget_board_array">
         <item>@string/board_popular</item>
         <item>@string/board_latest</item>

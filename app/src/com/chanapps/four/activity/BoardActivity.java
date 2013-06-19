@@ -63,7 +63,6 @@ public class BoardActivity
     protected BoardCursorLoader cursorLoader;
     protected Menu menu;
     protected long tim;
-    protected String boardCode;
     protected String query = "";
     protected MenuItem searchMenuItem;
     protected ViewType viewType = ViewType.AS_GRID;
@@ -111,7 +110,20 @@ public class BoardActivity
         if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
             setWatchlist(this);
         if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/ q=" + query);
-        getSupportLoaderManager().initLoader(0, null, this);
+        if (ChanBoard.isVirtualBoard(boardCode) && !ChanBoard.isPopularBoard(boardCode)) { // always ready, start loading
+            if (DEBUG) Log.i(TAG, "onCreate non-popular virtual board, loading immediately");
+            getSupportLoaderManager().initLoader(0, null, this);
+        }
+        else { // check if we have data to load
+            if (ChanBoard.boardHasData(this, boardCode)) {
+                if (DEBUG) Log.i(TAG, "onCreate board has data, loading");
+                getSupportLoaderManager().initLoader(0, null, this); // data is ready, load it
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "onCreate no board data, waiting for profile onBoardSelected callback");
+                startProgress();
+            }
+        }
     }
 
     protected static void setWatchlist(BoardActivity fragment) {
@@ -230,7 +242,7 @@ public class BoardActivity
         if (handler == null)
             handler = new LoaderHandler();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query);
-        setActionBarTitle();
+        //setActionBarTitle();
     }
 
 	@Override
@@ -242,7 +254,7 @@ public class BoardActivity
         handleUpdatedThreads();
         invalidateOptionsMenu(); // for correct spinner display
 		NetworkProfileManager.instance().activityChange(this);
-        if (adapter == null || adapter.getCount() == 0)
+        if ((adapter == null || adapter.getCount() == 0) && ChanBoard.boardHasData(this, boardCode))
             getSupportLoaderManager().restartLoader(0, null, this);
         new TutorialOverlay(layout, Page.BOARD);
     }
@@ -542,7 +554,7 @@ public class BoardActivity
         }
         return super.onPrepareOptionsMenu(menu);
     }
-
+    /*
     public void setActionBarTitle() {
         String title;
         ChanBoard board = loadBoard();
@@ -551,7 +563,7 @@ public class BoardActivity
             title += " /" + boardCode + "/";
         getActionBar().setTitle(title);
     }
-
+    */
     protected ChanBoard loadBoard() {
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board == null) {
@@ -626,7 +638,7 @@ public class BoardActivity
     @Override
     public void refresh() {
         handleUpdatedThreads();
-        setActionBarTitle(); // for update time
+        //setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
         //if (gridView == null || gridView.getCount() < 1)
         //    createAbsListView();
