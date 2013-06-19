@@ -5,7 +5,8 @@
               android:orientation="vertical"
               android:background="@drawable/card_background"
         >
-
+<!--               android:background="@drawable/card_background"
+-->
         <RelativeLayout
                 android:id="@+id/grid_item_thread_image_wrap"
                 android:layout_width="match_parent"
@@ -35,7 +36,7 @@
 
         <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="84dp"
+                android:layout_height="92dp"
                 android:orientation="vertical"
                 >
 

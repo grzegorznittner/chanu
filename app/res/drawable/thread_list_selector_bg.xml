@@ -6,7 +6,6 @@
             <solid android:color="@color/PaletteChanuGreenHalfOpacity"/>
         </shape>
     </item>
-    <!--<item android:drawable="@drawable/card_background"/>-->
     <!--
     <item android:state_selected="true">
         <shape>

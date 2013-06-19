@@ -226,11 +226,7 @@ public class BoardActivity
         gridView.setAdapter(adapter);
         gridView.setClickable(true);
         gridView.setOnItemClickListener(boardItemListener);
-        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
-            gridView.setLongClickable(true);
-            gridView.setOnItemLongClickListener(boardItemLongListener);
-        }
-        gridView.setSelector(R.drawable.board_grid_selector_bg);
+        //gridView.setSelector(R.drawable.board_grid_selector_bg);
 
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         gridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
@@ -245,12 +241,24 @@ public class BoardActivity
         //setActionBarTitle();
     }
 
-	@Override
+    protected void handleWatchlistLongClickable() {
+        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
+            gridView.setOnItemLongClickListener(boardItemLongListener);
+            gridView.setLongClickable(true);
+        }
+        else {
+            gridView.setOnItemLongClickListener(null);
+            gridView.setLongClickable(false);
+        }
+    }
+
+    @Override
 	protected void onResume() {
 		super.onResume();
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query);
         if (handler == null)
             handler = new LoaderHandler();
+        handleWatchlistLongClickable();
         handleUpdatedThreads();
         invalidateOptionsMenu(); // for correct spinner display
 		NetworkProfileManager.instance().activityChange(this);
@@ -433,7 +441,7 @@ public class BoardActivity
             final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
             final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
             ChanThread thread = ChanFileStorage.loadThreadData(BoardActivity.this, boardCode, threadNo);
-            if (thread != null && thread.posts != null && thread.posts[0] != null && thread.posts[0].tim > 0) {
+            if (thread != null) {
                 WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, thread);
                 d.show(getSupportFragmentManager(), WatchlistDeleteDialogFragment.TAG);
                 return true;
