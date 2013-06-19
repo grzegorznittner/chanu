@@ -173,29 +173,12 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             return;
         }
 
-		String iboardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-		boolean iboardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
-		int ipageNo = iboardCatalog ? -1 : intent.getIntExtra(ChanHelper.PAGE, 0);
-		long ithreadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-		boolean iboardHandling = ithreadNo == 0;
-		boolean ipriority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
-		if (boardCode != null && boardCode.equals(iboardCode)
-            && boardCatalog == iboardCatalog
-            && pageNo == ipageNo
-            && threadNo == ithreadNo
-            && boardHandling == iboardHandling
-            && priority == ipriority) {
-            if (DEBUG) Log.i(TAG, "Already fetching /" + boardCode + "/" + threadNo + ", skipping");
-            return;
-        }
-        else {
-            boardCode = iboardCode;
-            boardCatalog = iboardCatalog;
-            pageNo = ipageNo;
-            threadNo = ithreadNo;
-            boardHandling = iboardHandling;
-            priority = ipriority;
-        }
+		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
+		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
+		pageNo = boardCatalog ? -1 : intent.getIntExtra(ChanHelper.PAGE, 0);
+		threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+		boardHandling = threadNo == 0;
+		priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
 
         if (boardHandling) {
 			if (DEBUG) Log.i(TAG, "Handling board " + boardCode + (boardCatalog ? " catalog" : " page=" + pageNo) + " priority=" + priority);

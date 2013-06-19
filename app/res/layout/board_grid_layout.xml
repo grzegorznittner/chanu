@@ -29,8 +29,6 @@
             android:visibility="gone"
             />
 
-    <include layout="@layout/tutorial_overlay"/>
-
     <!--
     <ProgressBar
             android:id="@+id/board_progress_bar"
@@ -57,8 +55,7 @@
                 ads:loadAdOnCreate="true"/>
     </LinearLayout>
         -->
-                                              <!--
+
     <include layout="@layout/tutorial_overlay"/>
-    -->
 
 </RelativeLayout>

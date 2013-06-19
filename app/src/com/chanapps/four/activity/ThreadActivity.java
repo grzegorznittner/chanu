@@ -304,8 +304,6 @@ public class ThreadActivity
             getSupportLoaderManager().restartLoader(0, null, this);
         if (absBoardListView != null && (adapterBoardsTablet == null || adapterBoardsTablet.getCount() == 0))
             getSupportLoaderManager().restartLoader(1, null, this); // board loader for tablet view
-
-        new TutorialOverlay(layout, tutorialPage());
     }
 
     @Override

@@ -129,6 +129,7 @@ public class NetworkProfileManager {
 		if (DEBUG) Log.i(TAG, "activity change to " + newActivity.getChanActivityId() + " receiver=" + receiver + " activity=" + currentActivity);
 
         ensureInitialized(newActivity);
+        ActivityDispatcher.store(newActivity);
         NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 
         currentActivityId = newActivity.getChanActivityId();

@@ -19,7 +19,4 @@
             android:background="@color/PaletteYellowWhite"/>
 
     <include layout="@layout/board_refresh_bar"/>
-    <!--
-    <include layout="@layout/tutorial_overlay"/>
-    -->
 </RelativeLayout>

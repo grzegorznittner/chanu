@@ -33,7 +33,6 @@ abstract public class
     public static final boolean DEBUG = true;
     protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
 
-    protected Handler handler;
     protected ActionBarDrawerToggle mDrawerToggle;
     protected boolean mShowNSFW = false;
     protected int mBoardArrayId;
@@ -109,7 +108,6 @@ abstract public class
     @Override
     protected void onStart() {
         super.onStart();
-        handler = new Handler();
         boolean newShowNSFW = ChanBoard.showNSFW(getApplicationContext());
         if (newShowNSFW != mShowNSFW) {
             mShowNSFW = newShowNSFW;
@@ -135,53 +133,6 @@ abstract public class
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle bundle) {
-        super.onSaveInstanceState(bundle);
-        ActivityDispatcher.store(this);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle bundle) {
-        super.onRestoreInstanceState(bundle);
-    }
-
-    protected void onStop() {
-        super.onStop();
-        if (DEBUG) Log.i(TAG, "onStop");
-        handler = null;
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        if (DEBUG) Log.i(TAG, "onRestart");
-    }
-
-    public void onWindowFocusChanged(boolean hasFocus) {
-        if (DEBUG) Log.i(TAG, "onWindowFocusChanged hasFocus: " + hasFocus);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (DEBUG) Log.i(TAG, "onResume");
-        handler = new Handler();
-        NetworkProfileManager.instance().activityChange(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (DEBUG) Log.i(TAG, "onPause");
-        handler = null;
-    }
-
-    protected void onDestroy() {
-        super.onDestroy();
-        if (DEBUG) Log.i(TAG, "onDestroy");
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item))
             return true;
@@ -201,11 +152,6 @@ abstract public class
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public Handler getChanHandler() {
-        return handler;
     }
 
     @Override
