@@ -489,6 +489,9 @@ public class BoardActivity
                         R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
                 rawResourceDialog.show();
                 return true;
+            case R.id.web_menu:
+                String url = ChanBoard.boardUrl(boardCode);
+                ChanHelper.launchUrlInBrowser(this, url);
             default:
                 return super.onOptionsItemSelected(item);
         }

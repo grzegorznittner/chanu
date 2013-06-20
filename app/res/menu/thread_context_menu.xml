@@ -54,5 +54,9 @@
           android:title="@string/block_posts_menu"
           android:icon="@drawable/content_remove"
             />
+    <item android:id="@+id/web_menu"
+          android:title="@string/web_menu"
+          android:icon="@drawable/location_web_site"
+            />
 
 </menu>

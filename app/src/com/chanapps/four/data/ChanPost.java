@@ -1283,4 +1283,8 @@ public class ChanPost {
     	w = t.w;
     }
 
+    public static String postUrl(String boardCode, long threadNo, long postNo) {
+        return ChanThread.threadUrl(boardCode, threadNo) + "#p" + postNo;
+    }
+
 }

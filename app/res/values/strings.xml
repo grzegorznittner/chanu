@@ -102,6 +102,7 @@
     <string name="logout_pass_no_response">Couldn\'t logout, no response</string>
 
     <!-- menus -->
+    <string name="web_menu">Web</string>
     <string name="settings_menu">Settings</string>
     <string name="global_rules_menu">Rules</string>
     <string name="board_rules_menu">Rules</string>

@@ -348,6 +348,13 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             case R.id.offline_chan_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;
+            case R.id.web_menu:
+                String url;
+                if (postNo > 0)
+                    url = ChanPost.postUrl(boardCode, threadNo, postNo);
+                else
+                    url = ChanThread.threadUrl(boardCode, threadNo);
+                ChanHelper.launchUrlInBrowser(this, url);
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);

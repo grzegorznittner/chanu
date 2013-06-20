@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -89,7 +90,6 @@ public class ThreadActivity
     protected int columnWidth = 0;
     protected int columnHeight = 0;
     protected MenuItem searchMenuItem;
-    protected long threadNo;
     protected long postNo; // for direct jumps from latest post / recent images
     protected String text;
     protected String imageUrl;
@@ -566,9 +566,13 @@ public class ThreadActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item))
+        if (mDrawerToggle.isDrawerIndicatorEnabled() && mDrawerToggle.onOptionsItemSelected(item))
             return true;
         switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent intent = BoardActivity.createIntent(this, boardCode, "");
+                NavUtils.navigateUpTo(this, intent);
+                return true;
             case R.id.refresh_menu:
                 setProgressBarIndeterminateVisibility(true);
                 NetworkProfileManager.instance().manualRefresh(this);
@@ -595,6 +599,9 @@ public class ThreadActivity
             case R.id.board_rules_menu:
                 displayBoardRules();
                 return true;
+            case R.id.web_menu:
+                String url = ChanThread.threadUrl(boardCode, threadNo);
+                ChanHelper.launchUrlInBrowser(this, url);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -737,6 +744,9 @@ public class ThreadActivity
                 Map<ChanBlocklist.BlockType, List<String>> blocklist = extractBlocklist(postPos);
                 (new BlocklistSelectToAddDialogFragment(blocklist)).show(getFragmentManager(), TAG);
                 return true;
+            case R.id.web_menu:
+                String url = ChanPost.postUrl(boardCode, threadNo, postNos[0]);
+                ChanHelper.launchUrlInBrowser(this, url);
             default:
                 return false;
         }

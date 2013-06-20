@@ -85,6 +85,9 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity {
                         R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
                 rawResourceDialog.show();
                 return true;
+            case R.id.web_menu:
+                String url = ChanBoard.boardUrl(null);
+                ChanHelper.launchUrlInBrowser(this, url);
             case R.id.settings_menu:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);

@@ -319,4 +319,8 @@ public class ChanThread extends ChanPost {
     	return t;
     }
 
+    public static String threadUrl(String boardCode, long threadNo) {
+        return ChanBoard.boardUrl(boardCode) + "res/" + threadNo;
+    }
+
 }

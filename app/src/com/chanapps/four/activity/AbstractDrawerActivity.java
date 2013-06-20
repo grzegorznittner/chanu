@@ -36,6 +36,7 @@ abstract public class
     protected static final String STATE_SELECTED_NAVIGATION_ITEM = "selectedNavigationItem";
 
     protected String boardCode;
+    protected long threadNo = 0;
 
     protected boolean mShowNSFW = false;
 
@@ -272,7 +273,10 @@ abstract public class
     protected void onResume() {
         super.onResume();
         selectActionBarNavigationItem();
-        selectDrawerItem();
+        if (threadNo == 0)
+            selectDrawerItem();
+        else
+            mDrawerToggle.setDrawerIndicatorEnabled(false);
     }
 
     protected void selectActionBarNavigationItem() {

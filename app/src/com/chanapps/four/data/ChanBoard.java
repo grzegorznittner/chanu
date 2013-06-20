@@ -31,6 +31,9 @@ public class ChanBoard {
     private static final int NUM_RELATED_BOARDS = 3;
     private static final int NUM_RELATED_THREADS = 3;
 
+    public static final String WEB_HOME_URL = "http://www.4chan.org";
+    public static final String WEB_ROOT_URL = "http://boards.4chan.org";
+
     public static final String BOARD_CODE = "boardCode";
     public static final String POPULAR_BOARD_CODE = BoardType.POPULAR.boardCode();
     public static final String LATEST_BOARD_CODE = BoardType.LATEST.boardCode();
@@ -909,5 +912,10 @@ public class ChanBoard {
         }
     }
 
-
+    public static String boardUrl(String boardCode) {
+        if (boardCode == null || boardCode.isEmpty() || isVirtualBoard(boardCode))
+            return WEB_HOME_URL;
+        else
+            return WEB_ROOT_URL + "/" + boardCode + "/";
+    }
 }
