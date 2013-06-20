@@ -101,8 +101,6 @@ public class ThreadCursorLoader extends BoardCursorLoader {
 
         //int adSpace = MINIMUM_AD_SPACING;
 
-        // always put an ad at the top
-        matrixCursor.addRow(board.makePostAdRow(getContext(), 0));
 
         int i = 0;
         int numQueryMatches = 0;
@@ -174,8 +172,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         }
 
         // always put an ad at the bottom after done loading
-        if (i > 1 || thread.replies == 0)
-            matrixCursor.addRow(board.makePostAdRow(getContext(), i));
+        //if (i > 1 || thread.replies == 0)
+        //    matrixCursor.addRow(board.makePostAdRow(getContext(), i));
 
     }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.chanapps.four.component.CheckableLinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        style="@style/ThreadListLinkLayout"
+        style="@style/ThreadListItemLayout"
         android:id="@+id/list_item"
         >
 
@@ -19,19 +19,28 @@
                         android:layout_toRightOf="@+id/list_item_image_spacer"
                         android:id="@+id/list_item_image_wrapper">
             <ImageView
-                    style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
+                    style="@style/ThreadListItemImage" android:id="@+id/list_item_image"
+                    />
         </RelativeLayout>
+
         <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"
-                android:autoLink="none"
+                android:layout_toRightOf="@+id/list_item_image_wrapper"
+                android:layout_toLeftOf="@+id/list_item_country_flag"
+                android:paddingLeft="0dp"
+                android:paddingTop="0dp"
                 android:linksClickable="false"
-                />
-        <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"
-                   android:autoLink="none"
-                   android:linksClickable="false"
+                android:autoLink="none"
                 />
         <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"
-                  android:autoLink="none"
+                  android:layout_toRightOf="@+id/list_item_image_wrapper"
+                  android:layout_toLeftOf="@+id/list_item_country_flag"
+                  android:layout_below="@+id/list_item_subject"
                   android:linksClickable="false"
+                  android:autoLink="none"
+                />
+        <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"
+                   android:linksClickable="false"
+                   android:autoLink="none"
                 />
     </RelativeLayout>
 

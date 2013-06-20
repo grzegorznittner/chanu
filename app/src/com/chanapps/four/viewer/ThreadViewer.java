@@ -204,17 +204,34 @@ public class ThreadViewer {
         else
             displayItemCountFields(item, cursor, backlinkOnClickListener, repliesOnClickListener);
         item.setVisibility(View.VISIBLE);
+        /*
+        if (cursor.getPosition() == 1) {
+            int top = item.getResources().getDimensionPixelSize(R.dimen.ThreadListLayout_paddingBottom);
+            item.setPadding(item.getPaddingLeft(), top, item.getPaddingRight(), item.getPaddingBottom());
+        }
+        else {
+            item.setPadding(item.getPaddingLeft(), 0, item.getPaddingRight(), item.getPaddingBottom());
+        }
+        */
         return true;
     }
 
     static protected void displayHeaderCountFields(View item, Cursor cursor,
                                                    View.OnClickListener repliesOnClickListener) {
+        int r = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES));
+        int i = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_IMAGES));
         TextView numReplies = (TextView)item.findViewById(R.id.list_item_num_replies_text);
         TextView numImages = (TextView)item.findViewById(R.id.list_item_num_images_text);
+        TextView numRepliesLabel = (TextView)item.findViewById(R.id.list_item_num_replies_label);
+        TextView numImagesLabel = (TextView)item.findViewById(R.id.list_item_num_images_label);
         if (numReplies != null)
-            numReplies.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES))));
+            numReplies.setText(String.valueOf(r));
         if (numImages != null)
-            numImages.setText(String.valueOf(cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_IMAGES))));
+            numImages.setText(String.valueOf(i));
+        if (numRepliesLabel != null)
+            numRepliesLabel.setText(item.getResources().getQuantityString(R.plurals.thread_num_replies_label, r));
+        if (numImagesLabel != null)
+            numImagesLabel.setText(item.getResources().getQuantityString(R.plurals.thread_num_images_label, i));
         displayNumDirectReplies(item, cursor, repliesOnClickListener, false);
     }
 
@@ -245,6 +262,10 @@ public class ThreadViewer {
         if (numDirectReplies == null)
             return 0;
         int directReplies = numDirectReplies(cursor);
+        TextView numRepliesLabel = (TextView)item.findViewById(R.id.list_item_num_direct_replies_label);
+        if (numRepliesLabel != null)
+            numRepliesLabel.setText(
+                    item.getResources().getQuantityString(R.plurals.thread_num_direct_replies_label, directReplies));
 
         numDirectReplies.setText(String.valueOf(directReplies));
         if (directReplies > 0) {

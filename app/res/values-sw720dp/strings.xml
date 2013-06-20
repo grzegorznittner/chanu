@@ -188,7 +188,7 @@
 
     <dimen name="ThreadListItemFullText_layout_marginLeft">0dp</dimen>
     <dimen name="ThreadListItemFullText_layout_marginRight">0dp</dimen>
-    <dimen name="ThreadListItemFullText_paddingTop">16dp</dimen>
+    <dimen name="ThreadListItemFullText_paddingTop">0dp</dimen>
     <dimen name="ThreadListItemFullText_paddingLeft">0dp</dimen>
     <dimen name="ThreadListItemFullTextHeader_paddingLeft">0dp</dimen>
 

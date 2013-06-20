@@ -1026,7 +1026,7 @@ public class ChanPost {
                 thumbnailUrl(),
                 "",
                 countryFlagUrl(),
-                headline("", false, null, false),
+                headline("", true, null, false),
                 replies,
                 images,
                 textComponents[0],

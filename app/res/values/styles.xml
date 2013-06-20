@@ -531,7 +531,7 @@
         <item name="android:orientation">vertical</item>
         <item name="android:textSize">@dimen/ThreadListLayout</item>
     </style>
-
+    <!--
     <style name="ThreadListLinkLayout" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -542,7 +542,7 @@
         <item name="android:orientation">vertical</item>
         <item name="android:textSize">@dimen/ThreadListLayout</item>
     </style>
-
+    -->
     <style name="ThreadListAdLayout" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -552,6 +552,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:paddingBottom">@dimen/ThreadListLayout_paddingBottom</item>
     </style>
 
     <style name="ThreadListButtonLayout" parent="AppTheme">
@@ -804,6 +805,7 @@
         <item name="android:paddingRight">@dimen/ThreadListItemFullText_paddingLeft</item>
         <item name="android:paddingBottom">@dimen/ThreadListItemHead_paddingBottom</item>
         <item name="android:gravity">top|left</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textSize">@dimen/ThreadListItemSubject</item>
         <item name="android:textColor">@color/PaletteBlack</item>
         <item name="android:autoLink">web|email</item>

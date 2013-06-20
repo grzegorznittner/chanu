@@ -264,6 +264,22 @@
         <item quantity="other">%1$d links</item>
     </plurals>
 
+    <plurals name="thread_num_replies_label">
+        <item quantity="zero">POSTS</item>
+        <item quantity="one">POST</item>
+        <item quantity="other">POSTS</item>
+    </plurals>
+    <plurals name="thread_num_images_label">
+        <item quantity="zero">IMAGES</item>
+        <item quantity="one">IMAGE</item>
+        <item quantity="other">IMAGES</item>
+    </plurals>
+    <plurals name="thread_num_direct_replies_label">
+        <item quantity="zero">REPLIES</item>
+        <item quantity="one">REPLY</item>
+        <item quantity="other">REPLIES</item>
+    </plurals>
+
     <!-- watchlist -->
     <string name="board_end_of_watchlist">End of Watchlist</string>
     <string name="board_empty_watchlist">Watchlist empty\n\nWatch a thread to add it here</string>
@@ -1456,7 +1472,7 @@
 
     <dimen name="ThreadListItemFullText_layout_marginLeft">0dp</dimen>
     <dimen name="ThreadListItemFullText_layout_marginRight">0dp</dimen>
-    <dimen name="ThreadListItemFullText_paddingTop">8dp</dimen>
+    <dimen name="ThreadListItemFullText_paddingTop">0dp</dimen>
     <dimen name="ThreadListItemFullText_paddingLeft">16dp</dimen>
     <dimen name="ThreadListItemFullTextHeader_paddingLeft">0dp</dimen>
 
