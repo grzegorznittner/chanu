@@ -1,6 +1,5 @@
 package com.chanapps.four.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -961,6 +960,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     public void closeSearch() {}
 
     @Override
-    public void startProgress() {}
+    public void setProgress(boolean on) {}
 
 }

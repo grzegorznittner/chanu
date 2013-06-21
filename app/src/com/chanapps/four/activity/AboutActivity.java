@@ -63,7 +63,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity {
     public void closeSearch() {}
 
     @Override
-    public void startProgress() {}
+    public void setProgress(boolean on) {}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

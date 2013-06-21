@@ -109,6 +109,8 @@ public class ThreadActivity
 
     protected ThreadListener threadListener;
 
+    protected boolean progressVisible = false;
+
     public static void startActivity(Activity from, String boardCode, long threadNo, String query) {
         startActivity(from, boardCode, threadNo, 0, query);
     }
@@ -267,15 +269,15 @@ public class ThreadActivity
         if (id == 0 && threadNo > 0) {
             loadingStatusFlags &= ~THREAD_DONE;
             if (DEBUG) Log.i(TAG, "onCreateLoader returning ThreadCursorLoader /" + boardCode + "/" + threadNo);
-            setProgressBarIndeterminateVisibility(true);
+            setProgress(true);
             return new ThreadCursorLoader(this, boardCode, threadNo, query, absBoardListView == null);
         } else if (id == 0) {
-            setProgressBarIndeterminateVisibility(false);
+            setProgress(false);
             return null;
         } else {
             loadingStatusFlags &= ~BOARD_DONE;
             if (DEBUG) Log.i(TAG, "onCreateLoder returning BoardCursorLoader /" + boardCode + "/");
-            setProgressBarIndeterminateVisibility(true);
+            setProgress(true);
             return new BoardCursorLoader(this, boardCode, "");
         }
     }
@@ -445,9 +447,9 @@ public class ThreadActivity
 
     protected void stopProgressBarIfLoadersDone() {
         if (absBoardListView == null && (loadingStatusFlags & THREAD_DONE) > 0)
-            setProgressBarIndeterminateVisibility(false);
+            setProgress(false);
         else if (absBoardListView != null && (loadingStatusFlags & BOARD_DONE) > 0 && (loadingStatusFlags & THREAD_DONE) > 0)
-            setProgressBarIndeterminateVisibility(false);
+            setProgress(false);
     }
 
     protected void createAbsListView() {
@@ -553,13 +555,27 @@ public class ThreadActivity
         return true;
     }
 */
+
+    protected boolean isThreadPlayable() {
+        return adapter != null
+                && adapter.getCount() > 0
+                && !getSupportLoaderManager().hasRunningLoaders()
+                && !progressVisible;
+    }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem playMenuItem = menu.findItem(R.id.play_thread_menu);
         if (playMenuItem != null)
             synchronized (this) {
-                playMenuItem.setIcon(shouldPlayThread ? R.drawable.av_stop : R.drawable.av_play);
-                playMenuItem.setTitle(shouldPlayThread ? R.string.play_thread_stop_menu : R.string.play_thread_menu);
+                if (isThreadPlayable()) {
+                    playMenuItem.setIcon(shouldPlayThread ? R.drawable.av_stop : R.drawable.av_play);
+                    playMenuItem.setTitle(shouldPlayThread ? R.string.play_thread_stop_menu : R.string.play_thread_menu);
+                    playMenuItem.setVisible(true);
+                }
+                else {
+                    playMenuItem.setVisible(false);
+                }
             }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -574,7 +590,7 @@ public class ThreadActivity
                 NavUtils.navigateUpTo(this, intent);
                 return true;
             case R.id.refresh_menu:
-                setProgressBarIndeterminateVisibility(true);
+                setProgress(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 return true;
             case R.id.post_reply_menu:
@@ -1305,10 +1321,11 @@ public class ThreadActivity
     }
 
     @Override
-    public void startProgress() {
+    public void setProgress(boolean on) {
         Handler handler = getChanHandler();
         if (handler != null)
-            setProgressBarIndeterminateVisibility(true);
+            setProgressBarIndeterminateVisibility(on);
+        progressVisible = on;
     }
 
     private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";

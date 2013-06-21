@@ -45,10 +45,8 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
                 @Override
                 public void run() {
                     ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    if (activity instanceof Activity) {
-                        ((Activity)activity).setProgressBarIndeterminateVisibility(false);
-                        Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
-                    }
+                    activity.setProgress(false);
+                    Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
                 }
             });
     }
@@ -63,10 +61,8 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
                 @Override
                 public void run() {
                     ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    if (activity instanceof Activity) {
-                        ((Activity)activity).setProgressBarIndeterminateVisibility(false);
-                        Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
-                    }
+                    activity.setProgress(false);
+                    Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
                 }
             });
     }
@@ -79,10 +75,8 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
                 @Override
                 public void run() {
                     ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    if (activity instanceof Activity) {
-                        ((Activity)activity).setProgressBarIndeterminateVisibility(false);
-                        Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
-                    }
+                    activity.setProgress(false);
+                    Toast.makeText(activity.getBaseContext(), R.string.board_offline_refresh, Toast.LENGTH_SHORT).show();
                 }
             });
     }

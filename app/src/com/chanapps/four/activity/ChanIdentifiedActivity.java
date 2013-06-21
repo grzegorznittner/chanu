@@ -28,6 +28,6 @@ public interface ChanIdentifiedActivity {
     void refresh();
 
     // tell activity we are starting fetch
-    void startProgress();
+    void setProgress(boolean on);
 
 }

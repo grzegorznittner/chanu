@@ -536,6 +536,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     public void closeSearch() {}
 
     @Override
-    public void startProgress() {}
+    public void setProgress(boolean on) {}
 
 }

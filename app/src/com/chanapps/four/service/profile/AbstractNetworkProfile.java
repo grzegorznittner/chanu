@@ -288,10 +288,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                if (activity instanceof Activity) {
-                    ((Activity)activity).setProgressBarIndeterminateVisibility(true);
-                }
+                NetworkProfileManager.instance().getActivity().setProgress(true);
             }
         });
     }
@@ -303,11 +300,9 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
             @Override
             public void run() {
                 ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                if (activity instanceof Activity) {
-                    ((Activity)activity).setProgressBarIndeterminateVisibility(false);
-                    if (string != null && !string.isEmpty())
-                        Toast.makeText(activity.getBaseContext(), string, Toast.LENGTH_SHORT).show();
-                }
+                activity.setProgress(false);
+                if (string != null && !string.isEmpty())
+                    Toast.makeText(activity.getBaseContext(), string, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -319,11 +314,9 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
             @Override
             public void run() {
                 ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                if (activity instanceof Activity) {
-                    ((Activity)activity).setProgressBarIndeterminateVisibility(false);
-                    if (stringId > 0)
-                        Toast.makeText(activity.getBaseContext(), stringId, Toast.LENGTH_SHORT).show();
-                }
+                activity.setProgress(false);
+                if (stringId > 0)
+                    Toast.makeText(activity.getBaseContext(), stringId, Toast.LENGTH_SHORT).show();
             }
         });
     }

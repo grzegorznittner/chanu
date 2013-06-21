@@ -194,10 +194,10 @@ abstract public class
     public void closeSearch() {}
 
     @Override
-    public void startProgress() {
+    public void setProgress(boolean on) {
         Handler handler = getChanHandler();
         if (handler != null)
-            setProgressBarIndeterminateVisibility(true);
+            setProgressBarIndeterminateVisibility(on);
     }
 
     abstract public boolean isSelfBoard(String boardAsMenu);

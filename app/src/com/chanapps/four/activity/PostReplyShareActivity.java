@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
-import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.fragment.PickShareBoardDialogFragment;
 
@@ -101,6 +100,6 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
     public void closeSearch() {}
 
     @Override
-    public void startProgress() {}
+    public void setProgress(boolean on) {}
 
 }

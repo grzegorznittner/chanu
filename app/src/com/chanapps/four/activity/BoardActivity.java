@@ -121,7 +121,7 @@ public class BoardActivity
             }
             else {
                 if (DEBUG) Log.i(TAG, "onCreate no board data, waiting for profile onBoardSelected callback");
-                startProgress();
+                setProgress(true);
             }
         }
     }
@@ -328,7 +328,7 @@ public class BoardActivity
     @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ q=" + query + " id=" + id);
-        setProgressBarIndeterminateVisibility(true);
+        setProgress(true);
         cursorLoader = new BoardCursorLoader(this, boardCode, query);
         return cursorLoader;
 	}
@@ -387,7 +387,7 @@ public class BoardActivity
     }
 
     protected void stopProgressBarIfLoadersDone() {
-        setProgressBarIndeterminateVisibility(false);
+        setProgress(false);
     }
 
     @Override
@@ -462,7 +462,7 @@ public class BoardActivity
                     if (DEBUG) Log.i(TAG, "manual refresh skipped for non-popular virtual board /" + boardCode + "/");
                     return true;
                 }
-                setProgressBarIndeterminateVisibility(true);
+                setProgress(true);
                 NetworkProfileManager.instance().manualRefresh(this);
                 if (gridView != null)
                     gridView.setSelection(0);
@@ -685,7 +685,7 @@ public class BoardActivity
 	@Override
 	public void onClick(View v) {
         if (v.getId() == R.id.board_refresh_button) {
-            setProgressBarIndeterminateVisibility(true);
+            setProgress(true);
             LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
             refreshLayout.setVisibility(LinearLayout.GONE);
             NetworkProfileManager.instance().manualRefresh(this);
@@ -714,9 +714,9 @@ public class BoardActivity
     }
 
     @Override
-    public void startProgress() {
+    public void setProgress(boolean on) {
         if (handler != null)
-            setProgressBarIndeterminateVisibility(true);
+            setProgressBarIndeterminateVisibility(on);
     }
 
     @Override
