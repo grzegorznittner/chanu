@@ -91,7 +91,6 @@ public class ThreadActivity
     protected int columnHeight = 0;
     protected MenuItem searchMenuItem;
     protected long postNo; // for direct jumps from latest post / recent images
-    protected String text;
     protected String imageUrl;
     protected boolean shouldPlayThread = false;
     protected ShareActionProvider shareActionProvider = null;
@@ -478,6 +477,7 @@ public class ThreadActivity
             Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
             int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
             if (DEBUG) Log.i(TAG, "onItemClick pos=" + position + " flags=" + flags + " view=" + view);
+            updateSharedIntent();
             if ((flags & ChanPost.FLAG_IS_AD) > 0)
                 itemAdListener.onClick(view);
             else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
@@ -508,17 +508,6 @@ public class ThreadActivity
                 threadListener.sameIdOnClickListener,
                 threadListener.exifOnClickListener,
                 startActionModeListener);
-    }
-
-    protected File fullSizeImageFile(Cursor cursor) {
-        long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-        String ext = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXT));
-        Uri uri = ChanFileStorage.getLocalImageUri(getApplicationContext(), boardCode, postNo, ext);
-        File localImage = new File(URI.create(uri.toString()));
-        if (localImage != null && localImage.exists() && localImage.canRead() && localImage.length() > 0)
-            return localImage;
-        else
-            return null;
     }
 
     protected void setAbsListViewClass() {
@@ -789,22 +778,27 @@ public class ThreadActivity
             if (cursor == null)
                 continue;
             String subject = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_SUBJECT));
-            if (subject != null && !subject.isEmpty())
-                text += (text.isEmpty() ? "" : "\n") + subject;
             String message = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_TEXT));
-            if (message != null && !message.isEmpty())
-                text += (text.isEmpty() ? "" : "\n") + message;
-            if (text.isEmpty()) {
-                subject = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-                if (subject != null && !subject.isEmpty())
-                    text += (text.isEmpty() ? "" : "\n") + subject;
-                message = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
-                if (message != null && !message.isEmpty())
-                    text += (text.isEmpty() ? "" : "\n") + message;
+            if (!subject.isEmpty() || !message.isEmpty()) {
+                text = subject
+                        + (!subject.isEmpty() && !message.isEmpty() ? "<br/>" : "")
+                        + message;
+                if (DEBUG) Log.i(TAG, "selectText() de-spoilered text=" + text);
             }
-            if (!text.isEmpty())
-                text += "<br/><br/>";
+            else {
+                subject = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+                message = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+                text = subject
+                        + (!subject.isEmpty() && !message.isEmpty() ? "<br/>" : "")
+                        + message;
+                if (DEBUG) Log.i(TAG, "selectText() raw text=" + text);
+            }
+            break;
+//            if (!text.isEmpty())
+//                text += "<br/><br/>";
         }
+        text = text.replaceAll("(</?br/?>)+", "\n").replaceAll("<[^>]*>", "");
+        if (DEBUG) Log.i(TAG, "selectText() returning filtered text=" + text);
         return text;
     }
 
@@ -973,6 +967,7 @@ public class ThreadActivity
 
             startActionMode(ThreadActivity.this);
             absListView.setItemChecked(pos, true);
+            updateSharedIntent();
             return true;
         }
     };
@@ -1187,16 +1182,15 @@ public class ThreadActivity
 
     public void updateSharedIntent() {
         SparseBooleanArray postPos = absListView.getCheckedItemPositions();
+        if (DEBUG) Log.i(TAG, "updateSharedIntent() checked count=" + postPos.size());
         String extraText = selectText(postPos);
-        if (extraText != null && !extraText.isEmpty())
-            text += "\n\n" + extraText.replaceAll("</?br/?>", "\n").replaceAll("<[^>]*>", "");
         ArrayList<String> paths = new ArrayList<String>();
         Cursor cursor = adapter.getCursor();
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         for (int i = 0; i < absListView.getCount(); i++) {
             if (!postPos.get(i) || !cursor.moveToPosition(i))
                 continue;
-            File file = fullSizeImageFile(cursor); // try for full size first
+            File file = ThreadViewer.fullSizeImageFile(getApplicationContext(), cursor); // try for full size first
             if (file == null) { // if can't find it, fall back to thumbnail
                 String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL)); // thumbnail
                 if (DEBUG) Log.i(TAG, "Couldn't find full image, falling back to thumbnail=" + url);
@@ -1209,7 +1203,7 @@ public class ThreadActivity
         Intent intent;
         if (paths.size() == 0) {
             intent = new Intent(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_TEXT, text);
+            intent.putExtra(Intent.EXTRA_TEXT, extraText);
             intent.setType("text/html");
             setShareIntent(intent);
         } else {
@@ -1227,7 +1221,7 @@ public class ThreadActivity
             }
             intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            intent.putExtra(Intent.EXTRA_TEXT, text);
+            intent.putExtra(Intent.EXTRA_TEXT, extraText);
             intent.setType("image/jpeg");
             setShareIntent(intent);
             if (missingPaths.size() > 0) {

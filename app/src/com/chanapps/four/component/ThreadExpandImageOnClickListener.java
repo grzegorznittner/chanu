@@ -39,6 +39,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     private static final boolean DEBUG = false;
     private static final int NO_TEXT_PADDING_TOP_DP = 8;
 
+    private View itemView;
     private ViewGroup itemHeaderWrapper;
     private ViewGroup itemThumbnailImageWrapper;
     private ImageView itemThumbnailImage;
@@ -61,6 +62,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     private int flags;
     private String spoilerSubject;
     private String spoilerText;
+    private boolean showProgressBar = false;
 
     public ThreadExpandImageOnClickListener(Context context, final Cursor cursor, final View itemView) {
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
@@ -71,6 +73,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         spoilerSubject = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_SUBJECT));
         spoilerText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_TEXT));
 
+        this.itemView = itemView;
         itemHeaderWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_header_wrapper);
         itemThumbnailImageWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_image_wrapper);
         itemThumbnailImage = (ImageView)itemView.findViewById(R.id.list_item_image);
@@ -94,6 +97,10 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
         flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
         if (DEBUG) Log.i(TAG, "postUrl=" + postImageUrl + " postSize=" + postW + "x" + postH);
+    }
+
+    public void setShowProgressBar(boolean show) {
+        showProgressBar = show;
     }
 
     private void collapseImageView() {
@@ -244,6 +251,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         if (DEBUG) Log.i(TAG, "Set expanded image to visible");
         if (itemExpandedProgressBar != null)
             itemExpandedProgressBar.setVisibility(View.VISIBLE);
+            //itemExpandedProgressBar.setVisibility(showProgressBar ? View.VISIBLE : View.GONE);
 
         int width = targetSize.x; // may need to adjust to avoid out of mem
         int height = targetSize.y;
@@ -294,6 +302,8 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
                 if (itemExpandedWrapper != null)
                     itemExpandedWrapper.setVisibility(View.VISIBLE);
                 hideThumbnail();
+                if (itemView != null)
+                    itemView.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.TRUE);
                 //if (itemThumbnailImage != null && listPosition == 0) // thread header loads image over thumbnail
                 //    itemThumbnailImage.setImageDrawable(null);
             }

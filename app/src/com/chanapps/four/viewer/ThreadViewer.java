@@ -1,5 +1,6 @@
 package com.chanapps.four.viewer;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -7,6 +8,7 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.text.*;
 import android.text.method.LinkMovementMethod;
 import android.text.style.*;
@@ -18,9 +20,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.component.ChanGridSizer;
+import com.chanapps.four.component.ThreadExpandImageOnClickListener;
 import com.chanapps.four.component.ThreadImageOnClickListener;
 import com.chanapps.four.data.ChanAd;
+import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -31,6 +36,8 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import org.xml.sax.XMLReader;
 
+import java.io.File;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -194,8 +201,8 @@ public class ThreadViewer {
                                      View.OnClickListener repliesOnClickListener) {
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         item.setTag((flags | ChanPost.FLAG_IS_AD) > 0 ? null : postId);
-        item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, new Boolean(false));
-        item.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, new Boolean(false));
+        item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.FALSE);
+        item.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, Boolean.FALSE);
         ViewGroup itemHeaderWrapper = (ViewGroup) item.findViewById(R.id.list_item_header_wrapper);
         ViewGroup.LayoutParams params = itemHeaderWrapper.getLayoutParams();
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -519,6 +526,20 @@ public class ThreadViewer {
         if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0 || params == null)
             return clearImage(iv, params);
 
+        File file = fullSizeImageFile(iv.getContext(), cursor); // try for full size first
+        if (file != null && file.exists() && file.canRead() && file.length() > 0) {
+            View itemView = (flags & ChanPost.FLAG_IS_HEADER) > 0
+                    ? (View)iv.getParent().getParent()
+                    : (View)iv.getParent().getParent().getParent();
+            if (itemView != null) {
+                ThreadExpandImageOnClickListener expander =
+                        (new ThreadExpandImageOnClickListener(iv.getContext(), cursor, itemView));
+                expander.setShowProgressBar(false);
+                expander.onClick(itemView);
+                return true;
+            }
+        }
+
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
         int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
@@ -829,4 +850,17 @@ public class ThreadViewer {
         }).start();
         v.setImageBitmap(null);
     }
+
+    public static File fullSizeImageFile(Context context, Cursor cursor) {
+        String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+        long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+        String ext = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXT));
+        Uri uri = ChanFileStorage.getLocalImageUri(context, boardCode, postNo, ext);
+        File localImage = new File(URI.create(uri.toString()));
+        if (localImage != null && localImage.exists() && localImage.canRead() && localImage.length() > 0)
+            return localImage;
+        else
+            return null;
+    }
+
 }

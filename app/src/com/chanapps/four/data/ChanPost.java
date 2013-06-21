@@ -977,7 +977,7 @@ public class ChanPost {
 
     public Object[] makeRow(String query, int i, byte[] backlinksBlob, byte[] repliesBlob, byte[] sameIdsBlob) {
         String[] textComponents = textComponents(query);
-        //String[] spoilerComponents = spoilerComponents(query);
+        String[] spoilerComponents = spoilerComponents(query);
         String exifText = exifText();
         int flags = postFlags(false, false, textComponents[0], textComponents[1], exifText);
         if (i == 0)
@@ -999,10 +999,8 @@ public class ChanPost {
                 w,
                 h,
                 tim,
-                "",
-                "",
-                //spoilerComponents[0],
-                //spoilerComponents[1],
+                spoilerComponents[0],
+                spoilerComponents[1],
                 exifText(),
                 id,
                 trip,
