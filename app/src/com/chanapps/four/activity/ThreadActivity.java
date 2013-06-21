@@ -475,9 +475,10 @@ public class ThreadActivity
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+            postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
             int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-            if (DEBUG) Log.i(TAG, "onItemClick pos=" + position + " flags=" + flags + " view=" + view);
-            updateSharedIntent();
+            if (DEBUG) Log.i(TAG, "onItemClick pos=" + position + " postNo=" + postNo + " flags=" + flags + " view=" + view);
+            // /updateSharedIntent();
             if ((flags & ChanPost.FLAG_IS_AD) > 0)
                 itemAdListener.onClick(view);
             else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
@@ -951,7 +952,10 @@ public class ThreadActivity
         @Override
         public boolean onLongClick(View v) {
             int pos = absListView.getPositionForView(v);
-            if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
+            Cursor cursor = adapter.getCursor();
+            if (cursor.moveToPosition(pos))
+                postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+            if (DEBUG) Log.i(TAG, "on long click for pos=" + pos + " postNo=" + postNo);
 
             View itemView = null;
             for (int i = 0; i < absListView.getChildCount(); i++) {
@@ -965,9 +969,17 @@ public class ThreadActivity
             if (itemView == null)
                 return false;
 
-            startActionMode(ThreadActivity.this);
             absListView.setItemChecked(pos, true);
-            updateSharedIntent();
+
+            if (actionMode == null) {
+                if (DEBUG) Log.i(TAG, "starting action mode...");
+                startActionMode(ThreadActivity.this);
+                if (DEBUG) Log.i(TAG, "started action mode");
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "action mode already started, updating share intent");
+                updateSharedIntent();
+            }
             return true;
         }
     };
@@ -1183,7 +1195,11 @@ public class ThreadActivity
     public void updateSharedIntent() {
         SparseBooleanArray postPos = absListView.getCheckedItemPositions();
         if (DEBUG) Log.i(TAG, "updateSharedIntent() checked count=" + postPos.size());
-        String extraText = selectText(postPos);
+        String linkUrl = (postNo > 0 && postNo != threadNo)
+                ? ChanPost.postUrl(boardCode, threadNo, postNo)
+                : ChanThread.threadUrl(boardCode, threadNo);
+        String text = selectText(postPos);
+        String extraText = linkUrl + (text.isEmpty() ? "" : "\n\n" + text);
         ArrayList<String> paths = new ArrayList<String>();
         Cursor cursor = adapter.getCursor();
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
