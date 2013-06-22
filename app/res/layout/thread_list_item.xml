@@ -63,12 +63,14 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!--
     <View android:layout_width="match_parent"
           android:layout_height="8px"
           android:layout_marginTop="12dp"
           android:layout_marginLeft="@dimen/ThreadListItemHeaderWrapper_paddingLeft"
           android:layout_marginRight="@dimen/ThreadListItemHeaderWrapper_paddingRight"
           android:background="@drawable/divider_horizontal_holo_light"/>
+          -->
 <!--           android:layout_marginTop="@dimen/ThreadListLayout_paddingBottom"
 -->
 </com.chanapps.four.component.CheckableLinearLayout>

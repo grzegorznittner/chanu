@@ -111,11 +111,14 @@
     <dimen name="BoardListText_paddingBottom">16dp</dimen>
     <dimen name="BoardListText_textSize">16sp</dimen>
 
+    <dimen name="ThreadListHeader_padding">32dp</dimen>
+    <dimen name="ThreadListHeader_small_padding">16dp</dimen>
+
     <dimen name="ThreadListHeaderImage_layout_marginTop">16dp</dimen>
     <dimen name="ThreadListHeaderImage_layout_marginBottom">0dp</dimen>
 
-    <dimen name="ThreadListHeaderSubject_layout_marginLeft">0dp</dimen>
-    <dimen name="ThreadListHeaderSubject_layout_marginRight">0dp</dimen>
+    <dimen name="ThreadListHeaderSubject_layout_marginLeft">32dp</dimen>
+    <dimen name="ThreadListHeaderSubject_layout_marginRight">32dp</dimen>
     <dimen name="ThreadListHeaderSubject_paddingTop">16dp</dimen>
 
     <dimen name="ThreadListHeaderHeadWrapper_paddingBottom">16dp</dimen>
@@ -126,8 +129,8 @@
     <dimen name="ThreadListHeaderCountryFlag_layout_marginTop">16dp</dimen>
     <dimen name="ThreadListHeaderCountryFlag_layout_marginRight">32dp</dimen>
 
-    <dimen name="ThreadListHeaderHead_layout_marginLeft">0dp</dimen>
-    <dimen name="ThreadListHeaderHead_layout_marginRight">0dp</dimen>
+    <dimen name="ThreadListHeaderHead_layout_marginLeft">32dp</dimen>
+    <dimen name="ThreadListHeaderHead_layout_marginRight">32dp</dimen>
 
     <dimen name="ThreadListHeaderExifText_layout_marginLeft">32dp</dimen>
     <dimen name="ThreadListHeaderExifText_layout_marginRight">32dp</dimen>
@@ -148,7 +151,7 @@
     <dimen name="ThreadListLayout_paddingTop">16dp</dimen>
     <dimen name="ThreadListLayout_paddingBottom">16dp</dimen>
     <dimen name="ThreadListLayout_paddingLeft">32dp</dimen>
-    <dimen name="ThreadListHeaderInnerLayout_paddingLeft">32dp</dimen>
+    <dimen name="ThreadListHeaderInnerLayout_paddingLeft">0dp</dimen>
     <dimen name="ThreadListLayout_paddingRight">32dp</dimen>
 
     <dimen name="ThreadListItemHeaderWrapper_paddingLeft">16dp</dimen>
@@ -182,8 +185,8 @@
     <dimen name="ThreadListItemHead_paddingTop">8dp</dimen>
     <dimen name="ThreadListItemHead_paddingBottom">0dp</dimen>
 
-    <dimen name="ThreadListItemExifText_layout_marginLeft">0dp</dimen>
-    <dimen name="ThreadListItemExifText_layout_marginRight">0dp</dimen>
+    <dimen name="ThreadListItemExifText_layout_marginLeft">32dp</dimen>
+    <dimen name="ThreadListItemExifText_layout_marginRight">32dp</dimen>
     <dimen name="ThreadListItemExifText_paddingTop">16dp</dimen>
 
     <dimen name="ThreadListItemFullText_layout_marginLeft">0dp</dimen>
