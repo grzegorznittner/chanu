@@ -622,7 +622,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">@dimen/ThreadListHeader_padding</item>
         <item name="android:paddingRight">@dimen/ThreadListHeader_padding</item>
-        <!--<item name="android:paddingTop">@dimen/ThreadListHeader_micro_padding</item>-->
+        <item name="android:paddingTop">@dimen/ThreadListHeader_small_padding</item>
         <item name="android:paddingBottom">@dimen/ThreadListHeader_small_padding</item>
         <item name="android:background">@color/PaletteLightBlack</item>
     </style>
@@ -660,15 +660,28 @@
     <style name="ThreadListItemBar" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
-        <item name="android:paddingLeft">@dimen/ThreadListHeader_padding</item>
         <item name="android:background">@drawable/thread_list_item_bar_bg</item>
+    </style>
+
+    <style name="ThreadListItemLeftSpacer" parent="AppTheme">
+        <item name="android:layout_toRightOf">@+id/list_item_image_wrapper</item>
+        <item name="android:layout_width">@dimen/ThreadListHeader_padding</item>
+        <item name="android:layout_height">match_parent</item>
     </style>
 
     <style name="ThreadListHeaderBarAgoWrapper" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerVertical">true</item>
-        <item name="android:layout_toRightOf">@+id/list_item_image_wrapper</item>
+        <item name="android:layout_toRightOf">@+id/list_item_left_spacer</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="ThreadListHeaderBarImageDetailsWrapper" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_toRightOf">@+id/list_item_ago_wrapper</item>
         <item name="android:orientation">vertical</item>
     </style>
 
@@ -878,7 +891,6 @@
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_marginRight">@dimen/ThreadListHeader_small_padding</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@color/PaletteYellowWhite</item>
     </style>
 
     <style name="ThreadListItemImage" parent="AppTheme">

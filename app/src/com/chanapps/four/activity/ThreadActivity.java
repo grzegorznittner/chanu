@@ -501,6 +501,7 @@ public class ThreadActivity
     public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
         return ThreadViewer.setViewValue(view, cursor, boardCode,
                 isTablet(),
+                true,
                 columnWidth,
                 columnHeight,
                 threadListener.imageOnClickListener,
@@ -508,6 +509,7 @@ public class ThreadActivity
                 threadListener.repliesOnClickListener,
                 threadListener.sameIdOnClickListener,
                 threadListener.exifOnClickListener,
+                postReplyListener,
                 startActionModeListener);
     }
 
@@ -526,6 +528,22 @@ public class ThreadActivity
     private void postReply(String replyText) {
         PostReplyActivity.startActivity(this, boardCode, threadNo, 0, ChanPost.planifyText(replyText));
     }
+
+    protected View.OnClickListener postReplyListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = absListView.getPositionForView(v);
+            if (pos < 0)
+                return;
+            Cursor cursor = adapter.getCursor();
+            if (!cursor.moveToPosition(pos))
+                return;
+            long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+            if (postNo == threadNo)
+                postNo = 0;
+            PostReplyActivity.startActivity(ThreadActivity.this, boardCode, threadNo, postNo, ChanPost.planifyText(""));
+        }
+    };
 
 /*
     protected boolean navigateUp() {

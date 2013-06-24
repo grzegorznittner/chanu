@@ -12,6 +12,7 @@
             <ImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
             <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/>
         </RelativeLayout>
+        <View style="@style/ThreadListItemLeftSpacer" android:id="@+id/list_item_left_spacer"/>
         <LinearLayout style="@style/ThreadListHeaderBarAgoWrapper" android:id="@+id/list_item_ago_wrapper">
             <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_ago"/>
             <TextView style="@style/ThreadListHeaderBarNo" android:id="@+id/list_item_header_bar_no"/>
@@ -27,7 +28,7 @@
                 <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_direct_replies_label"
                           android:textColor="@color/blue_base"/>
             </LinearLayout>
-            <LinearLayout style="@style/ThreadListHeaderNumVerticalBorder"/>
+            <LinearLayout style="@style/ThreadListHeaderNumVerticalBorder" android:id="@+id/list_item_header_bar_right_border"/>
         </LinearLayout>
         <LinearLayout style="@style/ThreadListHeaderBarReply" android:id="@+id/list_item_header_bar_reply_wrapper">
             <ImageView style="@style/ThreadListItemBarReplyIcon" android:id="@+id/list_item_header_bar_reply"/>

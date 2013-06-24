@@ -17,6 +17,16 @@
             <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_ago"/>
             <TextView style="@style/ThreadListHeaderBarNo" android:id="@+id/list_item_header_bar_no"/>
         </LinearLayout>
+        <!--
+        <LinearLayout style="@style/ThreadListHeaderBarImageDetailsWrapper" android:id="@+id/list_item_image_details_wrapper">
+            <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_image_dimensions"
+                    android:text="1280x720"
+                    />
+            <TextView style="@style/ThreadListHeaderBarNo" android:id="@+id/list_item_header_bar_image_size"
+                    android:text="130KB"
+                    />
+        </LinearLayout>
+        -->
         <LinearLayout style="@style/ThreadListHeaderBarReply" android:id="@+id/list_item_header_bar_reply_wrapper">
             <ImageView style="@style/ThreadListHeaderBarReplyIcon" android:id="@+id/list_item_header_bar_reply"/>
         </LinearLayout>
@@ -38,7 +48,8 @@
                     android:layout_height="@dimen/ThreadListHeader_subjectHeight"
                     android:padding="@dimen/ThreadListHeader_micro_padding"
                     android:layout_marginRight="@dimen/ThreadListHeader_small_padding"
-                    android:src="@drawable/glyphish_skull_dark"/>
+                    android:src="@drawable/glyphish_skull_dark"
+                    android:visibility="gone"/>
         </LinearLayout>
         <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
         <ImageView style="@style/ThreadListHeaderCountryFlag" android:id="@+id/list_item_country_flag"/>

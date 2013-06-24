@@ -41,6 +41,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
     private View itemView;
     private ViewGroup itemHeaderWrapper;
+    private View listItemLeftSpacer;
     private ViewGroup itemThumbnailImageWrapper;
     private ImageView itemThumbnailImage;
     private ViewGroup itemExpandedWrapper;
@@ -77,6 +78,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         itemThumbnailImageWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_image_wrapper);
         itemThumbnailImage = (ImageView)itemView.findViewById(R.id.list_item_image);
         itemExpandedWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_image_expanded_wrapper);
+        listItemLeftSpacer = itemView.findViewById(R.id.list_item_left_spacer);
         itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
         itemExpandedImageClickEffect = itemView.findViewById(R.id.list_item_image_expanded_click_effect);
         itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
@@ -125,6 +127,8 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
             if (DEBUG) Log.i(TAG, "Skipping adjusting thumbnail height, null thumbnail image wrapper");
             return;
         }
+        if (listItemLeftSpacer != null)
+            listItemLeftSpacer.setVisibility(View.VISIBLE);
         itemThumbnailImageWrapper.setVisibility(View.GONE);
         /*
         ViewGroup.LayoutParams params = itemThumbnailImageWrapper.getLayoutParams();
@@ -169,7 +173,9 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         if (params == null)
             return;
         params.width = itemThumbWidth;
-        ChanImageLoader.getInstance(itemThumbnailImage.getContext()).displayImage(thumbImageUrl, itemThumbnailImage);
+        if (listItemLeftSpacer != null)
+            listItemLeftSpacer.setVisibility(View.GONE);
+       ChanImageLoader.getInstance(itemThumbnailImage.getContext()).displayImage(thumbImageUrl, itemThumbnailImage);
     }
     */
     @Override

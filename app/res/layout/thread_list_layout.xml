@@ -12,7 +12,6 @@
             android:id="@+id/thread_list_view"
             style="@style/ListViewTemplate"
             android:background="@color/PaletteYellowWhite"
-            android:dividerHeight="0dp"
             />
     <!--
     <include layout="@layout/tutorial_overlay"/>

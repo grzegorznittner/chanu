@@ -64,6 +64,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         R.id.list_item_image,
                         R.id.list_item_header,
                         R.id.list_item_subject,
+                        R.id.list_item_subject_icons,
                         R.id.list_item_title,
                         R.id.list_item_button,
                         R.id.list_item_urllink,

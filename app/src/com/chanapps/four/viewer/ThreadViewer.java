@@ -101,6 +101,7 @@ public class ThreadViewer {
 
     public static boolean setViewValue(final View view, final Cursor cursor, String groupBoardCode,
                                        boolean isTablet,
+                                       boolean showContextMenu,
                                        int columnWidth,
                                        int columnHeight,
                                        View.OnClickListener imageOnClickListener,
@@ -108,6 +109,7 @@ public class ThreadViewer {
                                        View.OnClickListener repliesOnClickListener,
                                        View.OnClickListener sameIdOnClickListener,
                                        View.OnClickListener exifOnClickListener,
+                                       View.OnClickListener postReplyListener,
                                        View.OnLongClickListener startActionModeListener
                                        ) {
         initStatics(view);
@@ -127,16 +129,18 @@ public class ThreadViewer {
             return setListLinkView(view, cursor, flags);
         else
             return setListItemView(view, cursor, flags,
+                    showContextMenu,
                     imageOnClickListener,
                     backlinkOnClickListener, repliesOnClickListener, sameIdOnClickListener,
                     exifOnClickListener,
+                    postReplyListener,
                     startActionModeListener);
     }
 
     public static boolean setListLinkView(final View view, final Cursor cursor, int flags) {
         switch (view.getId()) {
             case R.id.list_item:
-                return setItem((ViewGroup) view, cursor, flags, null, null);
+                return setItem((ViewGroup) view, cursor, flags, false, null, null, null);
             case R.id.list_item_image_wrapper:
                 return setImageWrapper((ViewGroup) view, cursor, flags);
             case R.id.list_item_image:
@@ -153,23 +157,35 @@ public class ThreadViewer {
     }
 
     public static boolean setListItemView(final View view, final Cursor cursor, int flags,
+                                          boolean showContextMenu,
                                           View.OnClickListener imageOnClickListener,
                                           View.OnClickListener backlinkOnClickListener,
                                           View.OnClickListener repliesOnClickListener,
                                           View.OnClickListener sameIdOnClickListener,
                                           View.OnClickListener exifOnClickListener,
-                                          View.OnLongClickListener startActionModeListener) {
+                                          View.OnClickListener postReplyListener,
+                                          final View.OnLongClickListener startActionModeListener) {
         if (startActionModeListener != null)
             view.setOnLongClickListener(startActionModeListener);
         switch (view.getId()) {
             case R.id.list_item:
-                return setItem((ViewGroup) view, cursor, flags, backlinkOnClickListener, repliesOnClickListener);
+                View overflow = view.findViewById(R.id.list_item_header_bar_overflow_wrapper);
+                if (overflow != null) {
+                    overflow.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startActionModeListener.onLongClick(v);
+                        }
+                    });
+                }
+                return setItem((ViewGroup) view, cursor, flags, showContextMenu,
+                        backlinkOnClickListener, repliesOnClickListener, postReplyListener);
             case R.id.list_item_image_expanded_wrapper:
                 return setImageExpandedWrapper((ViewGroup) view);
             case R.id.list_item_image_expanded:
                 return setImageExpanded((ImageView) view);
             case R.id.list_item_image_expanded_click_effect:
-                return setImageExpandedClickEffect(view, cursor, flags);
+                return setImageExpandedClickEffect(view, cursor, flags, imageOnClickListener);
             case R.id.list_item_expanded_progress_bar:
                 return setImageExpandedProgressBar((ProgressBar) view);
             case R.id.list_item_image_wrapper:
@@ -182,6 +198,8 @@ public class ThreadViewer {
                 return setHeaderValue((TextView) view, cursor, repliesOnClickListener, sameIdOnClickListener);
             case R.id.list_item_subject:
                 return setSubject((TextView) view, cursor, flags, backlinkOnClickListener);
+            case R.id.list_item_subject_icons:
+                return setSubjectIcons(view, flags);
             case R.id.list_item_text:
                 return setText((TextView) view, cursor, flags, backlinkOnClickListener, exifOnClickListener);
             case R.id.list_item_exif_text:
@@ -200,16 +218,36 @@ public class ThreadViewer {
      */
 
     static protected boolean setItem(ViewGroup item, Cursor cursor, int flags,
+                                     boolean showContextMenu,
                                      View.OnClickListener backlinkOnClickListener,
-                                     View.OnClickListener repliesOnClickListener) {
+                                     View.OnClickListener repliesOnClickListener,
+                                     View.OnClickListener postReplyListener) {
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-        item.setTag((flags | ChanPost.FLAG_IS_AD) > 0 ? null : postId);
+        item.setTag((flags & ChanPost.FLAG_IS_AD) > 0 ? null : postId);
         item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.FALSE);
         item.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, Boolean.FALSE);
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
-            displayHeaderCountFields(item, cursor, repliesOnClickListener);
+            displayHeaderCountFields(item, cursor, showContextMenu, repliesOnClickListener);
         else
-            displayItemCountFields(item, cursor, backlinkOnClickListener, repliesOnClickListener);
+            displayItemCountFields(item, cursor, showContextMenu, backlinkOnClickListener, repliesOnClickListener);
+        View listItemLeftSpacer = item.findViewById(R.id.list_item_left_spacer);
+        if (listItemLeftSpacer != null)
+            listItemLeftSpacer.setVisibility((flags & ChanPost.FLAG_HAS_IMAGE) > 0 ? View.GONE : View.VISIBLE);
+        View rightBar = item.findViewById(R.id.list_item_header_bar_right_border);
+        if (rightBar != null)
+            rightBar.setVisibility(showContextMenu ? View.VISIBLE : View.GONE);
+        View reply = item.findViewById(R.id.list_item_header_bar_reply_wrapper);
+        if (reply != null) {
+            reply.setVisibility(
+                    (showContextMenu && (flags & (ChanPost.FLAG_IS_DEAD | ChanPost.FLAG_IS_CLOSED)) == 0)
+                            ? View.VISIBLE
+                            : View.GONE);
+            if (postReplyListener != null && reply.getVisibility() == View.VISIBLE)
+                reply.setOnClickListener(postReplyListener);
+        }
+        View overflow = item.findViewById(R.id.list_item_header_bar_overflow_wrapper);
+        if (overflow != null)
+            overflow.setVisibility(showContextMenu ? View.VISIBLE : View.GONE);
         item.setVisibility(View.VISIBLE);
         /*
         if (cursor.getPosition() == 1) {
@@ -223,7 +261,7 @@ public class ThreadViewer {
         return true;
     }
 
-    static protected void displayHeaderCountFields(View item, Cursor cursor,
+    static protected void displayHeaderCountFields(View item, Cursor cursor, boolean showContextMenu,
                                                    View.OnClickListener repliesOnClickListener) {
         displayHeaderBarAgoNo(item, cursor);
         int r = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES));
@@ -240,7 +278,7 @@ public class ThreadViewer {
             numRepliesLabel.setText(item.getResources().getQuantityString(R.plurals.thread_num_replies_label, r));
         if (numImagesLabel != null)
             numImagesLabel.setText(item.getResources().getQuantityString(R.plurals.thread_num_images_label, i));
-        displayNumDirectReplies(item, cursor, repliesOnClickListener, false);
+        displayNumDirectReplies(item, cursor, showContextMenu, repliesOnClickListener, false);
     }
 
     static protected void displayHeaderBarAgoNo(View item, Cursor cursor) {
@@ -254,23 +292,29 @@ public class ThreadViewer {
             no.setText(String.valueOf(postNo));
     }
 
-    static protected void displayItemCountFields(View item, Cursor cursor,
+    static protected void displayItemCountFields(View item, Cursor cursor, boolean showContextMenu,
                                                  View.OnClickListener backlinkOnClickListener,
                                                  View.OnClickListener repliesOnClickListener) {
         displayHeaderBarAgoNo(item, cursor);
         //n += displayNumRefs(item, cursor, backlinkOnClickListener);
-        displayNumDirectReplies(item, cursor, repliesOnClickListener, true);
+        displayNumDirectReplies(item, cursor, showContextMenu, repliesOnClickListener, true);
     }
 
-    static protected int displayNumDirectReplies(View item, Cursor cursor,
+    static protected int displayNumDirectReplies(View item, Cursor cursor, boolean showContextMenu,
                                                   View.OnClickListener repliesOnClickListener,
                                                   boolean markVisibility) {
         View wrapper = item.findViewById(R.id.list_item_num_direct_replies);
         if (wrapper == null)
             return 0;
+        if (!showContextMenu) {
+            wrapper.setVisibility(View.GONE);
+            return 0;
+        }
+
         TextView numDirectReplies = (TextView)item.findViewById(R.id.list_item_num_direct_replies_text);
         if (numDirectReplies == null)
             return 0;
+
         int directReplies = numDirectReplies(cursor);
         TextView numRepliesLabel = (TextView)item.findViewById(R.id.list_item_num_direct_replies_label);
         if (numRepliesLabel != null)
@@ -419,6 +463,13 @@ public class ThreadViewer {
         return true;
     }
 
+    static private boolean setSubjectIcons(View view, int flags) {
+        View deadIcon = view.findViewById(R.id.list_item_dead_icon);
+        if (deadIcon != null)
+            deadIcon.setVisibility((flags & ChanPost.FLAG_IS_DEAD) > 0 ? View.VISIBLE : View.GONE);
+        return true;
+    }
+
     static private final String SHOW_EXIF_TEXT = "Show EXIF Data";
     static private final String SHOW_EXIF_HTML = "<b>" + SHOW_EXIF_TEXT + "</b>";
 
@@ -556,22 +607,27 @@ public class ThreadViewer {
 
     static private boolean setImage(final ImageView iv, final Cursor cursor, int flags,
                                     View.OnClickListener imageOnClickListener) {
-        ViewGroup.LayoutParams params = iv.getLayoutParams();
-        if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0 || params == null)
-            return clearImage(iv, params);
+        if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0) {
+            iv.setImageBitmap(null);
+            iv.setVisibility(View.GONE);
+            return true;
+        }
 
-        File file = fullSizeImageFile(iv.getContext(), cursor); // try for full size first
-        if (file != null && file.exists() && file.canRead() && file.length() > 0) {
-            View itemView = (flags & ChanPost.FLAG_IS_HEADER) > 0
-                    ? (View)iv.getParent().getParent()
-                    : (View)iv.getParent().getParent().getParent();
-            if (itemView != null) {
-                if (DEBUG) Log.i(TAG, "setImage file=" + file.getAbsolutePath());
-                ThreadExpandImageOnClickListener expander =
-                        (new ThreadExpandImageOnClickListener(iv.getContext(), cursor, itemView));
-                expander.setShowProgressBar(false);
-                expander.onClick(itemView);
-                return true;
+        if ((flags & ChanPost.FLAG_IS_HEADER) > 0) { // use expanded image
+            File file = fullSizeImageFile(iv.getContext(), cursor); // try for full size first
+            if (file != null && file.exists() && file.canRead() && file.length() > 0) {
+                View itemView = (flags & ChanPost.FLAG_IS_HEADER) > 0
+                        ? (View)iv.getParent().getParent()
+                        : (View)iv.getParent().getParent().getParent();
+                if (itemView != null) {
+                    if (DEBUG) Log.i(TAG, "setImage file=" + file.getAbsolutePath());
+                    iv.setVisibility(View.VISIBLE);
+                    ThreadExpandImageOnClickListener expander =
+                            (new ThreadExpandImageOnClickListener(iv.getContext(), cursor, itemView));
+                    expander.setShowProgressBar(false);
+                    expander.onClick(itemView);
+                    return true;
+                }
             }
         }
 
@@ -601,19 +657,24 @@ public class ThreadViewer {
         }
 
         if (tn_w == 0 || tn_h == 0)  // we don't have height and width, so just show unscaled image
-            return displayImageAtDefaultSize(iv, params, url);
+            return displayImageAtDefaultSize(iv, url);
 
         // scale image
         Point imageSize;
+        ViewGroup.LayoutParams params = iv.getLayoutParams();
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
             imageSize = sizeHeaderImage(tn_w, tn_h);
-            params.width = imageSize.x;
-            params.height = imageSize.y;
+            if (params != null) {
+                params.width = imageSize.x;
+                params.height = imageSize.y;
+            }
         }
         else {
             imageSize = sizeItemImage(tn_w, tn_h);
-            params.width = imageSize.x;
-            params.height = imageSize.y;
+            if (params != null) {
+                params.width = imageSize.x;
+                params.height = imageSize.y;
+            }
         }
         ImageSize displayImageSize = new ImageSize(imageSize.x, imageSize.y);
         DisplayImageOptions options = createDisplayImageOptions(displayImageSize);
@@ -629,19 +690,12 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean clearImage(final ImageView iv, ViewGroup.LayoutParams params) {
-        iv.setImageBitmap(null);
-        iv.setVisibility(View.VISIBLE);
-        if (params == null) // something wrong in layout
-            return true;
-        params.width = 0;
-        params.height = 0;
-        return true;
-    }
-
-    static private boolean displayImageAtDefaultSize(final ImageView iv, ViewGroup.LayoutParams params, String url) {
-        params.width = itemThumbWidth;
-        params.height = itemThumbMaxHeight;
+    static private boolean displayImageAtDefaultSize(final ImageView iv, String url) {
+        ViewGroup.LayoutParams params = iv.getLayoutParams();
+        if (params != null) {
+            params.width = itemThumbWidth;
+            params.height = itemThumbMaxHeight;
+        }
         iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
         iv.setVisibility(View.VISIBLE);
         imageLoader.displayImage(url, iv, displayImageOptions);
@@ -689,14 +743,15 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean setImageExpandedClickEffect(final View view, final Cursor cursor, int flags) {
+    static private boolean setImageExpandedClickEffect(final View view, final Cursor cursor, int flags,
+                                                       View.OnClickListener imageOnClickListener) {
         view.setVisibility(View.GONE);
         if ((flags & (ChanPost.FLAG_IS_AD
                 | ChanPost.FLAG_IS_TITLE
                 | ChanPost.FLAG_IS_THREADLINK
                 | ChanPost.FLAG_IS_BOARDLINK
                 | ChanPost.FLAG_NO_EXPAND)) == 0)
-            view.setOnClickListener(new ThreadImageOnClickListener(cursor));
+            view.setOnClickListener(imageOnClickListener);
         return true;
     }
 
@@ -813,7 +868,13 @@ public class ThreadViewer {
             }
             @Override
             public void updateDrawState(TextPaint ds) {
-                ds.bgColor = blackout ? PALETTE_BLACK : 0; // palette black 2d2d2d
+                if (blackout) {
+                    int textColor = ds.getColor();
+                    ds.bgColor = textColor;
+                }
+                //int bgColor = ds.bgColor;
+                //ds.bgColor = blackout ? PALETTE_BLACK : 0; // palette black 2d2d2d
+                //ds.bgColor = blackout ? textColor : bgColor; // palette black 2d2d2d
             }
         }
         class SpanFactory {
