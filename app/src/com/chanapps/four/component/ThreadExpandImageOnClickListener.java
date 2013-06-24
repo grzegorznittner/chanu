@@ -74,7 +74,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         spoilerText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_TEXT));
 
         this.itemView = itemView;
-        itemHeaderWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_header_wrapper);
         itemThumbnailImageWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_image_wrapper);
         itemThumbnailImage = (ImageView)itemView.findViewById(R.id.list_item_image);
         itemExpandedWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_image_expanded_wrapper);

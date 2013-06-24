@@ -49,6 +49,7 @@ public class ChanPost {
     public static final String POST_NUM_IMAGES = "numImages";
     public static final String POST_SUBJECT_TEXT = "subjectText"; // we construct and filter this // NOT USED
     public static final String POST_TEXT = "text"; // we construct and filter this
+    public static final String POST_DATE_TEXT = "dateText"; // we construct and filter this
     public static final String POST_IMAGE_URL = "imageUrl"; // we construct this from board and tim
     public static final String POST_FULL_IMAGE_URL = "fullImageUrlrl"; // we construct this from board and tim
     public static final String POST_COUNTRY_URL = "countryUrl"; // we construct this from the country code
@@ -78,6 +79,7 @@ public class ChanPost {
     public static final int FLAG_IS_HEADER = 0x2000;
     public static final int FLAG_IS_URLLINK = 0x4000;
     public static final int FLAG_NO_EXPAND = 0x8000;
+    public static final int FLAG_HAS_HEAD = 0x10000;
 
     public static String planifyText(String text) {
         return text.replaceAll("<br/?>", "\n").replaceAll("<[^>]*>", "");
@@ -108,7 +110,7 @@ public class ChanPost {
         return i;
     }
 
-    private int postFlags(boolean isAd, boolean isThreadLink, String subject, String text, String exifText) {
+    private int postFlags(boolean isAd, boolean isThreadLink, String subject, String text, String exifText, String headline) {
         int flags = 0;
         if (tim > 0)
             flags |= FLAG_HAS_IMAGE;
@@ -130,6 +132,8 @@ public class ChanPost {
             flags |= FLAG_IS_AD;
         if (isThreadLink)
             flags |= FLAG_IS_THREADLINK;
+        if (headline != null && !headline.isEmpty())
+            flags |= FLAG_HAS_HEAD;
         return flags;
     }
 
@@ -145,6 +149,7 @@ public class ChanPost {
             POST_NUM_IMAGES,
             POST_SUBJECT_TEXT,
             POST_TEXT,
+            POST_DATE_TEXT,
             POST_TN_W,
             POST_TN_H,
             POST_W,
@@ -554,10 +559,7 @@ public class ChanPost {
 
     public String headline(String query, boolean boardLevel, byte[] repliesBlob, boolean showNumReplies) {
         List<String> items = new ArrayList<String>();
-        items.add(dateText());
         if (!boardLevel) {
-            if (!hidePostNumbers)
-                items.add("No. " + Long.toString(no));
             if (email != null && !email.isEmpty() && email.equals("sage"))
                 items.add("<b>sage</b>");
             if (id != null && !id.isEmpty() && id.equals(SAGE_POST_ID))
@@ -616,8 +618,6 @@ public class ChanPost {
                 text += " (IL)";
             if (bumplimit == 1)
                 text += " (BL)";
-            if (isDead)
-                text += " DEAD";
             if (sticky > 0)
                 text += " STICKY";
             if (closed > 0)
@@ -979,7 +979,8 @@ public class ChanPost {
         String[] textComponents = textComponents(query);
         String[] spoilerComponents = spoilerComponents(query);
         String exifText = exifText();
-        int flags = postFlags(false, false, textComponents[0], textComponents[1], exifText);
+        String headline = headline(query, false, repliesBlob, false);
+        int flags = postFlags(false, false, textComponents[0], textComponents[1], exifText, headline);
         if (i == 0)
             flags |= FLAG_IS_HEADER;
         return new Object[] {
@@ -989,11 +990,12 @@ public class ChanPost {
                 thumbnailUrl(),
                 imageUrl(),
                 countryFlagUrl(),
-                headline(query, false, repliesBlob, false),
+                headline,
                 replies,
                 images,
                 textComponents[0],
                 textComponents[1],
+                dateText(),
                 tn_w,
                 tn_h,
                 w,
@@ -1017,6 +1019,7 @@ public class ChanPost {
 
     public Object[] makeThreadLinkRow() {
         String[] textComponents = textComponents("");
+        String headline = headline("", true, null, false);
         return new Object[] {
                 no,
                 board,
@@ -1024,10 +1027,11 @@ public class ChanPost {
                 thumbnailUrl(),
                 "",
                 countryFlagUrl(),
-                headline("", true, null, false),
+                headline,
                 replies,
                 images,
                 textComponents[0],
+                "",
                 "",
                 tn_w,
                 tn_h,
@@ -1046,7 +1050,7 @@ public class ChanPost {
                 null,
                 null,
                 null,
-                postFlags(false, true, textComponents[0], "", "")
+                postFlags(false, true, textComponents[0], "", "", headline)
         };
     }
 
@@ -1063,6 +1067,7 @@ public class ChanPost {
                 0,
                 0,
                 board.name,
+                "",
                 "",
                 250,
                 250,
@@ -1098,6 +1103,7 @@ public class ChanPost {
                 0,
                 "",
                 ad.bannerClickUrl(),
+                "",
                 ad.tn_w_banner(),
                 ad.tn_h_banner(),
                 -1,
@@ -1138,7 +1144,8 @@ public class ChanPost {
                 subject,
                 desc,
                 "",
-                "",
+                0,
+                0,
                 -1,
                 -1,
                 0,

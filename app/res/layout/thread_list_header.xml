@@ -12,9 +12,33 @@
         <View style="@style/ThreadListHeaderImageExpandedClickEffect" android:id="@+id/list_item_image_expanded_click_effect"/>
     </RelativeLayout>
 
-    <!--<LinearLayout style="@style/ThreadListHeaderInnerLayout">-->
+    <RelativeLayout style="@style/ThreadListHeaderBar">
+        <LinearLayout style="@style/ThreadListHeaderBarAgoWrapper" android:id="@+id/list_item_ago_wrapper">
+            <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_ago"/>
+            <TextView style="@style/ThreadListHeaderBarNo" android:id="@+id/list_item_header_bar_no"/>
+        </LinearLayout>
+        <LinearLayout style="@style/ThreadListHeaderBarReply" android:id="@+id/list_item_header_bar_reply_wrapper">
+            <ImageView style="@style/ThreadListHeaderBarReplyIcon" android:id="@+id/list_item_header_bar_reply"/>
+        </LinearLayout>
+        <LinearLayout style="@style/ThreadListHeaderBarOverflow" android:id="@+id/list_item_header_bar_overflow_wrapper">
+            <ImageView style="@style/ThreadListHeaderBarOverflowIcon" android:id="@+id/list_item_header_bar_overflow"/>
+        </LinearLayout>
+    </RelativeLayout>
 
     <RelativeLayout style="@style/ThreadListHeaderHeadWrapper" android:id="@+id/list_item_header_wrapper">
+        <LinearLayout
+            android:id="@+id/list_item_subject_icons"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/ThreadListHeader_subjectHeight"
+            android:dividerPadding="@dimen/ThreadListHeader_small_padding"
+            android:orientation="horizontal">
+            <ImageView
+                    android:id="@+id/list_item_dead_icon"
+                    android:layout_width="@dimen/ThreadListHeader_subjectHeight"
+                    android:layout_height="@dimen/ThreadListHeader_subjectHeight"
+                    android:padding="@dimen/ThreadListHeader_micro_padding"
+                    android:src="@drawable/glyphish_skull_dark"/>
+        </LinearLayout>
         <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
         <ImageView style="@style/ThreadListHeaderCountryFlag" android:id="@+id/list_item_country_flag"/>
         <TextView style="@style/ThreadListHeaderFullText" android:id="@+id/list_item_text"/>

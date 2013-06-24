@@ -7,6 +7,6 @@
 
     <TextView style="@style/ThreadListTitle" android:id="@+id/list_item_title"/>
 
-    <View style="@style/ThreadListHeaderBar"/>
+    <View style="@style/ThreadListHeaderLine"/>
 
 </LinearLayout>

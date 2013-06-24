@@ -59,7 +59,7 @@ public class ThreadViewer {
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static DisplayMetrics displayMetrics = null;
     private static Typeface subjectTypeface = null;
@@ -68,6 +68,7 @@ public class ThreadViewer {
     private static int itemThumbMaxHeight = 0;
     private static ImageLoader imageLoader = null;
     private static DisplayImageOptions displayImageOptions = null;
+    private static DisplayImageOptions thumbDisplayImageOptions = null;
 
     public static void initStatics(View view) {
         if (displayMetrics != null)
@@ -80,6 +81,12 @@ public class ThreadViewer {
         itemThumbMaxHeight = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_MAXHEIGHT_DP);
         imageLoader = ChanImageLoader.getInstance(view.getContext());
         displayImageOptions = createDisplayImageOptions(null);
+        thumbDisplayImageOptions = new DisplayImageOptions.Builder()
+                .cacheOnDisc()
+                .cacheInMemory()
+                .imageScaleType(ImageScaleType.NONE)
+                .resetViewBeforeLoading()
+                .build();
     }
 
     private static DisplayImageOptions createDisplayImageOptions(ImageSize imageSize) {
@@ -130,8 +137,6 @@ public class ThreadViewer {
         switch (view.getId()) {
             case R.id.list_item:
                 return setItem((ViewGroup) view, cursor, flags, null, null);
-            case R.id.list_item_header_wrapper:
-                return setHeaderWrapper((ViewGroup) view, flags);
             case R.id.list_item_image_wrapper:
                 return setImageWrapper((ViewGroup) view, cursor, flags);
             case R.id.list_item_image:
@@ -159,8 +164,6 @@ public class ThreadViewer {
         switch (view.getId()) {
             case R.id.list_item:
                 return setItem((ViewGroup) view, cursor, flags, backlinkOnClickListener, repliesOnClickListener);
-            case R.id.list_item_header_wrapper:
-                return setHeaderWrapper((ViewGroup) view, flags);
             case R.id.list_item_image_expanded_wrapper:
                 return setImageExpandedWrapper((ViewGroup) view);
             case R.id.list_item_image_expanded:
@@ -203,9 +206,6 @@ public class ThreadViewer {
         item.setTag((flags | ChanPost.FLAG_IS_AD) > 0 ? null : postId);
         item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.FALSE);
         item.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, Boolean.FALSE);
-        ViewGroup itemHeaderWrapper = (ViewGroup) item.findViewById(R.id.list_item_header_wrapper);
-        ViewGroup.LayoutParams params = itemHeaderWrapper.getLayoutParams();
-        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
             displayHeaderCountFields(item, cursor, repliesOnClickListener);
         else
@@ -225,6 +225,7 @@ public class ThreadViewer {
 
     static protected void displayHeaderCountFields(View item, Cursor cursor,
                                                    View.OnClickListener repliesOnClickListener) {
+        displayHeaderBarAgoNo(item, cursor);
         int r = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES));
         int i = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_IMAGES));
         TextView numReplies = (TextView)item.findViewById(R.id.list_item_num_replies_text);
@@ -242,21 +243,23 @@ public class ThreadViewer {
         displayNumDirectReplies(item, cursor, repliesOnClickListener, false);
     }
 
+    static protected void displayHeaderBarAgoNo(View item, Cursor cursor) {
+        String dateText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_DATE_TEXT));
+        TextView ago = (TextView)item.findViewById(R.id.list_item_header_bar_ago);
+        if (ago != null)
+            ago.setText(dateText);
+        long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+        TextView no = (TextView)item.findViewById(R.id.list_item_header_bar_no);
+        if (no != null)
+            no.setText(String.valueOf(postNo));
+    }
+
     static protected void displayItemCountFields(View item, Cursor cursor,
                                                  View.OnClickListener backlinkOnClickListener,
                                                  View.OnClickListener repliesOnClickListener) {
-        int n = 0;
+        displayHeaderBarAgoNo(item, cursor);
         //n += displayNumRefs(item, cursor, backlinkOnClickListener);
-        n += displayNumDirectReplies(item, cursor, repliesOnClickListener, true);
-        View wrapper = item.findViewById(R.id.list_item_num_wrapper);
-        if (wrapper == null)
-            return;
-        if (n > 0) {
-            wrapper.setVisibility(View.VISIBLE);
-        }
-        else {
-            wrapper.setVisibility(View.GONE);
-        }
+        displayNumDirectReplies(item, cursor, repliesOnClickListener, true);
     }
 
     static protected int displayNumDirectReplies(View item, Cursor cursor,
@@ -328,13 +331,26 @@ public class ThreadViewer {
     }
 
     static protected boolean setHeaderWrapper(ViewGroup wrapper, int flags) {
-        if ((flags & ChanPost.FLAG_IS_AD) > 0)
+        if ((flags & ChanPost.FLAG_IS_AD) > 0) {
             wrapper.setBackgroundResource(R.drawable.thread_ad_bg_gradient);
-        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
+            wrapper.setVisibility(View.VISIBLE);
+        }
+        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0) {
             wrapper.setBackgroundResource(R.drawable.thread_button_gradient_bg);
-        else
+            wrapper.setVisibility(View.VISIBLE);
+        }
+        else if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0) {
             wrapper.setBackgroundResource(0);
-        wrapper.setVisibility(View.VISIBLE);
+            wrapper.setVisibility(View.VISIBLE);
+        }
+        else if ((flags & ChanPost.FLAG_HAS_HEAD) > 0) {
+            wrapper.setBackgroundResource(0);
+            wrapper.setVisibility(View.VISIBLE);
+        }
+        else {
+            wrapper.setBackgroundResource(0);
+            wrapper.setVisibility(View.GONE);
+        }
         return true;
     }
 
@@ -343,14 +359,21 @@ public class ThreadViewer {
                                           View.OnClickListener repliesOnClickListener,
                                           View.OnClickListener sameIdOnClickListener) {
         String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_HEADLINE_TEXT));
-        if (repliesOnClickListener != null || sameIdOnClickListener != null)
-            tv.setMovementMethod(LinkMovementMethod.getInstance());
+        if (text == null || text.isEmpty()) {
+            tv.setVisibility(View.GONE);
+            tv.setText("");
+            return true;
+        }
+        //if (repliesOnClickListener != null || sameIdOnClickListener != null)
+        //    tv.setMovementMethod(LinkMovementMethod.getInstance());
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text));
-        if (repliesOnClickListener != null)
-            addLinkedSpans(spannable, REPLY_PATTERN, repliesOnClickListener);
+        //if (repliesOnClickListener != null)
+        //    addLinkedSpans(spannable, REPLY_PATTERN, repliesOnClickListener);
         if (cursor.getBlob(cursor.getColumnIndex(ChanPost.POST_SAME_IDS_BLOB)) != null
-                && sameIdOnClickListener != null)
+                && sameIdOnClickListener != null) {
+            tv.setMovementMethod(LinkMovementMethod.getInstance());
             addLinkedSpans(spannable, ID_PATTERN, sameIdOnClickListener);
+        }
         tv.setText(spannable);
         tv.setVisibility(View.VISIBLE);
         return true;
@@ -363,9 +386,12 @@ public class ThreadViewer {
             tv.setVisibility(View.GONE);
             return true;
         }
-        String text = "";
-        if ((flags & ChanPost.FLAG_HAS_SUBJECT) > 0)
-            text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+        if ((flags & ChanPost.FLAG_HAS_SUBJECT) == 0) {
+            tv.setText("");
+            tv.setVisibility(View.GONE);
+            return true;
+        }
+        String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
         /*
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
             if ((flags & ChanPost.FLAG_IS_CLOSED) > 0)
@@ -374,13 +400,13 @@ public class ThreadViewer {
                 text = tv.getResources().getString(R.string.thread_is_dead) + (text.isEmpty() ? "" : " ") + text;
         }
         */
-        if (DEBUG) Log.i(TAG, "setSubject text=" + text);
-        if (backlinkOnClickListener != null)
-            tv.setMovementMethod(LinkMovementMethod.getInstance());
+        if (DEBUG) Log.v(TAG, "setSubject text=" + text);
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text, null, spoilerTagHandler));
         if (spannable.length() > 0) {
-            if (backlinkOnClickListener != null)
+            if (backlinkOnClickListener != null) {
+                tv.setMovementMethod(LinkMovementMethod.getInstance());
                 addLinkedSpans(spannable, POST_PATTERN, backlinkOnClickListener);
+            }
             tv.setText(spannable);
             if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
                 tv.setTypeface(subjectTypeface);
@@ -399,31 +425,39 @@ public class ThreadViewer {
     static private boolean setText(final TextView tv, final Cursor cursor, int flags,
                                    final View.OnClickListener backlinkOnClickListener,
                                    final View.OnClickListener exifOnClickListener) {
-        String text;
-        if ((flags & ChanPost.FLAG_IS_AD) > 0)
-            text = "";
-        else if ((flags & ChanPost.FLAG_HAS_TEXT) > 0)
-            text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
-        else
-            text = "";
+        if ((flags & ChanPost.FLAG_IS_AD) > 0) {
+            tv.setVisibility(View.GONE);
+            tv.setText("");
+            return true;
+        }
+
+        if ((flags & (ChanPost.FLAG_HAS_TEXT | ChanPost.FLAG_HAS_EXIF)) == 0) {
+            tv.setVisibility(View.GONE);
+            tv.setText("");
+            return true;
+        }
+
+        String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
         if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null)
             text += (text.isEmpty() ? "" : " ") + SHOW_EXIF_HTML;
-        if (DEBUG) Log.i(TAG, "setText text=" + text);
+
+        Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text, null, spoilerTagHandler));
+        if (spannable.length() == 0) {
+            tv.setVisibility(View.GONE);
+            tv.setText("");
+            return true;
+        }
+
         if (backlinkOnClickListener != null || exifOnClickListener != null)
             tv.setMovementMethod(LinkMovementMethod.getInstance());
-        Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text, null, spoilerTagHandler));
         if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null)
             addExifSpan(tv, spannable, exifOnClickListener);
-        if (spannable.length() > 0) {
-            if (backlinkOnClickListener != null)
-                addLinkedSpans(spannable, POST_PATTERN, backlinkOnClickListener);
-            tv.setText(spannable);
-            tv.setVisibility(View.VISIBLE);
-        }
-        else {
-            tv.setText("");
-            tv.setVisibility(View.GONE);
-        }
+        if (backlinkOnClickListener != null)
+            addLinkedSpans(spannable, POST_PATTERN, backlinkOnClickListener);
+
+        if (DEBUG) Log.v(TAG, "setText spannable=" + spannable + " len=" + spannable.length());
+        tv.setText(spannable);
+        tv.setVisibility(View.VISIBLE);
         return true;
     }
 
@@ -532,6 +566,7 @@ public class ThreadViewer {
                     ? (View)iv.getParent().getParent()
                     : (View)iv.getParent().getParent().getParent();
             if (itemView != null) {
+                if (DEBUG) Log.i(TAG, "setImage file=" + file.getAbsolutePath());
                 ThreadExpandImageOnClickListener expander =
                         (new ThreadExpandImageOnClickListener(iv.getContext(), cursor, itemView));
                 expander.setShowProgressBar(false);
@@ -541,6 +576,22 @@ public class ThreadViewer {
         }
 
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
+        if ((flags & ChanPost.FLAG_IS_HEADER) == 0) {
+            if (url != null && !url.isEmpty()) {
+                if (DEBUG) Log.i(TAG, "setImage url=" + url);
+                if (imageOnClickListener != null)
+                    iv.setOnClickListener(imageOnClickListener);
+                iv.setVisibility(View.VISIBLE);
+                imageLoader.displayImage(url, iv, thumbDisplayImageOptions);
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "setImage null image");
+                iv.setVisibility(View.GONE);
+                iv.setImageBitmap(null);
+            }
+            return true;
+        }
+
         int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
         int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
 
@@ -558,8 +609,6 @@ public class ThreadViewer {
             imageSize = sizeHeaderImage(tn_w, tn_h);
             params.width = imageSize.x;
             params.height = imageSize.y;
-            //params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            //params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
         else {
             imageSize = sizeItemImage(tn_w, tn_h);
@@ -574,6 +623,7 @@ public class ThreadViewer {
             iv.setOnClickListener(imageOnClickListener);
         iv.setVisibility(View.VISIBLE);
         ImageLoadingListener listener = ((flags & ChanPost.FLAG_IS_AD) > 0) ? adImageLoadingListener : null;
+        if (DEBUG) Log.i(TAG, "setImage header url=" + url);
         imageLoader.displayImage(url, iv, options, listener);
 
         return true;
@@ -610,7 +660,7 @@ public class ThreadViewer {
             imageSize.x = desiredWidth; // restrict by width normally
             imageSize.y = (int) ((double) desiredWidth / scaleFactor);
         }
-        if (DEBUG) Log.i(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + imageSize.x + "x" + imageSize.y);
+        if (DEBUG) Log.v(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + imageSize.x + "x" + imageSize.y);
         return imageSize;
     }
 
