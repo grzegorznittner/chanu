@@ -37,6 +37,7 @@
                     android:layout_width="@dimen/ThreadListHeader_subjectHeight"
                     android:layout_height="@dimen/ThreadListHeader_subjectHeight"
                     android:padding="@dimen/ThreadListHeader_micro_padding"
+                    android:layout_marginRight="@dimen/ThreadListHeader_small_padding"
                     android:src="@drawable/glyphish_skull_dark"/>
         </LinearLayout>
         <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
