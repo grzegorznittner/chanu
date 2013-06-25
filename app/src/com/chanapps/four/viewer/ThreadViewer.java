@@ -13,9 +13,11 @@ import android.text.*;
 import android.text.method.LinkMovementMethod;
 import android.text.style.*;
 import android.util.DisplayMetrics;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.android.gallery3d.ui.Log;
@@ -110,6 +112,7 @@ public class ThreadViewer {
                                        View.OnClickListener sameIdOnClickListener,
                                        View.OnClickListener exifOnClickListener,
                                        View.OnClickListener postReplyListener,
+                                       View.OnClickListener overflowListener,
                                        View.OnLongClickListener startActionModeListener
                                        ) {
         initStatics(view);
@@ -134,6 +137,7 @@ public class ThreadViewer {
                     backlinkOnClickListener, repliesOnClickListener, sameIdOnClickListener,
                     exifOnClickListener,
                     postReplyListener,
+                    overflowListener,
                     startActionModeListener);
     }
 
@@ -164,20 +168,15 @@ public class ThreadViewer {
                                           View.OnClickListener sameIdOnClickListener,
                                           View.OnClickListener exifOnClickListener,
                                           View.OnClickListener postReplyListener,
+                                          View.OnClickListener overflowListener,
                                           final View.OnLongClickListener startActionModeListener) {
-        if (startActionModeListener != null)
-            view.setOnLongClickListener(startActionModeListener);
+        //if (startActionModeListener != null)
+        //    view.setOnLongClickListener(startActionModeListener);
         switch (view.getId()) {
             case R.id.list_item:
                 View overflow = view.findViewById(R.id.list_item_header_bar_overflow_wrapper);
-                if (overflow != null) {
-                    overflow.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            startActionModeListener.onLongClick(v);
-                        }
-                    });
-                }
+                if (overflow != null)
+                    overflow.setOnClickListener(overflowListener);
                 return setItem((ViewGroup) view, cursor, flags, showContextMenu,
                         backlinkOnClickListener, repliesOnClickListener, postReplyListener);
             case R.id.list_item_image_expanded_wrapper:
@@ -233,9 +232,9 @@ public class ThreadViewer {
         View listItemLeftSpacer = item.findViewById(R.id.list_item_left_spacer);
         if (listItemLeftSpacer != null)
             listItemLeftSpacer.setVisibility((flags & ChanPost.FLAG_HAS_IMAGE) > 0 ? View.GONE : View.VISIBLE);
-        View rightBar = item.findViewById(R.id.list_item_header_bar_right_border);
-        if (rightBar != null)
-            rightBar.setVisibility(showContextMenu ? View.VISIBLE : View.GONE);
+        //View rightBar = item.findViewById(R.id.list_item_header_bar_right_border);
+        //if (rightBar != null)
+        //    rightBar.setVisibility(showContextMenu ? View.VISIBLE : View.GONE);
         View reply = item.findViewById(R.id.list_item_header_bar_reply_wrapper);
         if (reply != null) {
             reply.setVisibility(
@@ -285,7 +284,7 @@ public class ThreadViewer {
         String dateText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_DATE_TEXT));
         TextView ago = (TextView)item.findViewById(R.id.list_item_header_bar_ago);
         if (ago != null)
-            ago.setText(dateText);
+            ago.setText("[ " + dateText + " ]");
         long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         TextView no = (TextView)item.findViewById(R.id.list_item_header_bar_no);
         if (no != null)

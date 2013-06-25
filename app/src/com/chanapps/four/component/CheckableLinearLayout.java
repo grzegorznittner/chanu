@@ -45,7 +45,8 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
 
     protected void setBackground() {
         if (isChecked)
-            setBackgroundColor(R.color.PaletteChanuGreenHalfOpacity);
+            //setBackgroundColor(R.color.PaletteChanuGreenHalfOpacity);
+            ;//setBackgroundColor(R.color.blue_base);
         else
             setBackgroundDrawable(null);
     }

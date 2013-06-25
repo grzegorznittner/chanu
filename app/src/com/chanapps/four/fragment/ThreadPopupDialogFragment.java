@@ -258,6 +258,7 @@ public class ThreadPopupDialogFragment
                 null, //threadListener.sameIdOnClickListener,
                 threadListener.exifOnClickListener,
                 null,
+                null,
                 null);
     }
 

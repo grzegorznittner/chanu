@@ -510,6 +510,7 @@ public class ThreadActivity
                 threadListener.sameIdOnClickListener,
                 threadListener.exifOnClickListener,
                 postReplyListener,
+                overflowListener,
                 startActionModeListener);
     }
 
@@ -1392,4 +1393,97 @@ public class ThreadActivity
         }
     }
 
+    protected View.OnClickListener overflowListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            uncheckAll();
+            int pos = absListView.getPositionForView(v);
+            if (pos >= 0) {
+                absListView.setItemChecked(pos, true);
+                postNo = absListView.getItemIdAtPosition(pos);
+            }
+            updateSharedIntent();
+            PopupMenu popup = new PopupMenu(ThreadActivity.this, v);
+            popup.inflate(R.menu.thread_context_menu);
+            popup.setOnMenuItemClickListener(popupListener);
+            popup.setOnDismissListener(popupDismissListener);
+            MenuItem shareItem = popup.getMenu().findItem(R.id.thread_context_share_action_menu);
+            shareActionProvider = shareItem == null ? null : (ShareActionProvider) shareItem.getActionProvider();
+            popup.show();
+        }
+    };
+
+    protected PopupMenu.OnMenuItemClickListener popupListener = new PopupMenu.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            long[] postNos = absListView.getCheckedItemIds();
+            SparseBooleanArray postPos = absListView.getCheckedItemPositions();
+            if (postNos.length == 0) {
+                Toast.makeText(getApplicationContext(), R.string.thread_no_posts_selected, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            switch (item.getItemId()) {
+                case R.id.post_reply_all_menu:
+                    if (DEBUG) Log.i(TAG, "Post nos: " + Arrays.toString(postNos));
+                    postReply(postNos);
+                    return true;
+                case R.id.post_reply_all_quote_menu:
+                    String quotesText = selectQuoteText(postPos);
+                    postReply(quotesText);
+                    return true;
+                case R.id.copy_text_menu:
+                    String selectText = selectText(postPos);
+                    copyToClipboard(selectText);
+                    //(new SelectTextDialogFragment(text)).show(getSupportFragmentManager(), SelectTextDialogFragment.TAG);
+                    return true;
+                case R.id.download_images_to_gallery_menu:
+                    ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null, postNos);
+                    Toast.makeText(ThreadActivity.this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.image_search_menu:
+                    imageSearch(postPos, IMAGE_SEARCH_ROOT);
+                    return true;
+                case R.id.anime_image_search_menu:
+                    imageSearch(postPos, IMAGE_SEARCH_ROOT_ANIME);
+                    return true;
+                case R.id.translate_posts_menu:
+                    return translatePosts(postPos);
+                case R.id.delete_posts_menu:
+                    (new DeletePostDialogFragment(boardCode, threadNo, postNos))
+                            .show(getSupportFragmentManager(), DeletePostDialogFragment.TAG);
+                    return true;
+                case R.id.report_posts_menu:
+                    (new ReportPostDialogFragment(boardCode, threadNo, postNos))
+                            .show(getSupportFragmentManager(), ReportPostDialogFragment.TAG);
+                    return true;
+                case R.id.block_posts_menu:
+                    Map<ChanBlocklist.BlockType, List<String>> blocklist = extractBlocklist(postPos);
+                    (new BlocklistSelectToAddDialogFragment(blocklist)).show(getFragmentManager(), TAG);
+                    return true;
+                case R.id.web_menu:
+                    String url = ChanPost.postUrl(boardCode, threadNo, postNos[0]);
+                    ChanHelper.launchUrlInBrowser(ThreadActivity.this, url);
+                default:
+                    return false;
+
+            }
+        }
+    };
+
+    protected PopupMenu.OnDismissListener popupDismissListener = new PopupMenu.OnDismissListener() {
+        @Override
+        public void onDismiss(PopupMenu menu) {
+            uncheckAll();
+        }
+    };
+
+    protected void uncheckAll() {
+        SparseBooleanArray checked = absListView.getCheckedItemPositions();
+        for (int i = 0; i < checked.size(); i++) {
+            int pos = checked.keyAt(i);
+            if (checked.get(pos, false))
+                absListView.setItemChecked(pos, false);
+        }
+    }
 }

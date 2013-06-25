@@ -116,6 +116,7 @@
     <dimen name="ThreadListHeader_padding">32dp</dimen>
     <dimen name="ThreadListHeader_med_padding">24dp</dimen>
     <dimen name="ThreadListHeader_small_padding">16dp</dimen>
+    <dimen name="ThreadListHeader_mini_padding">12dp</dimen>
     <dimen name="ThreadListHeader_micro_padding">8dp</dimen>
 
     <dimen name="ThreadListHeaderImage_layout_marginTop">16dp</dimen>
