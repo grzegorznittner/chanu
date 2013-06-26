@@ -1010,6 +1010,7 @@
         <item>@string/board_type_misc</item>
         -->
         <item>@string/board_watch</item>
+        <item>@string/about_menu</item>
     </string-array>
 
     <string-array name="long_board_array">
@@ -1100,6 +1101,7 @@
         <item>@string/board_type_other</item>
         -->
         <item>@string/board_watch</item>
+        <item>@string/about_menu</item>
     </string-array>
 
     <string-array name="long_board_array_worksafe">
