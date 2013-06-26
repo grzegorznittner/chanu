@@ -626,6 +626,7 @@ public class ChanFileStorage {
         }
 
         storeBoardData(context, board);
+        WidgetProviderUtils.updateAll(context, ChanBoard.WATCHLIST_BOARD_CODE);
     }
 
     public static void deleteWatchedThread(Context context, ChanThread thread) throws IOException {
@@ -639,12 +640,14 @@ public class ChanFileStorage {
         board.threads = newThreads.toArray(new ChanPost[]{});
 
         storeBoardData(context, board);
+        WidgetProviderUtils.updateAll(context, ChanBoard.WATCHLIST_BOARD_CODE);
     }
 
     public static void clearWatchedThreads(Context context) throws IOException {
         ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
         board.threads = new ChanThread[]{};
         storeBoardData(context, board);
+        WidgetProviderUtils.updateAll(context, ChanBoard.WATCHLIST_BOARD_CODE);
     }
 
     private static void updateWatchedThread(Context context, ChanThread loadedThread) throws IOException {
