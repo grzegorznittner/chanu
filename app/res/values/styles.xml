@@ -779,6 +779,7 @@
         <item name="android:layout_marginRight">@dimen/ThreadListHeader_micro_padding</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_alignParentRight">true</item>
+        <item name="android:background">@drawable/thread_list_selector_bg</item>
     </style>
 
     <style name="ThreadListHeaderBarOverflowIcon" parent="AppTheme">
@@ -794,6 +795,7 @@
         <item name="android:layout_marginRight">@dimen/ThreadListHeader_micro_padding</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_alignParentRight">true</item>
+        <item name="android:background">@drawable/thread_list_selector_bg</item>
     </style>
 
     <style name="ThreadListItemBarOverflowIcon" parent="AppTheme">

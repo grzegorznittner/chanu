@@ -339,9 +339,9 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null);
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.view_image_gallery_menu:
-                GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
-                return true;
+            //case R.id.view_image_gallery_menu:
+            //    GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
+            //    return true;
             case R.id.offline_board_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);
                 return true;

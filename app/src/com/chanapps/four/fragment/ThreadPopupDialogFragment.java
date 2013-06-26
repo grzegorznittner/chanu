@@ -260,6 +260,7 @@ public class ThreadPopupDialogFragment
                 threadListener.exifOnClickListener,
                 null,
                 null,
+                null,
                 null);
     }
 

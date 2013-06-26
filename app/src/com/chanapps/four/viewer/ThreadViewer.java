@@ -13,19 +13,15 @@ import android.text.*;
 import android.text.method.LinkMovementMethod;
 import android.text.style.*;
 import android.util.DisplayMetrics;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.ThreadExpandImageOnClickListener;
-import com.chanapps.four.component.ThreadImageOnClickListener;
 import com.chanapps.four.data.ChanAd;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
@@ -55,8 +51,6 @@ public class ThreadViewer {
 
     public static final int ITEM_THUMB_WIDTH_DP = 96;
     public static final int ITEM_THUMB_MAXHEIGHT_DP = ITEM_THUMB_WIDTH_DP;
-    public static final int ITEM_THUMB_EMPTY_DP = 8;
-    public static final int DEFAULT_AD_HEIGHT_DP = 48;
     public static final int MAX_HEADER_SCALE = 2;
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
@@ -65,7 +59,6 @@ public class ThreadViewer {
 
     private static DisplayMetrics displayMetrics = null;
     private static Typeface subjectTypeface = null;
-    private static int defaultAdHeight = 0;
     private static int itemThumbWidth = 0;
     private static int itemThumbMaxHeight = 0;
     private static ImageLoader imageLoader = null;
@@ -78,7 +71,6 @@ public class ThreadViewer {
         Resources res = view.getResources();
         displayMetrics = res.getDisplayMetrics();
         subjectTypeface = Typeface.createFromAsset(res.getAssets(), SUBJECT_FONT);
-        defaultAdHeight = ChanGridSizer.dpToPx(displayMetrics, DEFAULT_AD_HEIGHT_DP);
         itemThumbWidth = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
         itemThumbMaxHeight = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_MAXHEIGHT_DP);
         imageLoader = ChanImageLoader.getInstance(view.getContext());
@@ -115,6 +107,7 @@ public class ThreadViewer {
                                        View.OnClickListener exifOnClickListener,
                                        View.OnClickListener postReplyListener,
                                        View.OnClickListener overflowListener,
+                                       View.OnClickListener expandedImageListener,
                                        View.OnLongClickListener startActionModeListener
                                        ) {
         initStatics(view);
@@ -143,13 +136,14 @@ public class ThreadViewer {
                     exifOnClickListener,
                     postReplyListener,
                     overflowListener,
+                    expandedImageListener,
                     startActionModeListener);
     }
 
     public static boolean setListLinkView(final View view, final Cursor cursor, int flags) {
         switch (view.getId()) {
             case R.id.list_item:
-                return setItem((ViewGroup) view, cursor, flags, false, null, null, null, null);
+                return setItem((ViewGroup) view, cursor, flags, false, null, null, null, null, null);
             case R.id.list_item_image_wrapper:
                 return setImageWrapper((ViewGroup) view, cursor, flags);
             case R.id.list_item_image:
@@ -175,22 +169,21 @@ public class ThreadViewer {
                                           View.OnClickListener exifOnClickListener,
                                           View.OnClickListener postReplyListener,
                                           View.OnClickListener overflowListener,
+                                          View.OnClickListener expandedImageListener,
                                           final View.OnLongClickListener startActionModeListener) {
         //if (startActionModeListener != null)
         //    view.setOnLongClickListener(startActionModeListener);
         switch (view.getId()) {
             case R.id.list_item:
-                View overflow = view.findViewById(R.id.list_item_header_bar_overflow_wrapper);
-                if (overflow != null)
-                    overflow.setOnClickListener(overflowListener);
                 return setItem((ViewGroup) view, cursor, flags, showContextMenu,
-                        backlinkOnClickListener, imagesOnClickListener, repliesOnClickListener, postReplyListener);
+                        backlinkOnClickListener, imagesOnClickListener, repliesOnClickListener,
+                        postReplyListener, overflowListener);
             case R.id.list_item_image_expanded_wrapper:
                 return setImageExpandedWrapper((ViewGroup) view);
             case R.id.list_item_image_expanded:
                 return setImageExpanded((ImageView) view);
             case R.id.list_item_image_expanded_click_effect:
-                return setImageExpandedClickEffect(view, cursor, flags, imageOnClickListener);
+                return setImageExpandedClickEffect(view, cursor, flags, expandedImageListener);
             case R.id.list_item_expanded_progress_bar:
                 return setImageExpandedProgressBar((ProgressBar) view);
             case R.id.list_item_image_wrapper:
@@ -227,7 +220,8 @@ public class ThreadViewer {
                                      View.OnClickListener backlinkOnClickListener,
                                      View.OnClickListener imagesOnClickListener,
                                      View.OnClickListener repliesOnClickListener,
-                                     View.OnClickListener postReplyListener) {
+                                     View.OnClickListener postReplyListener,
+                                     View.OnClickListener overflowListener) {
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         item.setTag((flags & ChanPost.FLAG_IS_AD) > 0 ? null : postId);
         item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.FALSE);
@@ -252,8 +246,16 @@ public class ThreadViewer {
                 reply.setOnClickListener(postReplyListener);
         }
         View overflow = item.findViewById(R.id.list_item_header_bar_overflow_wrapper);
-        if (overflow != null)
-            overflow.setVisibility(showContextMenu ? View.VISIBLE : View.GONE);
+        if (overflow != null) {
+            if (showContextMenu) {
+                overflow.setOnClickListener(overflowListener);
+                overflow.setVisibility(View.VISIBLE);
+            }
+            else {
+                overflow.setOnClickListener(null);
+                overflow.setVisibility(View.GONE);
+            }
+        }
         item.setVisibility(View.VISIBLE);
         /*
         if (cursor.getPosition() == 1) {
@@ -645,7 +647,6 @@ public class ThreadViewer {
                     iv.setVisibility(View.VISIBLE);
                     ThreadExpandImageOnClickListener expander =
                             (new ThreadExpandImageOnClickListener(iv.getContext(), cursor, itemView));
-                    expander.setShowProgressBar(false);
                     expander.onClick(itemView);
                     return true;
                 }
@@ -771,8 +772,9 @@ public class ThreadViewer {
                 | ChanPost.FLAG_IS_TITLE
                 | ChanPost.FLAG_IS_THREADLINK
                 | ChanPost.FLAG_IS_BOARDLINK
-                | ChanPost.FLAG_NO_EXPAND)) == 0)
+                | ChanPost.FLAG_NO_EXPAND)) == 0) {
             view.setOnClickListener(imageOnClickListener);
+        }
         return true;
     }
 

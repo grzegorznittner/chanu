@@ -512,6 +512,7 @@ public class ThreadActivity
                 threadListener.exifOnClickListener,
                 postReplyListener,
                 overflowListener,
+                expandedImageListener,
                 startActionModeListener);
     }
 
@@ -551,6 +552,25 @@ public class ThreadActivity
             if (postNo == threadNo)
                 postNo = 0;
             PostReplyActivity.startActivity(ThreadActivity.this, boardCode, threadNo, postNo, ChanPost.planifyText(""));
+        }
+    };
+
+    protected View.OnClickListener expandedImageListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = absListView.getPositionForView(v);
+            if (pos < 0)
+                return;
+            Cursor cursor = adapter.getCursor();
+            if (!cursor.moveToPosition(pos))
+                return;
+            long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+            //if (postNo == threadNo)
+            //    postNo = 0;
+            if (postNo > 0)
+                GalleryViewActivity.startActivity(ThreadActivity.this, boardCode, threadNo, postNo);
+            else
+                GalleryViewActivity.startAlbumViewActivity(ThreadActivity.this, boardCode, threadNo);
         }
     };
 
@@ -615,9 +635,6 @@ public class ThreadActivity
                 return true;
             case R.id.watch_thread_menu:
                 addToWatchlist();
-                return true;
-            case R.id.view_image_gallery_menu:
-                GalleryViewActivity.startAlbumViewActivity(this, boardCode, threadNo);
                 return true;
             case R.id.download_all_images_menu:
                 ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);

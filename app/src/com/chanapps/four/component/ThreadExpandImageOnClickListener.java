@@ -36,11 +36,9 @@ import java.net.URI;
 public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
     private static final String TAG = ThreadExpandImageOnClickListener.class.getSimpleName();
-    private static final boolean DEBUG = false;
-    private static final int NO_TEXT_PADDING_TOP_DP = 8;
+    private static final boolean DEBUG = true;
 
     private View itemView;
-    private ViewGroup itemHeaderWrapper;
     private View listItemLeftSpacer;
     private ViewGroup itemThumbnailImageWrapper;
     private ImageView itemThumbnailImage;
@@ -48,31 +46,18 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     private ImageView itemExpandedImage;
     private View itemExpandedImageClickEffect;
     private ProgressBar itemExpandedProgressBar;
-    private TextView itemSubjectView;
-    private TextView itemHeadlineView;
-    private TextView itemTextView;
     private String postImageUrl = null;
-    private String thumbImageUrl = null;
     private int postW = 0;
     private int postH = 0;
     private int listPosition = 0;
     private String fullImagePath = null;
-    private int padding8Dp;
-    private int itemThumbWidth;
-    private int itemThumbEmptyWidth;
     private int flags;
-    private String spoilerSubject;
-    private String spoilerText;
-    private boolean showProgressBar = false;
 
     public ThreadExpandImageOnClickListener(Context context, final Cursor cursor, final View itemView) {
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
         String postExt = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXT));
         Uri uri = ChanFileStorage.getLocalImageUri(context, boardCode, postId, postExt);
-        thumbImageUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
-        spoilerSubject = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_SUBJECT));
-        spoilerText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SPOILER_TEXT));
 
         this.itemView = itemView;
         itemThumbnailImageWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_image_wrapper);
@@ -82,14 +67,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
         itemExpandedImageClickEffect = itemView.findViewById(R.id.list_item_image_expanded_click_effect);
         itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
-        itemSubjectView = (TextView)itemView.findViewById(R.id.list_item_subject);
-        itemHeadlineView = (TextView)itemView.findViewById(R.id.list_item_header);
-        itemTextView = (TextView)itemView.findViewById(R.id.list_item_text);
-
-        DisplayMetrics displayMetrics = itemExpandedImage.getResources().getDisplayMetrics();
-        padding8Dp = ChanGridSizer.dpToPx(displayMetrics, NO_TEXT_PADDING_TOP_DP);
-        itemThumbWidth = ChanGridSizer.dpToPx(displayMetrics, ThreadViewer.ITEM_THUMB_WIDTH_DP);
-        itemThumbEmptyWidth = ChanGridSizer.dpToPx(displayMetrics, ThreadViewer.ITEM_THUMB_EMPTY_DP);
 
         listPosition = cursor.getPosition();
         postW = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_W));
@@ -100,19 +77,12 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         if (DEBUG) Log.i(TAG, "postUrl=" + postImageUrl + " postSize=" + postW + "x" + postH);
     }
 
-    public void setShowProgressBar(boolean show) {
-        showProgressBar = show;
-    }
-
     private void collapseImageView() {
         if (DEBUG) Log.i(TAG, "collapsed pos=" + listPosition);
-        //ChanHelper.clearBigImageView(itemExpandedImage);
         if (itemExpandedWrapper != null)
             itemExpandedWrapper.setVisibility(View.GONE);
         if (itemExpandedProgressBar != null)
             itemExpandedProgressBar.setVisibility(View.GONE);
-        //itemExpandedImage.setVisibility(View.GONE);
-        //showThumbnail();
     }
 
     private void hideThumbnail() {
@@ -130,54 +100,9 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         if (listItemLeftSpacer != null)
             listItemLeftSpacer.setVisibility(View.VISIBLE);
         itemThumbnailImageWrapper.setVisibility(View.GONE);
-        /*
-        ViewGroup.LayoutParams params = itemThumbnailImageWrapper.getLayoutParams();
-        if (params == null)
-            return;
-        params.width = itemThumbEmptyWidth;
-
-        if (itemHeaderWrapper == null) {
-            if (DEBUG) Log.i(TAG, "Skipping adjusting thumbnail height, no header wrapper");
-            return;
-        }
-        ViewGroup.LayoutParams params2 = itemHeaderWrapper.getLayoutParams();
-        if (params2 == null)
-            return;
-
-        // find wrapper height, wrap_content doesn't work in this case
-        int subjectHeight = measureTextViewHeight(itemSubjectView);
-        int spacer = subjectHeight > 0 ? padding8Dp : 0;
-        int headlineHeight = measureTextViewHeight(itemHeadlineView);
-        int wrapperHeight = padding8Dp/2 + subjectHeight + spacer + headlineHeight + padding8Dp;
-        if (DEBUG) Log.i(TAG, "subjectHeight=" + subjectHeight + " headlineHeight=" + headlineHeight + " wrapperHeight=" + wrapperHeight);
-        params2.height = wrapperHeight; // for some reason doesn't respect wrap_content
-        */
     }
 
-    /*
-    private int measureTextViewHeight(TextView tv) {
-        Context context = tv.getContext();
-        CharSequence text = tv.getText();
-        if (text == null || text.length() == 0)
-            return 0;
-        TextPaint paint = tv.getPaint();
-        int width = context.getResources().getDisplayMetrics().widthPixels - 4 * padding8Dp;
-        StaticLayout staticLayout = new StaticLayout(text, paint, width, Layout.Alignment.ALIGN_NORMAL, 1.0f, 1.0f, false);
-        return staticLayout.getHeight();
-    }
 
-    private void showThumbnail() {
-        if (itemThumbnailImageWrapper == null || itemThumbnailImage == null)
-            return;
-        ViewGroup.LayoutParams params = itemThumbnailImageWrapper.getLayoutParams();
-        if (params == null)
-            return;
-        params.width = itemThumbWidth;
-        if (listItemLeftSpacer != null)
-            listItemLeftSpacer.setVisibility(View.GONE);
-       ChanImageLoader.getInstance(itemThumbnailImage.getContext()).displayImage(thumbImageUrl, itemThumbnailImage);
-    }
-    */
     @Override
     public void onClick(View v) {
         if (DEBUG) Log.i(TAG, "expanding pos=" + listPosition);
@@ -185,47 +110,11 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
             expandImage();
     }
 
-    /*
-    private Point calculateImageDimensions() {
-        if (DEBUG) Log.i(TAG, "post size " + postW + "x" + postH);
-        DisplayMetrics displayMetrics = itemExpandedImage.getResources().getDisplayMetrics();
-        int maxWidth = Math.min(displayMetrics.widthPixels, displayMetrics.heightPixels);
-        int maxHeight = maxWidth; // to avoid excessively big images
-        //itemExpandedImage.setMaxWidth(maxWidth);
-        //itemExpandedImage.setMaxHeight(maxHeight);
-        if (DEBUG) Log.i(TAG, "max size " + maxWidth + "x" + maxHeight);
-        float scaleFactor = 1;
-        if (postW >= postH) {
-            // square or wide image, base sizing on width
-            if (postW > maxWidth)
-                scaleFactor = (float)maxWidth / (float)postW;
-        }
-        else {
-            // tall image
-            if (postH > maxHeight)
-                scaleFactor = (float)maxHeight / (float)postH;
-        }
-        int width = Math.round(scaleFactor * (float)postW);
-        int height = Math.round(scaleFactor * (float)postH);
-        return new Point(width, height);
-    }
-    */
     private void setImageDimensions(Point targetSize) {
         ViewGroup.LayoutParams params = itemExpandedImage.getLayoutParams();
         if (params != null) {
-            /*
-            if ((flags & ChanPost.FLAG_IS_HEADER) > 0
-                    && itemThumbnailImage != null
-                    && itemThumbnailImage.getLayoutParams() != null) { // for thread header use existing params
-                ViewGroup.LayoutParams thumbParams = itemThumbnailImage.getLayoutParams();
-                params.width = thumbParams.width;
-                params.height = thumbParams.height;
-            }
-            else {
-            */
             params.width = targetSize.x;
             params.height = targetSize.y;
-            //}
             if (DEBUG) Log.i(TAG, "set expanded image size=" + params.width + "x" + params.height);
             ViewGroup.LayoutParams params2 = itemExpandedImageClickEffect.getLayoutParams();
             if (params2 != null) {
@@ -236,27 +125,10 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         }
     }
 
-    /*
-    private void scheduleScrollIfNeeded(Point targetSize) {
-        int lastPosition = threadActivity.getAbsListView().getLastVisiblePosition();
-        boolean shouldMove = listPosition > 0 && listPosition >= lastPosition - 1;
-        if (shouldMove && threadActivity.getChanHandler() != null) {
-            final int scrollDistance = targetSize.y;
-            threadActivity.getChanHandler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    threadActivity.getAbsListView().smoothScrollBy(scrollDistance, 250);
-                }
-            }, 250);
-        }
-    }
-    */
-
     private void displayImage(Point targetSize) {
         if (DEBUG) Log.i(TAG, "Set expanded image to visible");
         if (itemExpandedProgressBar != null)
             itemExpandedProgressBar.setVisibility(View.VISIBLE);
-            //itemExpandedProgressBar.setVisibility(showProgressBar ? View.VISIBLE : View.GONE);
 
         int width = targetSize.x; // may need to adjust to avoid out of mem
         int height = targetSize.y;
@@ -309,8 +181,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
                 hideThumbnail();
                 if (itemView != null)
                     itemView.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.TRUE);
-                //if (itemThumbnailImage != null && listPosition == 0) // thread header loads image over thumbnail
-                //    itemThumbnailImage.setImageDrawable(null);
             }
 
             @Override
@@ -346,10 +216,8 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         clearImage();
         ThreadViewer.initStatics(itemExpandedImage);
         Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
-        //calculateImageDimensions();
         if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
         setImageDimensions(targetSize);
-        //scheduleScrollIfNeeded(targetSize);
         displayImage(targetSize);
     }
 

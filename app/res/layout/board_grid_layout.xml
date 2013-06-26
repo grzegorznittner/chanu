@@ -9,13 +9,14 @@
         android:padding="0dp"
         android:background="@color/PaletteOffWhite"
         >
-        
-	<GridView
-            android:id="@+id/board_grid_view"
-            style="@style/BoardGridView"
-            />
 
     <include layout="@layout/board_refresh_bar"/>
+
+    <GridView
+            android:id="@+id/board_grid_view"
+            style="@style/BoardGridView"
+            android:layout_below="@+id/board_refresh_bar"
+            />
 
     <TextView
             android:id="@+id/board_grid_empty_text"

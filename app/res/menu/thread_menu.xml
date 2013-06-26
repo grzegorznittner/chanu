@@ -7,11 +7,6 @@
           android:showAsAction="collapseActionView"
           android:actionViewClass="android.widget.SearchView"/>
 
-    <item android:id="@+id/view_image_gallery_menu"
-          android:title="@string/view_image_gallery_menu"
-          android:icon="@drawable/content_picture"
-            />
-
     <item android:id="@+id/watch_thread_menu"
           android:title="@string/watch_thread_menu"
           android:icon="@drawable/rating_important"
@@ -49,13 +44,4 @@
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"
             />
-    <item android:id="@+id/about_menu"
-          android:title="@string/about_menu"
-          android:icon="@drawable/action_about"
-            />
-    <item android:id="@+id/exit_menu"
-          android:title="@string/exit_menu"
-          android:icon="@drawable/navigation_cancel"
-            />
-
 </menu>
