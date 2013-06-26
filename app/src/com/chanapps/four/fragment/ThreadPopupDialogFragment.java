@@ -254,6 +254,7 @@ public class ThreadPopupDialogFragment
                 0,
                 threadListener.imageOnClickListener,
                 null, //threadListener.backlinkOnClickListener,
+                null,
                 null, //threadListener.repliesOnClickListener,
                 null, //threadListener.sameIdOnClickListener,
                 threadListener.exifOnClickListener,

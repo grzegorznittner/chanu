@@ -88,6 +88,7 @@ public class ThreadViewer {
                 .cacheInMemory()
                 .imageScaleType(ImageScaleType.NONE)
                 .resetViewBeforeLoading()
+                .showStubImage(R.drawable.ic_contact_picture_2)
                 .build();
     }
 
@@ -108,6 +109,7 @@ public class ThreadViewer {
                                        int columnHeight,
                                        View.OnClickListener imageOnClickListener,
                                        View.OnClickListener backlinkOnClickListener,
+                                       View.OnClickListener imagesOnClickListener,
                                        View.OnClickListener repliesOnClickListener,
                                        View.OnClickListener sameIdOnClickListener,
                                        View.OnClickListener exifOnClickListener,
@@ -134,7 +136,10 @@ public class ThreadViewer {
             return setListItemView(view, cursor, flags,
                     showContextMenu,
                     imageOnClickListener,
-                    backlinkOnClickListener, repliesOnClickListener, sameIdOnClickListener,
+                    backlinkOnClickListener,
+                    imagesOnClickListener,
+                    repliesOnClickListener,
+                    sameIdOnClickListener,
                     exifOnClickListener,
                     postReplyListener,
                     overflowListener,
@@ -144,7 +149,7 @@ public class ThreadViewer {
     public static boolean setListLinkView(final View view, final Cursor cursor, int flags) {
         switch (view.getId()) {
             case R.id.list_item:
-                return setItem((ViewGroup) view, cursor, flags, false, null, null, null);
+                return setItem((ViewGroup) view, cursor, flags, false, null, null, null, null);
             case R.id.list_item_image_wrapper:
                 return setImageWrapper((ViewGroup) view, cursor, flags);
             case R.id.list_item_image:
@@ -164,6 +169,7 @@ public class ThreadViewer {
                                           boolean showContextMenu,
                                           View.OnClickListener imageOnClickListener,
                                           View.OnClickListener backlinkOnClickListener,
+                                          View.OnClickListener imagesOnClickListener,
                                           View.OnClickListener repliesOnClickListener,
                                           View.OnClickListener sameIdOnClickListener,
                                           View.OnClickListener exifOnClickListener,
@@ -178,7 +184,7 @@ public class ThreadViewer {
                 if (overflow != null)
                     overflow.setOnClickListener(overflowListener);
                 return setItem((ViewGroup) view, cursor, flags, showContextMenu,
-                        backlinkOnClickListener, repliesOnClickListener, postReplyListener);
+                        backlinkOnClickListener, imagesOnClickListener, repliesOnClickListener, postReplyListener);
             case R.id.list_item_image_expanded_wrapper:
                 return setImageExpandedWrapper((ViewGroup) view);
             case R.id.list_item_image_expanded:
@@ -219,6 +225,7 @@ public class ThreadViewer {
     static protected boolean setItem(ViewGroup item, Cursor cursor, int flags,
                                      boolean showContextMenu,
                                      View.OnClickListener backlinkOnClickListener,
+                                     View.OnClickListener imagesOnClickListener,
                                      View.OnClickListener repliesOnClickListener,
                                      View.OnClickListener postReplyListener) {
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
@@ -226,7 +233,7 @@ public class ThreadViewer {
         item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.FALSE);
         item.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, Boolean.FALSE);
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
-            displayHeaderCountFields(item, cursor, showContextMenu, repliesOnClickListener);
+            displayHeaderCountFields(item, cursor, showContextMenu, imagesOnClickListener, repliesOnClickListener);
         else
             displayItemCountFields(item, cursor, showContextMenu, backlinkOnClickListener, repliesOnClickListener);
         View listItemLeftSpacer = item.findViewById(R.id.list_item_left_spacer);
@@ -261,6 +268,7 @@ public class ThreadViewer {
     }
 
     static protected void displayHeaderCountFields(View item, Cursor cursor, boolean showContextMenu,
+                                                   View.OnClickListener imagesOnClickListener,
                                                    View.OnClickListener repliesOnClickListener) {
         displayHeaderBarAgoNo(item, cursor);
         int r = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES));
@@ -277,6 +285,15 @@ public class ThreadViewer {
             numRepliesLabel.setText(item.getResources().getQuantityString(R.plurals.thread_num_replies_label, r));
         if (numImagesLabel != null)
             numImagesLabel.setText(item.getResources().getQuantityString(R.plurals.thread_num_images_label, i));
+
+        View wrapper = item.findViewById(R.id.list_item_num_images);
+        View spinner = item.findViewById(R.id.list_item_num_images_spinner);
+        if (wrapper != null) {
+            wrapper.setOnClickListener(i > 0 ? imagesOnClickListener : null);
+            if (spinner != null)
+                spinner.setVisibility(i > 0 ? View.VISIBLE : View.GONE);
+        }
+
         displayNumDirectReplies(item, cursor, showContextMenu, repliesOnClickListener, false);
     }
 
@@ -284,7 +301,7 @@ public class ThreadViewer {
         String dateText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_DATE_TEXT));
         TextView ago = (TextView)item.findViewById(R.id.list_item_header_bar_ago);
         if (ago != null)
-            ago.setText("[ " + dateText + " ]");
+            ago.setText("~  " + dateText);
         long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         TextView no = (TextView)item.findViewById(R.id.list_item_header_bar_no);
         if (no != null)
@@ -321,13 +338,18 @@ public class ThreadViewer {
                     item.getResources().getQuantityString(R.plurals.thread_num_direct_replies_label, directReplies));
 
         numDirectReplies.setText(String.valueOf(directReplies));
+        View spinner = item.findViewById(R.id.list_item_num_direct_replies_spinner);
         if (directReplies > 0) {
             wrapper.setOnClickListener(repliesOnClickListener);
+            if (spinner != null)
+                spinner.setVisibility(View.VISIBLE);
             if (markVisibility)
                 wrapper.setVisibility(View.VISIBLE);
         }
         else {
             wrapper.setOnClickListener(null);
+            if (spinner != null)
+                spinner.setVisibility(View.GONE);
             if (markVisibility)
                 wrapper.setVisibility(View.GONE);
         }

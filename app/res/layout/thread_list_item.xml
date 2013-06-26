@@ -8,12 +8,13 @@
         >
 
     <RelativeLayout style="@style/ThreadListItemBar">
+        <View style="@style/ThreadListItemBarBackground"/>
         <RelativeLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper">
             <ImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
             <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/>
         </RelativeLayout>
         <View style="@style/ThreadListItemLeftSpacer" android:id="@+id/list_item_left_spacer"/>
-        <LinearLayout style="@style/ThreadListHeaderBarAgoWrapper" android:id="@+id/list_item_ago_wrapper">
+        <LinearLayout style="@style/ThreadListItemBarAgoWrapper" android:id="@+id/list_item_ago_wrapper">
             <TextView style="@style/ThreadListItemBarNo" android:id="@+id/list_item_header_bar_no"/>
             <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_ago"/>
         </LinearLayout>
@@ -54,9 +55,9 @@
             android:paddingBottom="@dimen/ThreadListHeader_med_padding"
             android:orientation="vertical"
             >
-        <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"/>
         <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"/>
         <TextView style="@style/ThreadListItemFullText" android:id="@+id/list_item_text"/>
+        <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"/>
         <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_exif_text"/>
     </LinearLayout>
 

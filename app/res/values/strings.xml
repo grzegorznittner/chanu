@@ -124,7 +124,7 @@
     <string name="post_reply_menu">Reply</string>
     <string name="post_reply_quote_menu">Post quoted reply</string>
     <string name="post_reply_all_menu">Reply</string>
-    <string name="post_reply_all_quote_menu">Ouote</string>
+    <string name="post_reply_all_quote_menu">Quote</string>
     <string name="go_to_link_menu">Go to link</string>
     <string name="go_to_link_not_found">No links found in posts</string>
     <string name="select_text_menu">Select text</string>

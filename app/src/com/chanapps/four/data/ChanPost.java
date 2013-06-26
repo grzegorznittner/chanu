@@ -552,7 +552,7 @@ public class ChanPost {
         if (fsize > 0) {
             int kbSize = (fsize / 1024) + 1;
             String size = (kbSize > 1000) ? (kbSize / 1000) + "MB" : kbSize + "KB";
-            return w + "x" + h + " " + size;
+            return w + "x" + h + " - " + size;
         }
         return "";
     }

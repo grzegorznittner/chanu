@@ -43,6 +43,7 @@ public class BoardGridViewer {
                 .cacheOnDisc()
                 .cacheInMemory()
                 .resetViewBeforeLoading()
+                .showStubImage(R.drawable.ic_contact_picture_2)
                 .build();
     }
 

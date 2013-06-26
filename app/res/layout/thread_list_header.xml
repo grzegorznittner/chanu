@@ -13,6 +13,7 @@
     </RelativeLayout>
 
     <RelativeLayout style="@style/ThreadListHeaderBar">
+        <View style="@style/ThreadListHeaderBarBackground"/>
         <LinearLayout style="@style/ThreadListHeaderBarAgoWrapper" android:id="@+id/list_item_ago_wrapper">
             <TextView style="@style/ThreadListHeaderBarNo" android:id="@+id/list_item_header_bar_no"/>
             <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_ago"/>
@@ -43,10 +44,10 @@
             android:orientation="horizontal">
             <ImageView
                     android:id="@+id/list_item_dead_icon"
-                    android:layout_width="@dimen/ThreadListHeader_padding"
-                    android:layout_height="@dimen/ThreadListHeader_padding"
+                    android:layout_width="@dimen/ThreadListHeaderSubject"
+                    android:layout_height="@dimen/ThreadListHeaderSubject"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginRight="@dimen/ThreadListHeader_padding"
+                    android:layout_marginRight="@dimen/ThreadListHeader_med_padding"
                     android:src="@drawable/geomicons_skull"
                     android:scaleType="fitCenter"
                     android:visibility="gone"/>
@@ -71,11 +72,18 @@
 
         <View style="@style/ThreadListHeaderNumVerticalBorder" android:id="@+id/list_item_num_vertical_border"/>
 
-        <RelativeLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_images">
+        <RelativeLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_images"
+                        android:background="@drawable/thread_list_selector_bg">
             <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
                 <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_images_text"/>
                 <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_images_label"/>
             </LinearLayout>
+            <ImageView android:id="@+id/list_item_num_images_spinner"
+                    android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_alignParentRight="true"
+                       android:layout_alignParentBottom="true"
+                       android:src="@drawable/spinner_default_holo_dark"/>
         </RelativeLayout>
 
         <View style="@style/ThreadListHeaderNumVerticalBorder" android:id="@+id/list_item_num_vertical_border"/>
@@ -84,9 +92,14 @@
                         android:background="@drawable/thread_list_selector_bg">
             <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
                 <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_direct_replies_text"/>
-                <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_direct_replies_label"
-                          android:textColor="@color/blue_base"/>
+                <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_direct_replies_label"/>
             </LinearLayout>
+            <ImageView android:id="@+id/list_item_num_direct_replies_spinner"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_alignParentRight="true"
+                       android:layout_alignParentBottom="true"
+                       android:src="@drawable/spinner_default_holo_dark"/>
         </RelativeLayout>
 
     </LinearLayout>

@@ -506,6 +506,7 @@ public class ThreadActivity
                 columnHeight,
                 threadListener.imageOnClickListener,
                 threadListener.backlinkOnClickListener,
+                imagesOnClickListener,
                 threadListener.repliesOnClickListener,
                 threadListener.sameIdOnClickListener,
                 threadListener.exifOnClickListener,
@@ -529,6 +530,13 @@ public class ThreadActivity
     private void postReply(String replyText) {
         PostReplyActivity.startActivity(this, boardCode, threadNo, 0, ChanPost.planifyText(replyText));
     }
+
+    protected View.OnClickListener imagesOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            GalleryViewActivity.startAlbumViewActivity(ThreadActivity.this, boardCode, threadNo);
+        }
+    };
 
     protected View.OnClickListener postReplyListener = new View.OnClickListener() {
         @Override
