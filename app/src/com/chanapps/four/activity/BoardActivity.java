@@ -69,7 +69,7 @@ public class BoardActivity
     protected int firstVisiblePosition = -1;
     protected int firstVisiblePositionOffset = -1;
 
-    public static void startActivity(Activity from, String boardCode, String query) {
+    public static void startActivity(Context from, String boardCode, String query) {
         //if (query != null && !query.isEmpty())
         //    NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.SEARCH_BOARD);
         from.startActivity(createIntent(from, boardCode, query));

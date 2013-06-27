@@ -6,7 +6,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -17,28 +16,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.service.NetworkProfileManager;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 abstract public class
         AbstractDrawerActivity
-        extends FragmentActivity
-        implements ChanIdentifiedActivity,
-        ListView.OnItemClickListener,
-        ActionBar.OnNavigationListener
+        extends AbstractBoardSpinnerActivity
+        implements ChanIdentifiedActivity
 {
     protected static final String TAG = AbstractDrawerActivity.class.getSimpleName();
     protected static final boolean DEBUG = true;
-    protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
-    protected static final String STATE_SELECTED_NAVIGATION_ITEM = "selectedNavigationItem";
-
-    protected String boardCode;
-    protected long threadNo = 0;
-
-    protected boolean mShowNSFW = false;
 
     protected int mDrawerArrayId;
     protected String[] mDrawerArray;
@@ -47,31 +35,12 @@ abstract public class
     protected ArrayAdapter<String> mDrawerAdapter;
     protected ActionBarDrawerToggle mDrawerToggle;
 
-    protected ActionBar actionBar;
-    protected int mSpinnerArrayId;
-    protected String[] mSpinnerArray;
-    protected ListView mSpinnerList;
-    protected DrawerLayout mSpinnerLayout;
-    protected ArrayAdapter<String> mSpinnerAdapter;
-
-    @Override
-    protected void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-        if (DEBUG) Log.v(TAG, "onCreate");
-        NetworkProfileManager.instance().ensureInitialized(this);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar
-        setContentView(R.layout.drawer_activity_layout);
-        mShowNSFW = ChanBoard.showNSFW(getApplicationContext());
-        createActionBar();
-        createDrawer();
-        createViews(bundle);
+    protected int activityLayout() {
+        return R.layout.drawer_activity_layout;
     }
 
-    protected void createActionBar() {
-        actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        setSpinnerAdapter();
+    protected void createPreViews() {
+        createDrawer();
     }
 
     abstract protected void createViews(Bundle bundle);
@@ -87,15 +56,9 @@ abstract public class
         mDrawerToggle.onConfigurationChanged(config);
     }
 
-    protected void setSpinnerAdapter() {
-        mSpinnerArrayId = mShowNSFW
-                ? R.array.long_board_array
-                : R.array.long_board_array_worksafe;
-        mSpinnerArray = getResources().getStringArray(mSpinnerArrayId);
-        mSpinnerAdapter = new ArrayAdapter<String>(actionBar.getThemedContext(),
-                android.R.layout.simple_spinner_item, android.R.id.text1, mSpinnerArray);
-        mSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        actionBar.setListNavigationCallbacks(mSpinnerAdapter, this);
+    protected void setAdapters() {
+        setSpinnerAdapter();
+        setDrawerAdapter();
     }
 
     protected void setDrawerAdapter() {
@@ -112,7 +75,7 @@ abstract public class
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        mDrawerList.setOnItemClickListener(this);
+        mDrawerList.setOnItemClickListener(drawerClickListener);
         setDrawerAdapter();
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -168,22 +131,7 @@ abstract public class
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item))
             return true;
-        switch (item.getItemId()) {
-            case R.id.settings_menu:
-                if (DEBUG) Log.i(TAG, "Starting settings activity");
-                Intent settingsIntent = new Intent(this, SettingsActivity.class);
-                startActivity(settingsIntent);
-                return true;
-            case R.id.about_menu:
-                Intent intent = new Intent(this, AboutActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.exit_menu:
-                ChanHelper.exitApplication(this);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -202,19 +150,15 @@ abstract public class
 
     abstract public boolean isSelfBoard(String boardAsMenu);
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mDrawerLayout.closeDrawer(mDrawerList);
-        String boardAsMenu = (String) parent.getItemAtPosition(position);
-        if (DEBUG) Log.i(TAG, "onItemClick boardAsMenu=" + boardAsMenu);
-        handleSelectItem(boardAsMenu);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(int position, long id) {
-        String item = mSpinnerAdapter.getItem(position);
-        return handleSelectItem(item);
-    }
+    protected ListView.OnItemClickListener drawerClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            mDrawerLayout.closeDrawer(mDrawerList);
+            String boardAsMenu = (String) parent.getItemAtPosition(position);
+            if (DEBUG) Log.i(TAG, "onItemClick boardAsMenu=" + boardAsMenu);
+            handleSelectItem(boardAsMenu);
+        }
+    };
 
     protected boolean handleSelectItem(String boardAsMenu) {
         if (isSelfBoard(boardAsMenu)) {
@@ -258,47 +202,14 @@ abstract public class
         startActivity(intent);
         return true;
     }
-    /*
-    @Override
-    protected void onRestoreInstanceState(Bundle bundle) {
-        if (bundle.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
-            int pos = bundle.getInt(STATE_SELECTED_NAVIGATION_ITEM);
-            actionBar.setSelectedNavigationItem(pos);
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle bundle) {
-        int pos = actionBar.getSelectedNavigationIndex();
-        bundle.putInt(STATE_SELECTED_NAVIGATION_ITEM, pos);
-    }
-    */
 
     @Override
     protected void onResume() {
         super.onResume();
-        selectActionBarNavigationItem();
         if (threadNo == 0)
             selectDrawerItem();
         else
             mDrawerToggle.setDrawerIndicatorEnabled(false);
-    }
-
-    protected void selectActionBarNavigationItem() {
-        int pos = 0;
-        for (int i = 0; i < mSpinnerAdapter.getCount(); i++) {
-            String boardText = mSpinnerAdapter.getItem(i);
-            BoardType type = BoardType.valueOfDrawerString(this, boardText);
-            if (type != null && type.boardCode().equals(boardCode)) {
-                pos = i;
-                break;
-            }
-            else if (boardText.matches("/" + boardCode + "/.*")) {
-                pos = i;
-                break;
-            }
-        }
-        actionBar.setSelectedNavigationItem(pos);
     }
 
 }

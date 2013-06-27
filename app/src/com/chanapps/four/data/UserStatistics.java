@@ -271,7 +271,6 @@ public class UserStatistics {
 			}
 			tipSet = BOARDSELECTOR_FEATURES;
 			break;
-			*/
 		case POPULAR:
 			if (!displayedTips.contains(ChanFeature.POPULAR_DESC)) {
 				return ChanFeature.POPULAR_DESC;
@@ -284,19 +283,20 @@ public class UserStatistics {
 			}
 			tipSet = WATCHLIST_FEATURES;
 			break;
+        */
 		case BOARD:
 			if (!displayedTips.contains(ChanFeature.BOARD_DESC)) {
 				return ChanFeature.BOARD_DESC;
 			}
 			tipSet = BOARD_FEATURES;
 			break;
+		/*
 		case THREAD:
 			if (!displayedTips.contains(ChanFeature.THREAD_DESC)) {
 				return ChanFeature.THREAD_DESC;
 			}
 			tipSet = THREAD_FEATURES;
 			break;
-		    /*
         case RECENT:
 			if (!displayedTips.contains(ChanFeature.POPULAR_DESC)) {
 				return ChanFeature.POPULAR_DESC;

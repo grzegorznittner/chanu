@@ -9,7 +9,7 @@ public interface ChanIdentifiedActivity {
 	 * Returns activity identifier
 	 */
 	ChanActivityId getChanActivityId();
-	
+
 	/**
 	 * Returns handler which can be used to notify activity.
 	 * If not available null will be returned.
