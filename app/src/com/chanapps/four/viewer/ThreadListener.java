@@ -1,16 +1,13 @@
 package com.chanapps.four.viewer;
 
+import android.app.Fragment;
 import android.database.Cursor;
-import android.os.Handler;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.AbsListView;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.ThreadActivity;
-import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.component.ThreadExpandExifOnClickListener;
 import com.chanapps.four.component.ThreadExpandImageOnClickListener;
+import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.fragment.ThreadPopupDialogFragment;
 
@@ -24,35 +21,28 @@ import com.chanapps.four.fragment.ThreadPopupDialogFragment;
 public class ThreadListener {
 
     private static final String TAG = ThreadListener.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
-    private FragmentManager fragmentManager;
-    private AbsListView absListView;
-    private AbstractBoardCursorAdapter adapter;
-    private Handler handler;
+    private ThreadViewable threadViewable;
 
-    public ThreadListener(FragmentManager fragmentManager, AbsListView absListView,
-                          AbstractBoardCursorAdapter adapter, Handler handler) {
-        this.fragmentManager = fragmentManager;
-        this.absListView = absListView;
-        this.adapter = adapter;
-        this.handler = handler;
+    public ThreadListener(ThreadViewable threadViewable) {
+        this.threadViewable = threadViewable;
     }
 
     private final View.OnClickListener createPopupListener(final ThreadPopupDialogFragment.PopupType popupType) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int pos = absListView.getPositionForView(v);
-                Cursor cursor = adapter.getCursor();
+                int pos = threadViewable.getAbsListView().getPositionForView(v);
+                Cursor cursor = threadViewable.getAdapter().getCursor();
                 cursor.moveToPosition(pos);
                 String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
                 long linkedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
                 long linkedPostNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
                 if (linkedThreadNo <= 0)
                     linkedThreadNo = linkedPostNo;
-                (new ThreadPopupDialogFragment(linkedBoardCode, linkedThreadNo, linkedPostNo, pos, popupType))
-                        .show(fragmentManager, ThreadPopupDialogFragment.TAG);
+                if (DEBUG) Log.i(TAG, "popupListener clicked pos=" + pos + " type=" + popupType);
+                threadViewable.showDialog(linkedBoardCode, linkedThreadNo, linkedPostNo, pos, popupType);
             }
         };
     }
@@ -64,13 +54,13 @@ public class ThreadListener {
     public final View.OnClickListener imageOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            int pos = absListView.getPositionForView(v);
+            int pos = threadViewable.getAbsListView().getPositionForView(v);
             if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
 
             View itemView = null;
-            for (int i = 0; i < absListView.getChildCount(); i++) {
-                View child = absListView.getChildAt(i);
-                if (absListView.getPositionForView(child) == pos) {
+            for (int i = 0; i < threadViewable.getAbsListView().getChildCount(); i++) {
+                View child = threadViewable.getAbsListView().getChildAt(i);
+                if (threadViewable.getAbsListView().getPositionForView(child) == pos) {
                     itemView = child;
                     break;
                 }
@@ -81,7 +71,7 @@ public class ThreadListener {
             if ((Boolean) itemView.getTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED))
                 return;
 
-            Cursor cursor = adapter.getCursor();
+            Cursor cursor = threadViewable.getAdapter().getCursor();
             cursor.moveToPosition(pos);
             final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
             if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
@@ -95,13 +85,13 @@ public class ThreadListener {
     public final View.OnClickListener exifOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            int pos = absListView.getPositionForView(v);
+            int pos = threadViewable.getAbsListView().getPositionForView(v);
             if (DEBUG) Log.i(TAG, "received item click pos: " + pos);
 
             View itemView = null;
-            for (int i = 0; i < absListView.getChildCount(); i++) {
-                View child = absListView.getChildAt(i);
-                if (absListView.getPositionForView(child) == pos) {
+            for (int i = 0; i < threadViewable.getAbsListView().getChildCount(); i++) {
+                View child = threadViewable.getAbsListView().getChildAt(i);
+                if (threadViewable.getAbsListView().getPositionForView(child) == pos) {
                     itemView = child;
                     break;
                 }
@@ -112,12 +102,17 @@ public class ThreadListener {
             if ((Boolean) itemView.getTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED))
                 return;
 
-            Cursor cursor = adapter.getCursor();
-            cursor.moveToPosition(pos);
+            Cursor cursor = threadViewable.getAdapter() == null ? null : threadViewable.getAdapter().getCursor();
+            if (cursor == null)
+                return;
+            if (!cursor.moveToPosition(pos))
+                return;
             final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
             if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
             if ((flags & (ChanPost.FLAG_HAS_EXIF)) > 0) {
-                (new ThreadExpandExifOnClickListener(absListView, cursor, handler)).onClick(itemView);
+                (new ThreadExpandExifOnClickListener(
+                        threadViewable.getAbsListView(), cursor, threadViewable.getHandler()))
+                        .onClick(itemView);
                 itemView.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, Boolean.TRUE);
             }
         }

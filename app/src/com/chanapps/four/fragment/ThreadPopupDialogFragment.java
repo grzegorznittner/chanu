@@ -3,7 +3,6 @@ package com.chanapps.four.fragment;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
@@ -14,14 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.*;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
+import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -38,10 +36,11 @@ import java.util.HashSet;
 * Time: 12:44 PM
 * To change this template use File | Settings | File Templates.
 */
-public class ThreadPopupDialogFragment
-        extends DialogFragment
-        implements AbstractBoardCursorAdapter.ViewBinder
+public class ThreadPopupDialogFragment extends DialogFragment implements ThreadViewable
 {
+    public static final String TAG = ThreadPopupDialogFragment.class.getSimpleName();
+    public static final boolean DEBUG = true;
+
     public static final String LAST_POSITION = "lastPosition";
     public static final String POPUP_TYPE = "popupType";
 
@@ -50,8 +49,6 @@ public class ThreadPopupDialogFragment
         REPLIES,
         SAME_ID
     }
-
-    public static final String TAG = ThreadPopupDialogFragment.class.getSimpleName();
 
     private String boardCode;
     private long threadNo;
@@ -96,11 +93,57 @@ public class ThreadPopupDialogFragment
         title.setText(popupTitle());
         init();
         setStyle(STYLE_NO_TITLE, 0);
+        if (DEBUG) Log.i(TAG, "creating dialog");
         return builder
                 .setView(layout)
                 .setPositiveButton(R.string.thread_popup_reply, postReplyListener)
                 .setNegativeButton(R.string.dialog_close, dismissListener)
                 .create();
+
+    /*
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.report_post_dialog_fragment, null);
+        builder
+            .setView(view)
+            .setPositiveButton(R.string.report_post, null)
+            .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ReportPostDialogFragment.this.dismiss();
+                }
+            });
+        reportTypeSpinner = (Spinner)view.findViewById(R.id.report_post_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                getActivity(),
+                R.array.report_post_types,
+                android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        reportTypeSpinner.setAdapter(adapter);
+        reportRecaptchaResponse = (EditText)view.findViewById(R.id.report_post_recaptcha_response);
+        recaptchaButton = (ImageButton)view.findViewById(R.id.report_post_recaptcha_imgview);
+        recaptchaButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                reloadCaptcha();
+            }
+        });
+        recaptchaLoading = (ImageView)view.findViewById(R.id.report_post_recaptcha_loading);
+        reportPostBugWarning = (TextView)view.findViewById(R.id.report_post_bug_warning);
+        if (postNos.length > 1) {
+            String s = String.format(getString(R.string.report_post_bug_warning), postNos[0]);
+            reportPostBugWarning.setText(s);
+            reportPostBugWarning.setVisibility(View.VISIBLE);
+        }
+        else {
+            reportPostBugWarning.setVisibility(View.GONE);
+        }
+        reloadCaptcha();
+        AlertDialog dialog = builder.create();
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.report_post), (DialogInterface.OnClickListener)null);
+        return dialog;
+
+     */
     }
 
     private String popupTitle() {
@@ -169,23 +212,31 @@ public class ThreadPopupDialogFragment
     }
 
     protected void loadAdapter() {
-        ThreadActivity threadActivity = (ThreadActivity)getActivity();
-        cursor = threadActivity.getCursor();
-        if (cursor == null || cursor.getCount() <= 0)
+        String tag = ThreadActivity.fragmentTag(boardCode, threadNo, 0);
+        ThreadFragment fragment = (ThreadFragment)(getActivity().getSupportFragmentManager().findFragmentByTag(tag));
+        if (DEBUG) Log.i(TAG, "found fragment for tag=" + tag + " fragment=" + fragment);
+        if (fragment == null
+                || fragment.getAdapter() == null
+                || (cursor = fragment.getAdapter().getCursor()) == null
+                || cursor.getCount() <= 0)
+        {
+            if (DEBUG) Log.i(TAG, "couldn't find valid cursor, dismissing");
             dismiss();
-        else
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    final Cursor detailCursor = detailsCursor();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.swapCursor(detailCursor);
-                        }
-                    });
-                }
-            }).start();
+            return;
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final Cursor detailCursor = detailsCursor();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.swapCursor(detailCursor);
+                    }
+                });
+            }
+        }).start();
     }
 
     @Override
@@ -201,13 +252,27 @@ public class ThreadPopupDialogFragment
     }
 
     protected void init() {
-        adapter = new ThreadListCursorAdapter(getActivity(), this);
-        absListView = (ListView) layout.findViewById(R.id.thread_list_view);
+        adapter = new ThreadListCursorAdapter(getActivity(), viewBinder);
+        absListView = (ListView) layout.findViewById(R.id.thread_popup_list_view);
         absListView.setAdapter(adapter);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
-        threadListener = new ThreadListener(getActivity().getSupportFragmentManager(), absListView, adapter,
-                ((ChanIdentifiedActivity)getActivity()).getChanHandler());
+        threadListener = new ThreadListener(this);
+    }
+
+    @Override
+    public AbsListView getAbsListView() {
+        return absListView;
+    }
+
+    @Override
+    public ResourceCursorAdapter getAdapter() {
+        return adapter;
+    }
+
+    @Override
+    public Handler getHandler() {
+        return handler;
     }
 
     protected Cursor detailsCursor() {
@@ -245,23 +310,33 @@ public class ThreadPopupDialogFragment
         return count;
     }
 
+    protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
+        @Override
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            return ThreadViewer.setViewValue(view, cursor, boardCode,
+                    false, // never show board list at fragment pop-up level
+                    false,
+                    0,
+                    0,
+                    threadListener.imageOnClickListener,
+                    null, //threadListener.backlinkOnClickListener,
+                    null,
+                    null, //threadListener.repliesOnClickListener,
+                    null, //threadListener.sameIdOnClickListener,
+                    threadListener.exifOnClickListener,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
+    };
+
     @Override
-    public boolean setViewValue(final View view, final Cursor cursor, final int columnIndex) {
-        return ThreadViewer.setViewValue(view, cursor, boardCode,
-                false, // never show board list at fragment pop-up level
-                false,
-                0,
-                0,
-                threadListener.imageOnClickListener,
-                null, //threadListener.backlinkOnClickListener,
-                null,
-                null, //threadListener.repliesOnClickListener,
-                null, //threadListener.sameIdOnClickListener,
-                threadListener.exifOnClickListener,
-                null,
-                null,
-                null,
-                null);
+    public void showDialog(String boardCode, long threadNo, long postNo, int pos,
+                           ThreadPopupDialogFragment.PopupType popupType) {
+        throw new UnsupportedOperationException("showDialog not supported from ThreadPopupDialogFragment");
+        //(new ThreadPopupDialogFragment(boardCode, threadNo, postNo, pos, popupType))
+        //        .show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
     }
 
 }

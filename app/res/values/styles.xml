@@ -744,6 +744,7 @@
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_toLeftOf">@+id/list_item_header_bar_overflow_wrapper</item>
+        <item name="android:background">@drawable/thread_list_selector_bg</item>
     </style>
 
     <style name="ThreadListHeaderBarReplyIcon" parent="AppTheme">
@@ -757,6 +758,7 @@
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_toLeftOf">@+id/list_item_header_bar_overflow_wrapper</item>
+        <item name="android:background">@drawable/thread_list_selector_bg</item>
     </style>
 
     <style name="ThreadListItemBarChatIcon" parent="AppTheme">
