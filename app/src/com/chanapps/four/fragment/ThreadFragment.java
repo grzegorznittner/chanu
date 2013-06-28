@@ -1,6 +1,5 @@
 package com.chanapps.four.fragment;
 
-import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +27,7 @@ import com.chanapps.four.data.*;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
+import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
@@ -161,7 +161,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         super.onStart();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo);
         if (handler == null)
-            handler = new LoaderHandler();
+            handler = new Handler();
         threadListener = new ThreadListener(this);
     }
 
@@ -185,7 +185,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         super.onResume();
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo);
         if (handler == null)
-            handler = new LoaderHandler();
+            handler = new Handler();
         if (adapter == null || adapter.getCount() == 0)
             getLoaderManager().restartLoader(0, null, loaderCallbacks);
         if (onTablet() && (adapterBoardsTablet == null || adapterBoardsTablet.getCount() == 0))
@@ -236,20 +236,41 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         params.width = columnWidth; // 1-column-wide, no padding
     }
 
+    protected void tryFetchThread() {
+        if (DEBUG) Log.i(TAG, "tryFetchThread /" + boardCode + "/" + threadNo);
+        if (handler == null) {
+            if (DEBUG) Log.i(TAG, "tryFetchThread not in foreground, exiting");
+            return;
+        }
+        NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
+        if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
+            if (DEBUG) Log.i(TAG, "tryFetchThread bad health, exiting");
+            String msg = String.format(getString(R.string.mobile_profile_health_status),
+                    health.toString().toLowerCase().replaceAll("_", " "));
+            Toast.makeText(getActivityContext(), msg, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ((ThreadActivity)getActivity()).setProgressForFragment(boardCode, threadNo, true);
+        FetchChanDataService.scheduleThreadFetchWithPriority(getActivityContext(), boardCode, threadNo);
+    }
+
     protected void onThreadLoadFinished(Cursor data) {
         adapter.swapCursor(data);
-        if (DEBUG) Log.i(TAG, "onThreadLoadFinished listView count=" + absListView.getCount());
+        if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " listView.count=" + absListView.getCount());
         // retry load if maybe data wasn't there yet
         ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
-        if ((data == null || data.getCount() < 1
-                || (thread != null && thread.replies > 0 && !thread.isDead && data.getCount() <= 2))
-                && handler != null) {
-            NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
-            if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
-                String msg = String.format(getString(R.string.mobile_profile_health_status),
-                        health.toString().toLowerCase().replaceAll("_", " "));
-                Toast.makeText(getActivityContext(), msg, Toast.LENGTH_SHORT).show();
-            }
+        if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " thread=" + thread);
+        if (data == null) {
+            tryFetchThread();
+        }
+        else if (thread == null) {
+            tryFetchThread();
+        }
+        else if (thread.posts == null) {
+            tryFetchThread();
+        }
+        else if (thread.replies < thread.posts.length && !thread.isDead) {
+            tryFetchThread();
         }
         else if (postNo > 0) {
             Cursor cursor = adapter.getCursor();
@@ -268,6 +289,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 absListView.setSelection(pos);
                 postNo = -1;
             }
+            return;
         }
         else if (firstVisiblePosition >= 0) {
             if (absListView instanceof ListView)
@@ -1024,7 +1046,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     }
 
     public void refresh() {
-        getActivity().invalidateOptionsMenu(); // in case spinner needs to be reset
+        if (getActivity() != null)
+            getActivity().invalidateOptionsMenu(); // in case spinner needs to be reset
         refreshBoard(); // for tablets
         refreshThread();
         if (actionMode != null)
@@ -1033,36 +1056,24 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     public void refreshBoard() { /* for tablets */
         if (handler != null && onTablet())
-            handler.sendEmptyMessageDelayed(1, LOADER_RESTART_INTERVAL_SHORT_MS);
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (DEBUG) Log.i(TAG, "refreshBoard() restarting loader");
+                    getLoaderManager().restartLoader(1, null, loaderCallbacks);
+                }
+            });
     }
 
     public void refreshThread() {
         if (handler != null)
-            handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
-    }
-
-    private class LoaderHandler extends Handler {
-        public LoaderHandler() {
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            try {
-                super.handleMessage(msg);
-                switch (msg.what) {
-                    case 1:
-                        if (DEBUG) Log.i(TAG, ">>>>>>>>>>> restart message received restarting loader");
-                        getLoaderManager().restartLoader(1, null, loaderCallbacks);
-                        break;
-
-                    default:
-                        if (DEBUG) Log.i(TAG, ">>>>>>>>>>> restart message received restarting loader");
-                        getLoaderManager().restartLoader(0, null, loaderCallbacks);
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (DEBUG) Log.i(TAG, "refreshThread() restarting loader");
+                    getLoaderManager().restartLoader(0, null, loaderCallbacks);
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "Couldn't handle message " + msg, e);
-            }
-        }
+            });
     }
 
     public void setProgress(boolean on) {
@@ -1205,10 +1216,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ id=" + id);
+            if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/" + threadNo + " id=" + id);
             if (id == 0 && threadNo > 0) {
                 loadingStatusFlags &= ~THREAD_DONE;
-                if (DEBUG) Log.i(TAG, "onCreateLoader returning ThreadCursorLoader /" + boardCode + "/" + threadNo);
+                if (DEBUG) Log.i(TAG, "onCreateLoader returning ThreadCursorLoader for /" + boardCode + "/" + threadNo);
                 setProgress(true);
                 return new ThreadCursorLoader(getActivityContext(),
                         boardCode, threadNo, query, !onTablet());
@@ -1217,7 +1228,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 return null;
             } else {
                 loadingStatusFlags &= ~BOARD_DONE;
-                if (DEBUG) Log.i(TAG, "onCreateLoder returning BoardCursorLoader /" + boardCode + "/");
+                if (DEBUG) Log.i(TAG, "onCreateLoder returning BoardCursorLoader for /" + boardCode + "/" + threadNo);
                 setProgress(true);
                 return new BoardCursorLoader(getActivityContext(), boardCode, "");
             }
@@ -1225,7 +1236,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ id=" + loader.getId()
+            if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/" + threadNo + " id=" + loader.getId()
                     + " count=" + (data == null ? 0 : data.getCount()) + " loader=" + loader);
             if (loader instanceof ThreadCursorLoader)
                 onThreadLoadFinished(data);
@@ -1235,7 +1246,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
-            if (DEBUG) Log.i(TAG, "onLoaderReset /" + boardCode + "/ id=" + loader.getId());
+            if (DEBUG) Log.i(TAG, "onLoaderReset /" + boardCode + "/" + threadNo + " id=" + loader.getId());
             adapter.swapCursor(null);
         }
     };
@@ -1380,7 +1391,12 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     @Override
     public void showDialog(String boardCode, long threadNo, long postNo, int pos, ThreadPopupDialogFragment.PopupType popupType) {
+        if (DEBUG) Log.i(TAG, "showDialog /" + boardCode + "/" + threadNo + "#p" + postNo + " pos=" + pos);
         (new ThreadPopupDialogFragment(boardCode, threadNo, postNo, pos, popupType))
                 .show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
+    }
+
+    public String toString() {
+        return "ThreadFragment[] " + getChanActivityId().toString();
     }
 }

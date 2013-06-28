@@ -99,51 +99,6 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                 .setPositiveButton(R.string.thread_popup_reply, postReplyListener)
                 .setNegativeButton(R.string.dialog_close, dismissListener)
                 .create();
-
-    /*
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.report_post_dialog_fragment, null);
-        builder
-            .setView(view)
-            .setPositiveButton(R.string.report_post, null)
-            .setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    ReportPostDialogFragment.this.dismiss();
-                }
-            });
-        reportTypeSpinner = (Spinner)view.findViewById(R.id.report_post_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                getActivity(),
-                R.array.report_post_types,
-                android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        reportTypeSpinner.setAdapter(adapter);
-        reportRecaptchaResponse = (EditText)view.findViewById(R.id.report_post_recaptcha_response);
-        recaptchaButton = (ImageButton)view.findViewById(R.id.report_post_recaptcha_imgview);
-        recaptchaButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                reloadCaptcha();
-            }
-        });
-        recaptchaLoading = (ImageView)view.findViewById(R.id.report_post_recaptcha_loading);
-        reportPostBugWarning = (TextView)view.findViewById(R.id.report_post_bug_warning);
-        if (postNos.length > 1) {
-            String s = String.format(getString(R.string.report_post_bug_warning), postNos[0]);
-            reportPostBugWarning.setText(s);
-            reportPostBugWarning.setVisibility(View.VISIBLE);
-        }
-        else {
-            reportPostBugWarning.setVisibility(View.GONE);
-        }
-        reloadCaptcha();
-        AlertDialog dialog = builder.create();
-        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.report_post), (DialogInterface.OnClickListener)null);
-        return dialog;
-
-     */
     }
 
     private String popupTitle() {
@@ -212,19 +167,34 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
     }
 
     protected void loadAdapter() {
-        String tag = ThreadActivity.fragmentTag(boardCode, threadNo, 0);
-        ThreadFragment fragment = (ThreadFragment)(getActivity().getSupportFragmentManager().findFragmentByTag(tag));
-        if (DEBUG) Log.i(TAG, "found fragment for tag=" + tag + " fragment=" + fragment);
-        if (fragment == null
-                || fragment.getAdapter() == null
-                || (cursor = fragment.getAdapter().getCursor()) == null
-                || cursor.getCount() <= 0)
-        {
-            if (DEBUG) Log.i(TAG, "couldn't find valid cursor, dismissing");
+        ThreadActivity activity = (ThreadActivity)getActivity();
+        if (activity == null) {
+            if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null activity, exiting");
             dismiss();
             return;
         }
-
+        ThreadFragment fragment = activity.getCurrentFragment();
+        if (fragment == null) {
+            if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null fragment, exiting");
+            dismiss();
+            return;
+        }
+        if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " fragment=" + fragment);
+        if (fragment.getAdapter() == null) {
+            if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null adapter, exiting");
+            dismiss();
+            return;
+        }
+        if ((cursor = fragment.getAdapter().getCursor()) == null) {
+            if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " null cursor, exiting");
+            dismiss();
+            return;
+        }
+        if (cursor.getCount() == 0) {
+            if (DEBUG) Log.i(TAG, "loadAdapter /" + boardCode + "/" + threadNo + " empty cursor, exiting");
+            dismiss();
+            return;
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {

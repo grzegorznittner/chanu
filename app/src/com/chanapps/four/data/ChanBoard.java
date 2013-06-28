@@ -918,4 +918,27 @@ public class ChanBoard {
         else
             return WEB_ROOT_URL + "/" + boardCode + "/";
     }
+
+    public int getThreadIndex(String boardCode, long threadNo) {
+        if (defData)
+            return -1;
+        if (threads == null)
+            return -1;
+        int index = -1;
+        ChanPost thread;
+        for (int i = 0; i < threads.length; i++) {
+            if ((thread = threads[i]) == null)
+                continue;
+            if (thread.board == null)
+                continue;
+            if (!thread.board.equals(boardCode))
+                continue;
+            if (thread.no != threadNo)
+                continue;
+            index = i;
+            break;
+        }
+        return index;
+    }
+
 }

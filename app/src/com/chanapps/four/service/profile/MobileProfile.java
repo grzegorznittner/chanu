@@ -268,14 +268,14 @@ public class MobileProfile extends AbstractNetworkProfile {
 
     @Override
     public void onThreadSelected(Context context, String boardCode, long threadId) {
-        if (DEBUG) Log.d(TAG, "onThreadSelected");
+        if (DEBUG) Log.d(TAG, "onThreadSelected /" + boardCode + "/" + threadId);
         super.onThreadSelected(context, boardCode, threadId);
         Health health = getConnectionHealth();
 
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        //if (board != null && board.threads != null && board.threads.length > 1) {
-        //    if (DEBUG) Log.i(TAG, "board already loaded for thread, skipping load");
-        //} else
+        if (board != null && board.threads != null && board.threads.length > 1) {
+            if (DEBUG) Log.i(TAG, "board already loaded for thread, skipping load");
+        } else
         if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
@@ -283,12 +283,10 @@ public class MobileProfile extends AbstractNetworkProfile {
             if (DEBUG) Log.i(TAG, "scheduling board fetch for thread with priority for /" + boardCode + "/");
             FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false);
         }
-
         ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadId);
-        //if (thread != null && thread.posts != null && (thread.replies == 0 || thread.posts.length > 1)) {
-        //    if (DEBUG) Log.i(TAG, "thread already loading, skipping load");
-        //} else
-        if (health == Health.NO_CONNECTION) {
+        if (thread != null && thread.posts != null) {// && (thread.replies == 0 || thread.posts.length == thread.replies)) {
+            if (DEBUG) Log.i(TAG, "thread already loaded, skipping load");
+        } else if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
         } else {
@@ -457,16 +455,9 @@ public class MobileProfile extends AbstractNetworkProfile {
         final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         final ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
 
-        boolean isThreadActivity = currentActivityId != null
-                && currentActivityId.boardCode != null
-                && currentActivityId.boardCode.equals(data.boardCode)
-                && currentActivityId.threadNo == data.threadNo
-                && currentActivityId.postNo == 0
-                && currentActivityId.activity == LastActivity.THREAD_ACTIVITY;
-
         ChanThread thread = ChanFileStorage.loadThreadData(service.getApplicationContext(), data.boardCode, data.threadNo);
         if (DEBUG) Log.i(TAG, "Loaded thread " + thread.board + "/" + thread.no + " posts " + thread.posts.length);
-        if ((thread == null || thread.defData) && isThreadActivity) {
+        if ((thread == null || thread.defData)) {
             // thread file is corrupted, and user stays on thread page (or loads image), we need to refetch thread
             if (DEBUG) Log.w(TAG, "Thread " + data.boardCode + "/" + data.threadNo + " is corrupted");
             //FetchChanDataService.scheduleThreadFetch(service.getApplicationContext(), data.boardCode, data.threadNo);
@@ -474,19 +465,22 @@ public class MobileProfile extends AbstractNetworkProfile {
             return;
         }
 
-        Handler handler = activity.getChanHandler();
-        if (DEBUG) Log.i(TAG, "Check reload thread " + thread.board + "/" + thread.no
-                + " isThreadActivity=" + isThreadActivity
-                + " handler=" + handler);
-
         // user is on the thread page, we need to reloaded it
-        if (isThreadActivity && handler != null)
+        final Handler handler = activity.getChanHandler();
+        if (handler != null && activity instanceof ThreadActivity) {
+            final String boardCode = thread.board;
+            final long threadNo = thread.no;
+            if (DEBUG) Log.i(TAG, "asking thread activity to reload fragment /" + boardCode + "/" + threadNo);
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    activity.refresh();
+                    ((ThreadActivity)activity).refreshFragment(boardCode, threadNo);
                 }
             });
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "skipping thread pager fragment reload");
+        }
 
     }
 

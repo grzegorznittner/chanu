@@ -1,7 +1,10 @@
 package com.chanapps.four.activity;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -11,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.*;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
@@ -39,7 +43,11 @@ public class ThreadActivity
     public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
     public static final boolean DEBUG = true;
+    protected static final int OFFSCREEN_PAGE_LIMIT = 0;
 
+    protected ChanBoard board;
+    protected ThreadPagerAdapter mAdapter;
+    protected ViewPager mPager;
     protected Handler handler;
     protected String query = "";
     protected MenuItem searchMenuItem;
@@ -79,6 +87,11 @@ public class ThreadActivity
     }
 
     @Override
+    protected int activityLayout() {
+        return R.layout.thread_activity_layout;
+    }
+
+    @Override
     protected void createViews(Bundle bundle) {
         // first get all the variables
         if (bundle != null)
@@ -91,28 +104,30 @@ public class ThreadActivity
         if (threadNo <= 0)
             redirectToBoard();
 
-        // now create the fragments
-        createFragments();
+        createPager();
     }
 
-    protected void createFragments() {
-        // make fragment
-        ThreadFragment fragment = new ThreadFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(BOARD_CODE, boardCode);
-        bundle.putLong(THREAD_NO, threadNo);
-        bundle.putLong(POST_NO, postNo);
-        bundle.putString(SearchManager.QUERY, query);
-        fragment.setArguments(bundle);
-        fragment.setHasOptionsMenu(true);
-
-        // add to view
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.content_frame, fragment, fragmentTag());
-        fragmentTransaction.commit();
+    protected void createPager() {
+        board = ChanFileStorage.loadBoardData(this, boardCode);
+        mAdapter = new ThreadPagerAdapter(getSupportFragmentManager());
+        mAdapter.setBoard(board);
+        mPager = (ViewPager)findViewById(R.id.pager);
+        mPager.setOffscreenPageLimit(OFFSCREEN_PAGE_LIMIT);
+        mPager.setAdapter(mAdapter);
+        setCurrentItemToThread();
     }
 
+    protected void setCurrentItemToThread() {
+        int pos = getCurrentThreadPos();
+        if (pos != mPager.getCurrentItem() && pos >= 0 && pos < mAdapter.getCount())
+            mPager.setCurrentItem(pos, false);
+    }
+
+    protected int getCurrentThreadPos() {
+        return board.getThreadIndex(boardCode, threadNo);
+    }
+
+    /*
     protected String fragmentTag() {
         return fragmentTag(boardCode, threadNo, postNo);
     }
@@ -120,11 +135,11 @@ public class ThreadActivity
     public static String fragmentTag(String boardCode, long threadNo, long postNo) {
         return "/" + boardCode + "/" + threadNo + (postNo > 0 && postNo != threadNo ? "#p" + postNo : "");
     }
-
+    */
     protected void redirectToBoard() { // backup in case we are missing stuff
         Log.e(TAG, "Empty board code, redirecting to board /" + boardCode + "/");
         Intent intent = BoardActivity.createIntent(this, boardCode, "");
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
@@ -145,6 +160,10 @@ public class ThreadActivity
         threadNo = savedInstanceState.getLong(ChanThread.THREAD_NO, 0);
         query = savedInstanceState.getString(SearchManager.QUERY);
         if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/" + threadNo);
+        if (board == null || !board.link.equals(boardCode))
+            createPager();
+        else
+            setCurrentItemToThread();
     }
 
     @Override
@@ -339,9 +358,54 @@ public class ThreadActivity
     @Override
     public void refresh() {
         invalidateOptionsMenu(); // in case spinner needs to be reset
-        ThreadFragment fragment = (ThreadFragment)getSupportFragmentManager().findFragmentByTag(fragmentTag());
+        ThreadFragment fragment = getCurrentFragment();
+        //ThreadFragment fragment = (ThreadFragment)getSupportFragmentManager().findFragmentByTag(fragmentTag());
         if (fragment != null)
             fragment.refresh();
+    }
+
+    public void refreshFragment(String boardCode, long threadNo) {
+        if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo);
+        if (mPager == null) {
+            if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " skipping, null pager");
+            return;
+        }
+        if (mAdapter == null) {
+            if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " skipping, null adapter");
+            return;
+        }
+        int current = mPager.getCurrentItem();
+        int delta = mPager.getOffscreenPageLimit();
+        for (int i = current - delta; i < current + delta + 1; i++)
+            refreshFragmentAtPosition(boardCode, threadNo, i);
+    }
+
+    protected void refreshFragmentAtPosition(String boardCode, long threadNo, int pos) {
+        ThreadFragment fragment;
+        ChanActivityId data;
+        if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " pos=" + pos);
+        if (pos < 0 || pos >= mAdapter.getCount()) {
+            if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " pos=" + pos
+                + " out of bounds, skipping");
+            return;
+        }
+        if ((fragment = getFragmentAtPosition(pos)) == null) {
+            if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " pos=" + pos
+                    + " null fragment at position, skipping");
+            return;
+        }
+        if ((data = fragment.getChanActivityId()) == null) {
+            if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " pos=" + pos
+                    + " null getChanActivityId(), skipping");
+            return;
+        }
+        if (data.boardCode == null || !data.boardCode.equals(boardCode) || data.threadNo != threadNo) {
+            if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " pos=" + pos
+                    + " unmatching data=/" + data.boardCode + "/" + data.threadNo + ", skipping");
+            return;
+        }
+        if (DEBUG) Log.i(TAG, "refreshing fragment /" + boardCode + "/" + threadNo + " pos=" + pos);
+        fragment.refreshThread();
     }
 
     @Override
@@ -372,6 +436,97 @@ public class ThreadActivity
 
     protected ChanIdentifiedActivity getChanActivity() {
         return this;
+    }
+
+    public ThreadFragment getCurrentFragment() {
+        if (mPager == null)
+            return null;
+        int i = mPager.getCurrentItem();
+        return getFragmentAtPosition(i);
+    }
+
+    protected ThreadFragment getFragmentAtPosition(int pos) {
+        if (mAdapter == null)
+            return null;
+        else
+            return mAdapter.getCachedItem(pos);
+    }
+
+    public static class ThreadPagerAdapter extends FragmentStatePagerAdapter {
+        protected ChanBoard board;
+        protected Map<Integer,WeakReference<ThreadFragment>> fragments
+                = new HashMap<Integer, WeakReference<ThreadFragment>>();
+        public ThreadPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+        public void setBoard(ChanBoard board) {
+            if (board == null || board.threads == null)
+                throw new UnsupportedOperationException("can't start pager with null board or null threads");
+            this.board = board;
+        }
+        @Override
+        public int getCount() {
+            return board.threads.length;
+        }
+        @Override
+        public Fragment getItem(int pos) {
+            if (pos < board.threads.length)
+                return createFragment(pos);
+            else
+                return null;
+        }
+        protected Fragment createFragment(int pos) {
+            // get thread
+            ChanPost thread = board.threads[pos];
+            String boardCode = thread.board;
+            long threadNo = thread.no;
+            long postNo = 0;
+            String query = "";
+            // make fragment
+            ThreadFragment fragment = new ThreadFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString(BOARD_CODE, boardCode);
+            bundle.putLong(THREAD_NO, threadNo);
+            bundle.putLong(POST_NO, postNo);
+            bundle.putString(SearchManager.QUERY, query);
+            fragment.setArguments(bundle);
+            fragment.setHasOptionsMenu(true);
+            return fragment;
+        }
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Object object = super.instantiateItem(container, position);
+            fragments.put(position, new WeakReference<ThreadFragment>((ThreadFragment)object));
+            return object;
+        }
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            super.destroyItem(container, position, object);
+            fragments.remove(position);
+        }
+        public ThreadFragment getCachedItem(int position) {
+            WeakReference<ThreadFragment> ref = fragments.get(position);
+            if (ref == null)
+                return null;
+            else
+                return ref.get();
+        }
+    }
+
+    public void setProgressForFragment(String boardCode, long threadNo, boolean on) {
+        ThreadFragment fragment = getCurrentFragment();
+        if (fragment == null)
+            return;
+        ChanActivityId data = fragment.getChanActivityId();
+        if (data == null)
+            return;
+        if (data.boardCode == null)
+            return;
+        if (!data.boardCode.equals(boardCode))
+            return;
+        if (data.threadNo != threadNo)
+            return;
+        setProgress(on);
     }
 
 }
