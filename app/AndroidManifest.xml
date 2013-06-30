@@ -34,7 +34,7 @@
     <application
             android:name="com.chanapps.four.FourChannerApp"
             android:icon="@drawable/app_icon"
-            android:label="@string/application_name"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme"
             android:debuggable="true">
 
@@ -78,10 +78,10 @@
                     />
         </activity>
 
-        <activity android:name=".BoardActivity" android:label=""
-                  android:launchMode="standard"
+        <activity android:name=".BoardActivity" android:label="@string/app_name"
                 >
-            <intent-filter android:priority="100">
+            <!--<intent-filter android:priority="100"> -->
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -94,7 +94,7 @@
                     android:value=".SearchActivity"/>
         </activity>
 
-        <activity android:name=".ThreadActivity" android:label=""
+        <activity android:name=".ThreadActivity" android:label="@string/thread_activity"
                   android:launchMode="standard"
                 >
             <intent-filter>

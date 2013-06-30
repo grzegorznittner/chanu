@@ -41,7 +41,7 @@ public class BoardCoverFlowWidgetProvider extends AbstractBoardWidgetProvider {
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_board_coverflow_layout);
-            remoteViews.setRemoteAdapter(appWidgetId, R.id.stack_view_coverflow, intent);
+            remoteViews.setRemoteAdapter(R.id.stack_view_coverflow, intent);
             remoteViews.setEmptyView(R.id.stack_view_coverflow, R.id.stack_view_empty);
 
             updateWidgetViews(R.layout.widget_board_coverflow_layout, R.id.widget_board_coverflow_container, remoteViews, context, widgetConf);

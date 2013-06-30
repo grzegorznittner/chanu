@@ -114,7 +114,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         createAbsListView();
         if (onTablet())
             getLoaderManager().initLoader(1, null, loaderCallbacks); // board loader for tablet view
-        getLoaderManager().initLoader(0, null, loaderCallbacks);
+        if (threadNo > 0)
+            getLoaderManager().initLoader(0, null, loaderCallbacks);
+        else
+            Toast.makeText(getActivityContext(), R.string.thread_invalid_id, Toast.LENGTH_SHORT).show();
         return layout;
     }
 
@@ -186,10 +189,15 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new Handler();
+        if (threadNo > 0) {
         if (adapter == null || adapter.getCount() == 0)
             getLoaderManager().restartLoader(0, null, loaderCallbacks);
         if (onTablet() && (adapterBoardsTablet == null || adapterBoardsTablet.getCount() == 0))
             getLoaderManager().restartLoader(1, null, loaderCallbacks); // board loader for tablet view
+        }
+        else {
+            Toast.makeText(getActivityContext(), R.string.thread_invalid_id, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -1227,15 +1235,12 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/" + threadNo + " id=" + id);
-            if (id == 0 && threadNo > 0) {
+            if (id == 0) {
                 loadingStatusFlags &= ~THREAD_DONE;
                 if (DEBUG) Log.i(TAG, "onCreateLoader returning ThreadCursorLoader for /" + boardCode + "/" + threadNo);
                 setProgressForFragment(true);
                 return new ThreadCursorLoader(getActivityContext(),
                         boardCode, threadNo, query, !onTablet());
-            } else if (id == 0) {
-                setProgress(false);
-                return null;
             } else {
                 loadingStatusFlags &= ~BOARD_DONE;
                 if (DEBUG) Log.i(TAG, "onCreateLoder returning BoardCursorLoader for /" + boardCode + "/" + threadNo);

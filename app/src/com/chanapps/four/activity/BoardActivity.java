@@ -594,11 +594,14 @@ public class BoardActivity
             return;
         ChanBoard board = loadBoard();
         StringBuffer msg = new StringBuffer();
+        /*
         if (board.shouldSwapThreads()) { // auto-update if we have no threads to show, don't display menu
             if (DEBUG) Log.i(TAG, "swapping threads");
             board.swapLoadedThreads();
             refreshLayout.setVisibility(LinearLayout.GONE);
-        } else if ((board.newThreads > 0)// || board.updatedThreads > 0)
+        } else
+        */
+        if ((board.newThreads > 0)// || board.updatedThreads > 0)
                 && (query == null || query.isEmpty())) { // display update button
             if (DEBUG) Log.i(TAG, "displaying new thread refresh bar to user");
             //if (board.newThreads > 0) {

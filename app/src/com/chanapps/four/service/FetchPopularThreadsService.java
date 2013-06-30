@@ -36,7 +36,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class FetchPopularThreadsService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchPopularThreadsService.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
     private boolean priority;
     private boolean backgroundLoad;

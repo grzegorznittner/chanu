@@ -213,6 +213,7 @@
     <string name="thread_prev_replies_found">Found %1$d references</string>
     <string name="thread_next_replies_found">Found %1$d replies</string>
     <string name="thread_no_id_found">No other posts found for %1$s</string>
+    <string name="thread_invalid_id">No thread found</string>
     <string name="thread_id_found">Found %1$d other posts for same posters</string>
     <string name="thread_no_text_subject"></string>
     <string name="thread_go_to_link">Go To Link</string>

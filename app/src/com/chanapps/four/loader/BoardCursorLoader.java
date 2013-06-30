@@ -124,13 +124,13 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0
                     + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
         }
-        /*
+
         if (board.shouldSwapThreads())
         { // auto-update if we have no threads to show
-            if (DEBUG) Log.i(TAG, "auto-swapping loaded threads since empty");
+            if (DEBUG) Log.i(TAG, "auto-swapping /" + boardName + "/");
             board.swapLoadedThreads();
         }
-        */
+
         if (board.threads != null && !board.defData
                 && board.threads.length > 0 && board.threads[0] != null && !board.threads[0].defData) { // show loading
             //if (!board.isVirtualBoard()) {
