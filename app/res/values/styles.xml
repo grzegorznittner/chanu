@@ -768,7 +768,7 @@
     <style name="ThreadListItemBarChatIcon" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:src">@drawable/social_chat_filled_light</item>
+        <item name="android:src">@drawable/social_chat_filled_light_high</item>
     </style>
 
     <style name="ThreadListItemBarReplyIcon" parent="AppTheme">
@@ -1326,9 +1326,10 @@
     -->
     <color name="PaletteTransparent">#00000000</color>
     <color name="pressed_chanu">#CC16B206</color>
-    <!-- <color name="PaletteChanuGreen">#16b206</color> -->
-    <color name="PaletteChanuGreen">#98b92e</color>
-    <color name="PaletteChanuGreenHalfOpacity">#8898b92e</color>
+    <!-- <color name="PaletteChanuGreen">#16b206</color>
+    <color name="PaletteChanuGreen">#98b92e</color> -->
+    <color name="PaletteChanuGreen">#80b719</color>
+    <color name="PaletteChanuGreenHalfOpacity">#8880b719</color>
     <color name="PaletteYellowWhite">#ecebe7</color>
     <color name="PaletteWhite">#f7f7f7</color>
     <color name="PaletteOffWhite">#e4e4e4</color>
