@@ -18,7 +18,7 @@ import java.io.*;
 public class ChanActivityId implements Serializable {
 
     public static final String TAG = ChanActivityId.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public LastActivity activity;
     public String boardCode = null;

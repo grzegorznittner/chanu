@@ -19,7 +19,7 @@ import com.chanapps.four.data.*;
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected static final String TAG = BoardCursorLoader.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
 
     protected static final double AD_PROBABILITY = 0.20;
     protected static final int MINIMUM_AD_SPACING = 4;
@@ -124,13 +124,13 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             Log.i(TAG, "threadcount=" + (board.threads != null ? board.threads.length : 0
                     + " loadedthreadcount=" + (board.loadedThreads != null ? board.loadedThreads.length : 0)));
         }
-        
+        /*
         if (board.shouldSwapThreads())
         { // auto-update if we have no threads to show
             if (DEBUG) Log.i(TAG, "auto-swapping loaded threads since empty");
             board.swapLoadedThreads();
         }
-
+        */
         if (board.threads != null && !board.defData
                 && board.threads.length > 0 && board.threads[0] != null && !board.threads[0].defData) { // show loading
             //if (!board.isVirtualBoard()) {

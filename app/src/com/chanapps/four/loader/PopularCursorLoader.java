@@ -16,7 +16,7 @@ import java.util.List;
 public class PopularCursorLoader extends BoardCursorLoader {
 
     protected static final String TAG = PopularCursorLoader.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
 
     public PopularCursorLoader(Context context) {
         super(context);

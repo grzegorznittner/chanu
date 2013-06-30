@@ -29,7 +29,7 @@ public class ChanBoard {
     private static final boolean DEBUG = true;
     private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
     private static final int NUM_RELATED_BOARDS = 3;
-    private static final int NUM_RELATED_THREADS = 3;
+    //private static final int NUM_RELATED_THREADS = 3;
 
     public static final String WEB_HOME_URL = "http://www.4chan.org";
     public static final String WEB_ROOT_URL = "http://boards.4chan.org";
@@ -72,6 +72,7 @@ public class ChanBoard {
 	public int newThreads = 0;
 	public int updatedThreads = 0;
     public long lastFetched;
+    public long lastSwapped;
     public boolean defData = false;
 
     private static List<ChanBoard> boards = new ArrayList<ChanBoard>();
@@ -93,6 +94,22 @@ public class ChanBoard {
         this.workSafe = workSafe;
         this.classic = classic;
         this.textOnly = textOnly;
+    }
+
+    public static boolean boardNeedsRefresh(Context context, String boardCode, boolean forceRefresh) {
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        if (board == null || board.defData)
+            return true;
+        else if (board.threads == null || board.threads.length == 0)
+            return true;
+        else if (board.threads[0] == null || board.threads[0].defData)
+            return true;
+        else if (!board.isCurrent())
+            return true;
+        else if (forceRefresh)
+            return true;
+        else
+            return false;
     }
 
     public ChanBoard copy() {
@@ -557,7 +574,7 @@ public class ChanBoard {
     public Object[] makeRow(Context context, long threadNo) { // for board selector
         return ChanThread.makeBoardRow(context, link, name, getRandomImageResourceId(threadNo));
     }
-
+    /*
     public Object[] makeThreadAdRow(Context context, int pos) {
         ChanAd ad = ChanAd.randomAd(workSafe);
         return ChanThread.makeAdRow(context, link, ad);
@@ -567,15 +584,16 @@ public class ChanBoard {
         ChanAd ad = ChanAd.randomAd(workSafe);
         return ChanPost.makeAdRow(context, link, ad);
     }
-
-    public Object[] makePostRelatedThreadsHeaderRow(Context context) {
-        return ChanPost.makeTitleRow(link, context.getString(R.string.thread_related_threads_title),
-                String.format(context.getString(R.string.thread_related_threads_desc), link));
-    }
-
+    */
     public Object[] makePostRelatedBoardsHeaderRow(Context context) {
         return ChanPost.makeTitleRow(link, context.getString(R.string.board_related_boards_title),
                 String.format(context.getString(R.string.board_related_boards_desc), link));
+    }
+
+    /*
+    public Object[] makePostRelatedThreadsHeaderRow(Context context) {
+        return ChanPost.makeTitleRow(link, context.getString(R.string.thread_related_threads_title),
+                String.format(context.getString(R.string.thread_related_threads_desc), link));
     }
 
     public List<Object[]> makePostRelatedThreadsRows(long threadNo) {
@@ -634,7 +652,7 @@ public class ChanBoard {
         }
         return rows;
     }
-
+    */
     private int findThreadPos(long threadNo) {
         // find position of thread in list
         int threadPos = -1;
@@ -647,7 +665,7 @@ public class ChanBoard {
         }
         return threadPos;
     }
-
+    /*
     private List<Object[]> makePostNextThreadRows(long threadNo, int numThreads) {
         List<Object[]> rows = new ArrayList<Object[]>();
         int threadPos = findThreadPos(threadNo);
@@ -664,7 +682,7 @@ public class ChanBoard {
         }
         return rows;
     }
-
+     */
     public Object[] makePostBoardLinkRow(Context context, long threadNo) {
         return ChanPost.makeBoardLinkRow(context, this, threadNo);
     }
@@ -834,10 +852,11 @@ public class ChanBoard {
                 thread != null ? thread.board : backupBoardCode,
                 i);
     }
-
+    /*
     public List<ChanBoard> relatedBoards(Context context) {
         return relatedBoards(context, 0);
     }
+    */
     public List<ChanBoard> relatedBoards(Context context, long threadNo) {
         initBoards(context);
         if (isVirtualBoard())
@@ -896,18 +915,36 @@ public class ChanBoard {
             return false;
         if (threads == null || threads.length == 0)
             return true;
-        if (threads[0] == null || threads[0].no <= 0)
+        if (threads[0] == null || threads[0].defData || threads[0].no <= 0)
+            return true;
+        if (!isSwapCurrent())
             return true;
         return false;
     }
 
+    public boolean isSwapCurrent() {
+        long diff = Math.abs(new Date().getTime() - lastSwapped);
+        boolean swapCurrent;
+        if (lastSwapped <= 0)
+            swapCurrent = false;
+        else if (diff > SWAP_DELAY_MS)
+            swapCurrent = false;
+        else
+            swapCurrent = true;
+        if (DEBUG) Log.i(TAG, "isSwapCurrent lastSwapped=" + lastSwapped + " diff=" + diff + " return=" + swapCurrent);
+        return swapCurrent;
+    }
+
     public void swapLoadedThreads() {
-        if (hasNewBoardData()) {
+        boolean hasNew = hasNewBoardData();
+        if (DEBUG) Log.i(TAG, "swapLoadedThreads() hasNew=" + hasNew);
+        if (hasNew) {
             synchronized (this) {
                 threads = loadedThreads;
                 loadedThreads = new ChanThread[0];
                 newThreads = 0;
                 updatedThreads = 0;
+                lastSwapped = (new Date()).getTime();
             }
         }
     }
@@ -940,5 +977,17 @@ public class ChanBoard {
         }
         return index;
     }
+
+    public boolean isCurrent() {
+        FetchParams params = NetworkProfileManager.instance().getCurrentProfile().getFetchParams();
+        if (lastFetched <= 0)
+            return false;
+        else if (Math.abs(new Date().getTime() - lastFetched) > params.refreshDelay)
+            return false;
+        else
+            return true;
+    }
+
+    protected static final long SWAP_DELAY_MS = 300000L;
 
 }

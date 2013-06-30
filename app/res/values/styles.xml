@@ -733,9 +733,11 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="ThreadListHeaderBarChat" parent="AppTheme">
+    <style name="ThreadListItemBarChat" parent="AppTheme">
         <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:paddingTop">@dimen/ThreadListHeader_small_padding</item>
+        <item name="android:paddingBottom">@dimen/ThreadListHeader_small_padding</item>
         <item name="android:gravity">center</item>
     </style>
 
@@ -754,8 +756,10 @@
     </style>
 
     <style name="ThreadListItemBarReply" parent="AppTheme">
-        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize_small</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:paddingTop">@dimen/ThreadListHeader_small_padding</item>
+        <item name="android:paddingBottom">@dimen/ThreadListHeader_small_padding</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_toLeftOf">@+id/list_item_header_bar_overflow_wrapper</item>
         <item name="android:background">@drawable/thread_list_selector_bg</item>
@@ -790,10 +794,14 @@
     </style>
 
     <style name="ThreadListItemBarOverflow" parent="AppTheme">
-        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize_small</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:paddingTop">@dimen/ThreadListHeader_small_padding</item>
+        <item name="android:paddingBottom">@dimen/ThreadListHeader_small_padding</item>
+        <!--
         <item name="android:layout_marginLeft">@dimen/ThreadListHeader_micro_padding</item>
         <item name="android:layout_marginRight">@dimen/ThreadListHeader_micro_padding</item>
+        -->
         <item name="android:gravity">center</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:background">@drawable/thread_list_selector_bg</item>

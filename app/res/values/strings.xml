@@ -1393,6 +1393,7 @@
     <dimen name="BoardListText_textSize">16sp</dimen>
 
     <dimen name="ThreadListHeader_flowsize">48dp</dimen>
+    <dimen name="ThreadListHeader_flowsize_small">32dp</dimen>
     <dimen name="ThreadListHeader_subjectHeight">30dp</dimen>
     <dimen name="ThreadListHeader_padding">16dp</dimen>
     <dimen name="ThreadListHeader_med_padding">12dp</dimen>

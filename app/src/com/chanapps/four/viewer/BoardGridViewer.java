@@ -31,7 +31,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 public class BoardGridViewer {
 
     private static String TAG = BoardGridViewer.class.getSimpleName();
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
 
     private static ImageLoader imageLoader;
     private static DisplayImageOptions displayImageOptions;

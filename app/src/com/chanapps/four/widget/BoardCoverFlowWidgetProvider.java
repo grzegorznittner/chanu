@@ -21,7 +21,7 @@ public class BoardCoverFlowWidgetProvider extends AbstractBoardWidgetProvider {
 
     public static final String TAG = BoardCoverFlowWidgetProvider.class.getSimpleName();
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     @Override
     protected String getWidgetType() {

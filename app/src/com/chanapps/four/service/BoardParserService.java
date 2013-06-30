@@ -145,7 +145,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
                 ChanFileStorage.storeBoardData(context, board);
             if (DEBUG) Log.i(TAG, "Stored board " + boardCode + (pageNo == -1 ? " catalog" : " page " + pageNo)
             		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
-            setActionBarSubtitle();
+            //setActionBarSubtitle();
 
             if (!boardCatalog) {
 	            // thread files are stored in separate service call to make board parsing faster
@@ -272,7 +272,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         	}
         }
 	}
-
+    /*
 	private void setActionBarSubtitle() {
 		final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
 		if (activity != null && activity.getChanActivityId() != null) {
@@ -290,7 +290,7 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 			}
 		}
 	}
-
+    */
 	@Override
 	public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(boardCode, pageNo, priority);

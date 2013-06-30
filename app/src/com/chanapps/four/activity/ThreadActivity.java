@@ -42,8 +42,8 @@ public class ThreadActivity
     public static final String BOARD_CODE = "boardCode";
     public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
-    public static final boolean DEBUG = true;
-    protected static final int OFFSCREEN_PAGE_LIMIT = 0;
+    public static final boolean DEBUG = false;
+    protected static final int OFFSCREEN_PAGE_LIMIT = 1;
 
     protected ChanBoard board;
     protected ThreadPagerAdapter mAdapter;
@@ -254,7 +254,12 @@ public class ThreadActivity
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = BoardActivity.createIntent(this, boardCode, "");
-                NavUtils.navigateUpTo(this, intent);
+                if (NavUtils.shouldUpRecreateTask(this, intent)) {
+                    if (DEBUG) Log.i(TAG, "shouldUpRecreateTask " + this);
+                } else {
+                    if (DEBUG) Log.i(TAG, "navigateUpTo");
+                    NavUtils.navigateUpTo(this, intent);
+                }
                 return true;
             case R.id.refresh_menu:
                 setProgress(true);

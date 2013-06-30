@@ -38,7 +38,7 @@ public class UpdateWidgetService extends RemoteViewsService {
 
     public static final int NUM_TOP_THREADS = 6;
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static DisplayImageOptions optionsWithFakeDisplayer;
 
@@ -285,7 +285,7 @@ public class UpdateWidgetService extends RemoteViewsService {
     public static class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         public static final String TAG = StackRemoteViewsFactory.class.getSimpleName();
-        private static final boolean DEBUG = true;
+        private static final boolean DEBUG = false;
 
         private Context mContext;
         private Cursor mCursor;

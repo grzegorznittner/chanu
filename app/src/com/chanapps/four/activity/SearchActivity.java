@@ -21,7 +21,7 @@ import com.chanapps.four.service.NetworkProfileManager;
 public class SearchActivity extends Activity {
 
     protected static final String TAG = SearchActivity.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
 
     protected String query;
 

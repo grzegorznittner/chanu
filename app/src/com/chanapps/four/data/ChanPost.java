@@ -1089,7 +1089,7 @@ public class ChanPost {
                 FLAG_HAS_IMAGE | FLAG_HAS_SUBJECT | FLAG_IS_BOARDLINK
         };
     }
-
+    /*
     public static Object[] makeAdRow(Context context, String boardCode, ChanAd ad) {
         return new Object[] {
                 ad.hashCode(),
@@ -1124,7 +1124,7 @@ public class ChanPost {
                 FLAG_HAS_IMAGE | FLAG_IS_AD
         };
     }
-
+    */
     public static Object[] makeTitleRow(String boardCode, String title) {
         return makeTitleRow(boardCode, title, "");
     }
@@ -1164,7 +1164,7 @@ public class ChanPost {
                 FLAG_HAS_SUBJECT | FLAG_IS_TITLE
         };
     }
-
+    /*
     public static final int MIN_TOKEN_LENGTH = 5;
 
     public Set<String> keywords() {
@@ -1188,7 +1188,7 @@ public class ChanPost {
         if (DEBUG && relevancy > 0) Log.v(TAG, "relevancy=" + relevancy + " matching keywords=" + tokenSet);
         return relevancy;
     }
-
+    */
     public static Object[] extractPostRow(Cursor cursor) {
         int flagIdx = cursor.getColumnIndex(POST_FLAGS);
         int postNoIdx = cursor.getColumnIndex(POST_ID);

@@ -3,6 +3,7 @@ package com.chanapps.four.data;
 import java.util.*;
 
 import android.util.Log;
+import com.chanapps.four.service.NetworkProfileManager;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import android.content.Context;
@@ -82,11 +83,11 @@ public class ChanThread extends ChanPost {
             flags |= THREAD_FLAG_STICKY;
         return flags;
     }
-
+    /*
     public static Object[] makeRow(Context context, ChanPost post, String query) {
         return makeRow(context, post, query, 0);
     }
-
+    */
     public static Object[] makeRow(Context context, ChanPost post, String query, int extraFlags) {
         return makeRow(context, post, query, extraFlags, true);
     }
@@ -207,6 +208,22 @@ public class ChanThread extends ChanPost {
         };
     }
 
+    public static boolean threadNeedsRefresh(Context context, String boardCode, long threadNo, boolean forceRefresh) {
+        ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
+        if (thread == null || thread.defData)
+            return true;
+        else if (thread.posts == null || thread.posts.length == 0)
+            return true;
+        else if (thread.posts.length < thread.replies && !thread.isDead)
+            return true;
+        else if (!thread.isCurrent())
+            return true;
+        else if (forceRefresh)
+            return true;
+        else
+            return false;
+    }
+
     public String toString() {
 		return "Thread " + no + ", com: " + com + ", sub:" + sub + ", posts: " + posts.length
 				+ (posts.length > 0 ? ", posts[0].no: " + posts[0].no : "")
@@ -321,6 +338,16 @@ public class ChanThread extends ChanPost {
 
     public static String threadUrl(String boardCode, long threadNo) {
         return ChanBoard.boardUrl(boardCode) + "res/" + threadNo;
+    }
+
+    public boolean isCurrent() {
+        FetchParams params = NetworkProfileManager.instance().getCurrentProfile().getFetchParams();
+        if (lastFetched <= 0)
+            return false;
+        else if (Math.abs(new Date().getTime() - lastFetched) > params.refreshDelay)
+            return false;
+        else
+            return true;
     }
 
 }

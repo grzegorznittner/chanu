@@ -57,7 +57,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
     
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
@@ -240,6 +240,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (DEBUG) Log.i(TAG, "tryFetchThread /" + boardCode + "/" + threadNo);
         if (handler == null) {
             if (DEBUG) Log.i(TAG, "tryFetchThread not in foreground, exiting");
+            loadingStatusFlags |= THREAD_DONE;
+            stopProgressBarIfLoadersDone();
             return;
         }
         NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
@@ -248,9 +250,11 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             String msg = String.format(getString(R.string.mobile_profile_health_status),
                     health.toString().toLowerCase().replaceAll("_", " "));
             Toast.makeText(getActivityContext(), msg, Toast.LENGTH_SHORT).show();
+            loadingStatusFlags |= THREAD_DONE;
+            stopProgressBarIfLoadersDone();
             return;
         }
-        ((ThreadActivity)getActivity()).setProgressForFragment(boardCode, threadNo, true);
+        startProgressBarForThread();
         FetchChanDataService.scheduleThreadFetchWithPriority(getActivityContext(), boardCode, threadNo);
     }
 
@@ -260,16 +264,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         // retry load if maybe data wasn't there yet
         ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
         if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " thread=" + thread);
-        if (data == null) {
-            tryFetchThread();
-        }
-        else if (thread == null) {
-            tryFetchThread();
-        }
-        else if (thread.posts == null) {
-            tryFetchThread();
-        }
-        else if (thread.replies < thread.posts.length && !thread.isDead) {
+        if (ChanThread.threadNeedsRefresh(getActivityContext(), boardCode, threadNo, false)) {
             tryFetchThread();
         }
         else if (postNo > 0) {
@@ -289,6 +284,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 absListView.setSelection(pos);
                 postNo = -1;
             }
+            loadingStatusFlags |= THREAD_DONE;
+            stopProgressBarIfLoadersDone();
             return;
         }
         else if (firstVisiblePosition >= 0) {
@@ -298,9 +295,13 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 absListView.setSelection(firstVisiblePosition);
             firstVisiblePosition = -1;
             firstVisiblePositionOffset = -1;
+            loadingStatusFlags |= THREAD_DONE;
+            stopProgressBarIfLoadersDone();
         }
-        loadingStatusFlags |= THREAD_DONE;
-        stopProgressBarIfLoadersDone();
+        else {
+            loadingStatusFlags |= THREAD_DONE;
+            stopProgressBarIfLoadersDone();
+        }
     }
 
     protected void onBoardsTabletLoadFinished(Cursor data) {
@@ -343,11 +344,20 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         stopProgressBarIfLoadersDone();
     }
 
+    protected void setProgressForFragment(boolean on) {
+        ((ThreadActivity)getActivity()).setProgressForFragment(boardCode, threadNo, on);
+    }
+
+    protected void startProgressBarForThread() {
+        loadingStatusFlags &= ~THREAD_DONE;
+        setProgressForFragment(true);
+    }
+
     protected void stopProgressBarIfLoadersDone() {
         if (!onTablet() && (loadingStatusFlags & THREAD_DONE) > 0)
-            setProgress(false);
+            setProgressForFragment(false);
         else if (onTablet() && (loadingStatusFlags & BOARD_DONE) > 0 && (loadingStatusFlags & THREAD_DONE) > 0)
-            setProgress(false);
+            setProgressForFragment(false);
     }
 
     protected void createAbsListView() {
@@ -1220,7 +1230,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             if (id == 0 && threadNo > 0) {
                 loadingStatusFlags &= ~THREAD_DONE;
                 if (DEBUG) Log.i(TAG, "onCreateLoader returning ThreadCursorLoader for /" + boardCode + "/" + threadNo);
-                setProgress(true);
+                setProgressForFragment(true);
                 return new ThreadCursorLoader(getActivityContext(),
                         boardCode, threadNo, query, !onTablet());
             } else if (id == 0) {
@@ -1229,7 +1239,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             } else {
                 loadingStatusFlags &= ~BOARD_DONE;
                 if (DEBUG) Log.i(TAG, "onCreateLoder returning BoardCursorLoader for /" + boardCode + "/" + threadNo);
-                setProgress(true);
+                setProgressForFragment(true);
                 return new BoardCursorLoader(getActivityContext(), boardCode, "");
             }
         }

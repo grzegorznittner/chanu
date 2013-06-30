@@ -37,7 +37,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static final String VIEW_TYPE = "viewType";
 

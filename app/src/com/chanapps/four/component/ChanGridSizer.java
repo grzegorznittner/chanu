@@ -20,7 +20,7 @@ import com.chanapps.four.activity.R;
 public class ChanGridSizer {
 
     private static final String TAG = ChanGridSizer.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     static public int dpToPx(Display d, int dp) {
         DisplayMetrics displayMetrics = new DisplayMetrics();

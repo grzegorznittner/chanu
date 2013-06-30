@@ -1,5 +1,6 @@
 package com.chanapps.four.service.profile;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -180,31 +181,27 @@ public class MobileProfile extends AbstractNetworkProfile {
     public void onBoardSelected(Context context, String boardCode) {
         super.onBoardSelected(context, boardCode);
         if (DEBUG) Log.i(TAG, "onBoardSelected");
-        Health health = getConnectionHealth();
-        if (health == Health.NO_CONNECTION) {
-            makeHealthStatusToast(context, health);
-            if (DEBUG) Log.i(TAG, "skipping preload board as there is no network connection");
-            return;
-        }
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        Health health = getConnectionHealth();
         if (board != null && board.isVirtualBoard() && !board.isPopularBoard()) {
             if (DEBUG) Log.i(TAG, "skipping non-popular virtual board /" + boardCode + "/");
-            return;
         }
-        boolean priority = (board == null || board.defData
-                || board.threads == null || board.threads.length == 0 || board.threads[0].defData);
-        /*if (board != null && board.threads != null && board.threads.length > 0) {
-            if (DEBUG) Log.i(TAG, "skipping preload board as already have data");
-            return;
-        }*/
-        if (DEBUG) Log.i(TAG, "onBoardSelected priority=" + priority);
-        boolean canFetch = FetchChanDataService.scheduleBoardFetch(context, boardCode, priority, false);
-        if (!canFetch) {
-            if (DEBUG) Log.i(TAG, "skipping fresh selected board=" + boardCode);
-            return;
+        else if (!ChanBoard.boardNeedsRefresh(context, boardCode, false)) {
+            if (DEBUG) Log.i(TAG, "skipping board /" + boardCode + "/ doesnt need refresh");
         }
-        if (DEBUG) Log.i(TAG, "auto-fetching selected board=" + boardCode);
-        startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
+        else if (health == Health.NO_CONNECTION) {
+            makeHealthStatusToast(context, health);
+            if (DEBUG) Log.i(TAG, "skipping preload board as there is no network connection");
+        }
+        else if (!ChanBoard.boardHasData(context, boardCode)) {
+            if (DEBUG) Log.i(TAG, "no board data, thus priority fetching /" + boardCode + "/");
+            FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "board needs update, non-priority fetching /" + boardCode + "/");
+            if (FetchChanDataService.scheduleBoardFetch(context, boardCode, false, false))
+                startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
+        }
     }
 
     @Override
@@ -273,26 +270,31 @@ public class MobileProfile extends AbstractNetworkProfile {
         Health health = getConnectionHealth();
 
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        if (board != null && board.threads != null && board.threads.length > 1) {
+        if (!ChanBoard.boardNeedsRefresh(context, boardCode, false)) {
             if (DEBUG) Log.i(TAG, "board already loaded for thread, skipping load");
-        } else
-        if (health == Health.NO_CONNECTION) {
+        }
+        else if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
-        } else {
-            if (DEBUG) Log.i(TAG, "scheduling board fetch for thread with priority for /" + boardCode + "/");
+        }
+        else if (!ChanBoard.boardHasData(context, boardCode)) {
+            if (DEBUG) Log.i(TAG, "onThreadSelected no board data priority fetch /" + boardCode + "/");
             FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false);
         }
-        ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadId);
-        if (thread != null && thread.posts != null) {// && (thread.replies == 0 || thread.posts.length == thread.replies)) {
+        else {
+            if (DEBUG) Log.i(TAG, "onThreadSelected normal fetch /" + boardCode + "/");
+            FetchChanDataService.scheduleBoardFetch(context, boardCode, false, false);
+        }
+
+        if (!ChanThread.threadNeedsRefresh(context, boardCode, threadId, false)) {
             if (DEBUG) Log.i(TAG, "thread already loaded, skipping load");
         } else if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
         } else {
             if (DEBUG) Log.i(TAG, "scheduling thread fetch with priority for /" + boardCode + "/" + threadId);
-            startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
-            FetchChanDataService.scheduleThreadFetchWithPriority(context, boardCode, threadId);
+            if (FetchChanDataService.scheduleThreadFetchWithPriority(context, boardCode, threadId))
+                startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
         }
     }
 
@@ -417,15 +419,10 @@ public class MobileProfile extends AbstractNetworkProfile {
             return;
         }
 
-        boolean oldEnough = false; //Calendar.getInstance().getTimeInMillis() - board.lastFetched > ChanBoard.MAX_DELAY_FOR_REFRESH_THREADS_ON_REQUEST;
-        if (data.priority || board.defData || oldEnough || board.isVirtualBoard()) {
-            if (!data.priority) {
-                // priority requests do this above (see call to ChanFileStorage.loadFreshBoardData)
-                board.threads = board.loadedThreads;
-                board.loadedThreads = new ChanThread[0];
-                board.newThreads = 0;
-                board.updatedThreads = 0;
-            }
+        if (data.priority || board.defData || !board.isCurrent() || !board.isSwapCurrent() || board.isVirtualBoard()) {
+            // priority requests do this above (see call to ChanFileStorage.loadFreshBoardData)
+            //if (!data.priority)
+            //    board.swapLoadedThreads();
 
             final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
             ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();

@@ -29,6 +29,7 @@ import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.GenericDialogFragment;
 import com.chanapps.four.fragment.PickNewThreadBoardDialogFragment;
+import com.chanapps.four.fragment.WatchlistClearDialogFragment;
 import com.chanapps.four.fragment.WatchlistDeleteDialogFragment;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -492,6 +493,10 @@ public class BoardActivity
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(boardCode);
                 ChanHelper.launchUrlInBrowser(this, url);
+                return true;
+            case R.id.clear_watchlist_menu:
+                (new WatchlistClearDialogFragment()).show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -590,22 +595,25 @@ public class BoardActivity
         ChanBoard board = loadBoard();
         StringBuffer msg = new StringBuffer();
         if (board.shouldSwapThreads()) { // auto-update if we have no threads to show, don't display menu
-            if (DEBUG) Log.i(TAG, "auto-updating threads since empty");
+            if (DEBUG) Log.i(TAG, "swapping threads");
             board.swapLoadedThreads();
             refreshLayout.setVisibility(LinearLayout.GONE);
-        } else if ((board.newThreads > 0 || board.updatedThreads > 0)
+        } else if ((board.newThreads > 0)// || board.updatedThreads > 0)
                 && (query == null || query.isEmpty())) { // display update button
-            if (board.newThreads > 0) {
+            if (DEBUG) Log.i(TAG, "displaying new thread refresh bar to user");
+            //if (board.newThreads > 0) {
                 msg.append("" + board.newThreads + " new");
-            }
+            //}
+            /*
             if (board.updatedThreads > 0) {
                 if (board.newThreads > 0) {
                     msg.append(", ");
                 }
                 msg.append("" + board.updatedThreads + " updated");
             }
+            */
             msg.append(" thread");
-            if (board.newThreads + board.updatedThreads > 1) {
+            if (board.newThreads > 1) { // + board.updatedThreads > 1) {
                 msg.append("s");
             }
             msg.append(" available");

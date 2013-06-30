@@ -30,7 +30,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
     private String boardCode;
     private boolean boardCatalog;
@@ -53,7 +53,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             return false;
         }
 
-    	if (!boardNeedsRefresh(context, boardCode, priority)) {
+    	if (!ChanBoard.boardNeedsRefresh(context, boardCode, priority)) {
             if (DEBUG) Log.i(TAG, "Skipping not needing refresh normal board fetch service for "
                     + boardCode + " priority=" + priority);
             return false;
@@ -84,7 +84,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     }
 
     private static boolean scheduleThreadFetch(Context context, String boardCode, long threadNo, boolean priority, boolean backgroundLoad) {
-    	if (!threadNeedsRefresh(context, boardCode, threadNo, true)) {
+    	if (!ChanThread.threadNeedsRefresh(context, boardCode, threadNo, priority)) {
             if (DEBUG) Log.i(TAG, "skipping refresh, thread doesn't need it for /" + boardCode + "/" + threadNo);
         	return false;
         }
@@ -112,41 +112,6 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         context.startService(intent);
     }
 
-	private static boolean boardNeedsRefresh(Context context, String boardCode, boolean forceRefresh) {
-		FetchParams params = NetworkProfileManager.instance().getFetchParams();
-        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        long now = new Date().getTime();
-        if (board != null && !board.defData && board.lastFetched > 0) {
-        	long refresh = (forceRefresh || board.isFastBoard()) ? params.forceRefreshDelay : params.refreshDelay;
-            long interval = now - board.lastFetched;
-        	if (interval < refresh) {
-        		if (DEBUG) Log.i(TAG, "Skipping board " + boardCode + " fetch as it was fetched "
-        				+ (interval / 1000) + "s ago, refresh for priority=" + forceRefresh + " delay is " + (refresh / 1000) + "s" );
-        		return false;
-        	}
-        }
-        return true;
-	}
-
-	private static boolean threadNeedsRefresh(Context context, String boardCode, long threadNo, boolean forceRefresh) {
-		FetchParams params = NetworkProfileManager.instance().getFetchParams();
-        ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
-        long now = new Date().getTime();
-        if (thread == null || thread.defData) {
-            return true;
-        }
-        if (thread.posts != null && thread.posts.length > 1 && (thread.isDead || thread.closed > 0)) {
-            return false;
-        }
-        long refresh = forceRefresh ? params.forceRefreshDelay : params.refreshDelay;
-        if (now - thread.lastFetched < refresh) {
-            if (DEBUG) Log.i(TAG, "Skiping thread " + boardCode + "/" + threadNo + " fetch as it was fetched "
-                    + ((now - thread.lastFetched) / 1000) + "s ago, refresh delay is " + (refresh / 1000) + "s" );
-            return false;
-        }
-        return true;
-	}
-    
     public FetchChanDataService() {
    		super("chan_fetch");
    	}

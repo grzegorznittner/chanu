@@ -36,7 +36,7 @@ import java.net.URI;
 public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
     private static final String TAG = ThreadExpandImageOnClickListener.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private View itemView;
     private View listItemLeftSpacer;

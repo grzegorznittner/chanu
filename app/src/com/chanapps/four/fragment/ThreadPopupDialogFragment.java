@@ -39,7 +39,7 @@ import java.util.HashSet;
 public class ThreadPopupDialogFragment extends DialogFragment implements ThreadViewable
 {
     public static final String TAG = ThreadPopupDialogFragment.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final String LAST_POSITION = "lastPosition";
     public static final String POPUP_TYPE = "popupType";

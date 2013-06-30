@@ -20,12 +20,12 @@
         </LinearLayout>
         <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
         <RelativeLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies">
-            <LinearLayout style="@style/ThreadListHeaderBarChat" android:id="@+id/list_item_header_bar_chat_wrapper">
+            <LinearLayout style="@style/ThreadListItemBarChat" android:id="@+id/list_item_header_bar_chat_wrapper">
                 <ImageView style="@style/ThreadListItemBarChatIcon" android:id="@+id/list_item_header_bar_chat"/>
             </LinearLayout>
             <TextView style="@style/ThreadListItemReplyNum" android:id="@+id/list_item_num_direct_replies_text"/>
         </RelativeLayout>
-        <LinearLayout style="@style/ThreadListHeaderBarReply" android:id="@+id/list_item_header_bar_reply_wrapper">
+        <LinearLayout style="@style/ThreadListItemBarReply" android:id="@+id/list_item_header_bar_reply_wrapper">
             <ImageView style="@style/ThreadListItemBarReplyIcon" android:id="@+id/list_item_header_bar_reply"/>
         </LinearLayout>
         <LinearLayout style="@style/ThreadListItemBarOverflow" android:id="@+id/list_item_header_bar_overflow_wrapper">
