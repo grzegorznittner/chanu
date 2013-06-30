@@ -261,6 +261,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 			String strings[] = popularThreadsStr.split("<li>");
 			for (int i = 1; i < strings.length; i++) {
 				try {
+                    if (DEBUG) Log.v(TAG, "paring line=" + strings[i]);
                     ChanThread thread = parseThread(strings[i]);
                     if (DEBUG) Log.v(TAG, "parsed thread /" + thread.board + "/" + thread.no
                             + " tn_w=" + thread.tn_w + " tn_h=" + thread.tn_h + " tim=" + thread.tim

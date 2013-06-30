@@ -3,8 +3,8 @@
 <!-- START ACTIONBAR THEME -->
 
     <style name="Theme.Chanu" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+        <!--
         <item name="android:actionBarItemBackground">@drawable/selectable_background_chanu</item>
-        <!--<item name="android:popupMenuStyle">@style/PopupMenu.Chanu</item> -->
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Chanu</item>
         <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Chanu</item>
         <item name="android:actionDropDownStyle">@style/DropDownNav.Chanu</item>
@@ -12,11 +12,11 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_chanu</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_chanu</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Chanu</item>
-        <!-- Light.DarkActionBar specific -->
         <item name="android:actionBarWidgetTheme">@style/Theme.Chanu.Widget</item>
-        <!-- from android-holo-colors theme -->
         <item name="android:editTextStyle">@style/EditTextChanuGreenTheme</item>
         <item name="android:seekBarStyle">@style/SeekBarChanuGreenTheme</item>
+        -->
+        <!--<item name="android:popupMenuStyle">@style/PopupMenu.Chanu</item> -->
         <!--
         <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewChanuGreenTheme</item>
         <item name="android:checkboxStyle">@style/CheckBoxChanuGreenTheme</item>
@@ -59,7 +59,7 @@
     <item name="android:listViewWhiteStyle">@style/ListViewChanuGreenTheme.White</item>
     <item name="android:spinnerItemStyle">@style/SpinnerItemChanuGreenTheme</item>
   </style>
--->
+
     <style name="ActionBar.Solid.Chanu" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@drawable/ab_solid_chanu</item>
         <item name="android:backgroundStacked">@drawable/ab_stacked_solid_chanu</item>
@@ -98,12 +98,11 @@
         <item name="android:background">@drawable/btn_cab_done_chanu</item>
     </style>
 
-    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
     <style name="Theme.Chanu.Widget" parent="@android:style/Theme.Holo">
         <item name="android:popupMenuStyle">@style/PopupMenu.Chanu</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Chanu</item>
     </style>
-
+    -->
 <!-- END ACTIONBAR THEME -->
 
     <style name="AppTheme" parent="Theme.Chanu">
