@@ -631,6 +631,7 @@
     <string name="mobile_profile_parse_board_fail">Couldn\'t parse /%1$s/</string>
     <string name="mobile_profile_parse_thread_fail">Couldn\'t parse /%1$s/%2$d</string>
     <string name="no_connection_profile">Offline mode</string>
+    <string name="board_no_connection_load">Can\'t load board, no connection</string>
 
     <string name="board_grid_item_view_thread_desc">View thread</string>
     <string name="board_grid_item_view_posts_desc">View posts</string>

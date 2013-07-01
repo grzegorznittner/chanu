@@ -6,6 +6,7 @@ import android.os.Handler;
 
 import android.widget.Toast;
 import com.chanapps.four.activity.*;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.service.FetchChanDataService;
@@ -88,9 +89,10 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
         final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
 
-        /*if (ChanFileStorage.hasNewBoardData(baseContext, boardCode))
-            ChanFileStorage.loadFreshBoardData(baseContext, boardCode);
-*/
+        ChanBoard board = ChanFileStorage.loadBoardData(baseContext, boardCode);
+        if (board != null)
+            board.swapLoadedThreads();
+
         boolean boardActivity = currentActivityId != null
                 && currentActivityId.boardCode != null
                 && currentActivityId.boardCode.equals(boardCode);

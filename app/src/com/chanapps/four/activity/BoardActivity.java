@@ -40,12 +40,7 @@ import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 
-public class BoardActivity
-        extends AbstractDrawerActivity
-        implements ChanIdentifiedActivity,
-        OnClickListener,
-        LoaderManager.LoaderCallbacks<Cursor>,
-        AbstractBoardCursorAdapter.ViewBinder
+public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
 	public static final boolean DEBUG = true;
@@ -113,17 +108,25 @@ public class BoardActivity
         if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/ q=" + query);
         if (ChanBoard.isVirtualBoard(boardCode) && !ChanBoard.isPopularBoard(boardCode)) { // always ready, start loading
             if (DEBUG) Log.i(TAG, "onCreate non-popular virtual board, loading immediately");
-            getSupportLoaderManager().initLoader(0, null, this);
+            getSupportLoaderManager().initLoader(0, null, loaderCallbacks);
         }
-        else { // check if we have data to load
-            if (ChanBoard.boardHasData(this, boardCode)) {
-                if (DEBUG) Log.i(TAG, "onCreate board has data, loading");
-                getSupportLoaderManager().initLoader(0, null, this); // data is ready, load it
+        else if (ChanBoard.boardHasData(this, boardCode)) {
+            if (DEBUG) Log.i(TAG, "onCreate board has data, loading");
+            getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
+        }
+        else if (NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
+                == NetworkProfile.Health.NO_CONNECTION) {
+            if (DEBUG) Log.i(TAG, "onCreate no board data and connection is down");
+            Toast.makeText(getApplicationContext(), R.string.board_no_connection_load, Toast.LENGTH_SHORT).show();
+            if (emptyText != null) {
+                emptyText.setText(R.string.board_no_connection_load);
+                emptyText.setVisibility(View.VISIBLE);
             }
-            else {
-                if (DEBUG) Log.i(TAG, "onCreate no board data, waiting for profile onBoardSelected callback");
-                setProgress(true);
-            }
+            setProgress(false);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "onCreate no board data, waiting for profile onBoardSelected callback");
+            setProgress(true);
         }
     }
 
@@ -218,7 +221,7 @@ public class BoardActivity
         layout = View.inflate(getApplicationContext(), R.layout.board_grid_layout, null);
         contentFrame.addView(layout);
         emptyText = (TextView)layout.findViewById(R.id.board_grid_empty_text);
-        adapter = new BoardGridCursorAdapter(this, this, columnWidth, columnHeight);
+        adapter = new BoardGridCursorAdapter(getApplicationContext(), viewBinder, columnWidth, columnHeight);
         gridView = (GridView)findViewById(R.id.board_grid_view);
         columnWidth = ChanGridSizer.getCalculatedWidth(getResources().getDisplayMetrics(),
                 getResources().getInteger(R.integer.BoardGridView_numColumns),
@@ -264,7 +267,7 @@ public class BoardActivity
         invalidateOptionsMenu(); // for correct spinner display
 		NetworkProfileManager.instance().activityChange(this);
         if ((adapter == null || adapter.getCount() == 0) && ChanBoard.boardHasData(this, boardCode))
-            getSupportLoaderManager().restartLoader(0, null, this);
+            getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
         new TutorialOverlay(layout, Page.BOARD);
     }
 
@@ -320,61 +323,69 @@ public class BoardActivity
         }
     };
 
+    protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
+        @Override
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight);
+        }
+    };
 
-    @Override
-    public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-        return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight);
-    }
+    protected LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ q=" + query + " id=" + id);
+            setProgress(true);
+            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, query);
+            return cursorLoader;
+        }
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ q=" + query + " id=" + loader.getId()
+                    + " count=" + (data == null ? 0 : data.getCount()));
+            if (gridView == null)
+                createAbsListView();
+            adapter.swapCursor(data);
 
-    @Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ q=" + query + " id=" + id);
-        setProgress(true);
-        cursorLoader = new BoardCursorLoader(this, boardCode, query);
-        return cursorLoader;
-	}
-
-    @Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ q=" + query + " id=" + loader.getId()
-                + " count=" + (data == null ? 0 : data.getCount()));
-        if (gridView == null)
-            createAbsListView();
-		adapter.swapCursor(data);
-
-        // retry load if maybe data wasn't there yet
-        if ((data == null || data.getCount() < 1) && handler != null) {
-            NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
-            if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
-                String msg = String.format(getString(R.string.mobile_profile_health_status),
-                        health.toString().toLowerCase().replaceAll("_", " "));
-                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            // retry load if maybe data wasn't there yet
+            if ((data == null || data.getCount() < 1) && handler != null) {
+                NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
+                if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
+                    String msg = String.format(getString(R.string.mobile_profile_health_status),
+                            health.toString().toLowerCase().replaceAll("_", " "));
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                }
+                showEmptyText();
+                stopProgressBarIfLoadersDone();
+                return;
+                //else {
+                //    handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
+                //}
             }
-            showEmptyText();
+            /*
+            else {
+                if (firstVisiblePosition >= 0) {
+                    //if (gridView instanceof ListView)
+                    //    ((ListView) gridView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
+                    //else
+                    gridView.setSelection(firstVisiblePosition);
+                    firstVisiblePosition = -1;
+                    firstVisiblePositionOffset = -1;
+                }
+                handleUpdatedThreads(); // see if we need to update
+                setActionBarTitle(); // to reflect updated time
+            }
+            */
+
+            hideEmptyText();
             stopProgressBarIfLoadersDone();
-            return;
-            //else {
-            //    handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
-            //}
         }
-        /*
-        else {
-            if (firstVisiblePosition >= 0) {
-                //if (gridView instanceof ListView)
-                //    ((ListView) gridView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
-                //else
-                gridView.setSelection(firstVisiblePosition);
-                firstVisiblePosition = -1;
-                firstVisiblePositionOffset = -1;
-            }
-            handleUpdatedThreads(); // see if we need to update
-            setActionBarTitle(); // to reflect updated time
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            if (DEBUG) Log.i(TAG, "onLoaderReset /" + boardCode + "/ q=" + query + " id=" + loader.getId());
+            if (adapter != null)
+                adapter.swapCursor(null);
         }
-        */
-
-        hideEmptyText();
-        stopProgressBarIfLoadersDone();
-    }
+    };
 
     protected void showEmptyText() {
         BoardType boardType = BoardType.valueOfBoardCode(boardCode);
@@ -390,13 +401,6 @@ public class BoardActivity
     protected void stopProgressBarIfLoadersDone() {
         setProgress(false);
     }
-
-    @Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-        if (DEBUG) Log.i(TAG, "onLoaderReset /" + boardCode + "/ q=" + query + " id=" + loader.getId());
-        if (adapter != null)
-            adapter.swapCursor(null);
-	}
 
     AbsListView.OnItemClickListener boardItemListener = new AbsListView.OnItemClickListener() {
         @Override
@@ -625,10 +629,10 @@ public class BoardActivity
             refreshText.setText(msg.toString());
             ImageButton refreshButton = (ImageButton)refreshLayout.findViewById(R.id.board_refresh_button);
             refreshButton.setClickable(true);
-            refreshButton.setOnClickListener(this);
+            refreshButton.setOnClickListener(boardRefreshListener);
             ImageButton ignoreButton = (ImageButton)refreshLayout.findViewById(R.id.board_ignore_button);
             ignoreButton.setClickable(true);
-            ignoreButton.setOnClickListener(this);
+            ignoreButton.setOnClickListener(boardRefreshListener);
 
             refreshLayout.setVisibility(LinearLayout.VISIBLE);
         } else { // don't display menu
@@ -693,19 +697,21 @@ public class BoardActivity
             searchMenuItem.collapseActionView();
     }
 
-	@Override
-	public void onClick(View v) {
-        if (v.getId() == R.id.board_refresh_button) {
-            setProgress(true);
-            LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
-            refreshLayout.setVisibility(LinearLayout.GONE);
-            NetworkProfileManager.instance().manualRefresh(this);
+    protected OnClickListener boardRefreshListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == R.id.board_refresh_button) {
+                setProgress(true);
+                LinearLayout refreshLayout = (LinearLayout)BoardActivity.this.findViewById(R.id.board_refresh_bar);
+                refreshLayout.setVisibility(LinearLayout.GONE);
+                NetworkProfileManager.instance().manualRefresh(BoardActivity.this);
+            }
+            else if (v.getId() == R.id.board_ignore_button) {
+                LinearLayout refreshLayout = (LinearLayout)BoardActivity.this.findViewById(R.id.board_refresh_bar);
+                refreshLayout.setVisibility(LinearLayout.GONE);
+            }
         }
-        else if (v.getId() == R.id.board_ignore_button) {
-	        LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
-	        refreshLayout.setVisibility(LinearLayout.GONE);
-		}
-	}
+    };
 
     private class LoaderHandler extends Handler {
         public LoaderHandler() {}
@@ -716,7 +722,7 @@ public class BoardActivity
                 switch (msg.what) {
                     default:
                         if (DEBUG) Log.i(TAG, ">>>>>>>>>>> restart message received restarting loader");
-                        getSupportLoaderManager().restartLoader(0, null, BoardActivity.this);
+                        getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Couldn't handle message " + msg, e);
