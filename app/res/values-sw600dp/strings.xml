@@ -4,7 +4,7 @@
     <dimen name="WidgetConfigureOkButton">22sp</dimen>
     <dimen name="BoardSelectorOverlay">18sp</dimen>
     <dimen name="BoardGridSubject">16sp</dimen>
-    <dimen name="BoardGridInfo">16sp</dimen>
+    <dimen name="BoardGridInfo">14sp</dimen>
     <dimen name="BoardGridAction">18sp</dimen>
     <dimen name="BoardGridNumReplies">16sp</dimen>
     <dimen name="BoardGridAbbrev">16sp</dimen>
@@ -242,26 +242,13 @@
     <string name="BoardRefreshBarWidth">wrap_content</string>
 
     <!-- tutorial_overlay -->
-    <dimen name="tutorial_overlay_subject_layout_margin">16dp</dimen>
-    <dimen name="tutorial_overlay_subject_textSize">22sp</dimen>
-
-    <dimen name="tutorial_overlay_detail_marginLeft">16dp</dimen>
-    <dimen name="tutorial_overlay_detail_marginTop">0sp</dimen>
-    <dimen name="tutorial_overlay_detail_marginRight">16dp</dimen>
-    <dimen name="tutorial_overlay_detail_marginBottom">16dp</dimen>
-    <dimen name="tutorial_overlay_detail_textSize">18sp</dimen>
-
-    <dimen name="tutorial_overlay_button_marginTop">48dp</dimen>
-    <dimen name="tutorial_overlay_button_marginRight">16dp</dimen>
+    <dimen name="tutorial_overlay_subject_layout_margin">32dp</dimen>
+    <dimen name="tutorial_overlay_subject_layout_marginBottom">16dp</dimen>
+    <dimen name="tutorial_overlay_subject_textSize">28sp</dimen>
+    <dimen name="tutorial_overlay_detail_textSize">22sp</dimen>
     <dimen name="tutorial_overlay_button_paddingLeft">48dp</dimen>
     <dimen name="tutorial_overlay_button_paddingTop">8dp</dimen>
-    <dimen name="tutorial_overlay_button_paddingRight">48dp</dimen>
-    <dimen name="tutorial_overlay_button_paddingBottom">8dp</dimen>
-    <dimen name="tutorial_overlay_button_textSize">22sp</dimen>
-
-    <dimen name="tutorial_overlay_dismiss_marginRight">16dp</dimen>
-    <dimen name="tutorial_overlay_dismiss_marginBottom">16dp</dimen>
-    <dimen name="tutorial_overlay_dismiss_padding">8dp</dimen>
+    <dimen name="tutorial_overlay_button_textSize">18sp</dimen>
 
     <!-- widgets dimension -->
     <dimen name="widget_board_minWidth">350dp</dimen>
@@ -286,4 +273,8 @@
     <dimen name="ItemsDialogFragment_title_textSize">28sp</dimen>
 
     <integer name="BoardGridView.numColumns">4</integer>
+    <dimen name="BoardGridView.spacing">12dp</dimen>
+    <dimen name="BoardGridViewTablet.spacing">12dp</dimen>
+    <dimen name="BoardGridTextHeight">108dp</dimen>
+
 </resources>

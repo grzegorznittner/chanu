@@ -176,7 +176,7 @@
     <string name="board_selector_latest_desc">The ten latest posts</string>
     <string name="board_selector_latest_images_title">Recent&lt;br/&gt;Images</string>
     <string name="board_selector_latest_images_desc">The three latest uploaded images</string>
-    <string name="board_selector_boardlist_title">Boards</string>
+    <string name="board_selector_boardlist_title">Sections</string>
 
     <!-- board activity -->
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
@@ -639,10 +639,22 @@
     <string name="board_grid_item_view_board_desc">View board</string>
 
     <!-- tutorial -->
-    <string name="tutorial_overlay_button">Got It</string>
-    <string name="tutorial_overlay_button_description">Dismiss tutorial</string>
-    <string name="tutorial_overlay_dismiss">Don\'t show any more tutorials</string>
+    <string name="tutorial_overlay_button">Next</string>
+    <string name="tutorial_overlay_dismiss">Dismiss</string>
+    <string name="tutorial_overlay_finished">Done</string>
 
+    <string name="tutorial_intro_desc">Welcome</string>
+    <string name="tutorial_intro_desc_detail">Chanu is an anonymous discussion board, with fast-changing frequent updates and image content from 4chan.</string>
+    <string name="tutorial_section_desc">Sections</string>
+    <string name="tutorial_section_desc_detail">Sections group discussion boards into categories such as Popular Threads, Japanese Culture, and Creative.</string>
+    <string name="tutorial_board_desc">Boards</string>
+    <string name="tutorial_board_desc_detail">Each board has its own topic such as Anime, Video Games, and Sports, where anyone can start new discussions.</string>
+    <string name="tutorial_thread_desc">Threads</string>
+    <string name="tutorial_thread_desc_detail">Each discussion thread starts with an image and then expires when the board or comment limit is reached.</string>
+    <string name="tutorial_finished_desc">Finished</string>
+    <string name="tutorial_finished_desc_detail">You\'ve now covered the basics.  Click a section such as Popular Threads to start browsing for content.</string>
+
+    <!--
     <string name="tutorial_boardselector_desc">Welcome to the Boards</string>
     <string name="tutorial_boardselector_desc_detail">On Chanu, people post images on boards and discuss them. Click a
         board to see its posts.
@@ -660,12 +672,6 @@
     </string>
     <string name="tutorial_watchlist_delete">Delete Watchlist</string>
     <string name="tutorial_watchlist_delete_detail">You can use the \'X\' icon to clear the watchlist</string>
-
-
-    <string name="tutorial_board_desc">Board View</string>
-    <string name="tutorial_board_desc_detail">Browse uploaded images organized into thread topics. Click a thread to see
-        the discussion.
-    </string>
     <string name="tutorial_board_select">Select Board</string>
     <string name="tutorial_board_select_detail">Use the Select Board spinner to quickly jump to a board</string>
     <string name="tutorial_manual_refresh">Manual Refresh</string>
@@ -684,10 +690,6 @@
     <string name="tutorial_board_rules_detail">This menu shows the rules for this board, read before posting</string>
     <string name="tutorial_gallery_view">Gallery View</string>
     <string name="tutorial_gallery_view_detail">Click the image button to go to the thread gallery view</string>
-
-    <string name="tutorial_thread_desc">Thread View</string>
-    <string name="tutorial_thread_desc_detail">The first image starts the discussion, text and image replies follow.
-    </string>
     <string name="tutorial_search_thread">Post Search</string>
     <string name="tutorial_search_thread_detail">Click the search button to find matching posts</string>
     <string name="tutorial_post">Post Reply</string>
@@ -706,7 +708,6 @@
     <string name="tutorial_download_all_images_to_gallery_detail">This menu downloads all thread images to your Android
         gallery
     </string>
-
     <string name="tutorial_settings_names">User Info</string>
     <string name="tutorial_settings_names_detail">You can optionally enter the name, email and password you would like
         to auto-fill for posting
@@ -719,6 +720,7 @@
     <string name="tutorial_settings_cache_size_detail">Adjust cache parameters to optimize browsing speed</string>
     <string name="tutorial_settings_watchlist">Watchlist</string>
     <string name="tutorial_settings_watchlist_detail">Adjust watchlist parameters for automatic list cleaning</string>
+    -->
 
     <!-- board names -->
     <string name="board_type_worksafe">Worksafe</string>
@@ -809,8 +811,8 @@
     <string name="board_latest_images_abbrev">Latest Imgs</string>
     <string name="board_select">Chanu</string>
     <string name="board_select_abbrev">Chanu</string>
-    <string name="board_meta">Boards</string>
-    <string name="board_meta_desc">List of all boards</string>
+    <string name="board_meta">Sections</string>
+    <string name="board_meta_desc">List of all sections</string>
 
     <!-- board descriptions -->
     <string name="board_desc_3">3D Modeling and Imagery</string>
@@ -1531,25 +1533,12 @@
 
     <!-- tutorial_overlay -->
     <dimen name="tutorial_overlay_subject_layout_margin">16dp</dimen>
+    <dimen name="tutorial_overlay_subject_layout_marginBottom">8dp</dimen>
     <dimen name="tutorial_overlay_subject_textSize">22sp</dimen>
-
-    <dimen name="tutorial_overlay_detail_marginLeft">16dp</dimen>
-    <dimen name="tutorial_overlay_detail_marginTop">0sp</dimen>
-    <dimen name="tutorial_overlay_detail_marginRight">16dp</dimen>
-    <dimen name="tutorial_overlay_detail_marginBottom">16dp</dimen>
     <dimen name="tutorial_overlay_detail_textSize">18sp</dimen>
-
-    <dimen name="tutorial_overlay_button_marginTop">48dp</dimen>
-    <dimen name="tutorial_overlay_button_marginRight">16dp</dimen>
-    <dimen name="tutorial_overlay_button_paddingLeft">48dp</dimen>
+    <dimen name="tutorial_overlay_button_paddingLeft">36dp</dimen>
     <dimen name="tutorial_overlay_button_paddingTop">8dp</dimen>
-    <dimen name="tutorial_overlay_button_paddingRight">48dp</dimen>
-    <dimen name="tutorial_overlay_button_paddingBottom">8dp</dimen>
-    <dimen name="tutorial_overlay_button_textSize">22sp</dimen>
-
-    <dimen name="tutorial_overlay_dismiss_marginRight">16dp</dimen>
-    <dimen name="tutorial_overlay_dismiss_marginBottom">16dp</dimen>
-    <dimen name="tutorial_overlay_dismiss_padding">8dp</dimen>
+    <dimen name="tutorial_overlay_button_textSize">18sp</dimen>
 
     <!-- popular / home -->
     <dimen name="PopularTitle_paddingTop">24dp</dimen>
@@ -1588,4 +1577,6 @@
     <integer name="BoardTabletGridView.numColumns">1</integer>
     <dimen name="BoardGridView.spacing">8dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">8dp</dimen>
+    <dimen name="BoardGridTextHeight">92dp</dimen>
+
 </resources>

@@ -241,31 +241,21 @@
     <string name="BoardRefreshBarWidth">wrap_content</string>
 
     <!-- tutorial_overlay -->
-    <dimen name="tutorial_overlay_subject_layout_margin">16dp</dimen>
-    <dimen name="tutorial_overlay_subject_textSize">22sp</dimen>
-
-    <dimen name="tutorial_overlay_detail_marginLeft">16dp</dimen>
-    <dimen name="tutorial_overlay_detail_marginTop">0sp</dimen>
-    <dimen name="tutorial_overlay_detail_marginRight">16dp</dimen>
-    <dimen name="tutorial_overlay_detail_marginBottom">16dp</dimen>
-    <dimen name="tutorial_overlay_detail_textSize">18sp</dimen>
-
-    <dimen name="tutorial_overlay_button_marginTop">48dp</dimen>
-    <dimen name="tutorial_overlay_button_marginRight">16dp</dimen>
+    <dimen name="tutorial_overlay_subject_layout_margin">32dp</dimen>
+    <dimen name="tutorial_overlay_subject_layout_marginBottom">16dp</dimen>
+    <dimen name="tutorial_overlay_subject_textSize">36sp</dimen>
+    <dimen name="tutorial_overlay_detail_textSize">22sp</dimen>
     <dimen name="tutorial_overlay_button_paddingLeft">48dp</dimen>
     <dimen name="tutorial_overlay_button_paddingTop">8dp</dimen>
-    <dimen name="tutorial_overlay_button_paddingRight">48dp</dimen>
-    <dimen name="tutorial_overlay_button_paddingBottom">8dp</dimen>
-    <dimen name="tutorial_overlay_button_textSize">22sp</dimen>
-
-    <dimen name="tutorial_overlay_dismiss_marginRight">32dp</dimen>
-    <dimen name="tutorial_overlay_dismiss_marginBottom">32dp</dimen>
-    <dimen name="tutorial_overlay_dismiss_padding">16dp</dimen>
+    <dimen name="tutorial_overlay_button_textSize">36sp</dimen>
 
     <!-- widgets dimension -->
     <dimen name="widget_board_minWidth">350dp</dimen>
     <dimen name="widget_board_minHeight">228dp</dimen>
 
-    <integer name="BoardGridView.numColumns">6</integer>
+    <integer name="BoardGridView.numColumns">5</integer>
+    <dimen name="BoardGridView.spacing">16dp</dimen>
+    <dimen name="BoardGridViewTablet.spacing">16dp</dimen>
+    <dimen name="BoardGridTextHeight">140dp</dimen>
 
 </resources>

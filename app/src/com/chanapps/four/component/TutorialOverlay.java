@@ -19,61 +19,89 @@ import com.chanapps.four.service.NetworkProfileManager;
  */
 public class TutorialOverlay {
 
+    protected static final String TAG = TutorialOverlay.class.getSimpleName();
+    protected static final boolean DEBUG = true;
+
     public enum Page {
-        BOARDLIST,
-        POPULAR,
-        WATCHLIST,
-        BOARD,
-        THREAD;
+        //BOARDLIST,
+        //POPULAR,
+        //WATCHLIST,
+        BOARD
+        //,THREAD
+        ;
     }
 
     protected UserStatistics.ChanFeature feature;
+    protected Page page;
+    protected View layout;
     protected ViewGroup tutorialOverlay;
     protected TextView tutorialOverlaySubject;
     protected TextView tutorialOverlayDetail;
     protected Button tutorialOverlayButton;
     protected TextView tutorialOverlayDismiss;
 
-    protected static final String TAG = TutorialOverlay.class.getSimpleName();
-
     public TutorialOverlay(View layout, Page page) {
+        this.layout =  layout;
+        this.page = page;
+        tutorialOverlay = (ViewGroup)layout.findViewById(R.id.tutorial_overlay);
+        if (!displayNextTipForPage(page)) {
+            tutorialOverlay.setVisibility(View.GONE);
+            return;
+        }
+        addButtonHandlers();
+        tutorialOverlay.setVisibility(View.VISIBLE);
+    }
+
+    protected boolean displayNextTipForPage(Page page) {
         NetworkProfileManager manager = NetworkProfileManager.instance();
         if (manager == null) {
             Log.e(TAG, "no network manager found");
-            return;
+            return false;
         }
         UserStatistics stats = manager.getUserStatistics();
         if (stats == null) {
             Log.e(TAG, "no user statistics found");
-            return;
+            return false;
         }
         feature = stats.nextTipForPage(page);
         if (feature == null) {
             Log.e(TAG, "no tutorial feature found");
+            return false;
         }
         if (feature == UserStatistics.ChanFeature.NONE) {
-            return;
+            Log.e(TAG, "NONE tutorial feature found");
+            return false;
         }
-
+        if (DEBUG) Log.i(TAG, "found feature=" + feature);
         String featureSubjectStringName = "tutorial_" + feature.toString().toLowerCase();
         String featureDetailStringName = "tutorial_" + feature.toString().toLowerCase() + "_detail";
         String subject = getStringResourceByName(layout.getContext(), featureSubjectStringName);
         String detail = getStringResourceByName(layout.getContext(), featureDetailStringName);
         if (subject == null || detail == null) {
-            return;
+            Log.e(TAG, "string data missing for feature=" + feature);
+            return false;
         }
+        setTipText(subject, detail);
+        NetworkProfileManager.instance().getUserStatistics().tipDisplayed(feature);
+        return true;
+    }
 
-        tutorialOverlay = (ViewGroup)layout.findViewById(R.id.tutorial_overlay);
+    protected void setTipText(String subject, String detail) {
         tutorialOverlaySubject = (TextView)layout.findViewById(R.id.tutorial_overlay_subject);
         tutorialOverlaySubject.setText(subject);
         tutorialOverlayDetail = (TextView)layout.findViewById(R.id.tutorial_overlay_detail);
         tutorialOverlayDetail.setText(detail);
+    }
+
+    protected void addButtonHandlers() {
         tutorialOverlayButton = (Button)layout.findViewById(R.id.tutorial_overlay_button);
         tutorialOverlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tutorialOverlay.setVisibility(View.GONE);
-                NetworkProfileManager.instance().getUserStatistics().tipDisplayed(feature);
+                if (!displayNextTipForPage(page))
+                    tutorialOverlay.setVisibility(View.GONE);
+                if (feature == UserStatistics.ChanFeature.FINISHED_DESC)
+                    updateButtonsToFinished();
             }
         });
         tutorialOverlayDismiss = (TextView)layout.findViewById(R.id.tutorial_overlay_dismiss);
@@ -84,7 +112,11 @@ public class TutorialOverlay {
                 NetworkProfileManager.instance().getUserStatistics().disableTips();
             }
         });
-        tutorialOverlay.setVisibility(View.VISIBLE);
+    }
+
+    protected void updateButtonsToFinished() {
+        tutorialOverlayDismiss.setVisibility(View.GONE);
+        tutorialOverlayButton.setText(R.string.tutorial_overlay_finished);
     }
 
     private String getStringResourceByName(Context context, String aString) {
@@ -94,4 +126,5 @@ public class TutorialOverlay {
             return null;
         return context.getString(resId);
     }
+
 }

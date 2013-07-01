@@ -37,24 +37,36 @@ public class UserStatistics {
 
 	public static enum ChanFeature {
 		NONE,
-		//BOARDSELECTOR_DESC,
-        POPULAR_DESC, WATCHLIST_DESC, BOARD_DESC, THREAD_DESC
+	    INTRO_DESC,
+	    SECTION_DESC,
+        BOARD_DESC,
+        THREAD_DESC,
+        FINISHED_DESC
+        //POPULAR_DESC,
+        //WATCHLIST_DESC,
         //,WATCHLIST_CLEAN, WATCHLIST_DELETE,
 		//BOARD_SELECT, MANUAL_REFRESH, SEARCH_BOARD, SEARCH_THREAD, BOARD_LIST_VIEW, ADD_THREAD, POST,
 		//CACHED_BOARD_IMAGES, ALL_CACHED_IMAGES, BOARD_RULES, WATCH_THREAD, GALLERY_VIEW,
 		//PLAY_THREAD, PRELOAD_ALL_IMAGES, DOWNLOAD_ALL_IMAGES_TO_GALLERY,
 		//SETTINGS_NAMES, SETTINGS_4CHAN_PASS, SETTINGS_CACHE_SIZE, SETTINGS_WATCHLIST
 	}
-	
-	//public static ChanFeature[] BOARDSELECTOR_FEATURES = new ChanFeature[]{
-	//	ChanFeature.BOARDSELECTOR_DESC, ChanFeature.BOARD_SELECT, ChanFeature.ALL_CACHED_IMAGES };
+    public static ChanFeature[] MAIN_TUTORIAL_FEATURES = new ChanFeature[]{
+            ChanFeature.INTRO_DESC,
+            ChanFeature.SECTION_DESC,
+            ChanFeature.BOARD_DESC,
+            ChanFeature.THREAD_DESC,
+            ChanFeature.FINISHED_DESC
+    };
+	/*
+	public static ChanFeature[] BOARDSELECTOR_FEATURES = new ChanFeature[]{
+		ChanFeature.BOARDSELECTOR_DESC, ChanFeature.BOARD_SELECT, ChanFeature.ALL_CACHED_IMAGES };
 	public static ChanFeature[] POPULAR_FEATURES = new ChanFeature[]{
             ChanFeature.POPULAR_DESC
-            //,ChanFeature.MANUAL_REFRESH
+            ,ChanFeature.MANUAL_REFRESH
     };
 	public static ChanFeature[] WATCHLIST_FEATURES = new ChanFeature[]{
             ChanFeature.WATCHLIST_DESC
-            //, ChanFeature.WATCHLIST_CLEAN, ChanFeature.WATCHLIST_DELETE
+            , ChanFeature.WATCHLIST_CLEAN, ChanFeature.WATCHLIST_DELETE
     };
 	public static ChanFeature[] BOARD_FEATURES = new ChanFeature[]{
             ChanFeature.BOARD_DESC
@@ -72,7 +84,7 @@ public class UserStatistics {
             //ChanFeature.SETTINGS_4CHAN_PASS
     };
 	public static ChanFeature[] GALLERY_FEATURES = new ChanFeature[]{};
-
+    */
 	/**
 	 * board code -> number of visits (including threads and image view)
 	 */
@@ -285,11 +297,15 @@ public class UserStatistics {
 			break;
         */
 		case BOARD:
+            tipSet = MAIN_TUTORIAL_FEATURES;
+            break;
+            /*
 			if (!displayedTips.contains(ChanFeature.BOARD_DESC)) {
 				return ChanFeature.BOARD_DESC;
 			}
 			tipSet = BOARD_FEATURES;
 			break;
+			*/
 		/*
 		case THREAD:
 			if (!displayedTips.contains(ChanFeature.THREAD_DESC)) {
@@ -311,13 +327,14 @@ public class UserStatistics {
 			break;
 		*/
         }
-
+        /*
 		if (!tipShouldBeDisplayed()) {
 			return ChanFeature.NONE;
 		}
-
+        */
 		for (ChanFeature feature : tipSet) {
-			if (!usedFeatures.contains(feature) && !displayedTips.contains(feature)) {
+			//if (!usedFeatures.contains(feature) && !displayedTips.contains(feature)) {
+			if (!displayedTips.contains(feature)) {
 				return feature;
 			}
 		}
