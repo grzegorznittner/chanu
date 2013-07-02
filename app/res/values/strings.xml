@@ -27,7 +27,8 @@
     <string name="not_implemented">Not yet implemented</string>
     <string name="thread_related_threads_title">Related Threads</string>
     <string name="thread_related_threads_desc">Threads on /%1$s/ covering a similar topic</string>
-    <string name="thread_search">Search</string>
+    <string name="board_search">Search board</string>
+    <string name="thread_search">Search thread</string>
     <string name="search_title">Search</string>
     <string name="thread_search_results">MATCHING POSTS FOR %1$s</string>
     <string name="thread_search_no_results">&lt;i&gt;no matches&lt;/i&gt;</string>
@@ -102,62 +103,62 @@
     <string name="logout_pass_no_response">Couldn\'t logout, no response</string>
 
     <!-- menus -->
-    <string name="web_menu">Web</string>
+    <string name="web_menu">View on 4chan.org</string>
     <string name="settings_menu">Settings</string>
-    <string name="global_rules_menu">Rules</string>
-    <string name="board_rules_menu">Rules</string>
+    <string name="global_rules_menu">Board rules</string>
+    <string name="board_rules_menu">Global rules</string>
     <string name="go_to_top_position_menu">Go to top</string>
-    <string name="play_thread_menu">Play</string>
-    <string name="play_thread_stop_menu">Stop</string>
+    <string name="play_thread_menu">Play thread</string>
+    <string name="play_thread_stop_menu">Stop thread</string>
     <string name="go_to_end_position_menu">Go to end</string>
-    <string name="refresh_board_menu">Refresh</string>
-    <string name="refresh_thread_menu">Refresh</string>
-    <string name="new_thread_menu">New</string>
-    <string name="new_thread_short">New</string>
+    <string name="refresh_board_menu">Refresh board</string>
+    <string name="refresh_thread_menu">Refresh thread</string>
+    <string name="new_thread_menu">New thread</string>
+    <string name="new_thread_short">New thread</string>
     <string name="prefetch_board_menu">Preload threads</string>
-    <string name="watch_thread_menu">Watch</string>
+    <string name="watch_thread_menu">Add to Watchlist</string>
     <string name="view_as_grid_menu">View as grid</string>
     <string name="view_as_list_menu">View as list</string>
     <string name="thread_image_popup_menu">Thread images</string>
     <string name="thread_navigate_popup_menu">Thread navigation</string>
-    <string name="thread_reply_menu">Reply</string>
-    <string name="post_reply_menu">Reply</string>
+    <string name="thread_reply_menu">Reply to thread</string>
+    <string name="post_reply_menu">Reply to thread</string>
     <string name="post_reply_quote_menu">Post quoted reply</string>
-    <string name="post_reply_all_menu">Reply</string>
-    <string name="post_reply_all_quote_menu">Quote</string>
+    <string name="post_reply_all_menu">Reply to post</string>
+    <string name="post_reply_all_quote_menu">Reply with quoted post</string>
     <string name="go_to_link_menu">Go to link</string>
     <string name="go_to_link_not_found">No links found in posts</string>
     <string name="select_text_menu">Select text</string>
     <string name="select_text_hint">Select text</string>
-    <string name="copy_text_menu">Copy</string>
+    <string name="copy_text_menu">Copy post text</string>
     <string name="delete_report_posts_menu">Delete/report posts</string>
-    <string name="delete_posts_menu">Delete</string>
-    <string name="delete_blocks_menu">Delete</string>
-    <string name="report_posts_menu">Report</string>
-    <string name="block_posts_menu">Block</string>
+    <string name="delete_posts_menu">Delete post</string>
+    <string name="delete_blocks_menu">Delete block</string>
+    <string name="report_posts_menu">Report post</string>
+    <string name="block_posts_menu">Block bost</string>
     <string name="translate_posts_menu">Translate post</string>
     <string name="translate_no_text">No text found to translate</string>
-    <string name="share_image">Share</string>
-    <string name="share_text">Share</string>
+    <string name="share_image">Share post</string>
+    <string name="share_text">Share post</string>
     <string name="share_text_default">Thread /</string>
     <string name="share_text_empty">No text found to share</string>
     <string name="toggle_image_only_menu">Toggle image only</string>
     <string name="prev_image_menu">Prev image</string>
     <string name="next_image_menu">Next image</string>
-    <string name="download_all_images_menu">Prefetch</string>
-    <string name="download_all_images_to_gallery_menu">Download</string>
-    <string name="download_images_to_gallery_menu">Download</string>
+    <string name="download_all_images_menu">Prefetch images</string>
+    <string name="download_all_images_to_gallery_menu">Download images</string>
+    <string name="download_images_to_gallery_menu">Download image</string>
     <string name="download_image_menu">Save to gallery</string>
     <string name="set_as_wallpaper_menu">Set as wallpaper</string>
-    <string name="view_image_gallery_menu">Gallery</string>
-    <string name="image_search_menu">Tineye</string>
-    <string name="anime_image_search_menu">IQDB</string>
+    <string name="view_image_gallery_menu">Thread gallery</string>
+    <string name="image_search_menu">Tineye image search</string>
+    <string name="anime_image_search_menu">IQDB image search</string>
     <string name="share_image_menu">Share image</string>
     <string name="share_text_menu">Share text</string>
     <string name="post_reply_send_menu">Send</string>
-    <string name="offline_board_view_menu">Gallery</string>
+    <string name="offline_board_view_menu">Board gallery</string>
     <string name="offline_board_view_title">%1$s</string>
-    <string name="offline_chan_view_menu">Gallery</string>
+    <string name="offline_chan_view_menu">All boards gallery</string>
 
     <!-- board types tab -->
     <string name="japanese_culture">Japanese Culture</string>
@@ -176,7 +177,7 @@
     <string name="board_selector_latest_desc">The ten latest posts</string>
     <string name="board_selector_latest_images_title">Recent&lt;br/&gt;Images</string>
     <string name="board_selector_latest_images_desc">The three latest uploaded images</string>
-    <string name="board_selector_boardlist_title">Sections</string>
+    <string name="board_selector_boardlist_title">All Boards</string>
 
     <!-- board activity -->
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
@@ -350,7 +351,7 @@
     <string name="exif_title">EXIF Data</string>
     <string name="copy_text">Copy</string>
     <string name="copy_text_complete">Copied text</string>
-    <string name="translate">Translate</string>
+    <string name="translate">Translate post</string>
     <string name="report">Report Post</string>
     <string name="reply">Post Reply</string>
     <string name="reply_short">Reply</string>
@@ -645,8 +646,8 @@
 
     <string name="tutorial_intro_desc">Welcome</string>
     <string name="tutorial_intro_desc_detail">Chanu is an anonymous discussion board, with fast-changing frequent updates and image content from 4chan.</string>
-    <string name="tutorial_section_desc">Sections</string>
-    <string name="tutorial_section_desc_detail">Sections group discussion boards into categories such as Popular Threads, Japanese Culture, and Creative.</string>
+    <string name="tutorial_section_desc">Categories</string>
+    <string name="tutorial_section_desc_detail">Categories group discussion boards such as Japanese Culture, Interests, Creative, and Other.</string>
     <string name="tutorial_board_desc">Boards</string>
     <string name="tutorial_board_desc_detail">Each board has its own topic such as Anime, Video Games, and Sports, where anyone can start new discussions.</string>
     <string name="tutorial_thread_desc">Threads</string>
@@ -811,8 +812,8 @@
     <string name="board_latest_images_abbrev">Latest Imgs</string>
     <string name="board_select">Chanu</string>
     <string name="board_select_abbrev">Chanu</string>
-    <string name="board_meta">Sections</string>
-    <string name="board_meta_desc">List of all sections</string>
+    <string name="board_meta">All Boards</string>
+    <string name="board_meta_desc">List of all boards</string>
 
     <!-- board descriptions -->
     <string name="board_desc_3">3D Modeling and Imagery</string>
@@ -1000,35 +1001,25 @@
     </string-array>
     -->
 
+    <string name="categories" value="Categories"/>
+
     <string-array name="long_drawer_array">
         <item>@string/board_meta</item>
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
-        <!--
+        <item>@string/board_watch</item>
+        <item>@string/categories</item>
         <item>@string/board_type_japanese_culture</item>
         <item>@string/board_type_interests</item>
         <item>@string/board_type_creative</item>
         <item>@string/board_type_other</item>
         <item>@string/board_type_adult</item>
         <item>@string/board_type_misc</item>
-        -->
-        <item>@string/board_watch</item>
-        <item>@string/about_menu</item>
     </string-array>
 
     <string-array name="long_board_array">
         <item>@string/board_meta</item>
-        <item>@string/board_type_recent</item>
-        <item>@string/board_latest</item>
-        <item>@string/board_latest_images</item>
-        <item>@string/board_watch</item>
-        <item>@string/board_type_japanese_culture</item>
-        <item>@string/board_type_interests</item>
-        <item>@string/board_type_creative</item>
-        <item>@string/board_type_other</item>
-        <item>@string/board_type_adult</item>
-        <item>@string/board_type_misc</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -1091,6 +1082,16 @@
         <item>/wsg/ Worksafe GIF</item>
         <item>/x/ Paranormal</item>
         <item>/y/ Yaoi</item>
+        <item>@string/board_type_recent</item>
+        <item>@string/board_latest</item>
+        <item>@string/board_latest_images</item>
+        <item>@string/board_watch</item>
+        <item>@string/board_type_japanese_culture</item>
+        <item>@string/board_type_interests</item>
+        <item>@string/board_type_creative</item>
+        <item>@string/board_type_other</item>
+        <item>@string/board_type_adult</item>
+        <item>@string/board_type_misc</item>
     </string-array>
 
     <string-array name="long_drawer_array_worksafe">
@@ -1098,26 +1099,16 @@
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
-        <!--
+        <item>@string/board_watch</item>
+        <item>@string/categories</item>
         <item>@string/board_type_japanese_culture</item>
         <item>@string/board_type_interests</item>
         <item>@string/board_type_creative</item>
         <item>@string/board_type_other</item>
-        -->
-        <item>@string/board_watch</item>
-        <item>@string/about_menu</item>
     </string-array>
 
     <string-array name="long_board_array_worksafe">
         <item>@string/board_meta</item>
-        <item>@string/board_type_recent</item>
-        <item>@string/board_latest</item>
-        <item>@string/board_latest_images</item>
-        <item>@string/board_watch</item>
-        <item>@string/board_type_japanese_culture</item>
-        <item>@string/board_type_interests</item>
-        <item>@string/board_type_creative</item>
-        <item>@string/board_type_other</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -1163,13 +1154,17 @@
         <item>/wg/ Wallpapers/General</item>
         <item>/wsg/ Worksafe GIF</item>
         <item>/x/ Paranormal</item>
-    </string-array>
-
-    <string-array name="widget_board_array">
-        <item>@string/board_popular</item>
+        <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
         <item>@string/board_watch</item>
+        <item>@string/board_type_japanese_culture</item>
+        <item>@string/board_type_interests</item>
+        <item>@string/board_type_creative</item>
+        <item>@string/board_type_other</item>
+    </string-array>
+
+    <string-array name="widget_board_array">
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -1232,13 +1227,13 @@
         <item>/wsg/ Worksafe GIF</item>
         <item>/x/ Paranormal</item>
         <item>/y/ Yaoi</item>
-    </string-array>
-
-    <string-array name="widget_board_array_worksafe">
         <item>@string/board_popular</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
         <item>@string/board_watch</item>
+    </string-array>
+
+    <string-array name="widget_board_array_worksafe">
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -1284,6 +1279,10 @@
         <item>/wg/ Wallpapers/General</item>
         <item>/wsg/ Worksafe GIF</item>
         <item>/x/ Paranormal</item>
+        <item>@string/board_popular</item>
+        <item>@string/board_latest</item>
+        <item>@string/board_latest_images</item>
+        <item>@string/board_watch</item>
     </string-array>
 
     <!-- Font sizes -->

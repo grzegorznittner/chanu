@@ -43,6 +43,7 @@ public class ChanHelper {
     public static final String LAST_ACTIVITY = "lastActivity";
     public static final String IGNORE_DISPATCH = "ignoreDispatch";
     public static final String PRIORITY_MESSAGE = "priorityFetch";
+    public static final String SECONDARY_THREAD_NO = "secondaryThreadNo";
     public static final String CLEAR_FETCH_QUEUE = "clearFetchQueue";
     public static final String THREAD_FETCH_TIME = "threadFetchTime";
     public static final String USER_POSTS = "userPosts";

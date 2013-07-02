@@ -40,16 +40,16 @@ public class WifiProfile extends MobileProfile {
         super.onBoardSelected(context, boardCode);
         Health health = getConnectionHealth();
         if (health == Health.GOOD || health == Health.PERFECT) {
-            ChanBoard boardObj = ChanFileStorage.loadBoardData(context, boardCode);
+            ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
             int threadPrefechCounter = health == Health.GOOD ? 3 : 7;
-            if (boardObj != null) {
-                for(ChanPost post : boardObj.threads) {
+            if (board != null) {
+                for(ChanPost thread : board.threads) {
                     if (threadPrefechCounter <= 0) {
                         break;
                     }
-                    if (post.closed == 0 && post.sticky == 0 && post.replies > 5 && post.images > 1) {
+                    if (thread.closed == 0 && thread.sticky == 0 && thread.replies > 5 && thread.images > 1) {
                         threadPrefechCounter--;
-                        FetchChanDataService.scheduleThreadFetch(context, boardCode, post.no);
+                        FetchChanDataService.scheduleThreadFetch(context, boardCode, thread.no, false, false);
                     }
                 }
             }

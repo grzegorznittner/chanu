@@ -205,7 +205,7 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
 
     @Override
     public String toString() {
-        return "BoardThreadsParserService : " + (new ChanActivityId(boardCode, pageNo, priority));
+        return "BoardThreadsParserService : " + getChanActivityId();
     }
 
 }

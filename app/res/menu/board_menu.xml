@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/search_menu"
-          android:title="@string/thread_search"
+          android:title="@string/board_search"
           android:icon="@drawable/action_search"
           android:showAsAction="collapseActionView"
           android:actionViewClass="android.widget.SearchView"/>
@@ -45,6 +45,10 @@
     <item android:id="@+id/settings_menu"
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"
+            />
+    <item android:id="@+id/about_menu"
+          android:title="@string/about_menu"
+          android:icon="@drawable/action_about"
             />
     <item android:id="@+id/exit_menu"
           android:title="@string/exit_menu"

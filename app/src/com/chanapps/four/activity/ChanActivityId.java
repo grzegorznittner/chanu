@@ -24,6 +24,7 @@ public class ChanActivityId implements Serializable {
     public String boardCode = null;
     public int pageNo = -1;
     public long threadNo = 0;
+    public long secondaryThreadNo = 0;
     public long postNo = 0;
     public int position = 0;
     public GalleryViewActivity.ViewType viewType = null;

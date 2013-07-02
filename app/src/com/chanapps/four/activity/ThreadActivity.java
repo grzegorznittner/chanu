@@ -104,12 +104,15 @@ public class ThreadActivity
             boardCode = ChanBoard.META_BOARD_CODE;
         if (threadNo <= 0)
             redirectToBoard();
+        board = ChanFileStorage.loadBoardData(this, boardCode);
 
-        createPager();
+        if (board == null || board.defData || board.threads.length == 0)
+            Log.i(TAG, "Board not ready, postponing pager creation");
+        else
+            createPager();
     }
 
     protected void createPager() {
-        board = ChanFileStorage.loadBoardData(this, boardCode);
         mAdapter = new ThreadPagerAdapter(getSupportFragmentManager());
         mAdapter.setBoard(board);
         mPager = (ViewPager)findViewById(R.id.pager);
@@ -372,6 +375,11 @@ public class ThreadActivity
 
     public void refreshFragment(String boardCode, long threadNo) {
         if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo);
+        board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+        if (mPager == null && !board.defData) {
+            if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " board loaded, creating pager");
+            createPager();
+        }
         if (mPager == null) {
             if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " skipping, null pager");
             return;

@@ -263,7 +263,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             return;
         }
         startProgressBarForThread();
-        FetchChanDataService.scheduleThreadFetchWithPriority(getActivityContext(), boardCode, threadNo);
+        FetchChanDataService.scheduleThreadFetch(getActivityContext(), boardCode, threadNo, true, false);
     }
 
     protected void onThreadLoadFinished(Cursor data) {

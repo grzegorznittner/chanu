@@ -36,6 +36,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     private boolean boardCatalog;
     private int pageNo;
     private long threadNo;
+    private long secondaryThreadNo;
     private boolean boardHandling = true;
     private boolean priority;
     private boolean backgroundLoad;
@@ -44,6 +45,11 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     private ChanThread thread;
 
     public static boolean scheduleBoardFetch(Context context, String boardCode, boolean priority, boolean backgroundLoad) {
+        return scheduleBoardFetch(context, boardCode, priority, backgroundLoad, 0);
+    }
+
+    public static boolean scheduleBoardFetch(Context context, String boardCode, boolean priority, boolean backgroundLoad,
+                                             long threadNo) {
         if (ChanBoard.isPopularBoard(boardCode)) {
             if (DEBUG) Log.i(TAG, "Redirecting refresh request for /" + boardCode + "/ to popular fetch service");
             return FetchPopularThreadsService.schedulePopularFetchService(context, priority, backgroundLoad);
@@ -67,23 +73,14 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         if (backgroundLoad) {
             intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
         }
+        if (threadNo > 0) {
+            intent.putExtra(ChanHelper.SECONDARY_THREAD_NO, threadNo);
+        }
         context.startService(intent);
         return true;
     }
 
-    public static boolean scheduleBackgroundThreadFetch(Context context, String boardCode, long threadNo, boolean priority) {
-        return scheduleThreadFetch(context, boardCode, threadNo, priority, true);
-    }
-
-    public static boolean scheduleThreadFetch(Context context, String boardCode, long threadNo) {
-        return scheduleThreadFetch(context, boardCode, threadNo, false, false);
-    }
-
-    public static boolean scheduleThreadFetchWithPriority(Context context, String boardCode, long threadNo) {
-        return scheduleThreadFetch(context, boardCode, threadNo, true, false);
-    }
-
-    private static boolean scheduleThreadFetch(Context context, String boardCode, long threadNo, boolean priority, boolean backgroundLoad) {
+    public static boolean scheduleThreadFetch(Context context, String boardCode, long threadNo, boolean priority, boolean backgroundLoad) {
     	if (!ChanThread.threadNeedsRefresh(context, boardCode, threadNo, priority)) {
             if (DEBUG) Log.i(TAG, "skipping refresh, thread doesn't need it for /" + boardCode + "/" + threadNo);
         	return false;
@@ -142,6 +139,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
 		pageNo = boardCatalog ? -1 : intent.getIntExtra(ChanHelper.PAGE, 0);
 		threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+        secondaryThreadNo = intent.getLongExtra(ChanHelper.SECONDARY_THREAD_NO, 0);
 		boardHandling = threadNo == 0;
 		priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
 
@@ -234,6 +232,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 
                 if (DEBUG) Log.w(TAG, "Fetched and stored " + chanApi + " in " + fetchTime + "ms, size " + fileSize);
                 if (DEBUG) Log.i(TAG, "Calling finishedFetchingData priority=" + priority);
+                /*
                 final ChanActivityId activityId = getChanActivityId();
                 final Context context = getApplicationContext();
                 final ChanIdentifiedService service = new ChanIdentifiedService() {
@@ -246,7 +245,8 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                         return context;
                     }
                 };
-                NetworkProfileManager.instance().finishedFetchingData(service, fetchTime, (int)fileSize);
+                */
+                NetworkProfileManager.instance().finishedFetchingData(this, fetchTime, (int)fileSize);
             }
         } catch (IOException e) {
             //toastUI(R.string.board_service_couldnt_read);
@@ -371,11 +371,15 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 
 	@Override
 	public ChanActivityId getChanActivityId() {
+        ChanActivityId id;
 		if (threadNo > 0) {
-			return new ChanActivityId(boardCode, threadNo, priority);
+			id = new ChanActivityId(boardCode, threadNo, priority);
 		} else {
-			return new ChanActivityId(boardCode, pageNo, priority);
+			id = new ChanActivityId(boardCode, pageNo, priority);
 		}
+        if (secondaryThreadNo > 0)
+            id.secondaryThreadNo = secondaryThreadNo;
+        return id;
 	}
 
 }

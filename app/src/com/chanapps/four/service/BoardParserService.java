@@ -49,17 +49,10 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     private boolean boardCatalog;
     private int pageNo;
     private boolean priority;
+    private long secondaryThreadNo = 0;
     private ChanBoard board;
 
-    public static void startService(Context context, String boardCode, int pageNo) {
-        startService(context, boardCode, pageNo, false);
-    }
-
-    public static void startServiceWithPriority(Context context, String boardCode, int pageNo) {
-        startService(context, boardCode, pageNo, true);
-    }
-    
-    public static void startService(Context context, String boardCode, int pageNo, boolean priority) {
+    public static void startService(Context context, String boardCode, int pageNo, boolean priority, long secondaryThreadNo) {
     	if (ChanBoard.isVirtualBoard(boardCode)) {
     		return;
     	}
@@ -70,6 +63,8 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         intent.putExtra(ChanHelper.PAGE, pageNo);
         if (priority)
 	        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+        if (secondaryThreadNo > 0)
+            intent.putExtra(ChanHelper.SECONDARY_THREAD_NO, secondaryThreadNo);
         context.startService(intent);
     }
     
@@ -122,7 +117,8 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
 		pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
         priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
-		if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " priority=" + priority);
+		secondaryThreadNo = intent.getLongExtra(ChanHelper.SECONDARY_THREAD_NO, 0);
+        if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " priority=" + priority);
 
         long startTime = Calendar.getInstance().getTimeInMillis();
 		try {
@@ -293,12 +289,15 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     */
 	@Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(boardCode, pageNo, priority);
+		ChanActivityId id = new ChanActivityId(boardCode, pageNo, priority);
+        if (secondaryThreadNo > 0)
+            id.secondaryThreadNo = secondaryThreadNo;
+        return id;
 	}
 
     @Override
     public String toString() {
-        return "BoardParserService : " + (new ChanActivityId(boardCode, pageNo, priority));
+        return "BoardParserService: " + getChanActivityId();
     }
 
 }

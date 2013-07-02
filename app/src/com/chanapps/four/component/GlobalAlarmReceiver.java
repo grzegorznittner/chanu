@@ -79,7 +79,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
         if (board == null || board.threads == null)
             return;
         for (ChanPost thread : board.threads) {
-            FetchChanDataService.scheduleThreadFetch(context, thread.board, thread.no);
+            FetchChanDataService.scheduleThreadFetch(context, board.link, thread.no, false, true);
         }
     }
 

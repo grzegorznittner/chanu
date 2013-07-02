@@ -45,14 +45,6 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
     private ChanThread thread;
     private long threadFetchTime;
 
-    public static void startService(Context context, String boardCode, long threadNo) {
-        startService(context, boardCode, threadNo, false);
-    }
-
-    public static void startServiceWithPriority(Context context, String boardCode, long threadNo) {
-        startService(context, boardCode, threadNo, true);
-    }
-
     public static void startService(Context context, String boardCode, long threadNo, boolean priority) {
         if (DEBUG) Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo
                 + " priority=" + priority);
@@ -165,5 +157,10 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
 	public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(boardCode, threadNo, priority);
 	}
+
+    @Override
+    public String toString() {
+        return "ThreadParserService : " + getChanActivityId();
+    }
 
 }

@@ -197,18 +197,10 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
             // skip since fetch&parse steps happen together for virtual boards
         } else if (data.threadNo == 0) {
 			// board fetching
-	        if (data.priority) {
-	        	BoardParserService.startServiceWithPriority(service.getApplicationContext(), data.boardCode, data.pageNo);
-	        } else {
-	        	BoardParserService.startService(service.getApplicationContext(), data.boardCode, data.pageNo);
-	        }
+            BoardParserService.startService(service.getApplicationContext(), data.boardCode, data.pageNo, data.priority, data.secondaryThreadNo);
 		} else if (data.postNo == 0) {
 			// thread fetching
-            if (data.priority) {
-            	ThreadParserService.startServiceWithPriority(service.getApplicationContext(), data.boardCode, data.threadNo);
-            } else {
-            	ThreadParserService.startService(service.getApplicationContext(), data.boardCode, data.threadNo);
-            }
+            ThreadParserService.startService(service.getApplicationContext(), data.boardCode, data.threadNo, data.priority);
 		} else {
 			// image fetching
 		}

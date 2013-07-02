@@ -295,7 +295,7 @@ public class PostReplyTask extends AsyncTask<PostingReplyDialogFragment, Void, I
         if (activityId != null) {
             if (activityId.activity == LastActivity.THREAD_ACTIVITY) {
                 ChanFileStorage.resetLastFetched(activityId.boardCode, activityId.threadNo);
-                FetchChanDataService.scheduleThreadFetchWithPriority(activity, activity.boardCode, activity.threadNo);
+                FetchChanDataService.scheduleThreadFetch(activity, activity.boardCode, activity.threadNo, true, false);
             } else if (activityId.activity == LastActivity.BOARD_ACTIVITY) {
                 ChanFileStorage.resetLastFetched(activityId.boardCode);
                 FetchChanDataService.scheduleBoardFetch(activity, activity.boardCode, true, false);

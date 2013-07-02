@@ -265,12 +265,12 @@ public class MobileProfile extends AbstractNetworkProfile {
     }
 
     @Override
-    public void onThreadSelected(Context context, String boardCode, long threadId) {
-        if (DEBUG) Log.d(TAG, "onThreadSelected /" + boardCode + "/" + threadId);
-        super.onThreadSelected(context, boardCode, threadId);
+    public void onThreadSelected(Context context, String boardCode, long threadNo) {
+        if (DEBUG) Log.d(TAG, "onThreadSelected /" + boardCode + "/" + threadNo);
+        super.onThreadSelected(context, boardCode, threadNo);
         Health health = getConnectionHealth();
+        boolean threadScheduled = false;
 
-        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
         if (!ChanBoard.boardNeedsRefresh(context, boardCode, false)) {
             if (DEBUG) Log.i(TAG, "board already loaded for thread, skipping load");
         }
@@ -280,37 +280,67 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
         else if (!ChanBoard.boardHasData(context, boardCode)) {
             if (DEBUG) Log.i(TAG, "onThreadSelected no board data priority fetch /" + boardCode + "/");
-            FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false);
+            if (FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false, threadNo)) {
+                startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
+                threadScheduled = true;
+            }
         }
         else {
             if (DEBUG) Log.i(TAG, "onThreadSelected normal fetch /" + boardCode + "/");
             FetchChanDataService.scheduleBoardFetch(context, boardCode, false, false);
         }
 
-        if (!ChanThread.threadNeedsRefresh(context, boardCode, threadId, false)) {
+        if (threadScheduled) {
+            Log.i(TAG, "onThreadSelected thread update scheduled after board fetch, exiting");
+            return;
+        }
+
+        if (!ChanThread.threadNeedsRefresh(context, boardCode, threadNo, false)) {
             if (DEBUG) Log.i(TAG, "thread already loaded, skipping load");
         } else if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
         } else {
-            if (DEBUG) Log.i(TAG, "scheduling thread fetch with priority for /" + boardCode + "/" + threadId);
-            if (FetchChanDataService.scheduleThreadFetchWithPriority(context, boardCode, threadId))
+            if (DEBUG) Log.i(TAG, "scheduling thread fetch with priority for /" + boardCode + "/" + threadNo);
+            if (FetchChanDataService.scheduleThreadFetch(context, boardCode, threadNo, true, false))
                 startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
         }
     }
 
     @Override
-    public void onThreadRefreshed(Context context, Handler handler, String board, long threadNo) {
-        super.onThreadRefreshed(context, handler, board, threadNo);
+    public void onThreadRefreshed(Context context, Handler handler, String boardCode, long threadNo) {
+        super.onThreadRefreshed(context, handler, boardCode, threadNo);
         Health health = getConnectionHealth();
         if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
         }
-        boolean canFetch = FetchChanDataService.scheduleThreadFetchWithPriority(context, board, threadNo);
+
+        boolean threadScheduled = false;
+        if (!ChanBoard.boardNeedsRefresh(context, boardCode, false)) {
+            if (DEBUG) Log.i(TAG, "onThreadRefreshed board already loaded for thread, skipping load");
+        }
+        else if (!ChanBoard.boardHasData(context, boardCode)) {
+            if (DEBUG) Log.i(TAG, "onThreadRefreshed no board data priority fetch /" + boardCode + "/");
+            if (FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false, threadNo)) {
+                startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
+                threadScheduled = true;
+            }
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "onThreadRefreshed normal fetch /" + boardCode + "/");
+            FetchChanDataService.scheduleBoardFetch(context, boardCode, false, false);
+        }
+
+        if (threadScheduled) {
+            Log.i(TAG, "onThreadRefreshed thread update scheduled after board fetch, exiting");
+            return;
+        }
+
+        boolean canFetch = FetchChanDataService.scheduleThreadFetch(context, boardCode, threadNo, true, false);
         if (DEBUG) Log.i(TAG, "onThreadRefreshed canFetch=" + canFetch + " handler=" + handler);
         if (!canFetch) {
-            ChanThread thread = ChanFileStorage.loadThreadData(context, board, threadNo);
+            ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
             int msgId;
             if (thread != null && thread.isDead)
                 msgId = R.string.thread_dead;
@@ -410,6 +440,7 @@ public class MobileProfile extends AbstractNetworkProfile {
             board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
         }
         if (DEBUG) Log.i(TAG, "handleBoardParseSuccess /" + data.boardCode + "/"
+                + " threads=" + board.threads.length
                 + " loadedThreads=" + board.loadedThreads.length
                 + " priority=" + data.priority
                 + " defData=" + board.defData);
@@ -422,11 +453,12 @@ public class MobileProfile extends AbstractNetworkProfile {
             return;
         }
 
-        if (data.priority || board.defData || !board.isCurrent() || !board.isSwapCurrent() || board.isVirtualBoard()) {
-            // priority requests do this above (see call to ChanFileStorage.loadFreshBoardData)
-            //if (!data.priority)
-            //    board.swapLoadedThreads();
-
+        if (data.secondaryThreadNo > 0) {
+            if (DEBUG) Log.i(TAG, "Board /" + data.boardCode + "/ loaded, fetching secondary threadNo=" + data.threadNo);
+            FetchChanDataService.scheduleThreadFetch(service.getApplicationContext(), data.boardCode,
+                    data.secondaryThreadNo, true, false);
+        }
+        else if (data.priority || board.defData || !board.isCurrent() || !board.isSwapCurrent() || board.isVirtualBoard()) {
             final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
             ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
             boolean isBoardActivity = currentActivityId != null
