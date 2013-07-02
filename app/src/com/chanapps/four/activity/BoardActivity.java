@@ -99,8 +99,23 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
-        if (boardCode == null || boardCode.isEmpty())
-            boardCode = ChanBoard.META_BOARD_CODE;
+        if (boardCode == null || boardCode.isEmpty()) {
+            if (ActivityDispatcher.isDispatchable(this)) {
+                if (DEBUG) Log.i(TAG, "empty board code, dispatching");
+                if (ActivityDispatcher.dispatch(this)) {
+                    if (DEBUG) Log.i(TAG, "dispatch successful, finishing");
+                    return;
+                }
+                else {
+                    if (DEBUG) Log.i(TAG, "couldn't dispatch, defaulting to meta board");
+                    boardCode = ChanBoard.META_BOARD_CODE;
+                }
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "empty board code, not dispatchable, setting to meta board");
+                boardCode = ChanBoard.META_BOARD_CODE;
+            }
+        }
         if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
             setWatchlist(this);
         if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/ q=" + query);

@@ -25,7 +25,7 @@ public class ActivityDispatcher {
 
     private static final String TAG = ActivityDispatcher.class.getSimpleName();
     private static final String LAST_ACTIVITY = "ActivityDispatcherLastActivity";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static void store(ChanIdentifiedActivity activity) {
         ChanActivityId activityId = activity.getChanActivityId();
@@ -40,32 +40,42 @@ public class ActivityDispatcher {
         if (DEBUG) Log.i(TAG, "store() stored " + activityId);
     }
 
-    public static void dispatch(ChanIdentifiedActivity activity) {
+    public static boolean isDispatchable(ChanIdentifiedActivity activity) {
+        return PreferenceManager
+                .getDefaultSharedPreferences(activity.getBaseContext())
+                .getString(LAST_ACTIVITY, null)
+                != null;
+    }
+
+    public static boolean dispatch(ChanIdentifiedActivity activity) {
 
         Intent intent = ((Activity)activity).getIntent();
         if (intent.hasExtra(ChanHelper.IGNORE_DISPATCH) && intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
             if (DEBUG) Log.i(TAG, "dispatch ignored by intent");
-            return;
+            return false;
         }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity.getBaseContext());
         String serialized = prefs.getString(LAST_ACTIVITY, null);
         if (serialized == null || serialized.isEmpty()) {
             if (DEBUG) Log.e(TAG, "dispatch() deserialize empty");
-            return;
+            return false;
         }
 
         ChanActivityId activityId = ChanActivityId.deserialize(serialized);
         if (activityId == null) {
             if (DEBUG) Log.e(TAG, "dispatch() deserialize null");
-            return;
+            return false;
         }
 
         if (DEBUG) Log.i(TAG, "dispatch() deserialized " + activityId);
         Intent newIntent = activityId.createIntent((Activity)activity);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        if (DEBUG) Log.i(TAG, "dispatch() created intent=" + newIntent
+                + " boardCode=" + newIntent.getStringExtra("boardCode"));
         ((Activity)activity).startActivity(newIntent);
         ((Activity)activity).finish();
+        return true;
     }
 
 }

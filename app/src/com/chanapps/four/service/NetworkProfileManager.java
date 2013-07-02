@@ -121,6 +121,7 @@ public class NetworkProfileManager {
             NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 
             activeProfile.onApplicationStart(newActivity.getBaseContext());
+            if (DEBUG) Log.i(TAG, "ensureInitialized initializing dispatching newActivity=" + newActivity.getChanActivityId());
             ActivityDispatcher.dispatch(newActivity);
         }
     }
