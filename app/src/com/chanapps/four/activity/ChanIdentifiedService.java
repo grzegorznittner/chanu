@@ -11,5 +11,6 @@ public interface ChanIdentifiedService {
 	/**
 	 * Returns service's context.
 	 */
-	Context getApplicationContext (); 
+	Context getApplicationContext ();
+
 }

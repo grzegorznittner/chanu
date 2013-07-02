@@ -39,10 +39,11 @@ public class ThreadActivity
 {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
+    public static final boolean DEBUG = true;
+
     public static final String BOARD_CODE = "boardCode";
     public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
-    public static final boolean DEBUG = false;
     protected static final int OFFSCREEN_PAGE_LIMIT = 1;
 
     protected ChanBoard board;

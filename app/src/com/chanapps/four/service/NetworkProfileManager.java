@@ -37,7 +37,7 @@ import java.lang.reflect.Field;
  */
 public class NetworkProfileManager {
 	private static final String TAG = NetworkProfileManager.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	private static NetworkProfileManager instance;
 	
@@ -232,6 +232,7 @@ public class NetworkProfileManager {
 	}
 	
 	public void failedFetchingData(ChanIdentifiedService service, Failure failure) {
+        if (DEBUG) Log.i(TAG, "failedFetchingData service=" + service);
 		service = checkService(service);
 		if (activeProfile == null) {
 			NetworkBroadcastReceiver.checkNetwork(service.getApplicationContext());

@@ -30,7 +30,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
     private String boardCode;
     private boolean boardCatalog;
@@ -250,9 +250,9 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             }
         } catch (IOException e) {
             //toastUI(R.string.board_service_couldnt_read);
-            NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
             Log.e(TAG, "IO Error fetching Chan board json", e);
-		} catch (Exception e) {
+            NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
+        } catch (Exception e) {
             //toastUI(R.string.board_service_couldnt_load);
             NetworkProfileManager.instance().failedFetchingData(this, Failure.WRONG_DATA);
 			Log.e(TAG, "Error fetching Chan board json", e);

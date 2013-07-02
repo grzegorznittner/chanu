@@ -931,7 +931,7 @@ public class ChanBoard {
             swapCurrent = false;
         else
             swapCurrent = true;
-        if (DEBUG) Log.i(TAG, "isSwapCurrent lastSwapped=" + lastSwapped + " diff=" + diff + " return=" + swapCurrent);
+        if (DEBUG) Log.i(TAG, "isSwapCurrent /" + link + "/ lastSwapped=" + lastSwapped + " diff=" + diff + " return=" + swapCurrent);
         return swapCurrent;
     }
 

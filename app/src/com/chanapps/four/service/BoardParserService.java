@@ -294,5 +294,11 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 	@Override
 	public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(boardCode, pageNo, priority);
-	}	
+	}
+
+    @Override
+    public String toString() {
+        return "BoardParserService : " + (new ChanActivityId(boardCode, pageNo, priority));
+    }
+
 }

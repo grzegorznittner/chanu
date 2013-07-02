@@ -38,9 +38,6 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
     protected static final String TAG = "BoardThreadsParserService";
     private static final boolean DEBUG = false;
 	
-	protected static final long STORE_INTERVAL_MS = 2000;
-    protected static final int MAX_THREAD_RETENTION_PER_BOARD = 100;
-
     private String boardCode;
     private boolean boardCatalog;
     private int pageNo;
@@ -205,4 +202,10 @@ public class BoardThreadsParserService extends BaseChanService implements ChanId
 	public ChanActivityId getChanActivityId() {
 		return new ChanActivityId(boardCode, pageNo, priority);
 	}
+
+    @Override
+    public String toString() {
+        return "BoardThreadsParserService : " + (new ChanActivityId(boardCode, pageNo, priority));
+    }
+
 }

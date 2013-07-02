@@ -45,8 +45,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 	public static final String TAG = BoardActivity.class.getSimpleName();
 	public static final boolean DEBUG = true;
     public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
-    protected static final String FIRST_VISIBLE_POSITION = "firstVisiblePosition";
-    protected static final String FIRST_VISIBLE_POSITION_OFFSET = "firstVisiblePositionOffset";
     private static WeakReference<BoardActivity> watchlistActivityRef = null;
 
     protected AbstractBoardCursorAdapter adapter;
@@ -704,7 +702,15 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 setProgress(true);
                 LinearLayout refreshLayout = (LinearLayout)BoardActivity.this.findViewById(R.id.board_refresh_bar);
                 refreshLayout.setVisibility(LinearLayout.GONE);
-                NetworkProfileManager.instance().manualRefresh(BoardActivity.this);
+                ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+                board.swapLoadedThreads();
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+                        }
+                    });
             }
             else if (v.getId() == R.id.board_ignore_button) {
                 LinearLayout refreshLayout = (LinearLayout)BoardActivity.this.findViewById(R.id.board_refresh_bar);

@@ -195,7 +195,8 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
         else if (!ChanBoard.boardHasData(context, boardCode)) {
             if (DEBUG) Log.i(TAG, "no board data, thus priority fetching /" + boardCode + "/");
-            FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false);
+            if (FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false))
+                startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
         }
         else {
             if (DEBUG) Log.i(TAG, "board needs update, non-priority fetching /" + boardCode + "/");
@@ -408,8 +409,10 @@ public class MobileProfile extends AbstractNetworkProfile {
         } else {
             board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
         }
-        if (DEBUG) Log.i(TAG, "handleBoardParseSuccess loadedThreads=" + board.loadedThreads.length
-                + " priority=" + data.priority + " defData=" + board.defData);
+        if (DEBUG) Log.i(TAG, "handleBoardParseSuccess /" + data.boardCode + "/"
+                + " loadedThreads=" + board.loadedThreads.length
+                + " priority=" + data.priority
+                + " defData=" + board.defData);
 
         if (board == null || board.defData) {
             // board data corrupted, we need to reload it
