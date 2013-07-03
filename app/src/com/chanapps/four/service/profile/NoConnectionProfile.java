@@ -89,9 +89,14 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
         final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
 
+        String refreshText = null;
         ChanBoard board = ChanFileStorage.loadBoardData(baseContext, boardCode);
-        if (board != null)
+        if (board != null && board.hasNewBoardData()) {
+            if (activity instanceof BoardActivity)
+                refreshText = ((BoardActivity)activity).boardRefreshMessage();
             board.swapLoadedThreads();
+        }
+        final String refreshMessage = refreshText;
 
         boolean boardActivity = currentActivityId != null
                 && currentActivityId.boardCode != null
@@ -103,7 +108,7 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    activity.refresh();
+                    ((BoardActivity)activity).refresh(refreshMessage);
                 }
             });
     }

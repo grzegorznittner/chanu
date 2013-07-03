@@ -243,25 +243,34 @@ public class MobileProfile extends AbstractNetworkProfile {
     @Override
     public void onUpdateViewData(Context baseContext, Handler handler, String boardCode) {
         super.onUpdateViewData(baseContext, handler, boardCode);
+        if (DEBUG) Log.i(TAG, "onUpdateViewData /" + boardCode + "/");
 
         final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         final ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
 
-        if (ChanFileStorage.hasNewBoardData(baseContext, boardCode))
-            ChanFileStorage.loadFreshBoardData(baseContext, boardCode);
+        String refreshText = null;
+        ChanBoard board = ChanFileStorage.loadBoardData(baseContext, boardCode);
+        if (board != null && board.hasNewBoardData()) {
+            if (activity instanceof BoardActivity)
+                refreshText = ((BoardActivity)activity).boardRefreshMessage();
+            board.swapLoadedThreads();
+        }
+        final String refreshMessage = refreshText;
 
         boolean boardActivity = currentActivityId != null
                 && currentActivityId.boardCode != null
                 && currentActivityId.boardCode.equals(boardCode);
 
         if (boardActivity && currentActivityId.activity == LastActivity.BOARD_ACTIVITY
-                && currentActivityId.threadNo == 0 && handler != null)
+                && currentActivityId.threadNo == 0 && handler != null) {
+            if (DEBUG) Log.i(TAG, "onUpdateViewData /" + boardCode + "/ refreshing activity");
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    activity.refresh();
+                    ((BoardActivity)activity).refresh(refreshMessage);
                 }
             });
+        }
     }
 
     @Override

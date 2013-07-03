@@ -39,6 +39,7 @@ import com.chanapps.four.viewer.BoardGridViewer;
 import com.chanapps.four.viewer.ViewType;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
@@ -62,6 +63,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected ViewType viewType = ViewType.AS_GRID;
     protected int firstVisiblePosition = -1;
     protected int firstVisiblePositionOffset = -1;
+    protected PullToRefreshAttacher mPullToRefreshAttacher;
 
     public static void startActivity(Context from, String boardCode, String query) {
         //if (query != null && !query.isEmpty())
@@ -141,7 +143,18 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (DEBUG) Log.i(TAG, "onCreate no board data, waiting for profile onBoardSelected callback");
             setProgress(true);
         }
+
+        mPullToRefreshAttacher = new PullToRefreshAttacher(this);
+        mPullToRefreshAttacher.setRefreshableView(gridView, pullToRefreshListener);
     }
+
+    protected PullToRefreshAttacher.OnRefreshListener pullToRefreshListener = new PullToRefreshAttacher.OnRefreshListener() {
+        @Override
+        public void onRefreshStarted(View view) {
+            if (DEBUG) Log.i(TAG, "pullToRefreshListener.onRefreshStarted()");
+            onRefresh();
+        }
+    };
 
     protected static void setWatchlist(BoardActivity fragment) {
         synchronized (BoardActivity.class) {
@@ -470,20 +483,24 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
     };
 
+    protected void onRefresh() {
+        if (ChanBoard.isVirtualBoard(boardCode) && !ChanBoard.isPopularBoard(boardCode)) {
+            if (DEBUG) Log.i(TAG, "manual refresh skipped for non-popular virtual board /" + boardCode + "/");
+            return;
+        }
+        setProgress(true);
+        NetworkProfileManager.instance().manualRefresh(this);
+        if (gridView != null)
+            gridView.setSelection(0);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item))
             return true;
         switch (item.getItemId()) {
             case R.id.refresh_menu:
-                if (ChanBoard.isVirtualBoard(boardCode) && !ChanBoard.isPopularBoard(boardCode)) {
-                    if (DEBUG) Log.i(TAG, "manual refresh skipped for non-popular virtual board /" + boardCode + "/");
-                    return true;
-                }
-                setProgress(true);
-                NetworkProfileManager.instance().manualRefresh(this);
-                if (gridView != null)
-                    gridView.setSelection(0);
+                onRefresh();
                 return true;
             case R.id.new_thread_menu:
                 ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);
@@ -605,6 +622,22 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         return board;
     }
 
+    public String boardRefreshMessage() {
+        ChanBoard board = loadBoard();
+        StringBuffer msg = new StringBuffer();
+        if (board.newThreads > 0) {
+            msg.append("" + board.newThreads + " new thread");
+            if (board.newThreads > 1) // + board.updatedThreads > 1) {
+                msg.append("s");
+        }
+        else if (board.updatedThreads > 0) {
+            msg.append("" + board.updatedThreads + " updated thread");
+            if (board.updatedThreads > 1) // + board.updatedThreads > 1) {
+                msg.append("s");
+        }
+        return msg.toString();
+    }
+
     public void handleUpdatedThreads() {
         LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
         if (refreshLayout == null)
@@ -676,6 +709,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     @Override
     public void refresh() {
+        refresh(null);
+    }
+
+    public void refresh(final String refreshMessage) {
+        if (DEBUG) Log.i(TAG, "refresh() /" + boardCode + "/ msg=" + refreshMessage);
         handleUpdatedThreads();
         //setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
@@ -685,10 +723,19 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (board == null) {
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         }
-        if (board.newThreads == 0 && board.updatedThreads == 0) {
-	        if (handler != null) {
-	        	handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
-	        }
+        //if (board.newThreads == 0 && board.updatedThreads == 0 && handler != null) {
+        if (board.newThreads == 0 && handler != null) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+                    if (refreshMessage != null)
+                        Toast.makeText(getApplicationContext(), refreshMessage, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        else {
+            stopProgressBarIfLoadersDone();
         }
     }
 
@@ -753,8 +800,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     @Override
     public void setProgress(boolean on) {
+        if (DEBUG) Log.i(TAG, "setProgress(" + on + ")");
         if (handler != null)
             setProgressBarIndeterminateVisibility(on);
+        if (mPullToRefreshAttacher != null && !on) {
+            if (DEBUG) Log.i(TAG, "mPullToRefreshAttacher.setRefreshComplete()");
+            mPullToRefreshAttacher.setRefreshComplete();
+        }
     }
 
     @Override

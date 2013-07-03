@@ -163,7 +163,7 @@ public class NetworkProfileManager {
 	
 	public void manualRefresh(ChanIdentifiedActivity newActivity) {
         //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.MANUAL_REFRESH);
-        if (DEBUG) Log.i(TAG, "manualRefresh " + newActivity.getChanActivityId(), new Exception("manualRefresh"));
+        if (DEBUG) Log.i(TAG, "manualRefresh " + newActivity.getChanActivityId());
 		if (newActivity == null) {
 			return;
 		}
