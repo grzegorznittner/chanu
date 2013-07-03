@@ -470,7 +470,7 @@ public class MobileProfile extends AbstractNetworkProfile {
             FetchChanDataService.scheduleThreadFetch(service.getApplicationContext(), data.boardCode,
                     data.secondaryThreadNo, true, false);
         }
-        else if (data.priority || board.defData || !board.isCurrent() || !board.isSwapCurrent() || board.isVirtualBoard()) {
+        else if (data.priority || board.defData || !board.isCurrent() || board.shouldSwapThreads() || board.isVirtualBoard()) {
             final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
             ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
             boolean isBoardActivity = currentActivityId != null

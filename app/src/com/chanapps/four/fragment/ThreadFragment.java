@@ -262,8 +262,14 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             stopProgressBarIfLoadersDone();
             return;
         }
-        startProgressBarForThread();
-        FetchChanDataService.scheduleThreadFetch(getActivityContext(), boardCode, threadNo, true, false);
+        if (FetchChanDataService.scheduleThreadFetch(getActivityContext(), boardCode, threadNo, true, false)) {
+            startProgressBarForThread();
+        }
+        else {
+            loadingStatusFlags |= THREAD_DONE;
+            stopProgressBarIfLoadersDone();
+            return;
+        }
     }
 
     protected void onThreadLoadFinished(Cursor data) {
@@ -353,6 +359,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     }
 
     protected void setProgressForFragment(boolean on) {
+        progressVisible = on;
         ((ThreadActivity)getActivity()).setProgressForFragment(boardCode, threadNo, on);
     }
 
@@ -520,7 +527,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 return true;
             */
             case R.id.refresh_menu:
-                setProgress(true);
+                setProgressForFragment(true);
                 NetworkProfileManager.instance().manualRefresh(getChanActivity());
                 return true;
             case R.id.post_reply_menu:
@@ -1092,12 +1099,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     getLoaderManager().restartLoader(0, null, loaderCallbacks);
                 }
             });
-    }
-
-    public void setProgress(boolean on) {
-        if (handler != null)
-            getActivity().setProgressBarIndeterminateVisibility(on);
-        progressVisible = on;
     }
 
     private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";

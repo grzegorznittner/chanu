@@ -910,6 +910,8 @@ public class ChanBoard {
         return false;
     }
 
+    protected final int MAX_THREADS_BEFORE_SWAP = 20;
+
     public boolean shouldSwapThreads() {
         if (loadedThreads == null || loadedThreads.length == 0)
             return false;
@@ -917,12 +919,14 @@ public class ChanBoard {
             return true;
         if (threads[0] == null || threads[0].defData || threads[0].no <= 0)
             return true;
+        if (threads.length > MAX_THREADS_BEFORE_SWAP)
+            return true;
         if (!isSwapCurrent())
             return true;
         return false;
     }
 
-    public boolean isSwapCurrent() {
+    private boolean isSwapCurrent() {
         long diff = Math.abs(new Date().getTime() - lastSwapped);
         boolean swapCurrent;
         if (lastSwapped <= 0)

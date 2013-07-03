@@ -4,7 +4,6 @@ import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.List;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.os.Message;
 import android.support.v4.app.LoaderManager;
@@ -45,7 +44,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
 	public static final boolean DEBUG = true;
-    public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
     private static WeakReference<BoardActivity> watchlistActivityRef = null;
 
     protected AbstractBoardCursorAdapter adapter;
@@ -266,7 +264,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected void onStart() {
         super.onStart();
         if (handler == null)
-            handler = new LoaderHandler();
+            handler = new Handler();
+            //handler = new LoaderHandler();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query);
         //setActionBarTitle();
     }
@@ -287,8 +286,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 		super.onResume();
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query);
         if (handler == null)
-            handler = new LoaderHandler();
+            handler = new Handler();
+            //handler = new LoaderHandler();
         handleWatchlistLongClickable();
+        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+        if (board.shouldSwapThreads())
+            board.swapLoadedThreads();
         handleUpdatedThreads();
         invalidateOptionsMenu(); // for correct spinner display
 		NetworkProfileManager.instance().activityChange(this);
@@ -623,7 +626,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     public void handleUpdatedThreads() {
-        LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
+        View refreshLayout = this.findViewById(R.id.board_refresh_bar);
         if (refreshLayout == null)
             return;
         ChanBoard board = loadBoard();
@@ -635,6 +638,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             refreshLayout.setVisibility(LinearLayout.GONE);
         } else
         */
+
         if ((board.newThreads > 0)// || board.updatedThreads > 0)
                 && (query == null || query.isEmpty())) { // display update button
             if (DEBUG) Log.i(TAG, "displaying new thread refresh bar to user");
@@ -698,12 +702,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     public void refresh(final String refreshMessage) {
         if (DEBUG) Log.i(TAG, "refresh() /" + boardCode + "/ msg=" + refreshMessage);
+        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         handleUpdatedThreads();
         //setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
         //if (gridView == null || gridView.getCount() < 1)
         //    createAbsListView();
-        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board == null) {
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         }
@@ -746,7 +750,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         public void onClick(View v) {
             if (v.getId() == R.id.board_refresh_button) {
                 setProgress(true);
-                LinearLayout refreshLayout = (LinearLayout)BoardActivity.this.findViewById(R.id.board_refresh_bar);
+                View refreshLayout = BoardActivity.this.findViewById(R.id.board_refresh_bar);
                 refreshLayout.setVisibility(LinearLayout.GONE);
                 ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
                 board.swapLoadedThreads();
@@ -759,12 +763,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     });
             }
             else if (v.getId() == R.id.board_ignore_button) {
-                LinearLayout refreshLayout = (LinearLayout)BoardActivity.this.findViewById(R.id.board_refresh_bar);
+                View refreshLayout = BoardActivity.this.findViewById(R.id.board_refresh_bar);
                 refreshLayout.setVisibility(LinearLayout.GONE);
             }
         }
     };
-
+    /*
     private class LoaderHandler extends Handler {
         public LoaderHandler() {}
         @Override
@@ -781,7 +785,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             }
         }
     }
-
+    */
     @Override
     public void setProgress(boolean on) {
         if (DEBUG) Log.i(TAG, "setProgress(" + on + ")");

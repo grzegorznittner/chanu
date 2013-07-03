@@ -258,12 +258,17 @@ public class ThreadActivity
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent intent = BoardActivity.createIntent(this, boardCode, "");
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+                /*
                 if (NavUtils.shouldUpRecreateTask(this, intent)) {
                     if (DEBUG) Log.i(TAG, "shouldUpRecreateTask " + this);
                 } else {
                     if (DEBUG) Log.i(TAG, "navigateUpTo");
                     NavUtils.navigateUpTo(this, intent);
                 }
+                */
                 return true;
             case R.id.refresh_menu:
                 setProgress(true);
