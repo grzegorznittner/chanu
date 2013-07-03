@@ -990,4 +990,18 @@ public class ChanBoard {
 
     protected static final long SWAP_DELAY_MS = 300000L;
 
+    public String refreshMessage() {
+        StringBuffer msg = new StringBuffer();
+        if (newThreads > 0) {
+            msg.append("" + newThreads + " new thread");
+            if (newThreads > 1) // + updatedThreads > 1) {
+                msg.append("s");
+        }
+        else if (updatedThreads > 0) {
+            msg.append("" + updatedThreads + " updated thread");
+            if (updatedThreads > 1) // + updatedThreads > 1) {
+                msg.append("s");
+        }
+        return msg.toString();
+    }
 }

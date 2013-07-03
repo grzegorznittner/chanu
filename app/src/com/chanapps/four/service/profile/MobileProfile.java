@@ -251,8 +251,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         String refreshText = null;
         ChanBoard board = ChanFileStorage.loadBoardData(baseContext, boardCode);
         if (board != null && board.hasNewBoardData()) {
-            if (activity instanceof BoardActivity)
-                refreshText = ((BoardActivity)activity).boardRefreshMessage();
+            refreshText = board.refreshMessage();
             board.swapLoadedThreads();
         }
         final String refreshMessage = refreshText;
@@ -442,17 +441,21 @@ public class MobileProfile extends AbstractNetworkProfile {
     private void handleBoardParseSuccess(ChanIdentifiedService service) {
         ChanActivityId data = service.getChanActivityId();
 
-        ChanBoard board = null;
-        if (data.priority) {
-            board = ChanFileStorage.loadFreshBoardData(service.getApplicationContext(), data.boardCode);
-        } else {
-            board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
+        String refreshText = null;
+        ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
+        if (data.priority && board != null && board.hasNewBoardData()) {
+            if (DEBUG) Log.i(TAG, "handleBoardParseSuccess /" + data.boardCode + "/ swapping threads");
+            refreshText = board.refreshMessage();
+            board.swapLoadedThreads();
         }
+        final String refreshMessage = refreshText;
         if (DEBUG) Log.i(TAG, "handleBoardParseSuccess /" + data.boardCode + "/"
+                + " priority=" + data.priority
+                + (board != null ? ""
                 + " threads=" + board.threads.length
                 + " loadedThreads=" + board.loadedThreads.length
-                + " priority=" + data.priority
-                + " defData=" + board.defData);
+                + " defData=" + board.defData
+                : ""));
 
         if (board == null || board.defData) {
             // board data corrupted, we need to reload it
@@ -480,7 +483,7 @@ public class MobileProfile extends AbstractNetworkProfile {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        activity.refresh();
+                        ((BoardActivity)activity).refresh(refreshMessage);
                     }
                 });
             }

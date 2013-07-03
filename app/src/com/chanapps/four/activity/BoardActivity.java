@@ -622,22 +622,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         return board;
     }
 
-    public String boardRefreshMessage() {
-        ChanBoard board = loadBoard();
-        StringBuffer msg = new StringBuffer();
-        if (board.newThreads > 0) {
-            msg.append("" + board.newThreads + " new thread");
-            if (board.newThreads > 1) // + board.updatedThreads > 1) {
-                msg.append("s");
-        }
-        else if (board.updatedThreads > 0) {
-            msg.append("" + board.updatedThreads + " updated thread");
-            if (board.updatedThreads > 1) // + board.updatedThreads > 1) {
-                msg.append("s");
-        }
-        return msg.toString();
-    }
-
     public void handleUpdatedThreads() {
         LinearLayout refreshLayout = (LinearLayout)this.findViewById(R.id.board_refresh_bar);
         if (refreshLayout == null)

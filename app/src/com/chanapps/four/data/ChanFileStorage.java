@@ -292,16 +292,6 @@ public class ChanFileStorage {
         return board == null ? false : board.hasNewBoardData();
     }
 
-    public static ChanBoard loadFreshBoardData(Context context, String boardCode) {
-        if (DEBUG) Log.i(TAG, "loadFreshBoardData code=" + boardCode);
-        ChanBoard board = loadBoardData(context, boardCode);
-        //if (hasNewBoardData(context, boardCode)) {
-        //    board.swapLoadedThreads();
-        //    FileSaverService.startService(context, FileType.BOARD_SAVE, boardCode);
-        //}
-        return board;
-    }
-
     private static ChanBoard prepareDefaultBoardData(Context context, String boardCode) {
         ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
         if (board == null) {

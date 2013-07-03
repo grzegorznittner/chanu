@@ -92,8 +92,7 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
         String refreshText = null;
         ChanBoard board = ChanFileStorage.loadBoardData(baseContext, boardCode);
         if (board != null && board.hasNewBoardData()) {
-            if (activity instanceof BoardActivity)
-                refreshText = ((BoardActivity)activity).boardRefreshMessage();
+            refreshText = board.refreshMessage();
             board.swapLoadedThreads();
         }
         final String refreshMessage = refreshText;
