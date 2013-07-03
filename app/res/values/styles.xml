@@ -494,8 +494,9 @@
 
     <style name="BoardRefreshBar" parent="BoardRefreshBarBase">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_gravity">right</item>
-        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@color/PaletteYellowWhite</item>
     </style>
 
     <!-- THREAD LIST STYLES -->
@@ -853,14 +854,14 @@
     <style name="ThreadListHeaderNumHorizontalBorder" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
-        <item name="android:background">@color/PaletteFaintGray</item>
+        <item name="android:background">@color/PaletteMedGray</item>
     </style>
 
     <style name="ThreadListHeaderNumVerticalBorder" parent="AppTheme">
         <item name="android:layout_width">1dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_alignParentRight">true</item>
-        <item name="android:background">@color/PaletteFaintGray</item>
+        <item name="android:background">@color/PaletteMedGray</item>
     </style>
     <!--
     <style name="ThreadListHeaderNumVerticalBorder1" parent="AppTheme">
@@ -1333,7 +1334,7 @@
     <color name="PaletteWhite">#f7f7f7</color>
     <color name="PaletteOffWhite">#e4e4e4</color>
     <color name="PaletteLightGray">#aaa</color>
-    <color name="PaletteFaintGray">#666</color>
+    <color name="PaletteMedGray">#666</color>
     <color name="PaletteDarkGray">#414141</color>
     <color name="PaletteLightBlack">#414141</color>
     <!--<color name="PaletteBlack">#ff2d2d2d</color> -->

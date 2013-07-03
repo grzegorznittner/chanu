@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="0dp"
-        android:background="@color/PaletteOffWhite"
+        android:background="@color/PaletteYellowWhite"
         >
 
     <include layout="@layout/board_refresh_bar"/>
