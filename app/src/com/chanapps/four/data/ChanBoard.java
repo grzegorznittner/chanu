@@ -35,6 +35,7 @@ public class ChanBoard {
     public static final String WEB_ROOT_URL = "http://boards.4chan.org";
 
     public static final String BOARD_CODE = "boardCode";
+    public static final String ALL_BOARDS_BOARD_CODE = BoardType.ALL_BOARDS.boardCode();
     public static final String POPULAR_BOARD_CODE = BoardType.POPULAR.boardCode();
     public static final String LATEST_BOARD_CODE = BoardType.LATEST.boardCode();
     public static final String LATEST_IMAGES_BOARD_CODE = BoardType.LATEST_IMAGES.boardCode();
@@ -47,10 +48,10 @@ public class ChanBoard {
     public static final String META_ADULT_BOARD_CODE = BoardType.ADULT.boardCode();
     public static final String META_MISC_BOARD_CODE = BoardType.MISC.boardCode();
 
-    public static final String[] VIRTUAL_BOARDS = { POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE, WATCHLIST_BOARD_CODE,
+    public static final String[] VIRTUAL_BOARDS = { ALL_BOARDS_BOARD_CODE, POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE, WATCHLIST_BOARD_CODE,
             META_BOARD_CODE, META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE, META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
             META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
-    public static final String[] META_BOARDS = { META_BOARD_CODE,
+    public static final String[] META_BOARDS = { ALL_BOARDS_BOARD_CODE, META_BOARD_CODE,
             META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE, META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
             META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
     public static final String[] POPULAR_BOARDS = { POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE };
@@ -379,8 +380,70 @@ public class ChanBoard {
     private static String[][] initBoardCodes(Context ctx) {
         String[][] boardCodesByType = {
                 {
-                    BoardType.META.toString(),
-                        META_BOARD_CODE, ctx.getString(R.string.board_meta),
+                    BoardType.ALL_BOARDS.toString(),
+                        ALL_BOARDS_BOARD_CODE, ctx.getString(R.string.board_all_boards),
+                        "a", ctx.getString(R.string.board_a),
+                        "c", ctx.getString(R.string.board_c),
+                        "w", ctx.getString(R.string.board_w),
+                        "m", ctx.getString(R.string.board_m),
+                        "cgl", ctx.getString(R.string.board_cgl),
+                        "cm", ctx.getString(R.string.board_cm),
+                        "n", ctx.getString(R.string.board_n),
+                        "jp", ctx.getString(R.string.board_jp),
+                        "vp", ctx.getString(R.string.board_vp),
+                        "v", ctx.getString(R.string.board_v),
+                        "vg", ctx.getString(R.string.board_vg),
+                        "vr", ctx.getString(R.string.board_vr),
+                        "co", ctx.getString(R.string.board_co),
+                        "g", ctx.getString(R.string.board_g),
+                        "tv", ctx.getString(R.string.board_tv),
+                        "k", ctx.getString(R.string.board_k),
+                        "o", ctx.getString(R.string.board_o),
+                        "an", ctx.getString(R.string.board_an),
+                        "tg", ctx.getString(R.string.board_tg),
+                        "sp", ctx.getString(R.string.board_sp),
+                        "asp", ctx.getString(R.string.board_asp),
+                        "sci", ctx.getString(R.string.board_sci),
+                        "int", ctx.getString(R.string.board_int),
+                        "out", ctx.getString(R.string.board_out),
+                        "i", ctx.getString(R.string.board_i),
+                        "po", ctx.getString(R.string.board_po),
+                        "p", ctx.getString(R.string.board_p),
+                        "ck", ctx.getString(R.string.board_ck),
+                        "ic", ctx.getString(R.string.board_ic),
+                        "wg", ctx.getString(R.string.board_wg),
+                        "mu", ctx.getString(R.string.board_mu),
+                        "fa", ctx.getString(R.string.board_fa),
+                        "toy", ctx.getString(R.string.board_toy),
+                        "3", ctx.getString(R.string.board_3),
+                        "gd", ctx.getString(R.string.board_gd),
+                        "diy", ctx.getString(R.string.board_diy),
+                        "wsg", ctx.getString(R.string.board_wsg),
+                        "q", ctx.getString(R.string.board_q),
+                        "trv", ctx.getString(R.string.board_trv),
+                        "fit", ctx.getString(R.string.board_fit),
+                        "x", ctx.getString(R.string.board_x),
+                        "lit", ctx.getString(R.string.board_lit),
+                        "adv", ctx.getString(R.string.board_adv),
+                        "lgbt", ctx.getString(R.string.board_lgbt),
+                        "mlp", ctx.getString(R.string.board_mlp),
+                        "s", ctx.getString(R.string.board_s),
+                        "hc", ctx.getString(R.string.board_hc),
+                        "hm", ctx.getString(R.string.board_hm),
+                        "h", ctx.getString(R.string.board_h),
+                        "e", ctx.getString(R.string.board_e),
+                        "u", ctx.getString(R.string.board_u),
+                        "d", ctx.getString(R.string.board_d),
+                        "y", ctx.getString(R.string.board_y),
+                        "t", ctx.getString(R.string.board_t),
+                        "hr", ctx.getString(R.string.board_hr),
+                        "gif", ctx.getString(R.string.board_gif),
+                        "b", ctx.getString(R.string.board_b),
+                        "r", ctx.getString(R.string.board_r),
+                        "r9k", ctx.getString(R.string.board_r9k),
+                        "pol", ctx.getString(R.string.board_pol),
+                        "soc", ctx.getString(R.string.board_soc),
+                        "s4s", ctx.getString(R.string.board_s4s)
                 },
                 {   BoardType.WATCHLIST.toString(),
                         WATCHLIST_BOARD_CODE, ctx.getString(R.string.board_watch),
@@ -393,6 +456,10 @@ public class ChanBoard {
                 },
                 {   BoardType.LATEST_IMAGES.toString(),
                         LATEST_IMAGES_BOARD_CODE, ctx.getString(R.string.board_latest_images)
+                },
+                {
+                        BoardType.META.toString(),
+                        META_BOARD_CODE, ctx.getString(R.string.board_meta),
                 },
                 {   BoardType.JAPANESE_CULTURE.toString(),
                         META_JAPANESE_CULTURE_BOARD_CODE, ctx.getString(R.string.board_type_japanese_culture),

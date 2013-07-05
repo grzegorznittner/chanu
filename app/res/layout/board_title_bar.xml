@@ -2,8 +2,8 @@
 
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/board_refresh_bar"
-        style="@style/BoardRefreshBar"
+        android:id="@+id/board_title_bar"
+        style="@style/BoardTitleBar"
         >
 
     <ImageView
@@ -15,7 +15,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:background="@color/PaletteTransparent"
-            android:src="@drawable/geomicons_skull"
+            android:src="@drawable/geomicons_folder"
             />
 
     <TextView
@@ -27,7 +27,6 @@
             android:paddingLeft="16dp"
             android:paddingRight="8dp"
             android:textColor="@color/PaletteMedGray"
-            android:text="Categories"
             android:textSize="@dimen/BoardTypeText"
             android:textIsSelectable="false"/>
 

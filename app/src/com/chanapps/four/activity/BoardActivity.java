@@ -118,6 +118,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
             setWatchlist(this);
         if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/ q=" + query);
+
+        if (ChanBoard.isVirtualBoard(boardCode))
+            displayBoardTitle();
+        else
+            hideBoardTitle();
+
         if (ChanBoard.isVirtualBoard(boardCode) && !ChanBoard.isPopularBoard(boardCode)) { // always ready, start loading
             if (DEBUG) Log.i(TAG, "onCreate non-popular virtual board, loading immediately");
             getSupportLoaderManager().initLoader(0, null, loaderCallbacks);
@@ -803,4 +809,21 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         return super.onSearchRequested();
     }
 
+    protected void displayBoardTitle() {
+        View boardTitleBar = findViewById(R.id.board_title_bar);
+        if (boardTitleBar == null)
+            return;
+        TextView boardTitle = (TextView)boardTitleBar.findViewById(R.id.board_title_text);
+        if (boardTitle == null)
+            return;
+        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+        boardTitle.setText(board.name);
+        boardTitleBar.setVisibility(View.VISIBLE);
+    }
+
+    protected void hideBoardTitle() {
+        View boardTitleBar = findViewById(R.id.board_title_bar);
+        if (boardTitleBar != null)
+            boardTitleBar.setVisibility(View.GONE);
+    }
 }

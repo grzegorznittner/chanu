@@ -169,6 +169,8 @@
     <string name="misc">Misc.</string>
 
     <!-- Board selector activity -->
+    <string name="board_selector_all_boards_title">All Boards</string>
+    <string name="board_selector_all_boards_desc">All boards on Chanu</string>
     <string name="board_selector_watchlist_title">Watchlist</string>
     <string name="board_selector_recent_title">Popular</string>
     <string name="board_selector_popular_title">Popular&lt;br/&gt;Threads</string>
@@ -177,7 +179,7 @@
     <string name="board_selector_latest_desc">The ten latest posts</string>
     <string name="board_selector_latest_images_title">Recent&lt;br/&gt;Images</string>
     <string name="board_selector_latest_images_desc">The three latest uploaded images</string>
-    <string name="board_selector_boardlist_title">All Boards</string>
+    <string name="board_selector_boardlist_title">Categories</string>
 
     <!-- board activity -->
     <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
@@ -289,6 +291,7 @@
     </plurals>
 
     <!-- watchlist -->
+    <string name="board_empty_all_boards">Unable to load boards</string>
     <string name="board_end_of_watchlist">End of Watchlist</string>
     <string name="board_empty_watchlist">Watchlist empty\n\nWatch a thread to add it here</string>
     <string name="board_empty_recent">Unable to load latest images</string>
@@ -738,7 +741,7 @@
     <string name="board_m">Mecha</string>
     <string name="board_cgl">Cosplay &amp; EGL</string>
     <string name="board_cm">Cute/Male</string>
-    <string name="board_n">Transportation</string>
+    <string name="board_n">Transport</string>
     <string name="board_jp">Otaku Culture</string>
     <string name="board_vp">Pokemon</string>
     <string name="board_type_interests">Interests</string>
@@ -807,82 +810,84 @@
     <string name="board_watch">Watchlist</string>
     <string name="board_watch_desc">Keep track of interesting threads</string>
     <string name="board_watch_abbrev">Watch</string>
-    <string name="board_type_recent">Popular</string>
+    <string name="board_type_recent">Popular Threads</string>
     <string name="board_type_recent_abbrev">Popular</string>
-    <string name="board_popular">Popular</string>
+    <string name="board_popular">Popular Threads</string>
     <string name="board_popular_abbrev">Popular</string>
-    <string name="board_latest">Latest</string>
+    <string name="board_latest">Latest Posts</string>
     <string name="board_latest_abbrev">Latest</string>
     <string name="board_latest_images">Latest Images</string>
     <string name="board_latest_images_abbrev">Latest Imgs</string>
-    <string name="board_select">Chanu</string>
-    <string name="board_select_abbrev">Chanu</string>
-    <string name="board_meta">All Boards</string>
-    <string name="board_meta_desc">List of all boards</string>
+    <string name="board_select">Select Board</string>
+    <string name="board_select_abbrev">Select</string>
+    <string name="board_meta">Categories</string>
+    <string name="board_meta_desc">Board categories</string>
+    <string name="board_all_boards">All Boards</string>
+    <string name="board_all_boards_desc">All boards on Chanu</string>
 
     <!-- board descriptions -->
-    <string name="board_desc_3">3D Modeling and Imagery</string>
-    <string name="board_desc_a">Japanese animation and manga books</string>
+    <string name="board_desc_3">3D Modeling, Imagery</string>
+    <string name="board_desc_a">Japanese books, animation</string>
     <string name="board_desc_adv">Crowdsourced advice column</string>
-    <string name="board_desc_an">Pets, plants, and cute cuddly photos</string>
-    <string name="board_desc_asp">Sports outside the mainstream</string>
-    <string name="board_desc_b">Anonymous anarchy and craziness</string>
-    <string name="board_desc_c">Cute girl/waifu anime pics</string>
-    <string name="board_desc_cgl">Costume dressup, elegant gothic lolita</string>
-    <string name="board_desc_ck">Recipies, kitchenware, tips</string>
-    <string name="board_desc_cm">Male-only anime pictures</string>
-    <string name="board_desc_co">Western superheros and comic books</string>
-    <string name="board_desc_d">Hardcore animated futanari, bondage, tentacles</string>
-    <string name="board_desc_diy">Plans, projects, instructions, critique</string>
-    <string name="board_desc_e">Softcore anime and manga females</string>
+    <string name="board_desc_an">Pets, plants, cuddlies</string>
+    <string name="board_desc_asp">BMX, skiing, parachuting</string>
+    <string name="board_desc_b">Anarchists Anonymous</string>
+    <string name="board_desc_c">Waifu and character images</string>
+    <string name="board_desc_cgl">Costumes, dressup, lolita</string>
+    <string name="board_desc_ck">Recipies, kitchenware</string>
+    <string name="board_desc_cm">Male anime and manga</string>
+    <string name="board_desc_co">Non-Japanese toons</string>
+    <string name="board_desc_d">Futanari, bondage, tentacles</string>
+    <string name="board_desc_diy">Plans, projects, instructions</string>
+    <string name="board_desc_e">Softcore anime females</string>
     <string name="board_desc_fa">Trends, closets, outfit ratings</string>
-    <string name="board_desc_fit">Workouts, progress pics, scooby</string>
+    <string name="board_desc_fit">Progress pics, lifting</string>
     <string name="board_desc_g">Geeks, gadgets and garages</string>
-    <string name="board_desc_gd">Websites, logos, posters, commentary</string>
+    <string name="board_desc_gd">Websites, logos, posters</string>
     <string name="board_desc_gif">Uncensored animated GIFs</string>
-    <string name="board_desc_h">Traditional animated hardcore</string>
+    <string name="board_desc_h">Animated porn</string>
     <string name="board_desc_hc">Live action hardcore porn</string>
     <string name="board_desc_hm">Male-only softcore photos</string>
-    <string name="board_desc_hr">Artwork, scans, photography and images</string>
-    <string name="board_desc_i">Slow board of images drawn on the Oekaki app</string>
-    <string name="board_desc_ic">Post, rate, and critique drawings and artwork</string>
-    <string name="board_desc_int">Global languages and cultures</string>
-    <string name="board_desc_jp">Weaboos, Hello Kitty, and all things Japanese</string>
-    <string name="board_desc_k">Guns, swords, and military history</string>
-    <string name="board_desc_lgbt">Lesbian, gay, bisexual and transgender community</string>
-    <string name="board_desc_lit">The culture of books dissected anonymously</string>
-    <string name="board_desc_m">Humanoid robots, exoskeletons, transformers</string>
-    <string name="board_desc_mlp">Bronie heaven dedicated to My Little Pony</string>
-    <string name="board_desc_mu">Fans, haters, and listening pleasure</string>
-    <string name="board_desc_n">Trains, planes, ships, and lots of bicycles</string>
+    <string name="board_desc_hr">Artwork, scans, photography</string>
+    <string name="board_desc_i">Drawings from 4chan\'s app</string>
+    <string name="board_desc_ic">Post, rate, and critique art</string>
+    <string name="board_desc_int">Culture and language</string>
+    <string name="board_desc_jp">Weaboos, Hello Kitty, J-pop</string>
+    <string name="board_desc_k">Guns, swords, military</string>
+    <string name="board_desc_lgbt">Lesbian, gay, bi, trans</string>
+    <string name="board_desc_lit">Critquing books and writing</string>
+    <string name="board_desc_m">Humanoid battle robots</string>
+    <string name="board_desc_mlp">Bronies on My Little Pony</string>
+    <string name="board_desc_mu">Fans, haters, and audio</string>
+    <string name="board_desc_n">Trains, planes, ships, bicycles</string>
     <string name="board_desc_o">Car talk, show-and-tell, mods</string>
-    <string name="board_desc_out">Hiking, camping, hunting, fishing, conservation</string>
-    <string name="board_desc_p">Original content photographs and constructive criticism</string>
-    <string name="board_desc_po">The art of folding paper and constructing cutouts</string>
-    <string name="board_desc_pol">No-holds-barred free-for-all political discussion</string>
-    <string name="board_desc_q">Meta-discussion of boards, moderation, future direction</string>
-    <string name="board_desc_r">Ask the community for sources of images and videos</string>
-    <string name="board_desc_r9k">All posts are unique; anything said before is auto-deleted</string>
+    <string name="board_desc_out">Hiking, camping, hunting, fishing</string>
+    <string name="board_desc_p">Original photos, criticism</string>
+    <string name="board_desc_po">Constructing, folding cutouts</string>
+    <string name="board_desc_pol">No-holds-barred discussion</string>
+    <string name="board_desc_q">Features and moderation</string>
+    <string name="board_desc_r">Ask for images and videos</string>
+    <string name="board_desc_r9k">Repeats-banned discussion</string>
     <string name="board_desc_s">Software female-only photos</string>
-    <string name="board_desc_s4s">Currated crazy sayings from around the boards</string>
-    <string name="board_desc_sci">Nerd heaven, discussion of mathematics and science</string>
-    <string name="board_desc_soc">Hookup threads, ideal mates, rate-me pics</string>
-    <string name="board_desc_sp">Major professional sports and teams</string>
+    <string name="board_desc_s4s">Currated crazy sayings</string>
+    <string name="board_desc_sci">Welcome to nerd heaven</string>
+    <string name="board_desc_soc">Hookups, ideal mates, rate-me</string>
+    <string name="board_desc_sp">Pro sports and teams</string>
     <string name="board_desc_t">Share the latest torrent links</string>
-    <string name="board_desc_tg">Board games, card games, role playing</string>
-    <string name="board_desc_toy">Action pictures, collectibles, make your own</string>
-    <string name="board_desc_trv">Stories, questions, experiences from around the world</string>
-    <string name="board_desc_tv">Series, episodes, movies, sets, production</string>
-    <string name="board_desc_u">Softcore animated lesbian pics</string>
-    <string name="board_desc_v">Vidya console and game discussion</string>
-    <string name="board_desc_vg">Long-lived threads focusing on particular games</string>
-    <string name="board_desc_vp">Collecting, training, and battling to become the master</string>
-    <string name="board_desc_vr">Pre-2000 console and PC game discussion</string>
-    <string name="board_desc_w">J-pop and anime-related large wallpaper images</string>
-    <string name="board_desc_wg">Highres non-anime wallpaper images</string>
-    <string name="board_desc_wsg">Animated GIFs strictly without lewd material</string>
-    <string name="board_desc_x">Aliens, ghosts, monsters - the truth is out there</string>
-    <string name="board_desc_y">Softcore animated gay images</string>
+    <string name="board_desc_tg">Boards, cards, role playing</string>
+    <string name="board_desc_toy">Action figures and collectibles</string>
+    <string name="board_desc_trv">Questions and experiences</string>
+    <string name="board_desc_tv">Series, episodes, movies, sets</string>
+    <string name="board_desc_u">Lesbian animation</string>
+    <string name="board_desc_v">Console and PC games</string>
+    <string name="board_desc_vg">Long-lived game discussions</string>
+    <string name="board_desc_vp">Collecting, training, evolving</string>
+    <string name="board_desc_vr">Pre-2000 video games</string>
+    <string name="board_desc_w">J-pop and anime pics</string>
+    <string name="board_desc_wg">Highres non-anime pics</string>
+    <string name="board_desc_wsg">Animated GIFs, no lewd material</string>
+    <string name="board_desc_x">Aliens, ghosts, metaphysics</string>
+    <string name="board_desc_y">Gay animation</string>
 
     <!-- spinner dropdown -->
     <!--
@@ -1009,12 +1014,12 @@
     <string name="categories" value="Categories"/>
 
     <string-array name="long_drawer_array">
-        <item>@string/board_meta</item>
+        <item>@string/board_all_boards</item>
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
         <item>@string/board_watch</item>
-        <item>@string/categories</item>
+        <item>@string/board_meta</item>
         <item>@string/board_type_japanese_culture</item>
         <item>@string/board_type_interests</item>
         <item>@string/board_type_creative</item>
@@ -1024,7 +1029,7 @@
     </string-array>
 
     <string-array name="long_board_array">
-        <item>@string/board_meta</item>
+        <item>@string/board_select</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -1058,7 +1063,7 @@
         <item>/m/ Mecha</item>
         <item>/mlp/ Pony</item>
         <item>/mu/ Music</item>
-        <item>/n/ Transportation</item>
+        <item>/n/ Transport</item>
         <item>/o/ Auto</item>
         <item>/out/ Outdoors</item>
         <item>/p/ Photography</item>
@@ -1087,25 +1092,15 @@
         <item>/wsg/ Worksafe GIF</item>
         <item>/x/ Paranormal</item>
         <item>/y/ Yaoi</item>
-        <item>@string/board_type_recent</item>
-        <item>@string/board_latest</item>
-        <item>@string/board_latest_images</item>
-        <item>@string/board_watch</item>
-        <item>@string/board_type_japanese_culture</item>
-        <item>@string/board_type_interests</item>
-        <item>@string/board_type_creative</item>
-        <item>@string/board_type_other</item>
-        <item>@string/board_type_adult</item>
-        <item>@string/board_type_misc</item>
     </string-array>
 
     <string-array name="long_drawer_array_worksafe">
-        <item>@string/board_meta</item>
+        <item>@string/board_all_boards</item>
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
         <item>@string/board_watch</item>
-        <item>@string/categories</item>
+        <item>@string/board_meta</item>
         <item>@string/board_type_japanese_culture</item>
         <item>@string/board_type_interests</item>
         <item>@string/board_type_creative</item>
@@ -1113,7 +1108,7 @@
     </string-array>
 
     <string-array name="long_board_array_worksafe">
-        <item>@string/board_meta</item>
+        <item>@string/board_select</item>
         <item>/3/ 3DCG</item>
         <item>/a/ Anime &amp; Manga</item>
         <item>/adv/ Advice</item>
@@ -1139,7 +1134,7 @@
         <item>/m/ Mecha</item>
         <item>/mlp/ Pony</item>
         <item>/mu/ Music</item>
-        <item>/n/ Transportation</item>
+        <item>/n/ Transport</item>
         <item>/o/ Auto</item>
         <item>/out/ Outdoors</item>
         <item>/p/ Photography</item>
@@ -1159,14 +1154,6 @@
         <item>/wg/ Wallpapers/General</item>
         <item>/wsg/ Worksafe GIF</item>
         <item>/x/ Paranormal</item>
-        <item>@string/board_type_recent</item>
-        <item>@string/board_latest</item>
-        <item>@string/board_latest_images</item>
-        <item>@string/board_watch</item>
-        <item>@string/board_type_japanese_culture</item>
-        <item>@string/board_type_interests</item>
-        <item>@string/board_type_creative</item>
-        <item>@string/board_type_other</item>
     </string-array>
 
     <string-array name="widget_board_array">
@@ -1203,7 +1190,7 @@
         <item>/m/ Mecha</item>
         <item>/mlp/ Pony</item>
         <item>/mu/ Music</item>
-        <item>/n/ Transportation</item>
+        <item>/n/ Transport</item>
         <item>/o/ Auto</item>
         <item>/out/ Outdoors</item>
         <item>/p/ Photography</item>
@@ -1264,7 +1251,7 @@
         <item>/m/ Mecha</item>
         <item>/mlp/ Pony</item>
         <item>/mu/ Music</item>
-        <item>/n/ Transportation</item>
+        <item>/n/ Transport</item>
         <item>/o/ Auto</item>
         <item>/out/ Outdoors</item>
         <item>/p/ Photography</item>
@@ -1581,6 +1568,6 @@
     <integer name="BoardTabletGridView.numColumns">1</integer>
     <dimen name="BoardGridView.spacing">8dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">8dp</dimen>
-    <dimen name="BoardGridTextHeight">92dp</dimen>
+    <dimen name="BoardGridTextHeight">80dp</dimen>
 
 </resources>

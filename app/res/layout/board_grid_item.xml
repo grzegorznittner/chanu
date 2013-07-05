@@ -60,7 +60,7 @@
                     android:paddingRight="8dp"
                     android:textColor="@color/PaletteLightGray"
                     android:textSize="@dimen/BoardGridInfo"
-                    android:maxLines="3"
+                    android:maxLines="2"
                     />
 
         </LinearLayout>

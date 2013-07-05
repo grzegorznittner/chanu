@@ -484,17 +484,18 @@
         <item name="android:textColor">@color/PaletteBlackHalfOpacity</item>
     </style>
 
-    <style name="BoardRefreshBarBase" parent="AppTheme">
+    <style name="BoardTitleBar" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
-        <item name="android:gravity">right</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:background">@color/PaletteBlack34Opacity</item>
+        <item name="android:background">@color/PaletteYellowWhite</item>
         <item name="android:visibility">gone</item>
     </style>
 
-    <style name="BoardRefreshBar" parent="BoardRefreshBarBase">
+    <style name="BoardRefreshBar" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
+        <item name="android:layout_below">@+id/board_title_bar</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:background">@color/PaletteYellowWhite</item>
     </style>

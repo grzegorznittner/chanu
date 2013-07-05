@@ -1,5 +1,13 @@
 <resources>
-    <style name="BoardRefreshBar" parent="BoardRefreshBarBase">
+    <style name="BoardTitleBar" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_gravity">left</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">@color/PaletteYellowWhite</item>
+    </style>
+    <style name="BoardRefreshBar" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_gravity">right</item>

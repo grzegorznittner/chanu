@@ -12,10 +12,11 @@ import com.chanapps.four.activity.R;
 */
 public enum BoardType {
 
-    META (R.string.board_meta, R.string.board_meta_desc, 0, false, true, "meta", R.string.board_empty_meta, R.string.board_meta),
+    ALL_BOARDS (R.string.board_selector_all_boards_title, R.string.board_selector_all_boards_desc, 0, true, true, "all_boards", R.string.board_empty_all_boards, R.string.board_all_boards),
     POPULAR (R.string.board_selector_popular_title, R.string.board_selector_popular_desc, 0, false, true, "popular", R.string.board_empty_popular, R.string.board_popular),
     LATEST (R.string.board_selector_latest_title, R.string.board_selector_latest_desc, 0, false, true, "latest", R.string.board_empty_latest, R.string.board_latest),
     LATEST_IMAGES (R.string.board_selector_latest_images_title, R.string.board_selector_latest_images_desc, 0, false, true, "images", R.string.board_empty_images, R.string.board_latest_images),
+    META (R.string.board_meta, R.string.board_meta_desc, 0, false, true, "meta", R.string.board_empty_meta, R.string.board_meta),
     JAPANESE_CULTURE (R.string.board_type_japanese_culture, R.string.board_type_japanese_culture_desc, 0, true, true, "japanese_culture", R.string.board_empty_meta, R.string.board_type_japanese_culture),
     INTERESTS (R.string.board_type_interests, R.string.board_type_interests_desc, 0, true, true, "interests", R.string.board_empty_meta, R.string.board_type_interests),
     CREATIVE (R.string.board_type_creative, R.string.board_type_creative_desc, 0, true, true, "creative", R.string.board_empty_meta, R.string.board_type_creative),

@@ -256,6 +256,6 @@
     <integer name="BoardGridView.numColumns">5</integer>
     <dimen name="BoardGridView.spacing">16dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">16dp</dimen>
-    <dimen name="BoardGridTextHeight">140dp</dimen>
+    <dimen name="BoardGridTextHeight">128dp</dimen>
 
 </resources>
