@@ -3,20 +3,11 @@ package com.chanapps.four.loader;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import com.android.gallery3d.util.ThreadPool;
-import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.ExtendedImageDownloader;
-import com.chanapps.four.data.ChanHelper;
 import com.nostra13.universalimageloader.cache.disc.naming.FileNameGenerator;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
 /**
  * Created with IntelliJ IDEA.

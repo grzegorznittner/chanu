@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.SettingsFragment;
 
@@ -40,6 +39,11 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_PASS_TOKEN = "pref_pass_token";
     public static final String PREF_PASS_PIN = "pref_pass_pin";
     public static final String PREF_PASS_ENABLED = "pref_pass_enabled";
+    public static final String PREF_WIDGET_BOARDS = "prefWidgetBoards";
+    public static final String PREF_BLOCKLIST_TRIPCODE = "prefBlocklistTripcode";
+    public static final String PREF_BLOCKLIST_NAME = "prefBlocklistName";
+    public static final String PREF_BLOCKLIST_EMAIL = "prefBlocklistEmail";
+    public static final String PREF_BLOCKLIST_ID = "prefBlocklistId";
 
     public static Intent createIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
@@ -102,7 +106,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
                 return true;
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(null);
-                ChanHelper.launchUrlInBrowser(this, url);
+                ActivityDispatcher.launchUrlInBrowser(this, url);
             case R.id.settings_menu:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
@@ -112,7 +116,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
                 startActivity(intent);
                 return true;
             case R.id.exit_menu:
-                ChanHelper.exitApplication(this);
+                ActivityDispatcher.exitApplication(this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

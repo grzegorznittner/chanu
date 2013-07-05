@@ -1,10 +1,9 @@
 package com.chanapps.four.data;
 
 import android.content.Context;
-import android.nfc.Tag;
 import android.util.Log;
+import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.task.PostReplyTask;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,7 +57,7 @@ public class ChanPostResponse {
                             threadNo = postNo;
                             postNo = 0;
                         }
-                        if (DEBUG) Log.i(PostReplyTask.TAG, "Found threadNo:" + threadNo + " postNo:" + postNo);
+                        if (DEBUG) Log.i(TAG, "Found threadNo:" + threadNo + " postNo:" + postNo);
                     }
                 }
                 catch (Exception e) {

@@ -8,8 +8,8 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import com.chanapps.four.activity.PostReplyActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.task.PostReplyTask;
 
 /**
 * Created with IntelliJ IDEA.
@@ -20,9 +20,9 @@ import com.chanapps.four.task.PostReplyTask;
 */
 public class PostingReplyDialogFragment extends DialogFragment {
     public static final String TAG = PostingReplyDialogFragment.class.getSimpleName();
-    PostReplyTask task;
+    PostReplyActivity.PostReplyTask task;
     long threadNo;
-    public PostingReplyDialogFragment(PostReplyTask task, long threadNo) {
+    public PostingReplyDialogFragment(PostReplyActivity.PostReplyTask task, long threadNo) {
         super();
         this.task = task;
         this.threadNo = threadNo;

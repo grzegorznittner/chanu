@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.widget.WidgetProviderUtils;
 
@@ -57,7 +57,7 @@ public class ResetPreferencesDialogFragment extends DialogFragment {
                                 PreferenceManager.getDefaultSharedPreferences(context)
                                         .edit()
                                         .clear()
-                                        .putStringSet(ChanHelper.PREF_WIDGET_BOARDS, savedWidgetConf)
+                                        .putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, savedWidgetConf)
                                         .commit();
 
                                 NetworkProfileManager.instance().getUserStatistics().reset();

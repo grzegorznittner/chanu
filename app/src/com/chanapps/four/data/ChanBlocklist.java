@@ -3,6 +3,7 @@ package com.chanapps.four.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import com.chanapps.four.activity.SettingsActivity;
 
 import java.util.*;
 
@@ -16,10 +17,10 @@ import java.util.*;
 public class ChanBlocklist {
 
     public enum BlockType {
-        TRIPCODE ("Tripcode", ChanHelper.PREF_BLOCKLIST_TRIPCODE),
-        NAME ("Name", ChanHelper.PREF_BLOCKLIST_NAME),
-        EMAIL ("Email", ChanHelper.PREF_BLOCKLIST_EMAIL),
-        ID ("Id", ChanHelper.PREF_BLOCKLIST_ID);
+        TRIPCODE ("Tripcode", SettingsActivity.PREF_BLOCKLIST_TRIPCODE),
+        NAME ("Name", SettingsActivity.PREF_BLOCKLIST_NAME),
+        EMAIL ("Email", SettingsActivity.PREF_BLOCKLIST_EMAIL),
+        ID ("Id", SettingsActivity.PREF_BLOCKLIST_ID);
         private String displayString;
         private String blockPref;
         BlockType(String s, String t) {

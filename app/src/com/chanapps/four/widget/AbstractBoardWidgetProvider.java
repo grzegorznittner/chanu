@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.GlobalAlarmReceiver;
-import com.chanapps.four.data.ChanHelper;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -42,7 +42,7 @@ public abstract class AbstractBoardWidgetProvider extends AppWidgetProvider {
         for (int i = 0; i < appWidgetIds.length; i++)
             widgetsToDelete.add(appWidgetIds[i]);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Set<String> widgetBoards = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
+        Set<String> widgetBoards = prefs.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>());
         Set<String> newWidgetBoards = new HashSet<String>();
         for (String widgetBoard : widgetBoards) {
             String[] components = widgetBoard.split(WidgetConf.DELIM);
@@ -51,7 +51,7 @@ public abstract class AbstractBoardWidgetProvider extends AppWidgetProvider {
                 newWidgetBoards.add(widgetBoard);
         }
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putStringSet(ChanHelper.PREF_WIDGET_BOARDS, newWidgetBoards);
+        editor.putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, newWidgetBoards);
         editor.commit();
     }
 

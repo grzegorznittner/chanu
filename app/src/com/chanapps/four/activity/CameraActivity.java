@@ -23,7 +23,6 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import com.chanapps.four.component.ToastRunnable;
-import com.chanapps.four.data.ChanHelper;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -93,6 +92,7 @@ public class CameraActivity extends Activity {
         }
     }
 
+    public static final String CAMERA_IMAGE_URL = "cameraImageUrl";
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
 
         @Override
@@ -116,7 +116,7 @@ public class CameraActivity extends Activity {
 
                     String url = Uri.fromFile(pictureFile).toString();
                     Intent intent = new Intent();
-                    intent.putExtra(ChanHelper.CAMERA_IMAGE_URL, url);
+                    intent.putExtra(CAMERA_IMAGE_URL, url);
                     setResult(Activity.RESULT_OK, intent);
                     if (DEBUG) Log.i(TAG, "Returning camera file:" + url);
                     success = true;

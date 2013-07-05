@@ -43,8 +43,8 @@ import com.android.gallery3d.util.GalleryUtils;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.VideoViewActivity;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.LastActivity;
+import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
 
 import android.app.ActionBar;
@@ -553,7 +553,7 @@ public class PhotoPage extends ActivityState
         		title = "/" + parts[1] + "/" + parts[2] + ":" + parts[3];
         	}
             Intent intent = new Intent(activity.getBaseContext(), VideoViewActivity.class);
-            intent.putExtra(ChanHelper.IMAGE_URL, uri.toString());
+            intent.putExtra(ImageDownloadService.IMAGE_URL, uri.toString());
             intent.putExtra(Intent.EXTRA_TITLE, title);
             activity.startActivity(intent);
         } catch (ActivityNotFoundException e) {

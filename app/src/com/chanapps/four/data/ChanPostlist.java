@@ -16,12 +16,14 @@ import java.util.Set;
  */
 public class ChanPostlist {
 
+    public static final String USER_POSTS = "userPosts";
+
     public static void addPost(Context context, String boardCode, long threadNo, long postNo, String password) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Set<String> posts = prefs.getStringSet(ChanHelper.USER_POSTS, new HashSet<String>());
+        Set<String> posts = prefs.getStringSet(USER_POSTS, new HashSet<String>());
         String post = getSerializedPost(boardCode, threadNo, postNo, password);
         posts.add(post);
-        prefs.edit().putStringSet(ChanHelper.USER_POSTS, posts).commit();
+        prefs.edit().putStringSet(USER_POSTS, posts).commit();
     }
 
     private static String getSerializedPost(String boardCode, long threadNo, long postNo, String password) {

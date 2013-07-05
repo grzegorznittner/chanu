@@ -1,18 +1,14 @@
 package com.chanapps.four.component;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.util.Base64OutputStream;
 import android.util.Log;
 import com.chanapps.four.activity.*;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.LastActivity;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,6 +22,7 @@ public class ActivityDispatcher {
     private static final String TAG = ActivityDispatcher.class.getSimpleName();
     private static final String LAST_ACTIVITY = "ActivityDispatcherLastActivity";
     private static final boolean DEBUG = true;
+    public static final String IGNORE_DISPATCH = "ignoreDispatch";
 
     public static void store(ChanIdentifiedActivity activity) {
         ChanActivityId activityId = activity.getChanActivityId();
@@ -50,7 +47,7 @@ public class ActivityDispatcher {
     public static boolean dispatch(ChanIdentifiedActivity activity) {
 
         Intent intent = ((Activity)activity).getIntent();
-        if (intent.hasExtra(ChanHelper.IGNORE_DISPATCH) && intent.getBooleanExtra(ChanHelper.IGNORE_DISPATCH, false)) {
+        if (intent.hasExtra(IGNORE_DISPATCH) && intent.getBooleanExtra(IGNORE_DISPATCH, false)) {
             if (DEBUG) Log.i(TAG, "dispatch ignored by intent");
             return false;
         }
@@ -78,4 +75,20 @@ public class ActivityDispatcher {
         return true;
     }
 
+    public static void launchUrlInBrowser(Context context, String url) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        context.startActivity(i);
+    }
+
+    public static void exitApplication(Context context) {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    public static boolean onUIThread() {
+        return Looper.getMainLooper().equals(Looper.myLooper());
+    }
 }

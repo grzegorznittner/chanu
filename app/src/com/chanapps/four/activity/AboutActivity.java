@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.AboutFragment;
 
@@ -87,7 +86,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity {
                 return true;
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(null);
-                ChanHelper.launchUrlInBrowser(this, url);
+                ActivityDispatcher.launchUrlInBrowser(this, url);
             case R.id.settings_menu:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
@@ -97,7 +96,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity {
                 startActivity(intent);
                 return true;
             case R.id.exit_menu:
-                ChanHelper.exitApplication(this);
+                ActivityDispatcher.exitApplication(this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

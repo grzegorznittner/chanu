@@ -28,8 +28,6 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.chanapps.four.data.ChanHelper;
-
 /**
  * Base service class based on IntentService class
  */
@@ -42,7 +40,10 @@ public abstract class BaseChanService extends Service {
     
     protected static final int MAX_NON_PRIORITY_MESSAGES = 10;
     protected static final int MAX_PRIORITY_MESSAGES = 0;
-    
+    public static final String CLEAR_FETCH_QUEUE = "clearFetchQueue";
+    public static final String PRIORITY_MESSAGE_FETCH = "priorityFetch";
+    public static final String BACKGROUND_LOAD = "backgroundLoad";
+
     protected int nonPriorityMessageCounter = 0;
     protected int priorityMessageCounter = 0;
 
@@ -74,7 +75,7 @@ public abstract class BaseChanService extends Service {
         @Override
         public void handleMessage(Message msg) {
         	Intent intent = (Intent)msg.obj;
-        	if (intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) == 1) {
+        	if (intent.getIntExtra(PRIORITY_MESSAGE_FETCH, 0) == 1) {
         		synchronized(this) {
         			priorityMessageCounter--;
         			if (priorityMessageCounter < 0) {
@@ -134,7 +135,7 @@ public abstract class BaseChanService extends Service {
         		priorityMessageCounter = 0;
         	}
     	}
-        if (intent != null && intent.getIntExtra(ChanHelper.CLEAR_FETCH_QUEUE, 0) == 1) {
+        if (intent != null && intent.getIntExtra(CLEAR_FETCH_QUEUE, 0) == 1) {
             if (DEBUG) Log.i(TAG, "Clearing chan fetch service message queue");
         	mServiceHandler.removeMessages(NON_PRIORITY_MESSAGE);
         	synchronized(this) {
@@ -150,7 +151,7 @@ public abstract class BaseChanService extends Service {
         Message msg = mServiceHandler.obtainMessage();
         msg.arg1 = startId;
         msg.obj = intent;
-        if (intent != null && intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) == 1) {
+        if (intent != null && intent.getIntExtra(PRIORITY_MESSAGE_FETCH, 0) == 1) {
         	msg.what = PRIORITY_MESSAGE;
         	mServiceHandler.sendMessageAtFrontOfQueue(msg);
         	synchronized(this) {

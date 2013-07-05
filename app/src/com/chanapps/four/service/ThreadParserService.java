@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.chanapps.four.activity.R;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -23,7 +24,6 @@ import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
@@ -38,6 +38,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
     private static final boolean DEBUG = false;
 
     protected static final long STORE_INTERVAL_MS = 2000;
+    public static final String THREAD_FETCH_TIME = "threadFetchTime";
 
     private String boardCode;
     private long threadNo;
@@ -49,11 +50,11 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
         if (DEBUG) Log.i(TAG, "Start thread load service for " + boardCode + " thread " + threadNo
                 + " priority=" + priority);
         Intent intent = new Intent(context, ThreadParserService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(ChanHelper.THREAD_FETCH_TIME, new Date().getTime());
+        intent.putExtra(ChanBoard.BOARD_CODE, boardCode);
+        intent.putExtra(ChanThread.THREAD_NO, threadNo);
+        intent.putExtra(THREAD_FETCH_TIME, new Date().getTime());
         if (priority)
-            intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+            intent.putExtra(PRIORITY_MESSAGE_FETCH, 1);
         context.startService(intent);
     }
 
@@ -67,10 +68,10 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-        threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-        priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
-        threadFetchTime = intent.getLongExtra(ChanHelper.THREAD_FETCH_TIME, 0);
+		boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
+        threadNo = intent.getLongExtra(ChanThread.THREAD_NO, 0);
+        priority = intent.getIntExtra(PRIORITY_MESSAGE_FETCH, 0) > 0;
+        threadFetchTime = intent.getLongExtra(THREAD_FETCH_TIME, 0);
 
         if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " threadNo=" + threadNo + " priority=" + priority);
 
@@ -124,6 +125,15 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
                 if (DEBUG) Log.i(TAG, "Stored thread " + boardCode + "/" + threadNo + " with " + thread.posts.length + " posts"
                 		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             }
+            int delta = thread.posts.length - previousPostNum;
+            if (delta == 0)
+                threadUpdateMessage = getString(R.string.thread_activity_nochange);
+            else if (delta > 0)
+                threadUpdateMessage = String.format(
+                        getResources().getQuantityString(R.plurals.thread_activity_updated, delta),
+                        delta);
+            else
+                threadUpdateMessage = null;
             NetworkProfileManager.instance().finishedParsingData(this);
         } catch (Exception e) {
             //toastUI(R.string.board_service_couldnt_load);
@@ -131,6 +141,8 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
         	NetworkProfileManager.instance().failedParsingData(this, Failure.WRONG_DATA);
 		}
 	}
+
+    String threadUpdateMessage = null;
 
 	protected void parseThread(BufferedReader in) throws IOException {
     	if (DEBUG) Log.i(TAG, "starting parsing thread " + boardCode + "/" + threadNo);
@@ -155,8 +167,11 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
 	
 	@Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(boardCode, threadNo, priority);
-	}
+		ChanActivityId id = new ChanActivityId(boardCode, threadNo, priority);
+        if (threadUpdateMessage != null)
+            id.threadUpdateMessage = threadUpdateMessage;
+	    return id;
+    }
 
     @Override
     public String toString() {

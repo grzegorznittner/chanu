@@ -33,6 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:scrollbars="none"
+                android:minLines="7"
                 >
         </EditText>
 
@@ -54,10 +55,9 @@
             </ImageButton>
             <ImageView
                     android:id="@+id/post_reply_recaptcha_loading"
-                    android:src="@drawable/navigation_refresh"
-                    android:scaleType="centerCrop"
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
+                    android:src="@drawable/navigation_refresh_light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center">
             </ImageView>
         </FrameLayout>

@@ -8,7 +8,6 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -20,6 +19,7 @@ import com.chanapps.four.activity.*;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
+import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.component.ThreadViewable;
@@ -35,6 +35,7 @@ import com.chanapps.four.viewer.ThreadListener;
 import com.chanapps.four.viewer.ThreadViewer;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,6 +92,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected int firstVisiblePositionOffset = -1;
     protected int firstVisibleBoardPosition = -1;
     protected int firstVisibleBoardPositionOffset = -1;
+    protected PullToRefreshAttacher mPullToRefreshAttacher;
 
     //tablet layout
     protected AbstractBoardCursorAdapter adapterBoardsTablet;
@@ -120,6 +122,14 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             Toast.makeText(getActivityContext(), R.string.thread_invalid_id, Toast.LENGTH_SHORT).show();
         return layout;
     }
+
+    protected PullToRefreshAttacher.OnRefreshListener pullToRefreshListener = new PullToRefreshAttacher.OnRefreshListener() {
+        @Override
+        public void onRefreshStarted(View view) {
+            if (DEBUG) Log.i(TAG, "pullToRefreshListener.onRefreshStarted()");
+            onRefresh();
+        }
+    };
 
     protected boolean onTablet() {
         return absBoardListView != null;
@@ -262,10 +272,13 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             stopProgressBarIfLoadersDone();
             return;
         }
+        if (DEBUG) Log.i(TAG, "tryFetchThread calling fetch chan data service");
         if (FetchChanDataService.scheduleThreadFetch(getActivityContext(), boardCode, threadNo, true, false)) {
+            if (DEBUG) Log.i(TAG, "tryFetchThread scheduled fetch");
             startProgressBarForThread();
         }
         else {
+            if (DEBUG) Log.i(TAG, "tryFetchThread couldn't fetch");
             loadingStatusFlags |= THREAD_DONE;
             stopProgressBarIfLoadersDone();
             return;
@@ -388,6 +401,12 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             absBoardListView.setOnItemClickListener(absBoardListViewListener);
             absBoardListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
         }
+    }
+
+    public void setPullToRefreshAttacher(PullToRefreshAttacher mPullToRefreshAttacher) {
+        this.mPullToRefreshAttacher = mPullToRefreshAttacher;
+        if (mPullToRefreshAttacher != null && absListView != null)
+            mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
     }
 
     protected AbsListView.OnItemClickListener threadItemListener = new AdapterView.OnItemClickListener() {
@@ -551,7 +570,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 return true;
             case R.id.web_menu:
                 String url = ChanThread.threadUrl(boardCode, threadNo);
-                ChanHelper.launchUrlInBrowser(getActivityContext(), url);
+                ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -685,7 +704,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
             if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
                 final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
-                ChanHelper.launchUrlInBrowser(getActivityContext(), clickUrl);
+                ActivityDispatcher.launchUrlInBrowser(getActivityContext(), clickUrl);
             }
             else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0
                     && title != null && !title.isEmpty()
@@ -720,7 +739,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             cursor.moveToPosition(pos);
             String adUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
             if (adUrl != null && !adUrl.isEmpty())
-                ChanHelper.launchUrlInBrowser(getActivity(), adUrl);
+                ActivityDispatcher.launchUrlInBrowser(getActivity(), adUrl);
         }
     };
 
@@ -769,7 +788,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 return;
             if (onTablet() && boardCode.equals(linkedBoardCode)) {
                 threadNo = linkedThreadNo;
-                refresh();
+                onRefresh();
             } else {
                 ThreadActivity.startActivity(getActivity(), linkedBoardCode, linkedThreadNo, "");
             }
@@ -886,7 +905,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         String translateUrl = GOOGLE_TRANSLATE_ROOT + localeCode + "&text=" + escaped;
         if (translateUrl.length() > MAX_HTTP_GET_URL_LEN)
             translateUrl = translateUrl.substring(0, MAX_HTTP_GET_URL_LEN);
-        ChanHelper.launchUrlInBrowser(getActivityContext(), translateUrl);
+        ActivityDispatcher.launchUrlInBrowser(getActivityContext(), translateUrl);
         return true;
     }
 
@@ -988,7 +1007,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     }
 
     private void setShareIntent(final Intent intent) {
-        if (ChanHelper.onUIThread())
+        if (ActivityDispatcher.onUIThread())
             synchronized (this) {
                 if (shareActionProvider != null && intent != null)
                     shareActionProvider.setShareIntent(intent);
@@ -1070,7 +1089,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         MediaScannerConnection.scanFile(getActivityContext(), paths, types, mediaScannerListener);
     }
 
-    public void refresh() {
+    public void onRefresh() {
         if (getActivity() != null)
             getActivity().invalidateOptionsMenu(); // in case spinner needs to be reset
         refreshBoard(); // for tablets
@@ -1091,12 +1110,18 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     }
 
     public void refreshThread() {
+        refreshThread(null);
+    }
+
+    public void refreshThread(final String message) {
         if (handler != null)
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (DEBUG) Log.i(TAG, "refreshThread() restarting loader");
                     getLoaderManager().restartLoader(0, null, loaderCallbacks);
+                    if (message != null)
+                        Toast.makeText(getActivityContext(), message, Toast.LENGTH_SHORT).show();
                 }
             });
     }
@@ -1209,7 +1234,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     return true;
                 case R.id.web_menu:
                     String url = ChanPost.postUrl(boardCode, threadNo, postNos[0]);
-                    ChanHelper.launchUrlInBrowser(getActivityContext(), url);
+                    ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
                 default:
                     return false;
             }
@@ -1350,7 +1375,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     return true;
                 case R.id.web_menu:
                     String url = ChanPost.postUrl(boardCode, threadNo, postNos[0]);
-                    ChanHelper.launchUrlInBrowser(getActivityContext(), url);
+                    ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
                 default:
                     return false;
             }

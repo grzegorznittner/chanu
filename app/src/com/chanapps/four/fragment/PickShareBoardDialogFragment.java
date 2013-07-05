@@ -1,15 +1,11 @@
 package com.chanapps.four.fragment;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,7 +13,6 @@ import android.widget.ListView;
 import com.chanapps.four.activity.PostReplyShareActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanHelper;
 
 import java.util.List;
 
@@ -66,7 +61,7 @@ public class PickShareBoardDialogFragment extends ListDialogFragment {
                         String boardCode = boardLine.substring(1, boardLine.indexOf(' '));
                         if (DEBUG) Log.i(TAG, "Picked board=" + boardCode);
                         Bundle b = new Bundle();
-                        b.putString(ChanHelper.BOARD_CODE, boardCode);
+                        b.putString(ChanBoard.BOARD_CODE, boardCode);
                         Message msg = Message.obtain(activityHandler, PostReplyShareActivity.PICK_BOARD);
                         msg.setData(b);
                         msg.sendToTarget();

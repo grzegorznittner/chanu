@@ -1,9 +1,7 @@
 package com.chanapps.four.data;
 
 import android.content.Context;
-import android.util.Log;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.task.PostReplyTask;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

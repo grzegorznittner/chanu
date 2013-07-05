@@ -35,7 +35,7 @@ public class CleanUpService extends BaseChanService {
         if (DEBUG) Log.i(TAG, "Scheduling clean up service");
         lastScheduled = Calendar.getInstance().getTimeInMillis();
         Intent intent = new Intent(context, CleanUpService.class);
-        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+        intent.putExtra(PRIORITY_MESSAGE_FETCH, 1);
         context.startService(intent);
     }
 

@@ -25,6 +25,7 @@ import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.*;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 
 /**
  * Created with IntelliJ IDEA.
@@ -53,6 +54,7 @@ public class ThreadActivity
     protected String query = "";
     protected MenuItem searchMenuItem;
     protected long postNo; // for direct jumps from latest post / recent images
+    protected PullToRefreshAttacher mPullToRefreshAttacher;
 
     public static void startActivity(Context from, String boardCode, long threadNo, String query) {
         startActivity(from, boardCode, threadNo, 0, query);
@@ -104,7 +106,9 @@ public class ThreadActivity
             boardCode = ChanBoard.META_BOARD_CODE;
         if (threadNo <= 0)
             redirectToBoard();
+
         board = ChanFileStorage.loadBoardData(this, boardCode);
+        mPullToRefreshAttacher = new PullToRefreshAttacher(this);
 
         if (board == null || board.defData || board.threads.length == 0)
             Log.i(TAG, "Board not ready, postponing pager creation");
@@ -164,10 +168,6 @@ public class ThreadActivity
         threadNo = savedInstanceState.getLong(ChanThread.THREAD_NO, 0);
         query = savedInstanceState.getString(SearchManager.QUERY);
         if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/" + threadNo);
-        if (board == null || !board.link.equals(boardCode))
-            createPager();
-        else
-            setCurrentItemToThread();
     }
 
     @Override
@@ -223,6 +223,13 @@ public class ThreadActivity
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new Handler();
+        if (board == null || !board.link.equals(boardCode) || mPager == null) { // recreate pager
+            board = ChanFileStorage.loadBoardData(this, boardCode);
+            createPager();
+        }
+        else {
+            setCurrentItemToThread();
+        }
         invalidateOptionsMenu(); // for correct spinner display
         NetworkProfileManager.instance().activityChange(this);
     }
@@ -293,7 +300,7 @@ public class ThreadActivity
                 return true;
             case R.id.web_menu:
                 String url = ChanThread.threadUrl(boardCode, threadNo);
-                ChanHelper.launchUrlInBrowser(this, url);
+                ActivityDispatcher.launchUrlInBrowser(this, url);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -375,10 +382,14 @@ public class ThreadActivity
         ThreadFragment fragment = getCurrentFragment();
         //ThreadFragment fragment = (ThreadFragment)getSupportFragmentManager().findFragmentByTag(fragmentTag());
         if (fragment != null)
-            fragment.refresh();
+            fragment.onRefresh();
     }
 
     public void refreshFragment(String boardCode, long threadNo) {
+        refreshFragment(boardCode, threadNo, null);
+    }
+
+    public void refreshFragment(String boardCode, long threadNo, String message) {
         if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo);
         board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (mPager == null && !board.defData) {
@@ -396,10 +407,10 @@ public class ThreadActivity
         int current = mPager.getCurrentItem();
         int delta = mPager.getOffscreenPageLimit();
         for (int i = current - delta; i < current + delta + 1; i++)
-            refreshFragmentAtPosition(boardCode, threadNo, i);
+            refreshFragmentAtPosition(boardCode, threadNo, i, i == current ? message : null);
     }
 
-    protected void refreshFragmentAtPosition(String boardCode, long threadNo, int pos) {
+    protected void refreshFragmentAtPosition(String boardCode, long threadNo, int pos, String message) {
         ThreadFragment fragment;
         ChanActivityId data;
         if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " pos=" + pos);
@@ -424,7 +435,7 @@ public class ThreadActivity
             return;
         }
         if (DEBUG) Log.i(TAG, "refreshing fragment /" + boardCode + "/" + threadNo + " pos=" + pos);
-        fragment.refreshThread();
+        fragment.refreshThread(message);
     }
 
     @Override
@@ -471,7 +482,7 @@ public class ThreadActivity
             return mAdapter.getCachedItem(pos);
     }
 
-    public static class ThreadPagerAdapter extends FragmentStatePagerAdapter {
+    public class ThreadPagerAdapter extends FragmentStatePagerAdapter {
         protected ChanBoard board;
         protected Map<Integer,WeakReference<ThreadFragment>> fragments
                 = new HashMap<Integer, WeakReference<ThreadFragment>>();
@@ -530,6 +541,21 @@ public class ThreadActivity
             else
                 return ref.get();
         }
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            ThreadFragment fragment = (ThreadFragment)object;
+            if (primaryItem != fragment && fragment.getChanActivityId().threadNo > 0) {
+                if (DEBUG) Log.i(TAG, "setPrimaryItem pos=" + position + " obj=" + fragment
+                        + " rebinding mPullToRefreshAttacher");
+                if (primaryItem != null)
+                    primaryItem.setPullToRefreshAttacher(null);
+                primaryItem = fragment;
+                fragment.setPullToRefreshAttacher(mPullToRefreshAttacher);
+            }
+            super.setPrimaryItem(container, position, object);
+        }
+
+        protected ThreadFragment primaryItem = null;
     }
 
     public void setProgressForFragment(String boardCode, long threadNo, boolean on) {
@@ -546,6 +572,10 @@ public class ThreadActivity
         if (data.threadNo != threadNo)
             return;
         setProgress(on);
+        if (mPullToRefreshAttacher != null && !on) {
+            if (DEBUG) Log.i(TAG, "mPullToRefreshAttacher.setRefreshComplete()");
+            mPullToRefreshAttacher.setRefreshComplete();
+        }
     }
 
 }

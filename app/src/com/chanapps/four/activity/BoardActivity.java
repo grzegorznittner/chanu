@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.SearchManager;
-import android.os.Message;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
@@ -73,7 +72,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         String intentBoardCode = boardCode == null || boardCode.isEmpty() ? ChanBoard.POPULAR_BOARD_CODE : boardCode;
         Intent intent = new Intent(context, BoardActivity.class);
         intent.putExtra(ChanBoard.BOARD_CODE, intentBoardCode);
-        intent.putExtra(ChanHelper.PAGE, 0);
+        intent.putExtra(ChanBoard.PAGE, 0);
         intent.putExtra(SearchManager.QUERY, query);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         return intent;
@@ -443,7 +442,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 String[] clickUrls = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL))
                         .split(ChanThread.AD_DELIMITER);
                 String clickUrl = viewType == ViewType.AS_GRID ? clickUrls[0] : clickUrls[1];
-                ChanHelper.launchUrlInBrowser(BoardActivity.this, clickUrl);
+                ActivityDispatcher.launchUrlInBrowser(BoardActivity.this, clickUrl);
             }
             else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0
                     && title != null && !title.isEmpty()
@@ -529,7 +528,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 return true;
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(boardCode);
-                ChanHelper.launchUrlInBrowser(this, url);
+                ActivityDispatcher.launchUrlInBrowser(this, url);
                 return true;
             case R.id.clear_watchlist_menu:
                 (new WatchlistClearDialogFragment()).show(getFragmentManager(), WatchlistClearDialogFragment.TAG);
@@ -679,7 +678,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                         board.lastFetched, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString());
             }
             TextView refreshText = (TextView)refreshLayout.findViewById(R.id.board_refresh_text);
-            refreshText.setText("Board is up to date");
+            if (refreshText != null)
+                refreshText.setText("Board is up to date");
 
             refreshLayout.setVisibility(LinearLayout.GONE);
         }

@@ -8,7 +8,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import com.chanapps.four.activity.*;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.task.AuthorizePassTask;
 
@@ -58,7 +58,7 @@ public class PassSettingsFragment extends PreferenceFragment
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 // we're cheating
-                ChanHelper.launchUrlInBrowser(getActivity(), PASS_PURCHASE_URL);
+                ActivityDispatcher.launchUrlInBrowser(getActivity(), PASS_PURCHASE_URL);
                 return true;
             }
         });

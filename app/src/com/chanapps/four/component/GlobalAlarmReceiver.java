@@ -37,7 +37,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
         if (Intent.ACTION_BOOT_COMPLETED.equals(action) || GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION.equals(action)) {
             /* use this when you screw up widgets and need to reset
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-            editor.remove(ChanHelper.PREF_WIDGET_BOARDS);
+            editor.remove(SettingsActivity.PREF_WIDGET_BOARDS);
             editor.commit();
             */
             new Thread(new Runnable() {

@@ -7,7 +7,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.fragment.PickShareBoardDialogFragment;
 
 /**
@@ -51,7 +52,7 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
 
     @Override
     protected synchronized Handler ensureHandler() {
-        if (handler == null && ChanHelper.onUIThread())
+        if (handler == null && ActivityDispatcher.onUIThread())
             handler = new ShareHandler();
         return handler;
     }
@@ -72,7 +73,7 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
                             finish();
                             return;
                         }
-                        boardCode = b.getString(ChanHelper.BOARD_CODE);
+                        boardCode = b.getString(ChanBoard.BOARD_CODE);
                         if ("".equals(boardCode)) {
                             Toast.makeText(PostReplyShareActivity.this, R.string.post_reply_share_error, Toast.LENGTH_SHORT).show();
                             finish();

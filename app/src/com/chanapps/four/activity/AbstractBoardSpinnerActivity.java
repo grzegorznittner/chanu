@@ -2,24 +2,16 @@ package com.chanapps.four.activity;
 
 import android.app.ActionBar;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.service.NetworkProfileManager;
 
 import java.util.regex.Matcher;
@@ -116,7 +108,7 @@ abstract public class
                 startActivity(intent);
                 return true;
             case R.id.exit_menu:
-                ChanHelper.exitApplication(this);
+                ActivityDispatcher.exitApplication(this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

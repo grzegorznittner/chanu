@@ -26,12 +26,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.util.Log;
 
-import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.ChanActivityId;
-import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
@@ -58,13 +55,13 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
     	}
         if (DEBUG) Log.i(TAG, "Start board load service for board=" + boardCode + " page=" + pageNo + " priority=" + priority );
         Intent intent = new Intent(context, BoardParserService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
-        intent.putExtra(ChanHelper.PAGE, pageNo);
+        intent.putExtra(ChanBoard.BOARD_CODE, boardCode);
+        intent.putExtra(ChanBoard.BOARD_CATALOG, pageNo == -1 ? 1 : 0);
+        intent.putExtra(ChanBoard.PAGE, pageNo);
         if (priority)
-	        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, 1);
+	        intent.putExtra(PRIORITY_MESSAGE_FETCH, 1);
         if (secondaryThreadNo > 0)
-            intent.putExtra(ChanHelper.SECONDARY_THREAD_NO, secondaryThreadNo);
+            intent.putExtra(FetchChanDataService.SECONDARY_THREAD_NO, secondaryThreadNo);
         context.startService(intent);
     }
     
@@ -113,11 +110,11 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
 
     @Override
 	protected void onHandleIntent(Intent intent) {
-		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
-		pageNo = intent.getIntExtra(ChanHelper.PAGE, 0);
-        priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
-		secondaryThreadNo = intent.getLongExtra(ChanHelper.SECONDARY_THREAD_NO, 0);
+		boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
+		boardCatalog = intent.getIntExtra(ChanBoard.BOARD_CATALOG, 0) == 1;
+		pageNo = intent.getIntExtra(ChanBoard.PAGE, 0);
+        priority = intent.getIntExtra(PRIORITY_MESSAGE_FETCH, 0) > 0;
+		secondaryThreadNo = intent.getLongExtra(FetchChanDataService.SECONDARY_THREAD_NO, 0);
         if (DEBUG) Log.i(TAG, "Handling board=" + boardCode + " priority=" + priority);
 
         long startTime = Calendar.getInstance().getTimeInMillis();

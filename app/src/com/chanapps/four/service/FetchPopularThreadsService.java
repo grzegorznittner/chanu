@@ -23,7 +23,6 @@ import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
@@ -49,9 +48,9 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
         if (DEBUG) Log.i(TAG, "Start popular threads fetch service priority=" + priority + " background=" + backgroundLoad);
         Intent intent = new Intent(context, FetchPopularThreadsService.class);
         if (priority)
-            intent.putExtra(ChanHelper.PRIORITY_MESSAGE, priority ? 1 : 0);
+            intent.putExtra(PRIORITY_MESSAGE_FETCH, priority ? 1 : 0);
         if (backgroundLoad)
-            intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
+            intent.putExtra(BACKGROUND_LOAD, true);
         context.startService(intent);
         return true;
     }
@@ -59,7 +58,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
     public static void clearServiceQueue(Context context) {
         if (DEBUG) Log.i(TAG, "Clearing chan fetch service queue");
         Intent intent = new Intent(context, FetchPopularThreadsService.class);
-        intent.putExtra(ChanHelper.CLEAR_FETCH_QUEUE, 1);
+        intent.putExtra(CLEAR_FETCH_QUEUE, 1);
         context.startService(intent);
     }
 
@@ -88,7 +87,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
     
 	@Override
 	protected void onHandleIntent(Intent intent) {
-        backgroundLoad = intent.getBooleanExtra(ChanHelper.BACKGROUND_LOAD, false);
+        backgroundLoad = intent.getBooleanExtra(BACKGROUND_LOAD, false);
 		if (!isChanForegroundActivity() && !backgroundLoad) {
             if (DEBUG)
                 Log.i(TAG, "Not foreground activity, exiting");
@@ -103,7 +102,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
             return;
         }
 
-		priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
+		priority = intent.getIntExtra(PRIORITY_MESSAGE_FETCH, 0) > 0;
 		if (DEBUG) Log.i(TAG, "Handling popular threads fetch");
 		handlePopularThreadsFetch();
 	}

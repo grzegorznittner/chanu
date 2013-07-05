@@ -29,6 +29,7 @@ public class ChanActivityId implements Serializable {
     public int position = 0;
     public GalleryViewActivity.ViewType viewType = null;
     public String text = "";
+    public String threadUpdateMessage = null;
     public boolean priority = false;
 
     public ChanActivityId (String boardCode, int pageNo, boolean priority) {

@@ -1,37 +1,13 @@
 package com.chanapps.four.component;
 
-import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.net.Uri;
 import android.os.Handler;
 import android.text.Html;
-import android.text.Layout;
-import android.text.StaticLayout;
-import android.text.TextPaint;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.*;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
-import com.chanapps.four.loader.ChanImageLoader;
-import com.chanapps.four.service.NetworkProfileManager;
-import com.chanapps.four.service.profile.NetworkProfile;
-import com.chanapps.four.viewer.ThreadViewer;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-
-import java.io.File;
-import java.net.URI;
 
 /**
 * Created with IntelliJ IDEA.

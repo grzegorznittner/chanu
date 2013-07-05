@@ -3,7 +3,6 @@
  */
 package com.chanapps.four.service;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Calendar;
@@ -14,7 +13,6 @@ import android.util.Log;
 
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.UserStatistics;
 
 /**
@@ -29,20 +27,21 @@ public class FileSaverService extends BaseChanService {
     private static final String PARAM_TYPE = "paramType";
     private static final String PARAM_VALUE = "paramValue";
     private static final String PARAM_STACKTRACE = "paramStack";
-    
+    public static final String NAME = "name";
+
     public enum FileType {USER_STATISTICS, LOG_EVENT, BOARD_SAVE};
     
     public static void startService(Context context, FileType fileType) {
         if (DEBUG) Log.i(TAG, "Start file saver service for " + fileType);
         Intent intent = new Intent(context, FileSaverService.class);
-        intent.putExtra(ChanHelper.NAME, fileType.toString());
+        intent.putExtra(NAME, fileType.toString());
         context.startService(intent);
     }
     
     public static void startService(Context context, FileType fileType, String value) {
         if (DEBUG) Log.i(TAG, "Start file saver service for " + fileType);
         Intent intent = new Intent(context, FileSaverService.class);
-        intent.putExtra(ChanHelper.NAME, fileType.toString());
+        intent.putExtra(NAME, fileType.toString());
     	intent.putExtra(PARAM_VALUE, value);
     	
         context.startService(intent);
@@ -51,7 +50,7 @@ public class FileSaverService extends BaseChanService {
     public static void startService(Context context, FileType fileType, String type, String value) {
         if (DEBUG) Log.i(TAG, "Start file saver service for " + fileType);
         Intent intent = new Intent(context, FileSaverService.class);
-        intent.putExtra(ChanHelper.NAME, fileType.toString());
+        intent.putExtra(NAME, fileType.toString());
         intent.putExtra(PARAM_DATE, Calendar.getInstance().getTimeInMillis());
     	intent.putExtra(PARAM_TYPE, type);
     	intent.putExtra(PARAM_VALUE, value);
@@ -76,7 +75,7 @@ public class FileSaverService extends BaseChanService {
 	protected void onHandleIntent(Intent intent) {
         long startTime = Calendar.getInstance().getTimeInMillis();
 		try {
-			String fileName = intent.getStringExtra(ChanHelper.NAME);
+			String fileName = intent.getStringExtra(NAME);
 			FileType fileType = FileType.valueOf(fileName);
 			if (DEBUG) Log.i(TAG, "Handling file saver service for " + fileType);
 			

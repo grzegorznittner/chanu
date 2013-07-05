@@ -1,18 +1,10 @@
 package com.chanapps.four.fragment;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.widget.BaseAdapter;
-import com.chanapps.four.activity.AboutActivity;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.component.IconPreferenceScreen;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.component.ActivityDispatcher;
 
 
 /**
@@ -54,7 +46,7 @@ public class AboutFragment extends PreferenceFragment
                 new Preference.OnPreferenceClickListener() {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
-                        ChanHelper.launchUrlInBrowser(getActivity(), url);
+                        ActivityDispatcher.launchUrlInBrowser(getActivity(), url);
                         return true;
                     }
                 });

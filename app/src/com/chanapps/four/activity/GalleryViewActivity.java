@@ -354,7 +354,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                     url = ChanPost.postUrl(boardCode, threadNo, postNo);
                 else
                     url = ChanThread.threadUrl(boardCode, threadNo);
-                ChanHelper.launchUrlInBrowser(this, url);
+                ActivityDispatcher.launchUrlInBrowser(this, url);
             case R.id.settings_menu:
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
@@ -365,7 +365,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                 startActivity(intent);
                 return true;
             case R.id.exit_menu:
-                ChanHelper.exitApplication(this);
+                ActivityDispatcher.exitApplication(this);
                 return true;
             default:
             	return getStateManager().itemSelected(item);
@@ -397,7 +397,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             if (boardCode == null || boardCode.isEmpty())
                 boardCode = ChanBoard.META_BOARD_CODE;
     		upIntent = BoardActivity.createIntent(this, boardCode, "");
-    		upIntent.putExtra(ChanHelper.IGNORE_DISPATCH, true);
+    		upIntent.putExtra(ActivityDispatcher.IGNORE_DISPATCH, true);
             break;
     	}
         NavUtils.navigateUpTo(this, upIntent);

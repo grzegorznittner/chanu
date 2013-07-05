@@ -10,6 +10,8 @@
         android:background="@color/PaletteYellowWhite"
         >
 
+    <include layout="@layout/board_title_bar"/>
+
     <include layout="@layout/board_refresh_bar"/>
 
     <GridView

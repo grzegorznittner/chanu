@@ -162,6 +162,8 @@ public class NoConnectionProfile extends AbstractNetworkProfile {
 				Handler handler = activity.getChanHandler();
 				if (handler != null) {
 					handler.sendEmptyMessage(0);
+                    if (data.threadUpdateMessage != null)
+                        Toast.makeText(activity.getBaseContext(), data.threadUpdateMessage, Toast.LENGTH_SHORT).show();
 				}
 			}
 		} else {

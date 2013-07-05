@@ -193,6 +193,7 @@
     <!-- thread activity -->
     <string name="thread_activity_refresh">Refreshing thread...</string>
     <string name="thread_activity_fresh">Thread is current</string>
+    <string name="thread_activity_nochange">No new comments</string>
     <string name="thread_dead">Can\'t refresh, thread is dead</string>
     <string name="thread_is_dead">DEAD THREAD</string>
     <string name="thread_closed">Can\'t refresh, thread is closed</string>
@@ -223,6 +224,10 @@
     <string name="thread_post_title">Post</string>
 
     <string name="board_grid_item_no_replies">No replies</string>
+    <plurals name="thread_activity_updated">
+        <item quantity="one">%1$d new comment</item>
+        <item quantity="other">%1$d new comments</item>
+    </plurals>
     <plurals name="board_grid_item_num_replies">
         <item quantity="zero">No replies</item>
         <item quantity="one">View 1 post</item>

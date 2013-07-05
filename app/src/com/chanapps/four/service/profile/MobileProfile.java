@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import android.widget.Toast;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
@@ -518,7 +519,7 @@ public class MobileProfile extends AbstractNetworkProfile {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    ((ThreadActivity)activity).refreshFragment(boardCode, threadNo);
+                    ((ThreadActivity)activity).refreshFragment(boardCode, threadNo, data.threadUpdateMessage);
                 }
             });
         }

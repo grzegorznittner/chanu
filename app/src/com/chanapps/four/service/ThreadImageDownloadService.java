@@ -81,8 +81,8 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
         		+ " all image download service for thread " + board + "/" + threadNo
         		+ (startPostNo == 0 ? "" : " from post " + startPostNo) + " " + targetType);
         Intent intent = new Intent(context, ThreadImageDownloadService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, board);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(ChanBoard.BOARD_CODE, board);
+        intent.putExtra(ChanThread.THREAD_NO, threadNo);
         intent.putExtra(TARGET_TYPE, targetType.toString());
         intent.putExtra(START_POST_NO, startPostNo);
         intent.putExtra(RESTART_COUNTER, restartCounter);
@@ -95,8 +95,8 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
     public static void cancelService(Context context, String url) {
         if (DEBUG) Log.i(TAG, "Cancelling image download service for " + url);
         Intent intent = new Intent(context, ThreadImageDownloadService.class);
-        intent.putExtra(ChanHelper.CLEAR_FETCH_QUEUE, 1);
-        intent.putExtra(ChanHelper.IMAGE_URL, url);
+        intent.putExtra(BaseChanService.CLEAR_FETCH_QUEUE, 1);
+        intent.putExtra(ImageDownloaderService.IMAGE_URL, url);
         context.startService(intent);
     }
     */
@@ -120,8 +120,8 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		board = intent.getStringExtra(ChanHelper.BOARD_CODE);
-		threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+		board = intent.getStringExtra(ChanBoard.BOARD_CODE);
+		threadNo = intent.getLongExtra(ChanThread.THREAD_NO, 0);
 		startPostNo = intent.getLongExtra(START_POST_NO, 0);
 		restartCounter = intent.getIntExtra(RESTART_COUNTER, 0);
 		targetType = TargetType.valueOf(intent.getStringExtra(TARGET_TYPE));

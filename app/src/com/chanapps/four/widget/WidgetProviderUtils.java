@@ -7,10 +7,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
-import com.chanapps.four.data.ChanHelper;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
@@ -40,7 +40,7 @@ public final class WidgetProviderUtils {
         }
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        Set<String> widgetConf = pref.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
+        Set<String> widgetConf = pref.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>());
 
         Set<String> savedWidgetConf = new HashSet<String>();
         for (String widgetBoard : widgetConf) {
@@ -63,13 +63,13 @@ public final class WidgetProviderUtils {
     public static void saveWidgetBoardPref(Context context, Set<String> savedWidgetConf) {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
-                .putStringSet(ChanHelper.PREF_WIDGET_BOARDS, savedWidgetConf)
+                .putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, savedWidgetConf)
                 .commit();
     }
 
     public static WidgetConf loadWidgetConf(Context context, int appWidgetId) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Set<String> widgetBoards = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
+        Set<String> widgetBoards = prefs.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>());
         for (String widgetBoard : widgetBoards) {
             WidgetConf widgetConf = new WidgetConf(widgetBoard);
             if (widgetConf.appWidgetId == appWidgetId)
@@ -81,7 +81,7 @@ public final class WidgetProviderUtils {
     public static void fetchAllWidgets(Context context) {
         if (DEBUG) Log.i(WidgetProviderUtils.TAG, "fetchAllWidgets");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Set<String> widgetBoards = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
+        Set<String> widgetBoards = prefs.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>());
         Set<String> boardsToFetch = new HashSet<String>();
         for (String widgetBoard : widgetBoards) {
             String[] components = widgetBoard.split(WidgetConf.DELIM);
@@ -118,7 +118,7 @@ public final class WidgetProviderUtils {
     public static void updateAll(Context context) {
         if (DEBUG) Log.i(WidgetProviderUtils.TAG, "Updating all widgets");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Set<String> widgetBoards = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
+        Set<String> widgetBoards = prefs.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>());
         for (String widgetBoard : widgetBoards) {
             String[] components = widgetBoard.split("/");
             int appWidgetId = Integer.valueOf(components[0]);
@@ -130,7 +130,7 @@ public final class WidgetProviderUtils {
     public static void updateAll(Context context, String boardCode) {
         if (DEBUG) Log.i(WidgetProviderUtils.TAG, "updateAll boardCode=" + boardCode);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Set<String> widgetBoards = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
+        Set<String> widgetBoards = prefs.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>());
         for (String widgetBoard : widgetBoards) {
             String[] components = widgetBoard.split(WidgetConf.DELIM);
             int widgetId = Integer.valueOf(components[0]);
@@ -149,7 +149,7 @@ public final class WidgetProviderUtils {
             return false;
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Set<String> widgetBoards = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>());
+        Set<String> widgetBoards = prefs.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>());
         Set<String> newWidgetBoards = new HashSet<String>();
         String newWidgetBoard = widgetConf.serialize();
         boolean found = false;
@@ -166,7 +166,7 @@ public final class WidgetProviderUtils {
             newWidgetBoards.add(newWidgetBoard);
         }
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putStringSet(ChanHelper.PREF_WIDGET_BOARDS, newWidgetBoards);
+        editor.putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, newWidgetBoards);
         editor.commit();
         return true;
     }
@@ -176,7 +176,7 @@ public final class WidgetProviderUtils {
             @Override
             public void run() {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                boolean hasWidgets = prefs.getStringSet(ChanHelper.PREF_WIDGET_BOARDS, new HashSet<String>()).size() > 0;
+                boolean hasWidgets = prefs.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>()).size() > 0;
                 if (hasWidgets)
                     fetchAllWidgets(context);
 

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/board_refresh_bar"
+        style="@style/BoardRefreshBar"
+        >
+
+    <ImageView
+            android:id="@+id/board_title_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="@color/PaletteTransparent"
+            android:src="@drawable/geomicons_skull"
+            />
+
+    <TextView
+            android:id="@+id/board_title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/board_title_icon"
+            android:layout_centerVertical="true"
+            android:paddingLeft="16dp"
+            android:paddingRight="8dp"
+            android:textColor="@color/PaletteMedGray"
+            android:text="Categories"
+            android:textSize="@dimen/BoardTypeText"
+            android:textIsSelectable="false"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/PaletteLightGray"/>
+
+</RelativeLayout>

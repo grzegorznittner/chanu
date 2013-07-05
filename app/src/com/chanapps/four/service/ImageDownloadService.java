@@ -12,7 +12,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Calendar;
 
-import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.*;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -25,9 +25,6 @@ import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.activity.GalleryViewActivity;
-import com.chanapps.four.data.ChanHelper;
-import com.chanapps.four.data.LastActivity;
-import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
 /**
@@ -39,23 +36,25 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 
     private static final int MIN_DOWNLOAD_PROGRESS_UPDATE = 300;
 	private static final int IMAGE_BUFFER_SIZE = 20480;
+    public static final String IMAGE_PATH = "imagePath";
+    public static final String IMAGE_URL = "imageUrl";
 
     public static void startService(Context context, String board, long threadNo, long postNo, String url, String targetFile) {
         if (DEBUG) Log.i(TAG, "Start image download service for " + url);
         Intent intent = new Intent(context, ImageDownloadService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, board);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
+        intent.putExtra(ChanBoard.BOARD_CODE, board);
+        intent.putExtra(ChanThread.THREAD_NO, threadNo);
         intent.putExtra(ChanPost.POST_NO, postNo);
-        intent.putExtra(ChanHelper.IMAGE_URL, url);
-        intent.putExtra(ChanHelper.IMAGE_PATH, targetFile);
+        intent.putExtra(IMAGE_URL, url);
+        intent.putExtra(IMAGE_PATH, targetFile);
         context.startService(intent);
     }
 
     public static void cancelService(Context context, String url) {
         if (DEBUG) Log.i(TAG, "Cancelling image download service for " + url);
         Intent intent = new Intent(context, ImageDownloadService.class);
-        intent.putExtra(ChanHelper.CLEAR_FETCH_QUEUE, 1);
-        intent.putExtra(ChanHelper.IMAGE_URL, url);
+        intent.putExtra(CLEAR_FETCH_QUEUE, 1);
+        intent.putExtra(IMAGE_URL, url);
         context.startService(intent);
     }
 
@@ -82,11 +81,11 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
         HttpURLConnection conn = null;
 		try {
 			stopDownload = false;
-			board = intent.getStringExtra(ChanHelper.BOARD_CODE);
-			threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
+			board = intent.getStringExtra(ChanBoard.BOARD_CODE);
+			threadNo = intent.getLongExtra(ChanThread.THREAD_NO, 0);
 			postNo = intent.getLongExtra(ChanPost.POST_NO, 0);
-			imageUrl = intent.getStringExtra(ChanHelper.IMAGE_URL);
-			targetImagePath = intent.getStringExtra(ChanHelper.IMAGE_PATH);
+			imageUrl = intent.getStringExtra(IMAGE_URL);
+			targetImagePath = intent.getStringExtra(IMAGE_PATH);
 			if (DEBUG) Log.i(TAG, "Handling image download service for " + imageUrl);
 			
 			File targetFile = new File(URI.create(targetImagePath));
@@ -171,13 +170,13 @@ public class ImageDownloadService extends BaseChanService implements ChanIdentif
 	
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null && intent.getIntExtra(ChanHelper.CLEAR_FETCH_QUEUE, 0) == 1) {
+        if (intent != null && intent.getIntExtra(CLEAR_FETCH_QUEUE, 0) == 1) {
             if (DEBUG) Log.i(TAG, "Clearing chan fetch service message queue");
         	mServiceHandler.removeMessages(PRIORITY_MESSAGE);
         	synchronized(this) {
         		priorityMessageCounter = 0;
         	}
-        	if (imageUrl != null && imageUrl.equals(intent.getStringExtra(ChanHelper.IMAGE_URL))) {
+        	if (imageUrl != null && imageUrl.equals(intent.getStringExtra(IMAGE_URL))) {
         		stopDownload = true;
         	}
         	return START_NOT_STICKY;

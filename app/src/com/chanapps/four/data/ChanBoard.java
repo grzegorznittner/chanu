@@ -56,6 +56,8 @@ public class ChanBoard {
     public static final String[] POPULAR_BOARDS = { POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE };
 
     public static final String DEFAULT_BOARD_CODE = "a";
+    public static final String PAGE = "pageNo";
+    public static final String BOARD_CATALOG = "boardCatalog";
 
     public String board;
     public String name;

@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.task.DeletePostTask;
-import com.chanapps.four.task.PostReplyTask;
 
 /**
 * Created with IntelliJ IDEA.

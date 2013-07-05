@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.Captcha;
-import com.chanapps.four.data.ChanHelper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 

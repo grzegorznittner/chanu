@@ -31,6 +31,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
 	private static final boolean DEBUG = true;
+    public static final String SECONDARY_THREAD_NO = "secondaryThreadNo";
 
     private String boardCode;
     private boolean boardCatalog;
@@ -66,15 +67,15 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         }
         if (DEBUG) Log.i(TAG, "Start chan fetch board service /" + boardCode + "/ priority=" + priority);
         Intent intent = new Intent(context, FetchChanDataService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.PAGE, -1);
-        intent.putExtra(ChanHelper.BOARD_CATALOG, 1);
-        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, priority ? 1 : 0);
+        intent.putExtra(ChanBoard.BOARD_CODE, boardCode);
+        intent.putExtra(ChanBoard.PAGE, -1);
+        intent.putExtra(ChanBoard.BOARD_CATALOG, 1);
+        intent.putExtra(PRIORITY_MESSAGE_FETCH, priority ? 1 : 0);
         if (backgroundLoad) {
-            intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
+            intent.putExtra(BACKGROUND_LOAD, true);
         }
         if (threadNo > 0) {
-            intent.putExtra(ChanHelper.SECONDARY_THREAD_NO, threadNo);
+            intent.putExtra(SECONDARY_THREAD_NO, threadNo);
         }
         context.startService(intent);
         return true;
@@ -92,11 +93,11 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         			new Exception("Locate caller and fix issue!"));
         }
         Intent intent = new Intent(context, FetchChanDataService.class);
-        intent.putExtra(ChanHelper.BOARD_CODE, boardCode);
-        intent.putExtra(ChanHelper.THREAD_NO, threadNo);
-        intent.putExtra(ChanHelper.PRIORITY_MESSAGE, priority ? 1 : 0);
+        intent.putExtra(ChanBoard.BOARD_CODE, boardCode);
+        intent.putExtra(ChanThread.THREAD_NO, threadNo);
+        intent.putExtra(PRIORITY_MESSAGE_FETCH, priority ? 1 : 0);
         if (backgroundLoad) {
-            intent.putExtra(ChanHelper.BACKGROUND_LOAD, true);
+            intent.putExtra(BACKGROUND_LOAD, true);
         }
         context.startService(intent);
         return true;
@@ -105,7 +106,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     public static void clearServiceQueue(Context context) {
         if (DEBUG) Log.i(TAG, "Clearing chan fetch service queue");
         Intent intent = new Intent(context, FetchChanDataService.class);
-        intent.putExtra(ChanHelper.CLEAR_FETCH_QUEUE, 1);
+        intent.putExtra(CLEAR_FETCH_QUEUE, 1);
         context.startService(intent);
     }
 
@@ -119,7 +120,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
     
 	@Override
 	protected void onHandleIntent(Intent intent) {
-        backgroundLoad = intent.getBooleanExtra(ChanHelper.BACKGROUND_LOAD, false);
+        backgroundLoad = intent.getBooleanExtra(BACKGROUND_LOAD, false);
 		if (!isChanForegroundActivity() && !backgroundLoad) {
             if (DEBUG)
                 Log.i(TAG, "Not foreground activity, exiting");
@@ -135,13 +136,13 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             return;
         }
 
-		boardCode = intent.getStringExtra(ChanHelper.BOARD_CODE);
-		boardCatalog = intent.getIntExtra(ChanHelper.BOARD_CATALOG, 0) == 1;
-		pageNo = boardCatalog ? -1 : intent.getIntExtra(ChanHelper.PAGE, 0);
-		threadNo = intent.getLongExtra(ChanHelper.THREAD_NO, 0);
-        secondaryThreadNo = intent.getLongExtra(ChanHelper.SECONDARY_THREAD_NO, 0);
+		boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
+		boardCatalog = intent.getIntExtra(ChanBoard.BOARD_CATALOG, 0) == 1;
+		pageNo = boardCatalog ? -1 : intent.getIntExtra(ChanBoard.PAGE, 0);
+		threadNo = intent.getLongExtra(ChanThread.THREAD_NO, 0);
+        secondaryThreadNo = intent.getLongExtra(SECONDARY_THREAD_NO, 0);
 		boardHandling = threadNo == 0;
-		priority = intent.getIntExtra(ChanHelper.PRIORITY_MESSAGE, 0) > 0;
+		priority = intent.getIntExtra(PRIORITY_MESSAGE_FETCH, 0) > 0;
 
         if (boardHandling) {
 			if (DEBUG) Log.i(TAG, "Handling board " + boardCode + (boardCatalog ? " catalog" : " page=" + pageNo) + " priority=" + priority);

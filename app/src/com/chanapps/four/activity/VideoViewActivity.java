@@ -11,8 +11,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.webkit.WebView;
 
-import com.android.gallery3d.ui.GLRoot;
-import com.chanapps.four.data.ChanHelper;
+import com.chanapps.four.service.ImageDownloadService;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -56,7 +55,7 @@ public class VideoViewActivity extends Activity {
 	    	myWebView.setBackgroundColor(0xffffff);
 	    	myWebView.getSettings().setJavaScriptEnabled(false);
 	    	myWebView.getSettings().setBuiltInZoomControls(false);
-	    	String html = "<html><body bgcolor=\"black\"><center><img src=\"" + getIntent().getStringExtra(ChanHelper.IMAGE_URL)
+	    	String html = "<html><body bgcolor=\"black\"><center><img src=\"" + getIntent().getStringExtra(ImageDownloadService.IMAGE_URL)
 	    			+ "\"></img></body></html>";
 	    	myWebView.loadDataWithBaseURL("/", html, "text/html", "UTF-8", null);
     	} catch (Throwable e) {
