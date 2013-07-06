@@ -147,8 +147,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             setProgress(true);
         }
 
-        mPullToRefreshAttacher = new PullToRefreshAttacher(this);
-        mPullToRefreshAttacher.setRefreshableView(gridView, pullToRefreshListener);
+        if (ChanBoard.isPopularBoard(boardCode) || !ChanBoard.isVirtualBoard(boardCode)) {
+            mPullToRefreshAttacher = new PullToRefreshAttacher(this);
+            mPullToRefreshAttacher.setRefreshableView(gridView, pullToRefreshListener);
+        }
+        else {
+            mPullToRefreshAttacher = null;
+        }
     }
 
     protected PullToRefreshAttacher.OnRefreshListener pullToRefreshListener = new PullToRefreshAttacher.OnRefreshListener() {

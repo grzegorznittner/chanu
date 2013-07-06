@@ -186,15 +186,16 @@ public class ChanBoard {
                 ChanBoard b = new ChanBoard(boardType, boardName, boardCode, iconId, workSafe, true, false);
                 if (DEBUG) Log.i(TAG, "Added board /" + boardCode + "/ " + boardName);
                 boardsForType.add(b);
-                boards.add(b);
-                if (workSafe)
-                    safeBoards.add(b);
-                boardByCode.put(boardCode, b);
+                if (!boardByCode.containsKey(b.link)) {
+                    boards.add(b);
+                    if (workSafe)
+                        safeBoards.add(b);
+                    boardByCode.put(boardCode, b);
+                }
             }
             boardsByType.put(boardType, boardsForType);
             if (DEBUG) Log.i(TAG, "Put boardsByType(" + boardType.boardCode() + ") as " + Arrays.toString(boardsForType.toArray()));
         }
-        /*
         Collections.sort(boards, new Comparator<ChanBoard>() {
             @Override
             public int compare(ChanBoard lhs, ChanBoard rhs) {
@@ -207,7 +208,6 @@ public class ChanBoard {
                 return lhs.link.compareToIgnoreCase(rhs.link);
             }
         });
-        */
         String[][] relatedBoardCodes = initRelatedBoards();
         for (String[] relatedBoardCodeArray : relatedBoardCodes) {
             String boardCode = relatedBoardCodeArray[0];

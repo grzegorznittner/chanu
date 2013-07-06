@@ -27,13 +27,13 @@ public class PickShareBoardDialogFragment extends ListDialogFragment {
 
     public static final String TAG = PickShareBoardDialogFragment.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private String[] boards;
     private Handler activityHandler;
 
     private void initBoards(Context context) {
-        List<ChanBoard> chanBoards = ChanBoard.getBoardsRespectingNSFW(context);
+        List<ChanBoard> chanBoards = ChanBoard.getNewThreadBoardsRespectingNSFW(context);
         boards = new String[chanBoards.size()];
         int i = 0;
         for (ChanBoard chanBoard : chanBoards) {

@@ -147,6 +147,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
+        if (boardCode == null || boardCode.isEmpty())
+            boardCode = ChanBoard.DEFAULT_BOARD_CODE;
         setViews();
     }
 
@@ -258,6 +260,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         if (DEBUG) Log.i(TAG, "setIntent() intent has /" + boardCode + "/" + threadNo + ":" + postNo + " imageUri=" + imageUri);
         Bundle bundle = loadBundleFromPrefs();
         if (bundle != null
+                && boardCode != null
                 && boardCode.equals(bundle.getString(ChanBoard.BOARD_CODE))
                 && threadNo == bundle.getLong(ChanThread.THREAD_NO)
                 && postNo == bundle.getLong(ChanPost.POST_NO)
@@ -988,7 +991,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         return true;
     }
 
-    private void setActionBarTitle() {
+    protected void setActionBarTitle() {
         String replyTitle = threadNo > 0
                 ? getString(R.string.post_reply_title)
                 : getString(R.string.post_reply_thread_title);

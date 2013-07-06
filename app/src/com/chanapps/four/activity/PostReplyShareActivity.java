@@ -79,7 +79,7 @@ public class PostReplyShareActivity extends PostReplyActivity implements ChanIde
                             finish();
                             return;
                         }
-                        setImagePreview();
+                        setViews();
                         break;
                     case POST_FINISHED:
                         // go to board to see our new post

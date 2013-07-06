@@ -15,7 +15,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:background="@color/PaletteTransparent"
-            android:src="@drawable/geomicons_folder"
+            android:src="@drawable/geomicons_folder_dark"
             />
 
     <TextView

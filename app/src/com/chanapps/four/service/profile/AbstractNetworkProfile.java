@@ -226,26 +226,31 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
             if (DEBUG) Log.i(TAG, "null handler failure, ignoring");
             return;
         }
-        int msgId;
         switch (failure) {
             case DEAD_THREAD:
-                msgId = R.string.mobile_profile_fetch_dead_thread;
                 if (DEBUG) Log.i(TAG, "refreshig after dead thread");
-                postStopMessageWithRefresh(handler, msgId);
+                if (activity instanceof ThreadActivity)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+                            ((ThreadActivity)activity)
+                                    .refreshFragment(data.boardCode, data.threadNo,
+                                            activity.getBaseContext().getString(R.string.mobile_profile_fetch_dead_thread));
+                        }
+                    });
                 break;
             case THREAD_UNMODIFIED:
-                msgId = R.string.mobile_profile_fetch_unmodified;
                 if (DEBUG) Log.i(TAG, "stopping after unmodified thread");
-                postStopMessage(handler, msgId);
+                postStopMessage(handler, R.string.mobile_profile_fetch_unmodified);
                 break;
             case NETWORK:
             case MISSING_DATA:
             case WRONG_DATA:
             case CORRUPT_DATA:
             default:
-                msgId = R.string.mobile_profile_fetch_failure;
                 if (DEBUG) Log.i(TAG, "stopping after generic failure");
-                postStopMessage(handler, msgId);
+                postStopMessage(handler, R.string.mobile_profile_fetch_failure);
                 break;
         }
     }
