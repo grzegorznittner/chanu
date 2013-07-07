@@ -10,13 +10,13 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.*;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.*;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +32,7 @@ abstract public class
     protected String[] mDrawerArray;
     protected ListView mDrawerList;
     protected DrawerLayout mDrawerLayout;
-    protected ArrayAdapter<String> mDrawerAdapter;
+    protected SimpleAdapter mDrawerAdapter;
     protected ActionBarDrawerToggle mDrawerToggle;
 
     protected int activityLayout() {
@@ -61,12 +61,30 @@ abstract public class
         setDrawerAdapter();
     }
 
+    protected static final String ROW_ID = "rowid";
+    protected static final String TEXT = "text";
+    protected static final String DRAWABLE_ID = "drawableid";
+
+    protected static final String[] adapterFrom = { ROW_ID, TEXT, DRAWABLE_ID };
+    protected static final int[] adapterTo = { R.id.drawer_list_item_text, R.id.drawer_list_item_text, R.id.drawer_list_item_icon };
+
     protected void setDrawerAdapter() {
         mDrawerArrayId = mShowNSFW
                 ? R.array.long_drawer_array
                 : R.array.long_drawer_array_worksafe;
         mDrawerArray = getResources().getStringArray(mDrawerArrayId);
-        mDrawerAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerArray);
+        List<HashMap<String, String>> fillMaps = new ArrayList<HashMap<String, String>>();
+        for (int i = 0; i < mDrawerArray.length; i++) {
+            String drawerText = mDrawerArray[i];
+            BoardType type = BoardType.valueOfDrawerString(this, drawerText);
+            HashMap<String, String> map = new HashMap<String, String>();
+            map.put(ROW_ID, "" + i);
+            map.put(TEXT, drawerText);
+            map.put(DRAWABLE_ID, "" + type.drawableId());
+            fillMaps.add(map);
+        }
+        mDrawerAdapter = new SimpleAdapter(this, fillMaps, R.layout.drawer_list_item, adapterFrom, adapterTo);
+        //mDrawerAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerArray);
         mDrawerList.setAdapter(mDrawerAdapter);
     }
 
@@ -113,7 +131,8 @@ abstract public class
 
     protected void selectDrawerItem() {
         for (int i = 0; i < mDrawerList.getAdapter().getCount(); i++) {
-            String s = (String)mDrawerList.getItemAtPosition(i);
+            HashMap<String, String> item = (HashMap<String, String>)mDrawerList.getItemAtPosition(i);
+            String s = item.get(TEXT);
             if (isSelfBoard(s)) {
                 mDrawerList.setItemChecked(i, true);
                 break;
@@ -154,7 +173,8 @@ abstract public class
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             mDrawerLayout.closeDrawer(mDrawerList);
-            String boardAsMenu = (String) parent.getItemAtPosition(position);
+            HashMap<String, String> item = (HashMap<String, String>)parent.getItemAtPosition(position);
+            String boardAsMenu = item.get(TEXT);
             if (DEBUG) Log.i(TAG, "onItemClick boardAsMenu=" + boardAsMenu);
             handleSelectItem(boardAsMenu);
         }

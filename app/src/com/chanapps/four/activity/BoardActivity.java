@@ -819,10 +819,15 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (boardTitleBar == null)
             return;
         TextView boardTitle = (TextView)boardTitleBar.findViewById(R.id.board_title_text);
-        if (boardTitle == null)
+        ImageView boardIcon = (ImageView)boardTitleBar.findViewById(R.id.board_title_icon);
+        if (boardTitle == null || boardIcon == null)
             return;
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        boardTitle.setText(board.name);
+        if (board != null)
+            boardTitle.setText(board.name);
+        BoardType type = BoardType.valueOfBoardCode(boardCode);
+        if (type != null)
+            boardIcon.setImageResource(type.darkDrawableId());
         boardTitleBar.setVisibility(View.VISIBLE);
     }
 
