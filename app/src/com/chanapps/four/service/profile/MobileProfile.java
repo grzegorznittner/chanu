@@ -294,6 +294,10 @@ public class MobileProfile extends AbstractNetworkProfile {
                 threadScheduled = true;
             }
         }
+        else if (health == Health.BAD) {
+            makeHealthStatusToast(context, health);
+            return;
+        }
         else {
             if (DEBUG) Log.i(TAG, "onThreadSelected normal fetch /" + boardCode + "/");
             FetchChanDataService.scheduleBoardFetch(context, boardCode, false, false);

@@ -7,28 +7,32 @@
         android:paddingRight="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:background="?android:attr/activatedBackgroundIndicator"
+        android:background="@drawable/drawer_list_selector_bg"
         >
-
+<!--         android:background="@color/PaletteBlack"
+        android:background="?android:attr/activatedBackgroundIndicator"
+-->
     <ImageView
             android:id="@+id/drawer_list_item_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="16dp"
-            android:scaleType="center"
+            android:background="@color/PaletteBlack"
             />
+<!--             android:scaleType="center"
+-->
 
     <TextView
             android:id="@+id/drawer_list_item_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/drawer_list_item_icon"
-            android:textAppearance="?android:attr/textAppearanceListItemSmall"
-            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
             android:textColor="@color/PaletteWhite"
             android:textSize="18sp"/>
     <!--
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
             android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
         -->
 </RelativeLayout>

@@ -132,6 +132,22 @@
         <item name="android:scrollbarStyle">outsideOverlay</item>
     </style>
 
+    <style name="ThreadListView" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:smoothScrollbar">true</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:verticalSpacing">0dp</item>
+        <item name="android:horizontalSpacing">0dp</item>
+        <item name="android:stretchMode">none</item>
+        <item name="android:divider">@color/PaletteLightGray</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:fastScrollEnabled">true</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+    </style>
+
     <!--
     <style name="BoardListViewTablet" parent="AppTheme">
         <item name="android:layout_width">250dp</item>
@@ -163,21 +179,6 @@
         <item name="android:fastScrollEnabled">true</item>
     </style>
     -->
-
-    <style name="ListViewTemplateWithGridTabletsThreads" parent="AppTheme">
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_toRightOf">@+id/board_grid_view_tablet</item>
-        <item name="android:smoothScrollbar">true</item>
-        <item name="android:padding">0dp</item>
-        <item name="android:verticalSpacing">0dp</item>
-        <item name="android:horizontalSpacing">0dp</item>
-        <item name="android:stretchMode">none</item>
-        <!--        <item name="android:divider">@color/PaletteOffWhite</item> -->
-        <item name="android:dividerHeight">1px</item>
-        <item name="android:cacheColorHint">#00000000</item>
-        <item name="android:fastScrollEnabled">true</item>
-    </style>
 
     <!-- SELECTOR GRID STYLES -->
 
@@ -241,22 +242,23 @@
 
     <style name="BoardGridViewTablet" parent="AppTheme">
         <item name="android:layout_width">@dimen/BoardGridViewTablet_layout_width</item>
-        <!-- actually we'll set this manually depending on screen size -->
         <item name="android:layout_height">match_parent</item>
-        <!--<item name="android:layout_centerInParent">true</item> -->
-        <item name="android:paddingTop">@dimen/BoardGridViewTablet.spacing</item>
-        <item name="android:paddingLeft">@dimen/BoardGridViewTablet.spacing</item>
-        <item name="android:paddingBottom">@dimen/BoardGridViewTablet.spacing</item>
-        <item name="android:paddingRight">@dimen/BoardGridViewTablet_paddingRight</item>
-        <item name="android:verticalSpacing">@dimen/BoardGridViewTablet.spacing</item>
-        <item name="android:horizontalSpacing">@dimen/BoardGridViewTablet.spacing</item>
-        <item name="android:numColumns">1</item>
-        <item name="android:stretchMode">none</item>
+        <item name="android:padding">@dimen/BoardGridView.spacing</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:divider">@color/PaletteTransparent</item>
+        <item name="android:dividerHeight">@dimen/BoardGridViewTablet.spacing</item>
+        <item name="android:stretchMode">columnWidth</item>
         <item name="android:gravity">top|left</item>
         <item name="android:smoothScrollbar">true</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
         <item name="android:cacheColorHint">#00000000</item>
-        <item name="android:fastScrollEnabled">true</item>
-        <!-- <item name="android:background">@drawable/board_view_gradient_bg</item>  -->
+        <item name="android:fastScrollEnabled">false</item>
+        <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
+        <item name="android:drawSelectorOnTop">true</item>
+        <item name="android:numColumns">1</item>
+        <item name="android:horizontalSpacing">@dimen/BoardGridView.spacing</item>
+        <item name="android:verticalSpacing">@dimen/BoardGridView.spacing</item>
+        <item name="android:stretchMode">columnWidth</item>
     </style>
 
     <style name="BoardGridImage" parent="AppTheme">
@@ -1320,6 +1322,10 @@
         -->
     </style>
 
+    <!-- Drawer -->
+
+    <dimen name="Drawer.layout_width">224dp</dimen>
+
     <!-- colors -->
     <!--
     <color name="HoloDimForegroundInverse">#323232</color>
@@ -1334,6 +1340,7 @@
     <color name="PaletteYellowWhite">#ecebe7</color>
     <color name="PaletteWhite">#f7f7f7</color>
     <color name="PaletteOffWhite">#e4e4e4</color>
+    <color name="PaletteLightestGray">#ccc</color>
     <color name="PaletteLightGray">#aaa</color>
     <color name="PaletteMedGray">#666</color>
     <color name="PaletteDarkGray">#414141</color>

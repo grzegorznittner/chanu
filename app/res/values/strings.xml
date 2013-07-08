@@ -27,8 +27,8 @@
     <string name="not_implemented">Not yet implemented</string>
     <string name="thread_related_threads_title">Related Threads</string>
     <string name="thread_related_threads_desc">Threads on /%1$s/ covering a similar topic</string>
-    <string name="board_search">Search board</string>
-    <string name="thread_search">Search thread</string>
+    <string name="board_search">Search</string>
+    <string name="thread_search">Search</string>
     <string name="search_title">Search</string>
     <string name="thread_search_results">MATCHING POSTS FOR %1$s</string>
     <string name="thread_search_no_results">&lt;i&gt;no matches&lt;/i&gt;</string>
@@ -111,8 +111,8 @@
     <string name="play_thread_menu">Play thread</string>
     <string name="play_thread_stop_menu">Stop thread</string>
     <string name="go_to_end_position_menu">Go to end</string>
-    <string name="refresh_board_menu">Refresh board</string>
-    <string name="refresh_thread_menu">Refresh thread</string>
+    <string name="refresh_board_menu">Refresh</string>
+    <string name="refresh_thread_menu">Refresh</string>
     <string name="new_thread_menu">New thread</string>
     <string name="new_thread_short">New thread</string>
     <string name="prefetch_board_menu">Preload threads</string>
@@ -172,12 +172,12 @@
     <string name="board_selector_all_boards_title">All Boards</string>
     <string name="board_selector_all_boards_desc">All boards on Chanu</string>
     <string name="board_selector_watchlist_title">Watchlist</string>
-    <string name="board_selector_recent_title">Popular</string>
-    <string name="board_selector_popular_title">Popular&lt;br/&gt;Threads</string>
+    <string name="board_selector_recent_title">Popular Threads</string>
+    <string name="board_selector_popular_title">Popular Threads</string>
     <string name="board_selector_popular_desc">The current top ten threads</string>
-    <string name="board_selector_latest_title">Latest&lt;br/&gt;Posts</string>
+    <string name="board_selector_latest_title">Latest Posts</string>
     <string name="board_selector_latest_desc">The ten latest posts</string>
-    <string name="board_selector_latest_images_title">Recent&lt;br/&gt;Images</string>
+    <string name="board_selector_latest_images_title">Recent Images</string>
     <string name="board_selector_latest_images_desc">The three latest uploaded images</string>
     <string name="board_selector_boardlist_title">Categories</string>
 
@@ -811,17 +811,17 @@
     <string name="board_watch_desc">Keep track of interesting threads</string>
     <string name="board_watch_abbrev">Watch</string>
     <string name="board_type_recent">Popular Threads</string>
-    <string name="board_type_recent_abbrev">Popular</string>
+    <string name="board_type_recent_abbrev">Popular Threads</string>
     <string name="board_popular">Popular Threads</string>
-    <string name="board_popular_abbrev">Popular</string>
+    <string name="board_popular_abbrev">Popular Threads</string>
     <string name="board_latest">Latest Posts</string>
-    <string name="board_latest_abbrev">Latest</string>
+    <string name="board_latest_abbrev">Latest Posts</string>
     <string name="board_latest_images">Latest Images</string>
     <string name="board_latest_images_abbrev">Latest Imgs</string>
     <string name="board_select">Select Board</string>
-    <string name="board_select_abbrev">Select</string>
-    <string name="board_meta">Categories</string>
-    <string name="board_meta_desc">Board categories</string>
+    <string name="board_select_abbrev">Select Board</string>
+    <string name="board_meta">Board Groups</string>
+    <string name="board_meta_desc">Board Groups</string>
     <string name="board_all_boards">All Boards</string>
     <string name="board_all_boards_desc">All boards on Chanu</string>
 

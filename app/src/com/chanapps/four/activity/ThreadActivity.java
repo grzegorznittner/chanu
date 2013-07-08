@@ -1,6 +1,5 @@
 package com.chanapps.four.activity;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
@@ -10,21 +9,30 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.*;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
+import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
+import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.*;
+import com.chanapps.four.loader.BoardCursorLoader;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
-import com.chanapps.four.service.ThreadImageDownloadService;
+import com.chanapps.four.service.profile.NetworkProfile;
+import com.chanapps.four.viewer.BoardGridViewer;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 
 /**
@@ -46,6 +54,9 @@ public class ThreadActivity
     public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
     protected static final int OFFSCREEN_PAGE_LIMIT = 1;
+    protected static final int LOADER_ID = 1;
+    protected static final String FIRST_VISIBLE_BOARD_POSITION = "firstVisibleBoardPosition";
+    protected static final String FIRST_VISIBLE_BOARD_POSITION_OFFSET = "firstVisibleBoardPositionOffset";
 
     protected ChanBoard board;
     protected ThreadPagerAdapter mAdapter;
@@ -55,6 +66,15 @@ public class ThreadActivity
     protected MenuItem searchMenuItem;
     protected long postNo; // for direct jumps from latest post / recent images
     protected PullToRefreshAttacher mPullToRefreshAttacher;
+
+    //tablet layout
+    protected AbstractBoardCursorAdapter adapterBoardsTablet;
+    protected AbsListView boardGrid;
+    protected int firstVisibleBoardPosition = -1;
+    protected int firstVisibleBoardPositionOffset = -1;
+    protected boolean tabletTestDone = false;
+    protected int columnWidth = 0;
+    protected int columnHeight = 0;
 
     public static void startActivity(Context from, String boardCode, long threadNo, String query) {
         startActivity(from, boardCode, threadNo, 0, query);
@@ -110,10 +130,16 @@ public class ThreadActivity
         board = ChanFileStorage.loadBoardData(this, boardCode);
         mPullToRefreshAttacher = new PullToRefreshAttacher(this);
 
-        if (board == null || board.defData || board.threads.length == 0)
-            Log.i(TAG, "Board not ready, postponing pager creation");
-        else
+        if (onTablet())
+            createAbsListView();
+        if (board != null && !board.defData && board.threads.length > 0) {
+            if (DEBUG) Log.i(TAG, "createViews() calling initLoader");
+            getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
             createPager();
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "Board not ready, postponing pager creation");
+        }
     }
 
     protected void createPager() {
@@ -122,6 +148,11 @@ public class ThreadActivity
         mPager = (ViewPager)findViewById(R.id.pager);
         mPager.setOffscreenPageLimit(OFFSCREEN_PAGE_LIMIT);
         mPager.setAdapter(mAdapter);
+        setCurrentItemToThread();
+    }
+
+    public void showThread(long threadNo) {
+        this.threadNo = threadNo;
         setCurrentItemToThread();
     }
 
@@ -153,20 +184,27 @@ public class ThreadActivity
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putString(ChanBoard.BOARD_CODE, boardCode);
-        savedInstanceState.putLong(ChanThread.THREAD_NO, threadNo);
-        savedInstanceState.putString(SearchManager.QUERY, query);
+    protected void onSaveInstanceState(Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+        bundle.putString(ChanBoard.BOARD_CODE, boardCode);
+        bundle.putLong(ChanThread.THREAD_NO, threadNo);
+        bundle.putString(SearchManager.QUERY, query);
+        int boardPos = !onTablet() ? -1 : boardGrid.getFirstVisiblePosition();
+        View boardView = !onTablet() ? null : boardGrid.getChildAt(0);
+        int boardOffset = boardView == null ? 0 : boardView.getTop();
+        bundle.putInt(FIRST_VISIBLE_BOARD_POSITION, boardPos);
+        bundle.putInt(FIRST_VISIBLE_BOARD_POSITION_OFFSET, boardOffset);
         if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/" + threadNo);
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
-        threadNo = savedInstanceState.getLong(ChanThread.THREAD_NO, 0);
-        query = savedInstanceState.getString(SearchManager.QUERY);
+    protected void onRestoreInstanceState(Bundle bundle) {
+        super.onRestoreInstanceState(bundle);
+        boardCode = bundle.getString(ChanBoard.BOARD_CODE);
+        threadNo = bundle.getLong(ChanThread.THREAD_NO, 0);
+        query = bundle.getString(SearchManager.QUERY);
+        firstVisibleBoardPosition = bundle.getInt(FIRST_VISIBLE_BOARD_POSITION);
+        firstVisibleBoardPositionOffset = bundle.getInt(FIRST_VISIBLE_BOARD_POSITION_OFFSET);
         if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/" + threadNo);
     }
 
@@ -232,6 +270,12 @@ public class ThreadActivity
         }
         invalidateOptionsMenu(); // for correct spinner display
         NetworkProfileManager.instance().activityChange(this);
+        if (onTablet()
+                && !getSupportLoaderManager().hasRunningLoaders()
+                && (adapterBoardsTablet == null || adapterBoardsTablet.getCount() == 0)) {
+            if (DEBUG) Log.i(TAG, "onResume calling restartLoader");
+            getSupportLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
+        }
     }
 
     @Override
@@ -246,6 +290,10 @@ public class ThreadActivity
         super.onStop();
         if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/" + threadNo);
         handler = null;
+        if (onTablet()) {
+            if (DEBUG) Log.i(TAG, "onStop calling destroyLoader");
+            getSupportLoaderManager().destroyLoader(LOADER_ID);
+        }
     }
 
     private void postReply(long postNos[]) {
@@ -261,66 +309,6 @@ public class ThreadActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent intent = BoardActivity.createIntent(this, boardCode, "");
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
-                /*
-                if (NavUtils.shouldUpRecreateTask(this, intent)) {
-                    if (DEBUG) Log.i(TAG, "shouldUpRecreateTask " + this);
-                } else {
-                    if (DEBUG) Log.i(TAG, "navigateUpTo");
-                    NavUtils.navigateUpTo(this, intent);
-                }
-                */
-                return true;
-            case R.id.refresh_menu:
-                setProgress(true);
-                NetworkProfileManager.instance().manualRefresh(this);
-                return true;
-            case R.id.post_reply_menu:
-                postReply("");
-                return true;
-            case R.id.watch_thread_menu:
-                addToWatchlist();
-                return true;
-            case R.id.download_all_images_menu:
-                ThreadImageDownloadService.startDownloadToBoardFolder(getBaseContext(), boardCode, threadNo);
-                Toast.makeText(this, R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.download_all_images_to_gallery_menu:
-                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo);
-                Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.board_rules_menu:
-                displayBoardRules();
-                return true;
-            case R.id.web_menu:
-                String url = ChanThread.threadUrl(boardCode, threadNo);
-                ActivityDispatcher.launchUrlInBrowser(this, url);
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    protected void displayBoardRules() {
-        //NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_RULES);
-        int boardRulesId = R.raw.global_rules_detail;
-        try {
-            boardRulesId = R.raw.class.getField("board_" + boardCode + "_rules").getInt(null);
-        } catch (Exception e) {
-            Log.e(TAG, "Couldn't find rules for board:" + boardCode);
-        }
-        RawResourceDialog rawResourceDialog
-                = new RawResourceDialog(this, R.layout.board_rules_dialog, R.raw.board_rules_header, boardRulesId);
-        rawResourceDialog.show();
-
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.thread_menu, menu);
@@ -329,64 +317,24 @@ public class ThreadActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-    protected void addToWatchlist() {
-        final Context context = getApplicationContext();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int msgId;
-                try {
-                    final ChanThread thread = ChanFileStorage.loadThreadData(getApplicationContext(), boardCode, threadNo);
-                    if (thread == null) {
-                        Log.e(TAG, "Couldn't add null thread /" + boardCode + "/" + threadNo + " to watchlist");
-                        msgId = R.string.thread_not_added_to_watchlist;
-                    }
-                    else {
-                        ChanFileStorage.addWatchedThread(context, thread);
-                        BoardActivity.refreshWatchlist();
-                        msgId = R.string.thread_added_to_watchlist;
-                        if (DEBUG) Log.i(TAG, "Added /" + boardCode + "/" + threadNo + " to watchlist");
-                    }
-                }
-                catch (IOException e) {
-                    msgId = R.string.thread_not_added_to_watchlist;
-                    Log.e(TAG, "Exception adding /" + boardCode + "/" + threadNo + " to watchlist", e);
-                }
-                final int stringId = msgId;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), stringId, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        }).start();
-    }
-
     public ChanActivityId getChanActivityId() {
         return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo, postNo, query);
-    }
-
-    protected void copyToClipboard(String text) {
-        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        android.content.ClipData clip = android.content.ClipData.newPlainText(
-                getApplicationContext().getString(R.string.app_name),
-                ChanPost.planifyText(text));
-        clipboard.setPrimaryClip(clip);
-        Toast.makeText(getApplicationContext(), R.string.copy_text_complete, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void refresh() {
         invalidateOptionsMenu(); // in case spinner needs to be reset
         ThreadFragment fragment = getCurrentFragment();
-        //ThreadFragment fragment = (ThreadFragment)getSupportFragmentManager().findFragmentByTag(fragmentTag());
         if (fragment != null)
             fragment.onRefresh();
-    }
-
-    public void refreshFragment(String boardCode, long threadNo) {
-        refreshFragment(boardCode, threadNo, null);
+        if (handler != null && onTablet())
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (DEBUG) Log.i(TAG, "refreshBoard() restarting loader");
+                    getSupportLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
+                }
+            });
     }
 
     public void refreshFragment(String boardCode, long threadNo, String message) {
@@ -551,6 +499,10 @@ public class ThreadActivity
                     primaryItem.setPullToRefreshAttacher(null);
                 primaryItem = fragment;
                 fragment.setPullToRefreshAttacher(mPullToRefreshAttacher);
+                if (onTablet()) {
+                    if (DEBUG) Log.i(TAG, "smooth scrolling to position=" + position);
+                    boardGrid.setSelection(position);
+                }
             }
             super.setPrimaryItem(container, position, object);
         }
@@ -577,5 +529,144 @@ public class ThreadActivity
             mPullToRefreshAttacher.setRefreshComplete();
         }
     }
+
+
+    protected void initTablet() {
+        if (!tabletTestDone) {
+            boardGrid = (AbsListView)findViewById(R.id.board_grid_view_tablet);
+            tabletTestDone = true;
+        }
+    }
+
+    // tablet
+    public boolean onTablet() {
+        initTablet();
+        return boardGrid != null;
+    }
+
+    protected void createAbsListView() {
+        initTablet();
+        ImageLoader imageLoader = ChanImageLoader.getInstance(getActivityContext());
+        columnWidth = ChanGridSizer.getCalculatedWidth(
+                getResources().getDimensionPixelSize(R.dimen.BoardGridViewTablet_layout_width),
+                1,
+                getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
+        columnHeight = 2 * columnWidth;
+        adapterBoardsTablet = new BoardGridCursorAdapter(getActivityContext(), viewBinder,
+                columnWidth, columnHeight);
+        boardGrid.setAdapter(adapterBoardsTablet);
+        boardGrid.setOnItemClickListener(boardGridListener);
+        boardGrid.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+    }
+
+    protected void onBoardsTabletLoadFinished(Cursor data) {
+        if (boardGrid == null)
+            createAbsListView();
+        this.adapterBoardsTablet.swapCursor(data);
+        // retry load if maybe data wasn't there yet
+        if (data != null && data.getCount() < 1 && handler != null) {
+            if (DEBUG) Log.i(TAG, "onBoardsTabletLoadFinished threadNo=" + threadNo + " data count=0");
+            NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
+            if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
+                String msg = String.format(getString(R.string.mobile_profile_health_status),
+                        health.toString().toLowerCase().replaceAll("_", " "));
+                Toast.makeText(getActivityContext(), msg, Toast.LENGTH_SHORT).show();
+            }
+        }
+        else if (firstVisibleBoardPosition >= 0) {
+            if (DEBUG) Log.i(TAG, "onBoardsTabletLoadFinished threadNo=" + threadNo + " firstVisibleBoardPosition=" + firstVisibleBoardPosition);
+            //if (boardGrid instanceof ListView)
+            //    ((ListView)boardGrid).setSelectionFromTop(firstVisibleBoardPosition, firstVisibleBoardPositionOffset);
+            //else
+            boardGrid.setSelection(firstVisibleBoardPosition);
+            firstVisibleBoardPosition = -1;
+            firstVisibleBoardPositionOffset = -1;
+        }
+        else if (threadNo > 0) {
+            Cursor cursor = adapterBoardsTablet.getCursor();
+            cursor.moveToPosition(-1);
+            boolean found = false;
+            int pos = 0;
+            while (cursor.moveToNext()) {
+                long threadNoAtPos = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+                if (threadNoAtPos == threadNo) {
+                    found = true;
+                    break;
+                }
+                pos++;
+            }
+            if (found) {
+                if (DEBUG) Log.i(TAG, "onBoardsTabletLoadFinished threadNo=" + threadNo + " pos=" + pos);
+                boardGrid.setSelection(pos);
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "onBoardsTabletLoadFinished threadNo=" + threadNo + " thread not found");
+            }
+        }
+        //setProgress(false);
+    }
+
+    protected LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ id=" + id);
+            //setProgress(true);
+            return new BoardCursorLoader(getActivityContext(), boardCode, "");
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ id=" + loader.getId()
+                    + " count=" + (data == null ? 0 : data.getCount()) + " loader=" + loader);
+            onBoardsTabletLoadFinished(data);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            if (DEBUG) Log.i(TAG, "onLoaderReset /" + boardCode + "/ id=" + loader.getId());
+            adapterBoardsTablet.swapCursor(null);
+        }
+    };
+
+    protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
+        @Override
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight);
+        }
+    };
+
+    protected AdapterView.OnItemClickListener boardGridListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+            int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+            final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+            final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
+            if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
+                final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
+                ActivityDispatcher.launchUrlInBrowser(getActivityContext(), clickUrl);
+            }
+            else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0
+                    && title != null && !title.isEmpty()
+                    && desc != null && !desc.isEmpty()) {
+                (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
+                        .show(getSupportFragmentManager(), ThreadFragment.TAG);
+            }
+            else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
+                final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+                BoardActivity.startActivity(getActivityContext(), boardLink, "");
+            }
+            else {
+                final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+                final long threadNoLink = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+                if (boardCode.equals(boardLink) && threadNo == threadNoLink) { // already on this, do nothing
+                } else if (boardCode.equals(boardLink)) { // just redisplay right tab
+                    showThread(threadNoLink);
+                } else {
+                    ThreadActivity.startActivity(getActivityContext(), boardLink, threadNoLink, "");
+                }
+            }
+        }
+    };
 
 }

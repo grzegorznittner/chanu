@@ -12,16 +12,17 @@
             android:layout_height="match_parent" />
     <!-- The navigation drawer -->
     <ListView android:id="@+id/left_drawer"
-              android:layout_width="224dp"
+              android:layout_width="@dimen/Drawer.layout_width"
               android:layout_height="match_parent"
               android:layout_gravity="start"
               android:choiceMode="singleChoice"
-              android:divider="@drawable/drawer_divider"
-              android:dividerHeight="1dp"
               android:background="@color/PaletteBlack"/>
 </android.support.v4.widget.DrawerLayout>
 
         <!--
+              android:divider="@drawable/drawer_divider"
+              android:dividerHeight="1dp"
+
               android:divider="@color/PaletteDarkGray"
               android:dividerHeight="1dp"
         android:divider="@android:color/transparent"

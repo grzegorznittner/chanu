@@ -31,7 +31,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 public class BoardGridViewer {
 
     private static String TAG = BoardGridViewer.class.getSimpleName();
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
 
     private static ImageLoader imageLoader;
     private static DisplayImageOptions displayImageOptions;
@@ -43,7 +43,7 @@ public class BoardGridViewer {
                 .cacheOnDisc()
                 .cacheInMemory()
                 .resetViewBeforeLoading()
-                .showStubImage(R.drawable.ic_contact_picture_2)
+                .showStubImage(R.drawable.stub_image_background)
                 .build();
     }
 
@@ -54,6 +54,12 @@ public class BoardGridViewer {
             initStatics(view);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         switch (view.getId()) {
+            case R.id.grid_item:
+                //ViewGroup.LayoutParams params = view.getLayoutParams();
+                //params.width = ;
+                if (DEBUG) Log.i(TAG, "setViewValue item=" + view + " visible=" + (view.getVisibility() == View.VISIBLE)
+                + " size=" + view.getMeasuredWidth() + "x" + view.getMeasuredHeight());
+                return true;
             case R.id.grid_item_thread_subject:
                 return setGridSubject((TextView) view, cursor);
             case R.id.grid_item_thread_info:
@@ -82,6 +88,7 @@ public class BoardGridViewer {
     protected static boolean setGridSubject(TextView tv, Cursor cursor) {
         String s = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
         if (s != null && !s.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "setGridSubject tv=" + tv + " text=" + s);
             tv.setText(Html.fromHtml(s));
             tv.setVisibility(View.VISIBLE);
         }
@@ -141,7 +148,7 @@ public class BoardGridViewer {
             imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
         }
         else {
-            iv.setVisibility(View.GONE);
+            iv.setVisibility(View.VISIBLE);
         }
         return true;
     }
@@ -157,7 +164,6 @@ public class BoardGridViewer {
         }
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            view.setVisibility(View.VISIBLE);
         }
         @Override
         public void onLoadingCancelled(String imageUri, View view) {

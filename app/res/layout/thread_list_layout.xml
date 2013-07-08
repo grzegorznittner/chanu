@@ -10,7 +10,7 @@
 
     <ListView
             android:id="@+id/thread_list_view"
-            style="@style/ListViewTemplate"
+            style="@style/ThreadListView"
             android:background="@color/PaletteYellowWhite"
             />
     <!--

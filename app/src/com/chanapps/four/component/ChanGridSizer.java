@@ -34,10 +34,13 @@ public class ChanGridSizer {
     }
 
     static public int getCalculatedWidth(DisplayMetrics d, int numColumns, int requestedHorizontalSpacing) {
-        int availableSpace = d.widthPixels - requestedHorizontalSpacing * (numColumns + 1);
+        return getCalculatedWidth(d.widthPixels, numColumns, requestedHorizontalSpacing);
+    }
+
+    static public int getCalculatedWidth(int widthPixels, int numColumns, int requestedHorizontalSpacing) {
+        int availableSpace = widthPixels - requestedHorizontalSpacing * (numColumns + 1);
         int columnWidth = availableSpace / numColumns;
         if (DEBUG) Log.i(TAG, "sizeGridToDisplay availableSpace=" + availableSpace
-                + " density=" + d.density
                 + " numColumns=" + numColumns
                 + " columnWidth=" + columnWidth);
         return columnWidth;

@@ -98,6 +98,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
+        emptyText = (TextView)findViewById(R.id.board_grid_empty_text);
         if (boardCode == null || boardCode.isEmpty()) {
             if (ActivityDispatcher.isDispatchable(this)) {
                 if (DEBUG) Log.i(TAG, "empty board code, dispatching");
@@ -254,13 +255,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             contentFrame.removeAllViews();
         layout = View.inflate(getApplicationContext(), R.layout.board_grid_layout, null);
         contentFrame.addView(layout);
-        emptyText = (TextView)layout.findViewById(R.id.board_grid_empty_text);
-        adapter = new BoardGridCursorAdapter(getApplicationContext(), viewBinder, columnWidth, columnHeight);
-        gridView = (GridView)findViewById(R.id.board_grid_view);
         columnWidth = ChanGridSizer.getCalculatedWidth(getResources().getDisplayMetrics(),
                 getResources().getInteger(R.integer.BoardGridView_numColumns),
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
+        adapter = new BoardGridCursorAdapter(getApplicationContext(), viewBinder, columnWidth, columnHeight);
+        gridView = (GridView)findViewById(R.id.board_grid_view);
         gridView.setAdapter(adapter);
         gridView.setClickable(true);
         gridView.setOnItemClickListener(boardItemListener);
@@ -427,6 +427,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     };
 
     protected void showEmptyText() {
+        if (emptyText == null)
+            return;
         BoardType boardType = BoardType.valueOfBoardCode(boardCode);
         int emptyStringId = (boardType != null) ? boardType.emptyStringId(): R.string.board_empty_default;
         emptyText.setText(emptyStringId);
@@ -434,6 +436,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void hideEmptyText() {
+        if (emptyText == null)
+            return;
         emptyText.setVisibility(View.GONE);
     }
 

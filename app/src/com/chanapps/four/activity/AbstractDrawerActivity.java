@@ -65,8 +65,19 @@ abstract public class
     protected static final String TEXT = "text";
     protected static final String DRAWABLE_ID = "drawableid";
 
-    protected static final String[] adapterFrom = { ROW_ID, TEXT, DRAWABLE_ID };
-    protected static final int[] adapterTo = { R.id.drawer_list_item_text, R.id.drawer_list_item_text, R.id.drawer_list_item_icon };
+    protected static final int SPACER_DRAWABLE_ID = R.drawable.drawer_spacer;
+
+    protected static final String[] adapterFrom = {
+            ROW_ID,
+            TEXT,
+            DRAWABLE_ID
+    };
+
+    protected static final int[] adapterTo = {
+            R.id.drawer_list_item_text,
+            R.id.drawer_list_item_text,
+            R.id.drawer_list_item_icon
+    };
 
     protected void setDrawerAdapter() {
         mDrawerArrayId = mShowNSFW
@@ -77,10 +88,11 @@ abstract public class
         for (int i = 0; i < mDrawerArray.length; i++) {
             String drawerText = mDrawerArray[i];
             BoardType type = BoardType.valueOfDrawerString(this, drawerText);
+            int drawableId = type.isSubCategory() ? SPACER_DRAWABLE_ID : type.drawableId();
             HashMap<String, String> map = new HashMap<String, String>();
             map.put(ROW_ID, "" + i);
             map.put(TEXT, drawerText);
-            map.put(DRAWABLE_ID, "" + type.drawableId());
+            map.put(DRAWABLE_ID, "" + drawableId);
             fillMaps.add(map);
         }
         mDrawerAdapter = new SimpleAdapter(this, fillMaps, R.layout.drawer_list_item, adapterFrom, adapterTo);

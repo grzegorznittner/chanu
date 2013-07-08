@@ -80,7 +80,7 @@ public class ThreadViewer {
                 .cacheInMemory()
                 .imageScaleType(ImageScaleType.NONE)
                 .resetViewBeforeLoading()
-                .showStubImage(R.drawable.ic_contact_picture_2)
+                .showStubImage(R.drawable.stub_image_background)
                 .build();
     }
 

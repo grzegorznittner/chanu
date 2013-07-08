@@ -17,14 +17,11 @@ import android.view.*;
 import android.widget.*;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
-import com.chanapps.four.adapter.BoardGridCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.ActivityDispatcher;
-import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.RawResourceDialog;
 import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.*;
-import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.loader.ThreadCursorLoader;
 import com.chanapps.four.service.FetchChanDataService;
@@ -62,13 +59,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
-    protected static final int THREAD_DONE = 0x1;
-    protected static final int BOARD_DONE = 0x2;
-    public static final int LOADER_RESTART_INTERVAL_SHORT_MS = 250;
+    protected static final int LOADER_ID = 0;
     protected static final String FIRST_VISIBLE_POSITION = "firstVisiblePosition";
     protected static final String FIRST_VISIBLE_POSITION_OFFSET = "firstVisiblePositionOffset";
-    protected static final String FIRST_VISIBLE_BOARD_POSITION = "firstVisibleBoardPosition";
-    protected static final String FIRST_VISIBLE_BOARD_POSITION_OFFSET = "firstVisibleBoardPositionOffset";
 
     protected String boardCode;
     protected long threadNo;
@@ -76,12 +69,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected AbstractBoardCursorAdapter adapter;
     protected View layout;
     protected AbsListView absListView;
-    protected Class absListViewClass = GridView.class;
     protected Handler handler;
     protected String query = "";
-    protected int columnWidth = 0;
-    protected int columnHeight = 0;
-    protected MenuItem searchMenuItem;
     protected long postNo; // for direct jumps from latest post / recent images
     protected String imageUrl;
     protected boolean shouldPlayThread = false;
@@ -90,14 +79,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected ActionMode actionMode = null;
     protected int firstVisiblePosition = -1;
     protected int firstVisiblePositionOffset = -1;
-    protected int firstVisibleBoardPosition = -1;
-    protected int firstVisibleBoardPositionOffset = -1;
     protected PullToRefreshAttacher mPullToRefreshAttacher;
-
-    //tablet layout
-    protected AbstractBoardCursorAdapter adapterBoardsTablet;
-    protected AbsListView absBoardListView;
-    protected int loadingStatusFlags = 0;
 
     protected ThreadListener threadListener;
 
@@ -114,10 +96,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + " q=" + query);
         layout = inflater.inflate(R.layout.thread_list_layout, viewGroup, false);
         createAbsListView();
-        if (onTablet())
-            getLoaderManager().initLoader(1, null, loaderCallbacks); // board loader for tablet view
         if (threadNo > 0)
-            getLoaderManager().initLoader(0, null, loaderCallbacks);
+            getLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks);
         else
             Toast.makeText(getActivityContext(), R.string.thread_invalid_id, Toast.LENGTH_SHORT).show();
         return layout;
@@ -132,9 +112,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     };
 
     protected boolean onTablet() {
-        return absBoardListView != null;
+        return getActivity() != null && ((ThreadActivity)getActivity()).onTablet();
     }
-    
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
@@ -146,11 +126,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         int offset = view == null ? 0 : view.getTop();
         savedInstanceState.putInt(FIRST_VISIBLE_POSITION, pos);
         savedInstanceState.putInt(FIRST_VISIBLE_POSITION_OFFSET, offset);
-        int boardPos = !onTablet() ? -1 : absBoardListView.getFirstVisiblePosition();
-        View boardView = !onTablet() ? null : absBoardListView.getChildAt(0);
-        int boardOffset = boardView == null ? 0 : view.getTop();
-        savedInstanceState.putInt(FIRST_VISIBLE_BOARD_POSITION, boardPos);
-        savedInstanceState.putInt(FIRST_VISIBLE_BOARD_POSITION_OFFSET, boardOffset);
         if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/" + threadNo + " pos=" + pos);
     }
 
@@ -164,8 +139,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         query = bundle.getString(SearchManager.QUERY);
         firstVisiblePosition = bundle.getInt(FIRST_VISIBLE_POSITION);
         firstVisiblePositionOffset = bundle.getInt(FIRST_VISIBLE_POSITION_OFFSET);
-        firstVisibleBoardPosition = bundle.getInt(FIRST_VISIBLE_BOARD_POSITION);
-        firstVisibleBoardPositionOffset = bundle.getInt(FIRST_VISIBLE_BOARD_POSITION_OFFSET);
         if (DEBUG) Log.i(TAG, "onRestoreInstanceState /" + boardCode + "/" + threadNo + " pos=" + firstVisiblePosition);
     }
 
@@ -199,15 +172,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new Handler();
-        if (threadNo > 0) {
-        if (adapter == null || adapter.getCount() == 0)
-            getLoaderManager().restartLoader(0, null, loaderCallbacks);
-        if (onTablet() && (adapterBoardsTablet == null || adapterBoardsTablet.getCount() == 0))
-            getLoaderManager().restartLoader(1, null, loaderCallbacks); // board loader for tablet view
-        }
-        else {
+        if (threadNo <= 0)
             Toast.makeText(getActivityContext(), R.string.thread_invalid_id, Toast.LENGTH_SHORT).show();
-        }
+        else if (adapter == null || adapter.getCount() == 0)
+            getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
     }
 
     @Override
@@ -222,44 +190,15 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         super.onStop();
         if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/" + threadNo);
         if (absListView != null)
-            getLoaderManager().destroyLoader(0);
-        if (onTablet())
-            getLoaderManager().destroyLoader(1);
+            getLoaderManager().destroyLoader(LOADER_ID);
         handler = null;
-    }
-
-    protected void initAdapter() {
-        adapter = new ThreadListCursorAdapter(getActivityContext(), viewBinder);
-        absListView.setAdapter(adapter);
-        if (onTablet() && absBoardListView instanceof GridView) {
-            adapterBoardsTablet = new BoardGridCursorAdapter(getActivityContext(), viewBinder,
-                    columnWidth, columnHeight);
-            absBoardListView.setAdapter(adapterBoardsTablet);
-        }
-    }
-
-    protected void initAbsListView() {
-        absListView = (ListView) layout.findViewById(R.id.thread_list_view);
-        absBoardListView = (GridView) layout.findViewById(R.id.board_grid_view_tablet);
-        if (onTablet())
-            sizeTabletGridToDisplay();
-    }
-
-    protected void sizeTabletGridToDisplay() {
-        columnWidth = ChanGridSizer.getCalculatedWidth(getResources().getDisplayMetrics(),
-                getResources().getInteger(R.integer.BoardTabletGridView_numColumns),
-                getResources().getDimensionPixelSize(R.dimen.BoardGridViewTablet_spacing));
-        columnHeight = 2 * columnWidth;
-        ViewGroup.LayoutParams params = absBoardListView.getLayoutParams();
-        params.width = columnWidth; // 1-column-wide, no padding
     }
 
     protected void tryFetchThread() {
         if (DEBUG) Log.i(TAG, "tryFetchThread /" + boardCode + "/" + threadNo);
         if (handler == null) {
             if (DEBUG) Log.i(TAG, "tryFetchThread not in foreground, exiting");
-            loadingStatusFlags |= THREAD_DONE;
-            stopProgressBarIfLoadersDone();
+            setProgress(false);
             return;
         }
         NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
@@ -268,19 +207,17 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             String msg = String.format(getString(R.string.mobile_profile_health_status),
                     health.toString().toLowerCase().replaceAll("_", " "));
             Toast.makeText(getActivityContext(), msg, Toast.LENGTH_SHORT).show();
-            loadingStatusFlags |= THREAD_DONE;
-            stopProgressBarIfLoadersDone();
+            setProgress(false);
             return;
         }
         if (DEBUG) Log.i(TAG, "tryFetchThread calling fetch chan data service");
         if (FetchChanDataService.scheduleThreadFetch(getActivityContext(), boardCode, threadNo, true, false)) {
             if (DEBUG) Log.i(TAG, "tryFetchThread scheduled fetch");
-            startProgressBarForThread();
+            setProgress(true);
         }
         else {
             if (DEBUG) Log.i(TAG, "tryFetchThread couldn't fetch");
-            loadingStatusFlags |= THREAD_DONE;
-            stopProgressBarIfLoadersDone();
+            setProgress(false);
             return;
         }
     }
@@ -311,8 +248,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 absListView.setSelection(pos);
                 postNo = -1;
             }
-            loadingStatusFlags |= THREAD_DONE;
-            stopProgressBarIfLoadersDone();
+            setProgress(false);
             return;
         }
         else if (firstVisiblePosition >= 0) {
@@ -322,85 +258,28 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 absListView.setSelection(firstVisiblePosition);
             firstVisiblePosition = -1;
             firstVisiblePositionOffset = -1;
-            loadingStatusFlags |= THREAD_DONE;
-            stopProgressBarIfLoadersDone();
+            setProgress(false);
         }
         else {
-            loadingStatusFlags |= THREAD_DONE;
-            stopProgressBarIfLoadersDone();
+            setProgress(false);
         }
     }
 
-    protected void onBoardsTabletLoadFinished(Cursor data) {
-        this.adapterBoardsTablet.swapCursor(data);
-        // retry load if maybe data wasn't there yet
-        if (data != null && data.getCount() < 1 && handler != null) {
-            NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
-            if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
-                String msg = String.format(getString(R.string.mobile_profile_health_status),
-                        health.toString().toLowerCase().replaceAll("_", " "));
-                Toast.makeText(getActivityContext(), msg, Toast.LENGTH_SHORT).show();
-            }
-        }
-        else if (firstVisibleBoardPosition >= 0) {
-            if (absBoardListView instanceof ListView)
-                ((ListView)absBoardListView).setSelectionFromTop(firstVisibleBoardPosition, firstVisibleBoardPositionOffset);
-            else
-                absBoardListView.setSelection(firstVisibleBoardPosition);
-            firstVisibleBoardPosition = -1;
-            firstVisibleBoardPositionOffset = -1;
-        }
-        else if (threadNo > 0) {
-            Cursor cursor = adapter.getCursor();
-            cursor.moveToPosition(-1);
-            boolean found = false;
-            int pos = 0;
-            while (cursor.moveToNext()) {
-                long threadNoAtPos = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-                if (threadNoAtPos == threadNo) {
-                    found = true;
-                    break;
-                }
-                pos++;
-            }
-            if (found) {
-                absBoardListView.setSelection(pos);
-            }
-        }
-        loadingStatusFlags |= BOARD_DONE;
-        stopProgressBarIfLoadersDone();
-    }
 
-    protected void setProgressForFragment(boolean on) {
+    protected void setProgress(boolean on) {
         progressVisible = on;
         ((ThreadActivity)getActivity()).setProgressForFragment(boardCode, threadNo, on);
     }
-
-    protected void startProgressBarForThread() {
-        loadingStatusFlags &= ~THREAD_DONE;
-        setProgressForFragment(true);
-    }
-
-    protected void stopProgressBarIfLoadersDone() {
-        if (!onTablet() && (loadingStatusFlags & THREAD_DONE) > 0)
-            setProgressForFragment(false);
-        else if (onTablet() && (loadingStatusFlags & BOARD_DONE) > 0 && (loadingStatusFlags & THREAD_DONE) > 0)
-            setProgressForFragment(false);
-    }
-
+    
     protected void createAbsListView() {
-        setAbsListViewClass();
-        // we don't use fragments, but create anything needed
-        initAbsListView();
-        initAdapter();
-        setupContextMenu();
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivityContext());
+        absListView = (ListView) layout.findViewById(R.id.thread_list_view);
+        adapter = new ThreadListCursorAdapter(getActivityContext(), viewBinder);
+        absListView.setAdapter(adapter);
+        absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        absListView.setOnCreateContextMenuListener(this);
         absListView.setOnItemClickListener(threadItemListener);
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
-        if (onTablet()) {
-            absBoardListView.setOnItemClickListener(absBoardListViewListener);
-            absBoardListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
-        }
     }
 
     public void setPullToRefreshAttacher(PullToRefreshAttacher mPullToRefreshAttacher) {
@@ -429,15 +308,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 itemBoardLinkListener.onClick(view);
         }
     };
-
-    protected void setupContextMenu() {
-        absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        absListView.setOnCreateContextMenuListener(this);
-    }
-
-    protected void setAbsListViewClass() {
-        absListViewClass = ListView.class;
-    }
 
     private void postReply(long postNos[]) {
         String replyText = "";
@@ -539,56 +409,37 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            /*
             case android.R.id.home:
-                Intent intent = BoardActivity.createIntent(this, boardCode, "");
-                NavUtils.navigateUpTo(this, intent);
+                Intent intent = BoardActivity.createIntent(getActivityContext(), boardCode, "");
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                getActivity().finish();
                 return true;
-            */
             case R.id.refresh_menu:
-                setProgressForFragment(true);
+                setProgress(true);
                 NetworkProfileManager.instance().manualRefresh(getChanActivity());
-                return true;
-            case R.id.post_reply_menu:
-                postReply("");
                 return true;
             case R.id.watch_thread_menu:
                 addToWatchlist();
                 return true;
+            /*
             case R.id.download_all_images_menu:
                 ThreadImageDownloadService.startDownloadToBoardFolder(getActivityContext(), boardCode, threadNo);
                 Toast.makeText(getActivityContext(), R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
                 return true;
+            */
             case R.id.download_all_images_to_gallery_menu:
                 ThreadImageDownloadService.startDownloadToGalleryFolder(getActivityContext(), boardCode, threadNo);
                 Toast.makeText(getActivityContext(), R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.play_thread_menu:
                 return playThreadMenu();
-            case R.id.board_rules_menu:
-                displayBoardRules();
-                return true;
             case R.id.web_menu:
                 String url = ChanThread.threadUrl(boardCode, threadNo);
                 ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    protected void displayBoardRules() {
-        //NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_RULES);
-        int boardRulesId = R.raw.global_rules_detail;
-        try {
-            boardRulesId = R.raw.class.getField("board_" + boardCode + "_rules").getInt(null);
-        } catch (Exception e) {
-            Log.e(TAG, "Couldn't find rules for board:" + boardCode);
-        }
-        RawResourceDialog rawResourceDialog
-                = new RawResourceDialog(getActivityContext(),
-                R.layout.board_rules_dialog, R.raw.board_rules_header, boardRulesId);
-        rawResourceDialog.show();
-
     }
 
     protected void addToWatchlist() {
@@ -691,47 +542,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         Toast.makeText(getActivityContext(), R.string.copy_text_complete, Toast.LENGTH_SHORT).show();
     }
 
-    protected boolean isTablet() {
-        return onTablet();
-    }
-
-    protected AdapterView.OnItemClickListener absBoardListViewListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-            int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-            final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
-            final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
-            if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
-                final String clickUrl = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL));
-                ActivityDispatcher.launchUrlInBrowser(getActivityContext(), clickUrl);
-            }
-            else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0
-                    && title != null && !title.isEmpty()
-                    && desc != null && !desc.isEmpty()) {
-                (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
-                        .show(getFragmentManager(), ThreadFragment.TAG);
-            }
-            else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
-                final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-                BoardActivity.startActivity(getActivityContext(), boardLink, "");
-            }
-            else {
-                final String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-                final long threadNoLink = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-                if (boardCode.equals(boardLink) && threadNo == threadNoLink) { // already on this, do nothing
-                } else if (boardCode.equals(boardLink)) { // just redisplay right tab
-                    threadNo = threadNoLink;
-                    refreshThread();
-                    NetworkProfileManager.instance().activityChange(getChanActivity());
-                } else {
-                    ThreadActivity.startActivity(getActivityContext(), boardLink, threadNoLink, "");
-                }
-            }
-        }
-    };
-
-  protected View.OnClickListener itemAdListener = new View.OnClickListener() {
+    protected View.OnClickListener itemAdListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int pos = absListView.getPositionForView(v);
@@ -786,9 +597,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             absListView.setItemChecked(pos, false); // gets checked for some reason
             if (linkedBoardCode == null || linkedBoardCode.isEmpty() || linkedThreadNo <= 0)
                 return;
-            if (onTablet() && boardCode.equals(linkedBoardCode)) {
-                threadNo = linkedThreadNo;
-                onRefresh();
+            if (boardCode.equals(linkedBoardCode)) {
+                ((ThreadActivity)getActivity()).showThread(threadNo);
             } else {
                 ThreadActivity.startActivity(getActivity(), linkedBoardCode, linkedThreadNo, "");
             }
@@ -1092,21 +902,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public void onRefresh() {
         if (getActivity() != null)
             getActivity().invalidateOptionsMenu(); // in case spinner needs to be reset
-        refreshBoard(); // for tablets
         refreshThread();
         if (actionMode != null)
             actionMode.finish();
-    }
-
-    public void refreshBoard() { /* for tablets */
-        if (handler != null && onTablet())
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (DEBUG) Log.i(TAG, "refreshBoard() restarting loader");
-                    getLoaderManager().restartLoader(1, null, loaderCallbacks);
-                }
-            });
     }
 
     public void refreshThread() {
@@ -1119,7 +917,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 @Override
                 public void run() {
                     if (DEBUG) Log.i(TAG, "refreshThread() restarting loader");
-                    getLoaderManager().restartLoader(0, null, loaderCallbacks);
+                    getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
                     if (message != null)
                         Toast.makeText(getActivityContext(), message, Toast.LENGTH_SHORT).show();
                 }
@@ -1261,28 +1059,15 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/" + threadNo + " id=" + id);
-            if (id == 0) {
-                loadingStatusFlags &= ~THREAD_DONE;
-                if (DEBUG) Log.i(TAG, "onCreateLoader returning ThreadCursorLoader for /" + boardCode + "/" + threadNo);
-                setProgressForFragment(true);
-                return new ThreadCursorLoader(getActivityContext(),
-                        boardCode, threadNo, query, !onTablet());
-            } else {
-                loadingStatusFlags &= ~BOARD_DONE;
-                if (DEBUG) Log.i(TAG, "onCreateLoder returning BoardCursorLoader for /" + boardCode + "/" + threadNo);
-                setProgressForFragment(true);
-                return new BoardCursorLoader(getActivityContext(), boardCode, "");
-            }
+            setProgress(true);
+            return new ThreadCursorLoader(getActivityContext(), boardCode, threadNo, query, !onTablet());
         }
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/" + threadNo + " id=" + loader.getId()
                     + " count=" + (data == null ? 0 : data.getCount()) + " loader=" + loader);
-            if (loader instanceof ThreadCursorLoader)
-                onThreadLoadFinished(data);
-            else
-                onBoardsTabletLoadFinished(data);
+            onThreadLoadFinished(data);
         }
 
         @Override
@@ -1394,27 +1179,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         }
     };
 
-    protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
-        @Override
-        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            return ThreadViewer.setViewValue(view, cursor, boardCode,
-                    isTablet(),
-                    true,
-                    columnWidth,
-                    columnHeight,
-                    threadListener.imageOnClickListener,
-                    threadListener.backlinkOnClickListener,
-                    imagesOnClickListener,
-                    threadListener.repliesOnClickListener,
-                    threadListener.sameIdOnClickListener,
-                    threadListener.exifOnClickListener,
-                    postReplyListener,
-                    overflowListener,
-                    expandedImageListener,
-                    startActionModeListener);
-        }
-    };
-
     protected MediaScannerConnection.OnScanCompletedListener mediaScannerListener
             = new MediaScannerConnection.MediaScannerConnectionClient()
     {
@@ -1440,4 +1204,26 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public String toString() {
         return "ThreadFragment[] " + getChanActivityId().toString();
     }
+
+    protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
+        @Override
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            return ThreadViewer.setViewValue(view, cursor, boardCode,
+                    onTablet(),
+                    true,
+                    0,
+                    0,
+                    threadListener.imageOnClickListener,
+                    threadListener.backlinkOnClickListener,
+                    imagesOnClickListener,
+                    threadListener.repliesOnClickListener,
+                    threadListener.sameIdOnClickListener,
+                    threadListener.exifOnClickListener,
+                    postReplyListener,
+                    overflowListener,
+                    expandedImageListener,
+                    startActionModeListener);
+        }
+    };
+
 }
