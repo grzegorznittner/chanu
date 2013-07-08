@@ -4,8 +4,8 @@
         android:shape="rectangle">
 
     <size
-        android:width="80dp"
-        android:height="32dp"
+        android:width="@dimen/drawer_spacer_width"
+        android:height="@dimen/drawer_spacer_height"
         />
 
     <solid

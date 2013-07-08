@@ -470,20 +470,29 @@ public class MobileProfile extends AbstractNetworkProfile {
             return;
         }
 
+        final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+        Handler handler = activity.getChanHandler();
+        if (data.activity == LastActivity.THREAD_ACTIVITY && handler != null) { // refresh view pager
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    ((ThreadActivity)activity).notifyBoardChanged();
+                }
+            });
+        }
+
         if (data.secondaryThreadNo > 0) {
             if (DEBUG) Log.i(TAG, "Board /" + data.boardCode + "/ loaded, fetching secondary threadNo=" + data.threadNo);
             FetchChanDataService.scheduleThreadFetch(service.getApplicationContext(), data.boardCode,
                     data.secondaryThreadNo, true, false);
         }
         else if (data.priority || board.defData || !board.isCurrent() || board.shouldSwapThreads() || board.isVirtualBoard()) {
-            final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
             ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
             boolean isBoardActivity = currentActivityId != null
                     && currentActivityId.boardCode != null
                     && currentActivityId.boardCode.equals(data.boardCode)
                     && currentActivityId.activity == LastActivity.BOARD_ACTIVITY;
             // user is on the board page, we need to be reloaded it
-            Handler handler = activity.getChanHandler();
             if (isBoardActivity && handler != null) {
                 handler.post(new Runnable() {
                     @Override

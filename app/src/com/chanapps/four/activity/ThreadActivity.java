@@ -134,7 +134,8 @@ public class ThreadActivity
             createAbsListView();
         if (board != null && !board.defData && board.threads.length > 0) {
             if (DEBUG) Log.i(TAG, "createViews() calling initLoader");
-            getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
+            if (onTablet())
+                getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
             createPager();
         }
         else {
@@ -339,8 +340,8 @@ public class ThreadActivity
 
     public void refreshFragment(String boardCode, long threadNo, String message) {
         if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo);
-        board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        if (mPager == null && !board.defData) {
+        ChanBoard fragmentBoard = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+        if (mPager == null && !fragmentBoard.defData) {
             if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " board loaded, creating pager");
             createPager();
         }
@@ -431,7 +432,9 @@ public class ThreadActivity
     }
 
     public class ThreadPagerAdapter extends FragmentStatePagerAdapter {
+        protected String boardCode;
         protected ChanBoard board;
+        protected int count;
         protected Map<Integer,WeakReference<ThreadFragment>> fragments
                 = new HashMap<Integer, WeakReference<ThreadFragment>>();
         public ThreadPagerAdapter(FragmentManager fm) {
@@ -440,15 +443,24 @@ public class ThreadActivity
         public void setBoard(ChanBoard board) {
             if (board == null || board.threads == null)
                 throw new UnsupportedOperationException("can't start pager with null board or null threads");
+            this.boardCode = board.link;
             this.board = board;
+            this.count = board.threads.length;
+            notifyDataSetChanged();
+        }
+        @Override
+        public void notifyDataSetChanged() {
+            board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
+            count = board.threads.length;
+            super.notifyDataSetChanged();
         }
         @Override
         public int getCount() {
-            return board.threads.length;
+            return count;
         }
         @Override
         public Fragment getItem(int pos) {
-            if (pos < board.threads.length)
+            if (pos < count)
                 return createFragment(pos);
             else
                 return null;
@@ -668,5 +680,12 @@ public class ThreadActivity
             }
         }
     };
+
+    public void notifyBoardChanged() {
+        if (mAdapter != null)
+            mAdapter.notifyDataSetChanged();
+        if (onTablet())
+            adapterBoardsTablet.notifyDataSetChanged();
+    }
 
 }

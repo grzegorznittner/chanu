@@ -1551,6 +1551,8 @@
     <!-- drawer -->
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <dimen name="drawer_spacer_width">32dp</dimen>
+    <dimen name="drawer_spacer_height">16dp</dimen>
 
     <dimen name="ItemsDialogFragment_title_minHeight">64dp</dimen>
     <dimen name="ItemsDialogFragment_title_paddingLeft">16dp</dimen>
