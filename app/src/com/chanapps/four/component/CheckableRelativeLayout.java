@@ -46,7 +46,7 @@ public class CheckableRelativeLayout extends RelativeLayout implements Checkable
 
     protected void setBackground() {
         if (isChecked)
-            setBackgroundColor(R.color.PaletteChanuGreenHalfOpacity);
+            setBackgroundColor(R.color.PaletteSelector);
         else
             setBackgroundDrawable(null);
     }

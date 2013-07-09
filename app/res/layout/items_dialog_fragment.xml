@@ -14,13 +14,13 @@
               android:minHeight="@dimen/ItemsDialogFragment_title_minHeight"
               android:paddingLeft="@dimen/ItemsDialogFragment_title_paddingLeft"
               android:paddingRight="@dimen/ItemsDialogFragment_title_paddingRight"
-              android:textColor="@color/PaletteChanuGreen"
+              android:textColor="@color/blue_base"
               android:textSize="@dimen/ItemsDialogFragment_title_textSize"
               android:gravity="center_vertical|left" />
     <View android:id="@+id/titleDivider"
           android:layout_width="match_parent"
           android:layout_height="2dp"
-          android:background="@color/PaletteChanuGreen" />
+          android:background="@color/blue_base" />
 
     <ListView
             android:id="@+id/items"

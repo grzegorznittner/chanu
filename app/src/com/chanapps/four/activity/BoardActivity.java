@@ -3,6 +3,7 @@ package com.chanapps.four.activity;
 import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import android.app.SearchManager;
 import android.support.v4.app.LoaderManager;
@@ -15,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
@@ -25,10 +27,7 @@ import com.chanapps.four.component.*;
 import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
-import com.chanapps.four.fragment.GenericDialogFragment;
-import com.chanapps.four.fragment.PickNewThreadBoardDialogFragment;
-import com.chanapps.four.fragment.WatchlistClearDialogFragment;
-import com.chanapps.four.fragment.WatchlistDeleteDialogFragment;
+import com.chanapps.four.fragment.*;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -48,7 +47,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected AbstractBoardCursorAdapter adapter;
     protected View layout;
     protected TextView emptyText;
-    protected GridView gridView;
+    protected AbsListView absListView;
     protected int columnWidth;
     protected int columnHeight;
     protected Handler handler;
@@ -150,7 +149,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
         if (ChanBoard.isPopularBoard(boardCode) || !ChanBoard.isVirtualBoard(boardCode)) {
             mPullToRefreshAttacher = new PullToRefreshAttacher(this);
-            mPullToRefreshAttacher.setRefreshableView(gridView, pullToRefreshListener);
+            mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
         }
         else {
             mPullToRefreshAttacher = null;
@@ -192,8 +191,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         savedInstanceState.putString(ChanBoard.BOARD_CODE, boardCode);
         savedInstanceState.putString(SearchManager.QUERY, query);
         /*
-        int pos = gridView == null ? -1 : gridView.getFirstVisiblePosition();
-        View view = gridView == null ? null : gridView.getChildAt(0);
+        int pos = absListView == null ? -1 : absListView.getFirstVisiblePosition();
+        View view = absListView == null ? null : absListView.getChildAt(0);
         int offset = view == null ? 0 : view.getTop();
         savedInstanceState.putInt(FIRST_VISIBLE_POSITION, pos);
         savedInstanceState.putInt(FIRST_VISIBLE_POSITION_OFFSET, offset);
@@ -260,14 +259,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
         adapter = new BoardGridCursorAdapter(getApplicationContext(), viewBinder, columnWidth, columnHeight);
-        gridView = (GridView)findViewById(R.id.board_grid_view);
-        gridView.setAdapter(adapter);
-        gridView.setClickable(true);
-        gridView.setOnItemClickListener(boardItemListener);
-        //gridView.setSelector(R.drawable.board_grid_selector_bg);
+        absListView = (GridView)findViewById(R.id.board_grid_view);
+        absListView.setAdapter(adapter);
+        //absListView.setClickable(true);
+        absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        //absListView.setOnItemClickListener(boardItemListener);
 
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
-        gridView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
+        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
     }
 
     @Override
@@ -280,25 +279,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         //setActionBarTitle();
     }
 
-    protected void handleWatchlistLongClickable() {
-        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
-            gridView.setOnItemLongClickListener(boardItemLongListener);
-            gridView.setLongClickable(true);
-        }
-        else {
-            gridView.setOnItemLongClickListener(null);
-            gridView.setLongClickable(false);
-        }
-    }
-
     @Override
 	protected void onResume() {
 		super.onResume();
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query);
         if (handler == null)
             handler = new Handler();
-            //handler = new LoaderHandler();
-        handleWatchlistLongClickable();
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board.shouldSwapThreads())
             board.swapLoadedThreads();
@@ -332,7 +318,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         /*
         adapter = null;
         layout = null;
-        gridView = null;
+        absListView = null;
         cursorLoader = null;
         menu = null;
         */
@@ -365,7 +351,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight);
+            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, overflowListener);
         }
     };
 
@@ -381,7 +367,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ q=" + query + " id=" + loader.getId()
                     + " count=" + (data == null ? 0 : data.getCount()));
-            if (gridView == null)
+            if (absListView == null)
                 createAbsListView();
             adapter.swapCursor(data);
 
@@ -403,10 +389,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             /*
             else {
                 if (firstVisiblePosition >= 0) {
-                    //if (gridView instanceof ListView)
-                    //    ((ListView) gridView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
+                    //if (absListView instanceof ListView)
+                    //    ((ListView) absListView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
                     //else
-                    gridView.setSelection(firstVisiblePosition);
+                    absListView.setSelection(firstVisiblePosition);
                     firstVisiblePosition = -1;
                     firstVisiblePositionOffset = -1;
                 }
@@ -482,24 +468,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
     };
 
-    protected AbsListView.OnItemLongClickListener boardItemLongListener = new AbsListView.OnItemLongClickListener() {
-        @Override
-        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-            final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-            final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-            ChanThread thread = ChanFileStorage.loadThreadData(BoardActivity.this, boardCode, threadNo);
-            if (thread != null) {
-                WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, thread);
-                d.show(getSupportFragmentManager(), WatchlistDeleteDialogFragment.TAG);
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-    };
-
     protected void onRefresh() {
         if (ChanBoard.isVirtualBoard(boardCode) && !ChanBoard.isPopularBoard(boardCode)) {
             if (DEBUG) Log.i(TAG, "manual refresh skipped for non-popular virtual board /" + boardCode + "/");
@@ -507,8 +475,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         setProgress(true);
         NetworkProfileManager.instance().manualRefresh(this);
-        if (gridView != null)
-            gridView.setSelection(0);
+        if (absListView != null)
+            absListView.setSelection(0);
     }
 
     @Override
@@ -721,7 +689,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         handleUpdatedThreads();
         //setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
-        //if (gridView == null || gridView.getCount() < 1)
+        //if (absListView == null || absListView.getCount() < 1)
         //    createAbsListView();
         if (board == null) {
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
@@ -828,7 +796,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             return;
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board != null)
-            boardTitle.setText(board.name);
+            boardTitle.setText(board.name.toLowerCase());
         BoardType type = BoardType.valueOfBoardCode(boardCode);
         if (type != null)
             boardIcon.setImageResource(type.darkDrawableId());
@@ -840,4 +808,79 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (boardTitleBar != null)
             boardTitleBar.setVisibility(View.GONE);
     }
+
+    protected View.OnClickListener overflowListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            uncheckAll();
+            int pos = absListView.getPositionForView(v);
+            if (pos >= 0)
+                absListView.setItemChecked(pos, true);
+            PopupMenu popup = new PopupMenu(BoardActivity.this, v);
+            int menuId = ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)
+                    ? R.menu.watchlist_context_menu
+                    : R.menu.board_context_menu;
+            popup.inflate(menuId);
+            popup.setOnMenuItemClickListener(popupListener);
+            popup.setOnDismissListener(popupDismissListener);
+            popup.show();
+        }
+    };
+
+    protected PopupMenu.OnDismissListener popupDismissListener = new PopupMenu.OnDismissListener() {
+        @Override
+        public void onDismiss(PopupMenu menu) {
+            uncheckAll();
+        }
+    };
+
+    protected void uncheckAll() {
+        SparseBooleanArray checked = absListView.getCheckedItemPositions();
+        for (int i = 0; i < checked.size(); i++) {
+            int pos = checked.keyAt(i);
+            if (checked.get(pos, false))
+                absListView.setItemChecked(pos, false);
+        }
+    }
+
+    protected PopupMenu.OnMenuItemClickListener popupListener = new PopupMenu.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            int pos = absListView.getCheckedItemPosition();
+            Cursor cursor = adapter.getCursor();
+            if (!cursor.moveToPosition(pos)) {
+                Toast.makeText(BoardActivity.this, R.string.board_no_threads_selected, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+            switch (item.getItemId()) {
+                case R.id.board_thread_preview_menu:
+                    Toast.makeText(BoardActivity.this, "not implemented", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.board_thread_view_menu:
+                    ThreadActivity.startActivity(BoardActivity.this, boardCode, threadNo, 0, "");
+                    return true;
+                case R.id.board_thread_gallery_menu:
+                    GalleryViewActivity.startAlbumViewActivity(BoardActivity.this, boardCode, threadNo);
+                    return true;
+                case R.id.board_thread_watch_menu:
+                    ThreadFragment.addToWatchlist(BoardActivity.this, handler, boardCode, threadNo);
+                    return true;
+                case R.id.board_thread_remove_menu:
+                    ChanThread thread = ChanFileStorage.loadThreadData(BoardActivity.this, boardCode, threadNo);
+                    if (thread != null) {
+                        WatchlistDeleteDialogFragment d = new WatchlistDeleteDialogFragment(handler, thread);
+                        d.show(getSupportFragmentManager(), WatchlistDeleteDialogFragment.TAG);
+                    }
+                    else {
+                        Toast.makeText(BoardActivity.this, R.string.watch_thread_not_found, Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    };
+
 }

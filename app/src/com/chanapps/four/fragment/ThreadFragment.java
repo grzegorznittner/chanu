@@ -443,13 +443,17 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     }
 
     protected void addToWatchlist() {
-        final Context context = getActivityContext();
+        addToWatchlist(getActivityContext(), handler, boardCode, threadNo);
+    }
+
+    public static void addToWatchlist(final Context context, final Handler handler,
+                                      final String boardCode, final long threadNo) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 int msgId;
                 try {
-                    final ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
+                    final ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
                     if (thread == null) {
                         Log.e(TAG, "Couldn't add null thread /" + boardCode + "/" + threadNo + " to watchlist");
                         msgId = R.string.thread_not_added_to_watchlist;
@@ -470,7 +474,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(getActivityContext(), stringId, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
                         }
                     });
             }
@@ -752,8 +756,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                                     if (absListView == null || adapter == null)
                                         return;
                                     /*
-                                    int first = gridView.getFirstVisiblePosition();
-                                    int last = gridView.getLastVisiblePosition();
+                                    int first = absListView.getFirstVisiblePosition();
+                                    int last = absListView.getLastVisiblePosition();
                                     for (int pos = first; pos <= last; pos++)
                                         expandVisibleItem(first, pos);
                                     */
@@ -761,7 +765,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                                 }
                                 /*
                                 private void expandVisibleItem(int first, int pos) {
-                                    View listItem = gridView.getChildAt(pos - first);
+                                    View listItem = absListView.getChildAt(pos - first);
                                     View image = listItem == null ? null : listItem.findViewById(R.id.list_item_image);
                                     Cursor cursor = adapter.getCursor();
                                     //if (DEBUG) Log.i(TAG, "pos=" + pos + " listItem=" + listItem + " expandButton=" + expandButton);
@@ -772,7 +776,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                                             && cursor.moveToPosition(pos))
                                     {
                                         long id = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-                                        gridView.performItemClick(image, pos, id);
+                                        absListView.performItemClick(image, pos, id);
                                     }
                                 }
                                 */
@@ -806,7 +810,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             return false;
         if (absListView == null || adapter == null || adapter.getCount() <= 0)
             return false;
-        //if (gridView.getLastVisiblePosition() == adapter.getCount() - 1)
+        //if (absListView.getLastVisiblePosition() == adapter.getCount() - 1)
         //    return false; // stop
         //It is scrolled all the way down here
         if (absListView.getLastVisiblePosition() >= absListView.getAdapter().getCount() - 1)

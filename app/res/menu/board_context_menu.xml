@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/board_thread_preview_menu"
+          android:title="@string/board_thread_preview_menu"
+            />
+
+    <item android:id="@+id/board_thread_view_menu"
+          android:title="@string/board_thread_view_menu"
+            />
+
+    <item android:id="@+id/board_thread_gallery_menu"
+          android:title="@string/board_thread_gallery_menu"
+            />
+
+    <item android:id="@+id/board_thread_watch_menu"
+          android:title="@string/board_thread_watch_menu"
+            />
+
+</menu>

@@ -18,7 +18,6 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="16dp"
-            android:background="@color/PaletteBlack"
             />
 <!--             android:scaleType="center"
 -->

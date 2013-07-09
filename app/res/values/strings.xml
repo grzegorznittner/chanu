@@ -116,7 +116,13 @@
     <string name="new_thread_menu">New thread</string>
     <string name="new_thread_short">New thread</string>
     <string name="prefetch_board_menu">Preload threads</string>
+    <string name="board_thread_preview_menu">Preview</string>
+    <string name="board_thread_view_menu">View</string>
+    <string name="board_thread_gallery_menu">Gallery</string>
+    <string name="board_thread_watch_menu">Watch</string>
+    <string name="board_thread_remove_menu">Remove</string>
     <string name="watch_thread_menu">Add to Watchlist</string>
+    <string name="watch_thread_not_found">Couldn\'t remove thread from watchlist</string>
     <string name="view_as_grid_menu">View as grid</string>
     <string name="view_as_list_menu">View as list</string>
     <string name="thread_image_popup_menu">Thread images</string>
@@ -204,7 +210,8 @@
     <string name="thread_wait_to_refresh">Min 10 sec between refresh</string>
     <string name="thread_end_of_thread">End of Thread</string>
     <string name="thread_context_select">Done</string>
-    <string name="thread_no_posts_selected">No Posts Selected</string>
+    <string name="board_no_threads_selected">No threads selected</string>
+    <string name="thread_no_posts_selected">No posts selected</string>
     <string name="thread_couldnt_load">Couldn\'t load thread</string>
     <string name="thread_couldnt_load_image_cancelled">Couldn\'t load image, cancelled</string>
     <string name="thread_couldnt_load_image">Couldn\'t load image: %1$s</string>
@@ -1278,7 +1285,7 @@
     </string-array>
 
     <!-- Font sizes -->
-    <dimen name="BoardTypeText">18sp</dimen>
+    <dimen name="BoardTypeText">16sp</dimen>
     <dimen name="WidgetConfigureOkButton">18sp</dimen>
     <dimen name="BoardSelectorOverlay">14sp</dimen>
     <dimen name="BoardGridSubject">14sp</dimen>

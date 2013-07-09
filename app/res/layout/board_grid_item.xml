@@ -34,18 +34,25 @@
                     />
         </RelativeLayout>
 
-        <LinearLayout
+        <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/BoardGridTextHeight"
                 android:orientation="vertical"
                 >
+
+            <ImageView
+                    android:id="@+id/grid_item_overflow_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/card_overflow_icon"/>
 
             <TextView
                     android:id="@+id/grid_item_thread_subject"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
+                    android:paddingRight="16dp"
                     android:textColor="@color/PaletteDarkGray"
                     android:textSize="@dimen/BoardGridSubject"
                     android:visibility="gone"
@@ -56,13 +63,14 @@
                     android:id="@+id/grid_item_thread_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/grid_item_thread_subject"
                     android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
+                    android:paddingRight="16dp"
                     android:textColor="@color/PaletteLightGray"
                     android:textSize="@dimen/BoardGridInfo"
                     android:maxLines="2"
                     />
 
-        </LinearLayout>
+        </RelativeLayout>
 
 </LinearLayout>

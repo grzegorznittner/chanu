@@ -48,18 +48,15 @@ public class BoardGridViewer {
     }
 
     public static boolean setViewValue(View view, Cursor cursor, String groupBoardCode,
-                                       int columnWidth, int columnHeight)
+                                       int columnWidth, int columnHeight,
+                                       View.OnClickListener overflowListener)
     {
         if (imageLoader == null)
             initStatics(view);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         switch (view.getId()) {
             case R.id.grid_item:
-                //ViewGroup.LayoutParams params = view.getLayoutParams();
-                //params.width = ;
-                if (DEBUG) Log.i(TAG, "setViewValue item=" + view + " visible=" + (view.getVisibility() == View.VISIBLE)
-                + " size=" + view.getMeasuredWidth() + "x" + view.getMeasuredHeight());
-                return true;
+                return setItem(view, cursor, groupBoardCode, overflowListener);
             case R.id.grid_item_thread_subject:
                 return setGridSubject((TextView) view, cursor);
             case R.id.grid_item_thread_info:
@@ -72,7 +69,25 @@ public class BoardGridViewer {
         return false;
     }
 
-    static String getBoardAbbrev(Context context, Cursor cursor, String groupBoardCode) {
+    protected static boolean setItem(View item, Cursor cursor, String groupBoardCode,
+                                     View.OnClickListener overflowListener) {
+        View overflow = item.findViewById(R.id.grid_item_overflow_icon);
+        if (overflow != null) {
+            if (overflowListener != null) {
+                overflow.setTag(R.id.BOARD_CODE, groupBoardCode);
+                overflow.setOnClickListener(overflowListener);
+                overflow.setVisibility(View.VISIBLE);
+            }
+            else {
+                overflow.setVisibility(View.GONE);
+            }
+        }
+        if (DEBUG) Log.i(TAG, "setitemValue item=" + item + " visible=" + (item.getVisibility() == View.VISIBLE)
+                + " size=" + item.getMeasuredWidth() + "x" + item.getMeasuredHeight());
+        return true;
+    }
+    
+    protected static String getBoardAbbrev(Context context, Cursor cursor, String groupBoardCode) {
         String threadAbbrev = "";
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         if (boardCode != null && !boardCode.isEmpty() && !boardCode.equals(groupBoardCode)) {

@@ -5,7 +5,7 @@
         <item name="android:layout_gravity">left</item>
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:background">@color/PaletteYellowWhite</item>
+        <item name="android:background">@color/PaletteKambalaGrayBg</item>
     </style>
     <style name="BoardRefreshBar" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>

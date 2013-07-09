@@ -13,7 +13,7 @@
     </item>
     <item>
         <shape>
-            <solid android:color="@color/PaletteBlack"/>
+            <solid android:color="@color/PaletteDarkGray"/>
         </shape>
     </item>
 

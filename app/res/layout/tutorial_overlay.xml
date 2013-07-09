@@ -20,7 +20,7 @@
             android:layout_marginBottom="@dimen/tutorial_overlay_subject_layout_marginBottom"
             android:textSize="@dimen/tutorial_overlay_subject_textSize"
             android:textStyle="bold"
-            android:textColor="@color/PaletteChanuGreen"
+            android:textColor="@color/PaletteGreen"
             />
 
     <TextView

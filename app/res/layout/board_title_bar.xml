@@ -8,10 +8,10 @@
 
     <ImageView
             android:id="@+id/board_title_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginRight="8dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:background="@color/PaletteTransparent"
@@ -25,8 +25,10 @@
             android:layout_toRightOf="@+id/board_title_icon"
             android:layout_centerVertical="true"
             android:paddingRight="16dp"
-            android:textColor="@color/PaletteMedGray"
+            android:textColor="@color/PaletteBlack"
             android:textSize="@dimen/BoardTypeText"
+            android:textAllCaps="true"
+            android:textStyle="bold"
             android:textIsSelectable="false"/>
 
     <View

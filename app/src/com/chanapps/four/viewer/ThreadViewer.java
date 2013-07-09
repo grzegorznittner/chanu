@@ -114,7 +114,7 @@ public class ThreadViewer {
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
         int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
         if (flags < 0) // we are on board list
-            return BoardGridViewer.setViewValue(view, cursor, groupBoardCode, columnWidth, columnHeight);
+            return BoardGridViewer.setViewValue(view, cursor, groupBoardCode, columnWidth, columnHeight, null);
         else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0)
             return setUrlLinkView(view, cursor);
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
@@ -238,12 +238,15 @@ public class ThreadViewer {
         //    rightBar.setVisibility(showContextMenu ? View.VISIBLE : View.GONE);
         View reply = item.findViewById(R.id.list_item_header_bar_reply_wrapper);
         if (reply != null) {
+            reply.setVisibility(View.GONE);
+            /*
             reply.setVisibility(
                     (showContextMenu && (flags & (ChanPost.FLAG_IS_DEAD | ChanPost.FLAG_IS_CLOSED)) == 0)
                             ? View.VISIBLE
                             : View.GONE);
             if (postReplyListener != null && reply.getVisibility() == View.VISIBLE)
                 reply.setOnClickListener(postReplyListener);
+            */
         }
         View overflow = item.findViewById(R.id.list_item_header_bar_overflow_wrapper);
         if (overflow != null) {
