@@ -1365,7 +1365,7 @@
     <dimen name="BoardListTextImageTopOverlay_paddingTop">2dp</dimen>
     <dimen name="BoardListTextImageTopOverlay_paddingBottom">2dp</dimen>
 
-    <dimen name="BoardListTitle_paddingTop">28dp</dimen>
+    <dimen name="BoardListTitle_paddingTop">16dp</dimen>
     <dimen name="BoardListTitle_paddingLeft">16dp</dimen>
     <dimen name="BoardListTitle_paddingRight">8dp</dimen>
     <dimen name="BoardListTitle_paddingBottom">4dp</dimen>

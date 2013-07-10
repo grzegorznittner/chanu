@@ -4,9 +4,16 @@
         style="@style/ThreadListItemLayout"
         android:id="@+id/list_item"
         android:descendantFocusability="blocksDescendants"
-        android:background="@color/PaletteYellowWhite"
+        android:paddingLeft="@dimen/BoardGridView.spacing"
+        android:paddingRight="@dimen/BoardGridView.spacing"
         >
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/card_background"
+        >
     <RelativeLayout style="@style/ThreadListItemBar">
         <View style="@style/ThreadListItemBarBackground"/>
         <RelativeLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper">
@@ -61,4 +68,5 @@
         <TextView style="@style/ThreadListItemExifText" android:id="@+id/list_item_exif_text"/>
     </LinearLayout>
 
+    </LinearLayout>
 </com.chanapps.four.component.CheckableLinearLayout>

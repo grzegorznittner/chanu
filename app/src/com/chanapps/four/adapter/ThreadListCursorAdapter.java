@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import com.android.gallery3d.data.ImageCacheRequest;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanPost;
 
@@ -18,11 +19,12 @@ import com.chanapps.four.data.ChanPost;
 public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
 
     protected static final String TAG = ThreadListCursorAdapter.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
     protected static final int TYPE = R.id.THREAD_VIEW_TYPE;
     protected static final String HEADER = "header";
-    protected static final String ITEM = "item";
+    protected static final String IMAGE_ITEM = "imageItem";
+    protected static final String TEXT_ITEM = "textItem";
     protected static final String AD = "ad";
     protected static final String TITLE = "title";
     protected static final String LINK = "link";
@@ -35,7 +37,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
 
     public ThreadListCursorAdapter(Context context, ViewBinder viewBinder) {
         this(context,
-                R.layout.thread_list_item,
+                R.layout.thread_list_image_item,
                 viewBinder,
                 new String[]{
                         ChanPost.POST_IMAGE_URL,
@@ -104,8 +106,10 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             newTag = BUTTON;
         else if ((flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0)
             newTag = LINK;
+        else if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
+            newTag = IMAGE_ITEM;
         else
-            newTag = ITEM;
+            newTag = TEXT_ITEM;
 
         View v = (convertView == null || !tag.equals(newTag))
             ? newView(context, parent, newTag, position)
@@ -134,8 +138,10 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
             id = R.layout.thread_list_button;
         else if (LINK.equals(tag))
             id = R.layout.thread_list_link;
+        else if (IMAGE_ITEM.equals(tag))
+            id = R.layout.thread_list_image_item;
         else
-            id = R.layout.thread_list_item;
+            id = R.layout.thread_list_text_item;
         View v = mInflater.inflate(id, parent, false);
         v.setTag(TYPE, tag);
         return v;
