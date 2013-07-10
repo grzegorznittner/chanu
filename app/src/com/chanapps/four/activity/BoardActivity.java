@@ -3,7 +3,6 @@ package com.chanapps.four.activity;
 import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import android.app.SearchManager;
 import android.support.v4.app.LoaderManager;
@@ -261,9 +260,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         adapter = new BoardGridCursorAdapter(getApplicationContext(), viewBinder, columnWidth, columnHeight);
         absListView = (GridView)findViewById(R.id.board_grid_view);
         absListView.setAdapter(adapter);
-        //absListView.setClickable(true);
+        absListView.setSelector(android.R.color.transparent);
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        //absListView.setOnItemClickListener(boardItemListener);
 
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
@@ -351,7 +349,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, overflowListener);
+            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
+                    overlayListener, overflowListener);
         }
     };
 
@@ -430,43 +429,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected void stopProgressBarIfLoadersDone() {
         setProgress(false);
     }
-
-    AbsListView.OnItemClickListener boardItemListener = new AbsListView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-            Cursor cursor = adapter.getCursor();
-            cursor.moveToPosition(position);
-            int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-            final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
-            final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
-            if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
-                String[] clickUrls = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL))
-                        .split(ChanThread.AD_DELIMITER);
-                String clickUrl = viewType == ViewType.AS_GRID ? clickUrls[0] : clickUrls[1];
-                ActivityDispatcher.launchUrlInBrowser(BoardActivity.this, clickUrl);
-            }
-            else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0
-                    && title != null && !title.isEmpty()
-                    && desc != null && !desc.isEmpty()) {
-                (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
-                        .show(getSupportFragmentManager(), BoardActivity.TAG);
-                return;
-            }
-            else if ((flags & ChanThread.THREAD_FLAG_BUTTON) > 0) {
-                PostReplyActivity.startActivity(BoardActivity.this, boardCode, 0, 0, "");
-                return;
-            }
-            else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
-                String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-                startActivity(BoardActivity.this, boardLink, "");
-            }
-            else {
-                String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
-                long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-                ThreadActivity.startActivity(BoardActivity.this, boardLink, threadNo, "");
-            }
-        }
-    };
 
     protected void onRefresh() {
         if (ChanBoard.isVirtualBoard(boardCode) && !ChanBoard.isPopularBoard(boardCode)) {
@@ -855,7 +817,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
             long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
             switch (item.getItemId()) {
-                case R.id.board_thread_preview_menu:
+                case R.id.board_thread_info_menu:
                     Toast.makeText(BoardActivity.this, "not implemented", Toast.LENGTH_SHORT).show();
                     return true;
                 case R.id.board_thread_view_menu:
@@ -879,6 +841,46 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     return true;
                 default:
                     return false;
+            }
+        }
+    };
+
+    protected OnClickListener overlayListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            int pos = absListView.getPositionForView(view);
+            if (DEBUG) Log.i(TAG, "onClick overlayListener pos=" + pos);
+            Cursor cursor = adapter.getCursor();
+            if (!cursor.moveToPosition(pos))
+                return;
+            int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+            final String title = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+            final String desc = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
+            if ((flags & ChanThread.THREAD_FLAG_AD) > 0) {
+                String[] clickUrls = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_CLICK_URL))
+                        .split(ChanThread.AD_DELIMITER);
+                String clickUrl = viewType == ViewType.AS_GRID ? clickUrls[0] : clickUrls[1];
+                ActivityDispatcher.launchUrlInBrowser(BoardActivity.this, clickUrl);
+            }
+            else if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0
+                    && title != null && !title.isEmpty()
+                    && desc != null && !desc.isEmpty()) {
+                (new GenericDialogFragment(title.replaceAll("<[^>]*>", " "), desc))
+                        .show(getSupportFragmentManager(), BoardActivity.TAG);
+                return;
+            }
+            else if ((flags & ChanThread.THREAD_FLAG_BUTTON) > 0) {
+                PostReplyActivity.startActivity(BoardActivity.this, boardCode, 0, 0, "");
+                return;
+            }
+            else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {
+                String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+                startActivity(BoardActivity.this, boardLink, "");
+            }
+            else {
+                String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+                long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+                ThreadActivity.startActivity(BoardActivity.this, boardLink, threadNo, "");
             }
         }
     };

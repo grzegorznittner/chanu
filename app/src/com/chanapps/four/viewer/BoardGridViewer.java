@@ -49,6 +49,7 @@ public class BoardGridViewer {
 
     public static boolean setViewValue(View view, Cursor cursor, String groupBoardCode,
                                        int columnWidth, int columnHeight,
+                                       View.OnClickListener overlayListener,
                                        View.OnClickListener overflowListener)
     {
         if (imageLoader == null)
@@ -56,7 +57,7 @@ public class BoardGridViewer {
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         switch (view.getId()) {
             case R.id.grid_item:
-                return setItem(view, cursor, groupBoardCode, overflowListener);
+                return setItem(view, cursor, groupBoardCode, overlayListener, overflowListener);
             case R.id.grid_item_thread_subject:
                 return setGridSubject((TextView) view, cursor);
             case R.id.grid_item_thread_info:
@@ -70,11 +71,11 @@ public class BoardGridViewer {
     }
 
     protected static boolean setItem(View item, Cursor cursor, String groupBoardCode,
+                                     View.OnClickListener overlayListener,
                                      View.OnClickListener overflowListener) {
         View overflow = item.findViewById(R.id.grid_item_overflow_icon);
         if (overflow != null) {
             if (overflowListener != null) {
-                overflow.setTag(R.id.BOARD_CODE, groupBoardCode);
                 overflow.setOnClickListener(overflowListener);
                 overflow.setVisibility(View.VISIBLE);
             }
@@ -82,6 +83,9 @@ public class BoardGridViewer {
                 overflow.setVisibility(View.GONE);
             }
         }
+        ViewGroup overlay = (ViewGroup)item.findViewById(R.id.grid_item_overlay);
+        if (overlay != null)
+            overlay.setOnClickListener(overlayListener);
         if (DEBUG) Log.i(TAG, "setitemValue item=" + item + " visible=" + (item.getVisibility() == View.VISIBLE)
                 + " size=" + item.getMeasuredWidth() + "x" + item.getMeasuredHeight());
         return true;

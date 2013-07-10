@@ -1329,9 +1329,11 @@
     <color name="PaletteMedGray">#666</color>
     <color name="PaletteDarkGray">#313b4b</color>
     <color name="PaletteBlack">#ff272727</color>
+    <color name="PalettePureBlack">#ff000000</color>
     <color name="PaletteBlackHalfOpacity">#802d2d2d</color>
     <color name="PaletteBlack34Opacity">#d02d2d2d</color>
     <color name="PaletteKambalaGrayBg">#dcdbe0</color>
+    <color name="PaletteDarkBlue">#ff2a2b31</color>
     <color name="PaletteSelector">#449def</color>
     <color name="PaletteSelectorHalf">#88449def</color>
     <color name="blue_base">#449def</color>

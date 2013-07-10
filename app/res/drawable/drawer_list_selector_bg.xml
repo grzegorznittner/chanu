@@ -13,16 +13,7 @@
     </item>
     <item>
         <shape>
-            <solid android:color="@color/PaletteDarkGray"/>
+            <solid android:color="@color/PaletteDarkBlue"/>
         </shape>
     </item>
-
-    <!--<item android:drawable="@drawable/card_background"/>-->
-    <!--
-    <item android:state_selected="true">
-        <shape>
-            <stroke android:width="2dp" android:color="@color/PaletteChanuGreenHalfOpacity"/>
-        </shape>
-    </item>
-        -->
 </selector>

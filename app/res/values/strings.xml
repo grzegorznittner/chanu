@@ -116,7 +116,7 @@
     <string name="new_thread_menu">New thread</string>
     <string name="new_thread_short">New thread</string>
     <string name="prefetch_board_menu">Preload threads</string>
-    <string name="board_thread_preview_menu">Preview</string>
+    <string name="board_thread_info_menu">Info</string>
     <string name="board_thread_view_menu">View</string>
     <string name="board_thread_gallery_menu">Gallery</string>
     <string name="board_thread_watch_menu">Watch</string>
@@ -1024,7 +1024,7 @@
         <item>@string/board_all_boards</item>
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
-        <item>@string/board_latest_images</item>
+       <!-- <item>@string/board_latest_images</item> -->
         <item>@string/board_watch</item>
         <item>@string/board_meta</item>
         <item>@string/board_type_japanese_culture</item>
@@ -1105,7 +1105,7 @@
         <item>@string/board_all_boards</item>
         <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
-        <item>@string/board_latest_images</item>
+        <!--<item>@string/board_latest_images</item> -->
         <item>@string/board_watch</item>
         <item>@string/board_meta</item>
         <item>@string/board_type_japanese_culture</item>

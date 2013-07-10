@@ -114,7 +114,7 @@ public class ThreadViewer {
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
         int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
         if (flags < 0) // we are on board list
-            return BoardGridViewer.setViewValue(view, cursor, groupBoardCode, columnWidth, columnHeight, null);
+            return BoardGridViewer.setViewValue(view, cursor, groupBoardCode, columnWidth, columnHeight, null, null);
         else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0)
             return setUrlLinkView(view, cursor);
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)

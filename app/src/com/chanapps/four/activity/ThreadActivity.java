@@ -643,7 +643,7 @@ public class ThreadActivity
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null);
+            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null, null);
         }
     };
 
