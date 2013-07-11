@@ -295,6 +295,7 @@ public class ThreadActivity
             if (DEBUG) Log.i(TAG, "onStop calling destroyLoader");
             getSupportLoaderManager().destroyLoader(LOADER_ID);
         }
+        setProgress(false);
     }
 
     private void postReply(long postNos[]) {

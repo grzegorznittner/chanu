@@ -311,6 +311,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     	super.onStop();
         if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/ q=" + query);
         getLoaderManager().destroyLoader(0);
+        setProgress(false);
         closeSearch();
     	handler = null;
         /*
