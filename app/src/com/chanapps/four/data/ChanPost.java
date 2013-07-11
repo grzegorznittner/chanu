@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.chanapps.four.activity.R;
@@ -543,16 +542,39 @@ public class ChanPost {
 
     public String dateText() {
         long timeMs = time > 0 ? 1000 * time : tim;
-        return (timeMs > 0)
-            ? DateUtils.getRelativeTimeSpanString(timeMs, (new Date()).getTime(), 0, DateUtils.FORMAT_ABBREV_RELATIVE).toString()
-            : "";
+        if (timeMs <= 0)
+            return "";
+        Date postDate = new Date();
+        postDate.setTime(timeMs);
+        Calendar postCal = Calendar.getInstance();
+        postCal.setTime(postDate);
+        Calendar nowCal = Calendar.getInstance();
+
+        if (postCal.get(Calendar.YEAR) != nowCal.get(Calendar.YEAR)) {
+            return "" + postCal.get(Calendar.YEAR);
+        }
+        else if (postCal.get(Calendar.DAY_OF_YEAR) != nowCal.get(Calendar.DAY_OF_YEAR)) {
+            return postCal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault())
+                    + " "
+                    + postCal.get(Calendar.DAY_OF_MONTH);
+        }
+        else {
+            int hour = postCal.get(Calendar.HOUR);
+            int min = postCal.get(Calendar.MINUTE);
+            return (hour == 0 ? 12 : hour)
+                    + ":"
+                    + (min < 10 ? "0" : "")
+                    + min
+                    + " "
+                    + postCal.getDisplayName(Calendar.AM_PM, Calendar.SHORT, Locale.getDefault());
+        }
     }
 
     public String imageDimensions() {
         if (fsize > 0) {
             int kbSize = (fsize / 1024) + 1;
             String size = (kbSize > 1000) ? (kbSize / 1000) + "MB" : kbSize + "KB";
-            return w + "x" + h + " - " + size;
+            return w + "x" + h + " ~ " + size;
         }
         return "";
     }
@@ -561,9 +583,9 @@ public class ChanPost {
         List<String> items = new ArrayList<String>();
         if (!boardLevel) {
             if (email != null && !email.isEmpty() && email.equals("sage"))
-                items.add("<b>sage</b>");
+                items.add("sage");
             if (id != null && !id.isEmpty() && id.equals(SAGE_POST_ID))
-                items.add("<b>sage</b>");
+                items.add("sage");
             if (id != null && !id.isEmpty())
                 items.add("Id: " + formattedUserId());
             if (name != null && !name.isEmpty() && !name.equals("Anonymous"))

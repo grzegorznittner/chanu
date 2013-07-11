@@ -3,104 +3,115 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         style="@style/ThreadListHeaderLayout"
         android:id="@+id/list_item"
+        android:paddingLeft="@dimen/BoardGridView.spacing"
+        android:paddingRight="@dimen/BoardGridView.spacing"
         >
 
-    <RelativeLayout style="@style/ThreadListHeaderImageSection">
-        <ImageView style="@style/ThreadListHeaderImage" android:id="@+id/list_item_image"/>
-        <ImageView style="@style/ThreadListHeaderImageExpanded" android:id="@+id/list_item_image_expanded"/>
-        <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/>
-        <View style="@style/ThreadListHeaderImageExpandedClickEffect" android:id="@+id/list_item_image_expanded_click_effect"/>
-    </RelativeLayout>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_background"
+            >
 
-    <RelativeLayout style="@style/ThreadListHeaderBar">
-        <View style="@style/ThreadListHeaderBarBackground"/>
-        <LinearLayout style="@style/ThreadListHeaderBarAgoWrapper" android:id="@+id/list_item_ago_wrapper">
-            <TextView style="@style/ThreadListHeaderBarNo" android:id="@+id/list_item_header_bar_no"/>
-            <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_ago"/>
-        </LinearLayout>
-        <!--
-        <LinearLayout style="@style/ThreadListHeaderBarImageDetailsWrapper" android:id="@+id/list_item_image_details_wrapper">
-            <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_image_dimensions"
-                    android:text="1280x720"
-                    />
-            <TextView style="@style/ThreadListHeaderBarNo" android:id="@+id/list_item_header_bar_image_size"
-                    android:text="130KB"
-                    />
-        </LinearLayout>
-        -->
-        <LinearLayout style="@style/ThreadListHeaderBarReply" android:id="@+id/list_item_header_bar_reply_wrapper">
-            <ImageView style="@style/ThreadListHeaderBarReplyIcon" android:id="@+id/list_item_header_bar_reply"/>
-        </LinearLayout>
-        <LinearLayout style="@style/ThreadListHeaderBarOverflow" android:id="@+id/list_item_header_bar_overflow_wrapper">
-            <ImageView style="@style/ThreadListHeaderBarOverflowIcon" android:id="@+id/list_item_header_bar_overflow"/>
-        </LinearLayout>
-    </RelativeLayout>
-
-    <RelativeLayout style="@style/ThreadListHeaderHeadWrapper" android:id="@+id/list_item_header_wrapper">
-        <LinearLayout
-            android:id="@+id/list_item_subject_icons"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/ThreadListHeader_subjectHeight"
-            android:orientation="horizontal">
-            <ImageView
-                    android:id="@+id/list_item_dead_icon"
-                    android:layout_width="@dimen/ThreadListHeaderSubject"
-                    android:layout_height="@dimen/ThreadListHeaderSubject"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginRight="@dimen/ThreadListHeader_med_padding"
-                    android:src="@drawable/geomicons_skull"
-                    android:scaleType="fitCenter"
-                    android:visibility="gone"/>
-        </LinearLayout>
-        <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
-        <ImageView style="@style/ThreadListHeaderCountryFlag" android:id="@+id/list_item_country_flag"/>
-        <TextView style="@style/ThreadListHeaderFullText" android:id="@+id/list_item_text"/>
-        <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"/>
-        <TextView style="@style/ThreadListHeaderExifText" android:id="@+id/list_item_exif_text"/>
-    </RelativeLayout>
-
-    <View style="@style/ThreadListHeaderNumHorizontalBorder" android:id="@+id/list_item_num_horizontal_border"/>
-
-    <LinearLayout style="@style/ThreadListHeaderNumSection">
-
-        <RelativeLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_replies">
-            <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
-                <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_replies_text"/>
-                <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_replies_label"/>
+        <RelativeLayout style="@style/ThreadListHeaderBar">
+            <View style="@style/ThreadListHeaderBarBackground"/>
+            <LinearLayout style="@style/ThreadListHeaderBarAgoWrapper" android:id="@+id/list_item_ago_wrapper">
+                <TextView style="@style/ThreadListHeaderBarNo" android:id="@+id/list_item_header_bar_no"/>
+                <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_ago"/>
+            </LinearLayout>
+            <!--
+            <LinearLayout style="@style/ThreadListHeaderBarImageDetailsWrapper" android:id="@+id/list_item_image_details_wrapper">
+                <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_image_dimensions"
+                        android:text="1280x720"
+                        />
+                <TextView style="@style/ThreadListHeaderBarNo" android:id="@+id/list_item_header_bar_image_size"
+                        android:text="130KB"
+                        />
+            </LinearLayout>
+            -->
+            <LinearLayout style="@style/ThreadListHeaderBarReply" android:id="@+id/list_item_header_bar_reply_wrapper">
+                <ImageView style="@style/ThreadListHeaderBarReplyIcon" android:id="@+id/list_item_header_bar_reply"/>
+            </LinearLayout>
+            <LinearLayout style="@style/ThreadListHeaderBarOverflow" android:id="@+id/list_item_header_bar_overflow_wrapper">
+                <ImageView style="@style/ThreadListHeaderBarOverflowIcon" android:id="@+id/list_item_header_bar_overflow"/>
             </LinearLayout>
         </RelativeLayout>
 
-        <View style="@style/ThreadListHeaderNumVerticalBorder" android:id="@+id/list_item_num_vertical_border"/>
+        <RelativeLayout style="@style/ThreadListHeaderImageSection">
+            <ImageView style="@style/ThreadListHeaderImage" android:id="@+id/list_item_image"/>
+            <ImageView style="@style/ThreadListHeaderImageExpanded" android:id="@+id/list_item_image_expanded"/>
+            <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/>
+            <View style="@style/ThreadListHeaderImageExpandedClickEffect" android:id="@+id/list_item_image_expanded_click_effect"/>
+        </RelativeLayout>
 
-        <RelativeLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_images"
-                        android:background="@drawable/thread_list_selector_bg">
-            <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
-                <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_images_text"/>
-                <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_images_label"/>
-            </LinearLayout>
-            <ImageView android:id="@+id/list_item_num_images_spinner"
+        <RelativeLayout style="@style/ThreadListHeaderHeadWrapper" android:id="@+id/list_item_header_wrapper">
+            <LinearLayout
+                    android:id="@+id/list_item_subject_icons"
                     android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_alignParentRight="true"
-                       android:layout_alignParentBottom="true"
-                       android:src="@drawable/spinner_default_holo_dark"/>
-        </RelativeLayout>
-
-        <View style="@style/ThreadListHeaderNumVerticalBorder" android:id="@+id/list_item_num_vertical_border"/>
-
-        <RelativeLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_direct_replies"
-                        android:background="@drawable/thread_list_selector_bg">
-            <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
-                <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_direct_replies_text"/>
-                <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_direct_replies_label"/>
+                    android:layout_height="@dimen/ThreadListHeader_subjectHeight"
+                    android:orientation="horizontal">
+                <ImageView
+                        android:id="@+id/list_item_dead_icon"
+                        android:layout_width="@dimen/ThreadListHeaderSubject"
+                        android:layout_height="@dimen/ThreadListHeaderSubject"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="@dimen/ThreadListHeader_med_padding"
+                        android:src="@drawable/geomicons_skull"
+                        android:scaleType="fitCenter"
+                        android:visibility="gone"/>
             </LinearLayout>
-            <ImageView android:id="@+id/list_item_num_direct_replies_spinner"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_alignParentRight="true"
-                       android:layout_alignParentBottom="true"
-                       android:src="@drawable/spinner_default_holo_dark"/>
+            <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
+            <ImageView style="@style/ThreadListHeaderCountryFlag" android:id="@+id/list_item_country_flag"/>
+            <TextView style="@style/ThreadListHeaderFullText" android:id="@+id/list_item_text"/>
+            <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"/>
+            <TextView style="@style/ThreadListHeaderExifText" android:id="@+id/list_item_exif_text"/>
         </RelativeLayout>
+
+        <View style="@style/ThreadListHeaderNumHorizontalBorder" android:id="@+id/list_item_num_horizontal_border"/>
+
+        <LinearLayout style="@style/ThreadListHeaderNumSection">
+
+            <RelativeLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_replies">
+                <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
+                    <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_replies_text"/>
+                    <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_replies_label"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <View style="@style/ThreadListHeaderNumVerticalBorder" android:id="@+id/list_item_num_vertical_border"/>
+
+            <RelativeLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_images"
+                            android:background="@drawable/thread_list_selector_bg">
+                <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
+                    <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_images_text"/>
+                    <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_images_label"/>
+                </LinearLayout>
+                <ImageView android:id="@+id/list_item_num_images_spinner"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_alignParentRight="true"
+                           android:layout_alignParentBottom="true"
+                           android:src="@drawable/spinner_default_holo_light"/>
+            </RelativeLayout>
+
+            <View style="@style/ThreadListHeaderNumVerticalBorder" android:id="@+id/list_item_num_vertical_border"/>
+
+            <RelativeLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_direct_replies"
+                            android:background="@drawable/thread_list_selector_bg">
+                <LinearLayout style="@style/ThreadListHeaderNumWrapInner">
+                    <TextView style="@style/ThreadListHeaderNumNum" android:id="@+id/list_item_num_direct_replies_text"/>
+                    <TextView style="@style/ThreadListHeaderNumLabel" android:id="@+id/list_item_num_direct_replies_label"/>
+                </LinearLayout>
+                <ImageView android:id="@+id/list_item_num_direct_replies_spinner"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_alignParentRight="true"
+                           android:layout_alignParentBottom="true"
+                           android:src="@drawable/spinner_default_holo_light"/>
+            </RelativeLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 

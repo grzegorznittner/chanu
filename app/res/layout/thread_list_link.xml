@@ -28,6 +28,7 @@
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/list_item_image"
                     android:layout_toLeftOf="@+id/list_item_country_flag"
+                    android:layout_centerVertical="true"
                     android:paddingLeft="@dimen/ThreadListHeader_padding"
                     android:paddingRight="@dimen/ThreadListHeader_padding"
                     android:paddingTop="@dimen/ThreadListHeader_small_padding"
@@ -36,13 +37,11 @@
                     >
 
                 <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"
-                          android:textSize="22sp"
-                          android:textStyle="normal"
                           android:textColor="@color/PaletteDarkGray"
                           android:linksClickable="false"
                           android:autoLink="none"
                         />
-                <TextView style="@style/ThreadListItemHead" android:id="@+id/list_item_header"
+                <TextView style="@style/ThreadListLinkHead" android:id="@+id/list_item_header"
                           android:linksClickable="false"
                           android:autoLink="none"
                         />

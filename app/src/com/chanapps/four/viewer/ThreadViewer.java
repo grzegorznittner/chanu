@@ -51,7 +51,7 @@ public class ThreadViewer {
 
     public static final int ITEM_THUMB_WIDTH_DP = 96;
     public static final int ITEM_THUMB_MAXHEIGHT_DP = ITEM_THUMB_WIDTH_DP;
-    public static final int MAX_HEADER_SCALE = 2;
+    public static final double MAX_HEADER_SCALE = 1.5;
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
@@ -731,11 +731,13 @@ public class ThreadViewer {
         Point imageSize = new Point();
         double scaleFactor = (double) tn_w / (double) tn_h;
         if (scaleFactor < 1) { // tall image, restrict by height
-            int desiredHeight = Math.min(displayMetrics.heightPixels / 2, tn_h * MAX_HEADER_SCALE); // prevent excessive scaling
+            int desiredHeight = Math.min(displayMetrics.heightPixels / 2,
+                    (int)(tn_h * MAX_HEADER_SCALE)); // prevent excessive scaling
             imageSize.x = (int) (scaleFactor * (double) desiredHeight);
             imageSize.y = desiredHeight;
         } else {
-            int desiredWidth = Math.min(displayMetrics.widthPixels, tn_w * MAX_HEADER_SCALE); // prevent excessive scaling
+            int desiredWidth = Math.min(displayMetrics.widthPixels,
+                    (int)(tn_w * MAX_HEADER_SCALE)); // prevent excessive scaling
             imageSize.x = desiredWidth; // restrict by width normally
             imageSize.y = (int) ((double) desiredWidth / scaleFactor);
         }

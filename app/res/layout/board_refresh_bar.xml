@@ -14,6 +14,7 @@
             android:paddingLeft="16dp"
             android:paddingRight="8dp"
             android:textColor="@color/PaletteMedGray"
+            android:textStyle="bold"
             android:textIsSelectable="false"/>
 
     <ImageButton

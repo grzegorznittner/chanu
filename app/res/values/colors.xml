@@ -1,0 +1,35 @@
+<resources>
+
+    <color name="PaletteActionBar">#3f4541</color>
+    <!--<color name="PaletteActionBar">#2d3441</color> -->
+    <color name="PaletteTitleBg">#ecebe7</color>
+    <color name="PaletteThreadLine">#444</color>
+    <color name="PaletteThreadHeaderBg">#00000000</color>
+    <!--<color name="PaletteThreadHeaderBg">#eef2ff</color>-->
+    <color name="PaletteThreadHeaderImageBg">#333</color>
+    <color name="PaletteThreadSecondaryText">#ccc</color>
+    <color name="PaletteImagePlaceholder">#ccc</color>
+    <color name="PaletteTransparent">#00000000</color>
+    <color name="PaletteGreen">#43c279</color>
+    <color name="PaletteYellowWhite">#ecebe7</color>
+    <color name="PaletteWhite">#f7f7f7</color>
+    <color name="PaletteOffWhite">#e4e4e4</color>
+    <color name="PaletteLightestGray">#ccc</color>
+    <color name="PaletteLightGray">#aaa</color>
+    <color name="PaletteMedGray">#666</color>
+    <color name="PaletteDarkGray">#313b4b</color>
+    <color name="PaletteBlack">#ff272727</color>
+    <color name="PalettePureBlack">#ff000000</color>
+    <color name="PaletteBlackHalfOpacity">#802d2d2d</color>
+    <color name="PaletteBlack34Opacity">#d02d2d2d</color>
+    <color name="PaletteKambalaGrayBg">#dcdbe0</color>
+    <color name="PaletteDarkBlue">#ff2a2b31</color>
+    <color name="PaletteSelector">#449def</color>
+    <color name="PaletteSelectorHalf">#88449def</color>
+    <color name="blue_base">#449def</color>
+    <color name="blue_base_half">#80449def</color>
+    <color name="blue_stroke">#2f6699</color>
+    <color name="blue_gradientS">#00a2e2</color>
+    <color name="blue_gradientE">#0767a4</color>
+
+</resources>

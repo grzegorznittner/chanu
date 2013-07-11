@@ -3,5 +3,5 @@
 <shape
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:shape="rectangle">
-    <solid android:color="@color/PaletteLightestGray" />
+    <solid android:color="@color/PaletteImagePlaceholder" />
 </shape>

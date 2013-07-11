@@ -376,31 +376,33 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     private void navigateUp() {
-    	Intent upIntent = null;
+    	Intent intent = null;
     	switch(viewType) {
     	case PHOTO_VIEW:
-    		upIntent = new Intent(this, ThreadActivity.class);
-            upIntent.putExtra(BOARD_CODE, boardCode);
-            upIntent.putExtra(THREAD_NO, threadNo);
-            upIntent.putExtra(ChanPost.POST_NO, postNo);
+    		intent = new Intent(this, ThreadActivity.class);
+            intent.putExtra(BOARD_CODE, boardCode);
+            intent.putExtra(THREAD_NO, threadNo);
+            intent.putExtra(ChanPost.POST_NO, postNo);
     		break;
     	case ALBUM_VIEW:
-    		upIntent = new Intent(this, ThreadActivity.class);
-            upIntent.putExtra(BOARD_CODE, boardCode);
-            upIntent.putExtra(THREAD_NO, threadNo);
+    		intent = new Intent(this, ThreadActivity.class);
+            intent.putExtra(BOARD_CODE, boardCode);
+            intent.putExtra(THREAD_NO, threadNo);
     		break;
     	case OFFLINE_ALBUM_VIEW:
-    		upIntent = new Intent(this, BoardActivity.class);
-            upIntent.putExtra(BOARD_CODE, boardCode);
+    		intent = new Intent(this, BoardActivity.class);
+            intent.putExtra(BOARD_CODE, boardCode);
     		break;
     	case OFFLINE_ALBUMSET_VIEW:
             if (boardCode == null || boardCode.isEmpty())
                 boardCode = ChanBoard.META_BOARD_CODE;
-    		upIntent = BoardActivity.createIntent(this, boardCode, "");
-    		upIntent.putExtra(ActivityDispatcher.IGNORE_DISPATCH, true);
+    		intent = BoardActivity.createIntent(this, boardCode, "");
+    		intent.putExtra(ActivityDispatcher.IGNORE_DISPATCH, true);
             break;
     	}
-        NavUtils.navigateUpTo(this, upIntent);
+        startActivity(intent);
+        finish();
+        //NavUtils.navigateUpTo(this, upIntent);
     }
 
     @Override

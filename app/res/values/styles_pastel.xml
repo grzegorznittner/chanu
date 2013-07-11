@@ -19,17 +19,23 @@
 
 <resources>
 
+    <!--
     <style name="Theme.Pastel" parent="@android:style/Theme.Holo.Light">
+    -->
+    <style name="Theme.Pastel" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+        <!--
         <item name="android:actionBarItemBackground">@drawable/selectable_background_pastel</item>
         <item name="android:popupMenuStyle">@style/PopupMenu.Pastel</item>
         <item name="android:dropDownListViewStyle">@style/DropDownListView.Pastel</item>
         <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Pastel</item>
         <item name="android:actionDropDownStyle">@style/DropDownNav.Pastel</item>
+        -->
         <item name="android:actionBarStyle">@style/ActionBar.Solid.Pastel</item>
+        <!--
         <item name="android:actionModeBackground">@drawable/cab_background_top_pastel</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_pastel</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Pastel</item>
-        
+        -->
         
     </style>
 
@@ -41,10 +47,12 @@
         d5e2af
         b6e1e0
         -->
-        <item name="android:background">#b6e1e0</item>
+        <item name="android:background">@color/PaletteActionBar</item>
+        <!--
         <item name="android:backgroundStacked">@drawable/ab_stacked_solid_pastel</item>
         <item name="android:backgroundSplit">@drawable/ab_bottom_solid_pastel</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Pastel</item>
+        -->
     </style>
 
     <style name="ActionBar.Transparent.Pastel" parent="@android:style/Widget.Holo.Light.ActionBar">

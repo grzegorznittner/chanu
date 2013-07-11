@@ -73,6 +73,7 @@
     <!-- thread popup -->
     <string name="thread_popup_title">Post %1$d</string>
     <string name="thread_popup_reply">Reply</string>
+    <string name="thread_popup_goto">Goto</string>
 
     <string name="dialog_color_picker_title">Pick a Color</string>
 
@@ -105,8 +106,8 @@
     <!-- menus -->
     <string name="web_menu">View on 4chan.org</string>
     <string name="settings_menu">Settings</string>
-    <string name="global_rules_menu">Board rules</string>
-    <string name="board_rules_menu">Global rules</string>
+    <string name="global_rules_menu">Global rules</string>
+    <string name="board_rules_menu">Board rules</string>
     <string name="go_to_top_position_menu">Go to top</string>
     <string name="play_thread_menu">Play thread</string>
     <string name="play_thread_stop_menu">Stop thread</string>
@@ -177,7 +178,7 @@
     <!-- Board selector activity -->
     <string name="board_selector_all_boards_title">All Boards</string>
     <string name="board_selector_all_boards_desc">All boards on Chanu</string>
-    <string name="board_selector_watchlist_title">Watchlist</string>
+    <string name="board_selector_watchlist_title">Thread Watchlist</string>
     <string name="board_selector_recent_title">Popular Threads</string>
     <string name="board_selector_popular_title">Popular Threads</string>
     <string name="board_selector_popular_desc">The current top ten threads</string>
@@ -416,7 +417,7 @@
     <string name="dialog_set">Set</string>
     <string name="dialog_reset">Reset</string>
     <string name="dialog_cancel">Cancel</string>
-    <string name="dialog_watchlist">Watchlist</string>
+    <string name="dialog_watchlist">Thread Watchlist</string>
     <string name="dialog_added_to_watchlist">Added to watchlist</string>
     <string name="dialog_deleted_from_watchlist">Removed from watchlist</string>
     <string name="dialog_cleared_watchlist">Watchlist cleared</string>
@@ -492,7 +493,7 @@
     <!-- preferences -->
     <string name="pref_about_category">About</string>
     <string name="pref_advanced_category">Advanced</string>
-    <string name="pref_watchlist_category">Watchlist</string>
+    <string name="pref_watchlist_category">Thread Watchlist</string>
     <string name="pref_custom_category">Customize</string>
     <string name="pref_custom_category_summ">Customize appearance and behavior</string>
     <string name="pref_show_nsfw_boards">NSFW Boards</string>
@@ -814,7 +815,7 @@
     <string name="board_pol">Politically Incorrect</string>
     <string name="board_s4s">Shit 4chan Says</string>
     <string name="board_soc">Social</string>
-    <string name="board_watch">Watchlist</string>
+    <string name="board_watch">Thread Watchlist</string>
     <string name="board_watch_desc">Keep track of interesting threads</string>
     <string name="board_watch_abbrev">Watch</string>
     <string name="board_type_recent">Popular Threads</string>
@@ -1022,8 +1023,8 @@
 
     <string-array name="long_drawer_array">
         <item>@string/board_all_boards</item>
-        <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
+        <item>@string/board_type_recent</item>
        <!-- <item>@string/board_latest_images</item> -->
         <item>@string/board_watch</item>
         <item>@string/board_meta</item>
@@ -1103,8 +1104,8 @@
 
     <string-array name="long_drawer_array_worksafe">
         <item>@string/board_all_boards</item>
-        <item>@string/board_type_recent</item>
         <item>@string/board_latest</item>
+        <item>@string/board_type_recent</item>
         <!--<item>@string/board_latest_images</item> -->
         <item>@string/board_watch</item>
         <item>@string/board_meta</item>

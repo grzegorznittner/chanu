@@ -44,10 +44,10 @@
             android:id="@+id/list_item_image_expanded_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/ThreadListHeader_small_padding"
             android:paddingLeft="@dimen/ThreadListHeader_padding"
             android:paddingRight="@dimen/ThreadListHeader_padding"
             android:visibility="gone"
+            android:background="@color/PaletteThreadHeaderImageBg"
             >
         <ImageView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded"/>
         <View style="@style/ThreadListItemImageExpandedClickEffect" android:id="@+id/list_item_image_expanded_click_effect"/>
