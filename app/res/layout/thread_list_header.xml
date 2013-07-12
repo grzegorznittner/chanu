@@ -57,7 +57,7 @@
                         android:layout_height="@dimen/ThreadListHeaderSubject"
                         android:layout_gravity="center_vertical"
                         android:layout_marginRight="@dimen/ThreadListHeader_med_padding"
-                        android:src="@drawable/geomicons_skull"
+                        android:src="@drawable/skull_light"
                         android:scaleType="fitCenter"
                         android:visibility="gone"/>
             </LinearLayout>

@@ -5,11 +5,6 @@
           android:title="@string/board_thread_info_menu"
             />
 
-    <item android:id="@+id/board_thread_view_menu"
-          android:title="@string/board_thread_view_menu"
-          android:visible="false"
-            />
-
     <item android:id="@+id/board_thread_gallery_menu"
           android:title="@string/board_thread_gallery_menu"
             />

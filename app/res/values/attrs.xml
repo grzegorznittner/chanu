@@ -29,4 +29,7 @@
         <attr name="itemMargin" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="CheckableRelativeLayout">
+        <attr name="background" format="reference"/>
+    </declare-styleable>
 </resources>

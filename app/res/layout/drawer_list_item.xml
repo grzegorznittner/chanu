@@ -1,5 +1,5 @@
 
-<RelativeLayout
+<com.chanapps.four.component.CheckableRelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -9,29 +9,32 @@
         android:paddingBottom="8dp"
         android:background="@drawable/drawer_list_selector_bg"
         >
-<!--         android:background="@color/PaletteBlack"
-        android:background="?android:attr/activatedBackgroundIndicator"
--->
-    <ImageView
-            android:id="@+id/drawer_list_item_icon"
+
+    <FrameLayout
+            android:id="@+id/drawer_list_item_icon_frame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="16dp"
-            />
-<!--             android:scaleType="center"
--->
+            android:duplicateParentState="true"
+            android:foreground="@drawable/drawer_list_image_frame_bg"
+            >
+
+        <ImageView
+                android:id="@+id/drawer_list_item_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="16dp"
+                />
+
+    </FrameLayout>
 
     <TextView
             android:id="@+id/drawer_list_item_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/drawer_list_item_icon"
+            android:layout_toRightOf="@+id/drawer_list_item_icon_frame"
             android:layout_centerVertical="true"
             android:textColor="@color/PaletteWhite"
             android:textSize="18sp"/>
-    <!--
-            android:textAppearance="?android:attr/textAppearanceListItemSmall"
-            android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
-        -->
-</RelativeLayout>
+
+</com.chanapps.four.component.CheckableRelativeLayout>
