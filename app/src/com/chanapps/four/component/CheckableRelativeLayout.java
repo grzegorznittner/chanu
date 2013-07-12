@@ -17,8 +17,11 @@ import com.chanapps.four.activity.R;
 public class CheckableRelativeLayout extends RelativeLayout implements Checkable {
 
     boolean isChecked = false;
+    int backgroundDrawable;
+
     public CheckableRelativeLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        backgroundDrawable = attrs.getAttributeResourceValue(R.attr.background, R.color.PaletteSelector);
     }
 
     @Override
@@ -46,7 +49,7 @@ public class CheckableRelativeLayout extends RelativeLayout implements Checkable
 
     protected void setBackground() {
         if (isChecked)
-            setBackgroundColor(R.color.PaletteSelector);
+            setBackgroundResource(backgroundDrawable);
         else
             setBackgroundDrawable(null);
     }

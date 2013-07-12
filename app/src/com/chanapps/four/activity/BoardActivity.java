@@ -52,7 +52,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected Handler handler;
     protected BoardCursorLoader cursorLoader;
     protected Menu menu;
-    protected long tim;
     protected String query = "";
     protected MenuItem searchMenuItem;
     protected ViewType viewType = ViewType.AS_GRID;
@@ -761,10 +760,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (board != null)
             boardTitle.setText(board.name.toLowerCase());
         BoardType type = BoardType.valueOfBoardCode(boardCode);
-        if (type != null)
+        if (type != null) {
             boardIcon.setImageResource(type.darkDrawableId());
+            boardIcon.setAlpha(DRAWABLE_ALPHA);
+        }
         boardTitleBar.setVisibility(View.VISIBLE);
     }
+
+    protected static final int DRAWABLE_ALPHA = 0xc2;
 
     protected void hideBoardTitle() {
         View boardTitleBar = findViewById(R.id.board_title_bar);
@@ -821,9 +824,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 case R.id.board_thread_info_menu:
                     Toast.makeText(BoardActivity.this, "not implemented", Toast.LENGTH_SHORT).show();
                     return true;
+                /*
                 case R.id.board_thread_view_menu:
                     ThreadActivity.startActivity(BoardActivity.this, boardCode, threadNo, 0, "");
                     return true;
+                    */
                 case R.id.board_thread_gallery_menu:
                     GalleryViewActivity.startAlbumViewActivity(BoardActivity.this, boardCode, threadNo);
                     return true;

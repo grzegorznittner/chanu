@@ -1,6 +1,5 @@
 package com.chanapps.four.activity;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -65,8 +64,6 @@ abstract public class
     protected static final String TEXT = "text";
     protected static final String DRAWABLE_ID = "drawableid";
 
-    protected static final int SPACER_DRAWABLE_ID = R.drawable.drawer_spacer;
-
     protected static final String[] adapterFrom = {
             ROW_ID,
             TEXT,
@@ -88,7 +85,7 @@ abstract public class
         for (int i = 0; i < mDrawerArray.length; i++) {
             String drawerText = mDrawerArray[i];
             BoardType type = BoardType.valueOfDrawerString(this, drawerText);
-            int drawableId = type.isSubCategory() ? SPACER_DRAWABLE_ID : type.drawableId();
+            int drawableId = type.drawableId();
             HashMap<String, String> map = new HashMap<String, String>();
             map.put(ROW_ID, "" + i);
             map.put(TEXT, drawerText);
@@ -96,10 +93,19 @@ abstract public class
             fillMaps.add(map);
         }
         mDrawerAdapter = new SimpleAdapter(this, fillMaps, R.layout.drawer_list_item, adapterFrom, adapterTo);
-        //mDrawerAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerArray);
+        //mDrawerAdapter.setViewBinder(mViewBinder);
         mDrawerList.setAdapter(mDrawerAdapter);
     }
-
+    /*
+    protected SimpleAdapter.ViewBinder mViewBinder = new SimpleAdapter.ViewBinder() {
+        public boolean setViewValue(View view, Object data, String textRepresentation) {
+            if (view.getId() == R.id.drawer_list_item_icon) {
+                ((ImageView)view).setAlpha();
+            }
+            return false;
+        }
+    };
+    */
     protected void createDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
@@ -206,6 +212,10 @@ abstract public class
         */
         BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
         if (boardType != null) {
+            if (boardType == BoardType.META) {
+                if (DEBUG) Log.i(TAG, "meta category board not clickable, exiting");
+                return false;
+            }
             String boardTypeCode = boardType.boardCode();
             if (boardTypeCode.equals(boardCode)) {
                 if (DEBUG) Log.i(TAG, "matched existing board code, exiting");
