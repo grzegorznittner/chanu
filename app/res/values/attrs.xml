@@ -32,4 +32,11 @@
     <declare-styleable name="CheckableRelativeLayout">
         <attr name="background" format="reference"/>
     </declare-styleable>
+
+    <declare-styleable name="InverseCheckableRelativeLayout">
+        <attr name="checkedBackground" format="reference"/>
+        <attr name="inverseBackground" format="reference"/>
+        <attr name="inverseForeground" format="reference"/>
+    </declare-styleable>
+
 </resources>

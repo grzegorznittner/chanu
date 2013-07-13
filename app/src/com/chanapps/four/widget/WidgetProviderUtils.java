@@ -185,6 +185,11 @@ public final class WidgetProviderUtils {
                 if (hasWatchlist)
                     GlobalAlarmReceiver.fetchWatchlistThreads(context);
 
+                board = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
+                boolean hasFavorites = (board != null && board.threads != null && board.threads.length > 0);
+                if (hasFavorites)
+                    GlobalAlarmReceiver.fetchFavoriteBoards(context);
+
                 if (hasWidgets || hasWatchlist)
                     scheduleGlobalAlarm(context);
             }

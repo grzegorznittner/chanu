@@ -6,12 +6,17 @@
     <color name="PaletteTitleBg">#ecebe7</color>
     <color name="PaletteTitleText">#313b4b</color>
     <color name="PaletteThreadLine">#444</color>
+    <color name="PaletteCardListBg">#e5e5e5</color>
     <color name="PaletteThreadHeaderBg">#00000000</color>
     <color name="PaletteThreadHeaderImageBg">#333</color>
     <color name="PaletteThreadSecondaryText">#ccc</color>
     <color name="PaletteImagePlaceholder">#ccc</color>
-    <color name="PaletteDrawerBg">#303030</color>
-    <color name="PaletteDrawerDivider">#444</color>
+    <!--<color name="PaletteDrawerBg">#303030</color>-->
+    <color name="PaletteDrawerText">#f2f2f2</color>
+    <color name="PaletteDrawerBg">#3f3f3f</color>
+    <color name="PaletteDrawerUncheckedBg">#883f3f3f</color>
+    <color name="PaletteDrawerUncheckedFg">#883f3f3f</color>
+    <color name="PaletteDrawerDivider">#5c5c5c</color>
     <color name="PaletteSelector">#449def</color>
     <color name="PaletteSelectorHalf">#88449def</color>
 

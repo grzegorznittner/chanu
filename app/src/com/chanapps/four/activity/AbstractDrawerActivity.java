@@ -25,7 +25,7 @@ abstract public class
         implements ChanIdentifiedActivity
 {
     protected static final String TAG = AbstractDrawerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
     protected int mDrawerArrayId;
     protected String[] mDrawerArray;
@@ -92,7 +92,17 @@ abstract public class
             map.put(DRAWABLE_ID, "" + drawableId);
             fillMaps.add(map);
         }
-        mDrawerAdapter = new SimpleAdapter(this, fillMaps, R.layout.drawer_list_item, adapterFrom, adapterTo);
+        mDrawerAdapter = new SimpleAdapter(this, fillMaps, R.layout.drawer_list_item, adapterFrom, adapterTo) {
+            @Override
+            public boolean isEnabled(int position) {
+                String drawerText = mDrawerArray[position];
+                BoardType type = BoardType.valueOfDrawerString(AbstractDrawerActivity.this, drawerText);
+                if (type == BoardType.META)
+                    return false;
+                else
+                    return true;
+            }
+        };
         //mDrawerAdapter.setViewBinder(mViewBinder);
         mDrawerList.setAdapter(mDrawerAdapter);
     }
@@ -148,9 +158,13 @@ abstract public class
     }
 
     protected void selectDrawerItem() {
+        if (DEBUG) Log.i(TAG, "selectDrawerItem()");
         for (int i = 0; i < mDrawerList.getAdapter().getCount(); i++) {
             HashMap<String, String> item = (HashMap<String, String>)mDrawerList.getItemAtPosition(i);
             String s = item.get(TEXT);
+            BoardType type = BoardType.valueOfDrawerString(this, s);
+            if (type == BoardType.META)
+                continue;
             if (isSelfBoard(s)) {
                 mDrawerList.setItemChecked(i, true);
                 break;
@@ -199,6 +213,7 @@ abstract public class
     };
 
     protected boolean handleSelectItem(String boardAsMenu) {
+        if (DEBUG) Log.i(TAG, "handleSelectItem(\"" + boardAsMenu + "\")");
         if (isSelfBoard(boardAsMenu)) {
             if (DEBUG) Log.i(TAG, "self board, returning");
             return false;
@@ -250,10 +265,14 @@ abstract public class
     @Override
     protected void onResume() {
         super.onResume();
-        if (threadNo == 0)
+        if (threadNo == 0) {
+            if (DEBUG) Log.i(TAG, "onResume() selecting drawer item");
             selectDrawerItem();
-        else
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "onResume() disabling drawer");
             mDrawerToggle.setDrawerIndicatorEnabled(false);
+        }
     }
 
 }

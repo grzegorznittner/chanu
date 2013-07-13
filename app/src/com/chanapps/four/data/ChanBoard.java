@@ -40,6 +40,7 @@ public class ChanBoard {
     public static final String LATEST_BOARD_CODE = BoardType.LATEST.boardCode();
     public static final String LATEST_IMAGES_BOARD_CODE = BoardType.LATEST_IMAGES.boardCode();
     public static final String WATCHLIST_BOARD_CODE = BoardType.WATCHLIST.boardCode();
+    public static final String FAVORITES_BOARD_CODE = BoardType.FAVORITES.boardCode();
     public static final String META_BOARD_CODE = BoardType.META.boardCode();
     public static final String META_JAPANESE_CULTURE_BOARD_CODE = BoardType.JAPANESE_CULTURE.boardCode();
     public static final String META_INTERESTS_BOARD_CODE = BoardType.INTERESTS.boardCode();
@@ -48,11 +49,14 @@ public class ChanBoard {
     public static final String META_ADULT_BOARD_CODE = BoardType.ADULT.boardCode();
     public static final String META_MISC_BOARD_CODE = BoardType.MISC.boardCode();
 
-    public static final String[] VIRTUAL_BOARDS = { ALL_BOARDS_BOARD_CODE, POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE, WATCHLIST_BOARD_CODE,
-            META_BOARD_CODE, META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE, META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
+    public static final String[] VIRTUAL_BOARDS = { ALL_BOARDS_BOARD_CODE, POPULAR_BOARD_CODE, LATEST_BOARD_CODE,
+            LATEST_IMAGES_BOARD_CODE, WATCHLIST_BOARD_CODE, FAVORITES_BOARD_CODE,
+            META_BOARD_CODE, META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE,
+            META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
             META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
     public static final String[] META_BOARDS = { ALL_BOARDS_BOARD_CODE, META_BOARD_CODE,
-            META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE, META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
+            META_JAPANESE_CULTURE_BOARD_CODE, META_INTERESTS_BOARD_CODE,
+            META_CREATIVE_BOARD_CODE, META_OTHER_BOARD_CODE,
             META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
     public static final String[] POPULAR_BOARDS = { POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE };
 
@@ -448,6 +452,9 @@ public class ChanBoard {
                 {   BoardType.WATCHLIST.toString(),
                         WATCHLIST_BOARD_CODE, ctx.getString(R.string.board_watch),
                 },
+                {   BoardType.FAVORITES.toString(),
+                        FAVORITES_BOARD_CODE, ctx.getString(R.string.board_favorites),
+                },
                 {   BoardType.POPULAR.toString(),
                         POPULAR_BOARD_CODE, ctx.getString(R.string.board_popular)
                 },
@@ -779,97 +786,6 @@ public class ChanBoard {
     	if (DEBUG) Log.i(TAG, "Updated board " + name + ", " + newThreads + " new threads, " + updatedThreads + " updated threads.");
     }
 
-    /*
-    public static void setupActionBarBoardSpinner(final Activity activity, final Menu menu, final String currentBoardCode) {
-        if (DEBUG) Log.i(BoardSelectorActivity.TAG, "setupActionBarSpinner " + activity + " " + menu + " boardCode=" + currentBoardCode);
-        MenuItem item = menu.findItem(R.id.board_jump_spinner_menu);
-        if (item == null)
-            return;
-        Spinner spinner = (Spinner)item.getActionView();
-        spinner.setOnItemSelectedListener(null);
-        int position = 0;
-        if (currentBoardCode == null || currentBoardCode.isEmpty() || activity instanceof BoardSelectorActivity) {
-            position = 0;
-        }
-        else {
-            SpinnerAdapter spinnerAdapter = spinner.getAdapter();
-            for (int i = 0; i < spinnerAdapter.getCount(); i++) {
-                String boardText = (String)spinnerAdapter.getItem(i);
-                if (boardText.matches("/" + currentBoardCode + "/.*")) {
-                    position = i;
-                    break;
-                }
-            }
-        }
-        spinner.setSelection(position, false);
-        spinner.setOnItemSelectedListener(new ActionBarSpinnerHandler(activity, currentBoardCode));
-    }
-
-    public static void resetActionBarSpinner(Menu menu) {
-        MenuItem boardJump = menu.findItem(R.id.board_jump_spinner_menu);
-        if (boardJump != null && boardJump.getActionView() != null)
-            ((Spinner)boardJump.getActionView()).setSelection(0, false);
-    }
-
-    private static class ActionBarSpinnerHandler implements AdapterView.OnItemSelectedListener {
-
-        private Activity activity;
-        private String createdWithBoardCode = null;
-
-        public ActionBarSpinnerHandler(final Activity activity, final String createdWithBoardCode) {
-            this.activity = activity;
-            this.createdWithBoardCode = createdWithBoardCode;
-        }
-
-        protected void dispatchToBoardSelector(AdapterView<?> parent, BoardSelectorTab tab) {
-            if (activity instanceof BoardSelectorActivity)
-            { // special case change tab
-                if (parent instanceof Spinner) {
-                    Spinner spinner = (Spinner)parent;
-                    spinner.setSelection(0, false);
-                }
-                ((BoardSelectorActivity)activity).setTab(tab);
-            }
-            else {
-                BoardSelectorActivity.startActivity(activity, tab);
-            }
-        }
-
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) { // for action bar spinner
-            //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.BOARD_SELECT);
-            if (position < 0)
-                return;
-            String boardAsMenu = (String) parent.getItemAtPosition(position);
-            if (DEBUG) Log.i(BoardSelectorActivity.TAG, "onItemSelected boardSelected=" + boardAsMenu + " created with board=" + createdWithBoardCode);
-            if (boardAsMenu == null
-                    || boardAsMenu.isEmpty())
-                return;
-            else if (boardAsMenu.equals(activity.getString(R.string.board_watch))
-                    || boardAsMenu.equals(activity.getString(R.string.board_watch_abbrev)))
-                dispatchToBoardSelector(parent, BoardSelectorTab.WATCHLIST);
-            else if (boardAsMenu.equals(activity.getString(R.string.board_type_recent))
-                    || boardAsMenu.equals(activity.getString(R.string.board_type_recent_abbrev)))
-                dispatchToBoardSelector(parent, BoardSelectorTab.RECENT);
-            else {
-                Pattern p = Pattern.compile("/([^/]*)/.*");
-                Matcher m = p.matcher(boardAsMenu);
-                if (!m.matches())
-                    return;
-                String boardCodeForJump = m.group(1);
-                if (boardCodeForJump == null || boardCodeForJump.isEmpty() || boardCodeForJump.equals(createdWithBoardCode))
-                    return;
-                BoardActivity.startActivity(activity, boardCodeForJump, "");
-            }
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) { // for action bar spinner
-        }
-
-    }
-    */
-
     public boolean isVirtualBoard() {
         return isVirtualBoard(link);
     }
@@ -1077,4 +993,15 @@ public class ChanBoard {
         }
         return msg.toString();
     }
+
+    public static ChanThread makeFavoritesThread(Context context, String boardCode) {
+        ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
+        ChanThread thread = new ChanThread();
+        thread.board = boardCode;
+        thread.no = 0;
+        thread.sub = board.name;
+        thread.com = getDescription(context, boardCode);
+        return thread;
+    }
+
 }

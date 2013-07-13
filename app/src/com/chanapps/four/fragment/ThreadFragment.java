@@ -363,25 +363,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         }
     };
 
-/*
-    protected boolean navigateUp() {
-        // FIXME: know that I'm coming from watching and return there
-        Intent upIntent = new Intent(this, BoardActivity.class);
-        upIntent.putExtra(BOARD_CODE, boardCode);
-        if (DEBUG) Log.i(TAG, "Made up intent with board=" + boardCode);
-//                if (NavUtils.shouldUpRecreateTask(this, upIntent)) { // needed when calling from widget
-//                    if (DEBUG) Log.i(TAG, "Should recreate task");
-        TaskStackBuilder.create(this).addParentStack(this).startActivities();
-        this.finish();
-//                }
-//                else {
-//                    if (DEBUG) Log.i(TAG, "Navigating up...");
-//                    NavUtils.navigateUpTo(this, upIntent);
-//                }
-        return true;
-    }
-*/
-
     protected boolean isThreadPlayable() {
         return adapter != null
                 && adapter.getCount() > 0

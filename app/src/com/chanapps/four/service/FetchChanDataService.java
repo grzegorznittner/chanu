@@ -165,8 +165,12 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 	}
 
 	private void handleBoard() {
-        if (boardCode.equals(ChanBoard.WATCHLIST_BOARD_CODE)) {
+        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
             Log.e(TAG, "Watchlist cannot be fetched from external site, only added and removed within the program");
+            return;
+        }
+        else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
+            Log.e(TAG, "Favorites cannot be fetched from external site, only added and removed within the program");
             return;
         }
 
@@ -268,8 +272,12 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             Log.e(TAG, "Board-level loading must be done via the BoardLoadService");
             return;
         }
-        if (boardCode.equals(ChanBoard.WATCHLIST_BOARD_CODE)) {
+        else if (boardCode.equals(ChanBoard.WATCHLIST_BOARD_CODE)) {
             Log.e(TAG, "Watchlist should not be fetched");
+            return;
+        }
+        else if (boardCode.equals(ChanBoard.FAVORITES_BOARD_CODE)) {
+            Log.e(TAG, "Favorites should not be fetched");
             return;
         }
 

@@ -186,6 +186,14 @@ public class CleanUpService extends BaseChanService {
                 watchedOrTopBoard.add(stat.board);
             }
         }
+        board = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
+        if (board != null && board.threads != null) {
+            for (ChanPost thread : board.threads) {
+                if (!watchedOrTopBoard.contains(thread.board)) {
+                    watchedOrTopBoard.add(thread.board);
+                }
+            }
+        }
         return watchedOrTopBoard;
     }
 

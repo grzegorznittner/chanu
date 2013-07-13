@@ -482,7 +482,7 @@ public class ChanPost {
     }
 
     public String toString() {
-		return "Post " + no + " " + com + ", thumb: " + thumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
+		return "/" + board + "/" + (resto == 0 ? no : resto + "#p" + no) + " sub=" + sub + " com=" + com + " thumb=" + thumbnailUrl() + " size=" + tn_w + "x" + tn_h;
 	}
 
     public String thumbnailUrl() { // thumbnail with fallback

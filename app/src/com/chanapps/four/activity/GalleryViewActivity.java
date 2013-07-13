@@ -289,13 +289,13 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	    		getStateManager().startState(PhotoPage.class, data);
 	    		break;
 	    	case ALBUM_VIEW:
-	    		data.putString(AlbumPage.KEY_MEDIA_PATH,
+                data.putString(AlbumPage.KEY_MEDIA_PATH,
 	    				Path.fromString("/chan/" + boardCode + "/" + threadNo).toString());
                 if (DEBUG) Log.i(TAG, "starting album state");
                 getStateManager().startState(AlbumPage.class, data);
 	    		break;
 	    	case OFFLINE_ALBUM_VIEW:
-	    		data.putString(AlbumPage.KEY_MEDIA_PATH,
+                data.putString(AlbumPage.KEY_MEDIA_PATH,
 	    				Path.fromString("/chan-offline/" + boardCode).toString());
                 if (DEBUG) Log.i(TAG, "starting offline album state");
                 getStateManager().startState(AlbumPage.class, data);

@@ -78,8 +78,12 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
         if (threadNo == 0) {
             Log.e(TAG, "Board loading must be done via the FetchChanDataService");
         }
-        if (boardCode.equals(ChanBoard.WATCHLIST_BOARD_CODE)) {
+        if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode)) {
             Log.e(TAG, "Watchlist is never parsed but stored directly");
+            return;
+        }
+        else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
+            Log.e(TAG, "Favorites is never parsed but stored directly");
             return;
         }
 
@@ -125,6 +129,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
                 if (DEBUG) Log.i(TAG, "Stored thread " + boardCode + "/" + threadNo + " with " + thread.posts.length + " posts"
                 		+ " in " + (Calendar.getInstance().getTimeInMillis() - startTime) + "ms");
             }
+            /*
             int delta = thread.posts.length - previousPostNum;
             if (delta == 0)
                 threadUpdateMessage = getString(R.string.thread_activity_nochange);
@@ -133,6 +138,7 @@ public class ThreadParserService extends BaseChanService implements ChanIdentifi
                         getResources().getQuantityString(R.plurals.thread_activity_updated, delta),
                         delta);
             else
+            */
                 threadUpdateMessage = null;
             NetworkProfileManager.instance().finishedParsingData(this);
         } catch (Exception e) {

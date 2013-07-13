@@ -621,11 +621,37 @@ public class ChanFileStorage {
         WidgetProviderUtils.updateAll(context, ChanBoard.WATCHLIST_BOARD_CODE);
     }
 
+    public static void addFavoriteBoard(Context context, ChanThread thread) throws IOException {
+        if (DEBUG) Log.i(TAG, "addFavoriteBoard /" + thread.board + "/");
+        ChanBoard board = loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
+        if (isFavoriteBoard(board, thread)) {
+            if (DEBUG) Log.i(TAG, "addFavoriteBoard /" + thread.board + "/ already favorite, exiting");
+            return;
+        }
+        List<ChanPost> newThreads = null;
+        if (board.defData || board.threads == null || board.threads.length == 0 || board.threads[0].defData) {
+            newThreads = new ArrayList<ChanPost>();
+            board.defData = false;
+        } else {
+            newThreads = new ArrayList<ChanPost>(Arrays.asList(board.threads));
+        }
+        if (DEBUG) Log.i(TAG, "Before adding to favorites: " + thread);
+        newThreads.add(0, thread);
+        board.threads = newThreads.toArray(new ChanPost[]{});
+
+        if (DEBUG) {
+            Log.i(TAG, "After adding to favorites: " + board.threads[board.threads.length - 1]);
+            Log.i(TAG, "After adding to favorites threads: " + board.threads[0]);
+            Log.i(TAG, "After adding to favorites defData: " + board.threads[0].defData);
+        }
+        storeBoardData(context, board);
+    }
+
     public static void deleteWatchedThread(Context context, ChanThread thread) throws IOException {
         ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
         List<ChanPost> newThreads = new ArrayList<ChanPost>(Arrays.asList(board.threads));
         for (ChanPost post : board.threads) {
-            if (post.no == thread.no) {
+            if (post.board != null && post.board.equals(thread.board) && post.no == thread.no) {
                 newThreads.remove(post);
             }
         }
@@ -635,11 +661,29 @@ public class ChanFileStorage {
         WidgetProviderUtils.updateAll(context, ChanBoard.WATCHLIST_BOARD_CODE);
     }
 
+    public static void deleteFavoritesBoard(Context context, ChanThread thread) throws IOException {
+        ChanBoard board = loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
+        List<ChanPost> newThreads = new ArrayList<ChanPost>(Arrays.asList(board.threads));
+        for (ChanPost post : board.threads) {
+            if (post.board != null && post.board.equals(thread.board)) {
+                newThreads.remove(post);
+            }
+        }
+        board.threads = newThreads.toArray(new ChanPost[]{});
+        storeBoardData(context, board);
+    }
+
     public static void clearWatchedThreads(Context context) throws IOException {
         ChanBoard board = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
         board.threads = new ChanThread[]{};
         storeBoardData(context, board);
         WidgetProviderUtils.updateAll(context, ChanBoard.WATCHLIST_BOARD_CODE);
+    }
+
+    public static void clearFavorites(Context context) throws IOException {
+        ChanBoard board = loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
+        board.threads = new ChanThread[]{};
+        storeBoardData(context, board);
     }
 
     private static void updateWatchedThread(Context context, ChanThread loadedThread) throws IOException {
@@ -687,7 +731,18 @@ public class ChanFileStorage {
         if (board == null || board.threads == null)
             return false;
         for (ChanPost post : board.threads) {
-            if (post.no == thread.no) {
+            if (post.board != null && post.board.equals(thread.board) && post.no == thread.no) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isFavoriteBoard(ChanBoard board, ChanThread thread) {
+        if (board == null || board.threads == null)
+            return false;
+        for (ChanPost post : board.threads) {
+            if (post.board != null && post.board.equals(thread.board)) {
                 return true;
             }
         }

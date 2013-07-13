@@ -83,6 +83,16 @@ public class SettingsFragment
             }
         });
 
+        Preference clearFavoritesButton = findPreference(SettingsActivity.PREF_CLEAR_FAVORITES);
+        clearFavoritesButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                (new FavoritesClearDialogFragment())
+                        .show(getFragmentManager(), FavoritesClearDialogFragment.TAG);
+                return true;
+            }
+        });
+
         Preference aboutButton = findPreference(SettingsActivity.PREF_ABOUT);
         aboutButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override

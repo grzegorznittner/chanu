@@ -67,6 +67,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.SLOW) {
             if (DEBUG) Log.i(TAG, "fetchAll fetching widgets, watchlists, and uncached boards");
             fetchWatchlistThreads(context);
+            fetchFavoriteBoards(context);
             WidgetProviderUtils.fetchAllWidgets(context);
             ChanBoard.preloadUncachedBoards(context);
         } else {
@@ -79,7 +80,16 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
         if (board == null || board.threads == null)
             return;
         for (ChanPost thread : board.threads) {
-            FetchChanDataService.scheduleThreadFetch(context, board.link, thread.no, false, true);
+            FetchChanDataService.scheduleThreadFetch(context, thread.board, thread.no, false, true);
+        }
+    }
+
+    public static void fetchFavoriteBoards(Context context) {
+        ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
+        if (board == null || board.threads == null)
+            return;
+        for (ChanPost thread : board.threads) {
+            FetchChanDataService.scheduleBoardFetch(context, thread.board, false, true);
         }
     }
 
