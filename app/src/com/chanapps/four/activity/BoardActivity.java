@@ -142,13 +142,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     return;
                 }
                 else {
-                    if (DEBUG) Log.i(TAG, "couldn't dispatch, defaulting to meta board");
-                    boardCode = ChanBoard.META_BOARD_CODE;
+                    if (DEBUG) Log.i(TAG, "couldn't dispatch, defaulting to all boards");
+                    boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
                 }
             }
             else {
-                if (DEBUG) Log.i(TAG, "empty board code, not dispatchable, setting to meta board");
-                boardCode = ChanBoard.META_BOARD_CODE;
+                if (DEBUG) Log.i(TAG, "empty board code, not dispatchable, setting to all boards");
+                boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
             }
         }
         else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
