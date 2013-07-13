@@ -89,6 +89,11 @@
                 android:summary="@string/pref_clear_cache_summ" />
 
         <Preference
+                android:key="pref_clear_favorites"
+                android:title="@string/pref_clear_favorites"
+                android:summary="@string/pref_clear_favorites_summ" />
+
+        <Preference
                 android:key="pref_clear_watchlist"
                 android:title="@string/pref_clear_watchlist"
                 android:summary="@string/pref_clear_watchlist_summ" />
