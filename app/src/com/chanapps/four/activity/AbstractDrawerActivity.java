@@ -16,6 +16,7 @@ import com.chanapps.four.data.ChanBoard;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,7 +72,7 @@ abstract public class
     };
 
     protected static final int[] adapterTo = {
-            R.id.drawer_list_item_text,
+            R.id.drawer_list_item,
             R.id.drawer_list_item_text,
             R.id.drawer_list_item_icon
     };
@@ -103,19 +104,58 @@ abstract public class
                     return true;
             }
         };
-        //mDrawerAdapter.setViewBinder(mViewBinder);
+        mDrawerAdapter.setViewBinder(mViewBinder);
         mDrawerList.setAdapter(mDrawerAdapter);
     }
-    /*
+
     protected SimpleAdapter.ViewBinder mViewBinder = new SimpleAdapter.ViewBinder() {
         public boolean setViewValue(View view, Object data, String textRepresentation) {
-            if (view.getId() == R.id.drawer_list_item_icon) {
-                ((ImageView)view).setAlpha();
+            switch (view.getId()) {
+                case R.id.drawer_list_item:
+                    // find item
+                    int pos = Integer.valueOf((String)data);
+                    Map<String, String> item = (Map<String, String>)mDrawerAdapter.getItem(pos);
+                    String drawerText = item.get(TEXT);
+                    BoardType type = BoardType.valueOfDrawerString(AbstractDrawerActivity.this, drawerText);
+
+                    // set checked state
+                    int selector;
+                    if (type.boardCode().equals(boardCode))
+                        selector = R.drawable.drawer_list_selector_checked_bg;
+                    else
+                        selector = R.drawable.drawer_list_selector_inverse_bg;
+                    FrameLayout child = (FrameLayout)view.findViewById(R.id.frame_child);
+                    child.setForeground(getResources().getDrawable(selector));
+
+                    // set title state
+                    ImageView icon = (ImageView)view.findViewById(R.id.drawer_list_item_icon);
+                    TextView text = (TextView)view.findViewById(R.id.drawer_list_item_text);
+                    TextView title = (TextView)view.findViewById(R.id.drawer_list_item_title);
+                    View divider = view.findViewById(R.id.drawer_list_item_divider);
+                    if (type == BoardType.META) {
+                        title.setText(drawerText);
+                        icon.setVisibility(View.GONE);
+                        text.setVisibility(View.GONE);
+                        title.setVisibility(View.VISIBLE);
+                        divider.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        icon.setVisibility(View.VISIBLE);
+                        text.setVisibility(View.VISIBLE);
+                        title.setVisibility(View.GONE);
+                        divider.setVisibility(View.GONE);
+                    }
+
+                    if (DEBUG) Log.i(TAG, "mViewBinder:setViewValue() item pos=" + pos + " checked=" + type.boardCode().equals(boardCode) + " type=" + type + " text=" + text + " item=" + item);
+
+                    return true;
+
+                default:
+                    return false;
             }
-            return false;
         }
     };
-    */
+
     protected void createDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
@@ -155,22 +195,7 @@ abstract public class
             setSpinnerAdapter();
             setDrawerAdapter();
         }
-    }
-
-    protected void selectDrawerItem() {
-        if (DEBUG) Log.i(TAG, "selectDrawerItem()");
-        for (int i = 0; i < mDrawerList.getAdapter().getCount(); i++) {
-            HashMap<String, String> item = (HashMap<String, String>)mDrawerList.getItemAtPosition(i);
-            String s = item.get(TEXT);
-            BoardType type = BoardType.valueOfDrawerString(this, s);
-            if (type == BoardType.META)
-                continue;
-            if (isSelfBoard(s)) {
-                mDrawerList.setItemChecked(i, true);
-                break;
-            }
-        }
-    }
+     }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -227,10 +252,12 @@ abstract public class
         */
         BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
         if (boardType != null) {
+            /*
             if (boardType == BoardType.META) {
                 if (DEBUG) Log.i(TAG, "meta category board not clickable, exiting");
                 return false;
             }
+            */
             String boardTypeCode = boardType.boardCode();
             if (boardTypeCode.equals(boardCode)) {
                 if (DEBUG) Log.i(TAG, "matched existing board code, exiting");
@@ -265,14 +292,13 @@ abstract public class
     @Override
     protected void onResume() {
         super.onResume();
-        if (threadNo == 0) {
-            if (DEBUG) Log.i(TAG, "onResume() selecting drawer item");
-            selectDrawerItem();
-        }
-        else {
-            if (DEBUG) Log.i(TAG, "onResume() disabling drawer");
-            mDrawerToggle.setDrawerIndicatorEnabled(false);
-        }
+        boolean drawerEnabled;
+        if (threadNo > 0)
+            drawerEnabled = false;
+        else
+            drawerEnabled = true;
+        if (DEBUG) Log.i(TAG, "onResume() drawerEnabled=" + drawerEnabled);
+        mDrawerToggle.setDrawerIndicatorEnabled(drawerEnabled);
     }
 
 }

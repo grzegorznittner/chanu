@@ -150,6 +150,22 @@ public class ChanBoard {
         return filtered;
     }
 
+    public static List<ChanBoard> getPickFavoritesBoardsRespectingNSFW(Context context) {
+        List<ChanBoard> source = getNewThreadBoardsRespectingNSFW(context);
+        List<ChanBoard> filtered = new ArrayList<ChanBoard>();
+        ChanBoard board = ChanFileStorage.loadBoardData(context, FAVORITES_BOARD_CODE);
+        if (board == null || board.defData || board.threads == null)
+            return source;
+        ChanPost[] threads = board.threads;
+        Set<String> boardCodes = new HashSet<String>(threads.length);
+        for (ChanPost thread : threads)
+            boardCodes.add(thread.board);
+        for (ChanBoard b : source)
+            if (!boardCodes.contains(b.link))
+                filtered.add(b);
+        return filtered;
+    }
+
     public static boolean showNSFW(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);

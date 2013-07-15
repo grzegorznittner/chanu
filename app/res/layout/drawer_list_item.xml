@@ -1,27 +1,24 @@
-
-<com.chanapps.four.component.InverseCheckableRelativeLayout
+<RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:custom="http://schemas.android.com/apk/res/com.chanapps.four.activity"
+        android:id="@+id/drawer_list_item"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        custom:checkedBackground="@drawable/drawer_list_selector_checked_bg"
-        custom:inverseBackground="@drawable/drawer_list_selector_inverse_bg"
-        custom:inverseForeground="@color/PaletteDrawerUncheckedFg"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
         >
 
     <FrameLayout
             android:id="@+id/frame_child"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:foreground="@drawable/drawer_list_selector_inverse_bg"
             >
 
         <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="32dp"
+                android:layout_width="32dp"
+                android:layout_height="match_parent"
                 >
 
             <ImageView
@@ -29,20 +26,40 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginRight="16dp"
                     />
-
-            <TextView
-                    android:id="@+id/drawer_list_item_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/drawer_list_item_icon"
-                    android:layout_centerVertical="true"
-                    android:textColor="@color/PaletteWhite"
-                    android:textSize="18sp"/>
 
         </RelativeLayout>
 
-</FrameLayout>
+    </FrameLayout>
 
-</com.chanapps.four.component.InverseCheckableRelativeLayout>
+    <TextView
+            android:id="@+id/drawer_list_item_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/frame_child"
+            android:layout_centerVertical="true"
+            android:textColor="@color/PaletteWhite"
+            android:textSize="18sp"/>
+
+    <TextView
+            android:id="@+id/drawer_list_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/drawer_list_item_divider"
+            android:layout_marginBottom="4dp"
+            android:textColor="@color/PaletteWhite"
+            android:textSize="14sp"
+            android:textAllCaps="true"
+            android:visibility="gone"
+            />
+
+    <View
+            android:id="@+id/drawer_list_item_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/PaletteDrawerDivider"
+            android:visibility="gone"
+            />
+
+</RelativeLayout>

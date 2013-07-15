@@ -10,7 +10,7 @@
             android:id="@+id/board_title_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginLeft="16dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"

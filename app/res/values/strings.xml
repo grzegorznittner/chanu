@@ -494,6 +494,8 @@
     <string name="post_reply_new_thread_error">Couldn\'t post new thread</string>
     <string name="post_reply_share_pick_board">New Thread - Pick Board</string>
     <string name="post_reply_new_thread_pick_board">New Thread - Pick Board</string>
+    <string name="favorites_pick_board">Pick Favorites Board</string>
+    <string name="favorites_pick_board_error">Couldn\'t pick favorites board</string>
 
     <!-- cover page -->
     <string name="popular_title_popular">Popular Threads</string>

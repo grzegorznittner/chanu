@@ -544,7 +544,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 (new FavoritesClearDialogFragment()).show(getFragmentManager(), FavoritesClearDialogFragment.TAG);
                 return true;
             case R.id.board_add_to_favorites_menu:
-                addToFavorites(BoardActivity.this, handler, boardCode);
+                board = ChanBoard.getBoardByCode(this, boardCode);
+                if (board == null || board.isVirtualBoard())
+                    new PickFavoritesBoardDialogFragment()
+                            .show(getFragmentManager(), PickFavoritesBoardDialogFragment.TAG);
+                else
+                    addToFavorites(BoardActivity.this, handler, boardCode);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -571,7 +576,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.board_menu, menu);
         searchMenuItem = menu.findItem(R.id.search_menu);
-        SearchActivity.createSearchView(this, searchMenuItem);
+        if (searchMenuItem != null && searchMenuItem.getActionView() != null)
+            SearchActivity.createSearchView(this, searchMenuItem);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -595,7 +601,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode)) {
             menu.findItem(R.id.clear_watchlist_menu).setVisible(false);
             menu.findItem(R.id.clear_favorites_menu).setVisible(true);
-            menu.findItem(R.id.board_add_to_favorites_menu).setVisible(false);
+            menu.findItem(R.id.board_add_to_favorites_menu).setVisible(true);
             menu.findItem(R.id.refresh_menu).setVisible(false);
             menu.findItem(R.id.search_menu).setVisible(false);
             menu.findItem(R.id.offline_board_view_menu).setVisible(false);

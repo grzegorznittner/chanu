@@ -69,7 +69,7 @@ public class InverseCheckableRelativeLayout extends RelativeLayout implements Ch
         if (isChecked) {
             setBackgroundResource(checkedBackgroundDrawable);
             if (child != null)
-                child.setForeground(null);
+                child.setForeground(getResources().getDrawable(R.color.PaletteDrawerUncheckedFg));
         }
         else {
             setBackgroundResource(inverseBackgroundDrawable);
