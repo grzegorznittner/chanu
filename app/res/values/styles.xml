@@ -1315,5 +1315,6 @@
     <!-- Drawer -->
 
     <dimen name="Drawer.layout_width">240dp</dimen>
+    <dimen name="Drawer.paddingTop">16dp</dimen>
 
 </resources>
