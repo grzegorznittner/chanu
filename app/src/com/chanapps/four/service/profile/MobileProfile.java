@@ -472,7 +472,8 @@ public class MobileProfile extends AbstractNetworkProfile {
 
         final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         Handler handler = activity.getChanHandler();
-        if (data.activity == LastActivity.THREAD_ACTIVITY && handler != null) { // refresh view pager
+        if (DEBUG) Log.i(TAG, "Board /" + data.boardCode + "/ loaded, activity=" + activity + " lastActivity=" + data.activity);
+        if (activity instanceof ThreadActivity && handler != null) { // refresh view pager
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -482,7 +483,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
 
         if (data.secondaryThreadNo > 0) {
-            if (DEBUG) Log.i(TAG, "Board /" + data.boardCode + "/ loaded, fetching secondary threadNo=" + data.threadNo);
+            if (DEBUG) Log.i(TAG, "Board /" + data.boardCode + "/ loaded, notifying thread, fetching secondary threadNo=" + data.secondaryThreadNo);
             FetchChanDataService.scheduleThreadFetch(service.getApplicationContext(), data.boardCode,
                     data.secondaryThreadNo, true, false);
         }

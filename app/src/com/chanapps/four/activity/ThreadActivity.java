@@ -683,10 +683,10 @@ public class ThreadActivity
     };
 
     public void notifyBoardChanged() {
-        if (mAdapter != null)
-            mAdapter.notifyDataSetChanged();
+        if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/ recreating pager");
         if (onTablet())
-            adapterBoardsTablet.notifyDataSetChanged();
+            createAbsListView();
+        createPager();
     }
 
 }
