@@ -16,7 +16,8 @@
     <color name="PaletteDrawerBg">#3f4541</color>
     <color name="PaletteDrawerUncheckedBg">#883f4541</color>
     <color name="PaletteDrawerUncheckedFg">#883f4541</color>
-    <color name="PaletteDrawerDivider">#88ffffff</color>
+    <color name="PaletteDrawerDividerText">#88ffffff</color>
+    <color name="PaletteDrawerDivider">#44ffffff</color>
     <color name="PaletteSelector">#449def</color>
     <color name="PaletteSelectorHalf">#88449def</color>
 
