@@ -99,7 +99,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (threadNo > 0)
             getLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks);
         else
-            Toast.makeText(getActivityContext(), R.string.thread_invalid_id, Toast.LENGTH_SHORT).show();
+            if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + " no thread found, skipping loader");
         return layout;
     }
 
@@ -172,10 +172,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new Handler();
-        if (threadNo <= 0)
-            Toast.makeText(getActivityContext(), R.string.thread_invalid_id, Toast.LENGTH_SHORT).show();
-        else if (adapter == null || adapter.getCount() == 0)
+        if (threadNo > 0 && (adapter == null || adapter.getCount() == 0))
             getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
+        else
+            if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + " no thread found, skipping loader");
     }
 
     @Override
@@ -949,7 +949,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected View.OnClickListener overflowListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            uncheckAll();
+            //uncheckAll();
             int pos = absListView.getPositionForView(v);
             if (pos >= 0) {
                 absListView.setItemChecked(pos, true);

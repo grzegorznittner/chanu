@@ -120,7 +120,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_centerInParent">true</item>
-        <item name="android:smoothScrollbar">true</item>
+        <item name="android:smoothScrollbar">false</item>
         <item name="android:padding">0dp</item>
         <item name="android:verticalSpacing">0dp</item>
         <item name="android:horizontalSpacing">0dp</item>
@@ -128,7 +128,7 @@
         <item name="android:divider">@color/PaletteLightGray</item>
         <item name="android:dividerHeight">1dp</item>
         <item name="android:cacheColorHint">#00000000</item>
-        <item name="android:fastScrollEnabled">false</item>
+        <item name="android:fastScrollEnabled">true</item>
         <item name="android:scrollbarStyle">outsideOverlay</item>
     </style>
 
@@ -136,14 +136,14 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_centerInParent">true</item>
-        <item name="android:smoothScrollbar">true</item>
+        <item name="android:smoothScrollbar">false</item>
         <item name="android:verticalSpacing">0dp</item>
         <item name="android:horizontalSpacing">0dp</item>
         <item name="android:stretchMode">none</item>
         <item name="android:divider">@color/PaletteTransparent</item>
         <item name="android:dividerHeight">@dimen/BoardGridView.spacing</item>
         <item name="android:cacheColorHint">#00000000</item>
-        <item name="android:fastScrollEnabled">false</item>
+        <item name="android:fastScrollEnabled">true</item>
         <item name="android:scrollbarStyle">outsideOverlay</item>
         <item name="android:paddingTop">@dimen/BoardGridView.spacing</item>
         <item name="android:paddingBottom">@dimen/BoardGridView.spacing</item>
@@ -200,9 +200,9 @@
         <item name="android:padding">@dimen/BoardGridView.spacing</item>
         <item name="android:clipToPadding">false</item>
         <item name="android:gravity">top|left</item>
-        <item name="android:smoothScrollbar">true</item>
+        <item name="android:smoothScrollbar">false</item>
         <item name="android:cacheColorHint">#00000000</item>
-        <item name="android:fastScrollEnabled">false</item>
+        <item name="android:fastScrollEnabled">true</item>
         <item name="android:horizontalSpacing">@dimen/BoardGridView.spacing</item>
         <item name="android:verticalSpacing">@dimen/BoardGridView.spacing</item>
         <item name="android:numColumns">@integer/BoardGridView.numColumns</item>
@@ -221,10 +221,10 @@
         <item name="android:dividerHeight">@dimen/BoardGridViewTablet.spacing</item>
         <item name="android:stretchMode">columnWidth</item>
         <item name="android:gravity">top|left</item>
-        <item name="android:smoothScrollbar">true</item>
+        <item name="android:smoothScrollbar">false</item>
         <item name="android:scrollbarStyle">outsideOverlay</item>
         <item name="android:cacheColorHint">#00000000</item>
-        <item name="android:fastScrollEnabled">false</item>
+        <item name="android:fastScrollEnabled">true</item>
         <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
         <item name="android:drawSelectorOnTop">true</item>
         <item name="android:numColumns">1</item>
@@ -640,7 +640,7 @@
     <style name="ThreadListHeaderBarBackground" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <!--<item name="android:background">@drawable/thread_list_header_bar_bg</item>-->
+        <item name="android:background">@color/PaletteThreadListBarBg</item>
     </style>
 
     <style name="ThreadListItemBar" parent="AppTheme">
@@ -651,7 +651,7 @@
     <style name="ThreadListItemBarBackground" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <!--<item name="android:background">@drawable/thread_list_item_bar_bg</item>-->
+        <item name="android:background">@color/PaletteThreadListBarBg</item>
     </style>
 
     <style name="ThreadListItemLeftSpacer" parent="AppTheme">
@@ -690,7 +690,7 @@
         <item name="android:layout_marginLeft">@dimen/ThreadListHeader_small_padding</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
-        <item name="android:textColor">@color/PaletteThreadSecondaryText</item>
+        <item name="android:textColor">@color/PaletteThreadTitleSecondaryText</item>
     </style>
 
     <style name="ThreadListHeaderBarNo" parent="AppTheme">
@@ -716,8 +716,7 @@
     <style name="ThreadListItemBarChat" parent="AppTheme">
         <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
-        <item name="android:paddingTop">@dimen/ThreadListHeader_chat_paddingTop</item>
-        <item name="android:paddingBottom">@dimen/ThreadListHeader_chat_paddingBottom</item>
+        <item name="android:background">@drawable/thread_list_direct_replies_overlay</item>
         <item name="android:gravity">center</item>
     </style>
 
@@ -750,6 +749,7 @@
     <style name="ThreadListItemBarChatIcon" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/ThreadListHeader_chat_padding</item>
         <item name="android:src">@drawable/speech_bubble_light</item>
     </style>
 
@@ -810,7 +810,7 @@
     </style>
 
     <style name="ThreadListItemReplyWrap" parent="AppTheme">
-        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:layout_toLeftOf">@+id/list_item_header_bar_reply_wrapper</item>
     </style>
@@ -870,13 +870,13 @@
     </style>
 
     <style name="ThreadListItemReplyNum" parent="AppTheme">
-        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
-        <!--<item name="android:paddingRight">@dimen/ThreadListHeader_micro_padding</item>-->
+        <item name="android:layout_toRightOf">@+id/list_item_header_bar_chat_wrapper</item>
         <item name="android:gravity">center</item>
-        <item name="android:textSize">@dimen/ThreadListHeaderLabel</item>
+        <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/PaletteBlack</item>
+        <item name="android:textColor">@color/PaletteThreadListBarOverlayFg</item>
         <item name="android:background">@drawable/thread_list_selector_bg</item>
     </style>
 
@@ -933,7 +933,7 @@
     <style name="ThreadListHeaderLine" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/ThreadListHeaderBar_layout_height</item>
-        <item name="android:background">@color/PaletteGreen</item>
+        <item name="android:background">@color/PaletteThreadDivider</item>
     </style>
 
     <!-- THREAD LIST ITEM -->
@@ -1085,7 +1085,7 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/BoardListTitle</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/PaletteGreen</item>
+        <item name="android:textColor">@color/PaletteThreadDividerText</item>
         <item name="android:textAllCaps">true</item>
         <!--<item name="android:background">@drawable/thread_button_gradient_bg</item>-->
     </style>

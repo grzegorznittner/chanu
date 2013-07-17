@@ -324,7 +324,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
 
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
-        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, false, true));
+        absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
     }
 
     @Override
@@ -441,29 +441,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                 }
                 showEmptyText();
-                stopProgressBarIfLoadersDone();
+                setProgress(false);
                 return;
-                //else {
-                //    handler.sendEmptyMessageDelayed(0, LOADER_RESTART_INTERVAL_SHORT_MS);
-                //}
             }
-            /*
-            else {
-                if (firstVisiblePosition >= 0) {
-                    //if (absListView instanceof ListView)
-                    //    ((ListView) absListView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
-                    //else
-                    absListView.setSelection(firstVisiblePosition);
-                    firstVisiblePosition = -1;
-                    firstVisiblePositionOffset = -1;
-                }
-                handleUpdatedThreads(); // see if we need to update
-                setActionBarTitle(); // to reflect updated time
-            }
-            */
 
             hideEmptyText();
-            stopProgressBarIfLoadersDone();
+            setProgress(false);
         }
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
@@ -486,10 +469,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (emptyText == null)
             return;
         emptyText.setVisibility(View.GONE);
-    }
-
-    protected void stopProgressBarIfLoadersDone() {
-        setProgress(false);
     }
 
     protected void onRefresh() {
@@ -750,10 +729,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         }
         //if (board.newThreads == 0 && board.updatedThreads == 0 && handler != null) {
-        if (board.newThreads == 0 && handler != null) {
+        if (handler != null && (board.newThreads == 0 || board.isVirtualBoard())) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    if (DEBUG) Log.i(TAG, "refresh() /" + boardCode + "/ msg=" + refreshMessage + " restarting loader");
                     getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
                     if (refreshMessage != null)
                         Toast.makeText(getApplicationContext(), refreshMessage, Toast.LENGTH_SHORT).show();
@@ -761,7 +741,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             });
         }
         else {
-            stopProgressBarIfLoadersDone();
+            setProgress(false);
         }
     }
 
@@ -772,9 +752,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 @Override
                 public void run() {
                     adapter.swapCursor(null);
+                    setProgress(false);
                 }
             });
-        //getLoaderManager().destroyLoader(0);
     }
 
     @Override
@@ -806,24 +786,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             }
         }
     };
-    /*
-    private class LoaderHandler extends Handler {
-        public LoaderHandler() {}
-        @Override
-        public void handleMessage(Message msg) {
-            try {
-                super.handleMessage(msg);
-                switch (msg.what) {
-                    default:
-                        if (DEBUG) Log.i(TAG, ">>>>>>>>>>> restart message received restarting loader");
-                        getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Couldn't handle message " + msg, e);
-            }
-        }
-    }
-    */
+
     @Override
     public void setProgress(boolean on) {
         if (DEBUG) Log.i(TAG, "setProgress(" + on + ")");
@@ -868,13 +831,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             boardTitleBar.setVisibility(View.GONE);
     }
 
+    protected int checkedPos = -1;
+
     protected View.OnClickListener overflowListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            uncheckAll();
-            int pos = absListView.getPositionForView(v);
-            if (pos >= 0)
-                absListView.setItemChecked(pos, true);
+            checkedPos = absListView.getPositionForView(v);
             PopupMenu popup = new PopupMenu(BoardActivity.this, v);
             int menuId;
             if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
@@ -893,23 +855,15 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected PopupMenu.OnDismissListener popupDismissListener = new PopupMenu.OnDismissListener() {
         @Override
         public void onDismiss(PopupMenu menu) {
-            uncheckAll();
+            checkedPos = -1;
         }
     };
-
-    protected void uncheckAll() {
-        SparseBooleanArray checked = absListView.getCheckedItemPositions();
-        for (int i = 0; i < checked.size(); i++) {
-            int pos = checked.keyAt(i);
-            if (checked.get(pos, false))
-                absListView.setItemChecked(pos, false);
-        }
-    }
 
     protected PopupMenu.OnMenuItemClickListener popupListener = new PopupMenu.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
-            int pos = absListView.getCheckedItemPosition();
+            int pos = checkedPos;
+            checkedPos = -1; // clear selection
             Cursor cursor = adapter.getCursor();
             if (!cursor.moveToPosition(pos)) {
                 Toast.makeText(BoardActivity.this, R.string.board_no_threads_selected, Toast.LENGTH_SHORT).show();

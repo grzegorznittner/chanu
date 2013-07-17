@@ -11,7 +11,7 @@
     <ListView
             android:id="@+id/thread_list_view"
             style="@style/ThreadListView"
-            android:background="@color/PaletteCardListBg"
+            android:background="@color/PaletteThreadCardListBg"
             />
     <!--
     <include layout="@layout/tutorial_overlay"/>

@@ -12,9 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/card_background"
+        android:background="@drawable/card_background_large"
         >
-    <RelativeLayout style="@style/ThreadListItemBar" android:layout_height="40dp">
+    <RelativeLayout style="@style/ThreadListItemBar">
         <View style="@style/ThreadListItemBarBackground"/>
         <View style="@style/ThreadListItemLeftSpacer" android:id="@+id/list_item_left_spacer"/>
         <LinearLayout style="@style/ThreadListItemBarAgoWrapper" android:id="@+id/list_item_ago_wrapper">
@@ -24,7 +24,13 @@
         <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
         <RelativeLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies">
             <LinearLayout style="@style/ThreadListItemBarChat" android:id="@+id/list_item_header_bar_chat_wrapper">
-                <ImageView style="@style/ThreadListItemBarChatIcon" android:id="@+id/list_item_header_bar_chat"/>
+                <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:foreground="@drawable/thread_list_direct_replies_overlay"
+                        >
+                    <ImageView style="@style/ThreadListItemBarChatIcon" android:id="@+id/list_item_header_bar_chat"/>
+                </FrameLayout>
             </LinearLayout>
             <TextView style="@style/ThreadListItemReplyNum" android:id="@+id/list_item_num_direct_replies_text"/>
         </RelativeLayout>
@@ -41,6 +47,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/ThreadListHeader_padding"
             android:paddingRight="@dimen/ThreadListHeader_padding"
+            android:paddingTop="@dimen/ThreadListHeader_med_padding"
             android:paddingBottom="@dimen/ThreadListHeader_med_padding"
             android:orientation="vertical"
             >

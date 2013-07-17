@@ -299,8 +299,11 @@ public class MobileProfile extends AbstractNetworkProfile {
             return;
         }
         else {
-            if (DEBUG) Log.i(TAG, "onThreadSelected normal fetch /" + boardCode + "/");
-            FetchChanDataService.scheduleBoardFetch(context, boardCode, false, false);
+            if (DEBUG) Log.i(TAG, "onThreadSelected board needs fetch /" + boardCode + "/" + threadNo);
+            if (FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false, threadNo)) {
+                startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
+                threadScheduled = true;
+            }
         }
 
         if (threadScheduled) {
@@ -361,7 +364,8 @@ public class MobileProfile extends AbstractNetworkProfile {
                 msgId = R.string.thread_closed;
             else
                 msgId = R.string.board_wait_to_refresh;
-            postStopMessage(handler, msgId);
+            if (DEBUG) Log.i(TAG, "onThreadRefreshed skipping refresh reason=" + msgId);
+            postStopMessage(handler, null);
         }
     }
 
@@ -473,7 +477,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         Handler handler = activity.getChanHandler();
         if (DEBUG) Log.i(TAG, "Board /" + data.boardCode + "/ loaded, activity=" + activity + " lastActivity=" + data.activity);
-        if (activity instanceof ThreadActivity && handler != null) { // refresh view pager
+        if (activity instanceof ThreadActivity && handler != null && data.secondaryThreadNo <= 0) { // refresh view pager
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -529,7 +533,8 @@ public class MobileProfile extends AbstractNetworkProfile {
         if (handler != null && activity instanceof ThreadActivity) {
             final String boardCode = thread.board;
             final long threadNo = thread.no;
-            if (DEBUG) Log.i(TAG, "asking thread activity to reload fragment /" + boardCode + "/" + threadNo);
+            if (DEBUG) Log.i(TAG, "asking thread activity to reload fragment /" + boardCode + "/" + threadNo
+                    + " secondaryThreadNo=" + data.secondaryThreadNo);
             handler.post(new Runnable() {
                 @Override
                 public void run() {

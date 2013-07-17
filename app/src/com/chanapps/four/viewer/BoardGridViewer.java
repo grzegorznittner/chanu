@@ -41,8 +41,8 @@ public class BoardGridViewer {
         displayImageOptions = new DisplayImageOptions.Builder()
                 .imageScaleType(ImageScaleType.NONE)
                 .cacheOnDisc()
-                .cacheInMemory()
-                .resetViewBeforeLoading()
+                //.cacheInMemory()
+                //.resetViewBeforeLoading()
                 .showStubImage(R.drawable.stub_image_background)
                 .build();
     }

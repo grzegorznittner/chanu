@@ -202,7 +202,7 @@ public class ChanBoard {
                 String boardCode = boardCodesForType[i];
                 String boardName = boardCodesForType[i+1];
                 boolean workSafe = !(boardType == BoardType.ADULT || boardType == BoardType.MISC);
-                int iconId = getImageResourceId(boardCode);
+                int iconId = getImageResourceId(boardCode, 0, 0);
                 ChanBoard b = new ChanBoard(boardType, boardName, boardCode, iconId, workSafe, true, false);
                 if (DEBUG) Log.i(TAG, "Added board /" + boardCode + "/ " + boardName);
                 boardsForType.add(b);
@@ -241,77 +241,45 @@ public class ChanBoard {
             if (DEBUG) Log.i(TAG, "Initialized /" + boardCode + "/ with " + relatedBoardList.size() + " related boards");
         }
 
+        initBoardDrawables();
     }
 
-    public static boolean isImagelessSticky(String boardCode, long postNo) {
-        if (boardCode.equals("s") && postNo == 9112225)
-            return true;
-        if (boardCode.equals("gif") && (postNo == 5405329 || postNo == 5412288))
-            return true;
-        return false;
+    public static boolean isImagelessSticky(String boardCode, long threadNo) {
+        int id = imagelessStickyDrawableId(boardCode, threadNo);
+        return id != 0;
     }
 
-    public int getImageResourceId() {
-        return getImageResourceId(link);
-    }
-
-    public static int getImageResourceId(String boardCode) {
-        return getImageResourceId(boardCode, 0);
-    }
-
-    public static int getIndexedImageResourceId(String boardCode, int index) {
-        return getImageResourceId(boardCode, 0, index);
+    public static int imagelessStickyDrawableId(String boardCode, long threadNo) {
+        if (boardCode.equals("s") && threadNo == 9112225)
+            return R.drawable.s_9112225;
+        else if (boardCode.equals("gif") && threadNo == 5404329)
+            return R.drawable.gif_5405329;
+        else if (boardCode.equals("gif") && threadNo == 5412288)
+            return R.drawable.gif_5412288;
+        else
+            return 0;
     }
 
     public static String getIndexedImageDrawableUrl(String boardCode, int index) {
-        return "drawable://" + getIndexedImageResourceId(boardCode, index);
-    }
-    public static int getImageResourceId(String boardCode, long postNo) {
-        return getImageResourceId(boardCode, postNo, -1);
-    }
-
-    public int getRandomImageResourceId() {
-        return getRandomImageResourceId(link);
-    }
-
-    public static int getRandomImageResourceId(String boardCode) {
-        return ChanBoard.getImageResourceId(boardCode, 0, (int)Math.floor(Math.random() * NUM_DEFAULT_IMAGES_PER_BOARD));
+        return "drawable://" + getImageResourceId(boardCode, 0, index);
     }
 
     public static int getRandomImageResourceId(String boardCode, long postNo) {
         return ChanBoard.getImageResourceId(boardCode, postNo, (int)(postNo % NUM_DEFAULT_IMAGES_PER_BOARD));
     }
 
-    public int getRandomImageResourceId(long threadNo) {
-        return ChanBoard.getRandomImageResourceId(link, threadNo);
-    }
+    protected static final int STUB_IMAGE_ID = R.drawable.stub_image;
 
     public static int getImageResourceId(String boardCode, long postNo, int index) { // allows special-casing first (usually sticky) and multiple
-        int imageId;
-        String fileRoot;
-        if (index == 0)
-            fileRoot = boardCode;
-        else if (index > 0)
-            fileRoot = boardCode + "_" + (index+1);
-        else if (isImagelessSticky(boardCode, postNo))
-            fileRoot = boardCode + "_" + postNo;
-        else
-            fileRoot = boardCode;
-        if (boardCode.equals("3") || boardCode.equals("int")) // avoid collisions
-            fileRoot = "board_" + fileRoot;
-        try {
-            imageId = R.drawable.class.getField(fileRoot).getInt(null);
-        } catch (Exception e) {
-            try {
-                fileRoot = boardCode;
-                if (boardCode.equals("3") || boardCode.equals("int")) // avoid collisions
-                    fileRoot = "board_" + fileRoot;
-                imageId = R.drawable.class.getField(fileRoot).getInt(null);
-            } catch (Exception e1) {
-                imageId = R.drawable.stub_image;
-            }
-        }
-        return imageId;
+        int imageId = imagelessStickyDrawableId(boardCode, postNo);
+        if (imageId > 0)
+            return imageId;
+        int[] imageIds = boardDrawables.get(boardCode);
+        if (imageIds == null || imageIds.length == 0)
+            return STUB_IMAGE_ID;
+        if (index >= 0 && index < 3)
+            return imageIds[index];
+        return imageIds[0];
     }
 
     public String getDescription(Context context) {
@@ -397,6 +365,8 @@ public class ChanBoard {
         return relatedBoardCodes;
     }
 
+    protected static Map<String, int[]> boardDrawables = new HashMap<String, int[]>();
+    
     private static String[][] initBoardCodes(Context ctx) {
         String[][] boardCodesByType = {
                 {
@@ -664,7 +634,7 @@ public class ChanBoard {
     }
 
     public Object[] makeRow(Context context, long threadNo) { // for board selector
-        return ChanThread.makeBoardRow(context, link, name, getRandomImageResourceId(threadNo));
+        return ChanThread.makeBoardRow(context, link, name, getRandomImageResourceId(link, threadNo));
     }
     /*
     public Object[] makeThreadAdRow(Context context, int pos) {
@@ -1020,4 +990,76 @@ public class ChanBoard {
         return thread;
     }
 
+    private static void initBoardDrawables() {
+        boardDrawables.clear();
+        boardDrawables.put("a", new int[]{ R.drawable.a, R.drawable.a_2, R.drawable.a_3 } );
+        boardDrawables.put("a", new int[]{ R.drawable.a, R.drawable.a_2, R.drawable.a_3 } );
+        boardDrawables.put("c", new int[]{ R.drawable.c, R.drawable.c_2, R.drawable.c_3 } );
+        boardDrawables.put("w", new int[]{ R.drawable.w, R.drawable.w_2, R.drawable.w_3 } );
+        boardDrawables.put("m", new int[]{ R.drawable.m, R.drawable.m_2, R.drawable.m_3 } );
+        boardDrawables.put("cgl", new int[]{ R.drawable.cgl, R.drawable.cgl_2, R.drawable.cgl_3 } );
+        boardDrawables.put("cm", new int[]{ R.drawable.cm, R.drawable.cm_2, R.drawable.cm_3 } );
+        boardDrawables.put("n", new int[]{ R.drawable.n, R.drawable.n_2, R.drawable.n_3 } );
+        boardDrawables.put("jp", new int[]{ R.drawable.jp, R.drawable.jp_2, R.drawable.jp_3 } );
+        boardDrawables.put("vp", new int[]{ R.drawable.vp, R.drawable.vp_2, R.drawable.vp_3 } );
+        boardDrawables.put("v", new int[]{ R.drawable.v, R.drawable.v_2, R.drawable.v_3 } );
+        boardDrawables.put("vg", new int[]{ R.drawable.vg, R.drawable.vg_2, R.drawable.vg_3 } );
+        boardDrawables.put("vr", new int[]{ R.drawable.vr, R.drawable.vr_2, R.drawable.vr_3 } );
+        boardDrawables.put("co", new int[]{ R.drawable.co, R.drawable.co_2, R.drawable.co_3 } );
+        boardDrawables.put("g", new int[]{ R.drawable.g, R.drawable.g_2, R.drawable.g_3 } );
+        boardDrawables.put("tv", new int[]{ R.drawable.tv, R.drawable.tv_2, R.drawable.tv_3 } );
+        boardDrawables.put("k", new int[]{ R.drawable.k, R.drawable.k_2, R.drawable.k_3 } );
+        boardDrawables.put("o", new int[]{ R.drawable.o, R.drawable.o_2, R.drawable.o_3 } );
+        boardDrawables.put("an", new int[]{ R.drawable.an, R.drawable.an_2, R.drawable.an_3 } );
+        boardDrawables.put("tg", new int[]{ R.drawable.tg, R.drawable.tg_2, R.drawable.tg_3 } );
+        boardDrawables.put("sp", new int[]{ R.drawable.sp, R.drawable.sp_2, R.drawable.sp_3 } );
+        boardDrawables.put("asp", new int[]{ R.drawable.asp, R.drawable.asp_2, R.drawable.asp_3 } );
+        boardDrawables.put("sci", new int[]{ R.drawable.sci, R.drawable.sci_2, R.drawable.sci_3 } );
+        boardDrawables.put("int", new int[]{ R.drawable.board_int, R.drawable.board_int_2, R.drawable.board_int_3 } );
+        boardDrawables.put("out", new int[]{ R.drawable.out, R.drawable.out_2, R.drawable.out_3 } );
+        boardDrawables.put("i", new int[]{ R.drawable.i, R.drawable.i_2, R.drawable.i_3 } );
+        boardDrawables.put("po", new int[]{ R.drawable.po, R.drawable.po_2, R.drawable.po_3 } );
+        boardDrawables.put("p", new int[]{ R.drawable.p, R.drawable.p_2, R.drawable.p_3 } );
+        boardDrawables.put("ck", new int[]{ R.drawable.ck, R.drawable.ck_2, R.drawable.ck_3 } );
+        boardDrawables.put("ic", new int[]{ R.drawable.ic, R.drawable.ic_2, R.drawable.ic_3 } );
+        boardDrawables.put("wg", new int[]{ R.drawable.wg, R.drawable.wg_2, R.drawable.wg_3 } );
+        boardDrawables.put("mu", new int[]{ R.drawable.mu, R.drawable.mu_2, R.drawable.mu_3 } );
+        boardDrawables.put("fa", new int[]{ R.drawable.fa, R.drawable.fa_2, R.drawable.fa_3 } );
+        boardDrawables.put("toy", new int[]{ R.drawable.toy, R.drawable.toy_2, R.drawable.toy_3 } );
+        boardDrawables.put("3", new int[]{ R.drawable.board_3, R.drawable.board_3_2, R.drawable.board_3_3 } );
+        boardDrawables.put("gd", new int[]{ R.drawable.gd, R.drawable.gd_2, R.drawable.gd_3 } );
+        boardDrawables.put("diy", new int[]{ R.drawable.diy, R.drawable.diy_2, R.drawable.diy_3 } );
+        boardDrawables.put("wsg", new int[]{ R.drawable.wsg, R.drawable.wsg_2, R.drawable.wsg_3 } );
+        boardDrawables.put("q", new int[]{ R.drawable.q, R.drawable.q_2, R.drawable.q_3 } );
+        boardDrawables.put("trv", new int[]{ R.drawable.trv, R.drawable.trv_2, R.drawable.trv_3 } );
+        boardDrawables.put("fit", new int[]{ R.drawable.fit, R.drawable.fit_2, R.drawable.fit_3 } );
+        boardDrawables.put("x", new int[]{ R.drawable.x, R.drawable.x_2, R.drawable.x_3 } );
+        boardDrawables.put("lit", new int[]{ R.drawable.lit, R.drawable.lit_2, R.drawable.lit_3 } );
+        boardDrawables.put("adv", new int[]{ R.drawable.adv, R.drawable.adv_2, R.drawable.adv_3 } );
+        boardDrawables.put("lgbt", new int[]{ R.drawable.lgbt, R.drawable.lgbt_2, R.drawable.lgbt_3 } );
+        boardDrawables.put("mlp", new int[]{ R.drawable.mlp, R.drawable.mlp_2, R.drawable.mlp_3 } );
+        boardDrawables.put("s", new int[]{ R.drawable.s, R.drawable.s_2, R.drawable.s_3 } );
+        boardDrawables.put("hc", new int[]{ R.drawable.hc, R.drawable.hc_2, R.drawable.hc_3 } );
+        boardDrawables.put("hm", new int[]{ R.drawable.hm, R.drawable.hm_2, R.drawable.hm_3 } );
+        boardDrawables.put("h", new int[]{ R.drawable.h, R.drawable.h_2, R.drawable.h_3 } );
+        boardDrawables.put("e", new int[]{ R.drawable.e, R.drawable.e_2, R.drawable.e_3 } );
+        boardDrawables.put("u", new int[]{ R.drawable.u, R.drawable.u_2, R.drawable.u_3 } );
+        boardDrawables.put("d", new int[]{ R.drawable.d, R.drawable.d_2, R.drawable.d_3 } );
+        boardDrawables.put("y", new int[]{ R.drawable.y, R.drawable.y_2, R.drawable.y_3 } );
+        boardDrawables.put("t", new int[]{ R.drawable.t, R.drawable.t_2, R.drawable.t_3 } );
+        boardDrawables.put("hr", new int[]{ R.drawable.hr, R.drawable.hr_2, R.drawable.hr_3 } );
+        boardDrawables.put("gif", new int[]{ R.drawable.gif, R.drawable.gif_2, R.drawable.gif_3 } );
+        boardDrawables.put("b", new int[]{ R.drawable.b, R.drawable.b_2, R.drawable.b_3 } );
+        boardDrawables.put("r", new int[]{ R.drawable.r, R.drawable.r_2, R.drawable.r_3 } );
+        boardDrawables.put("r9k", new int[]{ R.drawable.r9k, R.drawable.r9k_2, R.drawable.r9k_3 } );
+        boardDrawables.put("pol", new int[]{ R.drawable.pol, R.drawable.pol_2, R.drawable.pol_3 } );
+        boardDrawables.put("soc", new int[]{ R.drawable.soc, R.drawable.soc_2, R.drawable.soc_3 } );
+        boardDrawables.put("s4s", new int[]{ R.drawable.s4s, R.drawable.s4s_2, R.drawable.s4s_3 } );
+        for (String boardCode : VIRTUAL_BOARDS) {
+            BoardType type = BoardType.valueOfBoardCode(boardCode);
+            if (type != null)
+                boardDrawables.put(boardCode, new int[]{ type.drawableId(), type.drawableId(), type.drawableId() });
+        }
+    }
+    
 }

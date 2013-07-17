@@ -270,7 +270,10 @@ public class ThreadActivity
             setCurrentItemToThread();
         }
         invalidateOptionsMenu(); // for correct spinner display
-        NetworkProfileManager.instance().activityChange(this);
+        ChanActivityId lastActivityId = NetworkProfileManager.instance().getActivityId();
+        ChanActivityId activityId = getChanActivityId();
+        if (!activityId.equals(lastActivityId))
+            NetworkProfileManager.instance().activityChange(this);
         if (onTablet()
                 && !getSupportLoaderManager().hasRunningLoaders()
                 && (adapterBoardsTablet == null || adapterBoardsTablet.getCount() == 0)) {

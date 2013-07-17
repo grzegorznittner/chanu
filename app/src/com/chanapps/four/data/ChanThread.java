@@ -142,7 +142,8 @@ public class ChanThread extends ChanPost {
         if (boards.get(0).isMetaBoard() && boards.size() > 1)
             boards.remove(0);
         Collections.shuffle(boards);
-        int boardImageResourceId = boards.get(0).getRandomImageResourceId();
+        ChanBoard board = boards.get(0);
+        int boardImageResourceId = ChanBoard.getRandomImageResourceId(board.link, 0);
         return new Object[] {
                 boardType.hashCode(),
                 boardType.boardCode(),

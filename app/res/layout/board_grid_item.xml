@@ -60,6 +60,7 @@
                         android:textColor="@color/PaletteDarkGray"
                         android:textSize="@dimen/BoardGridSubject"
                         android:visibility="gone"
+                        android:ellipsize="end"
                         android:maxLines="2"
                         />
 

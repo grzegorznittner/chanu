@@ -486,8 +486,9 @@ public class ChanPost {
 	}
 
     public String thumbnailUrl() { // thumbnail with fallback
-        if (ChanBoard.isImagelessSticky(board, no))
-            return "drawable://" + ChanBoard.getImageResourceId(board, no);
+        int stickyId = ChanBoard.imagelessStickyDrawableId(board, no);
+        if (stickyId > 0)
+            return "drawable://" + stickyId;
         else if (spoiler > 0)
             return ChanBoard.spoilerThumbnailUrl(board);
         else if (tim > 0 && filedeleted == 0) // && tn_w > 2 && tn_h > 2)
@@ -499,8 +500,9 @@ public class ChanPost {
     }
 
     public int thumbnailId() { // for resource types
-        if (ChanBoard.isImagelessSticky(board, no))
-            return ChanBoard.getImageResourceId(board, no);
+        int stickyId = ChanBoard.imagelessStickyDrawableId(board, no);
+        if (stickyId > 0)
+            return stickyId;
         else if (spoiler > 0)
             return 0;
         else if (tim > 0 && filedeleted == 0 && tn_w > 2 && tn_h > 2)
@@ -1077,7 +1079,7 @@ public class ChanPost {
     }
 
     public static Object[] makeBoardLinkRow(Context context, ChanBoard board, long threadNo) {
-        int drawableId = board.getRandomImageResourceId(threadNo);
+        int drawableId = board.getRandomImageResourceId(board.link, threadNo);
         return new Object[] {
                 board.link.hashCode(),
                 board.link,

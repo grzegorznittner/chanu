@@ -235,14 +235,14 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
                         public void run() {
                             ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
                             ((ThreadActivity)activity)
-                                    .refreshFragment(data.boardCode, data.threadNo,
-                                            activity.getBaseContext().getString(R.string.mobile_profile_fetch_dead_thread));
+                                    .refreshFragment(data.boardCode, data.threadNo, null);
                         }
                     });
                 break;
             case THREAD_UNMODIFIED:
                 if (DEBUG) Log.i(TAG, "stopping after unmodified thread");
-                postStopMessage(handler, R.string.mobile_profile_fetch_unmodified);
+                //postStopMessage(handler, R.string.mobile_profile_fetch_unmodified);
+                postStopMessage(handler, null);
                 break;
             case NETWORK:
             case MISSING_DATA:
@@ -250,7 +250,8 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
             case CORRUPT_DATA:
             default:
                 if (DEBUG) Log.i(TAG, "stopping after generic failure");
-                postStopMessage(handler, R.string.mobile_profile_fetch_failure);
+                //postStopMessage(handler, R.string.mobile_profile_fetch_failure);
+                postStopMessage(handler, null);
                 break;
         }
     }

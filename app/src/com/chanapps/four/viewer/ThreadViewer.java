@@ -77,9 +77,9 @@ public class ThreadViewer {
         displayImageOptions = createDisplayImageOptions(null);
         thumbDisplayImageOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisc()
-                .cacheInMemory()
+                //.cacheInMemory()
                 .imageScaleType(ImageScaleType.NONE)
-                .resetViewBeforeLoading()
+                //.resetViewBeforeLoading()
                 .showStubImage(R.drawable.stub_image_background)
                 .build();
     }
@@ -87,10 +87,10 @@ public class ThreadViewer {
     private static DisplayImageOptions createDisplayImageOptions(ImageSize imageSize) {
         return new DisplayImageOptions.Builder()
                 .cacheOnDisc()
-                .cacheInMemory()
+                //.cacheInMemory()
                 .imageSize(imageSize)
                 .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
-                .resetViewBeforeLoading()
+                //.resetViewBeforeLoading()
                 .build();
     }
 
