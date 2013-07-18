@@ -55,7 +55,7 @@ public class ThreadViewer {
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static DisplayMetrics displayMetrics = null;
     private static Typeface subjectTypeface = null;
@@ -147,7 +147,7 @@ public class ThreadViewer {
             case R.id.list_item_image_wrapper:
                 return setImageWrapper((ViewGroup) view, cursor, flags);
             case R.id.list_item_image:
-                return setImage((ImageView) view, cursor, flags, null);
+                return setImage((ImageView) view, cursor, flags, null, null);
             case R.id.list_item_country_flag:
                 return setCountryFlag((ImageView) view, cursor, flags);
             case R.id.list_item_header:
@@ -180,16 +180,10 @@ public class ThreadViewer {
                         postReplyListener, overflowListener);
             case R.id.list_item_image_expanded_wrapper:
                 return setImageExpandedWrapper((ViewGroup) view);
-            case R.id.list_item_image_expanded:
-                return setImageExpanded((ImageView) view);
-            case R.id.list_item_image_expanded_click_effect:
-                return setImageExpandedClickEffect(view, cursor, flags, expandedImageListener);
-            case R.id.list_item_expanded_progress_bar:
-                return setImageExpandedProgressBar((ProgressBar) view);
             case R.id.list_item_image_wrapper:
                 return setImageWrapper((ViewGroup) view, cursor, flags);
             case R.id.list_item_image:
-                return setImage((ImageView) view, cursor, flags, imageOnClickListener);
+                return setImage((ImageView) view, cursor, flags, imageOnClickListener, expandedImageListener);
             case R.id.list_item_country_flag:
                 return setCountryFlag((ImageView) view, cursor, flags);
             case R.id.list_item_header:
@@ -518,7 +512,10 @@ public class ThreadViewer {
         if ((flags & ChanPost.FLAG_HAS_EXIF) > 0 && exifOnClickListener != null)
             text += (text.isEmpty() ? "" : " ") + SHOW_EXIF_HTML;
 
-        Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text, null, spoilerTagHandler));
+        String html = markupHtml(text);
+        if (DEBUG) Log.i(TAG, "text before replace:" + text);
+        if (DEBUG) Log.i(TAG, "text after  replace:" + html);
+        Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(html, null, spoilerTagHandler));
         if (spannable.length() == 0) {
             tv.setVisibility(View.GONE);
             tv.setText("");
@@ -551,8 +548,16 @@ public class ThreadViewer {
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
+    static private final String BR_RE = "<br/?>";
+    static private final String QUOTE_RE_FIRST = "^(>[^<>]*)(<br/?>)";
+    static private final String QUOTE_RE_FIRST_REPLACE = "<font color=\"#7a9441\">$1</font>$2";   // #7a9441
+    static private final String QUOTE_RE_MID = "(<br/?>)(>[^<>]*)";
+    static private final String QUOTE_RE_MID_REPLACE = "$1<font color=\"#7a9441\">$2</font>";   // #7a9441
+    static private final String QUOTE_RE_LAST = "<br/?>(>[^<>]*)$";
+    static private final String QUOTE_RE_LAST_REPLACE = "<br/><font color=\"#7a9441\">$1</font>";   // #7a9441
+    static private final String QUOTE_RE_ONLY = "^(>.*)$";
     static private final Pattern POST_PATTERN = Pattern.compile("(>>\\d+)");
-    static private final Pattern REPLY_PATTERN = Pattern.compile("(1 Reply|\\d+ Replies)");
+    //static private final Pattern REPLY_PATTERN = Pattern.compile("(1 Reply|\\d+ Replies)");
     static private final Pattern ID_PATTERN = Pattern.compile("Id: ([A-Za-z0-9+./_:!-]+)");
 
     static private void addLinkedSpans(Spannable spannable, Pattern pattern,
@@ -569,6 +574,15 @@ public class ThreadViewer {
             };
             spannable.setSpan(popup, m.start(1), m.end(1), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
+    }
+
+    static private String markupHtml(String in) {
+        String out = in
+                .replaceFirst(QUOTE_RE_FIRST, QUOTE_RE_FIRST_REPLACE)
+                .replaceAll(QUOTE_RE_MID, QUOTE_RE_MID_REPLACE)
+                //.replaceFirst(QUOTE_RE_LAST, QUOTE_RE_LAST_REPLACE)
+                ;
+        return out;
     }
 
     static private boolean setImageExifValue(final TextView tv) {
@@ -632,28 +646,42 @@ public class ThreadViewer {
     };
 
     static private boolean setImage(final ImageView iv, final Cursor cursor, int flags,
-                                    View.OnClickListener imageOnClickListener) {
+                                    View.OnClickListener imageOnClickListener,
+                                    View.OnClickListener expandedImageListener) {
         if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0) {
             iv.setImageBitmap(null);
             iv.setVisibility(View.GONE);
             return true;
         }
 
-        if ((flags & ChanPost.FLAG_IS_HEADER) > 0) { // use expanded image
-            File file = fullSizeImageFile(iv.getContext(), cursor); // try for full size first
-            if (file != null && file.exists() && file.canRead() && file.length() > 0) {
-                View itemView = (flags & ChanPost.FLAG_IS_HEADER) > 0
-                        ? (View)iv.getParent().getParent()
-                        : (View)iv.getParent().getParent().getParent();
-                if (itemView != null) {
-                    if (DEBUG) Log.i(TAG, "setImage file=" + file.getAbsolutePath());
-                    iv.setVisibility(View.VISIBLE);
-                    ThreadExpandImageOnClickListener expander =
-                            (new ThreadExpandImageOnClickListener(iv.getContext(), cursor, itemView));
-                    expander.onClick(itemView);
-                    return true;
-                }
+        //if ((flags & ChanPost.FLAG_IS_HEADER) > 0) { // use expanded image
+        View itemView = (flags & ChanPost.FLAG_IS_HEADER) > 0
+                ? (View)iv.getParent().getParent()
+                : (View)iv.getParent().getParent().getParent();
+        File file = fullSizeImageFile(iv.getContext(), cursor); // try for full size first
+        if (itemView != null && file != null) {
+            if (itemView != null) {
+                if (DEBUG) Log.i(TAG, "setImage() expanded file=" + file.getAbsolutePath());
+                ThreadExpandImageOnClickListener expander =
+                        (new ThreadExpandImageOnClickListener(iv.getContext(), cursor, itemView, expandedImageListener));
+                expander.displayCachedExpandedImage();
+                iv.setVisibility(View.GONE);
+                return true;
             }
+            else {
+                if (DEBUG) Log.i(TAG, "setImage() no item view found");
+            }
+        }
+        else if (itemView != null) {
+            View itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
+            View itemExpandedImageClickEffect = itemView.findViewById(R.id.list_item_image_expanded_click_effect);
+            View itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
+            if (itemExpandedImage != null)
+                itemExpandedImage.setVisibility(View.GONE);
+            if (itemExpandedImageClickEffect != null)
+                itemExpandedImageClickEffect.setVisibility(View.GONE);
+            if (itemExpandedProgressBar != null)
+                itemExpandedProgressBar.setVisibility(View.GONE);
         }
 
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
@@ -761,12 +789,6 @@ public class ThreadViewer {
 
     static private boolean setImageExpandedWrapper(final ViewGroup v) {
         v.setVisibility(View.GONE);
-        return true;
-    }
-
-    static private boolean setImageExpanded(final ImageView iv) {
-        clearBigImageView(iv);
-        iv.setVisibility(View.GONE);
         return true;
     }
 

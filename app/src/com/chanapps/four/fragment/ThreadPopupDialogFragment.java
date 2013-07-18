@@ -96,8 +96,8 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         if (DEBUG) Log.i(TAG, "creating dialog");
         return builder
                 .setView(layout)
-                .setPositiveButton(R.string.thread_popup_reply, postReplyListener)
-                .setNeutralButton(R.string.thread_popup_goto, null)
+                //.setPositiveButton(R.string.thread_popup_reply, postReplyListener)
+                //.setNeutralButton(R.string.thread_popup_goto, null)
                 .setNegativeButton(R.string.dialog_close, dismissListener)
                 .create();
     }

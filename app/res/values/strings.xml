@@ -1423,7 +1423,7 @@
     <dimen name="ThreadListHeader_small_padding">8dp</dimen>
     <dimen name="ThreadListHeader_mini_padding">6dp</dimen>
     <dimen name="ThreadListHeader_micro_padding">4dp</dimen>
-    <dimen name="ThreadListHeader_chat_padding">4dp</dimen>
+    <dimen name="ThreadListHeader_chat_padding">12dp</dimen>
 
     <dimen name="ThreadListHeaderImage_layout_marginTop">0dp</dimen>
     <dimen name="ThreadListHeaderImage_layout_marginBottom">0dp</dimen>

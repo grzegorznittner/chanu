@@ -3,11 +3,11 @@
     <!-- semantic colors -->
 
     <color name="PaletteActionBar">#3f4541</color>
-    <color name="PaletteTitleBg">#ecebe7</color>
+    <color name="PaletteTitleBg">@color/PaletteCardListBg</color>
     <color name="PaletteTitleText">#313b4b</color>
     <color name="PaletteThreadLine">#ccc</color>
     <color name="PaletteCardListBg">#d5d5d5</color>
-    <color name="PaletteThreadCardListBg">#d5d5d5</color>
+    <color name="PaletteThreadCardListBg">@color/PaletteCardListBg</color>
     <color name="PaletteThreadHeaderBg">#00000000</color>
     <color name="PaletteThreadHeaderImageBg">#333</color>
     <color name="PaletteThreadSecondaryText">#ccc</color>

@@ -244,11 +244,6 @@ public class ChanBoard {
         initBoardDrawables();
     }
 
-    public static boolean isImagelessSticky(String boardCode, long threadNo) {
-        int id = imagelessStickyDrawableId(boardCode, threadNo);
-        return id != 0;
-    }
-
     public static int imagelessStickyDrawableId(String boardCode, long threadNo) {
         if (boardCode.equals("s") && threadNo == 9112225)
             return R.drawable.s_9112225;

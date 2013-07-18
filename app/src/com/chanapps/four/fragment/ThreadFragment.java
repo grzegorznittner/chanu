@@ -344,25 +344,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         }
     };
 
-    protected View.OnClickListener expandedImageListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            int pos = absListView.getPositionForView(v);
-            if (pos < 0)
-                return;
-            Cursor cursor = adapter.getCursor();
-            if (!cursor.moveToPosition(pos))
-                return;
-            long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-            //if (postNo == threadNo)
-            //    postNo = 0;
-            if (postNo > 0)
-                GalleryViewActivity.startActivity(getActivityContext(), boardCode, threadNo, postNo);
-            else
-                GalleryViewActivity.startAlbumViewActivity(getActivityContext(), boardCode, threadNo);
-        }
-    };
-
     protected boolean isThreadPlayable() {
         return adapter != null
                 && adapter.getCount() > 0
@@ -1206,7 +1187,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     threadListener.exifOnClickListener,
                     postReplyListener,
                     overflowListener,
-                    expandedImageListener,
+                    threadListener.expandedImageListener,
                     startActionModeListener);
         }
     };

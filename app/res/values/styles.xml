@@ -150,6 +150,7 @@
         <item name="android:clipToPadding">false</item>
         <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
         <item name="android:drawSelectorOnTop">true</item>
+        <item name="android:background">@color/PaletteThreadCardListBg</item>
     </style>
 
     <!-- SELECTOR GRID STYLES -->
@@ -716,7 +717,7 @@
     <style name="ThreadListItemBarChat" parent="AppTheme">
         <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
-        <item name="android:background">@drawable/thread_list_direct_replies_overlay</item>
+        <!--<item name="android:background">@drawable/thread_list_selector_bg</item> -->
         <item name="android:gravity">center</item>
     </style>
 
@@ -747,8 +748,8 @@
     </style>
 
     <style name="ThreadListItemBarChatIcon" parent="AppTheme">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:padding">@dimen/ThreadListHeader_chat_padding</item>
         <item name="android:src">@drawable/speech_bubble_light</item>
     </style>
@@ -813,6 +814,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:layout_toLeftOf">@+id/list_item_header_bar_reply_wrapper</item>
+        <item name="android:foreground">@drawable/thread_list_selector_bg</item>
     </style>
 
     <style name="ThreadListItemNumWrapInner" parent="AppTheme">
@@ -873,11 +875,11 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:layout_toRightOf">@+id/list_item_header_bar_chat_wrapper</item>
+        <item name="android:paddingRight">@dimen/ThreadListHeader_med_padding</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/PaletteThreadListBarOverlayFg</item>
-        <item name="android:background">@drawable/thread_list_selector_bg</item>
     </style>
 
     <style name="ThreadListHeaderNumLabel" parent="AppTheme">

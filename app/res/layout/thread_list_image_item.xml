@@ -26,12 +26,27 @@
             <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_ago"/>
         </LinearLayout>
         <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
-        <RelativeLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies">
-            <LinearLayout style="@style/ThreadListItemBarChat" android:id="@+id/list_item_header_bar_chat_wrapper">
-                <ImageView style="@style/ThreadListItemBarChatIcon" android:id="@+id/list_item_header_bar_chat"/>
-            </LinearLayout>
-            <TextView style="@style/ThreadListItemReplyNum" android:id="@+id/list_item_num_direct_replies_text"/>
-        </RelativeLayout>
+        <FrameLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies">
+
+            <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/ThreadListHeader_flowsize"
+                    >
+
+                <LinearLayout style="@style/ThreadListItemBarChat" android:id="@+id/list_item_header_bar_chat_wrapper">
+                    <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:foreground="@drawable/thread_list_direct_replies_overlay"
+                            >
+                        <ImageView style="@style/ThreadListItemBarChatIcon" android:id="@+id/list_item_header_bar_chat"/>
+                    </FrameLayout>
+                </LinearLayout>
+                <TextView style="@style/ThreadListItemReplyNum" android:id="@+id/list_item_num_direct_replies_text"/>
+
+            </RelativeLayout>
+
+        </FrameLayout>
         <LinearLayout style="@style/ThreadListItemBarReply" android:id="@+id/list_item_header_bar_reply_wrapper">
             <ImageView style="@style/ThreadListItemBarReplyIcon" android:id="@+id/list_item_header_bar_reply"/>
         </LinearLayout>

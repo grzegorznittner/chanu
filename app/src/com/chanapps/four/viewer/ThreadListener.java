@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
+import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ThreadExpandExifOnClickListener;
 import com.chanapps.four.component.ThreadExpandImageOnClickListener;
@@ -76,9 +77,33 @@ public class ThreadListener {
             final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
             if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
             if ((flags & (ChanPost.FLAG_HAS_IMAGE)) > 0) {
-                (new ThreadExpandImageOnClickListener(v.getContext(), cursor, itemView)).onClick(itemView);
+                (new ThreadExpandImageOnClickListener(v.getContext(), cursor, itemView, expandedImageListener))
+                        .onClick(itemView);
                 itemView.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.TRUE);
             }
+        }
+    };
+
+    public View.OnClickListener expandedImageListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int pos = threadViewable.getAbsListView().getPositionForView(v);
+            if (pos < 0)
+                return;
+            Cursor cursor = threadViewable.getAdapter().getCursor();
+            if (!cursor.moveToPosition(pos))
+                return;
+            String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+            long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+            long threadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
+            if (threadNo <= 0)
+                threadNo = postNo;
+            //if (postNo == threadNo)
+            //    postNo = 0;
+            if (postNo > 0)
+                GalleryViewActivity.startActivity(v.getContext(), boardCode, threadNo, postNo);
+            else
+                GalleryViewActivity.startAlbumViewActivity(v.getContext(), boardCode, threadNo);
         }
     };
 

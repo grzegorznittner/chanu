@@ -1,21 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/board_thread_info_menu"
-          android:title="@string/board_thread_info_menu"
-            />
-
-    <item android:id="@+id/board_thread_gallery_menu"
-          android:title="@string/board_thread_gallery_menu"
-            />
-
     <item android:id="@+id/board_thread_watch_menu"
           android:title="@string/board_thread_watch_menu"
-            />
-
-    <item android:id="@+id/board_add_to_favorites_menu"
-          android:title="@string/board_add_to_favorites_menu"
-          android:visible="false"
             />
 
 </menu>

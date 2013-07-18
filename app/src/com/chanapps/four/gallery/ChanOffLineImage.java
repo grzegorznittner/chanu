@@ -104,7 +104,8 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
         }
 
         public Bitmap run(JobContext jc) {
-        	Bitmap bitmap = null;
+            //Bitmap srcBmp = null;
+        	Bitmap dstBmp = null;
     		try {
     			Options options = new Options();
     			options.inPreferredConfig = Config.ARGB_8888;
@@ -127,8 +128,30 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
                 }
 
     			try {
-    				bitmap = BitmapFactory.decodeStream(imageStream, null, options);
-    			}
+                    // center crop
+    				dstBmp = BitmapFactory.decodeStream(imageStream, null, options);
+                    /*
+                    srcBmp = BitmapFactory.decodeStream(imageStream, null, options);
+                    if (srcBmp.getWidth() >= srcBmp.getHeight()){
+                        dstBmp = Bitmap.createBitmap(
+                                srcBmp,
+                                srcBmp.getWidth()/2 - srcBmp.getHeight()/2,
+                                0,
+                                srcBmp.getHeight(),
+                                srcBmp.getHeight()
+                        );
+                    }else{
+                        dstBmp = Bitmap.createBitmap(
+                                srcBmp,
+                                0,
+                                srcBmp.getHeight()/2 - srcBmp.getWidth()/2,
+                                srcBmp.getWidth(),
+                                srcBmp.getWidth()
+                        );
+                    }
+                    */
+
+                }
                 catch (Exception e) {
                     Log.e(TAG, "Couldn't decode bitmap file " + imageFile, e);
                     return null;
@@ -137,7 +160,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
     				IOUtils.closeQuietly(imageStream);
     			}
 	            //return ensureGLCompatibleBitmap(bitmap);
-    			return bitmap;
+    			return dstBmp;
 			} catch (Throwable e) {
 				Log.e(TAG, "Bitmap docode error for " + imageFile.getName(), e);
 				return null;

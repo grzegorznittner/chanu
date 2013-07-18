@@ -410,7 +410,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            OnClickListener overflow = ChanBoard.isMetaBoard(boardCode) ? null : overflowListener;
+            OnClickListener overflow = ChanBoard.META_BOARD_CODE.equals(boardCode) ? null : overflowListener;
             return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
                     overlayListener, overflow);
         }
@@ -843,6 +843,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 menuId = R.menu.watchlist_context_menu;
             else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode))
                 menuId = R.menu.favorites_context_menu;
+            else if (ChanBoard.isMetaBoard(boardCode))
+                menuId = R.menu.meta_board_context_menu;
             else
                 menuId = R.menu.board_context_menu;
             popup.inflate(menuId);
@@ -872,17 +874,17 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
             long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
             switch (item.getItemId()) {
+                /*
                 case R.id.board_thread_info_menu:
                     Toast.makeText(BoardActivity.this, "not implemented", Toast.LENGTH_SHORT).show();
                     return true;
-                /*
                 case R.id.board_thread_view_menu:
                     ThreadActivity.startActivity(BoardActivity.this, boardCode, threadNo, 0, "");
                     return true;
-                    */
                 case R.id.board_thread_gallery_menu:
                     GalleryViewActivity.startAlbumViewActivity(BoardActivity.this, boardCode, threadNo);
                     return true;
+                */
                 case R.id.board_thread_watch_menu:
                     ThreadFragment.addToWatchlist(BoardActivity.this, handler, boardCode, threadNo);
                     return true;

@@ -1041,43 +1041,6 @@ public class ChanPost {
         };
     }
 
-    public Object[] makeThreadLinkRow() {
-        String[] textComponents = textComponents("");
-        String headline = headline("", true, null, false);
-        return new Object[] {
-                no,
-                board,
-                resto,
-                thumbnailUrl(),
-                "",
-                countryFlagUrl(),
-                headline,
-                replies,
-                images,
-                textComponents[0],
-                "",
-                "",
-                tn_w,
-                tn_h,
-                w,
-                h,
-                tim,
-                "",
-                "",
-                "",
-                id,
-                trip,
-                name,
-                email,
-                thumbnailId(),
-                ext,
-                null,
-                null,
-                null,
-                postFlags(false, true, textComponents[0], "", "", headline)
-        };
-    }
-
     public static Object[] makeBoardLinkRow(Context context, ChanBoard board, long threadNo) {
         int drawableId = board.getRandomImageResourceId(board.link, threadNo);
         return new Object[] {
