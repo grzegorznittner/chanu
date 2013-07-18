@@ -78,8 +78,10 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 		Stack<DataTransfer> clonedTransfers = (Stack<DataTransfer>)dataTransfers.clone();
 		if (clonedTransfers.size() < 2) {
 			Health defaultHealth = getDefaultConnectionHealth();
-			if (DEBUG) Log.i(TAG, "Less than 2 transfers, setting default health " + defaultHealth);
-			currentHealth = defaultHealth;
+			if (currentHealth != defaultHealth) {
+                if (DEBUG) Log.i(TAG, "Less than 2 transfers, changing default health to " + defaultHealth);
+                currentHealth = defaultHealth;
+            }
 			return defaultHealth;
 		}
 		for (DataTransfer transfer : clonedTransfers) {
@@ -93,11 +95,11 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 			}
 		}
 		if (failures > 2) {
-			if (DEBUG) Log.i(TAG, "More than 2 failures, switching to BAD from " + currentHealth);
 			if (currentHealth != Health.BAD) {
-				makeToast(R.string.network_profile_health_bad);
-			}
-			currentHealth = Health.BAD;
+                if (DEBUG) Log.i(TAG, "More than 2 failures, switching to BAD from " + currentHealth);
+                makeToast(R.string.network_profile_health_bad);
+                currentHealth = Health.BAD;
+            }
 			return currentHealth;
 		}
 		double avgRate = rateSum / rateNum;

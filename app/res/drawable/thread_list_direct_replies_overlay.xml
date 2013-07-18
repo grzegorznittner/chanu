@@ -8,9 +8,11 @@
         </shape>
     </item>
     -->
+    <!--
     <item>
         <shape>
             <solid android:color="@color/PaletteThreadListBarOverlayBg"/>
         </shape>
     </item>
+    -->
 </selector>

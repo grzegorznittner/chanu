@@ -22,7 +22,7 @@ import com.chanapps.four.fragment.ThreadPopupDialogFragment;
 public class ThreadListener {
 
     private static final String TAG = ThreadListener.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private ThreadViewable threadViewable;
 
@@ -100,6 +100,7 @@ public class ThreadListener {
                 threadNo = postNo;
             //if (postNo == threadNo)
             //    postNo = 0;
+            if (DEBUG) Log.i(TAG, "expandImageListener /" + boardCode + "/" + threadNo + "#p" + postNo);
             if (postNo > 0)
                 GalleryViewActivity.startActivity(v.getContext(), boardCode, threadNo, postNo);
             else

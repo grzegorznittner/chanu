@@ -21,6 +21,7 @@ import android.util.Log;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.data.*;
+import com.chanapps.four.service.profile.MobileProfile;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
@@ -100,6 +101,15 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             intent.putExtra(BACKGROUND_LOAD, true);
         }
         context.startService(intent);
+
+        NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
+        NetworkProfile.Health health = profile.getConnectionHealth();
+        if (profile.getConnectionType() == NetworkProfile.Type.WIFI
+                && (health == NetworkProfile.Health.GOOD || health == NetworkProfile.Health.PERFECT)) {
+            if (DEBUG) Log.i(TAG, "scheduleThreadFetch /" + boardCode + "/" + threadNo + " good Wifi, downloading images");
+            ThreadImageDownloadService.startDownloadToBoardFolder(context, boardCode, threadNo);
+        }
+
         return true;
     }
 

@@ -750,8 +750,9 @@
     <style name="ThreadListItemBarChatIcon" parent="AppTheme">
         <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
-        <item name="android:padding">@dimen/ThreadListHeader_chat_padding</item>
-        <item name="android:src">@drawable/speech_bubble_light</item>
+        <!--<item name="android:padding">@dimen/ThreadListHeader_chat_padding</item> -->
+        <item name="android:scaleType">center</item>
+        <item name="android:src">@drawable/social_chat_light</item>
     </style>
 
     <style name="ThreadListItemBarReplyIcon" parent="AppTheme">

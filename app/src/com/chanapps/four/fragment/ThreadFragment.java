@@ -55,7 +55,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
     
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
@@ -189,8 +189,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public void onStop() {
         super.onStop();
         if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/" + threadNo);
-        if (absListView != null)
-            getLoaderManager().destroyLoader(LOADER_ID);
+        //if (absListView != null)
+        //    getLoaderManager().destroyLoader(LOADER_ID);
         handler = null;
     }
 

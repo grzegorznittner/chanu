@@ -62,6 +62,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         Uri uri = ChanFileStorage.getLocalImageUri(context, boardCode, postId, postExt);
 
         this.itemView = itemView;
+        this.expandedImageListener = expandedImageListener;
         itemThumbnailImageWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_image_wrapper);
         itemThumbnailImage = (ImageView)itemView.findViewById(R.id.list_item_image);
         itemExpandedWrapper = (ViewGroup)itemView.findViewById(R.id.list_item_image_expanded_wrapper);
@@ -191,8 +192,8 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
                 collapseImageView();
-                Context context = itemExpandedImage.getContext();
-                Toast.makeText(context, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
+                //Context context = itemExpandedImage.getContext();
+                //Toast.makeText(context, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
             }
         }); // load async
     }

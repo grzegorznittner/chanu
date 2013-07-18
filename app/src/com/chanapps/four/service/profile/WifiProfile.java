@@ -9,6 +9,7 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.FetchChanDataService;
+import com.chanapps.four.service.NetworkProfileManager;
 
 
 public class WifiProfile extends MobileProfile {
@@ -38,6 +39,7 @@ public class WifiProfile extends MobileProfile {
     @Override
     public void onBoardSelected(Context context, String boardCode) {
         super.onBoardSelected(context, boardCode);
+        NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
         Health health = getConnectionHealth();
         if (health == Health.GOOD || health == Health.PERFECT) {
             ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);

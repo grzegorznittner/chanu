@@ -131,6 +131,7 @@ public class MobileProfile extends AbstractNetworkProfile {
     public void onApplicationStart(Context context) {
         super.onApplicationStart(context);
         CleanUpService.startService(context);
+        NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
         Health health = getConnectionHealth();
         WidgetProviderUtils.asyncUpdateWidgetsAndWatchlist(context);
         if (health != Health.BAD && health != Health.VERY_SLOW) {
@@ -183,26 +184,29 @@ public class MobileProfile extends AbstractNetworkProfile {
         super.onBoardSelected(context, boardCode);
         if (DEBUG) Log.i(TAG, "onBoardSelected");
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
-        Health health = getConnectionHealth();
         if (board != null && board.isVirtualBoard() && !board.isPopularBoard()) {
             if (DEBUG) Log.i(TAG, "skipping non-popular virtual board /" + boardCode + "/");
         }
         else if (!ChanBoard.boardNeedsRefresh(context, boardCode, false)) {
             if (DEBUG) Log.i(TAG, "skipping board /" + boardCode + "/ doesnt need refresh");
         }
-        else if (health == Health.NO_CONNECTION) {
-            makeHealthStatusToast(context, health);
-            if (DEBUG) Log.i(TAG, "skipping preload board as there is no network connection");
-        }
-        else if (!ChanBoard.boardHasData(context, boardCode)) {
-            if (DEBUG) Log.i(TAG, "no board data, thus priority fetching /" + boardCode + "/");
-            if (FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false))
-                startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
-        }
         else {
-            if (DEBUG) Log.i(TAG, "board needs update, non-priority fetching /" + boardCode + "/");
-            if (FetchChanDataService.scheduleBoardFetch(context, boardCode, false, false))
-                startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
+            NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
+            Health health = getConnectionHealth();
+            if (health == Health.NO_CONNECTION) {
+                makeHealthStatusToast(context, health);
+                if (DEBUG) Log.i(TAG, "skipping preload board as there is no network connection");
+            }
+            else if (!ChanBoard.boardHasData(context, boardCode)) {
+                if (DEBUG) Log.i(TAG, "no board data, thus priority fetching /" + boardCode + "/");
+                if (FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false))
+                    startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "board needs update, non-priority fetching /" + boardCode + "/");
+                if (FetchChanDataService.scheduleBoardFetch(context, boardCode, false, false))
+                    startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
+            }
         }
     }
 
@@ -277,32 +281,35 @@ public class MobileProfile extends AbstractNetworkProfile {
     public void onThreadSelected(Context context, String boardCode, long threadNo) {
         if (DEBUG) Log.d(TAG, "onThreadSelected /" + boardCode + "/" + threadNo);
         super.onThreadSelected(context, boardCode, threadNo);
-        Health health = getConnectionHealth();
         boolean threadScheduled = false;
 
         if (!ChanBoard.boardNeedsRefresh(context, boardCode, false)) {
             if (DEBUG) Log.i(TAG, "board already loaded for thread, skipping load");
         }
-        else if (health == Health.NO_CONNECTION) {
-            makeHealthStatusToast(context, health);
-            return;
-        }
-        else if (!ChanBoard.boardHasData(context, boardCode)) {
-            if (DEBUG) Log.i(TAG, "onThreadSelected no board data priority fetch /" + boardCode + "/");
-            if (FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false, threadNo)) {
-                startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
-                threadScheduled = true;
-            }
-        }
-        else if (health == Health.BAD) {
-            makeHealthStatusToast(context, health);
-            return;
-        }
         else {
-            if (DEBUG) Log.i(TAG, "onThreadSelected board needs fetch /" + boardCode + "/" + threadNo);
-            if (FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false, threadNo)) {
-                startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
-                threadScheduled = true;
+            NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
+            Health health = getConnectionHealth();
+            if (health == Health.NO_CONNECTION) {
+                makeHealthStatusToast(context, health);
+                return;
+            }
+            else if (!ChanBoard.boardHasData(context, boardCode)) {
+                if (DEBUG) Log.i(TAG, "onThreadSelected no board data priority fetch /" + boardCode + "/");
+                if (FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false, threadNo)) {
+                    startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
+                    threadScheduled = true;
+                }
+            }
+            else if (health == Health.BAD) {
+                makeHealthStatusToast(context, health);
+                return;
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "onThreadSelected board needs fetch /" + boardCode + "/" + threadNo);
+                if (FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false, threadNo)) {
+                    startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
+                    threadScheduled = true;
+                }
             }
         }
 
@@ -313,13 +320,18 @@ public class MobileProfile extends AbstractNetworkProfile {
 
         if (!ChanThread.threadNeedsRefresh(context, boardCode, threadNo, false)) {
             if (DEBUG) Log.i(TAG, "thread already loaded, skipping load");
-        } else if (health == Health.NO_CONNECTION) {
-            makeHealthStatusToast(context, health);
-            return;
-        } else {
-            if (DEBUG) Log.i(TAG, "scheduling thread fetch with priority for /" + boardCode + "/" + threadNo);
-            if (FetchChanDataService.scheduleThreadFetch(context, boardCode, threadNo, true, false))
-                startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
+        }
+        else {
+            NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
+            Health health = getConnectionHealth();
+            if (health == Health.NO_CONNECTION) {
+                makeHealthStatusToast(context, health);
+                return;
+            } else {
+                if (DEBUG) Log.i(TAG, "scheduling thread fetch with priority for /" + boardCode + "/" + threadNo);
+                if (FetchChanDataService.scheduleThreadFetch(context, boardCode, threadNo, true, false))
+                    startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
+            }
         }
     }
 

@@ -127,12 +127,13 @@ public class NetworkProfileManager {
     }
 
     public void activityChange(ChanIdentifiedActivity newActivity) {
-		if (DEBUG) Log.i(TAG, "activity change to " + newActivity.getChanActivityId() + " receiver=" + receiver + " activity=" + currentActivity);
+		if (DEBUG) Log.i(TAG, "activityChange to " + newActivity.getChanActivityId() + " receiver=" + receiver
+                + " lastActivity=" + currentActivity);
 
         ensureInitialized(newActivity);
         ActivityDispatcher.store(newActivity);
-        NetworkBroadcastReceiver.checkNetwork(newActivity.getBaseContext());
 
+        ChanActivityId lastActivity = currentActivityId;
         currentActivityId = newActivity.getChanActivityId();
 		currentActivity = newActivity;
 
@@ -143,10 +144,14 @@ public class NetworkProfileManager {
 
         switch(currentActivityId.activity) {
             case BOARD_ACTIVITY:
-                activeProfile.onBoardSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
+                if (lastActivity == null || !currentActivityId.boardCode.equals(lastActivity.boardCode)) {
+                    activeProfile.onBoardSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
+                }
                 break;
             case THREAD_ACTIVITY:
-                activeProfile.onThreadSelected(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo);
+                if (lastActivity == null || !currentActivityId.boardCode.equals(lastActivity.boardCode)
+                        || currentActivityId.threadNo != lastActivity.threadNo)
+                    activeProfile.onThreadSelected(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo);
                 break;
             case GALLERY_ACTIVITY:
                 activeProfile.onFullImageLoading(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo, currentActivityId.postNo);

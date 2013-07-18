@@ -37,7 +37,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static final String VIEW_TYPE = "viewType";
 
@@ -232,6 +232,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     @Override
     public void onBackPressed() {
+        if (DEBUG) Log.i(TAG, "onBackPressed()");
         // send the back event to the top sub-state
         GLRoot root = getGLRoot();
         root.lockRenderThread();

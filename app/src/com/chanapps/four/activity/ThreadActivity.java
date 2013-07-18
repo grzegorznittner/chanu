@@ -264,16 +264,15 @@ public class ThreadActivity
             handler = new Handler();
         if (board == null || !board.link.equals(boardCode) || mPager == null) { // recreate pager
             board = ChanFileStorage.loadBoardData(this, boardCode);
+            if (DEBUG) Log.i(TAG, "onResume() creating pager");
             createPager();
         }
         else {
+            if (DEBUG) Log.i(TAG, "onResume() set current item to thread");
             setCurrentItemToThread();
         }
-        invalidateOptionsMenu(); // for correct spinner display
-        ChanActivityId lastActivityId = NetworkProfileManager.instance().getActivityId();
-        ChanActivityId activityId = getChanActivityId();
-        if (!activityId.equals(lastActivityId))
-            NetworkProfileManager.instance().activityChange(this);
+        //invalidateOptionsMenu(); // for correct spinner display
+        NetworkProfileManager.instance().activityChange(this);
         if (onTablet()
                 && !getSupportLoaderManager().hasRunningLoaders()
                 && (adapterBoardsTablet == null || adapterBoardsTablet.getCount() == 0)) {
@@ -690,6 +689,20 @@ public class ThreadActivity
         if (onTablet())
             createAbsListView();
         createPager();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent intent = BoardActivity.createIntent(getActivityContext(), boardCode, "");
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                getActivity().finish();
+                return true;
+
+        }
+        return false;
     }
 
 }
