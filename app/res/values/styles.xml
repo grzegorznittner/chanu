@@ -798,7 +798,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:weightSum">3</item>
+        <item name="android:weightSum">2</item>
         <item name="android:background">@color/PaletteThreadHeaderBg</item>
         <!--<item name="android:background">@color/PaletteDarkGray</item>-->
     </style>

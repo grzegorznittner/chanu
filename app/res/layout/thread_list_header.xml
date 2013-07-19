@@ -30,6 +30,28 @@
                         />
             </LinearLayout>
             -->
+            <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
+            <FrameLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies">
+
+                <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/ThreadListHeader_flowsize"
+                        >
+
+                    <LinearLayout style="@style/ThreadListItemBarChat" android:id="@+id/list_item_header_bar_chat_wrapper">
+                        <FrameLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:foreground="@drawable/thread_list_direct_replies_overlay"
+                                >
+                            <ImageView style="@style/ThreadListItemBarChatIcon" android:id="@+id/list_item_header_bar_chat"/>
+                        </FrameLayout>
+                    </LinearLayout>
+                    <TextView style="@style/ThreadListItemReplyNum" android:id="@+id/list_item_num_direct_replies_text"/>
+
+                </RelativeLayout>
+
+            </FrameLayout>
             <LinearLayout style="@style/ThreadListHeaderBarReply" android:id="@+id/list_item_header_bar_reply_wrapper">
                 <ImageView style="@style/ThreadListHeaderBarReplyIcon" android:id="@+id/list_item_header_bar_reply"/>
             </LinearLayout>
@@ -62,7 +84,6 @@
                         android:visibility="gone"/>
             </LinearLayout>
             <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
-            <ImageView style="@style/ThreadListHeaderCountryFlag" android:id="@+id/list_item_country_flag"/>
             <TextView style="@style/ThreadListHeaderFullText" android:id="@+id/list_item_text"/>
             <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"/>
             <TextView style="@style/ThreadListHeaderExifText" android:id="@+id/list_item_exif_text"/>
@@ -94,7 +115,7 @@
                            android:layout_alignParentBottom="true"
                            android:src="@drawable/spinner_default_holo_light"/>
             </RelativeLayout>
-
+            <!--
             <View style="@style/ThreadListHeaderNumVerticalBorder" android:id="@+id/list_item_num_vertical_border"/>
 
             <RelativeLayout style="@style/ThreadListHeaderNumWrap" android:id="@+id/list_item_num_direct_replies"
@@ -110,7 +131,7 @@
                            android:layout_alignParentBottom="true"
                            android:src="@drawable/spinner_default_holo_light"/>
             </RelativeLayout>
-
+            -->
         </LinearLayout>
 
     </LinearLayout>

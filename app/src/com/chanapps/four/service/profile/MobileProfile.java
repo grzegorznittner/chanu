@@ -541,7 +541,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
 
         // user is on the thread page, we need to reloaded it
-        final Handler handler = activity.getChanHandler();
+        final Handler handler = activity == null ? null : activity.getChanHandler();
         if (handler != null && activity instanceof ThreadActivity) {
             final String boardCode = thread.board;
             final long threadNo = thread.no;

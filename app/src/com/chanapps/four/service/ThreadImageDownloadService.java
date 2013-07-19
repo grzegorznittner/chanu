@@ -270,16 +270,6 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
         if (thread != null)
             thread.useFriendlyIds = useFriendlyIds;
 
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-		Builder notifBuilder = new Notification.Builder(context);
-		notifBuilder.setSmallIcon(R.drawable.app_notification_icon_grayscale);
-        notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
-		notifBuilder.setAutoCancel(true);
-		notifBuilder.setContentTitle(context.getString(R.string.download_all_images_complete));
-		notifBuilder.setContentText
-                (String.format(context.getString(R.string.download_all_images_complete_detail), board, threadNo));
-		notifBuilder.setSmallIcon(R.drawable.app_icon);
-		
 		Intent threadActivityIntent = null;
 		switch(targetType) {
 		case TO_BOARD:
@@ -308,12 +298,22 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
   			*/
 			break;
 		}
-        
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
-				threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
-		notifBuilder.setContentIntent(pendingIntent);
-		
-		notificationManager.notify((int)thread.no, notifBuilder.getNotification());
+
+        if (targetType != TargetType.TO_BOARD) { // notify except on board auto-download
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+            Builder notifBuilder = new Notification.Builder(context);
+            notifBuilder.setSmallIcon(R.drawable.app_icon_notification);
+            notifBuilder.setWhen(Calendar.getInstance().getTimeInMillis());
+            notifBuilder.setAutoCancel(true);
+            notifBuilder.setContentTitle(context.getString(R.string.download_all_images_complete));
+            notifBuilder.setContentText
+                    (String.format(context.getString(R.string.download_all_images_complete_detail), board, threadNo));
+            notifBuilder.setSmallIcon(R.drawable.app_icon);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+                    threadActivityIntent, Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_UPDATE_CURRENT);
+            notifBuilder.setContentIntent(pendingIntent);
+            notificationManager.notify((int)thread.no, notifBuilder.getNotification());
+        }
 	}
 	
 	private Uri getGalleryURIForFirstImage(ChanThread thread) {

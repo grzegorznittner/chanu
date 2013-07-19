@@ -139,7 +139,7 @@ public class ClearCacheDialogFragment extends DialogFragment {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             Notification notification = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.drawable.app_notification_icon_grayscale)
+                    .setSmallIcon(R.drawable.app_icon_notification)
                     .setContentTitle(context.getString(R.string.pref_clear_cache_notification_title))
                     .setContentText(contentText)
                     .setContentIntent(pendingIntent)

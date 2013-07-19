@@ -288,7 +288,7 @@ public class ThreadViewer {
                 spinner.setVisibility(i > 0 ? View.VISIBLE : View.GONE);
         }
 
-        displayNumDirectReplies(item, cursor, showContextMenu, repliesOnClickListener, false);
+        displayNumDirectReplies(item, cursor, showContextMenu, repliesOnClickListener); //, false);
     }
 
     static protected void displayHeaderBarAgoNo(View item, Cursor cursor) {
@@ -307,12 +307,12 @@ public class ThreadViewer {
                                                  View.OnClickListener repliesOnClickListener) {
         displayHeaderBarAgoNo(item, cursor);
         //n += displayNumRefs(item, cursor, backlinkOnClickListener);
-        displayNumDirectReplies(item, cursor, showContextMenu, repliesOnClickListener, true);
+        displayNumDirectReplies(item, cursor, showContextMenu, repliesOnClickListener); //, true);
     }
 
     static protected int displayNumDirectReplies(View item, Cursor cursor, boolean showContextMenu,
-                                                  View.OnClickListener repliesOnClickListener,
-                                                  boolean markVisibility) {
+                                                  View.OnClickListener repliesOnClickListener) { //,
+                                                  //boolean markVisibility) {
         View wrapper = item.findViewById(R.id.list_item_num_direct_replies);
         if (wrapper == null)
             return 0;
@@ -326,25 +326,26 @@ public class ThreadViewer {
             return 0;
 
         int directReplies = numDirectReplies(cursor);
+        /*
         TextView numRepliesLabel = (TextView)item.findViewById(R.id.list_item_num_direct_replies_label);
         if (numRepliesLabel != null)
             numRepliesLabel.setText(
                     item.getResources().getQuantityString(R.plurals.thread_num_direct_replies_label, directReplies));
-
+        */
         numDirectReplies.setText(String.valueOf(directReplies));
-        View spinner = item.findViewById(R.id.list_item_num_direct_replies_spinner);
+        //View spinner = item.findViewById(R.id.list_item_num_direct_replies_spinner);
         if (directReplies > 0) {
             wrapper.setOnClickListener(repliesOnClickListener);
-            if (spinner != null)
-                spinner.setVisibility(View.VISIBLE);
-            if (markVisibility)
+            //if (spinner != null)
+            //    spinner.setVisibility(View.VISIBLE);
+            //if (markVisibility)
                 wrapper.setVisibility(View.VISIBLE);
         }
         else {
             wrapper.setOnClickListener(null);
-            if (spinner != null)
-                spinner.setVisibility(View.GONE);
-            if (markVisibility)
+            //if (spinner != null)
+            //    spinner.setVisibility(View.GONE);
+            //if (markVisibility)
                 wrapper.setVisibility(View.GONE);
         }
         return directReplies;
