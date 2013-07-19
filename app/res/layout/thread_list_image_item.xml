@@ -55,15 +55,7 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <RelativeLayout
-            android:id="@+id/list_item_image_expanded_wrapper"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/ThreadListHeader_padding"
-            android:paddingRight="@dimen/ThreadListHeader_padding"
-            android:visibility="gone"
-            android:background="@color/PaletteThreadHeaderImageBg"
-            >
+    <RelativeLayout style="@style/ThreadListItemImageSection" android:id="@+id/list_item_image_expanded_wrapper">
         <ImageView style="@style/ThreadListItemImageExpanded" android:id="@+id/list_item_image_expanded"/>
         <View style="@style/ThreadListItemImageExpandedClickEffect" android:id="@+id/list_item_image_expanded_click_effect"/>
     </RelativeLayout>

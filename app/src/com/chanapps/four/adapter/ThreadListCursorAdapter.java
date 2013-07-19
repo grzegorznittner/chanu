@@ -42,39 +42,24 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                 new String[]{
                         ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_IMAGE_URL,
                         ChanPost.POST_HEADLINE_TEXT,
-                        ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_SUBJECT_TEXT,
                         ChanPost.POST_TEXT,
                         ChanPost.POST_COUNTRY_URL,
-                        ChanPost.POST_IMAGE_URL,
-                        ChanPost.POST_FLAGS,
                         ChanPost.POST_FLAGS
                 },
                 new int[]{
-                        R.id.list_item_expanded_progress_bar,
-                        R.id.list_item_image_expanded_wrapper,
-                        R.id.list_item_image_expanded,
-                        R.id.list_item_image_expanded_click_effect,
                         R.id.list_item_image_wrapper,
                         R.id.list_item_image,
                         R.id.list_item_header,
                         R.id.list_item_subject,
                         R.id.list_item_subject_icons,
                         R.id.list_item_title,
-                        R.id.list_item_button,
-                        R.id.list_item_urllink,
                         R.id.list_item_text,
                         R.id.list_item_country_flag,
-                        R.id.list_item_exif_text,
-                        R.id.list_item_thread_banner_ad,
-                        R.id.list_item_thread_banner_ad_click_effect
+                        R.id.list_item_exif_text
                 });
     }
 

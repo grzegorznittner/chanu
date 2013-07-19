@@ -102,15 +102,22 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         }
         context.startService(intent);
 
-        NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
-        NetworkProfile.Health health = profile.getConnectionHealth();
-        if (profile.getConnectionType() == NetworkProfile.Type.WIFI
-                && (health == NetworkProfile.Health.GOOD || health == NetworkProfile.Health.PERFECT)) {
-            if (DEBUG) Log.i(TAG, "scheduleThreadFetch /" + boardCode + "/" + threadNo + " good Wifi, downloading images");
-            ThreadImageDownloadService.startDownloadToBoardFolder(context, boardCode, threadNo);
-        }
-
+        optionallyDownloadAllImages(context, boardCode, threadNo);
         return true;
+    }
+
+    private static void optionallyDownloadAllImages(Context context, String boardCode, long threadNo) {
+        ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
+        if (!thread.defData)
+            return;
+        NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
+        if (profile.getConnectionType() != NetworkProfile.Type.WIFI)
+            return;
+        NetworkProfile.Health health = profile.getConnectionHealth();
+        if (health != NetworkProfile.Health.PERFECT)
+            return;
+        if (DEBUG) Log.i(TAG, "scheduleThreadFetch /" + boardCode + "/" + threadNo + " good Wifi, downloading images");
+        ThreadImageDownloadService.startDownloadToBoardFolder(context, boardCode, threadNo);
     }
 
     public static void clearServiceQueue(Context context) {

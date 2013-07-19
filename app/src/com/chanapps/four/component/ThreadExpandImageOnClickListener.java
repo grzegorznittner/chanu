@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +36,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
     private static final String TAG = ThreadExpandImageOnClickListener.class.getSimpleName();
     private static final boolean DEBUG = true;
+    private static final double MAX_EXPANDED_SCALE = 1.5;
 
     private View itemView;
     private View listItemLeftSpacer;
@@ -115,15 +115,25 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
     private void setImageDimensions(Point targetSize) {
         ViewGroup.LayoutParams params = itemExpandedImage.getLayoutParams();
-        if (params != null) {
-            params.width = targetSize.x;
-            params.height = targetSize.y;
-            if (DEBUG) Log.i(TAG, "set expanded image size=" + params.width + "x" + params.height);
+        if (params == null) {
+            if (DEBUG) Log.i(TAG, "setImageDimensions() null params, exiting");
+            return;
+        }
+        params.width = targetSize.x;
+        params.height = targetSize.y;
+        if (DEBUG) Log.i(TAG, "setImageDimensions() to " + params.width + "x" + params.height);
+        if (itemExpandedImageClickEffect != null) {
             ViewGroup.LayoutParams params2 = itemExpandedImageClickEffect.getLayoutParams();
             if (params2 != null) {
                 params2.width = params.width;
                 params2.height = params.height;
-                if (DEBUG) Log.i(TAG, "set expanded image click effect size=" + params2.width + "x" + params2.height);
+            }
+        }
+        if (itemExpandedWrapper != null) {
+            ViewGroup.LayoutParams params3 = itemExpandedWrapper.getLayoutParams();
+            if (params3 != null) {
+                //params3.width = params.width; always match width
+                params3.height = params.height;
             }
         }
     }
@@ -132,6 +142,10 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         if (DEBUG) Log.i(TAG, "Set expanded image to visible");
         if (itemExpandedProgressBar != null)
             itemExpandedProgressBar.setVisibility(withProgress ? View.VISIBLE : View.GONE);
+        if (itemExpandedWrapper != null)
+            itemExpandedWrapper.setVisibility(View.VISIBLE);
+        if (itemExpandedImage != null)
+            itemExpandedImage.setVisibility(View.VISIBLE);
 
         int width = targetSize.x; // may need to adjust to avoid out of mem
         int height = targetSize.y;
@@ -139,10 +153,12 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         if (DEBUG) Log.i(TAG, "Downsampling image to size=" + imageSize.getWidth() + "x" + imageSize.getHeight());
         DisplayImageOptions expandedDisplayImageOptions = new DisplayImageOptions.Builder()
                 .imageSize(imageSize)
-                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                //.imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2)
+                .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
                 .cacheOnDisc()
                 .fullSizeImageLocation(fullImagePath)
                 .resetViewBeforeLoading()
+                .showStubImage(R.drawable.stub_image_background)
                 .build();
 
         // display image async
@@ -155,7 +171,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                collapseImageView();
+                //collapseImageView();
                 String reason = failReason.toString();
                 String msg;
                 Context context = itemExpandedImage.getContext();
@@ -169,20 +185,17 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
                 else
                     msg = String.format(context.getString(R.string.thread_couldnt_load_image), failReason.getType().toString().toLowerCase().replaceAll("_", " "));
                 if (DEBUG) Log.e(TAG, "Failed to download " + postImageUrl + " to file=" + fullImagePath + " reason=" + reason);
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 if (itemExpandedProgressBar != null && withProgress)
                     itemExpandedProgressBar.setVisibility(View.GONE);
-                view.setVisibility(View.VISIBLE);
                 if (itemExpandedImageClickEffect != null) {
                     itemExpandedImageClickEffect.setVisibility(View.VISIBLE);
                     itemExpandedImageClickEffect.setOnClickListener(expandedImageListener);
                 }
-                if (itemExpandedWrapper != null)
-                    itemExpandedWrapper.setVisibility(View.VISIBLE);
                 if (withProgress)
                     hideThumbnail();
                 if (itemView != null)
@@ -191,7 +204,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
-                collapseImageView();
+                //collapseImageView();
                 //Context context = itemExpandedImage.getContext();
                 //Toast.makeText(context, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
             }
@@ -221,6 +234,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         }
         clearImage();
         ThreadViewer.initStatics(itemExpandedImage);
+        //Point targetSize = sizeExpandedImage(postW, postH);
         Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
         if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
         setImageDimensions(targetSize);
@@ -231,10 +245,62 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         hideThumbnail();
         itemExpandedProgressBar.setVisibility(View.GONE);
         ThreadViewer.initStatics(itemExpandedImage);
+        //Point targetSize = sizeExpandedImage(postW, postH);
         Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
         if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
         setImageDimensions(targetSize);
         displayImage(targetSize, false);
     }
 
+    private static Point sizeExpandedImage(final int actualWidth, final int actualHeight) {
+        Point imageSize = new Point();
+        double aspectRatio = (double) actualWidth / (double) actualHeight;
+
+        if (aspectRatio < 1) { // tall image, restrict by height
+            int desiredHeight =
+                    //powerOfTwoReduce(
+                    //        actualHeight,
+                            Math.min(ThreadViewer.cardMaxImageHeight(), (int)(actualHeight * MAX_EXPANDED_SCALE))
+                    //)
+                    ;
+            imageSize.x = (int) (aspectRatio * (double) desiredHeight);
+            imageSize.y = desiredHeight;
+        } else {
+            int desiredWidth =
+                    //powerOfTwoReduce(
+                    //        actualWidth,
+                            Math.min(ThreadViewer.cardMaxImageWidth(), (int)(actualWidth * MAX_EXPANDED_SCALE))
+                    //)
+                    ;
+            imageSize.x = desiredWidth; // restrict by width normally
+            imageSize.y = (int) ((double) desiredWidth / aspectRatio);
+        }
+        if (DEBUG) com.android.gallery3d.ui.Log.v(TAG, "Input size=" + actualWidth + "x" + actualHeight + " output size=" + imageSize.x + "x" + imageSize.y);
+        return imageSize;
+    }
+    /*
+    private static int powerOfTwoReduce(double a, double d) { // actual, desired INT_SAMPLE_POWER_OF_2
+        if (a <= d)
+            return (int)a;
+        /* a > d
+
+           a/2^n <= d
+           a <= d * 2^n
+           a/d <= 2^n
+           ln(a/d)/ln(2) <= n
+           n >= ln(a/d)/ln(2)
+           p = ceil(n)
+
+           s = 2^p
+           o = a / s
+        */
+        /*
+        double n = Math.log(a/d) / Math.log(2);
+        int p = (int)Math.floor(n);
+        int s = (int)Math.pow(2, p); // scale
+        int o = (int)(a / s);
+        if (DEBUG) Log.i(TAG, "powerOfTwoReduce(a=" + a + ", d=" + d + ") n=" + n + " p=" + p + " s=" + s + " o=" + o);
+        return o;
+    }
+    */
 }

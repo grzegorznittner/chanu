@@ -538,7 +538,13 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@color/PaletteThreadHeaderImageBg</item>
-        <!--<item name="android:background">@color/PaletteBlack</item>-->
+    </style>
+
+    <style name="ThreadListItemImageSection" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/PaletteThreadHeaderImageBg</item>
+        <item name="android:visibility">gone</item>
     </style>
 
     <style name="ThreadListHeaderImage" parent="AppTheme">
@@ -563,7 +569,7 @@
         <item name="android:layout_marginTop">@dimen/ThreadListHeaderImage_layout_marginTop</item>
         <item name="android:layout_marginBottom">@dimen/ThreadListHeaderImage_layout_marginBottom</item>
         <item name="android:gravity">center</item>
-        <item name="android:scaleType">fitCenter</item>
+        <item name="android:scaleType">center</item>
         <item name="android:contentDescription">@string/thread_post_image</item>
         <item name="android:background">@color/PaletteThreadHeaderImageBg</item>
         <!--<item name="android:background">@color/PaletteBlack</item> -->
@@ -623,10 +629,9 @@
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
         <item name="android:textColor">@color/PaletteThreadSecondaryText</item>
+        <item name="android:textStyle">italic</item>
         <item name="android:autoLink">email</item>
         <item name="android:linksClickable">true</item>
-        <!--<item name="android:textColorLink">@color/PaletteChanuGreen</item>-->
-        <!--<item name="android:background">@color/PaletteDarkGray</item> -->
         <item name="android:visibility">gone</item>
         <item name="android:paddingTop">@dimen/ThreadListHeader_micro_padding</item>
     </style>
@@ -976,7 +981,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:scaleType">fitCenter</item>
+        <item name="android:scaleType">center</item>
         <item name="android:contentDescription">@string/thread_post_image_expanded</item>
     </style>
 
@@ -993,8 +998,9 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">@dimen/ThreadListHeader_micro_padding</item>
-        <item name="android:textColor">@color/PaletteThreadSecondaryText</item>
+        <item name="android:textColor">@color/PaletteThreadHeadText</item>
         <item name="android:textSize">@dimen/ThreadListItemHead</item>
+        <item name="android:textStyle">italic</item>
         <item name="android:autoLink">email</item>
         <item name="android:linksClickable">true</item>
         <item name="android:visibility">gone</item>

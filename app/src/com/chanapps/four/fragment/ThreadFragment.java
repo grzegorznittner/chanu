@@ -930,7 +930,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected View.OnClickListener overflowListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //uncheckAll();
             int pos = absListView.getPositionForView(v);
             if (pos >= 0) {
                 absListView.setItemChecked(pos, true);
@@ -1008,18 +1007,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected PopupMenu.OnDismissListener popupDismissListener = new PopupMenu.OnDismissListener() {
         @Override
         public void onDismiss(PopupMenu menu) {
-            uncheckAll();
         }
     };
-
-    protected void uncheckAll() {
-        SparseBooleanArray checked = absListView.getCheckedItemPositions();
-        for (int i = 0; i < checked.size(); i++) {
-            int pos = checked.keyAt(i);
-            if (checked.get(pos, false))
-                absListView.setItemChecked(pos, false);
-        }
-    }
 
     protected LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override

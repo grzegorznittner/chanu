@@ -38,7 +38,7 @@
             </LinearLayout>
         </RelativeLayout>
 
-        <RelativeLayout style="@style/ThreadListHeaderImageSection">
+        <RelativeLayout style="@style/ThreadListHeaderImageSection" android:id="@+id/list_item_image_expanded_wrapper">
             <ImageView style="@style/ThreadListHeaderImage" android:id="@+id/list_item_image"/>
             <ImageView style="@style/ThreadListHeaderImageExpanded" android:id="@+id/list_item_image_expanded"/>
             <ProgressBar style="@style/ThreadListItemExpandedProgressBar" android:id="@+id/list_item_expanded_progress_bar"/>

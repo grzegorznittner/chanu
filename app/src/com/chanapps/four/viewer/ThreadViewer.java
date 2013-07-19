@@ -59,6 +59,7 @@ public class ThreadViewer {
 
     private static DisplayMetrics displayMetrics = null;
     private static Typeface subjectTypeface = null;
+    private static int cardPaddingPx = 0;
     private static int itemThumbWidth = 0;
     private static int itemThumbMaxHeight = 0;
     private static ImageLoader imageLoader = null;
@@ -69,6 +70,7 @@ public class ThreadViewer {
         if (displayMetrics != null)
             return;
         Resources res = view.getResources();
+        cardPaddingPx = res.getDimensionPixelSize(R.dimen.BoardGridView_spacing);
         displayMetrics = res.getDisplayMetrics();
         subjectTypeface = Typeface.createFromAsset(res.getAssets(), SUBJECT_FONT);
         itemThumbWidth = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
@@ -115,14 +117,14 @@ public class ThreadViewer {
         int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
         if (flags < 0) // we are on board list
             return BoardGridViewer.setViewValue(view, cursor, groupBoardCode, columnWidth, columnHeight, null, null);
-        else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0)
-            return setUrlLinkView(view, cursor);
+        //else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0)
+        //    return setUrlLinkView(view, cursor);
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
             return setTitleView(view, cursor);
-        else if ((flags & ChanPost.FLAG_IS_BUTTON) > 0)
-            return setButtonView(view, cursor);
-        else if ((flags & ChanPost.FLAG_IS_AD) > 0)
-            return setBannerAdView(view, cursor, isTablet);
+        //else if ((flags & ChanPost.FLAG_IS_BUTTON) > 0)
+        //    return setButtonView(view, cursor);
+        //else if ((flags & ChanPost.FLAG_IS_AD) > 0)
+        //    return setBannerAdView(view, cursor, isTablet);
         else if ((flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0)
             return setListLinkView(view, cursor, flags);
         else
@@ -145,7 +147,7 @@ public class ThreadViewer {
             case R.id.list_item:
                 return setItem((ViewGroup) view, cursor, flags, false, null, null, null, null, null);
             case R.id.list_item_image_wrapper:
-                return setImageWrapper((ViewGroup) view, cursor, flags);
+                return setImageWrapper(view, flags);
             case R.id.list_item_image:
                 return setImage((ImageView) view, cursor, flags, null, null);
             case R.id.list_item_country_flag:
@@ -178,12 +180,13 @@ public class ThreadViewer {
                 return setItem((ViewGroup) view, cursor, flags, showContextMenu,
                         backlinkOnClickListener, imagesOnClickListener, repliesOnClickListener,
                         postReplyListener, overflowListener);
-            case R.id.list_item_image_expanded_wrapper:
-                return setImageExpandedWrapper((ViewGroup) view);
             case R.id.list_item_image_wrapper:
-                return setImageWrapper((ViewGroup) view, cursor, flags);
+                return setImageWrapper(view, flags);
             case R.id.list_item_image:
-                return setImage((ImageView) view, cursor, flags, imageOnClickListener, expandedImageListener);
+                if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
+                    return setHeaderImage((ImageView) view, cursor, flags, imageOnClickListener, expandedImageListener);
+                else
+                    return setImage((ImageView) view, cursor, flags, imageOnClickListener, expandedImageListener);
             case R.id.list_item_country_flag:
                 return setCountryFlag((ImageView) view, cursor, flags);
             case R.id.list_item_header:
@@ -200,14 +203,6 @@ public class ThreadViewer {
                 return false;
         }
     }
-
-    /*
-        protected boolean setEmptyItemText(TextView view) {
-        view.setText("");
-        view.setVisibility(View.GONE);
-        return true;
-    }
-     */
 
     static protected boolean setItem(ViewGroup item, Cursor cursor, int flags,
                                      boolean showContextMenu,
@@ -513,8 +508,8 @@ public class ThreadViewer {
             text += (text.isEmpty() ? "" : " ") + SHOW_EXIF_HTML;
 
         String html = markupHtml(text);
-        if (DEBUG) Log.i(TAG, "text before replace:" + text);
-        if (DEBUG) Log.i(TAG, "text after  replace:" + html);
+        //if (DEBUG) Log.i(TAG, "text before replace:" + text);
+        //if (DEBUG) Log.i(TAG, "text after  replace:" + html);
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(html, null, spoilerTagHandler));
         if (spannable.length() == 0) {
             tv.setVisibility(View.GONE);
@@ -529,7 +524,7 @@ public class ThreadViewer {
         if (backlinkOnClickListener != null)
             addLinkedSpans(spannable, POST_PATTERN, backlinkOnClickListener);
 
-        if (DEBUG) Log.v(TAG, "setText spannable=" + spannable + " len=" + spannable.length());
+        //if (DEBUG) Log.v(TAG, "setText spannable=" + spannable + " len=" + spannable.length());
         tv.setText(spannable);
         tv.setVisibility(View.VISIBLE);
         return true;
@@ -548,14 +543,10 @@ public class ThreadViewer {
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
-    static private final String BR_RE = "<br/?>";
     static private final String QUOTE_RE_FIRST = "^(>[^<>]*)(<br/?>)";
     static private final String QUOTE_RE_FIRST_REPLACE = "<font color=\"#7a9441\">$1</font>$2";   // #7a9441
     static private final String QUOTE_RE_MID = "(<br/?>)(>[^<>]*)";
     static private final String QUOTE_RE_MID_REPLACE = "$1<font color=\"#7a9441\">$2</font>";   // #7a9441
-    static private final String QUOTE_RE_LAST = "<br/?>(>[^<>]*)$";
-    static private final String QUOTE_RE_LAST_REPLACE = "<br/><font color=\"#7a9441\">$1</font>";   // #7a9441
-    static private final String QUOTE_RE_ONLY = "^(>.*)$";
     static private final Pattern POST_PATTERN = Pattern.compile("(>>\\d+)");
     //static private final Pattern REPLY_PATTERN = Pattern.compile("(1 Reply|\\d+ Replies)");
     static private final Pattern ID_PATTERN = Pattern.compile("Id: ([A-Za-z0-9+./_:!-]+)");
@@ -580,7 +571,6 @@ public class ThreadViewer {
         String out = in
                 .replaceFirst(QUOTE_RE_FIRST, QUOTE_RE_FIRST_REPLACE)
                 .replaceAll(QUOTE_RE_MID, QUOTE_RE_MID_REPLACE)
-                //.replaceFirst(QUOTE_RE_LAST, QUOTE_RE_LAST_REPLACE)
                 ;
         return out;
     }
@@ -591,144 +581,68 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean setImageWrapper(final ViewGroup layout, final Cursor cursor, int flags) {
+
+    static private boolean setImageWrapper(final View v, final int flags) {
         if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
-            layout.setVisibility(View.VISIBLE);
+            v.setVisibility(View.VISIBLE);
         else
-            layout.setVisibility(View.GONE);
+            v.setVisibility(View.GONE);
         return true;
     }
 
-    static private ImageLoadingListener adImageLoadingListener = new ImageLoadingListener() {
-        @Override
-        public void onLoadingStarted(String imageUri, View view) {
-        }
-
-        @Override
-        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-            if (view instanceof ImageView) {
-                ChanImageLoader.getInstance(view.getContext()).displayImage(ChanAd.defaultImageUrl(), (ImageView) view);
-            }
-        }
-
-        @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-        }
-
-        @Override
-        public void onLoadingCancelled(String imageUri, View view) {
-        }
-    };
-
-    static private ImageLoadingListener bannerAdImageLoadingListener = new ImageLoadingListener() {
-        @Override
-        public void onLoadingStarted(String imageUri, View view) {
-        }
-
-        @Override
-        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-            view.setVisibility(View.GONE);
-            //if (view instanceof ImageView) {
-            //    ChanImageLoader.getInstance(view.getContext()).displayImage(ChanAd.defaultImageUrl(), (ImageView) view);
-            //}
-        }
-
-        @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-            ViewGroup.LayoutParams params = view.getLayoutParams();
-            if (params != null)
-                params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
-
-        @Override
-        public void onLoadingCancelled(String imageUri, View view) {
-        }
-    };
+    static private boolean setHeaderImage(final ImageView iv, final Cursor cursor, int flags,
+                                    View.OnClickListener imageOnClickListener,
+                                    View.OnClickListener expandedImageListener) {
+        if (DEBUG) Log.i(TAG, "setHeaderImage()");
+        if (hideNoImage(iv, flags))
+            return true;
+        if (displayCachedExpandedHeaderImage(iv, cursor, flags, expandedImageListener))
+            return true;
+        return displayHeaderImage(iv, cursor, flags, imageOnClickListener);
+    }
 
     static private boolean setImage(final ImageView iv, final Cursor cursor, int flags,
                                     View.OnClickListener imageOnClickListener,
                                     View.OnClickListener expandedImageListener) {
-        if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0) {
-            iv.setImageBitmap(null);
-            iv.setVisibility(View.GONE);
+        if (hideNoImage(iv, flags))
             return true;
-        }
-
-        //if ((flags & ChanPost.FLAG_IS_HEADER) > 0) { // use expanded image
-        View itemView = (flags & ChanPost.FLAG_IS_HEADER) > 0
-                ? (View)iv.getParent().getParent()
-                : (View)iv.getParent().getParent().getParent();
-        File file = fullSizeImageFile(iv.getContext(), cursor); // try for full size first
-        if (itemView != null && file != null) {
-            if (itemView != null) {
-                if (DEBUG) Log.i(TAG, "setImage() expanded file=" + file.getAbsolutePath());
-                ThreadExpandImageOnClickListener expander =
-                        (new ThreadExpandImageOnClickListener(iv.getContext(), cursor, itemView, expandedImageListener));
-                expander.displayCachedExpandedImage();
-                iv.setVisibility(View.GONE);
-                return true;
-            }
-            else {
-                if (DEBUG) Log.i(TAG, "setImage() no item view found");
-            }
-        }
-        else if (itemView != null) {
-            View itemExpandedImage = (ImageView)itemView.findViewById(R.id.list_item_image_expanded);
-            View itemExpandedImageClickEffect = itemView.findViewById(R.id.list_item_image_expanded_click_effect);
-            View itemExpandedProgressBar = (ProgressBar)itemView.findViewById(R.id.list_item_expanded_progress_bar);
-            if (itemExpandedImage != null)
-                itemExpandedImage.setVisibility(View.GONE);
-            if (itemExpandedImageClickEffect != null)
-                itemExpandedImageClickEffect.setVisibility(View.GONE);
-            if (itemExpandedProgressBar != null)
-                itemExpandedProgressBar.setVisibility(View.GONE);
-        }
-
-        String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
-        if ((flags & ChanPost.FLAG_IS_HEADER) == 0) {
-            if (url != null && !url.isEmpty()) {
-                if (DEBUG) Log.i(TAG, "setImage url=" + url);
-                if (imageOnClickListener != null)
-                    iv.setOnClickListener(imageOnClickListener);
-                iv.setVisibility(View.VISIBLE);
-                imageLoader.displayImage(url, iv, thumbDisplayImageOptions);
-            }
-            else {
-                if (DEBUG) Log.i(TAG, "setImage null image");
-                iv.setVisibility(View.GONE);
-                iv.setImageBitmap(null);
-            }
+        if (!isListLink(flags) && displayCachedExpandedImage(iv, cursor, flags, expandedImageListener))
             return true;
-        }
+        return displayNonHeaderImage(iv, cursor, flags, imageOnClickListener);
+    }
 
+    static private boolean isListLink(int flags) {
+        return (flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0; // skip for unexpandables
+    }
+
+    static private boolean displayHeaderImage(ImageView iv, Cursor cursor, int flags,
+                                           View.OnClickListener imageOnClickListener) {
         int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
         int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
-
-        if ((flags & ChanPost.FLAG_HAS_SPOILER) > 0) { // don't size based on hidden image, size based on filler image
+        if ((flags & ChanPost.FLAG_HAS_SPOILER) > 0 || tn_w <= 0 || tn_h <= 0) { // don't size based on hidden image, size based on filler image
             tn_w = 250;
             tn_h = 250;
         }
-
-        if (tn_w == 0 || tn_h == 0)  // we don't have height and width, so just show unscaled image
-            return displayImageAtDefaultSize(iv, url);
+        //if (tn_w == 0 || tn_h == 0)  // we don't have height and width, so just show unscaled image
+        //    return displayHeaderImageAtDefaultSize(iv, url);
 
         // scale image
         Point imageSize;
         ViewGroup.LayoutParams params = iv.getLayoutParams();
-        if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
+        //if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
             imageSize = sizeHeaderImage(tn_w, tn_h);
             if (params != null) {
                 params.width = imageSize.x;
                 params.height = imageSize.y;
             }
-        }
-        else {
-            imageSize = sizeItemImage(tn_w, tn_h);
-            if (params != null) {
-                params.width = imageSize.x;
-                params.height = imageSize.y;
-            }
-        }
+        //}
+        //else {
+        //    imageSize = sizeItemImage(tn_w, tn_h);
+        //    if (params != null) {
+        //        params.width = imageSize.x;
+        //        params.height = imageSize.y;
+        //    }
+        //}
         ImageSize displayImageSize = new ImageSize(imageSize.x, imageSize.y);
         DisplayImageOptions options = createDisplayImageOptions(displayImageSize);
 
@@ -736,14 +650,104 @@ public class ThreadViewer {
         if (imageOnClickListener != null)
             iv.setOnClickListener(imageOnClickListener);
         iv.setVisibility(View.VISIBLE);
-        ImageLoadingListener listener = ((flags & ChanPost.FLAG_IS_AD) > 0) ? adImageLoadingListener : null;
-        if (DEBUG) Log.i(TAG, "setImage header url=" + url);
-        imageLoader.displayImage(url, iv, options, listener);
+        //ImageLoadingListener listener = ((flags & ChanPost.FLAG_IS_AD) > 0) ? adImageLoadingListener : null;
+        String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
+        if (DEBUG) Log.i(TAG, "setImage() url=" + url);
+        //imageLoader.displayImage(url, iv, options, listener);
+        imageLoader.displayImage(url, iv, options);
 
         return true;
     }
 
-    static private boolean displayImageAtDefaultSize(final ImageView iv, String url) {
+    static private boolean hideNoImage(ImageView iv, int flags) {
+        if ((flags & ChanPost.FLAG_HAS_IMAGE) == 0) {
+            if (DEBUG) Log.i(TAG, "hideNoImage()");
+            iv.setImageBitmap(null);
+            iv.setVisibility(View.GONE);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    static private boolean displayCachedExpandedHeaderImage(final ImageView iv, final Cursor cursor, final int flags,
+                                                      final View.OnClickListener expandedImageListener) {
+        View itemView = (View)iv.getParent().getParent();
+        if (itemView == null)
+            return false; // broken layout
+
+        File file = fullSizeImageFile(iv.getContext(), cursor); // try for full size first
+        if (file == null) {
+            View itemExpandedImage = itemView.findViewById(R.id.list_item_image_expanded);
+            View itemExpandedImageClickEffect = itemView.findViewById(R.id.list_item_image_expanded_click_effect);
+            View itemExpandedProgressBar = itemView.findViewById(R.id.list_item_expanded_progress_bar);
+            if (itemExpandedImage != null)
+                itemExpandedImage.setVisibility(View.GONE);
+            if (itemExpandedImageClickEffect != null)
+                itemExpandedImageClickEffect.setVisibility(View.GONE);
+            if (itemExpandedProgressBar != null)
+                itemExpandedProgressBar.setVisibility(View.GONE);
+            if (DEBUG) Log.i(TAG, "displayCachedExpandedHeaderImage no expanded image, returning");
+            return false;
+        }
+
+        if (DEBUG) Log.i(TAG, "displayCachedExpandedHeaderImage expanded file=" + file.getAbsolutePath());
+        ThreadExpandImageOnClickListener expander =
+                (new ThreadExpandImageOnClickListener(iv.getContext(), cursor, itemView, expandedImageListener));
+        expander.displayCachedExpandedImage();
+        return true;
+    }
+
+    static private boolean displayCachedExpandedImage(final ImageView iv, final Cursor cursor, final int flags,
+                                                      final View.OnClickListener expandedImageListener) {
+        View itemView = (View)iv.getParent().getParent().getParent();
+        if (itemView == null)
+            return false; // broken layout
+
+        File file = fullSizeImageFile(iv.getContext(), cursor); // try for full size first
+        if (file == null) {
+            View itemExpandedImage = itemView.findViewById(R.id.list_item_image_expanded);
+            View itemExpandedImageClickEffect = itemView.findViewById(R.id.list_item_image_expanded_click_effect);
+            View itemExpandedProgressBar = itemView.findViewById(R.id.list_item_expanded_progress_bar);
+            View itemExpandedImageWrapper = itemView.findViewById(R.id.list_item_image_expanded_wrapper);
+            if (itemExpandedImage != null)
+                itemExpandedImage.setVisibility(View.GONE);
+            if (itemExpandedImageClickEffect != null)
+                itemExpandedImageClickEffect.setVisibility(View.GONE);
+            if (itemExpandedProgressBar != null)
+                itemExpandedProgressBar.setVisibility(View.GONE);
+            if (itemExpandedImageWrapper != null)
+                itemExpandedImageWrapper.setVisibility(View.GONE);
+            return false;
+        }
+
+        if (DEBUG) Log.i(TAG, "setImage() expanded file=" + file.getAbsolutePath());
+        ThreadExpandImageOnClickListener expander =
+                (new ThreadExpandImageOnClickListener(iv.getContext(), cursor, itemView, expandedImageListener));
+        expander.displayCachedExpandedImage();
+        return true;
+    }
+
+    static private boolean displayNonHeaderImage(final ImageView iv, final Cursor cursor, final int flags,
+                                                 View.OnClickListener imageOnClickListener) {
+        String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
+        if (url != null && !url.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "setImage url=" + url);
+            if (imageOnClickListener != null)
+                iv.setOnClickListener(imageOnClickListener);
+            iv.setVisibility(View.VISIBLE);
+            imageLoader.displayImage(url, iv, thumbDisplayImageOptions);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "setImage null image");
+            iv.setVisibility(View.GONE);
+            iv.setImageBitmap(null);
+        }
+        return true;
+    }
+    /*
+    static private boolean displayHeaderImageAtDefaultSize(final ImageView iv, String url) {
         ViewGroup.LayoutParams params = iv.getLayoutParams();
         if (params != null) {
             params.width = itemThumbWidth;
@@ -754,61 +758,54 @@ public class ThreadViewer {
         imageLoader.displayImage(url, iv, displayImageOptions);
         return true;
     }
-
+    */
     public static Point sizeHeaderImage(final int tn_w, final int tn_h) {
         Point imageSize = new Point();
-        double scaleFactor = (double) tn_w / (double) tn_h;
-        if (scaleFactor < 1) { // tall image, restrict by height
-            int desiredHeight = Math.min(displayMetrics.heightPixels / 2,
-                    (int)(tn_h * MAX_HEADER_SCALE)); // prevent excessive scaling
-            imageSize.x = (int) (scaleFactor * (double) desiredHeight);
-            imageSize.y = desiredHeight;
+        double aspectRatio = (double) tn_w / (double) tn_h;
+        if (aspectRatio < 1) { // tall image, restrict by height
+            double desiredHeight = Math.min(cardMaxImageHeight(),
+                    (tn_h * MAX_HEADER_SCALE)); // prevent excessive scaling
+            imageSize.x = (int)(aspectRatio * desiredHeight);
+            imageSize.y = (int)desiredHeight;
         } else {
-            int desiredWidth = Math.min(displayMetrics.widthPixels,
-                    (int)(tn_w * MAX_HEADER_SCALE)); // prevent excessive scaling
-            imageSize.x = desiredWidth; // restrict by width normally
-            imageSize.y = (int) ((double) desiredWidth / scaleFactor);
+            double desiredWidth = Math.min(cardMaxImageWidth(),
+                    (tn_w * MAX_HEADER_SCALE)); // prevent excessive scaling
+            imageSize.x = (int)desiredWidth; // restrict by width normally
+            imageSize.y = (int)(desiredWidth / aspectRatio);
         }
         if (DEBUG) Log.v(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + imageSize.x + "x" + imageSize.y);
         return imageSize;
     }
 
+    public static int cardMaxImageWidth() {
+        if (displayMetrics.widthPixels < displayMetrics.heightPixels) // portrait
+            return displayMetrics.widthPixels - cardPaddingPx - cardPaddingPx;
+        else // landscape
+            return displayMetrics.widthPixels / 2 - cardPaddingPx - cardPaddingPx;
+    }
+
+    public static int cardMaxImageHeight() {
+        if (displayMetrics.widthPixels < displayMetrics.heightPixels) // portrait
+            return displayMetrics.heightPixels / 2 - cardPaddingPx - cardPaddingPx;
+        else // landscape
+            return displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
+    }
+
+    /*
     public static Point sizeItemImage(int tn_w, int tn_h) {
         Point imageSize = new Point();
-        double scaleFactor = (double) tn_w / (double) tn_h;
-        if (scaleFactor < 0.5) { // tall image, restrict by height
-            imageSize.x = (int) (scaleFactor * (double) itemThumbMaxHeight);
+        double aspectRatio = (double) tn_w / (double) tn_h;
+        if (aspectRatio < 0.5) { // tall image, restrict by height
+            imageSize.x = (int) (aspectRatio * (double) itemThumbMaxHeight);
             imageSize.y = itemThumbMaxHeight;
         } else {
             imageSize.x = itemThumbWidth; // restrict by width normally
-            imageSize.y = (int) ((double) itemThumbWidth / scaleFactor);
+            imageSize.y = (int) ((double) itemThumbWidth / aspectRatio);
         }
         //if (DEBUG) Log.i(TAG, "Item Input size=" + tn_w + "x" + tn_h + " output size=" + imageSize.x + "x" + imageSize.y);
         return imageSize;
     }
-
-    static private boolean setImageExpandedWrapper(final ViewGroup v) {
-        v.setVisibility(View.GONE);
-        return true;
-    }
-
-    static private boolean setImageExpandedClickEffect(final View view, final Cursor cursor, int flags,
-                                                       View.OnClickListener imageOnClickListener) {
-        view.setVisibility(View.GONE);
-        if ((flags & (ChanPost.FLAG_IS_AD
-                | ChanPost.FLAG_IS_TITLE
-                | ChanPost.FLAG_IS_THREADLINK
-                | ChanPost.FLAG_IS_BOARDLINK
-                | ChanPost.FLAG_NO_EXPAND)) == 0) {
-            view.setOnClickListener(imageOnClickListener);
-        }
-        return true;
-    }
-
-    static private boolean setImageExpandedProgressBar(final ProgressBar progressBar) {
-        progressBar.setVisibility(View.GONE);
-        return true;
-    }
+    */
 
     static private boolean setCountryFlag(final ImageView iv, final Cursor cursor, int flags) {
         if ((flags & ChanPost.FLAG_HAS_COUNTRY) > 0) {
@@ -823,15 +820,6 @@ public class ThreadViewer {
         return true;
     }
 
-    protected static boolean setUrlLinkView(View view, Cursor cursor) {
-        if (view.getId() == R.id.list_item_urllink) {
-            String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-            Spanned spanned = Html.fromHtml("<u>" + text + "</u>");
-            ((TextView)view).setText(spanned);
-        }
-        return true;
-    }
-
     protected static boolean setTitleView(View view, Cursor cursor) {
         if (view.getId() == R.id.list_item_title) {
             String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
@@ -841,53 +829,8 @@ public class ThreadViewer {
         return true;
     }
 
-    protected static boolean setButtonView(View view, Cursor cursor) {
-        if (view.getId() == R.id.list_item_button) {
-            String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-            Spanned spanned = Html.fromHtml(text);
-            ((TextView)view).setText(spanned);
-        }
-        return true;
-    }
-
-    protected static boolean setBannerAdView(View view, Cursor cursor, boolean isTablet) {
-        switch (view.getId()) {
-            case R.id.list_item_thread_banner_ad:
-                return setBannerAd((ImageView) view, cursor, isTablet);
-            case R.id.list_item_thread_banner_ad_click_effect:
-                return setBannerAdLayoutParams(view, cursor, isTablet);
-            default:
-                return true;
-        }
-    }
-
-    protected static boolean setBannerAd(final ImageView iv, Cursor cursor, boolean isTablet) {
-        setBannerAdLayoutParams(iv, cursor, isTablet);
-        String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
-        if (DEBUG) Log.i(TAG, "Displaying ad image iv=" + iv + " url=" + url);
-        imageLoader.displayImage(url, iv, displayImageOptions, bannerAdImageLoadingListener);
-        return true;
-    }
-
-    protected static boolean setBannerAdLayoutParams(final View v, Cursor cursor, boolean isTablet) {
-        ViewGroup.LayoutParams params = v.getLayoutParams();
-        if (params == null)
-            return false;
-        double tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
-        double tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
-        double viewWidth = displayMetrics.widthPixels
-                - v.getResources().getDimensionPixelSize(R.dimen.BoardGridViewTablet_layout_width);
-        double scale = viewWidth / tn_w;
-        double scaledHeight = scale * tn_h;
-        if (DEBUG) Log.i(TAG, "Ad inSize=" + tn_w + "x" + tn_h + " outSize=" + viewWidth + "x" + scaledHeight);
-        params.width = (int)viewWidth;
-        params.height = (int)scaledHeight;
-        return true;
-    }
-
     static private final Html.TagHandler spoilerTagHandler = new Html.TagHandler() {
         static private final String SPOILER_TAG = "s";
-        public static final int PALETTE_BLACK = 0xFF2D2D2D;
         class SpoilerSpan extends ClickableSpan {
             private int start = 0;
             private int end = 0;
@@ -922,9 +865,6 @@ public class ThreadViewer {
                     int textColor = ds.getColor();
                     ds.bgColor = textColor;
                 }
-                //int bgColor = ds.bgColor;
-                //ds.bgColor = blackout ? PALETTE_BLACK : 0; // palette black 2d2d2d
-                //ds.bgColor = blackout ? textColor : bgColor; // palette black 2d2d2d
             }
         }
         class SpanFactory {
@@ -982,19 +922,6 @@ public class ThreadViewer {
             return null;
         }
     };
-
-    public static void safeClearImageView(ImageView v) {
-        /*
-        Drawable d = v.getDrawable();
-        if (d != null && d instanceof BitmapDrawable) {
-            BitmapDrawable bd = (BitmapDrawable)d;
-            Bitmap b = bd.getBitmap();
-            if (b != null)
-                b.recycle();
-        }
-        */
-        v.setImageBitmap(null);
-    }
 
     public static void clearBigImageView(final ImageView v) {
         new Thread(new Runnable() {

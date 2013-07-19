@@ -11,6 +11,7 @@
     <color name="PaletteThreadHeaderBg">#00000000</color>
     <color name="PaletteThreadHeaderImageBg">#333</color>
     <color name="PaletteThreadSecondaryText">#ccc</color>
+    <color name="PaletteThreadHeadText">#bbb</color>
     <color name="PaletteImagePlaceholder">#ccc</color>
     <!--<color name="PaletteDrawerBg">#303030</color>-->
     <color name="PaletteDrawerText">#f2f2f2</color>

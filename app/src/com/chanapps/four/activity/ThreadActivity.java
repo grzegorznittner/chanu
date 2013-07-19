@@ -700,9 +700,9 @@ public class ThreadActivity
                 startActivity(intent);
                 getActivity().finish();
                 return true;
-
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return false;
     }
 
 }
