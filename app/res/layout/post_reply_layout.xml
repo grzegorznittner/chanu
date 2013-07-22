@@ -97,6 +97,14 @@
             </ImageButton>
 
             <ImageButton
+                    android:id="@+id/post_reply_web_button"
+                    style="@style/PostReplyButton"
+                    android:contentDescription="@string/post_reply_web_hint"
+                    android:hint="@string/post_reply_web_hint"
+                    android:src="@drawable/location_web_site">
+            </ImageButton>
+
+            <ImageButton
                     android:id="@+id/post_reply_camera_button"
                     style="@style/PostReplyButton"
                     android:contentDescription="@string/post_reply_camera_hint"
@@ -154,18 +162,29 @@
                 style="@style/PostReplyCheckbox"
                 android:text="@string/post_reply_spoiler" />
 
-        <ImageView
-                android:id="@+id/post_reply_image_preview"
+        <RelativeLayout
+                android:id="@+id/post_reply_preview_frame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:visibility="gone"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:contentDescription="@string/post_reply_add_image"
+                android:gravity="center"
+                android:visibility="gone"
                 >
-        </ImageView>
+            <ImageView
+                    android:id="@+id/post_reply_preview_image"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="post_reply_add_image"
+                    android:background="@drawable/stub_image_background">
+            </ImageView>
+            <ProgressBar style="@style/WebImageProgressBar" android:id="@+id/post_reply_preview_progress_bar"/>
+        </RelativeLayout>
 
         <EditText
                 android:id="@+id/post_reply_name"

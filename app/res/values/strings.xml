@@ -103,6 +103,18 @@
     <string name="logout_pass_error">Couldn\'t logout</string>
     <string name="logout_pass_no_response">Couldn\'t logout, no response</string>
 
+    <!-- web image -->
+    <string name="web_image_title">Attach Image from Web</string>
+    <string name="web_image_url_text_hint">Image Url</string>
+    <string name="web_image_key_download">Load</string>
+    <string name="web_image_button_download">Download</string>
+    <string name="web_image_button_browse">Browse for image</string>
+    <string name="web_image_button_attach">Attach</string>
+    <string name="web_image_input_url_first">Enter url to download image</string>
+    <string name="web_image_download_first">Download image before attaching</string>
+    <string name="web_image_download_hint">Download image</string>
+    <string name="web_image_download_failed">Couldn\'t download image</string>
+
     <!-- menus -->
     <string name="web_menu">View on 4chan.org</string>
     <string name="settings_menu">Settings</string>
@@ -444,6 +456,7 @@
     <string name="post_reply_text_hint">Comment (Optional)</string>
     <string name="post_reply_text_hint_required">Comment (Required)</string>
     <string name="post_reply_camera_hint">Camera</string>
+    <string name="post_reply_web_hint">Download Image</string>
     <string name="post_reply_picture_hint">Gallery</string>
     <string name="post_reply_delete_hint">Delete Image</string>
     <string name="post_reply_rotate_left_hint">Rotate Left</string>

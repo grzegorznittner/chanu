@@ -26,12 +26,17 @@ import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.*;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.multipartmime.*;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.task.LoadCaptchaTask;
 import com.chanapps.four.task.LogoutPassTask;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -91,6 +96,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     private ImageButton cameraButton;
     private ImageButton pictureButton;
+    private ImageButton webButton;
     private ImageButton deleteButton;
     private ImageButton bumpButton;
     private ImageButton sageButton;
@@ -111,7 +117,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private EditText subjectText;
     private EditText passwordText;
     private CheckBox spoilerCheckbox;
+    private RelativeLayout previewFrame;
     private ImageView imagePreview;
+    private ProgressBar previewProgress;
     TextView.OnEditorActionListener fastSend;
 
     protected Uri imageUri;
@@ -154,9 +162,12 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     protected void createViews() {
         wrapperLayout = (LinearLayout)findViewById(R.id.post_reply_wrapper);
-        imagePreview = (ImageView)findViewById(R.id.post_reply_image_preview);
+        previewFrame = (RelativeLayout)findViewById(R.id.post_reply_preview_frame);
+        imagePreview = (ImageView)findViewById(R.id.post_reply_preview_image);
+        previewProgress = (ProgressBar)findViewById(R.id.post_reply_preview_progress_bar);
         cameraButton = (ImageButton)findViewById(R.id.post_reply_camera_button);
         pictureButton = (ImageButton)findViewById(R.id.post_reply_picture_button);
+        webButton = (ImageButton)findViewById(R.id.post_reply_web_button);
         deleteButton = (ImageButton)findViewById(R.id.post_reply_delete_button);
         bumpButton = (ImageButton)findViewById(R.id.post_reply_bump_button);
         sageButton = (ImageButton)findViewById(R.id.post_reply_sage_button);
@@ -186,6 +197,12 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         pictureButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 startGallery();
+            }
+        });
+        webButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                (new WebImageDialogFragment(boardCode, threadNo))
+                        .show(getSupportFragmentManager(), WebImageDialogFragment.TAG);
             }
         });
         deleteButton.setOnClickListener(new View.OnClickListener() {
@@ -568,7 +585,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         updatePassRecaptchaViews(passEnabled);
     }
 
-    protected void setImageUri(String imageUrl) {
+    public void setImageUri(String imageUrl) {
         if (imageUrl != null && !imageUrl.isEmpty())
             try {
                 imageUri = Uri.parse(imageUrl);
@@ -584,6 +601,19 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             imageUri = null;
             imagePreview.setVisibility(View.GONE);
             if (DEBUG) Log.i(TAG, "imageUrl passed was null or empty");
+        }
+    }
+
+    public void setImageUri(Uri uri) {
+        if (uri != null) {
+            imageUri = uri;
+            setImagePreview();
+            if (DEBUG) Log.i(TAG, "loaded uri = " + uri);
+        }
+        else {
+            imageUri = null;
+            imagePreview.setVisibility(View.GONE);
+            if (DEBUG) Log.i(TAG, "image uri passed was null");
         }
     }
 
@@ -782,6 +812,16 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 if (DEBUG) Log.i(TAG, "No image uri found, not setting image");
                 return;
             }
+            imagePreview.setVisibility(View.VISIBLE);
+            DisplayImageOptions options = (new DisplayImageOptions.Builder())
+                    .cacheOnDisc()
+                    .showStubImage(R.drawable.stub_image_background)
+                    .resetViewBeforeLoading()
+                    .fullSizeImageLocation(imageUri.toString())
+                    .imageSize(new ImageSize(300, 300))
+                    .build();
+            ChanImageLoader.getInstance(this).displayImage(imageUri.toString(), imagePreview, options, previewListener);
+            /*
             Bitmap b = getImagePreviewBitmap();
             if (b != null) {
                 resetImagePreview();
@@ -793,12 +833,35 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
                 imagePreview.setVisibility(View.GONE);
                 Log.e(TAG, "setImagePreview null bitmap with imageUri=" + imageUri.toString());
             }
+            */
         }
         catch (Exception e) {
             Toast.makeText(getApplicationContext(), R.string.post_reply_no_image, Toast.LENGTH_SHORT).show();
             Log.e(TAG, "setImagePreview exception while loading bitmap", e);
         }
     }
+
+    protected ImageLoadingListener previewListener = new ImageLoadingListener() {
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {
+            previewProgress.setVisibility(View.VISIBLE);
+            previewFrame.setVisibility(View.VISIBLE);
+        }
+        @Override
+        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            previewProgress.setVisibility(View.GONE);
+            Toast.makeText(view.getContext(), R.string.web_image_download_failed, Toast.LENGTH_SHORT).show();
+        }
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            previewProgress.setVisibility(View.GONE);
+        }
+        @Override
+        public void onLoadingCancelled(String imageUri, View view) {
+            previewProgress.setVisibility(View.GONE);
+            Toast.makeText(view.getContext(), R.string.web_image_download_failed, Toast.LENGTH_SHORT).show();
+        }
+    };
 
     private void deleteImage() {
         imagePreview.setVisibility(View.GONE);

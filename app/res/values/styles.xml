@@ -977,6 +977,16 @@
         <!--<item name="android:background">@color/PaletteBlack</item> -->
     </style>
 
+    <style name="WebImageProgressBar" parent="@android:style/Widget.Holo.Light.ProgressBar.Large">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateOnly">true</item>
+        <item name="android:visibility">gone</item>
+        <!--<item name="android:background">@color/PaletteBlack</item> -->
+    </style>
+
     <style name="ThreadListItemImageExpanded" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
