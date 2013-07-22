@@ -108,6 +108,8 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 
     private static void optionallyDownloadAllImages(Context context, String boardCode, long threadNo) {
         ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
+        if (thread == null)
+            return;
         if (!thread.defData)
             return;
         NetworkProfile profile = NetworkProfileManager.instance().getCurrentProfile();
