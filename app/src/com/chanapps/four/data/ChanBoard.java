@@ -74,8 +74,8 @@ public class ChanBoard {
     public boolean classic;
     public boolean textOnly;
 	public ChanPost stickyPosts[] = new ChanPost[0];
-	public ChanPost threads[] = new ChanThread[0];
-	public ChanPost loadedThreads[] = new ChanThread[0];
+	public ChanThread threads[] = new ChanThread[0];
+	public ChanThread loadedThreads[] = new ChanThread[0];
 	public int newThreads = 0;
 	public int updatedThreads = 0;
     public long lastFetched;

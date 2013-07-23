@@ -242,6 +242,7 @@
     <string name="thread_invalid_id">No thread found</string>
     <string name="thread_id_found">Found %1$d other posts for same posters</string>
     <string name="thread_no_text_subject"></string>
+    <string name="thread_not_found">Thread not found, showing first thread on board</string>
     <string name="thread_go_to_link">Go To Link</string>
     <string name="thread_image_download_error">Error downloading thread images</string>
     <string name="thread_no_start_play">Can\'t start play, already at end</string>

@@ -215,7 +215,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 					Log.e(TAG, "Problem occured for: " + strings[i], e);
 				}
 			}
-			board.threads = threads.toArray(new ChanPost[]{});
+			board.threads = threads.toArray(new ChanThread[]{});
 			for (ChanPost post : board.threads) {
 				if (post.com == null || post.com.trim().length() == 0) {
 					post.com = (post.ext != null ? post.ext.substring(1) : "") + " " + post.w + "x" + post.h;
@@ -242,7 +242,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 					Log.e(TAG, "Problem occured for: " + strings[i], e);
 				}
 			}
-			board.threads = threads.toArray(new ChanPost[]{});
+			board.threads = threads.toArray(new ChanThread[]{});
 		}
 		if (DEBUG) Log.i(TAG, "board " + board.name + " has " + board.threads.length + " threads\n\n");
 	}
@@ -270,7 +270,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 					Log.e(TAG, "Problem occured for: " + strings[i], e);
 				}
 			}
-			board.threads = threads.toArray(new ChanPost[]{});
+			board.threads = threads.toArray(new ChanThread[]{});
 		}
 		if (DEBUG) Log.i(TAG, "board " + board.name + " has " + board.threads.length + " threads\n\n");
 	}

@@ -102,7 +102,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
         }
         context.startService(intent);
 
-        optionallyDownloadAllImages(context, boardCode, threadNo);
+        //optionallyDownloadAllImages(context, boardCode, threadNo); // really slow on large image threads
         return true;
     }
 

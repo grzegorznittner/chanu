@@ -149,7 +149,6 @@ public class ThreadActivity
         mPager = (ViewPager)findViewById(R.id.pager);
         mPager.setOffscreenPageLimit(OFFSCREEN_PAGE_LIMIT);
         mPager.setAdapter(mAdapter);
-        setCurrentItemToThread();
     }
 
     public void showThread(long threadNo) {
@@ -159,8 +158,11 @@ public class ThreadActivity
 
     protected void setCurrentItemToThread() {
         int pos = getCurrentThreadPos();
+        if (DEBUG) Log.i(TAG, "setCurrentItemToThread found pos=" + pos);
         if (pos != mPager.getCurrentItem() && pos >= 0 && pos < mAdapter.getCount())
             mPager.setCurrentItem(pos, false);
+        else
+            Toast.makeText(this, R.string.thread_not_found, Toast.LENGTH_SHORT).show();
     }
 
     protected int getCurrentThreadPos() {
@@ -262,15 +264,13 @@ public class ThreadActivity
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new Handler();
+        board = ChanFileStorage.loadBoardData(this, boardCode);
         if (board == null || !board.link.equals(boardCode) || mPager == null) { // recreate pager
-            board = ChanFileStorage.loadBoardData(this, boardCode);
             if (DEBUG) Log.i(TAG, "onResume() creating pager");
             createPager();
         }
-        else {
-            if (DEBUG) Log.i(TAG, "onResume() set current item to thread");
-            setCurrentItemToThread();
-        }
+        if (DEBUG) Log.i(TAG, "onResume() set current item to thread");
+        setCurrentItemToThread();
         //invalidateOptionsMenu(); // for correct spinner display
         NetworkProfileManager.instance().activityChange(this);
         if (onTablet()
@@ -347,6 +347,7 @@ public class ThreadActivity
         if (mPager == null && !fragmentBoard.defData) {
             if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " board loaded, creating pager");
             createPager();
+            setCurrentItemToThread();
         }
         if (mPager == null) {
             if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " skipping, null pager");
@@ -689,6 +690,7 @@ public class ThreadActivity
         if (onTablet())
             createAbsListView();
         createPager();
+        setCurrentItemToThread();
     }
 
     @Override

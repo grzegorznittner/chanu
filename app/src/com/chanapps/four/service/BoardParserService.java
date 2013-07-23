@@ -200,12 +200,12 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
             }
         }
 
-        board.threads = threads.toArray(new ChanPost[threads.size()]);
+        board.threads = threads.toArray(new ChanThread[threads.size()]);
         if (DEBUG) Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
 
     private void parseBoardCatalog(BufferedReader in) throws IOException {
-    	List<ChanPost> threads = new ArrayList<ChanPost>();
+    	List<ChanThread> threads = new ArrayList<ChanThread>();
     	board = ChanFileStorage.loadBoardData(getBaseContext(), boardCode);
     	boolean firstLoad = false;
     	if (board != null && board.defData) {
@@ -224,11 +224,11 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         		JsonNode pageNode = jp.readValueAsTree();
     	        for (JsonNode threadValue : pageNode.path("threads")) { // iterate over threads
     	            try {
-                        ChanPost post = mapper.readValue(threadValue, ChanPost.class);
-                        if (DEBUG) Log.i(TAG, "post sub=" + post.sub + " thumb=" + post.tn_w + "x" + post.tn_h + " full=" + post.w + "x" + post.h);
-                        if (post != null) {
-                            post.board = boardCode;
-                            threads.add(post);
+                        ChanThread thread = mapper.readValue(threadValue, ChanThread.class);
+                        if (DEBUG) Log.i(TAG, "thread sub=" + thread.sub + " thumb=" + thread.tn_w + "x" + thread.tn_h + " full=" + thread.w + "x" + thread.h);
+                        if (thread != null) {
+                            thread.board = boardCode;
+                            threads.add(thread);
                         }
                     }
                     catch (JsonMappingException e) { // if we have just one error, try and recover
@@ -252,14 +252,14 @@ public class BoardParserService extends BaseChanService implements ChanIdentifie
         if (DEBUG) Log.i(TAG, "Now have " + threads.size() + " threads ");
     }
 
-	private void updateBoardData(List<ChanPost> threads, boolean firstLoad) {
+	private void updateBoardData(List<ChanThread> threads, boolean firstLoad) {
 		if (board != null) {
         	synchronized (board) {
         		board.defData = false;
         		if (firstLoad) {
-        			board.threads = threads.toArray(new ChanPost[0]);
+        			board.threads = threads.toArray(new ChanThread[0]);
         		} else {
-        			board.loadedThreads = threads.toArray(new ChanPost[0]);
+        			board.loadedThreads = threads.toArray(new ChanThread[0]);
         		}
         		board.updateCountersAfterLoad();
         	}

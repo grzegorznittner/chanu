@@ -6,15 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import com.chanapps.four.service.BoardParserService;
 import com.chanapps.four.widget.WidgetProviderUtils;
@@ -108,14 +100,6 @@ public class ChanFileStorage {
             // default data should never be stored
             return;
         }
-        ChanBoard cachedBoard = boardCache.get(board.link);
-        if (cachedBoard == null) {
-            if (DEBUG) Log.i(TAG, "null board cache for board=" + board.link);
-            boardCache.put(board.link, board);
-        } else {
-            cachedBoard = board;
-            if (DEBUG) Log.i(TAG, "found cached board=" + board.link + " threadCount=" + cachedBoard.threads.length);
-        }
         File boardDir = getBoardCacheDirectory(context, board.link);
         if (boardDir != null && (boardDir.exists() || boardDir.mkdirs())) {
             ObjectMapper mapper = BoardParserService.getJsonMapper();
@@ -127,6 +111,10 @@ public class ChanFileStorage {
         } else {
             Log.e(TAG, "Cannot create board cache folder. " + (boardDir == null ? "null" : boardDir.getAbsolutePath()));
         }
+        if (!board.isVirtualBoard())
+            addMissingWatchedThreads(context, board);
+        boardCache.put(board.link, board);
+        if (DEBUG) Log.i(TAG, "put cached board=" + board.link + " threadCount=" + board.threads.length);
     }
 
     public static File getBoardFile(Context context, String boardName, int page) {
@@ -269,6 +257,8 @@ public class ChanFileStorage {
                     }
                     else {
                     */
+                    if (!board.isVirtualBoard())
+                        addMissingWatchedThreads(context, board);
                     boardCache.put(boardCode, board);
                     //}
                     return board;
@@ -284,7 +274,55 @@ public class ChanFileStorage {
                 boardFile.delete();
             }
         }
-        return prepareDefaultBoardData(context, boardCode);
+        ChanBoard board = prepareDefaultBoardData(context, boardCode);
+        if (!board.isVirtualBoard())
+            addMissingWatchedThreads(context, board);
+        return board;
+    }
+
+    private static void addMissingWatchedThreads(Context context, ChanBoard board) {
+        if (DEBUG) Log.i(TAG, "addMissingWatchedThreads /" + board.link + "/ start #threads = " + board.threads.length);
+        ChanBoard watchlist = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+        if (watchlist == null || watchlist.defData
+                || watchlist.threads == null || watchlist.threads.length == 0)
+            return;
+        Set<Long> watchedNos = new HashSet<Long>();
+        Map<Long, ChanThread> watchedThreads = new HashMap<Long, ChanThread>();
+        Map<Long, ChanThread> watchedLoadedThreads = new HashMap<Long, ChanThread>();
+        for (ChanThread thread : watchlist.threads) {
+            if (thread.board.equals(board.link)) {
+                watchedNos.add(thread.no);
+                watchedThreads.put(thread.no, thread);
+                watchedLoadedThreads.put(thread.no, thread);
+            }
+        }
+        if (DEBUG) Log.i(TAG, "addMissingWatchedThreads size=" + watchedNos.size());
+        if (watchedNos.size() == 0)
+            return;
+        synchronized (board) {
+            for (ChanThread thread : board.threads) {
+                if (watchedNos.contains(thread.no))
+                    watchedThreads.remove(thread.no);
+            }
+            for (ChanThread thread : board.loadedThreads) {
+                if (watchedNos.contains(thread.no))
+                    watchedLoadedThreads.remove(thread.no);
+            }
+            if (DEBUG) Log.i(TAG, "addMissingWatchedThreads missing size=" + watchedThreads.size());
+            // watchedThreads is now the list of missing board threads
+            if (watchedThreads.size() > 0) { // add to end of board.threads
+                List<ChanThread> threads = new ArrayList<ChanThread>(Arrays.asList(board.threads));
+                threads.addAll(watchedThreads.values());
+                board.threads = threads.toArray(board.threads);
+            }
+            if (DEBUG) Log.i(TAG, "addMissingWatchedThreads missing loaded size=" + watchedLoadedThreads.size());
+            if (watchedLoadedThreads.size() > 0) { // add to end of board.loadedThreads
+                List<ChanThread> threads = new ArrayList<ChanThread>(Arrays.asList(board.loadedThreads));
+                threads.addAll(watchedLoadedThreads.values());
+                board.loadedThreads = threads.toArray(board.loadedThreads);
+            }
+        }
+        if (DEBUG) Log.i(TAG, "addMissingWatchedThreads /" + board.link + "/ end #threads = " + board.threads.length);
     }
 
     public static boolean hasNewBoardData(Context context, String boardCode) {
@@ -609,7 +647,7 @@ public class ChanFileStorage {
         }
         if (DEBUG) Log.i(TAG, "Before adding to watchlist: " + thread);
         newThreads.add(0, thread.cloneForWatchlist());
-        board.threads = newThreads.toArray(new ChanPost[]{});
+        board.threads = newThreads.toArray(new ChanThread[]{});
 
         if (DEBUG) {
             Log.i(TAG, "After adding to watchlist: " + board.threads[board.threads.length - 1]);
@@ -637,7 +675,7 @@ public class ChanFileStorage {
         }
         if (DEBUG) Log.i(TAG, "Before adding to favorites: " + thread);
         newThreads.add(0, thread);
-        board.threads = newThreads.toArray(new ChanPost[]{});
+        board.threads = newThreads.toArray(new ChanThread[]{});
 
         if (DEBUG) {
             Log.i(TAG, "After adding to favorites: " + board.threads[board.threads.length - 1]);
@@ -655,7 +693,7 @@ public class ChanFileStorage {
                 newThreads.remove(post);
             }
         }
-        board.threads = newThreads.toArray(new ChanPost[]{});
+        board.threads = newThreads.toArray(new ChanThread[]{});
 
         storeBoardData(context, board);
         WidgetProviderUtils.updateAll(context, ChanBoard.WATCHLIST_BOARD_CODE);
@@ -669,7 +707,7 @@ public class ChanFileStorage {
                 newThreads.remove(post);
             }
         }
-        board.threads = newThreads.toArray(new ChanPost[]{});
+        board.threads = newThreads.toArray(new ChanThread[]{});
         storeBoardData(context, board);
     }
 
