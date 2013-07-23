@@ -359,36 +359,49 @@ public class ThreadActivity
         }
         int current = mPager.getCurrentItem();
         int delta = mPager.getOffscreenPageLimit();
-        for (int i = current - delta; i < current + delta + 1; i++)
-            refreshFragmentAtPosition(boardCode, threadNo, i, i == current ? message : null);
+        boolean found = false;
+        for (int i = current - delta; i < current + delta + 1; i++) {
+            if (refreshFragmentAtPosition(boardCode, threadNo, i, i == current ? message : null))
+                found = true;
+        }
+        if (!found) {
+            if (DEBUG) Log.i(TAG, "refreshFragment() fragment not found, setting item to 0");
+            if (mPager == null)
+                createPager();
+            mPager.setCurrentItem(0, false);
+            ThreadFragment fragment;
+            if ((fragment = getFragmentAtPosition(0)) == null)
+                fragment.refreshThread(null);
+        }
     }
 
-    protected void refreshFragmentAtPosition(String boardCode, long threadNo, int pos, String message) {
+    protected boolean refreshFragmentAtPosition(String boardCode, long threadNo, int pos, String message) {
         ThreadFragment fragment;
         ChanActivityId data;
         if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " pos=" + pos);
         if (pos < 0 || pos >= mAdapter.getCount()) {
             if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " pos=" + pos
                 + " out of bounds, skipping");
-            return;
+            return false;
         }
         if ((fragment = getFragmentAtPosition(pos)) == null) {
             if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " pos=" + pos
                     + " null fragment at position, skipping");
-            return;
+            return false;
         }
         if ((data = fragment.getChanActivityId()) == null) {
             if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " pos=" + pos
                     + " null getChanActivityId(), skipping");
-            return;
+            return false;
         }
         if (data.boardCode == null || !data.boardCode.equals(boardCode) || data.threadNo != threadNo) {
             if (DEBUG) Log.i(TAG, "refreshFragmentAtPosition /" + boardCode + "/" + threadNo + " pos=" + pos
                     + " unmatching data=/" + data.boardCode + "/" + data.threadNo + ", skipping");
-            return;
+            return false;
         }
         if (DEBUG) Log.i(TAG, "refreshing fragment /" + boardCode + "/" + threadNo + " pos=" + pos);
         fragment.refreshThread(message);
+        return true;
     }
 
     @Override
