@@ -927,6 +927,7 @@ public class ChanBoard {
     }
 
     public int getThreadIndex(String boardCode, long threadNo) {
+        if (DEBUG) Log.i(TAG, "getThreadIndex /" + boardCode + "/" + threadNo);
         if (defData)
             return -1;
         if (threads == null)

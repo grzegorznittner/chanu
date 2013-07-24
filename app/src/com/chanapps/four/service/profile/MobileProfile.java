@@ -189,6 +189,18 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
         else if (!ChanBoard.boardNeedsRefresh(context, boardCode, false)) {
             if (DEBUG) Log.i(TAG, "skipping board /" + boardCode + "/ doesnt need refresh");
+            final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+            ChanActivityId aid = activity == null ? null : activity.getChanActivityId();
+            Handler handler = activity == null ? null : activity.getChanHandler();
+            if (activity != null && activity instanceof BoardActivity
+                    && aid != null && aid.boardCode != null && aid.boardCode.equals(boardCode)
+                    && handler != null)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.setProgress(false);
+                    }
+                });
         }
         else {
             NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
@@ -441,17 +453,19 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
         // user is on the same page and it's a manual refresh, reload it
         Handler handler = activity.getChanHandler();
-        boolean hasHandler = handler != null;
-        boolean isPriority = currentActivityId.priority || data.priority;
-        boolean sameActivity = currentActivityId.activity == LastActivity.BOARD_ACTIVITY
+        final boolean isPriority = currentActivityId.priority || data.priority;
+        final boolean sameActivity = currentActivityId.activity == LastActivity.BOARD_ACTIVITY
                 && ChanBoard.WATCHLIST_BOARD_CODE.equals(currentActivityId.boardCode);
-        if (hasHandler && isPriority && sameActivity)
+        if (handler != null)
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (DEBUG) Log.i(TAG, "Refreshing boardCode=" + currentActivityId.boardCode
                             + " data boardcode=" + data.boardCode);
-                    activity.refresh();
+                    if (isPriority && sameActivity)
+                        activity.refresh();
+                    else
+                        activity.setProgress(false);
                 }
             });
         // tell it to refresh widgets for board if any are configured
@@ -498,23 +512,34 @@ public class MobileProfile extends AbstractNetworkProfile {
             });
         }
 
-        if (data.secondaryThreadNo > 0) {
+        if (data.secondaryThreadNo > 0 && activity instanceof ThreadActivity) {
             if (DEBUG) Log.i(TAG, "Board /" + data.boardCode + "/ loaded, notifying thread, fetching secondary threadNo=" + data.secondaryThreadNo);
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    ((ThreadActivity)activity).notifyBoardChanged();
+                }
+            });
             FetchChanDataService.scheduleThreadFetch(service.getApplicationContext(), data.boardCode,
                     data.secondaryThreadNo, true, false);
         }
-        else if (data.priority || board.defData || !board.isCurrent() || board.shouldSwapThreads() || board.isVirtualBoard()) {
-            ChanActivityId currentActivityId = NetworkProfileManager.instance().getActivityId();
-            boolean isBoardActivity = currentActivityId != null
-                    && currentActivityId.boardCode != null
-                    && currentActivityId.boardCode.equals(data.boardCode)
-                    && currentActivityId.activity == LastActivity.BOARD_ACTIVITY;
-            // user is on the board page, we need to be reloaded it
-            if (isBoardActivity && handler != null) {
+        else {
+            ChanActivityId aid = activity.getChanActivityId();
+            final boolean sameBoard = aid != null
+                    && aid.boardCode != null
+                    && aid.boardCode.equals(data.boardCode);
+            final boolean refresh = data.priority || board.defData || !board.isCurrent()
+                    || board.shouldSwapThreads() || board.isVirtualBoard();
+                // user is on the board page, we need to be reloaded it
+            if (handler != null && activity instanceof BoardActivity && sameBoard) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        ((BoardActivity)activity).refresh(refreshMessage);
+                        BoardActivity ba = (BoardActivity)activity;
+                        if (refresh)
+                            ba.refresh(refreshMessage);
+                        else
+                            ba.setProgress(false);
                     }
                 });
             }

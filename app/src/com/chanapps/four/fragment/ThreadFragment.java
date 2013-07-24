@@ -224,14 +224,15 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     protected void onThreadLoadFinished(Cursor data) {
         adapter.swapCursor(data);
-        if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " listView.count=" + absListView.getCount());
         // retry load if maybe data wasn't there yet
         ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
         if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " thread=" + thread);
         if (ChanThread.threadNeedsRefresh(getActivityContext(), boardCode, threadNo, false)) {
+            if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " trying thread refresh");
             tryFetchThread();
         }
         else if (postNo > 0) {
+            if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " scrolling to postNo=" + postNo);
             Cursor cursor = adapter.getCursor();
             cursor.moveToPosition(-1);
             boolean found = false;
@@ -252,6 +253,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             return;
         }
         else if (firstVisiblePosition >= 0) {
+            if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " scrolling to saved pos=" + firstVisiblePosition);
             if (absListView instanceof ListView)
                 ((ListView)absListView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
             else
@@ -261,6 +263,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             setProgress(false);
         }
         else {
+            if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " stopping spinner");
             setProgress(false);
         }
     }
@@ -882,7 +885,11 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (DEBUG) Log.i(TAG, "refreshThread() restarting loader");
+                    if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " restarting loader");
+                    ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
+                    if (thread != null && thread.isDead) {
+                        if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " found dead thread");
+                    }
                     getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
                     if (message != null)
                         Toast.makeText(getActivityContext(), message, Toast.LENGTH_SHORT).show();

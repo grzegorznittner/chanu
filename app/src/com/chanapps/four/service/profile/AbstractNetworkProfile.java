@@ -112,7 +112,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 		} else {
 			currentHealth = Health.VERY_SLOW;
 		}
-		if (DEBUG) Log.i(TAG, "Avg rate " + avgRate + " kB/s, setting health " + currentHealth);
+		//if (DEBUG) Log.i(TAG, "Avg rate " + avgRate + " kB/s, setting health " + currentHealth);
 		return currentHealth;
 	}
 	
