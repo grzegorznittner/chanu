@@ -159,10 +159,17 @@ public class ThreadActivity
     protected void setCurrentItemToThread() {
         int pos = getCurrentThreadPos();
         if (DEBUG) Log.i(TAG, "setCurrentItemToThread found pos=" + pos);
-        if (pos != mPager.getCurrentItem() && pos >= 0 && pos < mAdapter.getCount())
-            mPager.setCurrentItem(pos, false);
-        else
+        if (pos >= 0 && pos < mAdapter.getCount()) { // found it
+            if (pos == mPager.getCurrentItem()) // it's already selected, do nothing
+                ;
+            else
+                mPager.setCurrentItem(pos, false); // select the item
+        }
+        else { // we didn't find it, default to 0th thread
+            pos = 0;
+            mPager.setCurrentItem(pos, false); // select the item
             Toast.makeText(this, R.string.thread_not_found, Toast.LENGTH_SHORT).show();
+        }
     }
 
     protected int getCurrentThreadPos() {

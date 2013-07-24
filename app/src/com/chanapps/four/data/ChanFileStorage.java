@@ -316,7 +316,7 @@ public class ChanFileStorage {
                 board.threads = threads.toArray(board.threads);
             }
             if (DEBUG) Log.i(TAG, "addMissingWatchedThreads missing loaded size=" + watchedLoadedThreads.size());
-            if (watchedLoadedThreads.size() > 0) { // add to end of board.loadedThreads
+            if (board.loadedThreads.length > 0 && watchedLoadedThreads.size() > 0) { // add to end of board.loadedThreads
                 List<ChanThread> threads = new ArrayList<ChanThread>(Arrays.asList(board.loadedThreads));
                 threads.addAll(watchedLoadedThreads.values());
                 board.loadedThreads = threads.toArray(board.loadedThreads);
