@@ -322,7 +322,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         else if (NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
                 == NetworkProfile.Health.NO_CONNECTION) {
-            if (DEBUG) Log.i(TAG, "onStart no board data and connection is down");
+            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ no board data and connection is down");
             Toast.makeText(getApplicationContext(), R.string.board_no_connection_load, Toast.LENGTH_SHORT).show();
             if (emptyText != null) {
                 emptyText.setText(R.string.board_no_connection_load);

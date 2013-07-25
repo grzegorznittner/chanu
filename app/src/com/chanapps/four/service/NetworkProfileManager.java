@@ -144,14 +144,22 @@ public class NetworkProfileManager {
 
         switch(currentActivityId.activity) {
             case BOARD_ACTIVITY:
-                if (lastActivity == null || !currentActivityId.boardCode.equals(lastActivity.boardCode)) {
-                    activeProfile.onBoardSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
-                }
+                // NOTE: moved refresh logic to board activity
+               // if (lastActivity == null || !currentActivityId.boardCode.equals(lastActivity.boardCode)) {
+                //    activeProfile.onBoardSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
+                //}
                 break;
             case THREAD_ACTIVITY:
+                // NOTE: moved refresh logic to thread activity
+                // now with fragments, we only need to load the board at this level
+                //if (lastActivity == null || !currentActivityId.boardCode.equals(lastActivity.boardCode)) {
+                //    activeProfile.onBoardSelected(newActivity.getBaseContext(), currentActivityId.boardCode);
+                //}
+/*
                 if (lastActivity == null || !currentActivityId.boardCode.equals(lastActivity.boardCode)
                         || currentActivityId.threadNo != lastActivity.threadNo)
                     activeProfile.onThreadSelected(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo);
+*/
                 break;
             case GALLERY_ACTIVITY:
                 activeProfile.onFullImageLoading(newActivity.getBaseContext(), currentActivityId.boardCode, currentActivityId.threadNo, currentActivityId.postNo);

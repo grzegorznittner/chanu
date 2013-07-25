@@ -121,7 +121,7 @@ public class ThreadActivity
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
-        if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/" + threadNo + " q=" + query);
+        if (DEBUG) Log.i(TAG, "createViews() /" + boardCode + "/" + threadNo + " q=" + query);
         if (boardCode == null || boardCode.isEmpty())
             boardCode = ChanBoard.META_BOARD_CODE;
         if (threadNo <= 0)
@@ -132,15 +132,6 @@ public class ThreadActivity
 
         if (onTablet())
             createAbsListView();
-        if (ChanBoard.boardHasData(this, boardCode)) {
-            if (DEBUG) Log.i(TAG, "createViews() calling initLoader");
-            if (onTablet())
-                getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
-            createPager();
-        }
-        else {
-            if (DEBUG) Log.i(TAG, "Board not ready, postponing pager creation");
-        }
     }
 
     protected void createPager() {
@@ -270,6 +261,39 @@ public class ThreadActivity
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new Handler();
+
+        // from board activity
+        ChanBoard board = ChanFileStorage.loadBoardData(this, boardCode);
+        if (board.hasData() && board.isCurrent()) {
+            if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " board has current data, loading");
+            if (onTablet())
+                getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
+            createPager();
+        }
+        else if (board.hasData() && NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
+                == NetworkProfile.Health.NO_CONNECTION) {
+            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " board has old data but connection down, loading");
+            if (onTablet())
+                getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
+            createPager();
+        }
+        else if (NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
+                == NetworkProfile.Health.NO_CONNECTION) {
+            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " no board data and connection is down");
+            Toast.makeText(getApplicationContext(), R.string.board_no_connection_load, Toast.LENGTH_SHORT).show();
+            /*
+            if (emptyText != null) {
+                emptyText.setText(R.string.board_no_connection_load);
+                emptyText.setVisibility(View.VISIBLE);
+            }
+            */
+            setProgress(false);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " non-current board data, manual refreshing");
+            setProgress(true);
+            NetworkProfileManager.instance().manualRefresh(this);
+        }
     }
 
     @Override
@@ -280,7 +304,7 @@ public class ThreadActivity
             handler = new Handler();
         board = ChanFileStorage.loadBoardData(this, boardCode);
         if (board == null || !board.link.equals(boardCode) || mPager == null) { // recreate pager
-            if (DEBUG) Log.i(TAG, "onResume() creating pager");
+            if (DEBUG) Log.i(TAG, "onResume() /" + boardCode + "/" + threadNo + " creating pager");
             createPager();
         }
         //invalidateOptionsMenu(); // for correct spinner display
@@ -299,8 +323,12 @@ public class ThreadActivity
         }
         */
         if (NetworkProfileManager.instance().getActivity() != this) {
+            if (DEBUG) Log.i(TAG, "onResume() storing activity change");
             NetworkProfileManager.instance().activityChange(this);
-            setCurrentItemToThread();
+        }
+        int idx = board.getThreadIndex(boardCode, threadNo);
+        if (idx == -1) {
+            if (DEBUG) Log.i(TAG, "onResume() thread not in board, waiting for board refresh");
         }
         else {
             if (DEBUG) Log.i(TAG, "onResume() set current item to thread");
