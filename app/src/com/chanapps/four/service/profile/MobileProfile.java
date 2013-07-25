@@ -226,9 +226,11 @@ public class MobileProfile extends AbstractNetworkProfile {
     public void onBoardRefreshed(final Context context, Handler handler, String boardCode) {
         super.onBoardRefreshed(context, handler, boardCode);
         Health health = getConnectionHealth();
-        if (ChanFileStorage.hasNewBoardData(context, boardCode)) {
-            onUpdateViewData(context, handler, boardCode);
-        } else if (health == Health.NO_CONNECTION) {
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        if (board != null && board.hasNewBoardData()) {
+            board.swapLoadedThreads();
+        }
+        if (health == Health.NO_CONNECTION) {
             makeHealthStatusToast(context, health);
             return;
         } else if (ChanBoard.isPopularBoard(boardCode)) {
@@ -283,7 +285,7 @@ public class MobileProfile extends AbstractNetworkProfile {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    ((BoardActivity)activity).refresh(refreshMessage);
+                    ((BoardActivity)activity).refresh(null);
                 }
             });
         }
@@ -537,7 +539,7 @@ public class MobileProfile extends AbstractNetworkProfile {
                     public void run() {
                         BoardActivity ba = (BoardActivity)activity;
                         if (refresh)
-                            ba.refresh(refreshMessage);
+                            ba.refresh(null);
                         else
                             ba.setProgress(false);
                     }

@@ -864,6 +864,10 @@ public class ChanBoard {
         return board != null && !board.defData && board.threads != null && board.threads.length > 0;
     }
 
+    public boolean hasData() {
+        return !defData && threads != null && threads.length > 0;
+    }
+
     public boolean hasNewBoardData() {
         if (defData)
             return false;

@@ -161,37 +161,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             displayBoardTitle();
         else
             hideBoardTitle();
-
-        if (ChanBoard.isVirtualBoard(boardCode) && !ChanBoard.isPopularBoard(boardCode)) { // always ready, start loading
-            if (DEBUG) Log.i(TAG, "onCreate non-popular virtual board, loading immediately");
-            getSupportLoaderManager().initLoader(0, null, loaderCallbacks);
-        }
-        else if (ChanBoard.boardHasData(this, boardCode)) {
-            if (DEBUG) Log.i(TAG, "onCreate board has data, loading");
-            getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
-        }
-        else if (NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
-                == NetworkProfile.Health.NO_CONNECTION) {
-            if (DEBUG) Log.i(TAG, "onCreate no board data and connection is down");
-            Toast.makeText(getApplicationContext(), R.string.board_no_connection_load, Toast.LENGTH_SHORT).show();
-            if (emptyText != null) {
-                emptyText.setText(R.string.board_no_connection_load);
-                emptyText.setVisibility(View.VISIBLE);
-            }
-            setProgress(false);
-        }
-        else {
-            if (DEBUG) Log.i(TAG, "onCreate no board data, waiting for profile onBoardSelected callback");
-            setProgress(true);
-        }
-
-        if (ChanBoard.isPopularBoard(boardCode) || !ChanBoard.isVirtualBoard(boardCode)) {
-            mPullToRefreshAttacher = new PullToRefreshAttacher(this);
-            mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
-        }
-        else {
-            mPullToRefreshAttacher = null;
-        }
     }
 
     protected PullToRefreshAttacher.OnRefreshListener pullToRefreshListener = new PullToRefreshAttacher.OnRefreshListener() {
@@ -335,6 +304,44 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             //handler = new LoaderHandler();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query);
         //setActionBarTitle();
+
+        // moved section from onCreate
+        ChanBoard board = ChanFileStorage.loadBoardData(this, boardCode);
+        if (board.isVirtualBoard() && !board.isPopularBoard()) { // always ready, start loading
+            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ non-popular virtual board, loading immediately");
+            getSupportLoaderManager().initLoader(0, null, loaderCallbacks);
+        }
+        else if (board.hasData() && board.isCurrent()) {
+            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ board has current data, loading");
+            getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
+        }
+        else if (board.hasData() && NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
+                == NetworkProfile.Health.NO_CONNECTION) {
+            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ board has old data but connection down, loading");
+            getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
+        }
+        else if (NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
+                == NetworkProfile.Health.NO_CONNECTION) {
+            if (DEBUG) Log.i(TAG, "onStart no board data and connection is down");
+            Toast.makeText(getApplicationContext(), R.string.board_no_connection_load, Toast.LENGTH_SHORT).show();
+            if (emptyText != null) {
+                emptyText.setText(R.string.board_no_connection_load);
+                emptyText.setVisibility(View.VISIBLE);
+            }
+            setProgress(false);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ non-current board data, manual refreshing");
+            onRefresh();
+        }
+
+        if (board.isPopularBoard() || !board.isVirtualBoard()) {
+            mPullToRefreshAttacher = new PullToRefreshAttacher(this);
+            mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
+        }
+        else {
+            mPullToRefreshAttacher = null;
+        }
     }
 
     @Override
@@ -353,7 +360,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (DEBUG) Log.i(TAG, "onResume() activityChange to /" + boardCode + "/");
             NetworkProfileManager.instance().activityChange(this);
         }
-        if ((adapter == null || adapter.getCount() == 0) && ChanBoard.boardHasData(this, boardCode))
+        if ((adapter == null || adapter.getCount() == 0)
+                && board.hasData()
+                && board.isCurrent())
             getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
         new TutorialOverlay(layout, Page.BOARD);
     }
@@ -375,7 +384,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     	super.onStop();
         if (DEBUG) Log.i(TAG, "onStop /" + boardCode + "/ q=" + query);
         getLoaderManager().destroyLoader(0);
-        setProgress(false);
         closeSearch();
     	handler = null;
         /*
@@ -482,8 +490,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         setProgress(true);
         NetworkProfileManager.instance().manualRefresh(this);
-        if (absListView != null)
-            absListView.setSelection(0);
     }
 
     @Override
@@ -724,7 +730,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     public void refresh(final String refreshMessage) {
         if (DEBUG) Log.i(TAG, "refresh() /" + boardCode + "/ msg=" + refreshMessage);
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        handleUpdatedThreads();
+        //handleUpdatedThreads();
         //setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
         //if (absListView == null || absListView.getCount() < 1)

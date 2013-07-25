@@ -132,7 +132,7 @@ public class ThreadActivity
 
         if (onTablet())
             createAbsListView();
-        if (board != null && !board.defData && board.threads.length > 0) {
+        if (ChanBoard.boardHasData(this, boardCode)) {
             if (DEBUG) Log.i(TAG, "createViews() calling initLoader");
             if (onTablet())
                 getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
