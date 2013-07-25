@@ -36,7 +36,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	/*
 	 *               HEALTH  ----->   REFRESH_DELAY, FORCE_REFRESH_DELAY, READ_TIMEOUT, CONNECT_TIMEOUT
 	 */
-	private static final FetchParams DEFAULT_FETCH_PARAMS = new FetchParams(1800L, 1800L, 3, 3);
+	private static final FetchParams DEFAULT_FETCH_PARAMS = new FetchParams(1800L, 1800L, 3, 3, 0);
 	
 	@Override
 	public FetchParams getFetchParams() {

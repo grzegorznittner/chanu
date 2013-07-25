@@ -26,6 +26,7 @@ import com.chanapps.four.data.ChanAd;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
+import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -597,7 +598,11 @@ public class ThreadViewer {
         if (DEBUG) Log.i(TAG, "setHeaderImage()");
         if (hideNoImage(iv, flags))
             return true;
-        if (displayCachedExpandedHeaderImage(iv, cursor, flags, expandedImageListener))
+        View itemView = (View)iv.getParent().getParent().getParent();
+        if (displayCachedExpandedImage(itemView, cursor, expandedImageListener))
+            return true;
+        boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
+        if (!isDead && prefetchExpandedImage(itemView, cursor, expandedImageListener))
             return true;
         return displayHeaderImage(iv, cursor, flags, imageOnClickListener);
     }
@@ -607,9 +612,15 @@ public class ThreadViewer {
                                     View.OnClickListener expandedImageListener) {
         if (hideNoImage(iv, flags))
             return true;
-        if (!isListLink(flags) && displayCachedExpandedImage(iv, cursor, flags, expandedImageListener))
+        if (isListLink(flags))
+            return displayNonHeaderImage(iv, cursor, imageOnClickListener);
+        View itemView = (View)iv.getParent().getParent().getParent().getParent();
+        if (displayCachedExpandedImage(itemView, cursor, expandedImageListener))
             return true;
-        return displayNonHeaderImage(iv, cursor, flags, imageOnClickListener);
+        boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
+        if (!isDead && prefetchExpandedImage(itemView, cursor, expandedImageListener))
+            return true;
+        return displayNonHeaderImage(iv, cursor, imageOnClickListener);
     }
 
     static private boolean isListLink(int flags) {
@@ -672,41 +683,31 @@ public class ThreadViewer {
         }
     }
 
-    static private boolean displayCachedExpandedHeaderImage(final ImageView iv, final Cursor cursor, final int flags,
-                                                      final View.OnClickListener expandedImageListener) {
-        View itemView = (View)iv.getParent().getParent();
+    static private boolean prefetchExpandedImage(final View itemView, final Cursor cursor,
+                                                            final View.OnClickListener expandedImageListener) {
+        // NOTE: we assume full size image file doesn't already exist
         if (itemView == null)
             return false; // broken layout
 
-        File file = fullSizeImageFile(iv.getContext(), cursor); // try for full size first
-        if (file == null) {
-            View itemExpandedImage = itemView.findViewById(R.id.list_item_image_expanded);
-            View itemExpandedImageClickEffect = itemView.findViewById(R.id.list_item_image_expanded_click_effect);
-            View itemExpandedProgressBar = itemView.findViewById(R.id.list_item_expanded_progress_bar);
-            if (itemExpandedImage != null)
-                itemExpandedImage.setVisibility(View.GONE);
-            if (itemExpandedImageClickEffect != null)
-                itemExpandedImageClickEffect.setVisibility(View.GONE);
-            if (itemExpandedProgressBar != null)
-                itemExpandedProgressBar.setVisibility(View.GONE);
-            if (DEBUG) Log.i(TAG, "displayCachedExpandedHeaderImage no expanded image, returning");
-            return false;
+        int fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
+        int maxAutoloadFSize = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxAutoLoadFSize;
+        if (fsize <= maxAutoloadFSize) {
+            if (DEBUG) Log.i(TAG, "prefetchExpandedHeaderImage auto-expanding since fsize=" + fsize + " < " + maxAutoloadFSize);
+            ThreadExpandImageOnClickListener expander =
+                    (new ThreadExpandImageOnClickListener(itemView.getContext(), cursor, itemView, expandedImageListener));
+            expander.displayAutoExpandedImage();
+            return true;
         }
 
-        if (DEBUG) Log.i(TAG, "displayCachedExpandedHeaderImage expanded file=" + file.getAbsolutePath());
-        ThreadExpandImageOnClickListener expander =
-                (new ThreadExpandImageOnClickListener(iv.getContext(), cursor, itemView, expandedImageListener));
-        expander.displayCachedExpandedImage();
-        return true;
+        return false;
     }
 
-    static private boolean displayCachedExpandedImage(final ImageView iv, final Cursor cursor, final int flags,
+    static private boolean displayCachedExpandedImage(final View itemView, final Cursor cursor,
                                                       final View.OnClickListener expandedImageListener) {
-        View itemView = (View)iv.getParent().getParent().getParent();
         if (itemView == null)
             return false; // broken layout
 
-        File file = fullSizeImageFile(iv.getContext(), cursor); // try for full size first
+        File file = fullSizeImageFile(itemView.getContext(), cursor); // try for full size first
         if (file == null) {
             View itemExpandedImage = itemView.findViewById(R.id.list_item_image_expanded);
             View itemExpandedImageClickEffect = itemView.findViewById(R.id.list_item_image_expanded_click_effect);
@@ -723,14 +724,14 @@ public class ThreadViewer {
             return false;
         }
 
-        if (DEBUG) Log.i(TAG, "setImage() expanded file=" + file.getAbsolutePath());
+        if (DEBUG) Log.i(TAG, "displayCachedExpandedImage() expanded file=" + file.getAbsolutePath());
         ThreadExpandImageOnClickListener expander =
-                (new ThreadExpandImageOnClickListener(iv.getContext(), cursor, itemView, expandedImageListener));
+                (new ThreadExpandImageOnClickListener(itemView.getContext(), cursor, itemView, expandedImageListener));
         expander.displayCachedExpandedImage();
         return true;
     }
 
-    static private boolean displayNonHeaderImage(final ImageView iv, final Cursor cursor, final int flags,
+    static private boolean displayNonHeaderImage(final ImageView iv, final Cursor cursor,
                                                  View.OnClickListener imageOnClickListener) {
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         if (url != null && !url.isEmpty()) {

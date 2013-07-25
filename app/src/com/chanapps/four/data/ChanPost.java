@@ -61,6 +61,7 @@ public class ChanPost {
     public static final String POST_BACKLINKS_BLOB = "backlinksBlob";
     public static final String POST_REPLIES_BLOB = "repliesBlob";
     public static final String POST_SAME_IDS_BLOB = "sameIdsBlob";
+    public static final String POST_FSIZE = "fileSize";
     public static final String POST_FLAGS = "postFlags";
     public static final int FLAG_HAS_IMAGE = 0x001;
     public static final int FLAG_HAS_SUBJECT = 0x002;
@@ -166,6 +167,7 @@ public class ChanPost {
             POST_BACKLINKS_BLOB,
             POST_REPLIES_BLOB,
             POST_SAME_IDS_BLOB,
+            POST_FSIZE,
             POST_FLAGS
     };
 
@@ -1037,6 +1039,7 @@ public class ChanPost {
                 backlinksBlob,
                 repliesBlob,
                 sameIdsBlob,
+                fsize,
                 flags
         };
     }
@@ -1073,6 +1076,7 @@ public class ChanPost {
                 null,
                 null,
                 null,
+                0,
                 FLAG_HAS_IMAGE | FLAG_HAS_SUBJECT | FLAG_IS_BOARDLINK
         };
     }
@@ -1108,6 +1112,7 @@ public class ChanPost {
                 null,
                 null,
                 null,
+                0,
                 FLAG_HAS_IMAGE | FLAG_IS_AD
         };
     }
@@ -1148,6 +1153,7 @@ public class ChanPost {
                 null,
                 null,
                 null,
+                0,
                 FLAG_HAS_SUBJECT | FLAG_IS_TITLE
         };
     }

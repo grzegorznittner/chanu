@@ -12,11 +12,13 @@ public class FetchParams {
 	public long forceRefreshDelay;
 	public int readTimeout;
 	public int connectTimeout;
+    public int maxAutoLoadFSize; // in bytes
 
-	public FetchParams(long refreshDelay, long forceRefreshDelay, int readTimeout, int connectTimeout) {
+	public FetchParams(long refreshDelay, long forceRefreshDelay, int readTimeout, int connectTimeout, int maxAutoLoadFSize) {
 		this.refreshDelay = refreshDelay * 1000;
 		this.forceRefreshDelay = forceRefreshDelay * 1000;
 		this.readTimeout = readTimeout * 1000;
 		this.connectTimeout = connectTimeout * 1000;
+        this.maxAutoLoadFSize = maxAutoLoadFSize;
 	}
 }

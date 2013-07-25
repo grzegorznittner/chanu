@@ -285,15 +285,28 @@ public class ThreadActivity
         }
         //invalidateOptionsMenu(); // for correct spinner display
         ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
-        ThreadFragment fragment = getCurrentFragment();
+        //ThreadFragment fragment = getCurrentFragment();
+        /*
         if (activityId == null
                 || activityId.boardCode == null
                 || !activityId.boardCode.equals(boardCode)
-                || activityId.threadNo != threadNo) {
+                || activityId.threadNo != threadNo
+                || NetworkProfileManager.instance().getActivity() != this
+                ) {
             if (DEBUG) Log.i(TAG, "onResume() activity change");
             NetworkProfileManager.instance().activityChange(this);
             setCurrentItemToThread();
         }
+        */
+        if (NetworkProfileManager.instance().getActivity() != this) {
+            NetworkProfileManager.instance().activityChange(this);
+            setCurrentItemToThread();
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "onResume() set current item to thread");
+            setCurrentItemToThread();
+        }
+        /*
         else if (fragment != null) {
             activityId = fragment.getChanActivityId();
             if (activityId == null
@@ -304,6 +317,7 @@ public class ThreadActivity
                 setCurrentItemToThread();
             }
         }
+        */
 
         if (onTablet()
                 && !getSupportLoaderManager().hasRunningLoaders()
@@ -326,11 +340,11 @@ public class ThreadActivity
                 && activityId.threadNo > 0
                 ) { // different activity
             // only change if thread doesn't exist in board
-            if (board.getThreadIndex(boardCode, threadNo) == -1) {
+            //if (board.getThreadIndex(boardCode, threadNo) == -1) {
                 boardCode = activityId.boardCode;
                 threadNo = activityId.threadNo;
-                if (DEBUG) Log.i(TAG, "setPrimaryItem set activity to /" + boardCode + "/" + threadNo);
-            }
+                if (DEBUG) Log.i(TAG, "onPause save default thread to /" + boardCode + "/" + threadNo);
+            //}
         }
     }
 

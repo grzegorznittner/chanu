@@ -186,6 +186,12 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
                     msg = String.format(context.getString(R.string.thread_couldnt_load_image), failReason.getType().toString().toLowerCase().replaceAll("_", " "));
                 if (DEBUG) Log.e(TAG, "Failed to download " + postImageUrl + " to file=" + fullImagePath + " reason=" + reason);
                 //Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                if (itemExpandedProgressBar != null && withProgress)
+                    itemExpandedProgressBar.setVisibility(View.GONE);
+                if (itemExpandedImageClickEffect != null) {
+                    itemExpandedImageClickEffect.setVisibility(View.VISIBLE);
+                    itemExpandedImageClickEffect.setOnClickListener(expandedImageListener);
+                }
             }
 
             @Override
@@ -204,6 +210,8 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
 
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
+                if (itemExpandedProgressBar != null && withProgress)
+                    itemExpandedProgressBar.setVisibility(View.GONE);
                 //collapseImageView();
                 //Context context = itemExpandedImage.getContext();
                 //Toast.makeText(context, R.string.thread_couldnt_load_image_cancelled, Toast.LENGTH_SHORT).show();
@@ -233,6 +241,16 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
             return;
         }
         clearImage();
+        ThreadViewer.initStatics(itemExpandedImage);
+        //Point targetSize = sizeExpandedImage(postW, postH);
+        Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
+        if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
+        setImageDimensions(targetSize);
+        displayImage(targetSize, true);
+    }
+
+    public void displayAutoExpandedImage() {
+        itemExpandedProgressBar.setVisibility(View.VISIBLE);
         ThreadViewer.initStatics(itemExpandedImage);
         //Point targetSize = sizeExpandedImage(postW, postH);
         Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);

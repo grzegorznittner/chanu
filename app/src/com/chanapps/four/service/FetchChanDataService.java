@@ -87,6 +87,11 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             if (DEBUG) Log.i(TAG, "skipping refresh, thread doesn't need it for /" + boardCode + "/" + threadNo);
         	return false;
         }
+        ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
+        if (thread != null && thread.isDead) {
+            if (DEBUG) Log.i(TAG, "scheduleThreadFetch /" + boardCode + "/" + threadNo + " exiting due to dead thread");
+            return false;
+        }
         if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + "/" + threadNo
                 + " priority=" + priority + " background=" + backgroundLoad);
         if (boardCode == null || threadNo == 0) {
