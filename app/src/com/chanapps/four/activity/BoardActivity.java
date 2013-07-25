@@ -5,6 +5,7 @@ import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
@@ -59,6 +60,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected ViewType viewType = ViewType.AS_GRID;
     protected int firstVisiblePosition = -1;
     protected int firstVisiblePositionOffset = -1;
+    protected View boardTitleBar;
     protected PullToRefreshAttacher mPullToRefreshAttacher;
 
     public static void startActivity(Context from, String boardCode, String query) {
@@ -157,13 +159,15 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             setFavorites(this);
         if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/ q=" + query);
 
+        boardTitleBar = findViewById(R.id.board_title_bar);
         if (ChanBoard.isVirtualBoard(boardCode))
             displayBoardTitle();
         else
             hideBoardTitle();
     }
 
-    protected PullToRefreshAttacher.OnRefreshListener pullToRefreshListener = new PullToRefreshAttacher.OnRefreshListener() {
+    protected PullToRefreshAttacher.OnRefreshListener pullToRefreshListener
+            = new PullToRefreshAttacher.OnRefreshListener() {
         @Override
         public void onRefreshStarted(View view) {
             if (DEBUG) Log.i(TAG, "pullToRefreshListener.onRefreshStarted()");
@@ -335,7 +339,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             onRefresh();
         }
 
-        if (board.isPopularBoard() || !board.isVirtualBoard()) {
+        if (board.isPopularBoard() && boardTitleBar != null) {
+            PullToRefreshAttacher.Options ptrOptions = new PullToRefreshAttacher.Options();
+            ptrOptions.headerTransformer = new PopularHeaderTransformer();
+            mPullToRefreshAttacher = new PullToRefreshAttacher(this, ptrOptions);
+            mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
+        }
+        else if (!board.isVirtualBoard()) {
             mPullToRefreshAttacher = new PullToRefreshAttacher(this);
             mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
         }
@@ -822,7 +832,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void displayBoardTitle() {
-        View boardTitleBar = findViewById(R.id.board_title_bar);
         if (boardTitleBar == null)
             return;
         TextView boardTitle = (TextView)boardTitleBar.findViewById(R.id.board_title_text);
@@ -975,4 +984,31 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
     };
 
+    protected class PopularHeaderTransformer extends PullToRefreshAttacher.DefaultHeaderTransformer {
+        @Override
+        public void onViewCreated(Activity activity, View headerView) {
+            super.onViewCreated(activity, headerView);
+        }
+
+        @Override
+        public void onReset() {
+            if (boardTitleBar != null)
+                boardTitleBar.setVisibility(View.VISIBLE);
+            super.onReset();
+        }
+
+        @Override
+        public void onPulled(float percentagePulled) {
+            if (boardTitleBar != null)
+                boardTitleBar.setVisibility(View.GONE);
+            super.onPulled(percentagePulled);
+        }
+
+        @Override
+        public void onRefreshStarted() {
+            if (boardTitleBar != null)
+                boardTitleBar.setVisibility(View.VISIBLE);
+            super.onRefreshStarted();
+        }
+    }
 }
