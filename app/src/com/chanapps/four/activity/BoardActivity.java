@@ -355,8 +355,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             board.swapLoadedThreads();
         handleUpdatedThreads();
         invalidateOptionsMenu(); // for correct spinner display
+        /*
         ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
         if (activityId == null || activityId.boardCode == null || !activityId.boardCode.equals(boardCode)) {
+            if (DEBUG) Log.i(TAG, "onResume() activityChange to /" + boardCode + "/");
+            NetworkProfileManager.instance().activityChange(this);
+        }
+        */
+        if (NetworkProfileManager.instance().getActivity() != this) {
             if (DEBUG) Log.i(TAG, "onResume() activityChange to /" + boardCode + "/");
             NetworkProfileManager.instance().activityChange(this);
         }
