@@ -415,6 +415,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             String boardCode = (String)view.getTag(R.id.BOARD_CODE);
             Long threadNo = (Long)view.getTag(R.id.THREAD_NO);
             Long postNo = (Long)view.getTag(R.id.POST_NO);
+            if (DEBUG) Log.i(TAG, "viewActionListener /" + boardCode + "/" + threadNo + "#p" + postNo);
             Boolean isImage = (Boolean)view.getTag(R.id.BOARD_GRID_IMAGE);
             if (threadNo == 0)
                 BoardActivity.startActivity(BoardActivity.this, boardCode, "");
@@ -937,7 +938,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         @Override
         public void onClick(View view) {
             int pos = absListView.getPositionForView(view);
-            if (DEBUG) Log.i(TAG, "onClick overlayListener pos=" + pos);
+            if (DEBUG) Log.i(TAG, "overlayListener pos=" + pos);
             Cursor cursor = adapter.getCursor();
             if (!cursor.moveToPosition(pos))
                 return;
@@ -968,7 +969,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             else {
                 String boardLink = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
                 long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
-                ThreadActivity.startActivity(BoardActivity.this, boardLink, threadNo, "");
+                long postNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_JUMP_TO_POST_NO));
+                ThreadActivity.startActivity(BoardActivity.this, boardLink, threadNo, postNo, "");
             }
         }
     };

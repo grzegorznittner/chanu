@@ -93,13 +93,14 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         threadNo = bundle.getLong(THREAD_NO);
         postNo = bundle.getLong(POST_NO);
         query = bundle.getString(SearchManager.QUERY);
-        if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + " q=" + query);
+        if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
         layout = inflater.inflate(R.layout.thread_list_layout, viewGroup, false);
         createAbsListView();
         if (threadNo > 0)
             getLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks);
         else
-            if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + " no thread found, skipping loader");
+            if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + "#p" + postNo
+                    + " no thread found, skipping loader");
         return layout;
     }
 

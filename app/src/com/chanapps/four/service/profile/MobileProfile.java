@@ -248,13 +248,15 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
         if (DEBUG) {
             UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
-            int i = 1;
-            for (ChanBoardStat stat : userStats.topBoards()) {
-                Log.i(TAG, "Top boards: " + i++ + ". " + stat);
-            }
-            i = 1;
-            for (ChanThreadStat stat : userStats.topThreads()) {
-                Log.i(TAG, "Top threads: " + i++ + ". " + stat);
+            if (userStats != null) {
+                int i = 1;
+                for (ChanBoardStat stat : userStats.topBoards()) {
+                    Log.i(TAG, "Top boards: " + i++ + ". " + stat);
+                }
+                i = 1;
+                for (ChanThreadStat stat : userStats.topThreads()) {
+                    Log.i(TAG, "Top threads: " + i++ + ". " + stat);
+                }
             }
         }
     }

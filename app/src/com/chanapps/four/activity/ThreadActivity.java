@@ -81,6 +81,7 @@ public class ThreadActivity
     }
 
     public static void startActivity(Context from, String boardCode, long threadNo, long postNo, String query) {
+        if (DEBUG) Log.i(TAG, "startActivity /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
         if (threadNo <= 0)
             BoardActivity.startActivity(from, boardCode, query);
         else if (postNo <= 0)
@@ -121,7 +122,7 @@ public class ThreadActivity
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
-        if (DEBUG) Log.i(TAG, "createViews() /" + boardCode + "/" + threadNo + " q=" + query);
+        if (DEBUG) Log.i(TAG, "createViews() /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
         if (boardCode == null || boardCode.isEmpty())
             boardCode = ChanBoard.META_BOARD_CODE;
         if (threadNo <= 0)
@@ -155,6 +156,20 @@ public class ThreadActivity
                 ;
             else
                 mPager.setCurrentItem(pos, false); // select the item
+            /*
+            ThreadFragment fragment = getCurrentFragment();
+            ChanActivityId aid = fragment == null ? null : fragment.getChanActivityId();
+            if (aid != null
+                    && boardCode != null
+                    && boardCode.equals(aid.boardCode)
+                    && threadNo == aid.threadNo
+                    && postNo > 0) {
+                if (DEBUG) Log.i(TAG, "setCurrentItemToThread /" + boardCode + "/" + threadNo + "#p" + postNo
+                        + " scrolling fragment to post");
+                fragment.scroll
+                postNo = 0;
+            }
+            */
         }
         else { // we didn't find it, default to 0th thread
             if (DEBUG) Log.i(TAG, "setCurrentItemToThread /" + boardCode + "/" + threadNo + " not found pos=" + pos + " defaulting to zero");
@@ -252,7 +267,7 @@ public class ThreadActivity
                 if (DEBUG) Log.e(TAG, "Received invalid boardCode=" + uriBoardCode + " from url intent, using default board");
             }
         }
-        if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/" + threadNo);
+        if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/" + threadNo + "#p" + postNo);
     }
 
     @Override
@@ -597,7 +612,11 @@ public class ThreadActivity
             ChanPost thread = board.threads[pos];
             String boardCode = thread.board;
             long threadNo = thread.no;
-            long postNo = 0;
+            long postNo = (boardCode != null
+                    && boardCode.equals(ThreadActivity.this.boardCode)
+                    && threadNo == ThreadActivity.this.threadNo)
+                    ? ThreadActivity.this.postNo
+                    : -1;
             String query = "";
             // make fragment
             ThreadFragment fragment = new ThreadFragment();
@@ -606,6 +625,7 @@ public class ThreadActivity
             bundle.putLong(THREAD_NO, threadNo);
             bundle.putLong(POST_NO, postNo);
             bundle.putString(SearchManager.QUERY, query);
+            if (DEBUG) Log.i(TAG, "createFragment /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
             fragment.setArguments(bundle);
             fragment.setHasOptionsMenu(true);
             return fragment;
