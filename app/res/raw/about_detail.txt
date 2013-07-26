@@ -1,5 +1,5 @@
 <p>It's what Yotsuba uses</p>
-<p>Version 1.0 beta4</p>
+<p>Version 1.0 beta 15</p>
 <p>Copyright (c) 2012-3, John Burns, Greg Nittner, Mircea Pop</p>
 <p>All rights reserved.</p>
 <p>Uses Universal-Image-Loader (c) 2011-2012, Sergey Tarasevich</p>
