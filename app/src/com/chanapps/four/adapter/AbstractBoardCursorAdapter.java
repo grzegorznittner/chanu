@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ResourceCursorAdapter;
 
+import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 
@@ -27,7 +28,8 @@ import com.chanapps.four.data.ChanThread;
 abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
 	protected static final String TAG = AbstractBoardCursorAdapter.class.getSimpleName();
 	protected static final boolean DEBUG = false;
-	
+    protected static final String ID_COL = "_id";
+
     /**
      * A list of columns containing the data to bind to the UI.
      * This field should be made private, so it is hidden from the SDK.
@@ -40,8 +42,6 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
      * {@hide}
      */
     protected int[] mTo;
-
-    protected boolean isWatchlist = false;
 
     protected ViewBinder mViewBinder;
     protected Context context;
@@ -73,64 +73,41 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public AbstractBoardCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to, boolean isWatchlist) {
-        this(context, layout, viewBinder, from, to);
-        this.isWatchlist = isWatchlist;
-    }
-
-    /**
-     * Binds all of the field names passed into the "to" parameter of the
-     * constructor with their corresponding cursor columns as specified in the
-     * "from" parameter.
-     */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         final ViewBinder binder = mViewBinder;
-        final int count = mTo.length;
-        final int[] from = mFrom;
-        final int[] to = mTo;
-
         Object tag = view.getTag();
         if (tag != null && tag instanceof Long) {
             long viewPostId = (Long)tag;
-            long cursorPostId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+            long cursorPostId = cursor.getLong(cursor.getColumnIndex(ID_COL));
             if (viewPostId == cursorPostId) {
                 if (DEBUG) Log.i(TAG, "view already set, bypassing pos=" + cursor.getPosition());
                 return;
             }
         }
-
         if (binder != null)
-            binder.setViewValue(view, cursor, 0); // allow parent operations
-        for (int i = 0; i < count; i++) {
-            final View v = view.findViewById(to[i]);
-            if (v != null) {
-                boolean bound = false;
-                if (binder != null) {
-                    bound = binder.setViewValue(v, cursor, from[i]);
-                }
-            }
-        }
+            binder.setViewValue(view, cursor, 0);
     }
-    
-    /**
-     * @see android.widget.ListAdapter#getView(int, View, ViewGroup)
-     */
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        if (DEBUG) Log.i(TAG, "Getting view for pos=" + position);
+        int tag = getItemViewType(position);
+        if (convertView == null || (Integer)convertView.getTag(R.id.VIEW_TAG_TYPE) != tag) {
+            convertView = newView(parent, tag, position);
+            if (DEBUG) Log.i(TAG, "Created new view=" + convertView);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "Reusing existing view=" + convertView);
+        }
+        if (DEBUG) Log.i(TAG, "Binding pos=" + position + " to view=" + convertView);
         Cursor cursor = getCursor();
-        if (cursor == null) {
-            throw new IllegalStateException("this should only be called when the cursor is valid");
-        }
-        if (!cursor.moveToPosition(position)) {
-            throw new IllegalStateException("couldn't move cursor to position " + position);
-        }
-        View v = convertView != null ? convertView : newView(context, parent, "", position);
-        bindView(v, context, cursor);
-        return v;
+        cursor.moveToPosition(position);
+        bindView(convertView, context, getCursor());
+        return convertView;
     }
 
-    abstract protected View newView(Context context, ViewGroup parent, String tag, int position);
+    abstract protected View newView(ViewGroup parent, int tag, int position);
 
     /**
      * Create a map from an array of strings to an array of column-id integers in mCursor.

@@ -724,8 +724,7 @@ public class ThreadActivity
                 1,
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
-        adapterBoardsTablet = new BoardGridCursorAdapter(getActivityContext(), viewBinder,
-                columnWidth, columnHeight);
+        adapterBoardsTablet = new BoardGridCursorAdapter(getActivityContext(), viewBinder);
         boardGrid.setAdapter(adapterBoardsTablet);
         boardGrid.setOnItemClickListener(boardGridListener);
         boardGrid.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));

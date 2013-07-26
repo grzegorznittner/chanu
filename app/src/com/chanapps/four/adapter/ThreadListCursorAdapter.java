@@ -5,9 +5,9 @@ import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import com.android.gallery3d.data.ImageCacheRequest;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.viewer.ThreadViewHolder;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,15 +21,12 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected static final String TAG = ThreadListCursorAdapter.class.getSimpleName();
     protected static final boolean DEBUG = true;
 
-    protected static final int TYPE = R.id.THREAD_VIEW_TYPE;
-    protected static final String HEADER = "header";
-    protected static final String IMAGE_ITEM = "imageItem";
-    protected static final String TEXT_ITEM = "textItem";
-    protected static final String AD = "ad";
-    protected static final String TITLE = "title";
-    protected static final String LINK = "link";
-    protected static final String URLLINK = "urlLink";
-    protected static final String BUTTON = "button";
+    protected static final int TYPE_MAX_COUNT = 5;
+    protected static final int TYPE_HEADER = 1;
+    protected static final int TYPE_IMAGE_ITEM = 2;
+    protected static final int TYPE_TEXT_ITEM = 3;
+    protected static final int TYPE_TITLE = 4;
+    protected static final int TYPE_LINK = 5;
 
     protected ThreadListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
@@ -64,72 +61,63 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (DEBUG) Log.i(TAG, "Getting view for pos=" + position);
+    public int getItemViewType(int position) {
         Cursor cursor = getCursor();
-        if (cursor == null) {
+        if (cursor == null)
             throw new IllegalStateException("this should only be called when the cursor is valid");
-        }
-        if (!cursor.moveToPosition(position)) {
+        if (!cursor.moveToPosition(position))
             throw new IllegalStateException("couldn't move cursor to position " + position);
-        }
-
-        String tag = convertView == null ? "" : (String)convertView.getTag(TYPE);
-        if (tag == null)
-            tag = "";
         int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
-        String newTag;
+        int tag;
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
-            newTag = HEADER;
-        else if ((flags & ChanPost.FLAG_IS_AD) > 0)
-            newTag = AD;
-        else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0)
-            newTag = URLLINK;
+            tag = TYPE_HEADER;
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
-            newTag = TITLE;
-        else if ((flags & ChanPost.FLAG_IS_BUTTON) > 0)
-            newTag = BUTTON;
+            tag = TYPE_TITLE;
         else if ((flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0)
-            newTag = LINK;
+            tag = TYPE_LINK;
         else if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
-            newTag = IMAGE_ITEM;
+            tag = TYPE_IMAGE_ITEM;
         else
-            newTag = TEXT_ITEM;
+            tag = TYPE_TEXT_ITEM;
+        return tag;
+    }
 
-        View v = (convertView == null || !tag.equals(newTag))
-            ? newView(context, parent, newTag, position)
-            : convertView;
-        if (DEBUG && v == convertView)
-            Log.i(TAG, "Reusing existing view=" + v);
+    protected int getItemViewLayout(int tag) {
+        int id;
+        switch(tag) {
+            case TYPE_HEADER:
+                id = R.layout.thread_list_header;
+                break;
+            case TYPE_TITLE:
+                id = R.layout.thread_list_title;
+                break;
+            case TYPE_LINK:
+                id = R.layout.thread_list_link;
+                break;
+            case TYPE_IMAGE_ITEM:
+                id = R.layout.thread_list_image_item;
+                break;
+            case TYPE_TEXT_ITEM:
+            default:
+                id = R.layout.thread_list_text_item;
+        }
+        return id;
+    }
 
-        if (DEBUG) Log.i(TAG, "Binding view=" + v + " for pos=" + position);
-        bindView(v, context, cursor);
+    @Override
+    protected View newView(ViewGroup parent, int tag, int position) {
+        if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
+        int id = getItemViewLayout(tag);
+        View v = mInflater.inflate(id, parent, false);
+        ThreadViewHolder viewHolder = new ThreadViewHolder(v);
+        v.setTag(R.id.VIEW_TAG_TYPE, tag);
+        v.setTag(R.id.VIEW_HOLDER, viewHolder);
         return v;
     }
 
     @Override
-    protected View newView(Context context, ViewGroup parent, String tag, int position) {
-        if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        int id;
-        if (HEADER.equals(tag))
-            id = R.layout.thread_list_header;
-        else if (AD.equals(tag))
-            id = R.layout.thread_list_ad;
-        else if (URLLINK.equals(tag))
-            id = R.layout.thread_list_urllink;
-        else if (TITLE.equals(tag))
-            id = R.layout.thread_list_title;
-        else if (BUTTON.equals(tag))
-            id = R.layout.thread_list_button;
-        else if (LINK.equals(tag))
-            id = R.layout.thread_list_link;
-        else if (IMAGE_ITEM.equals(tag))
-            id = R.layout.thread_list_image_item;
-        else
-            id = R.layout.thread_list_text_item;
-        View v = mInflater.inflate(id, parent, false);
-        v.setTag(TYPE, tag);
-        return v;
+    public int getViewTypeCount() {
+        return TYPE_MAX_COUNT;
     }
 
 }

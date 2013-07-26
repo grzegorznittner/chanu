@@ -143,26 +143,18 @@ public class ThreadViewer {
                     startActionModeListener);
     }
 
-    public static boolean setListLinkView(final View view, final Cursor cursor, int flags) {
-        switch (view.getId()) {
-            case R.id.list_item:
-                return setItem((ViewGroup) view, cursor, flags, false, null, null, null, null, null);
-            case R.id.list_item_image_wrapper:
-                return setImageWrapper(view, flags);
-            case R.id.list_item_image:
-                return setImage((ImageView) view, cursor, flags, null, null);
-            case R.id.list_item_country_flag:
-                return setCountryFlag((ImageView) view, cursor, flags);
-            case R.id.list_item_header:
-                return setHeaderValue((TextView) view, cursor, null, null);
-            case R.id.list_item_subject:
-                return setSubject((TextView) view, cursor, flags, null);
-            default:
-                return false;
-        }
+    protected static boolean setListLinkView(final View view, final Cursor cursor, int flags) {
+        ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
+        setItem(viewHolder, cursor, flags, false, null, null, null, null, null);
+        setImageWrapper(viewHolder, flags);
+        setImage(viewHolder, cursor, flags, null, null);
+        setCountryFlag(viewHolder, cursor, flags);
+        setHeaderValue(viewHolder, cursor, null, null);
+        setSubject(viewHolder, cursor, flags, null);
+        return true;
     }
 
-    public static boolean setListItemView(final View view, final Cursor cursor, int flags,
+    protected static boolean setListItemView(final View view, final Cursor cursor, int flags,
                                           boolean showContextMenu,
                                           View.OnClickListener imageOnClickListener,
                                           View.OnClickListener backlinkOnClickListener,
@@ -176,69 +168,48 @@ public class ThreadViewer {
                                           final View.OnLongClickListener startActionModeListener) {
         //if (startActionModeListener != null)
         //    view.setOnLongClickListener(startActionModeListener);
-        switch (view.getId()) {
-            case R.id.list_item:
-                return setItem((ViewGroup) view, cursor, flags, showContextMenu,
-                        backlinkOnClickListener, imagesOnClickListener, repliesOnClickListener,
-                        postReplyListener, overflowListener);
-            case R.id.list_item_image_wrapper:
-                return setImageWrapper(view, flags);
-            case R.id.list_item_image:
-                if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
-                    return setHeaderImage((ImageView) view, cursor, flags, imageOnClickListener, expandedImageListener);
-                else
-                    return setImage((ImageView) view, cursor, flags, imageOnClickListener, expandedImageListener);
-            case R.id.list_item_country_flag:
-                return setCountryFlag((ImageView) view, cursor, flags);
-            case R.id.list_item_header:
-                return setHeaderValue((TextView) view, cursor, repliesOnClickListener, sameIdOnClickListener);
-            case R.id.list_item_subject:
-                return setSubject((TextView) view, cursor, flags, backlinkOnClickListener);
-            case R.id.list_item_subject_icons:
-                return setSubjectIcons(view, flags);
-            case R.id.list_item_text:
-                return setText((TextView) view, cursor, flags, backlinkOnClickListener, exifOnClickListener);
-            case R.id.list_item_exif_text:
-                return setImageExifValue((TextView) view);
-            default:
-                return false;
-        }
+        ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
+        setItem(viewHolder, cursor, flags, showContextMenu,
+                backlinkOnClickListener, imagesOnClickListener, repliesOnClickListener,
+                postReplyListener, overflowListener);
+        setImageWrapper(viewHolder, flags);
+        if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
+            setHeaderImage(viewHolder, cursor, flags, imageOnClickListener, expandedImageListener);
+        else
+            setImage(viewHolder, cursor, flags, imageOnClickListener, expandedImageListener);
+        setCountryFlag(viewHolder, cursor, flags);
+        setHeaderValue(viewHolder, cursor, repliesOnClickListener, sameIdOnClickListener);
+        setSubject(viewHolder, cursor, flags, backlinkOnClickListener);
+        setSubjectIcons(viewHolder, flags);
+        setText(viewHolder, cursor, flags, backlinkOnClickListener, exifOnClickListener);
+        setImageExifValue(viewHolder);
+        return true;
     }
 
-    static protected boolean setItem(ViewGroup item, Cursor cursor, int flags,
+    static protected boolean setItem(ThreadViewHolder viewHolder, Cursor cursor, int flags,
                                      boolean showContextMenu,
                                      View.OnClickListener backlinkOnClickListener,
                                      View.OnClickListener imagesOnClickListener,
                                      View.OnClickListener repliesOnClickListener,
                                      View.OnClickListener postReplyListener,
                                      View.OnClickListener overflowListener) {
+        ViewGroup item = viewHolder.list_item;
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         item.setTag((flags & ChanPost.FLAG_IS_AD) > 0 ? null : postId);
         item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.FALSE);
         item.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, Boolean.FALSE);
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
-            displayHeaderCountFields(item, cursor, showContextMenu, imagesOnClickListener, repliesOnClickListener);
+            displayHeaderCountFields(viewHolder, cursor, showContextMenu, imagesOnClickListener, repliesOnClickListener);
         else
-            displayItemCountFields(item, cursor, showContextMenu, backlinkOnClickListener, repliesOnClickListener);
-        View listItemLeftSpacer = item.findViewById(R.id.list_item_left_spacer);
+            displayItemCountFields(viewHolder, cursor, showContextMenu, backlinkOnClickListener, repliesOnClickListener);
+        View listItemLeftSpacer = viewHolder.list_item_left_spacer;
         if (listItemLeftSpacer != null)
             listItemLeftSpacer.setVisibility((flags & ChanPost.FLAG_HAS_IMAGE) > 0 ? View.GONE : View.VISIBLE);
-        //View rightBar = item.findViewById(R.id.list_item_header_bar_right_border);
-        //if (rightBar != null)
-        //    rightBar.setVisibility(showContextMenu ? View.VISIBLE : View.GONE);
-        View reply = item.findViewById(R.id.list_item_header_bar_reply_wrapper);
+        View reply = viewHolder.list_item_header_bar_reply_wrapper;
         if (reply != null) {
             reply.setVisibility(View.GONE);
-            /*
-            reply.setVisibility(
-                    (showContextMenu && (flags & (ChanPost.FLAG_IS_DEAD | ChanPost.FLAG_IS_CLOSED)) == 0)
-                            ? View.VISIBLE
-                            : View.GONE);
-            if (postReplyListener != null && reply.getVisibility() == View.VISIBLE)
-                reply.setOnClickListener(postReplyListener);
-            */
         }
-        View overflow = item.findViewById(R.id.list_item_header_bar_overflow_wrapper);
+        View overflow = viewHolder.list_item_header_bar_overflow_wrapper;
         if (overflow != null) {
             if (showContextMenu) {
                 overflow.setOnClickListener(overflowListener);
@@ -262,59 +233,59 @@ public class ThreadViewer {
         return true;
     }
 
-    static protected void displayHeaderCountFields(View item, Cursor cursor, boolean showContextMenu,
+    static protected void displayHeaderCountFields(ThreadViewHolder viewHolder, Cursor cursor, boolean showContextMenu,
                                                    View.OnClickListener imagesOnClickListener,
                                                    View.OnClickListener repliesOnClickListener) {
-        displayHeaderBarAgoNo(item, cursor);
+        displayHeaderBarAgoNo(viewHolder, cursor);
         int r = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES));
         int i = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_IMAGES));
-        TextView numReplies = (TextView)item.findViewById(R.id.list_item_num_replies_text);
-        TextView numImages = (TextView)item.findViewById(R.id.list_item_num_images_text);
-        TextView numRepliesLabel = (TextView)item.findViewById(R.id.list_item_num_replies_label);
-        TextView numImagesLabel = (TextView)item.findViewById(R.id.list_item_num_images_label);
+        TextView numReplies = viewHolder.list_item_num_replies_text;
+        TextView numImages = viewHolder.list_item_num_images_text;
+        TextView numRepliesLabel = viewHolder.list_item_num_replies_label;
+        TextView numImagesLabel = viewHolder.list_item_num_images_label;
         if (numReplies != null)
             numReplies.setText(String.valueOf(r));
         if (numImages != null)
             numImages.setText(String.valueOf(i));
         if (numRepliesLabel != null)
-            numRepliesLabel.setText(item.getResources().getQuantityString(R.plurals.thread_num_replies_label, r));
+            numRepliesLabel.setText(numRepliesLabel.getResources().getQuantityString(R.plurals.thread_num_replies_label, r));
         if (numImagesLabel != null)
-            numImagesLabel.setText(item.getResources().getQuantityString(R.plurals.thread_num_images_label, i));
+            numImagesLabel.setText(numImagesLabel.getResources().getQuantityString(R.plurals.thread_num_images_label, i));
 
-        View wrapper = item.findViewById(R.id.list_item_num_images);
-        View spinner = item.findViewById(R.id.list_item_num_images_spinner);
+        View wrapper = viewHolder.list_item_num_images;
+        View spinner = viewHolder.list_item_num_images_spinner;
         if (wrapper != null) {
             wrapper.setOnClickListener(i > 0 ? imagesOnClickListener : null);
             if (spinner != null)
                 spinner.setVisibility(i > 0 ? View.VISIBLE : View.GONE);
         }
 
-        displayNumDirectReplies(item, cursor, showContextMenu, repliesOnClickListener); //, false);
+        displayNumDirectReplies(viewHolder, cursor, showContextMenu, repliesOnClickListener); //, false);
     }
 
-    static protected void displayHeaderBarAgoNo(View item, Cursor cursor) {
+    static protected void displayHeaderBarAgoNo(ThreadViewHolder viewHolder, Cursor cursor) {
         String dateText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_DATE_TEXT));
-        TextView ago = (TextView)item.findViewById(R.id.list_item_header_bar_ago);
+        TextView ago = viewHolder.list_item_header_bar_ago;
         if (ago != null)
             ago.setText("~  " + dateText);
         long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-        TextView no = (TextView)item.findViewById(R.id.list_item_header_bar_no);
+        TextView no = viewHolder.list_item_header_bar_no;
         if (no != null)
             no.setText(String.valueOf(postNo));
     }
 
-    static protected void displayItemCountFields(View item, Cursor cursor, boolean showContextMenu,
+    static protected void displayItemCountFields(ThreadViewHolder viewHolder, Cursor cursor, boolean showContextMenu,
                                                  View.OnClickListener backlinkOnClickListener,
                                                  View.OnClickListener repliesOnClickListener) {
-        displayHeaderBarAgoNo(item, cursor);
+        displayHeaderBarAgoNo(viewHolder, cursor);
         //n += displayNumRefs(item, cursor, backlinkOnClickListener);
-        displayNumDirectReplies(item, cursor, showContextMenu, repliesOnClickListener); //, true);
+        displayNumDirectReplies(viewHolder, cursor, showContextMenu, repliesOnClickListener); //, true);
     }
 
-    static protected int displayNumDirectReplies(View item, Cursor cursor, boolean showContextMenu,
+    static protected int displayNumDirectReplies(ThreadViewHolder viewHolder, Cursor cursor, boolean showContextMenu,
                                                   View.OnClickListener repliesOnClickListener) { //,
                                                   //boolean markVisibility) {
-        View wrapper = item.findViewById(R.id.list_item_num_direct_replies);
+        View wrapper = viewHolder.list_item_num_direct_replies;
         if (wrapper == null)
             return 0;
         if (!showContextMenu) {
@@ -322,55 +293,23 @@ public class ThreadViewer {
             return 0;
         }
 
-        TextView numDirectReplies = (TextView)item.findViewById(R.id.list_item_num_direct_replies_text);
+        TextView numDirectReplies = viewHolder.list_item_num_direct_replies_text;
         if (numDirectReplies == null)
             return 0;
 
         int directReplies = numDirectReplies(cursor);
-        /*
-        TextView numRepliesLabel = (TextView)item.findViewById(R.id.list_item_num_direct_replies_label);
-        if (numRepliesLabel != null)
-            numRepliesLabel.setText(
-                    item.getResources().getQuantityString(R.plurals.thread_num_direct_replies_label, directReplies));
-        */
         numDirectReplies.setText(String.valueOf(directReplies));
-        //View spinner = item.findViewById(R.id.list_item_num_direct_replies_spinner);
         if (directReplies > 0) {
             wrapper.setOnClickListener(repliesOnClickListener);
-            //if (spinner != null)
-            //    spinner.setVisibility(View.VISIBLE);
-            //if (markVisibility)
-                wrapper.setVisibility(View.VISIBLE);
-        }
-        else {
-            wrapper.setOnClickListener(null);
-            //if (spinner != null)
-            //    spinner.setVisibility(View.GONE);
-            //if (markVisibility)
-                wrapper.setVisibility(View.GONE);
-        }
-        return directReplies;
-    }
-    /*
-    static protected int displayNumRefs(View item, Cursor cursor,
-                                                  View.OnClickListener backlinkOnClickListener) {
-        View wrapper = item.findViewById(R.id.list_item_num_refs);
-        TextView numRefs = (TextView)item.findViewById(R.id.list_item_num_refs_text);
-
-        int refs = numRefs(cursor);
-
-        numRefs.setText(String.valueOf(refs));
-        if (refs > 0) {
-            wrapper.setOnClickListener(backlinkOnClickListener);
             wrapper.setVisibility(View.VISIBLE);
         }
         else {
             wrapper.setOnClickListener(null);
             wrapper.setVisibility(View.GONE);
         }
-        return refs;
+        return directReplies;
     }
-    */
+
     static protected int numDirectReplies(Cursor cursor) {
         byte[] b = cursor.getBlob(cursor.getColumnIndex(ChanPost.POST_REPLIES_BLOB));
         if (b == null || b.length == 0)
@@ -381,44 +320,12 @@ public class ThreadViewer {
         return links.size();
     }
 
-    static protected int numRefs(Cursor cursor) {
-        byte[] b = cursor.getBlob(cursor.getColumnIndex(ChanPost.POST_BACKLINKS_BLOB));
-        if (b == null || b.length == 0)
-            return 0;
-        HashSet<?> links = ChanPost.parseBlob(b);
-        if (links == null || links.size() <= 0)
-            return 0;
-        return links.size();
-    }
-
-    static protected boolean setHeaderWrapper(ViewGroup wrapper, int flags) {
-        if ((flags & ChanPost.FLAG_IS_AD) > 0) {
-            wrapper.setBackgroundResource(R.drawable.thread_ad_bg_gradient);
-            wrapper.setVisibility(View.VISIBLE);
-        }
-        else if ((flags & ChanPost.FLAG_IS_TITLE) > 0) {
-            wrapper.setBackgroundResource(R.drawable.thread_button_gradient_bg);
-            wrapper.setVisibility(View.VISIBLE);
-        }
-        else if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0) {
-            wrapper.setBackgroundResource(0);
-            wrapper.setVisibility(View.VISIBLE);
-        }
-        else if ((flags & ChanPost.FLAG_HAS_HEAD) > 0) {
-            wrapper.setBackgroundResource(0);
-            wrapper.setVisibility(View.VISIBLE);
-        }
-        else {
-            wrapper.setBackgroundResource(0);
-            wrapper.setVisibility(View.GONE);
-        }
-        return true;
-    }
-
-
-    static private boolean setHeaderValue(final TextView tv, final Cursor cursor,
+    static private boolean setHeaderValue(ThreadViewHolder viewHolder, final Cursor cursor,
                                           View.OnClickListener repliesOnClickListener,
                                           View.OnClickListener sameIdOnClickListener) {
+        TextView tv = viewHolder.list_item_header;
+        if (tv == null)
+            return false;
         String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_HEADLINE_TEXT));
         if (text == null || text.isEmpty()) {
             tv.setVisibility(View.GONE);
@@ -440,8 +347,11 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean setSubject(final TextView tv, final Cursor cursor, int flags,
+    static private boolean setSubject(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
                                       View.OnClickListener backlinkOnClickListener) {
+        TextView tv = viewHolder.list_item_subject;
+        if (tv == null)
+            return false;
         if ((flags & (ChanPost.FLAG_IS_AD | ChanPost.FLAG_IS_TITLE)) > 0) {
             tv.setText("");
             tv.setVisibility(View.GONE);
@@ -480,8 +390,8 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean setSubjectIcons(View view, int flags) {
-        View deadIcon = view.findViewById(R.id.list_item_dead_icon);
+    static private boolean setSubjectIcons(ThreadViewHolder viewHolder, int flags) {
+        View deadIcon = viewHolder.list_item_dead_icon;
         if (deadIcon != null)
             deadIcon.setVisibility((flags & ChanPost.FLAG_IS_DEAD) > 0 ? View.VISIBLE : View.GONE);
         return true;
@@ -490,9 +400,12 @@ public class ThreadViewer {
     static private final String SHOW_EXIF_TEXT = "Show EXIF Data";
     static private final String SHOW_EXIF_HTML = "<b>" + SHOW_EXIF_TEXT + "</b>";
 
-    static private boolean setText(final TextView tv, final Cursor cursor, int flags,
+    static private boolean setText(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
                                    final View.OnClickListener backlinkOnClickListener,
                                    final View.OnClickListener exifOnClickListener) {
+        TextView tv = viewHolder.list_item_text;
+        if (tv == null)
+            return false;
         if ((flags & ChanPost.FLAG_IS_AD) > 0) {
             tv.setVisibility(View.GONE);
             tv.setText("");
@@ -577,14 +490,20 @@ public class ThreadViewer {
         return out;
     }
 
-    static private boolean setImageExifValue(final TextView tv) {
+    static private boolean setImageExifValue(ThreadViewHolder viewHolder) {
+        TextView tv = viewHolder.list_item_exif_text;
+        if (tv == null)
+            return false;
         tv.setText("");
         tv.setVisibility(View.GONE);
         return true;
     }
 
 
-    static private boolean setImageWrapper(final View v, final int flags) {
+    static private boolean setImageWrapper(ThreadViewHolder viewHolder, final int flags) {
+        View v = viewHolder.list_item_image_wrapper;
+        if (v == null)
+            return false;
         if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
             v.setVisibility(View.VISIBLE);
         else
@@ -592,33 +511,39 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean setHeaderImage(final ImageView iv, final Cursor cursor, int flags,
+    static private boolean setHeaderImage(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
                                     View.OnClickListener imageOnClickListener,
                                     View.OnClickListener expandedImageListener) {
+        ImageView iv = viewHolder.list_item_image;
+        if (iv == null)
+            return false;
         if (DEBUG) Log.i(TAG, "setHeaderImage()");
         if (hideNoImage(iv, flags))
             return true;
         View itemView = (View)iv.getParent().getParent().getParent();
-        if (displayCachedExpandedImage(itemView, cursor, expandedImageListener))
+        if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
-        if (!isDead && prefetchExpandedImage(itemView, cursor, expandedImageListener))
+        if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         return displayHeaderImage(iv, cursor, flags, imageOnClickListener);
     }
 
-    static private boolean setImage(final ImageView iv, final Cursor cursor, int flags,
+    static private boolean setImage(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
                                     View.OnClickListener imageOnClickListener,
                                     View.OnClickListener expandedImageListener) {
+        ImageView iv = viewHolder.list_item_image;
+        if (iv == null)
+            return false;
         if (hideNoImage(iv, flags))
             return true;
         if (isListLink(flags))
             return displayNonHeaderImage(iv, cursor, imageOnClickListener);
         View itemView = (View)iv.getParent().getParent().getParent().getParent();
-        if (displayCachedExpandedImage(itemView, cursor, expandedImageListener))
+        if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
-        if (!isDead && prefetchExpandedImage(itemView, cursor, expandedImageListener))
+        if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         return displayNonHeaderImage(iv, cursor, imageOnClickListener);
     }
@@ -683,36 +608,28 @@ public class ThreadViewer {
         }
     }
 
-    static private boolean prefetchExpandedImage(final View itemView, final Cursor cursor,
+    static private boolean prefetchExpandedImage(ThreadViewHolder viewHolder, final Cursor cursor,
                                                             final View.OnClickListener expandedImageListener) {
-        // NOTE: we assume full size image file doesn't already exist
-        if (itemView == null)
-            return false; // broken layout
-
         int fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
         int maxAutoloadFSize = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxAutoLoadFSize;
         if (fsize <= maxAutoloadFSize) {
             if (DEBUG) Log.i(TAG, "prefetchExpandedHeaderImage auto-expanding since fsize=" + fsize + " < " + maxAutoloadFSize);
             ThreadExpandImageOnClickListener expander =
-                    (new ThreadExpandImageOnClickListener(itemView.getContext(), cursor, itemView, expandedImageListener));
+                    (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener));
             expander.displayAutoExpandedImage();
             return true;
         }
-
         return false;
     }
 
-    static private boolean displayCachedExpandedImage(final View itemView, final Cursor cursor,
+    static private boolean displayCachedExpandedImage(ThreadViewHolder viewHolder, final Cursor cursor,
                                                       final View.OnClickListener expandedImageListener) {
-        if (itemView == null)
-            return false; // broken layout
-
-        File file = fullSizeImageFile(itemView.getContext(), cursor); // try for full size first
+        File file = fullSizeImageFile(viewHolder.list_item.getContext(), cursor); // try for full size first
         if (file == null) {
-            View itemExpandedImage = itemView.findViewById(R.id.list_item_image_expanded);
-            View itemExpandedImageClickEffect = itemView.findViewById(R.id.list_item_image_expanded_click_effect);
-            View itemExpandedProgressBar = itemView.findViewById(R.id.list_item_expanded_progress_bar);
-            View itemExpandedImageWrapper = itemView.findViewById(R.id.list_item_image_expanded_wrapper);
+            View itemExpandedImage = viewHolder.list_item_image_expanded;
+            View itemExpandedImageClickEffect = viewHolder.list_item_image_expanded_click_effect;
+            View itemExpandedProgressBar = viewHolder.list_item_expanded_progress_bar;
+            View itemExpandedImageWrapper = viewHolder.list_item_image_expanded_wrapper;
             if (itemExpandedImage != null)
                 itemExpandedImage.setVisibility(View.GONE);
             if (itemExpandedImageClickEffect != null)
@@ -726,7 +643,7 @@ public class ThreadViewer {
 
         if (DEBUG) Log.i(TAG, "displayCachedExpandedImage() expanded file=" + file.getAbsolutePath());
         ThreadExpandImageOnClickListener expander =
-                (new ThreadExpandImageOnClickListener(itemView.getContext(), cursor, itemView, expandedImageListener));
+                (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener));
         expander.displayCachedExpandedImage();
         return true;
     }
@@ -809,7 +726,10 @@ public class ThreadViewer {
     }
     */
 
-    static private boolean setCountryFlag(final ImageView iv, final Cursor cursor, int flags) {
+    static private boolean setCountryFlag(ThreadViewHolder viewHolder, final Cursor cursor, int flags) {
+        ImageView iv = viewHolder.list_item_country_flag;
+        if (iv == null)
+            return false;
         if ((flags & ChanPost.FLAG_HAS_COUNTRY) > 0) {
             iv.setImageBitmap(null);
             iv.setVisibility(View.VISIBLE);

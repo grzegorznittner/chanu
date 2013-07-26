@@ -532,7 +532,7 @@
         <item name="android:background">@drawable/thread_button_selector_bg</item>
     </style>
 
-    <!-- THREAD LIST HEADER -->
+    <!-- THREAD LIST TYPE_HEADER -->
 
     <style name="ThreadListHeaderImageSection" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>

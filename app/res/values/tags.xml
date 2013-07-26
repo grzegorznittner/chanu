@@ -7,4 +7,6 @@
     <item name="THREAD_NO" type="id">7</item>
     <item name="POST_NO" type="id">8</item>
     <item name="BOARD_GRID_IMAGE" type="id">9</item>
+    <item name="VIEW_HOLDER" type="id">10</item>
+    <item name="VIEW_TAG_TYPE" type="id">11</item>
 </resources>

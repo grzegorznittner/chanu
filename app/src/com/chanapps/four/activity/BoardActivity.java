@@ -290,7 +290,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 getResources().getInteger(R.integer.BoardGridView_numColumns),
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
-        adapter = new BoardGridCursorAdapter(getApplicationContext(), viewBinder, columnWidth, columnHeight);
+        adapter = new BoardGridCursorAdapter(getApplicationContext(), viewBinder);
         absListView = (GridView)findViewById(R.id.board_grid_view);
         absListView.setAdapter(adapter);
         absListView.setSelector(android.R.color.transparent);

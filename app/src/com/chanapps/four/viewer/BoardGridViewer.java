@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanBoard;
-import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -55,25 +54,19 @@ public class BoardGridViewer {
         if (imageLoader == null)
             initStatics(view);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
-        switch (view.getId()) {
-            case R.id.grid_item:
-                return setItem(view, cursor, groupBoardCode, overlayListener, overflowListener);
-            case R.id.grid_item_thread_subject:
-                return setGridSubject((TextView) view, cursor);
-            case R.id.grid_item_thread_info:
-                return setInfo((TextView) view, cursor, groupBoardCode, flags);
-            case R.id.grid_item_country_flag:
-                return setCountryFlag((ImageView) view, cursor);
-            case R.id.grid_item_thread_thumb:
-                return setGridThumb((ImageView) view, cursor, flags, columnWidth, columnHeight);
-        }
-        return false;
+        BoardGridViewHolder viewHolder = (BoardGridViewHolder)view.getTag(R.id.VIEW_HOLDER);
+        setItem(viewHolder, overlayListener, overflowListener);
+        setGridSubject(viewHolder, cursor);
+        setInfo(viewHolder, cursor, groupBoardCode, flags);
+        setCountryFlag(viewHolder, cursor);
+        setGridThumb(viewHolder, cursor, flags, columnWidth, columnHeight);
+        return true;
     }
 
-    protected static boolean setItem(View item, Cursor cursor, String groupBoardCode,
+    protected static boolean setItem(BoardGridViewHolder viewHolder,
                                      View.OnClickListener overlayListener,
                                      View.OnClickListener overflowListener) {
-        View overflow = item.findViewById(R.id.grid_item_overflow_icon);
+        View overflow = viewHolder.grid_item_overflow_icon;
         if (overflow != null) {
             if (overflowListener != null) {
                 overflow.setOnClickListener(overflowListener);
@@ -83,11 +76,9 @@ public class BoardGridViewer {
                 overflow.setVisibility(View.GONE);
             }
         }
-        ViewGroup overlay = (ViewGroup)item.findViewById(R.id.grid_item_overlay);
+        ViewGroup overlay = viewHolder.grid_item_overlay;
         if (overlay != null)
             overlay.setOnClickListener(overlayListener);
-        if (DEBUG) Log.i(TAG, "setitemValue item=" + item + " visible=" + (item.getVisibility() == View.VISIBLE)
-                + " size=" + item.getMeasuredWidth() + "x" + item.getMeasuredHeight());
         return true;
     }
     
@@ -104,7 +95,10 @@ public class BoardGridViewer {
         return threadAbbrev;
     }
 
-    protected static boolean setGridSubject(TextView tv, Cursor cursor) {
+    protected static boolean setGridSubject(BoardGridViewHolder viewHolder, Cursor cursor) {
+        TextView tv = viewHolder.grid_item_thread_subject;
+        if (tv == null)
+            return false;
         String s = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
         if (s != null && !s.isEmpty()) {
             if (DEBUG) Log.i(TAG, "setGridSubject tv=" + tv + " text=" + s);
@@ -129,7 +123,11 @@ public class BoardGridViewer {
         return true;
     }
 
-    protected static boolean setGridThumb(ImageView iv, Cursor cursor, int flags, int columnWidth, int columnHeight) {
+    protected static boolean setGridThumb(BoardGridViewHolder viewHolder, Cursor cursor, int flags,
+                                          int columnWidth, int columnHeight) {
+        ImageView iv = viewHolder.grid_item_thread_thumb;
+        if (iv == null)
+            return false;
         String url;
         if ((flags & ChanThread.THREAD_FLAG_TITLE) > 0) {
             url = "";
@@ -190,20 +188,10 @@ public class BoardGridViewer {
         }
     };
 
-    /*
-    protected static void displayDefaultItem(String imageUri, View view) {
-        if (imageUri.matches("drawable://.*")) {
-            displayItem(imageUri, view, null);
-            return;
-        }
-        String defaultUrl = (String)view.getTag(R.id.BOARD_GRID_VIEW_DEFAULT_DRAWABLE);
-        if (defaultUrl == null || defaultUrl.isEmpty())
-            defaultUrl = ChanBoard.getIndexedImageDrawableUrl(ChanBoard.DEFAULT_BOARD_CODE, 0);
-        imageLoader.displayImage(defaultUrl, (ImageView)view, displayImageOptions, thumbLoadingListener);
-    }
-    */
-
-    protected static boolean setCountryFlag(ImageView iv, Cursor cursor) {
+    protected static boolean setCountryFlag(BoardGridViewHolder viewHolder, Cursor cursor) {
+        ImageView iv = viewHolder.grid_item_country_flag;
+        if (iv == null)
+            return false;
         String url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_COUNTRY_FLAG_URL));
         if (url != null && !url.isEmpty()) {
             iv.setVisibility(View.VISIBLE);
@@ -216,7 +204,10 @@ public class BoardGridViewer {
         return true;
     }
 
-    protected static boolean setInfo(TextView tv, Cursor cursor, String groupBoardCode, int flags) {
+    protected static boolean setInfo(BoardGridViewHolder viewHolder, Cursor cursor, String groupBoardCode, int flags) {
+        TextView tv = viewHolder.grid_item_thread_info;
+        if (tv == null)
+            return false;
         String s = (flags & ChanThread.THREAD_FLAG_BOARD) == 0
                 ? getBoardAbbrev(tv.getContext(), cursor, groupBoardCode)
                 : "";

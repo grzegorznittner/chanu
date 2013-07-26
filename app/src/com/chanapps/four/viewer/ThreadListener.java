@@ -71,13 +71,16 @@ public class ThreadListener {
                 return;
             if ((Boolean) itemView.getTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED))
                 return;
+            ThreadViewHolder viewHolder = (ThreadViewHolder)itemView.getTag(R.id.VIEW_HOLDER);
+            if (viewHolder == null)
+                return;
 
             Cursor cursor = threadViewable.getAdapter().getCursor();
             cursor.moveToPosition(pos);
             final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
             if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
             if ((flags & (ChanPost.FLAG_HAS_IMAGE)) > 0) {
-                (new ThreadExpandImageOnClickListener(v.getContext(), cursor, itemView, expandedImageListener))
+                (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener))
                         .onClick(itemView);
                 itemView.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.TRUE);
             }
