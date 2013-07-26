@@ -22,7 +22,8 @@ public class ChanPost {
 	public static final String TAG = ChanPost.class.getSimpleName();
     private static final boolean DEBUG = false;
 
-    public static final String HEADLINE_BOARDLEVEL_DELIMITER = "<br/>";
+    //public static final String HEADLINE_BOARDLEVEL_DELIMITER = "<br/>";
+    public static final String HEADLINE_BOARDLEVEL_DELIMITER = " ";
     public static final String HEADLINE_THREADLEVEL_DELIMITER = "<br/>";
     //public static final String HEADLINE_THREADLEVEL_DELIMITER = " &middot; ";
     private static final int MIN_LINE = 30;
@@ -345,6 +346,7 @@ public class ChanPost {
             return highlightComponents(subject, message, query);
         }
 
+        /*
         // start subject extraction process
         String[] terminators = { "\r", "\n", "<br/>", "<br>", ". ", "! ", "? ", "; ", ": ", ", " };
         message = cleanMessage(message);
@@ -369,7 +371,7 @@ public class ChanPost {
             if (DEBUG) Log.v(TAG, "cutoff subject=" + subject + " message=" + message);
             return highlightComponents(subject, message, query);
         }
-
+        */
         // default
         if (DEBUG) Log.v(TAG, "default subject=" + subject + " message=" + message);
         return highlightComponents(cleanSubject(subject), cleanMessage(message), query);

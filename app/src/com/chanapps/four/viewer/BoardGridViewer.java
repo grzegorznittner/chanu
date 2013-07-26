@@ -29,8 +29,10 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
  */
 public class BoardGridViewer {
 
+    public static final int SMALL_GRID = 0x01;
+
     private static String TAG = BoardGridViewer.class.getSimpleName();
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
 
     private static ImageLoader imageLoader;
     private static DisplayImageOptions displayImageOptions;
@@ -51,6 +53,15 @@ public class BoardGridViewer {
                                        View.OnClickListener overlayListener,
                                        View.OnClickListener overflowListener)
     {
+        return setViewValue(view, cursor, groupBoardCode, columnWidth, columnHeight, overlayListener, overflowListener, 0);
+    }
+
+    public static boolean setViewValue(View view, Cursor cursor, String groupBoardCode,
+                                       int columnWidth, int columnHeight,
+                                       View.OnClickListener overlayListener,
+                                       View.OnClickListener overflowListener,
+                                       int options)
+    {
         if (imageLoader == null)
             initStatics(view);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
@@ -59,7 +70,7 @@ public class BoardGridViewer {
         setGridSubject(viewHolder, cursor);
         setInfo(viewHolder, cursor, groupBoardCode, flags);
         setCountryFlag(viewHolder, cursor);
-        setGridThumb(viewHolder, cursor, flags, columnWidth, columnHeight);
+        setImage(viewHolder, cursor, flags, columnWidth, columnHeight, options);
         return true;
     }
 
@@ -100,9 +111,15 @@ public class BoardGridViewer {
         if (tv == null)
             return false;
         String s = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
+        String t = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
         if (s != null && !s.isEmpty()) {
-            if (DEBUG) Log.i(TAG, "setGridSubject tv=" + tv + " text=" + s);
+            if (DEBUG) Log.i(TAG, "setGridSubject tv=" + tv + " subject=" + s);
             tv.setText(Html.fromHtml(s));
+            tv.setVisibility(View.VISIBLE);
+        }
+        else if (t != null && !t.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "setGridSubject tv=" + tv + " no subject, text=" + s);
+            tv.setText(Html.fromHtml(t));
             tv.setVisibility(View.VISIBLE);
         }
         else {
@@ -111,7 +128,7 @@ public class BoardGridViewer {
         }
         return true;
     }
-
+    /*
     protected static boolean setText(TextView tv, Cursor cursor) {
         String text = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
         if (text != null && !text.isEmpty()) {
@@ -122,9 +139,9 @@ public class BoardGridViewer {
         }
         return true;
     }
-
-    protected static boolean setGridThumb(BoardGridViewHolder viewHolder, Cursor cursor, int flags,
-                                          int columnWidth, int columnHeight) {
+    */
+    protected static boolean setImage(BoardGridViewHolder viewHolder, Cursor cursor, int flags,
+                                      int columnWidth, int columnHeight, int options) {
         ImageView iv = viewHolder.grid_item_thread_thumb;
         if (iv == null)
             return false;
@@ -146,26 +163,25 @@ public class BoardGridViewer {
             if (url == null || url.isEmpty())
                 url = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
         }
+        iv.setVisibility(View.VISIBLE);
         if (url != null && !url.isEmpty()) {
-            ViewParent parent = iv.getParent();
-            if (parent != null && parent instanceof View) {
-                View v = (View)parent;
-                ViewGroup.LayoutParams params = v.getLayoutParams();
-                if (columnWidth > 0 && columnHeight > 0 && params != null) {
-                    params.width = columnWidth;
+            if ((options & SMALL_GRID) > 0) {
+                ViewParent parent = iv.getParent();
+                if (parent != null && parent instanceof View) {
+                    View v = (View)parent;
+                    ViewGroup.LayoutParams params = v.getLayoutParams();
+                    if (columnWidth > 0 && params != null) {
+                        params.width = columnWidth; // force square
+                        params.height = columnWidth; // force square
+                    }
+                }
+                ViewGroup.LayoutParams params = iv.getLayoutParams();
+                if (columnWidth > 0 && params != null) {
+                    params.width = columnWidth; // force square
                     params.height = columnWidth; // force square
                 }
             }
-            ViewGroup.LayoutParams params = iv.getLayoutParams();
-            if (columnWidth > 0 && columnHeight > 0 && params != null) {
-                params.width = columnWidth;
-                params.height = columnWidth; // force square
-            }
-            iv.setVisibility(View.VISIBLE);
             imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
-        }
-        else {
-            iv.setVisibility(View.VISIBLE);
         }
         return true;
     }
@@ -214,7 +230,8 @@ public class BoardGridViewer {
         String t = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_HEADLINE));
         if (t == null)
             t = "";
-        String u = s + (s.isEmpty() || t.isEmpty() ? "" : "<br/>") + t;
+        //String u = s + (s.isEmpty() || t.isEmpty() ? "" : "<br/>") + t;
+        String u = s + (s.isEmpty() || t.isEmpty() ? "" : " ") + t;
         if ((flags & (ChanThread.THREAD_FLAG_AD | ChanThread.THREAD_FLAG_TITLE)) == 0 && !u.isEmpty()) {
             tv.setText(Html.fromHtml(u));
             tv.setVisibility(View.VISIBLE);

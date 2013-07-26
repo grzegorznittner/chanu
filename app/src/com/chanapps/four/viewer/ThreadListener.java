@@ -22,7 +22,7 @@ import com.chanapps.four.fragment.ThreadPopupDialogFragment;
 public class ThreadListener {
 
     private static final String TAG = ThreadListener.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private ThreadViewable threadViewable;
 

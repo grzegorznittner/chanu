@@ -17,13 +17,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
+import com.chanapps.four.adapter.BoardGridSmallCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.component.TutorialOverlay.Page;
 import com.chanapps.four.data.*;
@@ -42,7 +42,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
     private static WeakReference<BoardActivity> watchlistActivityRef = null;
     private static WeakReference<BoardActivity> favoritesActivityRef = null;
 
@@ -61,6 +61,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected int firstVisiblePosition = -1;
     protected int firstVisiblePositionOffset = -1;
     protected View boardTitleBar;
+    protected int gridViewOptions;
     protected PullToRefreshAttacher mPullToRefreshAttacher;
 
     public static void startActivity(Context from, String boardCode, String query) {
@@ -130,11 +131,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     @Override
     protected void createViews(Bundle bundle) {
-        createAbsListView();
         if (bundle != null)
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
+        createAbsListView();
         emptyText = (TextView)findViewById(R.id.board_grid_empty_text);
         if (boardCode == null || boardCode.isEmpty()) {
             if (ActivityDispatcher.isDispatchable(this)) {
@@ -247,6 +248,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "onNewIntent begin /" + intent.getStringExtra(ChanBoard.BOARD_CODE) + "/ q=" + query);
         setIntent(intent);
         setFromIntent(intent);
+        createAbsListView();
         if (DEBUG) Log.i(TAG, "onNewIntent end /" + boardCode + "/ q=" + query);
     }
 
@@ -279,18 +281,34 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "setFromIntent /" + boardCode + "/ q=" + query);
     }
 
+    protected void setGridViewOptions() {
+        if (ChanBoard.isVirtualBoard(boardCode) && !ChanBoard.isPopularBoard(boardCode))
+            gridViewOptions |= BoardGridViewer.SMALL_GRID;
+        else
+            gridViewOptions = 0;
+    }
+
     protected void createAbsListView() {
         // we don't use fragments, but create anything needed
+        setGridViewOptions();
         FrameLayout contentFrame = (FrameLayout)findViewById(R.id.content_frame);
         if (contentFrame.getChildCount() > 0)
             contentFrame.removeAllViews();
-        layout = View.inflate(getApplicationContext(), R.layout.board_grid_layout, null);
+        int layoutId = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
+                ? R.layout.board_grid_layout_small
+                : R.layout.board_grid_layout;
+        layout = View.inflate(getApplicationContext(), layoutId, null);
         contentFrame.addView(layout);
+        int numColumns = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
+                ? R.integer.BoardGridViewSmall_numColumns
+                : R.integer.BoardGridView_numColumns;
         columnWidth = ChanGridSizer.getCalculatedWidth(getResources().getDisplayMetrics(),
-                getResources().getInteger(R.integer.BoardGridView_numColumns),
+                getResources().getInteger(numColumns),
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
-        adapter = new BoardGridCursorAdapter(getApplicationContext(), viewBinder);
+        adapter = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
+                ? new BoardGridSmallCursorAdapter(getApplicationContext(), viewBinder)
+                : new BoardGridCursorAdapter(getApplicationContext(), viewBinder);
         absListView = (GridView)findViewById(R.id.board_grid_view);
         absListView.setAdapter(adapter);
         absListView.setSelector(android.R.color.transparent);
@@ -441,7 +459,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
             OnClickListener overflow = ChanBoard.META_BOARD_CODE.equals(boardCode) ? null : overflowListener;
             return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
-                    overlayListener, overflow);
+                    overlayListener, overflow, gridViewOptions);
         }
     };
 

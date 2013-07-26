@@ -213,6 +213,10 @@
         <item name="android:drawSelectorOnTop">true</item>
     </style>
 
+    <style name="BoardGridViewSmall" parent="BoardGridView">
+        <item name="android:numColumns">@integer/BoardGridViewSmall.numColumns</item>
+    </style>
+
     <style name="BoardGridViewTablet" parent="AppTheme">
         <item name="android:layout_width">@dimen/BoardGridViewTablet_layout_width</item>
         <item name="android:layout_height">match_parent</item>

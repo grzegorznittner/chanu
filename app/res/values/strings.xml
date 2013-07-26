@@ -1609,10 +1609,13 @@
     <dimen name="StaggeredGridView.Board.Item.paddingTop">8dp</dimen>
     <dimen name="StaggeredGridView.Board.Item.paddingBottom">8dp</dimen>
 
-    <integer name="BoardGridView.numColumns">3</integer>
+    <!--<integer name="BoardGridView.numColumns">3</integer> -->
+    <integer name="BoardGridView.numColumns">1</integer>
+    <integer name="BoardGridViewSmall.numColumns">3</integer>
     <integer name="BoardTabletGridView.numColumns">1</integer>
     <dimen name="BoardGridView.spacing">8dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">8dp</dimen>
-    <dimen name="BoardGridTextHeight">80dp</dimen>
+    <dimen name="BoardGridTextHeight">96dp</dimen>
+    <dimen name="BoardGridTextHeightSmall">80dp</dimen>
 
 </resources>
