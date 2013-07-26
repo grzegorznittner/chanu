@@ -235,6 +235,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     }
 
     public void displayAutoExpandedImage() {
+        viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
         viewHolder.list_item_expanded_progress_bar.setVisibility(View.VISIBLE);
         ThreadViewer.initStatics(viewHolder.list_item_image_expanded);
         //Point targetSize = sizeExpandedImage(postW, postH);

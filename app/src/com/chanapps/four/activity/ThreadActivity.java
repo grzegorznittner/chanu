@@ -305,11 +305,20 @@ public class ThreadActivity
             setProgress(false);
         }
         else {
+            /*
+            if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " non-current board data, loading");
+            if (onTablet())
+                getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
+            createPager();
+            */
             if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " non-current board data, manual refreshing");
             setProgress(true);
+            refreshing = true;
             NetworkProfileManager.instance().manualRefresh(this);
         }
     }
+
+    public boolean refreshing = false;
 
     @Override
     protected void onResume() {
@@ -323,7 +332,7 @@ public class ThreadActivity
             createPager();
         }
         //invalidateOptionsMenu(); // for correct spinner display
-        ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
+        //ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
         //ThreadFragment fragment = getCurrentFragment();
         /*
         if (activityId == null
@@ -430,6 +439,7 @@ public class ThreadActivity
 
     @Override
     public void refresh() {
+        refreshing = false;
         invalidateOptionsMenu(); // in case spinner needs to be reset
         ThreadFragment fragment = getCurrentFragment();
         if (fragment != null)
@@ -445,6 +455,7 @@ public class ThreadActivity
     }
 
     public void refreshFragment(String boardCode, long threadNo, String message) {
+        refreshing = false;
         if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " message=" + message);
         ChanBoard fragmentBoard = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (mPager == null && !fragmentBoard.defData) {
@@ -657,6 +668,7 @@ public class ThreadActivity
                 if (primaryItem != null)
                     primaryItem.setPullToRefreshAttacher(null);
                 primaryItem = fragment;
+                /*
                 ChanActivityId activityId = fragment.getChanActivityId();
                 if (activityId != null
                         && activityId.boardCode != null
@@ -670,6 +682,7 @@ public class ThreadActivity
                         if (DEBUG) Log.i(TAG, "setPrimaryItem set activity to /" + boardCode + "/" + threadNo);
                     }
                 }
+                */
                 fragment.setPullToRefreshAttacher(mPullToRefreshAttacher);
                 if (onTablet()) {
                     if (DEBUG) Log.i(TAG, "smooth scrolling to position=" + position);

@@ -520,13 +520,12 @@ public class ThreadViewer {
         if (DEBUG) Log.i(TAG, "setHeaderImage()");
         if (hideNoImage(iv, flags))
             return true;
-        View itemView = (View)iv.getParent().getParent().getParent();
         if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
         if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
-        return displayHeaderImage(iv, cursor, flags, imageOnClickListener);
+        return displayHeaderImage(viewHolder, cursor, flags, imageOnClickListener);
     }
 
     static private boolean setImage(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
@@ -552,8 +551,9 @@ public class ThreadViewer {
         return (flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0; // skip for unexpandables
     }
 
-    static private boolean displayHeaderImage(ImageView iv, Cursor cursor, int flags,
+    static private boolean displayHeaderImage(ThreadViewHolder viewHolder, Cursor cursor, int flags,
                                            View.OnClickListener imageOnClickListener) {
+        ImageView iv = viewHolder.list_item_image;
         int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
         int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
         if ((flags & ChanPost.FLAG_HAS_SPOILER) > 0 || tn_w <= 0 || tn_h <= 0) { // don't size based on hidden image, size based on filler image
@@ -586,10 +586,11 @@ public class ThreadViewer {
         // display image
         if (imageOnClickListener != null)
             iv.setOnClickListener(imageOnClickListener);
+        viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
         iv.setVisibility(View.VISIBLE);
         //ImageLoadingListener listener = ((flags & ChanPost.FLAG_IS_AD) > 0) ? adImageLoadingListener : null;
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
-        if (DEBUG) Log.i(TAG, "setImage() url=" + url);
+        if (DEBUG) Log.i(TAG, "displayHeaderImage() url=" + url);
         //imageLoader.displayImage(url, iv, options, listener);
         imageLoader.displayImage(url, iv, options);
 
@@ -613,7 +614,7 @@ public class ThreadViewer {
         int fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
         int maxAutoloadFSize = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxAutoLoadFSize;
         if (fsize <= maxAutoloadFSize) {
-            if (DEBUG) Log.i(TAG, "prefetchExpandedHeaderImage auto-expanding since fsize=" + fsize + " < " + maxAutoloadFSize);
+            if (DEBUG) Log.i(TAG, "prefetchExpandedImage auto-expanding since fsize=" + fsize + " < " + maxAutoloadFSize);
             ThreadExpandImageOnClickListener expander =
                     (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener));
             expander.displayAutoExpandedImage();
@@ -743,11 +744,13 @@ public class ThreadViewer {
     }
 
     protected static boolean setTitleView(View view, Cursor cursor) {
-        if (view.getId() == R.id.list_item_title) {
-            String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-            Spanned spanned = Html.fromHtml(text);
-            ((TextView)view).setText(spanned);
-        }
+        ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
+        TextView tv = viewHolder.list_item_title;
+        if (tv == null)
+            return false;
+        String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+        Spanned spanned = Html.fromHtml(text);
+        tv.setText(spanned);
         return true;
     }
 

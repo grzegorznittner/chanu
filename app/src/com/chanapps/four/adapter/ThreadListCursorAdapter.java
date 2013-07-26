@@ -22,11 +22,11 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected static final boolean DEBUG = true;
 
     protected static final int TYPE_MAX_COUNT = 5;
-    protected static final int TYPE_HEADER = 1;
-    protected static final int TYPE_IMAGE_ITEM = 2;
-    protected static final int TYPE_TEXT_ITEM = 3;
-    protected static final int TYPE_TITLE = 4;
-    protected static final int TYPE_LINK = 5;
+    protected static final int TYPE_HEADER = 0;
+    protected static final int TYPE_IMAGE_ITEM = 1;
+    protected static final int TYPE_TEXT_ITEM = 2;
+    protected static final int TYPE_TITLE = 3;
+    protected static final int TYPE_LINK = 4;
 
     protected ThreadListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);

@@ -96,11 +96,13 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
         layout = inflater.inflate(R.layout.thread_list_layout, viewGroup, false);
         createAbsListView();
+        /*
         if (threadNo > 0)
             getLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks);
         else
             if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + "#p" + postNo
                     + " no thread found, skipping loader");
+        */
         return layout;
     }
 
@@ -150,6 +152,19 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (handler == null)
             handler = new Handler();
         threadListener = new ThreadListener(this);
+        if (threadNo > 0 && (adapter == null || adapter.getCount() == 0)) {
+            ThreadActivity activity = (ThreadActivity)getActivity();
+            if (activity != null && !activity.refreshing) {
+                if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " restarting loader");
+                getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " activity null or refreshing, skipping loader");
+            }
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " no thread found, skipping loader");
+        }
     }
 
     @Override
@@ -173,10 +188,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new Handler();
-        if (threadNo > 0 && (adapter == null || adapter.getCount() == 0))
-            getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
-        else
-            if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + " no thread found, skipping loader");
     }
 
     @Override

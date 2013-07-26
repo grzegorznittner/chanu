@@ -20,7 +20,7 @@ import com.chanapps.four.viewer.ThreadViewHolder;
  */
 public class BoardGridCursorAdapter extends AbstractBoardCursorAdapter {
 
-    protected static final int TYPE_GRID_ITEM = 1;
+    protected static final int TYPE_GRID_ITEM = 0;
     protected static final int TYPE_MAX_COUNT = 1;
 
     public BoardGridCursorAdapter(Context context, ViewBinder viewBinder) {

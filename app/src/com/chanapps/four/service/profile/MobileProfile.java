@@ -1,5 +1,6 @@
 package com.chanapps.four.service.profile;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -480,14 +481,21 @@ public class MobileProfile extends AbstractNetworkProfile {
     private void handleBoardParseSuccess(ChanIdentifiedService service) {
         ChanActivityId data = service.getChanActivityId();
 
-        String refreshText = null;
+        //String refreshText = null;
         ChanBoard board = ChanFileStorage.loadBoardData(service.getApplicationContext(), data.boardCode);
-        if (data.priority && board != null && board.hasNewBoardData()) {
+        //if (data.priority && board != null && board.hasNewBoardData()) {
+        if (board != null && board.hasNewBoardData()) {
             if (DEBUG) Log.i(TAG, "handleBoardParseSuccess /" + data.boardCode + "/ swapping threads");
-            refreshText = board.refreshMessage();
+            //refreshText = board.refreshMessage();
             board.swapLoadedThreads();
+            try {
+                ChanFileStorage.storeBoardData(service.getApplicationContext(), board);
+            }
+            catch (IOException e) {
+                Log.e(TAG, "exception storing board /" + board.link + "/", e);
+            }
         }
-        final String refreshMessage = refreshText;
+        //final String refreshMessage = refreshText;
         if (DEBUG) Log.i(TAG, "handleBoardParseSuccess /" + data.boardCode + "/"
                 + " priority=" + data.priority
                 + (board != null ? ""
