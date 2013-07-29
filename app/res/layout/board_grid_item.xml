@@ -2,7 +2,7 @@
                 android:id="@+id/grid_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/card_background_large"
+                android:background="?themedBoardGridItemBackground"
         >
 
     <FrameLayout
@@ -57,7 +57,7 @@
                         android:paddingTop="4dp"
                         android:paddingLeft="8dp"
                         android:paddingRight="20dp"
-                        android:textColor="@color/PaletteDarkGray"
+                        android:textColor="?themedBoardGridItemSubjectTextColor"
                         android:textSize="@dimen/BoardGridSubject"
                         android:visibility="gone"
                         android:ellipsize="end"

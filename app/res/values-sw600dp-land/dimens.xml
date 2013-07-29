@@ -2,6 +2,7 @@
 
     <integer name="StaggeredGridView.Board.numColumns">2</integer>
 
-    <integer name="BoardGridView.numColumns">6</integer>
+    <integer name="BoardGridView.numColumns">3</integer>
+    <integer name="BoardGridViewSmall.numColumns">6</integer>
 
 </resources>

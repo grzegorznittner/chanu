@@ -1,0 +1,409 @@
+<resources>
+
+    <string-array name="report_post_types">
+        <item>Rule violation</item>
+        <item>Illegal content</item>
+        <item>Commercial spam/advertising</item>
+    </string-array>
+
+    <string-array name="pref_theme_entries">
+        <item>@string/pref_theme_light</item>
+        <item>@string/pref_theme_dark</item>
+        <item>@string/pref_theme_auto</item>
+    </string-array>
+
+    <string-array name="pref_theme_entry_values">
+        <item>@string/pref_theme_light_value</item>
+        <item>@string/pref_theme_dark_value</item>
+        <item>@string/pref_theme_auto_value</item>
+    </string-array>
+
+    <string-array name="long_drawer_array">
+        <item>@string/board_all_boards</item>
+        <item>@string/board_favorites</item>
+        <item>@string/board_latest</item>
+        <item>@string/board_type_recent</item>
+        <!-- <item>@string/board_latest_images</item> -->
+        <item>@string/board_watch</item>
+        <item>@string/board_meta</item>
+        <item>@string/board_type_japanese_culture</item>
+        <item>@string/board_type_interests</item>
+        <item>@string/board_type_creative</item>
+        <item>@string/board_type_other</item>
+        <item>@string/board_type_adult</item>
+        <item>@string/board_type_misc</item>
+    </string-array>
+
+    <string-array name="long_drawer_array_worksafe">
+        <item>@string/board_all_boards</item>
+        <item>@string/board_favorites</item>
+        <item>@string/board_latest</item>
+        <item>@string/board_type_recent</item>
+        <!--<item>@string/board_latest_images</item> -->
+        <item>@string/board_watch</item>
+        <item>@string/board_meta</item>
+        <item>@string/board_type_japanese_culture</item>
+        <item>@string/board_type_interests</item>
+        <item>@string/board_type_creative</item>
+        <item>@string/board_type_other</item>
+    </string-array>
+
+    <string-array name="long_board_array">
+        <item>@string/board_select</item>
+        <item>/3/ 3DCG</item>
+        <item>/a/ Anime &amp; Manga</item>
+        <item>/adv/ Advice</item>
+        <item>/an/ Animals &amp; Nature</item>
+        <item>/asp/ Alternative Sports</item>
+        <item>/b/ Random</item>
+        <item>/c/ Anime/Cute</item>
+        <item>/cgl/ Cosplay &amp; EGL</item>
+        <item>/ck/ Food &amp; Cooking</item>
+        <item>/cm/ Cute/Male</item>
+        <item>/co/ Comics &amp; Cartoons</item>
+        <item>/d/ Hentai/Alternative</item>
+        <item>/diy/ Do-It-Yourself</item>
+        <item>/e/ Ecchi</item>
+        <item>/fa/ Fashion</item>
+        <item>/fit/ Health &amp; Fitness</item>
+        <item>/g/ Technology</item>
+        <item>/gd/ Graphic Design</item>
+        <item>/gif/ Animated GIF</item>
+        <item>/h/ Hentai</item>
+        <item>/hc/ Hardcore</item>
+        <item>/hm/ Handsome Men</item>
+        <item>/hr/ High Resolution</item>
+        <item>/i/ Oekaki</item>
+        <item>/ic/ Artwork/Critique</item>
+        <item>/int/ International</item>
+        <item>/jp/ Otaku Culture</item>
+        <item>/k/ Weapons</item>
+        <item>/lgbt/ LGBT</item>
+        <item>/lit/ Literature</item>
+        <item>/m/ Mecha</item>
+        <item>/mlp/ Pony</item>
+        <item>/mu/ Music</item>
+        <item>/n/ Transport</item>
+        <item>/o/ Auto</item>
+        <item>/out/ Outdoors</item>
+        <item>/p/ Photography</item>
+        <item>/po/ Papercraft &amp; Origami</item>
+        <item>/pol/ Politically Incorrect</item>
+        <item>/q/ 4chan Discussion</item>
+        <item>/r/ Request</item>
+        <item>/r9k/ ROBOT9001</item>
+        <item>/s/ Sexy Beautiful Women</item>
+        <item>/s4s/ Shit 4chan Says</item>
+        <item>/sci/ Science &amp; Math</item>
+        <item>/soc/ Social</item>
+        <item>/sp/ Sports</item>
+        <item>/t/ Torrents</item>
+        <item>/tg/ Traditional Games</item>
+        <item>/toy/ Toys</item>
+        <item>/trv/ Travel</item>
+        <item>/tv/ Television &amp; Film</item>
+        <item>/u/ Yuri</item>
+        <item>/v/ Video Games</item>
+        <item>/vg/ Video Game Generals</item>
+        <item>/vp/ Pokemon</item>
+        <item>/vr/ Retro Games</item>
+        <item>/w/ Anime/Wallpapers</item>
+        <item>/wg/ Wallpapers/General</item>
+        <item>/wsg/ Worksafe GIF</item>
+        <item>/x/ Paranormal</item>
+        <item>/y/ Yaoi</item>
+    </string-array>
+
+    <string-array name="long_board_array_worksafe">
+        <item>@string/board_select</item>
+        <item>/3/ 3DCG</item>
+        <item>/a/ Anime &amp; Manga</item>
+        <item>/adv/ Advice</item>
+        <item>/an/ Animals &amp; Nature</item>
+        <item>/asp/ Alternative Sports</item>
+        <item>/c/ Anime/Cute</item>
+        <item>/cgl/ Cosplay &amp; EGL</item>
+        <item>/ck/ Food &amp; Cooking</item>
+        <item>/cm/ Cute/Male</item>
+        <item>/co/ Comics &amp; Cartoons</item>
+        <item>/diy/ Do-It-Yourself</item>
+        <item>/fa/ Fashion</item>
+        <item>/fit/ Health &amp; Fitness</item>
+        <item>/g/ Technology</item>
+        <item>/gd/ Graphic Design</item>
+        <item>/i/ Oekaki</item>
+        <item>/ic/ Artwork/Critique</item>
+        <item>/int/ International</item>
+        <item>/jp/ Otaku Culture</item>
+        <item>/k/ Weapons</item>
+        <item>/lgbt/ LGBT</item>
+        <item>/lit/ Literature</item>
+        <item>/m/ Mecha</item>
+        <item>/mlp/ Pony</item>
+        <item>/mu/ Music</item>
+        <item>/n/ Transport</item>
+        <item>/o/ Auto</item>
+        <item>/out/ Outdoors</item>
+        <item>/p/ Photography</item>
+        <item>/po/ Papercraft &amp; Origami</item>
+        <item>/q/ 4chan Discussion</item>
+        <item>/sci/ Science &amp; Math</item>
+        <item>/sp/ Sports</item>
+        <item>/tg/ Traditional Games</item>
+        <item>/toy/ Toys</item>
+        <item>/trv/ Travel</item>
+        <item>/tv/ Television &amp; Film</item>
+        <item>/v/ Video Games</item>
+        <item>/vg/ Video Game Generals</item>
+        <item>/vp/ Pokemon</item>
+        <item>/vr/ Retro Games</item>
+        <item>/w/ Anime/Wallpapers</item>
+        <item>/wg/ Wallpapers/General</item>
+        <item>/wsg/ Worksafe GIF</item>
+        <item>/x/ Paranormal</item>
+    </string-array>
+
+    <string-array name="widget_board_array">
+        <item>/3/ 3DCG</item>
+        <item>/a/ Anime &amp; Manga</item>
+        <item>/adv/ Advice</item>
+        <item>/an/ Animals &amp; Nature</item>
+        <item>/asp/ Alternative Sports</item>
+        <item>/b/ Random</item>
+        <item>/c/ Anime/Cute</item>
+        <item>/cgl/ Cosplay &amp; EGL</item>
+        <item>/ck/ Food &amp; Cooking</item>
+        <item>/cm/ Cute/Male</item>
+        <item>/co/ Comics &amp; Cartoons</item>
+        <item>/d/ Hentai/Alternative</item>
+        <item>/diy/ Do-It-Yourself</item>
+        <item>/e/ Ecchi</item>
+        <item>/fa/ Fashion</item>
+        <item>/fit/ Health &amp; Fitness</item>
+        <item>/g/ Technology</item>
+        <item>/gd/ Graphic Design</item>
+        <item>/gif/ Animated GIF</item>
+        <item>/h/ Hentai</item>
+        <item>/hc/ Hardcore</item>
+        <item>/hm/ Handsome Men</item>
+        <item>/hr/ High Resolution</item>
+        <item>/i/ Oekaki</item>
+        <item>/ic/ Artwork/Critique</item>
+        <item>/int/ International</item>
+        <item>/jp/ Otaku Culture</item>
+        <item>/k/ Weapons</item>
+        <item>/lgbt/ LGBT</item>
+        <item>/lit/ Literature</item>
+        <item>/m/ Mecha</item>
+        <item>/mlp/ Pony</item>
+        <item>/mu/ Music</item>
+        <item>/n/ Transport</item>
+        <item>/o/ Auto</item>
+        <item>/out/ Outdoors</item>
+        <item>/p/ Photography</item>
+        <item>/po/ Papercraft &amp; Origami</item>
+        <item>/pol/ Politically Incorrect</item>
+        <item>/q/ 4chan Discussion</item>
+        <item>/r/ Request</item>
+        <item>/r9k/ ROBOT9001</item>
+        <item>/s/ Sexy Beautiful Women</item>
+        <item>/s4s/ Shit 4chan Says</item>
+        <item>/sci/ Science &amp; Math</item>
+        <item>/soc/ Social</item>
+        <item>/sp/ Sports</item>
+        <item>/t/ Torrents</item>
+        <item>/tg/ Traditional Games</item>
+        <item>/toy/ Toys</item>
+        <item>/trv/ Travel</item>
+        <item>/tv/ Television &amp; Film</item>
+        <item>/u/ Yuri</item>
+        <item>/v/ Video Games</item>
+        <item>/vg/ Video Game Generals</item>
+        <item>/vp/ Pokemon</item>
+        <item>/vr/ Retro Games</item>
+        <item>/w/ Anime/Wallpapers</item>
+        <item>/wg/ Wallpapers/General</item>
+        <item>/wsg/ Worksafe GIF</item>
+        <item>/x/ Paranormal</item>
+        <item>/y/ Yaoi</item>
+        <item>@string/board_popular</item>
+        <item>@string/board_latest</item>
+        <item>@string/board_latest_images</item>
+        <item>@string/board_watch</item>
+    </string-array>
+
+    <string-array name="widget_board_array_worksafe">
+        <item>/3/ 3DCG</item>
+        <item>/a/ Anime &amp; Manga</item>
+        <item>/adv/ Advice</item>
+        <item>/an/ Animals &amp; Nature</item>
+        <item>/asp/ Alternative Sports</item>
+        <item>/c/ Anime/Cute</item>
+        <item>/cgl/ Cosplay &amp; EGL</item>
+        <item>/ck/ Food &amp; Cooking</item>
+        <item>/cm/ Cute/Male</item>
+        <item>/co/ Comics &amp; Cartoons</item>
+        <item>/diy/ Do-It-Yourself</item>
+        <item>/fa/ Fashion</item>
+        <item>/fit/ Health &amp; Fitness</item>
+        <item>/g/ Technology</item>
+        <item>/gd/ Graphic Design</item>
+        <item>/i/ Oekaki</item>
+        <item>/ic/ Artwork/Critique</item>
+        <item>/int/ International</item>
+        <item>/jp/ Otaku Culture</item>
+        <item>/k/ Weapons</item>
+        <item>/lgbt/ LGBT</item>
+        <item>/lit/ Literature</item>
+        <item>/m/ Mecha</item>
+        <item>/mlp/ Pony</item>
+        <item>/mu/ Music</item>
+        <item>/n/ Transport</item>
+        <item>/o/ Auto</item>
+        <item>/out/ Outdoors</item>
+        <item>/p/ Photography</item>
+        <item>/po/ Papercraft &amp; Origami</item>
+        <item>/q/ 4chan Discussion</item>
+        <item>/sci/ Science &amp; Math</item>
+        <item>/sp/ Sports</item>
+        <item>/tg/ Traditional Games</item>
+        <item>/toy/ Toys</item>
+        <item>/trv/ Travel</item>
+        <item>/tv/ Television &amp; Film</item>
+        <item>/v/ Video Games</item>
+        <item>/vg/ Video Game Generals</item>
+        <item>/vp/ Pokemon</item>
+        <item>/vr/ Retro Games</item>
+        <item>/w/ Anime/Wallpapers</item>
+        <item>/wg/ Wallpapers/General</item>
+        <item>/wsg/ Worksafe GIF</item>
+        <item>/x/ Paranormal</item>
+        <item>@string/board_popular</item>
+        <item>@string/board_latest</item>
+        <item>@string/board_latest_images</item>
+        <item>@string/board_watch</item>
+    </string-array>
+
+    <!-- spinner dropdown -->
+    <!--
+    <string-array name="board_array">
+        <item>@string/board_select_abbrev</item>
+        <item>@string/board_watch_abbrev</item>
+        <item>@string/board_type_recent_abbrev</item>
+        <item>/3/</item>
+        <item>/a/</item>
+        <item>/adv/</item>
+        <item>/an/</item>
+        <item>/asp/</item>
+        <item>/b/</item>
+        <item>/c/</item>
+        <item>/cgl/</item>
+        <item>/ck/</item>
+        <item>/cm/</item>
+        <item>/co/</item>
+        <item>/d/</item>
+        <item>/diy/</item>
+        <item>/e/</item>
+        <item>/fa/</item>
+        <item>/fit/</item>
+        <item>/g/</item>
+        <item>/gd/</item>
+        <item>/gif/</item>
+        <item>/h/</item>
+        <item>/hc/</item>
+        <item>/hm/</item>
+        <item>/hr/</item>
+        <item>/i/</item>
+        <item>/ic/</item>
+        <item>/int/</item>
+        <item>/jp/</item>
+        <item>/k/</item>
+        <item>/lgbt/</item>
+        <item>/lit/</item>
+        <item>/m/</item>
+        <item>/mlp/</item>
+        <item>/mu/</item>
+        <item>/n/</item>
+        <item>/o/</item>
+        <item>/out/</item>
+        <item>/p/</item>
+        <item>/po/</item>
+        <item>/pol/</item>
+        <item>/q/</item>
+        <item>/r/</item>
+        <item>/r9k/</item>
+        <item>/s/</item>
+        <item>/s4s/</item>
+        <item>/sci/</item>
+        <item>/soc/</item>
+        <item>/sp/</item>
+        <item>/t/</item>
+        <item>/tg/</item>
+        <item>/toy/</item>
+        <item>/trv/</item>
+        <item>/tv/</item>
+        <item>/u/</item>
+        <item>/v/</item>
+        <item>/vg/</item>
+        <item>/vp/</item>
+        <item>/vr/</item>
+        <item>/w/</item>
+        <item>/wg/</item>
+        <item>/wsg/</item>
+        <item>/x/</item>
+        <item>/y/</item>
+    </string-array>
+
+    <string-array name="board_array_worksafe">
+        <item>@string/board_select_abbrev</item>
+        <item>@string/board_watch_abbrev</item>
+        <item>@string/board_type_recent_abbrev</item>
+        <item>/3/</item>
+        <item>/a/</item>
+        <item>/adv/</item>
+        <item>/asp/</item>
+        <item>/an/</item>
+        <item>/c/</item>
+        <item>/cgl/</item>
+        <item>/ck/</item>
+        <item>/cm/</item>
+        <item>/co/</item>
+        <item>/diy/</item>
+        <item>/fa/</item>
+        <item>/fit/</item>
+        <item>/g/</item>
+        <item>/gd/</item>
+        <item>/i/</item>
+        <item>/ic/</item>
+        <item>/int/</item>
+        <item>/jp/</item>
+        <item>/k/</item>
+        <item>/lgbt/</item>
+        <item>/lit/</item>
+        <item>/m/</item>
+        <item>/mlp/</item>
+        <item>/mu/</item>
+        <item>/n/</item>
+        <item>/o/</item>
+        <item>/out/</item>
+        <item>/p/</item>
+        <item>/po/</item>
+        <item>/q/</item>
+        <item>/sci/</item>
+        <item>/sp/</item>
+        <item>/tg/</item>
+        <item>/toy/</item>
+        <item>/trv/</item>
+        <item>/tv/</item>
+        <item>/v/</item>
+        <item>/vg/</item>
+        <item>/vp/</item>
+        <item>/vr/</item>
+        <item>/w/</item>
+        <item>/wg/</item>
+        <item>/wsg/</item>
+        <item>/x/</item>
+    </string-array>
+    -->
+
+</resources>

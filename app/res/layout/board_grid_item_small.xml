@@ -2,7 +2,7 @@
                 android:id="@+id/grid_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/card_background"
+                style="@style/BoardGridItemSmall"
         >
 
     <FrameLayout
@@ -52,29 +52,12 @@
 
                 <TextView
                         android:id="@+id/grid_item_thread_subject"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="4dp"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="8dp"
-                        android:textColor="@color/PaletteDarkGray"
-                        android:textSize="@dimen/BoardGridSubject"
-                        android:visibility="gone"
-                        android:ellipsize="end"
-                        android:maxLines="2"
+                        style="@style/BoardGridItemSmallSubject"
                         />
 
                 <TextView
                         android:id="@+id/grid_item_thread_info"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="20dp"
-                        android:paddingBottom="8dp"
-                        android:textColor="@color/PaletteLightGray"
-                        android:textSize="@dimen/BoardGridInfo"
-                        android:maxLines="2"
+                        style="@style/BoardGridItemSmallInfo"
                         />
 
             </RelativeLayout>

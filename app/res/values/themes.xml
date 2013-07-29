@@ -1,0 +1,21 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.Pastel">
+        <item name="themedBoardGridLayoutBackground">@color/PaletteCardListBg</item>
+        <item name="themedBoardGridLayoutEmptyTextColor">@color/PaletteBlack</item>
+        <item name="themedBoardGridTitleTextColor">@color/PaletteTitleText</item>
+        <item name="themedBoardGridItemBackground">@drawable/card_background_large</item>
+        <item name="themedBoardGridItemSubjectTextColor">@color/PaletteDarkGray</item>
+        <item name="themedBoardGridItemSmallBackground">@drawable/card_background</item>
+    </style>
+
+    <style name="AppTheme.Dark" parent="AppTheme">
+        <item name="themedBoardGridLayoutBackground">@color/DarkPaletteCardListBg</item>
+        <item name="themedBoardGridLayoutEmptyTextColor">@color/PaletteWhite</item>
+        <item name="themedBoardGridTitleTextColor">@color/PaletteWhite</item>
+        <item name="themedBoardGridItemBackground">@drawable/dark_card_background_large</item>
+        <item name="themedBoardGridItemSubjectTextColor">@color/PaletteWhite</item>
+        <item name="themedBoardGridItemSmallBackground">@drawable/dark_card_background</item>
+    </style>
+
+</resources>

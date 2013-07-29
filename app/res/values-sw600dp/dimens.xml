@@ -272,10 +272,14 @@
     <dimen name="ItemsDialogFragment_title_paddingRight">24dp</dimen>
     <dimen name="ItemsDialogFragment_title_textSize">28sp</dimen>
 
-    <integer name="BoardGridView.numColumns">4</integer>
     <dimen name="BoardGridView.spacing">12dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">12dp</dimen>
     <dimen name="BoardGridTextHeight">96dp</dimen>
+   
+    <integer name="BoardGridView.numColumns">2</integer>
+    <integer name="BoardGridViewSmall.numColumns">4</integer>
+    <dimen name="BoardGridTextHeight">112dp</dimen>
+    <dimen name="BoardGridTextHeightSmall">96dp</dimen>
 
     <dimen name="drawer_spacer_width">80dp</dimen>
     <dimen name="drawer_spacer_height">32dp</dimen>

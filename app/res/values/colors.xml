@@ -51,5 +51,10 @@
     <color name="blue_stroke">#2f6699</color>
     <color name="blue_gradientS">#00a2e2</color>
     <color name="blue_gradientE">#0767a4</color>
+    <color name="pressed_pastel">#7f10004a</color>
+
+    <!-- dark theme -->
+
+    <color name="DarkPaletteCardListBg">#2a2a2a</color>
 
 </resources>

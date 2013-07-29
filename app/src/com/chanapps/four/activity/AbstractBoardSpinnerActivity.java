@@ -2,14 +2,17 @@ package com.chanapps.four.activity;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -23,11 +26,12 @@ abstract public class
         implements ChanIdentifiedActivity
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
     protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
 
     protected String boardCode;
     protected long threadNo = 0;
+    protected ThemeSelector themeSelector;
 
     protected boolean mShowNSFW = false;
 
@@ -42,6 +46,8 @@ abstract public class
         if (DEBUG) Log.v(TAG, "onCreate");
         NetworkProfileManager.instance().ensureInitialized(this);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar
+        themeSelector = new ThemeSelector(this);
+        themeSelector.initTheme();
         setContentView(activityLayout());
         mShowNSFW = ChanBoard.showNSFW(getApplicationContext());
         createActionBar();
@@ -86,6 +92,10 @@ abstract public class
         if (newShowNSFW != mShowNSFW) {
             mShowNSFW = newShowNSFW;
             setAdapters();
+        }
+        if (!themeSelector.themeMatchesPrefs()) {
+            if (DEBUG) Log.i(TAG, "onStart() needs theme change, recreating activity");
+            recreate();
         }
     }
 

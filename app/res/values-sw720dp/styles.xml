@@ -5,7 +5,7 @@
         <item name="android:layout_gravity">left</item>
         <item name="android:layout_alignParentLeft">true</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:background">@color/PaletteTitleBg</item>
+        <!--<item name="android:background">@color/PaletteTitleBg</item>-->
     </style>
     <style name="BoardRefreshBar" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
@@ -13,7 +13,7 @@
         <item name="android:layout_gravity">right</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:background">@color/PaletteTitleBg</item>
+        <!--<item name="android:background">@color/PaletteTitleBg</item>-->
     </style>
     <dimen name="Drawer.layout_width">400dp</dimen>
     <dimen name="Drawer.paddingTop">16dp</dimen>

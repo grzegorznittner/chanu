@@ -3,11 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:chanapps="http://schemas.android.com/apk/res/com.chanapps.four.activity"
         android:id="@+id/board_grid_layout"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="0dp"
-        android:background="@color/PaletteCardListBg"
+        style="@style/BoardGridLayout"
         >
 
     <include layout="@layout/board_title_bar"/>
@@ -22,14 +18,7 @@
 
     <TextView
             android:id="@+id/board_grid_empty_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:layout_centerInParent="true"
-            android:textSize="@dimen/BoardGridSubject"
-            android:textColor="@color/PaletteBlack"
-            android:visibility="gone"
+            style="@style/BoardGridLayoutEmptyText"
             />
 
     <!--

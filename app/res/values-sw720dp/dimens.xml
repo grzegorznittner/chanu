@@ -253,10 +253,13 @@
     <dimen name="widget_board_minWidth">350dp</dimen>
     <dimen name="widget_board_minHeight">228dp</dimen>
 
-    <integer name="BoardGridView.numColumns">5</integer>
     <dimen name="BoardGridView.spacing">16dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">16dp</dimen>
-    <dimen name="BoardGridTextHeight">128dp</dimen>
+
+    <integer name="BoardGridView.numColumns">2</integer>
+    <integer name="BoardGridViewSmall.numColumns">5</integer>
+    <dimen name="BoardGridTextHeight">160dp</dimen>
+    <dimen name="BoardGridTextHeightSmall">128dp</dimen>
 
     <dimen name="drawer_spacer_width">80dp</dimen>
     <dimen name="drawer_spacer_height">32dp</dimen>

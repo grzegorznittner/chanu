@@ -158,7 +158,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             setWatchlist(this);
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode))
             setFavorites(this);
-        if (DEBUG) Log.i(TAG, "onCreate /" + boardCode + "/ q=" + query);
+        if (DEBUG) Log.i(TAG, "createViews /" + boardCode + "/ q=" + query);
 
         boardTitleBar = findViewById(R.id.board_title_bar);
         if (ChanBoard.isVirtualBoard(boardCode))
@@ -297,7 +297,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         int layoutId = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
                 ? R.layout.board_grid_layout_small
                 : R.layout.board_grid_layout;
-        layout = View.inflate(getApplicationContext(), layoutId, null);
+        //layout = getLayoutInflater().inflate()
+        //layout = View.inflate(this, layoutId, null);
+        layout = getLayoutInflater().inflate(layoutId, null);
         contentFrame.addView(layout);
         int numColumns = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
                 ? R.integer.BoardGridViewSmall_numColumns
@@ -307,8 +309,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
         adapter = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
-                ? new BoardGridSmallCursorAdapter(getApplicationContext(), viewBinder)
-                : new BoardGridCursorAdapter(getApplicationContext(), viewBinder);
+                ? new BoardGridSmallCursorAdapter(this, viewBinder)
+                : new BoardGridCursorAdapter(this, viewBinder);
         absListView = (GridView)findViewById(R.id.board_grid_view);
         absListView.setAdapter(adapter);
         absListView.setSelector(android.R.color.transparent);
@@ -861,13 +863,17 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             boardTitle.setText(board.name.toLowerCase());
         BoardType type = BoardType.valueOfBoardCode(boardCode);
         if (type != null) {
-            boardIcon.setImageResource(type.darkDrawableId());
-            boardIcon.setAlpha(DRAWABLE_ALPHA);
+            boolean isDark = themeSelector.isDark();
+            int drawableId = isDark ? type.drawableId() : type.darkDrawableId();
+            int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
+            boardIcon.setImageResource(drawableId);
+            boardIcon.setAlpha(alpha);
         }
         boardTitleBar.setVisibility(View.VISIBLE);
     }
 
-    protected static final int DRAWABLE_ALPHA = 0xc2;
+    protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
+    protected static final int DRAWABLE_ALPHA_DARK = 0xff;
 
     protected void hideBoardTitle() {
         View boardTitleBar = findViewById(R.id.board_title_bar);

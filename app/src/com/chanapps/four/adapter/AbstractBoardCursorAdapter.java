@@ -70,6 +70,7 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         mTo = to;
         mOriginalFrom = from;
         mViewBinder = viewBinder;
+
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 

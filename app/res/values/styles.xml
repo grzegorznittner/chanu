@@ -1,121 +1,7 @@
 <resources>
 
-<!-- START ACTIONBAR THEME -->
+    <!-- START ACTIONBAR THEME -->
 
-    <style name="Theme.Chanu" parent="Theme.Pastel">
-        <!--
-        <item name="android:actionBarItemBackground">@drawable/selectable_background_chanu</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownListView.Chanu</item>
-        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Chanu</item>
-        <item name="android:actionDropDownStyle">@style/DropDownNav.Chanu</item>
-        <item name="android:actionBarStyle">@style/ActionBar.Solid.Chanu</item>
-        <item name="android:actionModeBackground">@drawable/cab_background_top_chanu</item>
-        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_chanu</item>
-        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Chanu</item>
-        <item name="android:actionBarWidgetTheme">@style/Theme.Chanu.Widget</item>
-        <item name="android:editTextStyle">@style/EditTextChanuGreenTheme</item>
-        <item name="android:seekBarStyle">@style/SeekBarChanuGreenTheme</item>
-        -->
-        <!--<item name="android:popupMenuStyle">@style/PopupMenu.Chanu</item> -->
-        <!--
-        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewChanuGreenTheme</item>
-        <item name="android:checkboxStyle">@style/CheckBoxChanuGreenTheme</item>
-        <item name="android:radioButtonStyle">@style/RadioButtonChanuGreenTheme</item>
-        <item name="android:buttonStyle">@style/ButtonChanuGreenTheme</item>
-        <item name="android:imageButtonStyle">@style/ImageButtonChanuGreenTheme</item>
-        <item name="android:spinnerStyle">@style/SpinnerChanuGreenTheme</item>
-        <item name="android:dropDownSpinnerStyle">@style/SpinnerChanuGreenTheme.DropDown</item>
-        <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemChanuGreenTheme</item>
-        <item name="android:progressBarStyleHorizontal">@style/ProgressBarChanuGreenTheme</item>
-        <item name="android:seekBarStyle">@style/SeekBarChanuGreenTheme</item>
-        <item name="android:ratingBarStyle">@style/RatingBarChanuGreenTheme</item>
-        <item name="android:ratingBarStyleIndicator">@style/RatingBarBigChanuGreenTheme</item>
-        <item name="android:ratingBarStyleSmall">@style/RatingBarSmallChanuGreenTheme</item>
-        <item name="android:buttonStyleToggle">@style/ToggleChanuGreenTheme</item>
-        <item name="android:listViewStyle">@style/ListViewChanuGreenTheme</item>
-        <item name="android:listViewWhiteStyle">@style/ListViewChanuGreenTheme.White</item>
-        <item name="android:spinnerItemStyle">@style/SpinnerItemChanuGreenTheme</item>
-        -->
-    </style>
-
-    <!--
-  <style name="ChanuGreenTheme" parent="android:Theme.Light">
-    <item name="android:editTextStyle">@style/EditTextChanuGreenTheme</item>
-    <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewChanuGreenTheme</item>
-    <item name="android:checkboxStyle">@style/CheckBoxChanuGreenTheme</item>
-    <item name="android:radioButtonStyle">@style/RadioButtonChanuGreenTheme</item>
-    <item name="android:buttonStyle">@style/ButtonChanuGreenTheme</item>
-    <item name="android:imageButtonStyle">@style/ImageButtonChanuGreenTheme</item>
-    <item name="android:spinnerStyle">@style/SpinnerChanuGreenTheme</item>
-    <item name="android:dropDownSpinnerStyle">@style/SpinnerChanuGreenTheme.DropDown</item>
-    <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemChanuGreenTheme</item>
-    <item name="android:progressBarStyleHorizontal">@style/ProgressBarChanuGreenTheme</item>
-    <item name="android:seekBarStyle">@style/SeekBarChanuGreenTheme</item>
-    <item name="android:ratingBarStyle">@style/RatingBarChanuGreenTheme</item>
-    <item name="android:ratingBarStyleIndicator">@style/RatingBarBigChanuGreenTheme</item>
-    <item name="android:ratingBarStyleSmall">@style/RatingBarSmallChanuGreenTheme</item>
-    <item name="android:buttonStyleToggle">@style/ToggleChanuGreenTheme</item>
-    <item name="android:listViewStyle">@style/ListViewChanuGreenTheme</item>
-    <item name="android:listViewWhiteStyle">@style/ListViewChanuGreenTheme.White</item>
-    <item name="android:spinnerItemStyle">@style/SpinnerItemChanuGreenTheme</item>
-  </style>
-
-    <style name="ActionBar.Solid.Chanu" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@drawable/ab_solid_chanu</item>
-        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_chanu</item>
-        <item name="android:backgroundSplit">@drawable/ab_bottom_solid_chanu</item>
-        <item name="android:progressBarStyle">@style/ProgressBar.Chanu</item>
-    </style>
-
-    <style name="ActionBar.Transparent.Chanu" parent="@android:style/Widget.Holo.ActionBar">
-        <item name="android:background">@drawable/ab_transparent_chanu</item>
-        <item name="android:progressBarStyle">@style/ProgressBar.Chanu</item>
-    </style>
-
-    <style name="PopupMenu.Chanu" parent="@android:style/Widget.Holo.ListPopupWindow">
-        <item name="android:popupBackground">@drawable/menu_dropdown_panel_chanu</item>	
-    </style>
-
-    <style name="DropDownListView.Chanu" parent="@android:style/Widget.Holo.ListView.DropDown">
-        <item name="android:listSelector">@drawable/selectable_background_chanu</item>
-    </style>
-
-    <style name="ActionBarTabStyle.Chanu" parent="@android:style/Widget.Holo.ActionBar.TabView">
-        <item name="android:background">@drawable/tab_indicator_ab_chanu</item>
-    </style>
-
-    <style name="DropDownNav.Chanu" parent="@android:style/Widget.Holo.Spinner">
-        <item name="android:background">@drawable/spinner_background_ab_chanu</item>
-        <item name="android:popupBackground">@drawable/menu_dropdown_panel_chanu</item>
-        <item name="android:dropDownSelector">@drawable/selectable_background_chanu</item>
-    </style>
-    
-    <style name="ProgressBar.Chanu" parent="@android:style/Widget.Holo.ProgressBar.Horizontal">
-        <item name="android:progressDrawable">@drawable/progress_horizontal_chanu</item>
-    </style>
-    
-    <style name="ActionButton.CloseMode.Chanu" parent="@android:style/Widget.Holo.ActionButton.CloseMode">
-        <item name="android:background">@drawable/btn_cab_done_chanu</item>
-    </style>
-
-    <style name="Theme.Chanu.Widget" parent="@android:style/Theme.Holo">
-        <item name="android:popupMenuStyle">@style/PopupMenu.Chanu</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownListView.Chanu</item>
-    </style>
-    -->
-<!-- END ACTIONBAR THEME -->
-
-    <style name="AppTheme" parent="Theme.Chanu">
-    </style>
-<!--
-    <style name="tabTheme" parent="AppTheme">
-        <item name="android:tabWidgetStyle">@style/Widget.TabWidget</item>
-    </style>
-
-    <style name="Widget.TabWidget" parent="AppTheme">
-        <item name="android:tabStripEnabled">false</item>
-    </style>
--->
     <style name="ListViewTemplate" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -177,10 +63,51 @@
     <style name="BoardGridLayout" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginLeft">0dp</item>
-        <item name="android:layout_marginRight">0dp</item>
-        <!--<item name="android:padding">0dp</item>-->
+        <item name="android:padding">0dp</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:background">?themedBoardGridLayoutBackground</item>
+    </style>
+
+    <style name="BoardGridLayoutEmptyText" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:textSize">@dimen/BoardGridSubject</item>
+        <item name="android:textColor">?themedBoardGridLayoutEmptyTextColor</item>
+        <item name="android:visibility">gone</item>
+    </style>
+    
+    <style name="BoardGridItemSmall" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?themedBoardGridItemSmallBackground</item>
+    </style>
+
+    <style name="BoardGridItemSmallSubject" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:textColor">?themedBoardGridItemSubjectTextColor</item>
+        <item name="android:textSize">@dimen/BoardGridSubject</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
+    <style name="BoardGridItemSmallInfo" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">20dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textColor">@color/PaletteLightGray</item>
+        <item name="android:textSize">@dimen/BoardGridInfo</item>
+        <item name="android:maxLines">2</item>
     </style>
 
     <!--
@@ -214,7 +141,21 @@
     </style>
 
     <style name="BoardGridViewSmall" parent="BoardGridView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/BoardGridView.spacing</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:smoothScrollbar">false</item>
+        <item name="android:cacheColorHint">#00000000</item>
+        <item name="android:fastScrollEnabled">true</item>
+        <item name="android:horizontalSpacing">@dimen/BoardGridView.spacing</item>
+        <item name="android:verticalSpacing">@dimen/BoardGridView.spacing</item>
         <item name="android:numColumns">@integer/BoardGridViewSmall.numColumns</item>
+        <item name="android:stretchMode">columnWidth</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
+        <item name="android:drawSelectorOnTop">true</item>
     </style>
 
     <style name="BoardGridViewTablet" parent="AppTheme">
@@ -467,7 +408,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:background">@color/PaletteTitleBg</item>
+        <!--<item name="android:background">@color/PaletteTitleBg</item>-->
         <item name="android:visibility">gone</item>
     </style>
 
@@ -476,7 +417,7 @@
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_below">@+id/board_title_bar</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:background">@color/PaletteTitleBg</item>
+        <!--<item name="android:background">@color/PaletteTitleBg</item>-->
     </style>
 
     <!-- THREAD LIST STYLES -->
@@ -601,7 +542,6 @@
         <item name="android:textSize">@dimen/ThreadListHeaderSubject</item>
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
-        <!-- <item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
         <!--<item name="android:background">@color/PaletteDarkGray</item>-->
         <item name="android:visibility">gone</item>
     </style>
@@ -913,7 +853,6 @@
         <item name="android:visibility">gone</item>
         <item name="android:paddingTop">@dimen/ThreadListHeader_micro_padding</item>
         <!--<item name="android:background">@color/PaletteDarkGray</item>-->
-        <!-- <item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
     </style>
 
     <style name="ThreadListHeaderExifText" parent="AppTheme">
@@ -1055,7 +994,6 @@
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
         <item name="android:visibility">gone</item>
-        <!--<item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
     </style>
 
     <style name="ThreadListItemCountryFlag" parent="AppTheme">
@@ -1175,7 +1113,6 @@
         <item name="android:autoLink">web|email</item>
         <item name="android:linksClickable">true</item>
         <item name="android:visibility">gone</item>
-        <!-- <item name="android:textColorLink">@color/PaletteChanuGreen</item> -->
     </style>
 
     <style name="ThreadListBannerAd" parent="AppTheme">

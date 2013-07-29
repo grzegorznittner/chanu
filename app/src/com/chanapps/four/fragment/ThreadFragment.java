@@ -289,7 +289,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected void createAbsListView() {
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivityContext());
         absListView = (ListView) layout.findViewById(R.id.thread_list_view);
-        adapter = new ThreadListCursorAdapter(getActivityContext(), viewBinder);
+        adapter = new ThreadListCursorAdapter(getActivity(), viewBinder);
         absListView.setAdapter(adapter);
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         absListView.setOnCreateContextMenuListener(this);
