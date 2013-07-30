@@ -11,6 +11,7 @@ import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -37,14 +38,17 @@ public class BoardGridViewer {
     private static ImageLoader imageLoader;
     private static DisplayImageOptions displayImageOptions;
 
-    private static void initStatics(View view) {
-        imageLoader = ChanImageLoader.getInstance(view.getContext());
+    public static void initStatics(Context context, boolean isDark) {
+        imageLoader = ChanImageLoader.getInstance(context);
+        int stub = isDark
+                ? R.drawable.stub_image_background_dark
+                : R.drawable.stub_image_background;
         displayImageOptions = new DisplayImageOptions.Builder()
                 .imageScaleType(ImageScaleType.NONE)
                 .cacheOnDisc()
                 //.cacheInMemory()
-                //.resetViewBeforeLoading()
-                .showStubImage(R.drawable.stub_image_background)
+                .resetViewBeforeLoading()
+                .showStubImage(stub)
                 .build();
     }
 
@@ -63,7 +67,7 @@ public class BoardGridViewer {
                                        int options)
     {
         if (imageLoader == null)
-            initStatics(view);
+            initStatics(view.getContext(), false);
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         BoardGridViewHolder viewHolder = (BoardGridViewHolder)view.getTag(R.id.VIEW_HOLDER);
         setItem(viewHolder, overlayListener, overflowListener);

@@ -19,7 +19,7 @@
               android:choiceMode="singleChoice"
               android:dividerHeight="2dp"
               android:divider="@color/PaletteTransparent"
-              android:background="@color/PaletteDrawerBg"/>
+              android:background="?themedDrawerBackground"/>
 </android.support.v4.widget.DrawerLayout>
 
         <!--

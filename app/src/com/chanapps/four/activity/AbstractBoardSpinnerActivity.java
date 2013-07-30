@@ -217,4 +217,8 @@ abstract public class
         actionBar.setSelectedNavigationItem(pos);
     }
 
+    public boolean isDark() {
+        return themeSelector.isDark();
+    }
+
 }

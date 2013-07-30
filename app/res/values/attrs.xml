@@ -39,11 +39,17 @@
         <attr name="inverseForeground" format="reference"/>
     </declare-styleable>
 
-    <attr name="themedBoardGridLayoutBackground" format="reference|color"/>
+    <attr name="themedCardChatIcon" format="reference"/>
+    <attr name="themedCardLineBackground" format="reference|color"/>
+    <attr name="themedCardListBackground" format="reference|color"/>
+    <attr name="themedCardListBarBg" format="reference|color"/>
+    <attr name="themedCardListBarOverlayFg" format="reference|color"/>
+    <attr name="themedCardSubjectTextColor" format="reference|color"/>
+    <attr name="themedDrawerBackground" format="reference|color"/>
     <attr name="themedBoardGridLayoutEmptyTextColor" format="reference|color"/>
     <attr name="themedBoardGridTitleTextColor" format="reference|color"/>
-    <attr name="themedBoardGridItemBackground" format="reference|color"/>
-    <attr name="themedBoardGridItemSubjectTextColor" format="reference|color"/>
-    <attr name="themedBoardGridItemSmallBackground" format="reference|color"/>
+    <attr name="themedLargeCardBackground" format="reference|color"/>
+    <attr name="themedSmallCardBackground" format="reference|color"/>
+    <attr name="themedStubImageBackgroundColor" format="reference|color"/>
 
 </resources>

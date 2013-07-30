@@ -31,6 +31,7 @@ import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.viewer.BoardGridViewer;
+import com.chanapps.four.viewer.ThreadViewer;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
@@ -130,6 +131,7 @@ public class ThreadActivity
 
         board = ChanFileStorage.loadBoardData(this, boardCode);
         mPullToRefreshAttacher = new PullToRefreshAttacher(this);
+        ThreadViewer.initStatics(this, isDark());
 
         if (onTablet())
             createAbsListView();

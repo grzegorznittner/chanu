@@ -111,7 +111,8 @@
     <string name="web_image_download_failed">Couldn\'t download image</string>
 
     <!-- menus -->
-    <string name="web_menu">View on 4chan.org</string>
+    <string name="web_menu">4chan.org</string>
+    <string name="direct_web_menu">View on 4chan.org</string>
     <string name="settings_menu">Settings</string>
     <string name="global_rules_menu">Global rules</string>
     <string name="board_rules_menu">Board rules</string>

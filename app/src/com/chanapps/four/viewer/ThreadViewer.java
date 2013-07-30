@@ -66,24 +66,26 @@ public class ThreadViewer {
     private static ImageLoader imageLoader = null;
     private static DisplayImageOptions displayImageOptions = null;
     private static DisplayImageOptions thumbDisplayImageOptions = null;
+    private static int stub;
 
-    public static void initStatics(View view) {
-        if (displayMetrics != null)
-            return;
-        Resources res = view.getResources();
+    public static void initStatics(Context context, boolean isDark) {
+        imageLoader = ChanImageLoader.getInstance(context);
+        stub = isDark
+                ? R.drawable.stub_image_background_dark
+                : R.drawable.stub_image_background;
+        Resources res = context.getResources();
         cardPaddingPx = res.getDimensionPixelSize(R.dimen.BoardGridView_spacing);
         displayMetrics = res.getDisplayMetrics();
         subjectTypeface = Typeface.createFromAsset(res.getAssets(), SUBJECT_FONT);
         itemThumbWidth = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
         itemThumbMaxHeight = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_MAXHEIGHT_DP);
-        imageLoader = ChanImageLoader.getInstance(view.getContext());
         displayImageOptions = createDisplayImageOptions(null);
         thumbDisplayImageOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisc()
                 //.cacheInMemory()
                 .imageScaleType(ImageScaleType.NONE)
-                //.resetViewBeforeLoading()
-                .showStubImage(R.drawable.stub_image_background)
+                .resetViewBeforeLoading()
+                .showStubImage(stub)
                 .build();
     }
 
@@ -93,7 +95,8 @@ public class ThreadViewer {
                 //.cacheInMemory()
                 .imageSize(imageSize)
                 .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
-                //.resetViewBeforeLoading()
+                .showStubImage(stub)
+                .resetViewBeforeLoading()
                 .build();
     }
 
@@ -113,7 +116,8 @@ public class ThreadViewer {
                                        View.OnClickListener expandedImageListener,
                                        View.OnLongClickListener startActionModeListener
                                        ) {
-        initStatics(view);
+        if (imageLoader == null)
+            initStatics(view.getContext(), false);
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
         int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
         if (flags < 0) // we are on board list
@@ -616,7 +620,7 @@ public class ThreadViewer {
         if (fsize <= maxAutoloadFSize) {
             if (DEBUG) Log.i(TAG, "prefetchExpandedImage auto-expanding since fsize=" + fsize + " < " + maxAutoloadFSize);
             ThreadExpandImageOnClickListener expander =
-                    (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener));
+                    (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener, stub));
             expander.displayAutoExpandedImage();
             return true;
         }
@@ -644,7 +648,7 @@ public class ThreadViewer {
 
         if (DEBUG) Log.i(TAG, "displayCachedExpandedImage() expanded file=" + file.getAbsolutePath());
         ThreadExpandImageOnClickListener expander =
-                (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener));
+                (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener, stub));
         expander.displayCachedExpandedImage();
         return true;
     }

@@ -9,6 +9,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.widget.BaseAdapter;
 import android.widget.Toast;
+import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.AboutActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
@@ -116,6 +117,17 @@ public class SettingsFragment
         name.setOnPreferenceClickListener(namesListener);
         email.setOnPreferenceClickListener(namesListener);
         password.setOnPreferenceClickListener(namesListener);
+
+        Preference.OnPreferenceChangeListener themeListener = new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                SettingsActivity activity = (SettingsActivity)getActivity();
+                activity.recreate();
+                return true;
+            }
+        };
+        Preference theme = findPreference(SettingsActivity.PREF_THEME);
+        theme.setOnPreferenceChangeListener(themeListener);
     }
 
 /*

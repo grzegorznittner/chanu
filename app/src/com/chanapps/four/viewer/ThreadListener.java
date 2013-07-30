@@ -25,9 +25,11 @@ public class ThreadListener {
     private static final boolean DEBUG = false;
 
     private ThreadViewable threadViewable;
+    private boolean isDark;
 
-    public ThreadListener(ThreadViewable threadViewable) {
+    public ThreadListener(ThreadViewable threadViewable, boolean isDark) {
         this.threadViewable = threadViewable;
+        this.isDark = isDark;
     }
 
     private final View.OnClickListener createPopupListener(final ThreadPopupDialogFragment.PopupType popupType) {
@@ -80,7 +82,7 @@ public class ThreadListener {
             final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
             if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
             if ((flags & (ChanPost.FLAG_HAS_IMAGE)) > 0) {
-                (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener))
+                (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener, isDark))
                         .onClick(itemView);
                 itemView.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.TRUE);
             }

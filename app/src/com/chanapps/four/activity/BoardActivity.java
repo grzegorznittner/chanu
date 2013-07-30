@@ -165,6 +165,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             displayBoardTitle();
         else
             hideBoardTitle();
+
+        BoardGridViewer.initStatics(this, themeSelector.isDark());
     }
 
     protected PullToRefreshAttacher.OnRefreshListener pullToRefreshListener
@@ -282,7 +284,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void setGridViewOptions() {
-        if (ChanBoard.isVirtualBoard(boardCode) && !ChanBoard.isPopularBoard(boardCode))
+        if (ChanBoard.isVirtualBoard(boardCode)
+                && !ChanBoard.isPopularBoard(boardCode)
+                && !ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
             gridViewOptions |= BoardGridViewer.SMALL_GRID;
         else
             gridViewOptions = 0;

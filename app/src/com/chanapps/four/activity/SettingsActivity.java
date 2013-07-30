@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.SettingsFragment;
@@ -47,14 +48,29 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_BLOCKLIST_EMAIL = "prefBlocklistEmail";
     public static final String PREF_BLOCKLIST_ID = "prefBlocklistId";
 
+    protected ThemeSelector themeSelector;
+
     public static Intent createIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
+    }
+
+    public boolean themeMatchesPrefs() {
+        return themeSelector.themeMatchesPrefs();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        themeSelector = new ThemeSelector(this);
+        themeSelector.initTheme();
         getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!themeSelector.themeMatchesPrefs())
+            recreate();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.chanapps.four.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -228,7 +229,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         absListView.setAdapter(adapter);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
-        threadListener = new ThreadListener(this);
+        threadListener = new ThreadListener(this, ((ThreadActivity)getActivity()).isDark());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.chanapps.four.fragment;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
+import com.chanapps.four.viewer.BoardGridViewer;
 import com.chanapps.four.viewer.ThreadListener;
 import com.chanapps.four.viewer.ThreadViewer;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -151,7 +153,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new Handler();
-        threadListener = new ThreadListener(this);
+        threadListener = new ThreadListener(this, ((ThreadActivity)getActivity()).isDark());
         if (threadNo > 0 && (adapter == null || adapter.getCount() == 0)) {
             ThreadActivity activity = (ThreadActivity)getActivity();
             if (activity != null && !activity.refreshing) {

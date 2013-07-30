@@ -2,6 +2,7 @@ package com.chanapps.four.activity;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -122,10 +123,13 @@ abstract public class
                     int selector;
                     if (type.boardCode().equals(boardCode))
                         selector = R.drawable.drawer_list_selector_checked_bg;
+                    else if (themeSelector != null && themeSelector.isDark())
+                        selector = R.drawable.drawer_list_selector_inverse_bg_dark;
                     else
                         selector = R.drawable.drawer_list_selector_inverse_bg;
                     FrameLayout child = (FrameLayout)view.findViewById(R.id.frame_child);
-                    child.setForeground(getResources().getDrawable(selector));
+                    Drawable selectorDrawable = getLayoutInflater().getContext().getResources().getDrawable(selector);
+                    child.setForeground(selectorDrawable);
 
                     // set title state
                     ImageView icon = (ImageView)view.findViewById(R.id.drawer_list_item_icon);

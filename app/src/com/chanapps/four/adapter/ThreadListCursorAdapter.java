@@ -19,7 +19,7 @@ import com.chanapps.four.viewer.ThreadViewHolder;
 public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
 
     protected static final String TAG = ThreadListCursorAdapter.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
     protected static final int TYPE_MAX_COUNT = 5;
     protected static final int TYPE_HEADER = 0;

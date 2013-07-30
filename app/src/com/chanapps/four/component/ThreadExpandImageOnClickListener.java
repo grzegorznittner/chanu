@@ -43,11 +43,21 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     private int listPosition = 0;
     private String fullImagePath = null;
     private int flags;
+    private int stub;
 
     public ThreadExpandImageOnClickListener(ThreadViewHolder viewHolder, final Cursor cursor,
-                                            View.OnClickListener expandedImageListener) {
+                                            View.OnClickListener expandedImageListener, boolean isDark) {
+        this(viewHolder, cursor, expandedImageListener,
+                isDark
+                        ? R.drawable.stub_image_background_dark
+                        : R.drawable.stub_image_background);
+    }
+
+    public ThreadExpandImageOnClickListener(ThreadViewHolder viewHolder, final Cursor cursor,
+                                            View.OnClickListener expandedImageListener, int stub) {
         this.viewHolder = viewHolder;
         this.expandedImageListener = expandedImageListener;
+        this.stub = stub;
 
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
@@ -140,7 +150,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
                 .cacheOnDisc()
                 .fullSizeImageLocation(fullImagePath)
                 .resetViewBeforeLoading()
-                .showStubImage(R.drawable.stub_image_background)
+                .showStubImage(stub)
                 .build();
 
         // display image async
@@ -226,7 +236,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
             return;
         }
         clearImage();
-        ThreadViewer.initStatics(viewHolder.list_item_image_expanded);
+        //ThreadViewer.initStatics(viewHolder.list_item_image_expanded);
         //Point targetSize = sizeExpandedImage(postW, postH);
         Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
         if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
@@ -237,7 +247,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     public void displayAutoExpandedImage() {
         viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
         viewHolder.list_item_expanded_progress_bar.setVisibility(View.VISIBLE);
-        ThreadViewer.initStatics(viewHolder.list_item_image_expanded);
+        //ThreadViewer.initStatics(viewHolder.list_item_image_expanded);
         //Point targetSize = sizeExpandedImage(postW, postH);
         Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
         if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
@@ -248,7 +258,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     public void displayCachedExpandedImage() {
         hideThumbnail();
         viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
-        ThreadViewer.initStatics(viewHolder.list_item_image_expanded);
+        //ThreadViewer.initStatics(viewHolder.list_item_image_expanded);
         //Point targetSize = sizeExpandedImage(postW, postH);
         Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
         if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
