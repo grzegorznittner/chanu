@@ -67,7 +67,7 @@ public class BoardGridViewer {
                                        int options)
     {
         if (imageLoader == null)
-            initStatics(view.getContext(), false);
+            throw new IllegalStateException("Must call initStatics() before calling setViewValue()");
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
         BoardGridViewHolder viewHolder = (BoardGridViewHolder)view.getTag(R.id.VIEW_HOLDER);
         setItem(viewHolder, overlayListener, overflowListener);

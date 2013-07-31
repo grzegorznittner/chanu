@@ -42,7 +42,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
     private static WeakReference<BoardActivity> watchlistActivityRef = null;
     private static WeakReference<BoardActivity> favoritesActivityRef = null;
 
@@ -166,7 +166,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         else
             hideBoardTitle();
 
-        BoardGridViewer.initStatics(this, themeSelector.isDark());
+        BoardGridViewer.initStatics(getApplicationContext(), themeSelector.isDark());
     }
 
     protected PullToRefreshAttacher.OnRefreshListener pullToRefreshListener
@@ -486,7 +486,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             adapter.swapCursor(data);
 
             // retry load if maybe data wasn't there yet
-            if ((data == null || data.getCount() < 1) && handler != null) {
+            if (boardCode.equals(ChanBoard.WATCHLIST_BOARD_CODE)
+                    || boardCode.equals(ChanBoard.FAVORITES_BOARD_CODE)) {
+                if (data == null || data.getCount() < 1)
+                    showEmptyText();
+            }
+            else if ((data == null || data.getCount() < 1) && handler != null) {
                 NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
                 if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
                     String msg = String.format(getString(R.string.mobile_profile_health_status),
@@ -494,11 +499,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                 }
                 showEmptyText();
-                setProgress(false);
-                return;
             }
-
-            hideEmptyText();
+            else {
+                hideEmptyText();
+            }
             setProgress(false);
         }
         @Override
@@ -510,6 +514,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     };
 
     protected void showEmptyText() {
+        if (DEBUG) Log.i(TAG, "showEmptyText /" + boardCode + "/");
         if (emptyText == null)
             return;
         BoardType boardType = BoardType.valueOfBoardCode(boardCode);
