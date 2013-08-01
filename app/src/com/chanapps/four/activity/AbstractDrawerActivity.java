@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
 
@@ -123,7 +124,7 @@ abstract public class
                     int selector;
                     if (type.boardCode().equals(boardCode))
                         selector = R.drawable.drawer_list_selector_checked_bg;
-                    else if (themeSelector != null && themeSelector.isDark())
+                    else if (ThemeSelector.instance(getApplicationContext()).isDark())
                         selector = R.drawable.drawer_list_selector_inverse_bg_dark;
                     else
                         selector = R.drawable.drawer_list_selector_inverse_bg;

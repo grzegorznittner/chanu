@@ -42,7 +42,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
     private static WeakReference<BoardActivity> watchlistActivityRef = null;
     private static WeakReference<BoardActivity> favoritesActivityRef = null;
 
@@ -166,7 +166,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         else
             hideBoardTitle();
 
-        BoardGridViewer.initStatics(getApplicationContext(), themeSelector.isDark());
+        BoardGridViewer.initStatics(getApplicationContext(), ThemeSelector.instance(getApplicationContext()).isDark());
     }
 
     protected PullToRefreshAttacher.OnRefreshListener pullToRefreshListener
@@ -872,7 +872,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             boardTitle.setText(board.name.toLowerCase());
         BoardType type = BoardType.valueOfBoardCode(boardCode);
         if (type != null) {
-            boolean isDark = themeSelector.isDark();
+            boolean isDark = ThemeSelector.instance(getApplicationContext()).isDark();
             int drawableId = isDark ? type.drawableId() : type.darkDrawableId();
             int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
             boardIcon.setImageResource(drawableId);

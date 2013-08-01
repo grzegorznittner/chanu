@@ -21,6 +21,7 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.*;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -153,7 +154,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new Handler();
-        threadListener = new ThreadListener(this, ((ThreadActivity)getActivity()).isDark());
+        threadListener = new ThreadListener(this, ThemeSelector.instance(getActivity().getApplicationContext()).isDark());
         if (threadNo > 0 && (adapter == null || adapter.getCount() == 0)) {
             ThreadActivity activity = (ThreadActivity)getActivity();
             if (activity != null && !activity.refreshing) {

@@ -19,6 +19,7 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
+import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanPost;
@@ -229,7 +230,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         absListView.setAdapter(adapter);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
-        threadListener = new ThreadListener(this, ((ThreadActivity)getActivity()).isDark());
+        threadListener = new ThreadListener(this, ThemeSelector.instance(getActivity().getApplicationContext()).isDark());
     }
 
     @Override

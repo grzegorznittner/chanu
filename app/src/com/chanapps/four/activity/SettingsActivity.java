@@ -48,29 +48,28 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_BLOCKLIST_EMAIL = "prefBlocklistEmail";
     public static final String PREF_BLOCKLIST_ID = "prefBlocklistId";
 
-    protected ThemeSelector themeSelector;
+    protected int themeId;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
     }
 
-    public boolean themeMatchesPrefs() {
-        return themeSelector.themeMatchesPrefs();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        themeSelector = new ThemeSelector(this);
-        themeSelector.initTheme();
+        themeId = ThemeSelector.instance(getApplicationContext()).setThemeIfNeeded(this, themeId);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ThemeSelector.instance(getApplicationContext()).recreateIfNeeded(this, themeId);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (!themeSelector.themeMatchesPrefs())
-            recreate();
     }
 
     @Override

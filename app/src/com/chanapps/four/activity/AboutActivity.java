@@ -26,7 +26,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity {
 
     public static final String TAG = AboutActivity.class.getSimpleName();
 
-    protected ThemeSelector themeSelector;
+    protected int themeId;
 
     public static Intent createIntent(Context from) {
         return new Intent(from, AboutActivity.class);
@@ -35,16 +35,14 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        themeSelector = new ThemeSelector(this);
-        themeSelector.initTheme();
+        themeId = ThemeSelector.instance(getApplicationContext()).setThemeIfNeeded(this, themeId);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new AboutFragment()).commit();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (!themeSelector.themeMatchesPrefs())
-            recreate();
+        ThemeSelector.instance(getApplicationContext()).recreateIfNeeded(this, themeId);
     }
 
     @Override

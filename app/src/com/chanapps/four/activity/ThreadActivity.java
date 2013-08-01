@@ -131,7 +131,7 @@ public class ThreadActivity
 
         board = ChanFileStorage.loadBoardData(this, boardCode);
         mPullToRefreshAttacher = new PullToRefreshAttacher(this);
-        ThreadViewer.initStatics(getApplicationContext(), isDark());
+        ThreadViewer.initStatics(getApplicationContext(), ThemeSelector.instance(getApplicationContext()).isDark());
 
         if (onTablet())
             createAbsListView();

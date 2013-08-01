@@ -1,8 +1,13 @@
 package com.chanapps.four.component;
 
+import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.*;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
@@ -17,58 +22,135 @@ import com.chanapps.four.activity.SettingsActivity;
 public class ThemeSelector {
 
     protected static final String TAG = ThemeSelector.class.getSimpleName();
-    protected static final boolean DEBUG = true;
-    protected String themeValue = "-1"; // not initialized
-    protected Context context;
-    
-    public ThemeSelector(Context context) {
-        this.context = context;    
-    }
+    protected static final boolean DEBUG = false;
 
-    public void initTheme() { // must run in onCreate BEFORE call to setContentView()
+    public static final String ACTION_THEME_CHANGED = "themeChangedAction";
+    public static final String EXTRA_THEME_ID = "themeId";
+
+    protected static final int LIGHT_THEME = R.style.AppTheme;
+    protected static final int DARK_THEME = R.style.AppTheme_Dark;
+    protected static final float LIGHT_LUX_THRESHOLD = 5;
+    protected static final float LUX_MIN_DELTA = 10;
+
+    public static final int DEFAULT_THEME = LIGHT_THEME;
+
+    protected static ThemeSelector themeSelector;
+
+    protected int themeId = LIGHT_THEME;
+    protected Context context;
+    protected SensorManager sensorManager;
+    protected Sensor lightSensor;
+    protected float lux = 100; // default to room lighting
+
+    protected ThemeSelector(Context context) {
+        this.context = context;
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String theme = prefs.getString(SettingsActivity.PREF_THEME,
                 context.getString(R.string.pref_theme_default_value));
-        if (themeValue.equals(theme)) {
-            if (DEBUG) Log.i(TAG, "selectTheme() theme=" + themeValue + " leaving unchanged");
-            return;
-        }
-        themeValue = theme;
-        int themeId = transformThemeSettingToId(theme);
-        context.setTheme(themeId);
-        if (DEBUG) Log.i(TAG, "selectTheme() changed to theme=" + themeValue);
+        themeId = calcThemeId(theme);
+        if (DEBUG) Log.i(TAG, "ThemeSelector() set to "
+                + (themeId == DARK_THEME ? "dark" : "light")
+                + " theme");
+        prefs.registerOnSharedPreferenceChangeListener(themeChangeListener);
+
+        sensorManager = (SensorManager)context.getSystemService(Service.SENSOR_SERVICE);
+        lightSensor = sensorManager == null ? null : sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        if (lightSensor != null)
+            sensorManager.registerListener(lightSensorListener, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    protected int transformThemeSettingToId(String theme) {
-        int themeId;
-        if (context.getString(R.string.pref_theme_light_value).equals(themeValue))
-            themeId = R.style.AppTheme;
-        else if (context.getString(R.string.pref_theme_dark_value).equals(themeValue))
-            themeId = R.style.AppTheme_Dark;
-        else if (context.getString(R.string.pref_theme_auto_value).equals(themeValue))
-            themeId = R.style.AppTheme; // should be fixed to check sensor lux levels
-        else
-            themeId = R.style.AppTheme;
+    protected SensorEventListener lightSensorListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            if (event == null
+                    || event.sensor == null
+                    || event.sensor.getType() != Sensor.TYPE_LIGHT
+                    || event.values == null
+                    || event.values.length < 1
+                    )
+                return;
+            float currentLux = event.values[0];
+            if (Math.abs(lux - currentLux) >= LUX_MIN_DELTA) {
+                lux = currentLux;
+                int newTheme = ambientLuxTheme();
+                if (themeId != newTheme)
+                    updateTheme(newTheme);
+            }
+        }
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            ; // ignore
+        }
+    };
+
+    protected void updateTheme(int newTheme) {
+        if (themeId == newTheme)
+            return;
+        themeId = newTheme;
+        Intent intent = new Intent(ACTION_THEME_CHANGED);
+        intent.putExtra(EXTRA_THEME_ID, themeId);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+    
+    public static ThemeSelector instance(Context context) {
+        if (themeSelector == null)
+            themeSelector = new ThemeSelector(context);
+        return themeSelector;
+    }
+
+    public int setThemeIfNeeded(Activity activity, int activityThemeId) {
+        if (activityThemeId != themeId) {
+            activity.setTheme(themeId);
+        }
         return themeId;
     }
 
-    public boolean themeMatchesPrefs() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String theme = prefs.getString(SettingsActivity.PREF_THEME,
-                context.getString(R.string.pref_theme_default_value));
-        if (themeValue.equals(theme)) {
-            if (DEBUG) Log.i(TAG, "themeMatchesPrefs() theme=" + theme + " leaving unchanged");
-            return true;
+    public void recreateIfNeeded(Activity activity, int activityThemeId) {
+        if (activityThemeId != themeId)
+            activity.recreate();
+    }
+
+    protected SharedPreferences.OnSharedPreferenceChangeListener themeChangeListener
+            = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (!SettingsActivity.PREF_THEME.equals(key))
+                return;
+            String theme = sharedPreferences.getString(SettingsActivity.PREF_THEME,
+                    context.getString(R.string.pref_theme_default_value));
+            int newThemeId = calcThemeId(theme);
+            if (themeId == newThemeId)
+                return;
+            updateTheme(newThemeId);
+            if (DEBUG) Log.i(TAG, "themeChangeListener set to "
+                    + (themeId == DARK_THEME ? "dark" : "light")
+                    + " theme");
         }
-        else {
-            if (DEBUG) Log.i(TAG, "themeMatchesPrefs() should change to new theme=" + theme);
-            return false;
-        }
+    };
+
+    protected int calcThemeId(String theme) {
+        int id;
+        if (context.getString(R.string.pref_theme_light_value).equals(theme))
+            id = LIGHT_THEME;
+        else if (context.getString(R.string.pref_theme_dark_value).equals(theme))
+            id = DARK_THEME;
+        else if (context.getString(R.string.pref_theme_auto_value).equals(theme))
+            id = ambientLuxTheme(); // should be fixed to check sensor lux levels
+        else
+            id = DEFAULT_THEME;
+        return id;
     }
 
     public boolean isDark() {
-        int themeId = transformThemeSettingToId(themeValue);
         return themeId == R.style.AppTheme_Dark;
+    }
+
+    protected int ambientLuxTheme() {
+        if (lux >= LIGHT_LUX_THRESHOLD)
+            return LIGHT_THEME;
+        else
+            return DARK_THEME;
     }
 
 }

@@ -1,12 +1,12 @@
 package com.chanapps.four.activity;
 
 import android.app.ActionBar;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.Window;
@@ -26,12 +26,12 @@ abstract public class
         implements ChanIdentifiedActivity
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
     protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
 
     protected String boardCode;
     protected long threadNo = 0;
-    protected ThemeSelector themeSelector;
+    protected int themeId;
 
     protected boolean mShowNSFW = false;
 
@@ -46,14 +46,29 @@ abstract public class
         if (DEBUG) Log.v(TAG, "onCreate");
         NetworkProfileManager.instance().ensureInitialized(this);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar
-        themeSelector = new ThemeSelector(this);
-        themeSelector.initTheme();
+        themeId = ThemeSelector.instance(getApplicationContext()).setThemeIfNeeded(this, themeId);
         setContentView(activityLayout());
         mShowNSFW = ChanBoard.showNSFW(getApplicationContext());
         createActionBar();
         createPreViews();
         createViews(bundle);
+        IntentFilter intentFilter = new IntentFilter(ThemeSelector.ACTION_THEME_CHANGED);
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(broadcastThemeReceiver, intentFilter);
     }
+
+    protected BroadcastReceiver broadcastThemeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent == null
+                    || intent.getAction() == null
+                    || !intent.getAction().equals(ThemeSelector.ACTION_THEME_CHANGED)
+                    || !intent.hasExtra(ThemeSelector.EXTRA_THEME_ID))
+                return;
+            int newThemeId = intent.getIntExtra(ThemeSelector.EXTRA_THEME_ID, ThemeSelector.DEFAULT_THEME);
+            if (themeId != newThemeId)
+                recreate();
+        }
+    };
 
     protected int activityLayout() {
         return R.layout.board_spinner_activity_layout;
@@ -93,10 +108,7 @@ abstract public class
             mShowNSFW = newShowNSFW;
             setAdapters();
         }
-        if (!themeSelector.themeMatchesPrefs()) {
-            if (DEBUG) Log.i(TAG, "onStart() needs theme change, recreating activity");
-            recreate();
-        }
+        ThemeSelector.instance(getApplicationContext()).recreateIfNeeded(this, themeId);
     }
 
     @Override
@@ -215,10 +227,6 @@ abstract public class
             }
         }
         actionBar.setSelectedNavigationItem(pos);
-    }
-
-    public boolean isDark() {
-        return themeSelector.isDark();
     }
 
 }
