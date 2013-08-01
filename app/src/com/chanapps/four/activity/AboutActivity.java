@@ -22,11 +22,12 @@ import com.chanapps.four.fragment.AboutFragment;
  * Time: 9:59 PM
  * To change this template use File | Settings | File Templates.
  */
-public class AboutActivity extends Activity implements ChanIdentifiedActivity {
+public class AboutActivity extends Activity implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity {
 
     public static final String TAG = AboutActivity.class.getSimpleName();
 
     protected int themeId;
+    protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
 
     public static Intent createIntent(Context from) {
         return new Intent(from, AboutActivity.class);
@@ -35,19 +36,35 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        themeId = ThemeSelector.instance(getApplicationContext()).setThemeIfNeeded(this, themeId);
+        broadcastThemeReceiver = new ThemeSelector.ThemeReceiver(this);
+        broadcastThemeReceiver.register();
         getFragmentManager().beginTransaction().replace(android.R.id.content, new AboutFragment()).commit();
+    }
+
+    @Override
+    public int getThemeId() {
+        return themeId;
+    }
+
+    @Override
+    public void setThemeId(int themeId) {
+        this.themeId = themeId;
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        ThemeSelector.instance(getApplicationContext()).recreateIfNeeded(this, themeId);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        broadcastThemeReceiver.unregister();
     }
 
     @Override

@@ -21,7 +21,7 @@ import com.chanapps.four.fragment.SettingsFragment;
  * Date: 11/20/12
  * Time: 11:50 PM
  */
-public class SettingsActivity extends Activity implements ChanIdentifiedActivity {
+public class SettingsActivity extends Activity implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity {
 
     public static final String TAG = SettingsActivity.class.getSimpleName();
 
@@ -49,6 +49,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_BLOCKLIST_ID = "prefBlocklistId";
 
     protected int themeId;
+    protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
 
     public static Intent createIntent(Context context) {
         return new Intent(context, SettingsActivity.class);
@@ -57,14 +58,24 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        themeId = ThemeSelector.instance(getApplicationContext()).setThemeIfNeeded(this, themeId);
+        broadcastThemeReceiver = new ThemeSelector.ThemeReceiver(this);
+        broadcastThemeReceiver.register();
         getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
+    }
+
+    @Override
+    public int getThemeId() {
+        return themeId;
+    }
+
+    @Override
+    public void setThemeId(int themeId) {
+        this.themeId = themeId;
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        ThemeSelector.instance(getApplicationContext()).recreateIfNeeded(this, themeId);
     }
 
     @Override
@@ -75,6 +86,12 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        broadcastThemeReceiver.unregister();
     }
 
     @Override

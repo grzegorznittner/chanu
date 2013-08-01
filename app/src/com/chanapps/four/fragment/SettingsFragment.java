@@ -118,6 +118,7 @@ public class SettingsFragment
         email.setOnPreferenceClickListener(namesListener);
         password.setOnPreferenceClickListener(namesListener);
 
+        /*
         Preference.OnPreferenceChangeListener themeListener = new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -128,6 +129,7 @@ public class SettingsFragment
         };
         Preference theme = findPreference(SettingsActivity.PREF_THEME);
         theme.setOnPreferenceChangeListener(themeListener);
+        */
     }
 
 /*

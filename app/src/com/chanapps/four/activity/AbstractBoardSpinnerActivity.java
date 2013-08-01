@@ -23,7 +23,8 @@ import java.util.regex.Pattern;
 abstract public class
         AbstractBoardSpinnerActivity
         extends FragmentActivity
-        implements ChanIdentifiedActivity
+        implements ChanIdentifiedActivity,
+        ThemeSelector.ThemeActivity
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
     protected static final boolean DEBUG = false;
@@ -32,6 +33,7 @@ abstract public class
     protected String boardCode;
     protected long threadNo = 0;
     protected int themeId;
+    protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
 
     protected boolean mShowNSFW = false;
 
@@ -46,29 +48,24 @@ abstract public class
         if (DEBUG) Log.v(TAG, "onCreate");
         NetworkProfileManager.instance().ensureInitialized(this);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar
-        themeId = ThemeSelector.instance(getApplicationContext()).setThemeIfNeeded(this, themeId);
+        broadcastThemeReceiver = new ThemeSelector.ThemeReceiver(this);
+        broadcastThemeReceiver.register();
         setContentView(activityLayout());
         mShowNSFW = ChanBoard.showNSFW(getApplicationContext());
         createActionBar();
         createPreViews();
         createViews(bundle);
-        IntentFilter intentFilter = new IntentFilter(ThemeSelector.ACTION_THEME_CHANGED);
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(broadcastThemeReceiver, intentFilter);
     }
 
-    protected BroadcastReceiver broadcastThemeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent == null
-                    || intent.getAction() == null
-                    || !intent.getAction().equals(ThemeSelector.ACTION_THEME_CHANGED)
-                    || !intent.hasExtra(ThemeSelector.EXTRA_THEME_ID))
-                return;
-            int newThemeId = intent.getIntExtra(ThemeSelector.EXTRA_THEME_ID, ThemeSelector.DEFAULT_THEME);
-            if (themeId != newThemeId)
-                recreate();
-        }
-    };
+    @Override
+    public int getThemeId() {
+        return themeId;
+    }
+
+    @Override
+    public void setThemeId(int themeId) {
+        this.themeId = themeId;
+    }
 
     protected int activityLayout() {
         return R.layout.board_spinner_activity_layout;
@@ -108,7 +105,6 @@ abstract public class
             mShowNSFW = newShowNSFW;
             setAdapters();
         }
-        ThemeSelector.instance(getApplicationContext()).recreateIfNeeded(this, themeId);
     }
 
     @Override
@@ -210,6 +206,12 @@ abstract public class
     protected void onResume() {
         super.onResume();
         selectActionBarNavigationItem();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        broadcastThemeReceiver.unregister();
     }
 
     protected void selectActionBarNavigationItem() {

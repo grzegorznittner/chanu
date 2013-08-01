@@ -2,9 +2,7 @@ package com.chanapps.four.component;
 
 import android.app.Activity;
 import android.app.Service;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.hardware.*;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -99,18 +97,6 @@ public class ThemeSelector {
         return themeSelector;
     }
 
-    public int setThemeIfNeeded(Activity activity, int activityThemeId) {
-        if (activityThemeId != themeId) {
-            activity.setTheme(themeId);
-        }
-        return themeId;
-    }
-
-    public void recreateIfNeeded(Activity activity, int activityThemeId) {
-        if (activityThemeId != themeId)
-            activity.recreate();
-    }
-
     protected SharedPreferences.OnSharedPreferenceChangeListener themeChangeListener
             = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
@@ -151,6 +137,51 @@ public class ThemeSelector {
             return LIGHT_THEME;
         else
             return DARK_THEME;
+    }
+
+    public static interface ThemeActivity {
+        int getThemeId();
+        void setThemeId(int themeId);
+        void setTheme(int themeId);
+        void recreate();
+        Context getApplicationContext();
+    }
+
+    public static class ThemeReceiver extends BroadcastReceiver {
+        protected ThemeActivity activity;
+        public ThemeReceiver() {
+            super();
+        }
+        public ThemeReceiver(ThemeActivity activity) {
+            this();
+            this.activity = activity;
+            int currentTheme = ThemeSelector.instance(activity.getApplicationContext()).themeId;
+            if (activity.getThemeId() != currentTheme) {
+                activity.setThemeId(currentTheme);
+                activity.setTheme(currentTheme);
+            }
+        }
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (activity == null
+                    || intent == null
+                    || intent.getAction() == null
+                    || !intent.getAction().equals(ThemeSelector.ACTION_THEME_CHANGED)
+                    || !intent.hasExtra(ThemeSelector.EXTRA_THEME_ID))
+                return;
+            int newThemeId = intent.getIntExtra(ThemeSelector.EXTRA_THEME_ID, ThemeSelector.DEFAULT_THEME);
+            if (activity.getThemeId() != newThemeId)
+                activity.recreate();
+        }
+        public void register() {
+            IntentFilter intentFilter = new IntentFilter(ThemeSelector.ACTION_THEME_CHANGED);
+            LocalBroadcastManager.getInstance(activity.getApplicationContext())
+                    .registerReceiver(this, intentFilter);
+        }
+        public void unregister() {
+            LocalBroadcastManager.getInstance(activity.getApplicationContext())
+                    .unregisterReceiver(this);
+        }
     }
 
 }
