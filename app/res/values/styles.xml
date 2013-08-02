@@ -946,7 +946,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:scaleType">center</item>
+        <!--<item name="android:scaleType">center</item>-->
+        <item name="android:scaleType">fitCenter</item>
         <item name="android:contentDescription">@string/thread_post_image_expanded</item>
     </style>
 

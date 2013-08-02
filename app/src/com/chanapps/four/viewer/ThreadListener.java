@@ -1,13 +1,12 @@
 package com.chanapps.four.viewer;
 
-import android.app.Fragment;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ThreadExpandExifOnClickListener;
-import com.chanapps.four.component.ThreadExpandImageOnClickListener;
+import com.chanapps.four.component.ThreadImageExpander;
 import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.fragment.ThreadPopupDialogFragment;
@@ -82,8 +81,16 @@ public class ThreadListener {
             final int flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
             if (DEBUG) Log.i(TAG, "clicked flags=" + flags);
             if ((flags & (ChanPost.FLAG_HAS_IMAGE)) > 0) {
-                (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener, isDark))
-                        .onClick(itemView);
+                //if (viewHolder.list_item_image_expanded != null
+                //        && viewHolder.list_item_image_expanded.getVisibility() != View.GONE
+                //        && viewHolder.list_item_image_expanded.getHeight() > 0) {
+                if (DEBUG) Log.i(TAG, "expanding pos: " + pos);
+                ThreadImageExpander expander = (new ThreadImageExpander(viewHolder, cursor, expandedImageListener,
+                        true,
+                        isDark
+                                ? R.drawable.stub_image_background_dark
+                                : R.drawable.stub_image_background));
+                expander.displayImage();
                 itemView.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.TRUE);
             }
         }

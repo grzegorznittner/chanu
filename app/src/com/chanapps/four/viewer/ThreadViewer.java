@@ -16,21 +16,17 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.ThreadExpandImageOnClickListener;
-import com.chanapps.four.data.ChanAd;
+import com.chanapps.four.component.ThreadImageExpander;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import org.xml.sax.XMLReader;
@@ -619,9 +615,9 @@ public class ThreadViewer {
         int maxAutoloadFSize = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxAutoLoadFSize;
         if (fsize <= maxAutoloadFSize) {
             if (DEBUG) Log.i(TAG, "prefetchExpandedImage auto-expanding since fsize=" + fsize + " < " + maxAutoloadFSize);
-            ThreadExpandImageOnClickListener expander =
-                    (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener, stub));
-            expander.displayAutoExpandedImage();
+            ThreadImageExpander expander =
+                    (new ThreadImageExpander(viewHolder, cursor, expandedImageListener, true, stub));
+            expander.displayImage();
             return true;
         }
         return false;
@@ -647,9 +643,9 @@ public class ThreadViewer {
         }
 
         if (DEBUG) Log.i(TAG, "displayCachedExpandedImage() expanded file=" + file.getAbsolutePath());
-        ThreadExpandImageOnClickListener expander =
-                (new ThreadExpandImageOnClickListener(viewHolder, cursor, expandedImageListener, stub));
-        expander.displayCachedExpandedImage();
+        ThreadImageExpander expander =
+                (new ThreadImageExpander(viewHolder, cursor, expandedImageListener, false, stub));
+        expander.displayImage();
         return true;
     }
 

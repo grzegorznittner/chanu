@@ -29,10 +29,10 @@ import java.net.URI;
 * Time: 10:28 AM
 * To change this template use File | Settings | File Templates.
 */
-public class ThreadExpandImageOnClickListener implements View.OnClickListener {
+public class ThreadImageExpander {
 
-    private static final String TAG = ThreadExpandImageOnClickListener.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final String TAG = ThreadImageExpander.class.getSimpleName();
+    private static final boolean DEBUG = true;
     //private static final double MAX_EXPANDED_SCALE = 1.5;
 
     private ThreadViewHolder viewHolder;
@@ -40,23 +40,15 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
     private String postImageUrl = null;
     private int postW = 0;
     private int postH = 0;
-    private int listPosition = 0;
     private String fullImagePath = null;
-    private int flags;
+    private boolean withProgress;
     private int stub;
 
-    public ThreadExpandImageOnClickListener(ThreadViewHolder viewHolder, final Cursor cursor,
-                                            View.OnClickListener expandedImageListener, boolean isDark) {
-        this(viewHolder, cursor, expandedImageListener,
-                isDark
-                        ? R.drawable.stub_image_background_dark
-                        : R.drawable.stub_image_background);
-    }
-
-    public ThreadExpandImageOnClickListener(ThreadViewHolder viewHolder, final Cursor cursor,
-                                            View.OnClickListener expandedImageListener, int stub) {
+    public ThreadImageExpander(ThreadViewHolder viewHolder, final Cursor cursor,
+                               View.OnClickListener expandedImageListener, boolean withProgress, int stub) {
         this.viewHolder = viewHolder;
         this.expandedImageListener = expandedImageListener;
+        this.withProgress = withProgress;
         this.stub = stub;
 
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
@@ -64,21 +56,11 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         String postExt = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXT));
         Uri uri = ChanFileStorage.getLocalImageUri(viewHolder.list_item.getContext(), boardCode, postId, postExt);
 
-        listPosition = cursor.getPosition();
         postW = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_W));
         postH = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_H));
         postImageUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_FULL_IMAGE_URL));
         fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
-        flags = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FLAGS));
         if (DEBUG) Log.i(TAG, "postUrl=" + postImageUrl + " postSize=" + postW + "x" + postH);
-    }
-
-    private void collapseImageView() {
-        if (DEBUG) Log.i(TAG, "collapsed pos=" + listPosition);
-        if (viewHolder.list_item_image_expanded_wrapper != null)
-            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.GONE);
-        if (viewHolder.list_item_expanded_progress_bar != null)
-            viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
     }
 
     private void hideThumbnail() {
@@ -96,13 +78,6 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         if (viewHolder.list_item_left_spacer != null)
             viewHolder.list_item_left_spacer.setVisibility(View.VISIBLE);
         viewHolder.list_item_image_wrapper.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (DEBUG) Log.i(TAG, "expanding pos=" + listPosition);
-        if ((flags & ChanPost.FLAG_HAS_IMAGE) > 0)
-            expandImage();
     }
 
     private void setImageDimensions(Point targetSize) {
@@ -130,7 +105,20 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         }
     }
 
-    private void displayImage(Point targetSize, final boolean withProgress) {
+    public void displayImage() {
+        if (withProgress) {
+            viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
+            viewHolder.list_item_expanded_progress_bar.setVisibility(View.VISIBLE);
+        }
+        else {
+            hideThumbnail();
+            viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
+        }
+
+        Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
+        if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
+        setImageDimensions(targetSize);
+
         if (DEBUG) Log.i(TAG, "Set expanded image to visible");
         if (viewHolder.list_item_expanded_progress_bar != null)
             viewHolder.list_item_expanded_progress_bar.setVisibility(withProgress ? View.VISIBLE : View.GONE);
@@ -224,6 +212,7 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         return true;
     }
 
+    /*
     private void clearImage() {
         if (DEBUG) Log.i(TAG, "Clearing existing image");
         ThreadViewer.clearBigImageView(viewHolder.list_item_image_expanded); // clear old image
@@ -244,71 +233,48 @@ public class ThreadExpandImageOnClickListener implements View.OnClickListener {
         displayImage(targetSize, true);
     }
 
-    public void displayAutoExpandedImage() {
-        viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
-        viewHolder.list_item_expanded_progress_bar.setVisibility(View.VISIBLE);
-        //ThreadViewer.initStatics(viewHolder.list_item_image_expanded);
-        //Point targetSize = sizeExpandedImage(postW, postH);
-        Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
-        if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
-        setImageDimensions(targetSize);
-        displayImage(targetSize, true);
-    }
-
-    public void displayCachedExpandedImage() {
-        hideThumbnail();
-        viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
-        //ThreadViewer.initStatics(viewHolder.list_item_image_expanded);
-        //Point targetSize = sizeExpandedImage(postW, postH);
-        Point targetSize = ThreadViewer.sizeHeaderImage(postW, postH);
-        if (DEBUG) Log.i(TAG, "inputSize=" + postW + "x" + postH + " targetSize=" + targetSize.x + "x" + targetSize.y);
-        setImageDimensions(targetSize);
-        displayImage(targetSize, false);
-    }
-
-    /*
     private static Point sizeExpandedImage(final int actualWidth, final int actualHeight) {
-        Point imageSize = new Point();
-        double aspectRatio = (double) actualWidth / (double) actualHeight;
+    Point imageSize = new Point();
+    double aspectRatio = (double) actualWidth / (double) actualHeight;
 
-        if (aspectRatio < 1) { // tall image, restrict by height
-            int desiredHeight =
-                    //powerOfTwoReduce(
-                    //        actualHeight,
-                            Math.min(ThreadViewer.cardMaxImageHeight(), (int)(actualHeight * MAX_EXPANDED_SCALE))
-                    //)
-                    ;
-            imageSize.x = (int) (aspectRatio * (double) desiredHeight);
-            imageSize.y = desiredHeight;
-        } else {
-            int desiredWidth =
-                    //powerOfTwoReduce(
-                    //        actualWidth,
-                            Math.min(ThreadViewer.cardMaxImageWidth(), (int)(actualWidth * MAX_EXPANDED_SCALE))
-                    //)
-                    ;
-            imageSize.x = desiredWidth; // restrict by width normally
-            imageSize.y = (int) ((double) desiredWidth / aspectRatio);
-        }
-        if (DEBUG) com.android.gallery3d.ui.Log.v(TAG, "Input size=" + actualWidth + "x" + actualHeight + " output size=" + imageSize.x + "x" + imageSize.y);
-        return imageSize;
+    if (aspectRatio < 1) { // tall image, restrict by height
+        int desiredHeight =
+                //powerOfTwoReduce(
+                //        actualHeight,
+                        Math.min(ThreadViewer.cardMaxImageHeight(), (int)(actualHeight * MAX_EXPANDED_SCALE))
+                //)
+                ;
+        imageSize.x = (int) (aspectRatio * (double) desiredHeight);
+        imageSize.y = desiredHeight;
+    } else {
+        int desiredWidth =
+                //powerOfTwoReduce(
+                //        actualWidth,
+                        Math.min(ThreadViewer.cardMaxImageWidth(), (int)(actualWidth * MAX_EXPANDED_SCALE))
+                //)
+                ;
+        imageSize.x = desiredWidth; // restrict by width normally
+        imageSize.y = (int) ((double) desiredWidth / aspectRatio);
     }
+    if (DEBUG) com.android.gallery3d.ui.Log.v(TAG, "Input size=" + actualWidth + "x" + actualHeight + " output size=" + imageSize.x + "x" + imageSize.y);
+    return imageSize;
+}
 
-    private static int powerOfTwoReduce(double a, double d) { // actual, desired INT_SAMPLE_POWER_OF_2
-        if (a <= d)
-            return (int)a;
-        /* a > d
+private static int powerOfTwoReduce(double a, double d) { // actual, desired INT_SAMPLE_POWER_OF_2
+    if (a <= d)
+        return (int)a;
+    /* a > d
 
-           a/2^n <= d
-           a <= d * 2^n
-           a/d <= 2^n
-           ln(a/d)/ln(2) <= n
-           n >= ln(a/d)/ln(2)
-           p = ceil(n)
+       a/2^n <= d
+       a <= d * 2^n
+       a/d <= 2^n
+       ln(a/d)/ln(2) <= n
+       n >= ln(a/d)/ln(2)
+       p = ceil(n)
 
-           s = 2^p
-           o = a / s
-        */
+       s = 2^p
+       o = a / s
+    */
         /*
         double n = Math.log(a/d) / Math.log(2);
         int p = (int)Math.floor(n);
