@@ -32,31 +32,22 @@
                         android:visibility="gone"
                         android:background="@drawable/board_grid_selector_bg"
                         />
-                <ImageView
-                        android:id="@+id/grid_item_country_flag"
-                        android:layout_width="@dimen/BoardGridCountryFlag_layout_width"
-                        android:layout_height="@dimen/BoardGridCountryFlag_layout_height"
-                        android:scaleType="fitXY"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentRight="true"
-                        android:contentDescription="@string/thread_country_flag"
-                        android:visibility="gone"
-                        />
             </RelativeLayout>
 
             <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/BoardGridTextHeight"
                     android:layout_toRightOf="@+id/grid_item_thread_image_wrap"
+                    android:paddingTop="4dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="24dp"
+                    android:paddingBottom="4dp"
                     >
 
                 <TextView
                         android:id="@+id/grid_item_thread_subject"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingTop="4dp"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="20dp"
                         android:textColor="?themedCardSubjectTextColor"
                         android:textSize="@dimen/BoardGridSubject"
                         android:visibility="gone"
@@ -64,14 +55,24 @@
                         android:maxLines="4"
                         />
 
+                <ImageView
+                        android:id="@+id/grid_item_country_flag"
+                        android:layout_width="@dimen/BoardGridCountryFlag_layout_width"
+                        android:layout_height="@dimen/BoardGridCountryFlag_layout_height"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="3dp"
+                        android:scaleType="fitXY"
+                        android:layout_alignParentBottom="true"
+                        android:contentDescription="@string/thread_country_flag"
+                        android:visibility="gone"
+                        />
+
                 <TextView
                         android:id="@+id/grid_item_thread_info"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/grid_item_country_flag"
                         android:layout_alignParentBottom="true"
-                        android:paddingLeft="8dp"
-                        android:paddingRight="20dp"
-                        android:paddingBottom="4dp"
                         android:textColor="@color/PaletteLightGray"
                         android:textSize="@dimen/BoardGridInfo"
                         android:maxLines="2"

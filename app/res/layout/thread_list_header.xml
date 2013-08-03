@@ -30,7 +30,6 @@
                         />
             </LinearLayout>
             -->
-            <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
             <FrameLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies">
 
                 <RelativeLayout
@@ -85,6 +84,7 @@
             </LinearLayout>
             <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"/>
             <TextView style="@style/ThreadListHeaderFullText" android:id="@+id/list_item_text"/>
+            <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"/>
             <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"/>
             <TextView style="@style/ThreadListHeaderExifText" android:id="@+id/list_item_exif_text"/>
         </RelativeLayout>

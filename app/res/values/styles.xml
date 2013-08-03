@@ -569,7 +569,7 @@
     <style name="ThreadListHeaderHead" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_below">@+id/list_item_text</item>
+        <item name="android:layout_below">@+id/list_item_country_flag</item>
         <item name="android:gravity">top|left</item>
         <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
         <item name="android:textColor">@color/PaletteThreadSecondaryText</item>
@@ -825,7 +825,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:layout_toRightOf">@+id/list_item_header_bar_chat_wrapper</item>
-        <!-- <item name="android:paddingRight">@dimen/ThreadListHeader_med_padding</item> -->
+        <item name="android:paddingRight">@dimen/ThreadListHeader_micro_padding</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
         <item name="android:textStyle">bold</item>
@@ -997,10 +997,8 @@
     <style name="ThreadListItemCountryFlag" parent="AppTheme">
         <item name="android:layout_width">@dimen/ThreadListItemCountryFlag_layout_width</item>
         <item name="android:layout_height">@dimen/ThreadListItemCountryFlag_layout_height</item>
-        <item name="android:layout_marginTop">@dimen/ThreadListItemCountryFlag_marginTop</item>
-        <item name="android:layout_marginLeft">@dimen/ThreadListItemImageWrapper_layout_marginRight</item>
-        <item name="android:layout_marginRight">@dimen/ThreadListItemCountryFlag_marginRight</item>
-        <item name="android:layout_toRightOf">@+id/list_item_header_bar_ago</item>
+        <item name="android:layout_below">@+id/list_item_text</item>
+        <item name="android:layout_marginTop">@dimen/ThreadListHeader_small_padding</item>
         <item name="android:scaleType">fitXY</item>
         <item name="android:contentDescription">@string/popup_country_flag</item>
     </style>
