@@ -86,6 +86,10 @@ abstract public class
         setSpinnerAdapter();
     }
 
+    protected boolean allAdaptersSet() {
+        return mSpinnerAdapter != null;
+    }
+
     protected void setSpinnerAdapter() {
         mSpinnerArrayId = mShowNSFW
                 ? R.array.long_board_array
@@ -103,6 +107,9 @@ abstract public class
         boolean newShowNSFW = ChanBoard.showNSFW(getApplicationContext());
         if (newShowNSFW != mShowNSFW) {
             mShowNSFW = newShowNSFW;
+            setAdapters();
+        }
+        else if (!allAdaptersSet()) {
             setAdapters();
         }
     }

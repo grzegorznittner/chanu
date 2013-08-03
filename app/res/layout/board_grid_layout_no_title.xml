@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:chanapps="http://schemas.android.com/apk/res/com.chanapps.four.activity"
         android:id="@+id/board_grid_layout"
         style="@style/BoardGridLayout"
         >
 
-    <include layout="@layout/board_title_bar"/>
+    <!-- <include layout="@layout/board_title_bar"/> -->
 
     <include layout="@layout/board_refresh_bar"/>
 

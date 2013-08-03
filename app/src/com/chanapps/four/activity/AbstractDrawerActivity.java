@@ -58,9 +58,15 @@ abstract public class
         mDrawerToggle.onConfigurationChanged(config);
     }
 
+    @Override
     protected void setAdapters() {
-        setSpinnerAdapter();
+        super.setAdapters();
         setDrawerAdapter();
+    }
+
+    @Override
+    protected boolean allAdaptersSet() {
+        return super.allAdaptersSet() && mDrawerAdapter != null;
     }
 
     protected static final String ROW_ID = "rowid";
@@ -189,18 +195,6 @@ abstract public class
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        boolean newShowNSFW = ChanBoard.showNSFW(getApplicationContext());
-        if (newShowNSFW != mShowNSFW) {
-            mShowNSFW = newShowNSFW;
-            setSpinnerAdapter();
-            setDrawerAdapter();
-        }
-     }
 
     @Override
     protected void onNewIntent(Intent intent) {

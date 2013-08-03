@@ -825,7 +825,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:layout_toRightOf">@+id/list_item_header_bar_chat_wrapper</item>
-        <item name="android:paddingRight">@dimen/ThreadListHeader_med_padding</item>
+        <!-- <item name="android:paddingRight">@dimen/ThreadListHeader_med_padding</item> -->
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
         <item name="android:textStyle">bold</item>

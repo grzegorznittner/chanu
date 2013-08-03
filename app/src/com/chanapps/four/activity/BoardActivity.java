@@ -65,8 +65,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected PullToRefreshAttacher mPullToRefreshAttacher;
 
     public static void startActivity(Context from, String boardCode, String query) {
-        //if (query != null && !query.isEmpty())
-        //    NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.SEARCH_BOARD);
         from.startActivity(createIntent(from, boardCode, query));
     }
 
@@ -293,16 +291,15 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void createAbsListView() {
-        // we don't use fragments, but create anything needed
         setGridViewOptions();
         FrameLayout contentFrame = (FrameLayout)findViewById(R.id.content_frame);
         if (contentFrame.getChildCount() > 0)
             contentFrame.removeAllViews();
         int layoutId = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
                 ? R.layout.board_grid_layout_small
-                : R.layout.board_grid_layout;
-        //layout = getLayoutInflater().inflate()
-        //layout = View.inflate(this, layoutId, null);
+                : (ChanBoard.isVirtualBoard(boardCode)
+                    ? R.layout.board_grid_layout
+                    : R.layout.board_grid_layout_no_title);
         layout = getLayoutInflater().inflate(layoutId, null);
         contentFrame.addView(layout);
         int numColumns = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
@@ -319,7 +316,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         absListView.setAdapter(adapter);
         absListView.setSelector(android.R.color.transparent);
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
     }
@@ -329,9 +325,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         super.onStart();
         if (handler == null)
             handler = new Handler();
-            //handler = new LoaderHandler();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query);
-        //setActionBarTitle();
 
         // moved section from onCreate
         ChanBoard board = ChanFileStorage.loadBoardData(this, boardCode);
@@ -362,14 +356,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ non-current board data, manual refreshing");
             onRefresh();
         }
-
-        if (board.isPopularBoard() && boardTitleBar != null) {
-            PullToRefreshAttacher.Options ptrOptions = new PullToRefreshAttacher.Options();
-            ptrOptions.headerTransformer = new PopularHeaderTransformer();
-            mPullToRefreshAttacher = new PullToRefreshAttacher(this, ptrOptions);
-            mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
-        }
-        else if (!board.isVirtualBoard()) {
+        if (board.isPopularBoard() || !board.isVirtualBoard()) {
             mPullToRefreshAttacher = new PullToRefreshAttacher(this);
             mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
         }
@@ -389,13 +376,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             board.swapLoadedThreads();
         handleUpdatedThreads();
         invalidateOptionsMenu(); // for correct spinner display
-        /*
-        ChanActivityId activityId = NetworkProfileManager.instance().getActivityId();
-        if (activityId == null || activityId.boardCode == null || !activityId.boardCode.equals(boardCode)) {
-            if (DEBUG) Log.i(TAG, "onResume() activityChange to /" + boardCode + "/");
-            NetworkProfileManager.instance().activityChange(this);
-        }
-        */
         if (NetworkProfileManager.instance().getActivity() != this) {
             if (DEBUG) Log.i(TAG, "onResume() activityChange to /" + boardCode + "/");
             NetworkProfileManager.instance().activityChange(this);
@@ -426,13 +406,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         getLoaderManager().destroyLoader(0);
         closeSearch();
     	handler = null;
-        /*
-        adapter = null;
-        layout = null;
-        absListView = null;
-        cursorLoader = null;
-        menu = null;
-        */
     }
 
     @Override
@@ -443,22 +416,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             getLoaderManager().destroyLoader(0);
 		handler = null;
 	}
-
-    protected View.OnClickListener viewActionListener = new View.OnClickListener(){
-        public void onClick(View view) {
-            String boardCode = (String)view.getTag(R.id.BOARD_CODE);
-            Long threadNo = (Long)view.getTag(R.id.THREAD_NO);
-            Long postNo = (Long)view.getTag(R.id.POST_NO);
-            if (DEBUG) Log.i(TAG, "viewActionListener /" + boardCode + "/" + threadNo + "#p" + postNo);
-            Boolean isImage = (Boolean)view.getTag(R.id.BOARD_GRID_IMAGE);
-            if (threadNo == 0)
-                BoardActivity.startActivity(BoardActivity.this, boardCode, "");
-            else if (isImage)
-                GalleryViewActivity.startAlbumViewActivity(BoardActivity.this, boardCode, threadNo);
-            else
-                ThreadActivity.startActivity(BoardActivity.this, boardCode, threadNo, postNo, "");
-        }
-    };
 
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
@@ -592,7 +549,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void displayBoardRules() {
-        //NetworkProfileManager.instance().getUserStatistics().featureUsed(ChanFeature.BOARD_RULES);
         int boardRulesId = R.raw.global_rules_detail;
         try {
             boardRulesId = R.raw.class.getField("board_" + boardCode + "_rules").getInt(null);
@@ -679,16 +635,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         return super.onPrepareOptionsMenu(menu);
     }
-    /*
-    public void setActionBarTitle() {
-        String title;
-        ChanBoard board = loadBoard();
-        title = (board == null ? "Board" : board.name);
-        if (!board.isVirtualBoard())
-            title += " /" + boardCode + "/";
-        getActionBar().setTitle(title);
-    }
-    */
     protected ChanBoard loadBoard() {
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board == null) {
@@ -703,28 +649,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             return;
         ChanBoard board = loadBoard();
         StringBuffer msg = new StringBuffer();
-        /*
-        if (board.shouldSwapThreads()) { // auto-update if we have no threads to show, don't display menu
-            if (DEBUG) Log.i(TAG, "swapping threads");
-            board.swapLoadedThreads();
-            refreshLayout.setVisibility(LinearLayout.GONE);
-        } else
-        */
 
         if ((board.newThreads > 0)// || board.updatedThreads > 0)
                 && (query == null || query.isEmpty())) { // display update button
-            if (DEBUG) Log.i(TAG, "displaying new thread refresh bar to user");
-            //if (board.newThreads > 0) {
-                msg.append("" + board.newThreads + " new");
-            //}
-            /*
-            if (board.updatedThreads > 0) {
-                if (board.newThreads > 0) {
-                    msg.append(", ");
-                }
-                msg.append("" + board.updatedThreads + " updated");
-            }
-            */
+            msg.append("" + board.newThreads + " new");
             msg.append(" thread");
             if (board.newThreads > 1) { // + board.updatedThreads > 1) {
                 msg.append("s");
@@ -776,15 +704,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     public void refresh(final String refreshMessage) {
         if (DEBUG) Log.i(TAG, "refresh() /" + boardCode + "/ msg=" + refreshMessage);
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        //handleUpdatedThreads();
-        //setActionBarTitle(); // for update time
         invalidateOptionsMenu(); // in case spinner needs to be reset
-        //if (absListView == null || absListView.getCount() < 1)
-        //    createAbsListView();
         if (board == null) {
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         }
-        //if (board.newThreads == 0 && board.updatedThreads == 0 && handler != null) {
         if (handler != null && (board.newThreads == 0 || board.isVirtualBoard())) {
             handler.post(new Runnable() {
                 @Override
@@ -885,7 +808,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected static final int DRAWABLE_ALPHA_DARK = 0xff;
 
     protected void hideBoardTitle() {
-        View boardTitleBar = findViewById(R.id.board_title_bar);
         if (boardTitleBar != null)
             boardTitleBar.setVisibility(View.GONE);
     }
@@ -933,17 +855,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
             long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
             switch (item.getItemId()) {
-                /*
-                case R.id.board_thread_info_menu:
-                    Toast.makeText(BoardActivity.this, "not implemented", Toast.LENGTH_SHORT).show();
-                    return true;
-                case R.id.board_thread_view_menu:
-                    ThreadActivity.startActivity(BoardActivity.this, boardCode, threadNo, 0, "");
-                    return true;
-                case R.id.board_thread_gallery_menu:
-                    GalleryViewActivity.startAlbumViewActivity(BoardActivity.this, boardCode, threadNo);
-                    return true;
-                */
                 case R.id.board_thread_watch_menu:
                     ThreadFragment.addToWatchlist(BoardActivity.this, handler, boardCode, threadNo);
                     return true;
@@ -1017,31 +928,4 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
     };
 
-    protected class PopularHeaderTransformer extends PullToRefreshAttacher.DefaultHeaderTransformer {
-        @Override
-        public void onViewCreated(Activity activity, View headerView) {
-            super.onViewCreated(activity, headerView);
-        }
-
-        @Override
-        public void onReset() {
-            if (boardTitleBar != null)
-                boardTitleBar.setVisibility(View.VISIBLE);
-            super.onReset();
-        }
-
-        @Override
-        public void onPulled(float percentagePulled) {
-            if (boardTitleBar != null)
-                boardTitleBar.setVisibility(View.GONE);
-            super.onPulled(percentagePulled);
-        }
-
-        @Override
-        public void onRefreshStarted() {
-            if (boardTitleBar != null)
-                boardTitleBar.setVisibility(View.VISIBLE);
-            super.onRefreshStarted();
-        }
-    }
 }
