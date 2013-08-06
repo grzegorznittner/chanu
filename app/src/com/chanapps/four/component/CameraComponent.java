@@ -36,7 +36,7 @@ public class CameraComponent {
     public static final int CAMERA_RESULT = 0x19;
 
     private static final String TAG = CameraComponent.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final String PICTURES_DIR = "Pictures";
     private static final String ALBUM_NAME = "Chanu";
     private static final String JPEG_FILE_PREFIX = "Photo_";

@@ -1,12 +1,12 @@
 package com.chanapps.four.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.SearchView;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.service.NetworkProfileManager;
@@ -46,6 +46,12 @@ public class SearchActivity extends Activity {
                 return false;
             }
         });
+        ActionBar actionBar = activity.getActionBar();
+        actionBar.setDisplayUseLogoEnabled(true);
+        actionBar.setIcon(R.drawable.app_icon_actionbar);
+        actionBar.setLogo(R.drawable.app_icon_actionbar);
+            //actionBar.setDisplayHomeAsUpEnabled(false);
+            //actionBar.setDisplayShowHomeEnabled(false);
         /*
         int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
         View searchPlate = searchView.findViewById(searchPlateId);
@@ -59,12 +65,14 @@ public class SearchActivity extends Activity {
         super.onCreate(savedInstanceState);
         if (DEBUG) Log.i(TAG, "onCreate query=" + getIntent().getStringExtra(SearchManager.QUERY));
         handleIntent(getIntent());
+        getActionBar().setDisplayUseLogoEnabled(true);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         if (DEBUG) Log.i(TAG, "onNewIntent");
         handleIntent(intent);
+        getActionBar().setDisplayUseLogoEnabled(true);
     }
 
     protected void handleIntent(Intent intent) {

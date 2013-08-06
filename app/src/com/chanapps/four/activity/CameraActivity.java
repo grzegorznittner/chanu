@@ -41,7 +41,7 @@ public class CameraActivity extends Activity {
 
     public static final String TAG = CameraActivity.class.getSimpleName();
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static final int MAX_PICTURE_SIZE_PX = 1000;
 

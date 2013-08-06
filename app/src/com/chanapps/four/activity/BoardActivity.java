@@ -5,7 +5,6 @@ import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.List;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
@@ -792,6 +791,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     @Override
     public boolean onSearchRequested() {
         if (DEBUG) Log.i(TAG, "onSearchRequested /" + boardCode + "/ q=" + query);
+        getActionBar().setDisplayUseLogoEnabled(true);
         return super.onSearchRequested();
     }
 

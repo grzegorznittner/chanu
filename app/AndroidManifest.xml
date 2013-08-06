@@ -100,8 +100,6 @@
         </activity>
 
         <activity android:name=".ThreadActivity" android:label="@string/thread_activity"
-                  android:logo="@drawable/app_icon_actionbar"
-                  android:icon="@drawable/app_icon_actionbar"
                   android:launchMode="standard"
                 >
             <intent-filter>
