@@ -11,6 +11,7 @@ import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.media.AudioManager;
+import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -40,7 +41,9 @@ public class CameraActivity extends Activity {
 
     public static final String TAG = CameraActivity.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
+
+    private static final int MAX_PICTURE_SIZE_PX = 1000;
 
     private Camera mCamera;
     private CameraPreview mPreview;
@@ -108,11 +111,38 @@ public class CameraActivity extends Activity {
                 else {
                     if (DEBUG) Log.i(TAG, "Took picture:" + pictureFile.getAbsolutePath());
 
-                    Bitmap b = createPortraitBitmap(data);
+                    ExifInterface exif = new ExifInterface(pictureFile.getAbsolutePath());
+                    String orientation = "" + exif.getAttribute(ExifInterface.TAG_ORIENTATION); // camera orientation
+                    //exif.setAttribute(ExifInterface.TAG_ORIENTATION, "0"); // prevent post-upload rotation of image
+                    //exif.saveAttributes();
+
+                    Bitmap b = createBitmap(data, orientation);
                     FileOutputStream fos = new FileOutputStream(pictureFile);
                     b.compress(Bitmap.CompressFormat.JPEG, 85, fos);
                     fos.close();
                     b.recycle();
+
+                    exif = new ExifInterface(pictureFile.getAbsolutePath());
+                    orientation = "" + exif.getAttribute(ExifInterface.TAG_ORIENTATION); // camera orientation
+                    if (DEBUG) Log.i(TAG, "pictureCallback post-save orientation=" + orientation);
+
+                    //values.put(MediaStore.Images.Media.TITLE, fileName);
+                    //values.put(MediaStore.Images.Media.DESCRIPTION, getString(R.string.post_reply_camera_capture));
+                    //values.put(MediaStore.Images.Media.MIME_TYPE, contentType);
+                    //values.put(MediaStore.Images.Media.ORIENTATION, "0");
+                    //Uri imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+                    Uri imageUri = Uri.fromFile(pictureFile);
+                    String[] fields = { MediaStore.Images.Media._ID, MediaStore.Images.ImageColumns.ORIENTATION };
+                    Cursor cursor = getContentResolver().query(imageUri, fields, null, null, null);
+                    if (cursor != null) {
+                        if (cursor.moveToFirst()) {
+                        String mediaOrientation = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.ORIENTATION));
+                        if (mediaOrientation != null)
+                            if (DEBUG) Log.i(TAG, "pictureCallback mediaStore orientation=" + mediaOrientation);
+                        }
+                        cursor.close();
+                    }
 
                     String url = Uri.fromFile(pictureFile).toString();
                     Intent intent = new Intent();
@@ -140,45 +170,82 @@ public class CameraActivity extends Activity {
         HEIGHT
     }
 
-    private Bitmap createPortraitBitmap(byte[] imageData) throws FileNotFoundException {
+    private int rotationAngle(String orientString) {
+        int orientation = orientString == null ? ExifInterface.ORIENTATION_NORMAL : Integer.parseInt(orientString);
+        int rotationAngle;
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                rotationAngle = 90;
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                rotationAngle = 180;
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                rotationAngle = 270;
+                break;
+            default:
+                rotationAngle = 0;
+        }
+        return rotationAngle;
+    }
 
-        // measure the scale factor limiting to 1000px max size
+    private int inSampleSize(byte[] imageData, int maxSizePx) { // scale to prevent excessively large images
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        Bitmap throwaway = BitmapFactory.decodeByteArray(imageData, 0, imageData.length, options); // this just sets options, returns null
+        BitmapFactory.decodeByteArray(imageData, 0, imageData.length, options); // this just sets options, returns null
         MaxAxis maxAxis = (options.outWidth >= options.outHeight) ? MaxAxis.WIDTH : MaxAxis.HEIGHT;
-        if (DEBUG) Log.i(TAG, "Initial size: " + options.outWidth + "x" + options.outHeight);
+        if (DEBUG) Log.i(TAG, "inSampleSize() input size=" + options.outWidth + "x" + options.outHeight);
         int scale = 1;
-        int maxPx = 1000;
-        if (DEBUG) Log.i(TAG, "Max px:" + maxPx);
         switch (maxAxis) {
             case WIDTH:
-                while (options.outWidth / scale > maxPx)
+                while (options.outWidth / scale > maxSizePx)
                     scale *= 2;
                 break;
             case HEIGHT:
-                while (options.outHeight / scale > maxPx)
+                while (options.outHeight / scale > maxSizePx)
                     scale *= 2;
                 break;
         }
+        if (DEBUG) Log.i(TAG, "inSampleSize() output scale=" + scale);
+        return scale;
+    }
 
-        // second pass actually scale the preview image
+    private int adjustRotation(Bitmap image, int inputAngle) { // overcome bug in android camera orientation
+        return inputAngle;
+    }
+
+    private Bitmap rotateBitmap(Bitmap image, int rotationAngle) { // destructively rotate bitmap
+        if (DEBUG) Log.i(TAG, "rotateBitmap() input size=" + image.getWidth() + "x" + image.getHeight()
+                + " angle=" + rotationAngle);
+        int w = image.getWidth();
+        int h = image.getHeight();
+        Matrix m = new Matrix();
+        m.postRotate(rotationAngle);
+        Bitmap rotatedBMP = Bitmap.createBitmap(image, 0, 0, w, h, m, true);
+        image.recycle();
+        image = rotatedBMP;
+        if (DEBUG) Log.i(TAG, "rotateBitmap() output size=" + image.getWidth() + "x" + image.getHeight());
+        return image;
+    }
+
+    private Bitmap createBitmap(byte[] imageData, String orientString) throws FileNotFoundException {
+        if (DEBUG) Log.i(TAG, "createBitmap() input orientation=" + orientString);
+
+        // scale the image
+        int scale = inSampleSize(imageData, MAX_PICTURE_SIZE_PX);
         BitmapFactory.Options scaleOptions = new BitmapFactory.Options();
         scaleOptions.inSampleSize = scale;
         Bitmap image = BitmapFactory.decodeByteArray(imageData, 0, imageData.length, scaleOptions);
+        if (DEBUG) Log.i(TAG, "createBitmap() scale=" + scale);
 
-        if (maxAxis == MaxAxis.WIDTH) { // shot in landscape
-            if (DEBUG) Log.i(TAG, "Pre-rotate size: " + image.getWidth() + "x" + image.getHeight());
-            int w = image.getWidth();
-            int h = image.getHeight();
-            Matrix m = new Matrix();
-            m.postRotate(90);
-            Bitmap rotatedBMP = Bitmap.createBitmap(image, 0, 0, w, h, m, true);
-            image.recycle();
-            image = rotatedBMP;
-        }
+        // third pass rotate the image if necessary
+        int inputAngle = rotationAngle(orientString);
+        int rotationAngle = adjustRotation(image, inputAngle);
+        if (rotationAngle != 0)
+            image = rotateBitmap(image, rotationAngle);
+        if (DEBUG) Log.i(TAG, "createBitmap() angle=" + rotationAngle);
 
-        if (DEBUG) Log.i(TAG, "Final size: " + image.getWidth() + "x" + image.getHeight());
+        if (DEBUG) Log.i(TAG, "createBitmap() output size=" + image.getWidth() + "x" + image.getHeight());
         return image;
     }
 

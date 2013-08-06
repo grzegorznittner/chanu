@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.ThemeSelector;
 
 /**
 * Created with IntelliJ IDEA.
@@ -50,8 +51,11 @@ public abstract class ListDialogFragment extends DialogFragment {
             TextView titleView = (TextView)layout.findViewById(R.id.title);
             titleView.setText(title);
             items = (ListView)layout.findViewById(R.id.items);
+            int itemLayoutId = ThemeSelector.instance(getActivity()).isDark()
+                    ? R.layout.items_dialog_item_dark
+                    : R.layout.items_dialog_item;
             adapter = new ArrayAdapter(getActivity().getApplicationContext(),
-                    R.layout.items_dialog_item, array);
+                    itemLayoutId, array);
             items.setAdapter(adapter);
             if (listener != null)
                 items.setOnItemClickListener(listener);

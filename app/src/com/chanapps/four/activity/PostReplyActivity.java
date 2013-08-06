@@ -1,9 +1,6 @@
 package com.chanapps.four.activity;
 
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -22,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
 import android.widget.*;
 import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.CameraComponent;
 import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
@@ -48,6 +46,7 @@ import org.apache.http.protocol.HttpContext;
 
 import java.io.*;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class PostReplyActivity extends FragmentActivity implements ChanIdentifiedActivity {
@@ -81,7 +80,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     public static final int POST_FINISHED = 0x01;
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static final int PASSWORD_MAX = 100000000;
     private static final Random randomGenerator = new Random();
@@ -89,8 +88,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     protected boolean exitingOnSuccess = false;
 
-    private static final int IMAGE_CAPTURE = 0x10;
+    private static final int IMAGE_CAPTURE = CameraComponent.CAMERA_RESULT;
     private static final int IMAGE_GALLERY = 0x11;
+    //private static final String ANDROID_IMAGE_CAPTURE = "android.media.action.IMAGE_CAPTURE";
 
     private LinearLayout wrapperLayout;
 
@@ -120,7 +120,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private RelativeLayout previewFrame;
     private ImageView imagePreview;
     private ProgressBar previewProgress;
-    TextView.OnEditorActionListener fastSend;
+    private TextView.OnEditorActionListener fastSend;
+    private CameraComponent camera;
 
     protected Uri imageUri;
     protected String boardCode = null;
@@ -155,6 +156,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
+        camera = new CameraComponent(getApplicationContext(), imageUri);
         if (boardCode == null || boardCode.isEmpty())
             boardCode = ChanBoard.DEFAULT_BOARD_CODE;
         setViews();
@@ -409,7 +411,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
             cameraButton.setVisibility(View.VISIBLE);
             cameraButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    startCamera();
+                    imageUri = camera.startCamera(PostReplyActivity.this);
                 }
             });
         }
@@ -686,44 +688,47 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-        if (DEBUG) Log.i(TAG, "onActivityResult for code=" + requestCode + " data=" + intent);
-        String msg;
-        try {
-            if (requestCode == IMAGE_CAPTURE) {
-                if (resultCode == RESULT_OK) {
-                    msg = getString(R.string.post_reply_added_image);
-                    imageUri = Uri.parse(intent.getStringExtra(CameraActivity.CAMERA_IMAGE_URL));
-                    //ensurePrefs().edit().putString(POST_REPLY_IMAGE_URL, imageUri.toString()).commit();
-                    if (DEBUG) Log.i(TAG, "Got camera result for activity url=" + imageUri);
-                }
-                else {
-                    msg = getString(R.string.post_reply_no_load_camera_image);
-                    if (DEBUG) Log.i(TAG, msg);
-                }
-            }
-            else if (requestCode == IMAGE_GALLERY) {
-                if (resultCode == RESULT_OK && intent != null && intent.getData() != null) {
-                    msg = getString(R.string.post_reply_added_image);
-                    imageUri = intent.getData();
-                    //ensurePrefs().edit().putString(POST_REPLY_IMAGE_URL, imageUri.toString()).commit();
-                    if (DEBUG) Log.i(TAG, "Got gallery result for activity imageUri=" + imageUri);
-                }
-                else {
-                    msg = getString(R.string.post_reply_no_load_gallery_image);
-                    if (DEBUG) Log.i(TAG, msg);
-                }
-            }
-            else {
-                msg = getString(R.string.post_reply_no_load_image);
-                Log.e(TAG, msg);
-            }
+        int fragmentIndex = (requestCode >>> 16);
+        if (fragmentIndex != 0) { // fragment bug
+            super.onActivityResult(requestCode, resultCode, intent);
+            return;
         }
-        catch (Exception e) {
-            msg = getString(R.string.post_reply_no_load_image);
-            Log.e(TAG, msg, e);
+        if (DEBUG) Log.i(TAG, "onActivityResult for requestCode=" + requestCode
+                + " intent=" + intent
+                + " intent.getData()=" + (intent == null ? "null" : intent.getData())
+        );
+        if (resultCode != RESULT_OK) {
+            Log.e(TAG, "onActivityResult error resultCode=" + resultCode + " intent=" + intent);
+            int errId = requestCode == IMAGE_CAPTURE
+                    ? R.string.post_reply_no_load_camera_image
+                    : R.string.post_reply_no_load_gallery_image;
+            Toast.makeText(this, errId, Toast.LENGTH_SHORT).show();
+            return;
         }
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+        switch (requestCode) {
+            case IMAGE_CAPTURE:
+                //imageUri = intent.hasExtra()
+                //imageUri = Uri.parse(intent.getStringExtra(CameraActivity.CAMERA_IMAGE_URL));
+                if (DEBUG) Log.i(TAG, "Got camera result for activity url=" + imageUri);
+                if (imageUri == null) {
+                    Log.e(TAG, "null image uri for camera image");
+                    Toast.makeText(this, R.string.post_reply_no_load_camera_image, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                camera.handleResult();
+                break;
+            case IMAGE_GALLERY:
+                if (DEBUG) Log.i(TAG, "Got gallery result for activity imageUri=" + imageUri);
+                if (intent == null || intent.getData() == null) {
+                    Log.e(TAG, "null image uri for gallery image");
+                    Toast.makeText(this, R.string.post_reply_no_load_gallery_image, Toast.LENGTH_SHORT).show();
+                }
+                imageUri = intent.getData();
+                break;
+            default:
+                Log.e(TAG, "invalid request code for image");
+                Toast.makeText(this, R.string.post_reply_no_load_image, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private enum MaxAxis {
@@ -850,7 +855,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         @Override
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
             previewProgress.setVisibility(View.GONE);
-            Toast.makeText(view.getContext(), R.string.web_image_download_failed, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(view.getContext(), R.string.web_image_download_failed, Toast.LENGTH_SHORT).show();
         }
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
@@ -859,7 +864,7 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         @Override
         public void onLoadingCancelled(String imageUri, View view) {
             previewProgress.setVisibility(View.GONE);
-            Toast.makeText(view.getContext(), R.string.web_image_download_failed, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(view.getContext(), R.string.web_image_download_failed, Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -889,11 +894,6 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
 
     private void sage() {
         emailText.setText("sage"); // 4chan way to post without bumping
-    }
-
-    private void startCamera() {
-        Intent intent = new Intent(this, CameraActivity.class);
-        startActivityForResult(intent, IMAGE_CAPTURE);
     }
 
     private void startGallery() {
