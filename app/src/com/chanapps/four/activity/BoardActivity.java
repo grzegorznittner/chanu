@@ -43,6 +43,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
 	public static final boolean DEBUG = false;
+    protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
+    protected static final int DRAWABLE_ALPHA_DARK = 0xff;
+
     private static WeakReference<BoardActivity> watchlistActivityRef = null;
     private static WeakReference<BoardActivity> favoritesActivityRef = null;
 
@@ -63,6 +66,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected View boardTitleBar;
     protected int gridViewOptions;
     protected PullToRefreshAttacher mPullToRefreshAttacher;
+    protected int checkedPos = -1;
 
     public static void startActivity(Context from, String boardCode, String query) {
         from.startActivity(createIntent(from, boardCode, query));
@@ -295,11 +299,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         FrameLayout contentFrame = (FrameLayout)findViewById(R.id.content_frame);
         if (contentFrame.getChildCount() > 0)
             contentFrame.removeAllViews();
-        int layoutId = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
-                ? R.layout.board_grid_layout_small
-                : (ChanBoard.isVirtualBoard(boardCode)
-                    ? R.layout.board_grid_layout
-                    : R.layout.board_grid_layout_no_title);
+        int layoutId;
+        if ((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0)
+            layoutId = R.layout.board_grid_layout_small;
+        else if (ChanBoard.isVirtualBoard(boardCode) || (query != null && !query.isEmpty()))
+            layoutId = R.layout.board_grid_layout;
+        else
+            layoutId = R.layout.board_grid_layout_no_title;
         layout = getLayoutInflater().inflate(layoutId, null);
         contentFrame.addView(layout);
         int numColumns = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
@@ -447,6 +453,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     || boardCode.equals(ChanBoard.FAVORITES_BOARD_CODE)) {
                 if (data == null || data.getCount() < 1)
                     showEmptyText();
+                else
+                    hideEmptyText();
+            }
+            else if (query != null && !query.isEmpty()) {
+                displaySearchTitle();
+                hideEmptyText();
             }
             else if ((data == null || data.getCount() < 1) && handler != null) {
                 NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
@@ -784,35 +796,45 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void displayBoardTitle() {
+        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+        String title = board == null || board.name == null ? "" : board.name.toLowerCase();
+        int lightIconId = 0;
+        int darkIconId = 0;
+        BoardType type = BoardType.valueOfBoardCode(boardCode);
+        if (type != null) {
+            lightIconId = type.drawableId();
+            darkIconId = type.darkDrawableId();
+        }
+        displayTitleBar(title, lightIconId, darkIconId);
+    }
+
+    protected void displaySearchTitle() {
+        String title = adapter != null && adapter.getCount() > 0 ? "Search Results" : "No Results";
+        displayTitleBar(title, R.drawable.search_light, R.drawable.search);
+    }
+
+    protected void displayTitleBar(String title, int lightIconId, int darkIconId) {
         if (boardTitleBar == null)
             return;
         TextView boardTitle = (TextView)boardTitleBar.findViewById(R.id.board_title_text);
         ImageView boardIcon = (ImageView)boardTitleBar.findViewById(R.id.board_title_icon);
         if (boardTitle == null || boardIcon == null)
             return;
-        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        if (board != null)
-            boardTitle.setText(board.name.toLowerCase());
-        BoardType type = BoardType.valueOfBoardCode(boardCode);
-        if (type != null) {
-            boolean isDark = ThemeSelector.instance(getApplicationContext()).isDark();
-            int drawableId = isDark ? type.drawableId() : type.darkDrawableId();
-            int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
+        boardTitle.setText(title);
+        boolean isDark = ThemeSelector.instance(getApplicationContext()).isDark();
+        int drawableId = isDark ? lightIconId : darkIconId;
+        int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
+        if (drawableId > 0) {
             boardIcon.setImageResource(drawableId);
             boardIcon.setAlpha(alpha);
         }
         boardTitleBar.setVisibility(View.VISIBLE);
     }
 
-    protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
-    protected static final int DRAWABLE_ALPHA_DARK = 0xff;
-
     protected void hideBoardTitle() {
         if (boardTitleBar != null)
             boardTitleBar.setVisibility(View.GONE);
     }
-
-    protected int checkedPos = -1;
 
     protected View.OnClickListener overflowListener = new View.OnClickListener() {
         @Override

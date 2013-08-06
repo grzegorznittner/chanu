@@ -137,11 +137,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             //    matrixCursor.addRow(board.makeThreadAdRow(getContext(), 0));
             //}
 
-            if (!query.isEmpty()) {
-                String title = String.format(context.getString(R.string.board_search_results), "<i>" + query + "</i>");
-                matrixCursor.addRow(ChanThread.makeTitleRow(boardName, title));
-            }
-
             if (DEBUG) Log.i(TAG, "Loading " + board.threads.length + " threads");
             //int adSpace = MINIMUM_AD_SPACING;
             int numQueryMatches = 0;
@@ -179,12 +174,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 */
             }
             if (DEBUG) Log.i(TAG, "Loaded " + i + " threads");
-
-            // no search results marker
-            if (!query.isEmpty() && numQueryMatches == 0) {
-                matrixCursor.addRow(ChanThread.makeTitleRow(boardName,
-                        context.getString(R.string.thread_search_no_results)));
-            }
 
             //addRelatedBoards(matrixCursor, board);
             // always put an ad at the bottom
