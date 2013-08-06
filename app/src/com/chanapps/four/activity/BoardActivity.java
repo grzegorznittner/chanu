@@ -809,8 +809,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void displaySearchTitle() {
-        String title = adapter != null && adapter.getCount() > 0 ? "Search Results" : "No Results";
-        displayTitleBar(title, R.drawable.search_light, R.drawable.search);
+        int title = adapter != null && adapter.getCount() > 0
+                ? R.string.search_results_title
+                : R.string.no_search_results_title;
+        displayTitleBar(getString(title), R.drawable.search, R.drawable.search_light);
     }
 
     protected void displayTitleBar(String title, int lightIconId, int darkIconId) {

@@ -28,6 +28,7 @@ public class SearchActivity extends Activity {
     public static void createSearchView(final Activity activity, MenuItem searchMenuItem) {
         SearchManager searchManager = (SearchManager)activity.getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView)searchMenuItem.getActionView();
+        searchView.setSubmitButtonEnabled(true);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -45,10 +46,12 @@ public class SearchActivity extends Activity {
                 return false;
             }
         });
+        /*
         int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
         View searchPlate = searchView.findViewById(searchPlateId);
         if (searchPlate != null)
             searchPlate.setBackgroundResource(R.drawable.textfield_search_view_holo_dark);
+        */
     }
 
     @Override
