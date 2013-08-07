@@ -57,7 +57,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public static final String BOARD_CODE = "boardCode";
     public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
-    
+
+    protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
+    protected static final int DRAWABLE_ALPHA_DARK = 0xff;
+
     public static final boolean DEBUG = true;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
@@ -83,6 +86,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected int firstVisiblePosition = -1;
     protected int firstVisiblePositionOffset = -1;
     protected PullToRefreshAttacher mPullToRefreshAttacher;
+    protected View boardTitleBar;
+    protected View boardSearchResultsBar;
 
     protected ThreadListener threadListener;
 
@@ -97,7 +102,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         postNo = bundle.getLong(POST_NO);
         query = bundle.getString(SearchManager.QUERY);
         if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + "#p" + postNo + " q=" + query);
-        layout = inflater.inflate(R.layout.thread_list_layout, viewGroup, false);
+        int layoutId = query != null && !query.isEmpty() ? R.layout.thread_list_layout_search : R.layout.thread_list_layout;
+        layout = inflater.inflate(layoutId, viewGroup, false);
         createAbsListView();
         /*
         if (threadNo > 0)
@@ -106,6 +112,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + "#p" + postNo
                     + " no thread found, skipping loader");
         */
+        boardTitleBar = layout.findViewById(R.id.board_title_bar);
+        boardSearchResultsBar = layout.findViewById(R.id.board_search_results_bar);
         return layout;
     }
 
@@ -242,7 +250,11 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         // retry load if maybe data wasn't there yet
         ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
         if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " thread=" + thread);
-        if (ChanThread.threadNeedsRefresh(getActivityContext(), boardCode, threadNo, false)) {
+        if (query != null && !query.isEmpty()) {
+            displaySearchTitle();
+            setProgress(false);
+        }
+        else if (ChanThread.threadNeedsRefresh(getActivityContext(), boardCode, threadNo, false)) {
             if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " trying thread refresh");
             tryFetchThread();
         }
@@ -1202,5 +1214,34 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     startActionModeListener);
         }
     };
+
+    protected void displaySearchTitle() {
+        displayTitleBar(getString(R.string.search_results_title), R.drawable.search, R.drawable.search_light);
+        int resultsId = adapter != null && adapter.getCount() > 0
+                ? R.string.board_search_results
+                : R.string.board_search_no_results;
+        String results = String.format(getString(resultsId), query);
+        TextView searchResultsTextView = (TextView)boardSearchResultsBar.findViewById(R.id.board_search_results_text);
+        searchResultsTextView.setText(results);
+        boardSearchResultsBar.setVisibility(View.VISIBLE);
+    }
+
+    protected void displayTitleBar(String title, int lightIconId, int darkIconId) {
+        if (boardTitleBar == null)
+            return;
+        TextView boardTitle = (TextView)boardTitleBar.findViewById(R.id.board_title_text);
+        ImageView boardIcon = (ImageView)boardTitleBar.findViewById(R.id.board_title_icon);
+        if (boardTitle == null || boardIcon == null)
+            return;
+        boardTitle.setText(title);
+        boolean isDark = ThemeSelector.instance(getActivity().getApplicationContext()).isDark();
+        int drawableId = isDark ? lightIconId : darkIconId;
+        int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
+        if (drawableId > 0) {
+            boardIcon.setImageResource(drawableId);
+            boardIcon.setAlpha(alpha);
+        }
+        boardTitleBar.setVisibility(View.VISIBLE);
+    }
 
 }

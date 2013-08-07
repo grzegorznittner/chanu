@@ -74,10 +74,6 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             if (DEBUG) Log.i(TAG, "Thread closed status for " + boardName + "/" + threadNo + " is closed=" + thread.closed);
             MatrixCursor matrixCursor = ChanPost.buildMatrixCursor();
 
-            if (!query.isEmpty()) {
-                String title = String.format(context.getString(R.string.thread_search_results), "<i>" + query + "</i>");
-                matrixCursor.addRow(ChanPost.makeTitleRow(boardName, title));
-            }
             if (board != null && thread != null && thread.posts != null && thread.posts.length > 0) { // show loading for no thread data
                 loadMatrixCursor(matrixCursor, board, thread);
                 if (DEBUG) Log.i(TAG, "Remaining to load:" + (thread.posts[0].replies - thread.posts.length));
@@ -136,10 +132,6 @@ public class ThreadCursorLoader extends BoardCursorLoader {
             i++;
         }
 
-        // no search results marker
-        if (!query.isEmpty() && numQueryMatches == 0)
-            matrixCursor.addRow(ChanPost.makeTitleRow(boardName, context.getString(R.string.thread_search_no_results)));
-
         /*
         if (!thread.isDead)
             matrixCursor.addRow(ChanPost.makeButtonRow(boardName, context.getString(R.string.reply_short).toUpperCase()));
@@ -163,7 +155,7 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         }
         */
         // put related boards at the bottom
-        if (showRelatedBoards) {
+        if (showRelatedBoards && (query == null || query.isEmpty())) {
             List<ChanBoard> boardRows = board.relatedBoards(context, threadNo);
             if (boardRows.size() > 0) {
                 matrixCursor.addRow(board.makePostRelatedBoardsHeaderRow(context));

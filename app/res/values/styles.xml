@@ -36,7 +36,6 @@
         <item name="android:clipToPadding">false</item>
         <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
         <item name="android:drawSelectorOnTop">true</item>
-        <item name="android:background">?themedCardListBackground</item>
     </style>
 
     <!-- SELECTOR GRID STYLES -->
