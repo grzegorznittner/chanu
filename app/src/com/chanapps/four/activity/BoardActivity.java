@@ -63,6 +63,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected int firstVisiblePosition = -1;
     protected int firstVisiblePositionOffset = -1;
     protected View boardTitleBar;
+    protected View boardSearchResultsBar;
     protected int gridViewOptions;
     protected PullToRefreshAttacher mPullToRefreshAttacher;
     protected int checkedPos = -1;
@@ -162,6 +163,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "createViews /" + boardCode + "/ q=" + query);
 
         boardTitleBar = findViewById(R.id.board_title_bar);
+        boardSearchResultsBar = findViewById(R.id.board_search_results_bar);
         if (ChanBoard.isVirtualBoard(boardCode))
             displayBoardTitle();
         else
@@ -301,7 +303,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         int layoutId;
         if ((gridViewOptions & BoardGridViewer.SMALL_GRID) > 0)
             layoutId = R.layout.board_grid_layout_small;
-        else if (ChanBoard.isVirtualBoard(boardCode) || (query != null && !query.isEmpty()))
+        else if (query != null && !query.isEmpty())
+            layoutId = R.layout.board_grid_layout_search;
+        else if (ChanBoard.isVirtualBoard(boardCode))
             layoutId = R.layout.board_grid_layout;
         else
             layoutId = R.layout.board_grid_layout_no_title;
@@ -759,6 +763,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (v.getId() == R.id.board_refresh_button) {
                 setProgress(true);
                 View refreshLayout = BoardActivity.this.findViewById(R.id.board_refresh_bar);
+                if (refreshLayout == null)
+                    return;
                 refreshLayout.setVisibility(LinearLayout.GONE);
                 ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
                 board.swapLoadedThreads();
@@ -772,6 +778,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             }
             else if (v.getId() == R.id.board_ignore_button) {
                 View refreshLayout = BoardActivity.this.findViewById(R.id.board_refresh_bar);
+                if (refreshLayout == null)
+                    return;
                 refreshLayout.setVisibility(LinearLayout.GONE);
             }
         }
@@ -809,10 +817,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void displaySearchTitle() {
-        int title = adapter != null && adapter.getCount() > 0
-                ? R.string.search_results_title
-                : R.string.no_search_results_title;
-        displayTitleBar(getString(title), R.drawable.search, R.drawable.search_light);
+        displayTitleBar(getString(R.string.search_results_title), R.drawable.search, R.drawable.search_light);
+        int resultsId = adapter != null && adapter.getCount() > 0
+                ? R.string.board_search_results
+                : R.string.board_search_no_results;
+        String results = String.format(getString(resultsId), query);
+        TextView searchResultsTextView = (TextView)boardSearchResultsBar.findViewById(R.id.board_search_results_text);
+        searchResultsTextView.setText(results);
+        boardSearchResultsBar.setVisibility(View.VISIBLE);
     }
 
     protected void displayTitleBar(String title, int lightIconId, int darkIconId) {
@@ -836,6 +848,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected void hideBoardTitle() {
         if (boardTitleBar != null)
             boardTitleBar.setVisibility(View.GONE);
+        if (boardSearchResultsBar != null)
+            boardSearchResultsBar.setVisibility(View.GONE);
     }
 
     protected View.OnClickListener overflowListener = new View.OnClickListener() {

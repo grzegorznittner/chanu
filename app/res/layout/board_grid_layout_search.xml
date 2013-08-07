@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/board_grid_layout"
+        style="@style/BoardGridLayout"
+        >
+
+    <include layout="@layout/board_title_bar"/>
+
+    <include layout="@layout/board_search_results_bar"
+            />
+
+    <GridView
+            android:id="@+id/board_grid_view"
+            style="@style/BoardGridView"
+            android:layout_below="@+id/board_search_results_bar"
+            />
+
+    <TextView
+            android:id="@+id/board_grid_empty_text"
+            style="@style/BoardGridLayoutEmptyText"
+            />
+
+    <!--
+    <ProgressBar
+            android:id="@+id/board_progress_bar"
+            style="@style/BoardProgressBar"
+            />
+
+    <LinearLayout
+            android:id="@+id/board_grid_advert"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal|center_vertical"
+            android:background="#121212"
+                xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+            >
+        <com.google.ads.AdView
+                android:id="@+id/adView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                ads:adUnitId="a150e4b6d4be55e"
+                ads:adSize="BANNER"
+                ads:testDevices="42f758079ab89f7f"
+                ads:loadAdOnCreate="true"/>
+    </LinearLayout>
+        -->
+
+    <include layout="@layout/tutorial_overlay"/>
+
+</RelativeLayout>

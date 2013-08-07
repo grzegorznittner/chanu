@@ -50,14 +50,6 @@ public class SearchActivity extends Activity {
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setIcon(R.drawable.app_icon_actionbar);
         actionBar.setLogo(R.drawable.app_icon_actionbar);
-            //actionBar.setDisplayHomeAsUpEnabled(false);
-            //actionBar.setDisplayShowHomeEnabled(false);
-        /*
-        int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
-        View searchPlate = searchView.findViewById(searchPlateId);
-        if (searchPlate != null)
-            searchPlate.setBackgroundResource(R.drawable.textfield_search_view_holo_dark);
-        */
     }
 
     @Override

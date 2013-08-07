@@ -23,7 +23,7 @@ import com.chanapps.four.data.*;
 public class ThreadCursorLoader extends BoardCursorLoader {
 
     private static final String TAG = ThreadCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     protected SharedPreferences prefs;
     protected long threadNo;

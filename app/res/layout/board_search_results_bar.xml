@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/board_search_results_bar"
+        style="@style/BoardTitleBar"
+        android:layout_below="@+id/board_title_bar"
+        >
+
+    <TextView
+            android:id="@+id/board_search_results_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textColor="?themedBoardGridTitleTextColor"
+            android:textSize="@dimen/BoardTypeText"
+            android:textIsSelectable="false"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/PaletteLightGray"/>
+
+</RelativeLayout>

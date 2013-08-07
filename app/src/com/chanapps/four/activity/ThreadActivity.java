@@ -49,7 +49,7 @@ public class ThreadActivity
 {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String BOARD_CODE = "boardCode";
     public static final String THREAD_NO = "threadNo";
@@ -140,6 +140,7 @@ public class ThreadActivity
     protected void createPager() {
         mAdapter = new ThreadPagerAdapter(getSupportFragmentManager());
         mAdapter.setBoard(board);
+        mAdapter.setQuery(query);
         mPager = (ViewPager)findViewById(R.id.pager);
         mPager.setOffscreenPageLimit(OFFSCREEN_PAGE_LIMIT);
         mPager.setAdapter(mAdapter);
@@ -589,6 +590,7 @@ public class ThreadActivity
     public class ThreadPagerAdapter extends FragmentStatePagerAdapter {
         protected String boardCode;
         protected ChanBoard board;
+        protected String query;
         protected int count;
         protected Map<Integer,WeakReference<ThreadFragment>> fragments
                 = new HashMap<Integer, WeakReference<ThreadFragment>>();
@@ -602,6 +604,9 @@ public class ThreadActivity
             this.board = board;
             this.count = board.threads.length;
             notifyDataSetChanged();
+        }
+        public void setQuery(String query) {
+            this.query = query;
         }
         @Override
         public void notifyDataSetChanged() {
@@ -630,7 +635,7 @@ public class ThreadActivity
                     && threadNo == ThreadActivity.this.threadNo)
                     ? ThreadActivity.this.postNo
                     : -1;
-            String query = "";
+            String query = this.query;
             // make fragment
             ThreadFragment fragment = new ThreadFragment();
             Bundle bundle = new Bundle();

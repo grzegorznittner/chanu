@@ -30,12 +30,12 @@
     <string name="board_search">Search</string>
     <string name="thread_search">Search</string>
     <string name="search_title">Search</string>
-    <string name="thread_search_results">MATCHING POSTS FOR %1$s</string>
-    <string name="thread_search_no_results">&lt;i&gt;no matches&lt;/i&gt;</string>
     <string name="search_hint">Enter text</string>
     <string name="search_results_title">Search Results</string>
-    <string name="no_search_results_title">No Results</string>
-    <string name="board_search_results">MATCHING THREADS FOR %1$s</string>
+    <string name="board_search_results">Threads matching \"%1$s\"</string>
+    <string name="board_search_no_results">No threads matching \"%1$s\"</string>
+    <string name="thread_search_results">Posts matching \"%1$s\"</string>
+    <string name="thread_search_no_results">No posts matching \"%1$s\"</string>
     <string name="board_related_boards_title">Related Boards</string>
     <string name="board_related_boards_desc">Boards having similar topics to /%1$s/</string>
 
