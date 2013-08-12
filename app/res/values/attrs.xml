@@ -51,5 +51,6 @@
     <attr name="themedLargeCardBackground" format="reference|color"/>
     <attr name="themedSmallCardBackground" format="reference|color"/>
     <attr name="themedStubImageBackgroundColor" format="reference|color"/>
+    <attr name="themedHelpIcon" format="reference"/>
 
 </resources>

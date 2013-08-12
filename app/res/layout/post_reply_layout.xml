@@ -5,7 +5,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:scrollbars="vertical">
+        android:scrollbars="vertical"
+        android:background="?themedCardListBackground"
+        >
 
     <LinearLayout
             android:id="@+id/post_reply_wrapper"
@@ -204,11 +206,28 @@
                 >
         </EditText>
 
-        <TextView
-                style="@style/PostReplyEditText"
-                android:layout_marginBottom="0dp"
-                android:text="Password">
-        </TextView>
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+            <TextView
+                    android:id="@+id/password_label"
+                    style="@style/PostReplyEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginRight="0dp"
+                    android:text="@string/post_reply_password_text"/>
+            <ImageButton
+                    android:id="@+id/password_help_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/password_label"
+                    android:hint="@string/post_reply_password_info_hint"
+                    android:src="?themedHelpIcon"
+                    android:background="@drawable/board_grid_selector_bg"
+                    />
+        </RelativeLayout>
 
         <EditText
                 android:id="@+id/post_reply_password"
@@ -218,6 +237,11 @@
                 android:maxLength="8"
                 >
         </EditText>
+
+        <Button
+                android:id="@+id/done"
+                style="@style/WidgetConfigureOkButton"
+                />
 
     </LinearLayout>
 

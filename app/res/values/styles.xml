@@ -1136,6 +1136,7 @@
         <item name="android:layout_marginBottom">@dimen/PostReplyEditText_layout_marginBottom</item>
         <item name="android:scrollbars">vertical</item>
         <item name="android:gravity">top|left</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
         <item name="android:imeOptions">actionSend</item>
         <item name="android:imeActionLabel">@string/post_reply_send</item>
     </style>
@@ -1283,10 +1284,10 @@
         <item name="android:paddingTop">@dimen/WidgetConfigureOkButton_paddingTop</item>
         <item name="android:paddingBottom">@dimen/WidgetConfigureOkButton_paddingBottom</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/widget_configure_btn_gradient_bg</item>
+        <item name="android:background">?themedCardSubjectTextColor</item>
         <item name="android:textSize">@dimen/WidgetConfigureOkButton</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/PaletteWhite</item>
+        <item name="android:textColor">?themedCardListBackground</item>
         <item name="android:text">@string/done</item>
         <!--
                 <item name="android:shadowColor">@color/PaletteBlack</item>

@@ -13,6 +13,7 @@
         <item name="themedLargeCardBackground">@drawable/card_background_large</item>
         <item name="themedSmallCardBackground">@drawable/card_background</item>
         <item name="themedStubImageBackgroundColor">@color/PaletteImagePlaceholder</item>
+        <item name="themedHelpIcon">@drawable/action_about_light</item>
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.Dark">
@@ -28,6 +29,7 @@
         <item name="themedLargeCardBackground">@drawable/dark_card_background_large</item>
         <item name="themedSmallCardBackground">@drawable/dark_card_background</item>
         <item name="themedStubImageBackgroundColor">@color/DarkPaletteImagePlaceholder</item>
+        <item name="themedHelpIcon">@drawable/action_about</item>
     </style>
 
 </resources>

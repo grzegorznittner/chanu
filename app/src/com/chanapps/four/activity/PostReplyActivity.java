@@ -1,5 +1,6 @@
 package com.chanapps.four.activity;
 
+import android.app.AlertDialog;
 import android.content.*;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -21,6 +22,7 @@ import android.widget.*;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.CameraComponent;
 import com.chanapps.four.component.ChanGridSizer;
+import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.*;
@@ -49,7 +51,10 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class PostReplyActivity extends FragmentActivity implements ChanIdentifiedActivity {
+public class PostReplyActivity
+        extends FragmentActivity
+        implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity
+{
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
 
@@ -109,6 +114,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     private ImageView recaptchaLoading;
     private EditText recaptchaText;
     private LoadCaptchaTask loadCaptchaTask;
+    private ImageButton infoButton;
+    private Button doneButton;
 
     private EditText messageText;
     private TextView passStatusText;
@@ -131,6 +138,9 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
     protected String contentType = null;
     protected String orientation = null;
 
+    protected int themeId;
+    protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
+
     public static void startActivity(Context context, String boardCode, long threadNo, long postNo, String replyText) {
         Intent intent = createIntent(context, boardCode, threadNo, postNo, replyText);
         context.startActivity(intent);
@@ -150,6 +160,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         super.onCreate(bundle);
         if (DEBUG) Log.i(TAG, "onCreate bundle=" + bundle);
         exitingOnSuccess = false;
+        broadcastThemeReceiver = new ThemeSelector.ThemeReceiver(this);
+        broadcastThemeReceiver.register();
         setContentView(R.layout.post_reply_layout);
         createViews();
         if (bundle != null)
@@ -162,6 +174,16 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         setViews();
     }
 
+    @Override
+    public int getThemeId() {
+        return themeId;
+    }
+
+    @Override
+    public void setThemeId(int themeId) {
+        this.themeId = themeId;
+    }
+
     protected void createViews() {
         wrapperLayout = (LinearLayout)findViewById(R.id.post_reply_wrapper);
         previewFrame = (RelativeLayout)findViewById(R.id.post_reply_preview_frame);
@@ -170,6 +192,8 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         cameraButton = (ImageButton)findViewById(R.id.post_reply_camera_button);
         pictureButton = (ImageButton)findViewById(R.id.post_reply_picture_button);
         webButton = (ImageButton)findViewById(R.id.post_reply_web_button);
+        infoButton = (ImageButton)findViewById(R.id.password_help_icon);
+        doneButton = (Button)findViewById(R.id.done);
         deleteButton = (ImageButton)findViewById(R.id.post_reply_delete_button);
         bumpButton = (ImageButton)findViewById(R.id.post_reply_bump_button);
         sageButton = (ImageButton)findViewById(R.id.post_reply_sage_button);
@@ -194,6 +218,18 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         recaptchaFrame = (FrameLayout)findViewById(R.id.post_reply_recaptcha_frame);
         recaptchaText = (EditText)findViewById(R.id.post_reply_recaptcha_response);
         recaptchaText.setOnEditorActionListener(fastSend);
+        doneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validateAndSendReply();
+            }
+        });
+        infoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showInfoFragment();
+            }
+        });
 
         setupCameraButton();
         pictureButton.setOnClickListener(new View.OnClickListener() {
@@ -390,6 +426,11 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         });
     }
 
+    private void showInfoFragment() {
+        (new PasswordInfoDialogFragment()).show(getSupportFragmentManager(), PasswordInfoDialogFragment.TAG);
+
+    }
+
     private void showPassFragment(DialogInterface.OnDismissListener dismissListener) {
         closeKeyboard();
         PassSettingsFragment fragment = new PassSettingsFragment();
@@ -565,6 +606,12 @@ public class PostReplyActivity extends FragmentActivity implements ChanIdentifie
         handler = null;
         if (!exitingOnSuccess)
             saveBundleToPrefs(saveStateToBundle(new Bundle()));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        broadcastThemeReceiver.unregister();
     }
 
     protected void saveUserFieldsToPrefs() {
