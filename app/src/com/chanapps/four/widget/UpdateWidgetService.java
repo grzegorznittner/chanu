@@ -228,7 +228,7 @@ public class UpdateWidgetService extends RemoteViewsService {
         }
 
         private PendingIntent makeHomeIntent() {
-            Intent intent = BoardActivity.createIntent(context, ChanBoard.META_BOARD_CODE, "");
+            Intent intent = BoardActivity.createIntent(context, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
             intent.putExtra(ActivityDispatcher.IGNORE_DISPATCH, true);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             int uniqueId = (100 * widgetConf.appWidgetId) + 1;

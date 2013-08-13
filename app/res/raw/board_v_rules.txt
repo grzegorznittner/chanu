@@ -1,9 +1,0 @@
-<h3>/v/ - Video Games</h3>
-
-<p>1. All posts should pertain to video games, their consoles, and video game culture.  Threads should remain on topic and stay in theme with the board.  Don't post off-topic garbage.</p>
-<p>2. Flaming/flagrant "fanboyism"/etc. will not be tolerated.</p>
-<p>3. Threads should not devolve into flamewars. Inciting or encouraging such activity will not be tolerated.</p>
-<p>4. Please refrain from reposting. If possible, try to skim the board for threads pertaining to your topics/info that may have already been posted.</p>
-<p>5. Game help and long-term discussion threads should be posted to the <a href="http://dis.4chan.org/games/">http://dis.4chan.org/games/</a> or <a href="http://boards.4chan.org/vg/">http://boards.4chan.org/vg/</a> boards.</p>
-<p>6. "Generals"&mdash;long-term, recurring threads about a specific game&mdash;should be posted in <a href="http://boards.4chan.org/vg/">http://boards.4chan.org/vg/</a> . This is not to say threads about specific games cannot be created on /v/, just that long-term, recurring threads belong in /vg/.</p>
-

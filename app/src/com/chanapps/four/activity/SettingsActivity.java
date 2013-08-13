@@ -10,7 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.chanapps.four.component.ActivityDispatcher;
-import com.chanapps.four.component.RawResourceDialog;
+import com.chanapps.four.component.StringResourceDialog;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;
@@ -131,12 +131,14 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                BoardActivity.startActivity(this, ChanBoard.META_BOARD_CODE, "");
+                BoardActivity.startActivity(this, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
                 return true;
             case R.id.global_rules_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this,
-                        R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
-                rawResourceDialog.show();
+                (new StringResourceDialog(this,
+                        R.layout.board_rules_dialog,
+                        R.string.global_rules_header,
+                        R.string.global_rules_detail))
+                        .show();
                 return true;
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(null);

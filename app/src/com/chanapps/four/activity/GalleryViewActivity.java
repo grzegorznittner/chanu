@@ -396,7 +396,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     		break;
     	case OFFLINE_ALBUMSET_VIEW:
             if (boardCode == null || boardCode.isEmpty())
-                boardCode = ChanBoard.META_BOARD_CODE;
+                boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
     		intent = BoardActivity.createIntent(this, boardCode, "");
     		intent.putExtra(ActivityDispatcher.IGNORE_DISPATCH, true);
             break;

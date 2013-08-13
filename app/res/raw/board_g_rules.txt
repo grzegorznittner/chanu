@@ -1,7 +1,0 @@
-<h3>/g/ - Technology</h3>
-
-<p>1. Images depicting the technology of past, present, and future are all welcome here.</p>
-<p>2. Support threads are allowed, but discouraged. Please consult a search engine before making such threads. "Obvious advice" threads may be removed at the discretion of the staff.</p>
-<p>3. Check out the boards at <a href="http://dis.4chan.org/comp/">http://dis.4chan.org/comp/</a> , <a href="http://dis.4chan.org/tech/">http://http://dis.4chan.org/tech/</a> , and <a href="http://dis.4chan.org/prog/">http://dis.4chan.org/prog/</a> as discussion-oriented alternatives to this imageboard.</p>
-<p>You may use [code] tags to highlight syntax and preserve whitespace. To use them, just wrap your code snippets [code]like this[/code].</p>
-

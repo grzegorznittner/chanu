@@ -135,7 +135,7 @@ public class ClearCacheDialogFragment extends DialogFragment {
         }
 
         private Notification makeNotification(String contentText) {
-            Intent intent = BoardActivity.createIntent(context, ChanBoard.META_BOARD_CODE, "");
+            Intent intent = BoardActivity.createIntent(context, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             Notification notification = new NotificationCompat.Builder(context)

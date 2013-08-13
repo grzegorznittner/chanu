@@ -941,4 +941,764 @@
     <string name="board_desc_y">Homosexual anime</string>
     <string name="categories" value="Categories"/>
 
+    <!-- rules dialog strings -->
+
+    <string name="board_rules_header">Board Rules</string>
+
+    <string name="global_rules_header">Global Rules</string>
+    <string name="global_rules_detail">
+        <![CDATA[
+        <p>1. Do not upload, post, discuss, request, or link to, anything that violates local or United States law. This will be severely punished and strictly enforced.</p>
+        <p>2. If you are under the age of 18, or it is illegal for you to view the materials contained on this website, discontinue browsing immediately.</p>
+        <p>3. Do not post the following outside of /b/: Trolls, flames, racism, off-topic replies, uncalled for catchphrases, macro image replies, indecipherable text (example: "lol u tk him 2da bar|?"), anthropomorphic ("furry"), grotesque ("guro"), post number GETs ("dubs"), or loli/shota pornography.</p>
+        <p>4. The posting of personal information or calls to invasion is prohibited.</p>
+        <p>5. All boards that default to the Yotsuba B or Burichan (blue) theme are to be considered "work safe." Violators may be temporarily banned and their posts removed. Note: Spoilered pornography or other not safe for work content is NOT allowed.</p>
+        <p>6. The quality of posts is extremely important to this community. Contributors are encouraged to provide high-quality images and informative comments.</p>
+        <p>7. Submitting false reports or otherwise abusing the report system will result in a ban of indeterminate length. Replying to a thread stating that you\'ve reported it or another post is also disallowed - please do not announce your reports.</p>
+        <p>8. Complaining about 4chan (its policies, moderation, etc.) on the imageboards can result in post deletion and banishment. The administrator faq at <a href="http://4chan.org/faq#whoadmin">http://4chan.org/faq#whoadmin</a> will address your questions, comments, complaints, and concerns via e-mail. Constructive criticism and feedback should be posted to <a href="http://boards.4chan.org/q/">http://boards.4chan.org/q/</a>.</p>
+        <p>9. Ban evasion will result in permanent bans - no exceptions. Instead, wait and appeal it at <a href="http://4chan.org/faq#banappeal">http://4chan.org/faq#banappeal</a></p>
+        <p>10. No spamming or flooding of any kind.</p>
+        <p>11. Advertising (all forms) is also not welcome - this includes any type of referral linking, "offers", stream threads, etc.</p>
+        <p>12. Impersonating the 4chan administrator, moderators, or janitors is strictly forbidden.</p>
+        <p>13. Do not use avatars or attach signatures to your posts.</p>
+        <p>14. The use of scrapers, bots, or other automated posting or downloading scripts is prohibited. Users may not post from proxies or Tor exit nodes.</p>
+        <p>15. All pony/brony threads, images, and avatars belong on the <a href="http://boards.4chan.org/mlp/">http://boards.4chan.org/mlp/</a> board.</p>
+        <p>16. All requests belong on the requests board at <a href="http://boards.4chan.org/r/">http://boards.4chan.org/r/</a> unless otherwise noted.</p>
+        <p>17. Remember: The use of 4chan is a privilege, not a right. The 4chan staff reserves the right to revoke access and remove content for any reason without notice.</p>
+        <p>Global rules apply to all boards unless otherwise noted.</p>
+        ]]>
+    </string>
+
+<string name="board_3_rules">
+<![CDATA[
+<h3>/3/ - 3DCG</h3>
+<p>Images and discussion should relate to 3D modeling and imagery.</p>
+<p>Remember: This is a worksafe board! No adult content is allowed.</p>
+]]>
+</string>
+
+
+<string name="board_a_rules">
+<![CDATA[
+<h3>/a/ - Anime &amp; Manga</h3>
+<p>1. All images and resulting discussion should pertain to anime or manga. For long-term series discussion, please refer to the <a href="http://dis.4chan.org/anime/">http://dis.4chan.org/anime/</a> board.</p>
+<p>2. The use of spoiler tags is highly recommended. To spoilerize text, enclose it like so: [spoiler]spoiled text[/spoiler]. In addition, images may be spoilerized by checking the "[Spoiler Image?]" box on the submission form.</p>
+<p>3. Purposeful spoiling of a series may result in post deletion and temporary ban.</p>
+<p>4. The discussion of "live action" television shows is permitted so long as they are distinctly rooted in, or based off of an anime or manga series.</p>
+<p>5. Japanese visual novels should be posted in <a href="http://boards.4chan.org/jp/">http://boards.4chan.org/jp/</a> , and Western on <a href="http://boards.4chan.org/vg/">http://boards.4chan.org/vg/</a> .</p>
+
+]]>
+</string>
+
+
+<string name="board_adv_rules">
+<![CDATA[
+<h3>/adv/ - Advice</h3>
+
+<p>1. All advice threads welcome. Offering or requesting is allowed.</p>
+<p>2. This is the destination for <strong>all</strong> questions regarding specific personal problems.</p>
+<p>3. All threads are expected to be constructive in nature; BAWWWing and venting is discouraged.</p>
+<p>4. No hookup or camwhore threads! Take that to /soc/.</p>
+
+]]>
+</string>
+
+
+<string name="board_an_rules">
+<![CDATA[
+<h3>/an/ - Animals &amp; Nature</h3>
+
+<p>1. All images of animals and nature are welcome.</p>
+<p>2. Posting images depicting animal cruelty is strictly forbidden.</p>
+
+]]>
+</string>
+
+
+<string name="board_asp_rules">
+<![CDATA[
+<h3>/asp/ - Alternative Sports</h3>
+<p>1. This board is for discussion of sports other than the major professional sports. This includes topics such as skydiving, surfing, skateboarding, rock-climing, bungee-jumping, BMX, wrestling, paintball and other "extreme" sports.</p>
+<p>2. Discussions about professional sports teams, leagues, and athletes should be posted to /sp/. Discussions about eSports should be posted to /vg/.</p>
+]]>
+</string>
+
+
+<string name="board_b_rules">
+<![CDATA[
+<h3>/b/ - Random</h3>
+
+<p>1. ZOMG NONE!!!1*</p>
+<p>2. Global rules 1, 2, 4, 7, 9, 10, 11, 13, 14, and 15 are enforced.</p>
+
+<p><strong><em>Note: "ZOMG NONE!!!1" applies to moderators as well.</em></strong></p>
+
+]]>
+</string>
+
+
+<string name="board_c_rules">
+<![CDATA[
+<h3>/c/ - Anime/Cute</h3>
+
+<p>1. Images should be cute ("moe") in nature.</p>
+<p>2. <em>Ecchi</em> belongs on its respective board. Males belong on the <em>cute/male</em> board.</p>
+<p>3. Heterosexual couples are allowed.</p>
+
+]]>
+</string>
+
+
+<string name="board_cgl_rules">
+<![CDATA[
+<h3>/cgl/ - Cosplay &amp; EGL</h3>
+
+<p>1. Pictures depicting those in costume play ("cosplay") and elegant gothic lolita ("EGL") dress are welcome.</p>
+<p>2. Don\'t bring community drama into this board. Singling out individual cosplayers and trolling them will not be tolerated.</p>
+<p>3. J-fashion is allowed. Models can be of any ethnicity, but the fashion should be of Japanese origin.</p>
+<p>4. "What Are You Wearing Today" threads should be cosplay/EGL/J-fashion focused. General fashion threads should be posted to /fa/.</p>
+<p>5. Health threads belong on /adv/ or /fit/.</p>
+
+]]>
+</string>
+
+
+<string name="board_ck_rules">
+<![CDATA[
+<h3>/ck/ - Food &amp; Cooking</h3>
+
+<p>1. Images and discussion should relate to food and cooking.</p>
+<p>2. Recipes are welcome! Feel free to talk about your favorite dishes and discuss past cooking experiences.</p>
+
+]]>
+</string>
+
+
+<string name="board_cm_rules">
+<![CDATA[
+<h3>/cm/ - Cute/Male</h3>
+
+<p>1. Images should depict animated males and be cute ("moe") in nature. Shounen-ai images are permitted.</p>
+<p>2. <em>Yaoi</em> belongs on its own respective board. Couples belong on the <em>anime/cute</em> board.</p>
+<p>3. This board is for animated content only. Images depicting "real" people will be removed.</p>
+
+
+]]>
+</string>
+
+
+<string name="board_co_rules">
+<![CDATA[
+<h3>/co/ - Comics &amp; Cartoons</h3>
+
+<p>1. Images and discussion should pertain to media of Western origin.</p>
+<p>2. Spoiler tag use is enforced. Don\'t know how to use spoiler tags?  Read about spoilers at <a href="http://4chan.org/faq#spoiler">http://4chan.org/faq#spoiler</a> .</p>
+
+]]>
+</string>
+
+
+<string name="board_d_rules">
+<![CDATA[
+<h3>/d/ - Hentai/Alternative</h3>
+
+<p>1. "Alternative" images including: futanari, bondage, tentacles, etc. are welcome. Caveats below.</p>
+<p>2. Images depicting bestiality, guro, scat, or generally seen to be "extreme" in nature are not to be uploaded.</p>
+
+]]>
+</string>
+
+
+<string name="board_diy_rules">
+<![CDATA[
+<h3>/diy/ - Do-It-Yourself</h3>
+
+<p>1. MAKERS GONNA MAKE!</p>
+<p>2. Do not post instructions for how to make weapons or any device that might bring harm to a person. Think "Instructables" and "Make Magazine" <em>not</em> "Anarchist\'s Cookbook."</p>
+
+]]>
+</string>
+
+
+<string name="board_e_rules">
+<![CDATA[
+<h3>/e/ - Ecchi</h3>
+
+<p>1. Only softcore nudity is permitted. Hardcore images should remain on the <em>hentai</em> board.</p>
+<p>2. Ecchi material is suggestive and often times cute, however, it should not be mistaken for the <em>cute</em> board.</p>
+
+]]>
+</string>
+
+
+<string name="board_f_rules">
+<![CDATA[
+<h3>/f/ - Flash</h3>
+
+<p>1. All uploaded files should be uniquely Japanese (pertain to Japanese culture). "Run of the mill" content is to be had elsewhere.</p>
+<p>2. Posting retail Flash files or Flash exploits is prohibited.</p>
+<p>3. The tagging of uploaded files is mandatory. Improperly tagged items may be removed without notice. Abuse of the tagging system may result in temporary ban.</p>
+<p>4. If your file is to be tagged as "[?] Other", re-examine the first rule before submission.</p>
+
+]]>
+</string>
+
+
+<string name="board_fa_rules">
+<![CDATA[
+<h3>/fa/ - Fashion</h3>
+
+<p>1. Images and discussion should pertain to fashion and apparel.</p>
+
+]]>
+</string>
+
+
+<string name="board_fit_rules">
+<![CDATA[
+<h3>/fit/ - Health &amp; Fitness</h3>
+
+<p>1. Images and discussion related to dieting, exercise, healthy living, and workout plans is welcome here.</p>
+<p>2. Relationship, dating advice, and "mental health" threads belong on /adv/.</p>
+
+]]>
+</string>
+
+
+<string name="board_g_rules">
+<![CDATA[
+<h3>/g/ - Technology</h3>
+
+<p>1. Images depicting the technology of past, present, and future are all welcome here.</p>
+<p>2. Support threads are allowed, but discouraged. Please consult a search engine before making such threads. "Obvious advice" threads may be removed at the discretion of the staff.</p>
+<p>3. Check out the boards at <a href="http://dis.4chan.org/comp/">http://dis.4chan.org/comp/</a> , <a href="http://dis.4chan.org/tech/">http://http://dis.4chan.org/tech/</a> , and <a href="http://dis.4chan.org/prog/">http://dis.4chan.org/prog/</a> as discussion-oriented alternatives to this imageboard.</p>
+<p>You may use [code] tags to highlight syntax and preserve whitespace. To use them, just wrap your code snippets [code]like this[/code].</p>
+
+]]>
+</string>
+
+
+<string name="board_gd_rules">
+<![CDATA[
+<h3>/gd/ - Graphic Design</h3>
+<p>1. This board is for the discussion of graphic design software and computer-aided graphic design techniques (ie. "Photoshopping").</p>
+<p>2. Requests for Photoshopping or any other work should go on /r/.</p>
+]]>
+</string>
+
+
+<string name="board_gif_rules">
+<![CDATA[
+<h3>/gif/ - Animated GIF</h3>
+
+<p>1. All GIFs should be animated - no static images.</p>
+
+]]>
+</string>
+
+
+<string name="board_h_rules">
+<![CDATA[
+<h3>/h/ - Hentai</h3>
+
+<p>1. Information pertaining to the artist, character\'s name, originating manga/doujin, etc. is highly valued. Please provide this information if it is available to you.</p>
+<p>2. Images should depict "of-age" females (use discretion).</p>
+<p>3. In addition, <em>alternative</em>, <em>ecchi</em>, <em>shota</em>, <em>yuri</em>, and <em>yaoi</em> content belong on their respective boards.</p>
+<p>4. The posting of paysite passwords is forbidden.</p>
+<p>5. Western drawn/styled ("toon") pictures and fan drawn ("fanart") images are not allowed at this time.</p>
+
+]]>
+</string>
+
+
+<string name="board_hc_rules">
+<![CDATA[
+<h3>/hc/ - Hardcore</h3>
+
+<p>1. Only tasteful hardcore pornography allowed.</p>
+<p>2. Do not post fake nudes or photos depicting abuse.</p>
+<p>3. This board is for straight content.</p>
+<p>4. Requests belong in <a href="http://boards.4chan.org/r/">http://boards.4chan.org/r/</a> !</p>
+
+]]>
+</string>
+
+
+<string name="board_hm_rules">
+<![CDATA[
+<h3>/hm/ - Handsome Men</h3>
+
+<p>1. Only tasteful photos and pornography allowed.</p>
+<p>2. This board is for gay, male content only. Do not post traps or trans here.</p>
+<p>3. Please no self pics, cock shots, etc.</p>
+<p>4. Absolutely no underage content (under 18) of any sort. Violators will be issued permanent bans.</p>
+
+]]>
+</string>
+
+
+<string name="board_hr_rules">
+<![CDATA[
+<h3>/hr/ - High Resolution</h3>
+
+<p>1. Post <em>quality</em> high-resolution 2D/3D artwork, scans, photography, and images of interest here.</p>
+<p>2. Do not simply post images because they have large dimensions. If an image would be of interest to another board, please crosspost the image (resizing if necessary).</p>
+<p>3. The <em>high resolution</em> board was created to provide a venue for extremely large images. It is not intended to be a <em>random</em> board.</p>
+<p>4. Non-worksafe images are allowed, however content must be kept tasteful (no grossout images).</p>
+
+]]>
+</string>
+
+
+<string name="board_i_rules">
+<![CDATA[
+<h3>/i/ - Oekaki</h3>
+
+<p>1. Oekakis can be random in nature, but please, no "junk" drawings.  Quality over quantity!</p>
+
+]]>
+</string>
+
+
+<string name="board_ic_rules">
+<![CDATA[
+<h3>/ic/ - Artwork/Critique</h3>
+
+<p>1. User-drawn works are to be submitted for critiquing. Do not submit work that you have not personally drawn or contributed to.</p>
+<p>2. Only constructive criticism will be accepted. Rude or offensive comments will result in a ban.</p>
+<p>3. Requests for free work of any sort are forbidden.</p>
+<p>4. Discussion of drawing tablets belongs in /g/.</p>
+
+]]>
+</string>
+
+
+<string name="board_int_rules">
+<![CDATA[
+<h3>/int/ - International</h3>
+
+<p>1. This board is for the discussion of foreign culture and language. Please be respectful.</p>
+<p>2. Posting in languages other than English is allowed - and encouraged!</p>
+
+]]>
+</string>
+
+
+<string name="board_jp_rules">
+<![CDATA[
+<h3>/jp/ - Otaku Culture</h3>
+
+<p>1. All images and discussion should pertain to light and visual novels, figures and other otaku paraphernalia, Touhou Project, Vocaloid, doujin works and music, NEET lifestyle, and diverse niche Japanese interests (kigurumi, idols, mahjong, tea).</p>
+<p>2. This is the appropriate board for the discussion of Japanese visual novels, and light novels without an animated adaptation. Western visual novels should be posted to /vg/, and translated visual novels are fine on either board.</p> 
+
+]]>
+</string>
+
+
+<string name="board_k_rules">
+<![CDATA[
+<h3>/k/ - Weapons</h3>
+
+<p>1. All weaponry is welcome. Military vehicles/knives/other weapons are included, this board isn\'t just for firearms!</p>
+
+]]>
+</string>
+
+
+<string name="board_lgbt_rules">
+<![CDATA[
+<h3>/lgbt/ - LGBT</h3>
+<p>1. This board is for the respectful discussion of LGBT lifestyle and the LGBT community.</p>
+<p>2. Hookup and "rate me"/camwhore threads belong on /soc/.</p>
+<p>3. Remember, this is a WORKSAFE BOARD. Absolutely no nudity or pornography!</p>
+]]>
+</string>
+
+
+<string name="board_lit_rules">
+<![CDATA[
+<h3>/lit/ - Literature</h3>
+
+<p>1. All literature discussion is welcome, however fan-fic is not allowed.</p>
+
+]]>
+</string>
+
+
+<string name="board_m_rules">
+<![CDATA[
+<h3>/m/ - Mecha</h3>
+
+<p>1. All mecha and mecha-related (ex: pilots, core fighter, mecha girl, hobby model) images are allowed.</p>
+
+]]>
+</string>
+
+
+<string name="board_mlp_rules">
+<![CDATA[
+<h3>/mlp/ - Pony</h3>
+
+<p>1. This is the destination for <u>all</u> My Little Pony related content on 4chan.</p>
+<p>2. This is a work safe board. No pornographic images or other not safe for work content is allowed. This includes clop clop!</p>
+<p>3. Do not post "dubs" threads.</p>
+<p>4. Please no roleplay threads.</p>
+<p>5. Threads should be about some<em>thing</em> show related, not some<em>one</em>.</p>
+<p>6. Please keep it civil! Bronies and ponies should play nicely, and if necessary keep to their own threads.</p>
+<p>7. Ponies only! No anthro.</p>
+<p>8. Global rule 13 does not apply to this board.</p>
+<p>9. Remember, <em>friendship is magic!</em></p>
+
+]]>
+</string>
+
+
+<string name="board_mu_rules">
+<![CDATA[
+<h3>/mu/ - Music</h3>
+
+<p>1. Discuss music, artists, and instruments here. All images should relate to the topic at hand.</p>
+<p>2. Trolling, instigating, or participating in a flamewar will result in a ban.</p>
+
+]]>
+</string>
+
+
+<string name="board_n_rules">
+<![CDATA[
+<h3>/n/ - Transportation</h3>
+
+<p>1. All sorts of transportation pictures and discussion welcome.  Trains, planes, ships, bicycles, flying elevators - post \'em all!</p>
+<p>2. Please keep automobiles on the <em>auto</em> board.
+<p>3. Military vehicles should be posted on the <em>weapons</em> board.</p>
+
+]]>
+</string>
+
+
+<string name="board_o_rules">
+<![CDATA[
+<h3>/o/ - Auto</h3>
+
+<p>1. All motor vehicle pictures are allowed.</p>
+<p>2. Photos of models and "race queens" are permitted, so long as they are sufficiently clothed.</p>
+
+]]>
+</string>
+
+
+<string name="board_out_rules">
+<![CDATA[
+<h3>/out/ - Outdoors</h3>
+<p>1. This board is for discussions about hiking, camping, geocaching, orienteering, farming, gardening, etc.</p>
+<p>2. GO OUTSIDE AND TOSS A BALL OR SOMETHING.</p>
+]]>
+</string>
+
+
+<string name="board_p_rules">
+<![CDATA[
+<h3>/p/ - Photography</h3>
+
+<p>1. Only upload images that you, the photographer, have taken.</p>
+<p>2. Post only photos that show at least trace amounts of thoughtful composition. Do not upload random snapshots.</p>
+<p>3. Even though EXIF data is made available when encoded, please post as much relevant technical information as possible, such as: camera, kit, lens, etc.</p>
+<p>4. Include a short description with your photograph, such as when and where it was photographed and under what circumstances.</p>
+<p>5. As with the <em>art</em> critique board, only constructive criticism will be tolerated.</p>
+
+]]>
+</string>
+
+
+<string name="board_po_rules">
+<![CDATA[
+<h3>/po/ - Papercraft &amp; Origami</h3>
+
+<p>1. Upload your papercraft and origami images here!</p>
+<p>2. Requesting is permitted.</p>
+
+]]>
+</string>
+
+
+<string name="board_pol_rules">
+<![CDATA[
+<h3>/pol/ - Politically Incorrect</h3>
+
+<p>1. Debate and discussion related to politics and current events is welcome.</p>
+<p>2. You are free to speak your mind, but <em>do not attack other users</em>. You may challenge one another, but <em>keep it civil</em>!</p>
+
+]]>
+</string>
+
+
+<string name="board_q_rules">
+<![CDATA[
+<h3>/q/ - 4chan Discussion</h3>
+
+<p>1. Users are free to discuss the site amongst themselves and with the 4chan team.</p>
+<p>2. Constructive criticism only. Trolling, flooding, and ban evasion will not be tolerated.</p>
+
+]]>
+</string>
+
+
+<string name="board_r9k_rules">
+<![CDATA[
+<h3>/r9k/ - ROBOT9001</h3>
+
+<p>1. The robot is reborn! A place for hanging out and posting greentext stories.</p>
+<p>2. Global Rule #3 is in effect - /b/ material belongs on /b/.</p>
+<p>3. Advice threads belong on /adv/, and "rate me," meetup, and camwhore threads on /soc/.</p>
+
+]]>
+</string>
+
+
+<string name="board_r_rules">
+<![CDATA[
+<h3>/r/ - Request</h3>
+
+<p>1. All requests, be they for content or reseeds, belong here.</p>
+<p>2. Provide ample information in your request. Be specific - requests for "hentai" instead of "Shirow - x Works" may be removed. Link back to existing post(s) if possible.</p>
+<p>3. Check the board for pre-existing and similar requests before reposting.</p>
+<p>4. Do not request or discuss material protected by United States copyright law.</p>
+
+]]>
+</string>
+
+
+<string name="board_rs_rules">
+<![CDATA[
+<h3>/rs/ - Rapidshares</h3>
+
+<p>1. Do not submit links for fileshares that violate the global rules.</p>
+<p>2. Be sure to include the proper password(s) if your files are password protected.</p>
+
+]]>
+</string>
+
+
+<string name="board_s_rules">
+<![CDATA[
+<h3>/s/ - Sexy Beautiful Women</h3>
+
+<p>1. All images should depict women <em>sexy</em> and beautiful in nature. Images should also be relatively high in quality and resolution.</p>
+<p>2. If you know any information about a photo not already submitted, post it! (ex: model\'s name, where to find the full set, link(s) to more/similar content, etc.)</p>
+<p>3. No hardcore or related fetish images allowed. Take it to <a href="http://boards.4chan.org/hc/">http://boards.4chan.org/hc/</a> !</p>
+<p>4. Racist remarks, trolls, and bump-replies (ex: "moar!") are not welcome.</p>
+<p>5. The posting of paysite passwords is forbidden. In addition, "fakes" (photo manipulations) are not to be uploaded.</p>
+<p>6. Absolutely no underage content (under 18) of any sort. Violators will be issued permanent bans.</p>
+
+]]>
+</string>
+
+
+<string name="board_sci_rules">
+<![CDATA[
+<h3>/sci/ - Science &amp; Math</h3>
+
+<p>1. All science and math related topics welcome.</p>
+<p>2. Homework threads will be deleted, and the poster banned.</p>
+<p>3. No "religion vs. science" threads.</p>
+
+]]>
+</string>
+
+
+<string name="board_soc_rules">
+<![CDATA[
+<h3>/soc/ - Social</h3>
+
+<p>1. Created to get "rate me," meetup, report in, and camwhore threads out of /b/ and /r9k/.</p>
+<p>2. No whining (aka "BAWWW") or "life" threads. This is not your personal blog.</p>
+<p>3. Tinychat and Amazon wishlist/begging threads are not allowed.</p>
+<p>4. Soliciting or offering payments for photos, webcam shows, etc is not allowed.</p>
+<p>5. Do not stalk or harass any users. Be civil to camwhores.</p>
+<p>6. Requesting contact info outside of contact and meetup threads is not allowed. If a user wishes to provide contact info on their own, they are free to do so, but all requests will be deleted.</p>
+<p>7. Asking a user to write on a sign is not allowed, unless said user is actively taking requests.  Timestamp requests are permitted.</p>
+<p>8. Please try to keep duplicate topics to a minimum by always searching for an old or active thread before posting a new one. Do not post a continuation of a thread until the bump limit is reached.</p>
+
+]]>
+</string>
+
+
+<string name="board_sp_rules">
+<![CDATA[
+<h3>/sp/ - Sports</h3>
+
+<p>1. All sports welcome.</p>
+<p>2. In the interest of keeping this board general, please combine threads related to similar topics (example: specific teams, games, players, etc.).</p>
+
+]]>
+</string>
+
+
+<string name="board_t_rules">
+<![CDATA[
+<h3>/t/ - Torrents</h3>
+
+<p>1. All material licensed in the United States is prohibited. This includes music, manga, hentai, artbooks, and anything else protected by United States copyright law. (Note: 99% of what you will find on the internet is probably unlicensed, however first check and make sure it is before posting!)</p>
+<p>2. There will be no "warez" allowed. Warez is classified as: retail software, games, movies, etc. See the above rule.</p>
+<p>3. Content should be Japanese in theme or origin. The torrents board is not your standard anime tracker. As such, no anime of any kind is to be posted on this board.</p>
+<p>4. Threads should not consist of filedump links. <em>Replying</em> to a pre-existing thread with RapidShare/Putfile/Megaupload/YouTube links is allowed, so long as the original post contains a torrent.  Check out <a href="http://rs.4chan.org/">http://rs.4chan.org/</a> for these types of links.</p>
+
+]]>
+</string>
+
+
+<string name="board_tg_rules">
+<![CDATA[
+<h3>/tg/ - Traditional Games</h3>
+
+<p>1. Board games, paper games, war games, card games, etc. go here!</p>
+
+]]>
+</string>
+
+
+<string name="board_toy_rules">
+<![CDATA[
+<h3>/toy/ - Toys</h3>
+
+<p>1. Toys, toys, toys!</p>
+<p>2. Absolutely no Japanese figurines. Action figures are permitted.</p>
+<p>3. No "hot glue" fetish images.</p>
+
+]]>
+</string>
+
+
+<string name="board_trv_rules">
+<![CDATA[
+<h3>/trv/ - Travel</h3>
+
+<p>1. Post images and information about various locales, places you\'ve traveled, or hope to visit in the future.</p>
+<p>2. Feel free to ask questions about other cultures, and post in native languages.</p>
+<p>3. This board is for all the countries of the world. The more diverse, the better!</p>
+
+]]>
+</string>
+
+
+<string name="board_tv_rules">
+<![CDATA[
+<h3>/tv/ - Television &amp; Film</h3>
+
+<p>1. Content should pertain to television shows, movies, actors/actresses, film equipment, etc.</p>
+<p>2. No "waifu" or "husbando" threads.</p>
+
+]]>
+</string>
+
+
+<string name="board_u_rules">
+<![CDATA[
+<h3>/u/ - Yuri</h3>
+
+<p>1. <em>Yuri</em> pictures are lesbian and/or softcore in nature.  Images should contain two or more women, and not contain men.</p>
+
+]]>
+</string>
+
+
+<string name="board_v_rules">
+<![CDATA[
+<h3>/v/ - Video Games</h3>
+
+<p>1. All posts should pertain to video games, their consoles, and video game culture.  Threads should remain on topic and stay in theme with the board.  Don\'t post off-topic garbage.</p>
+<p>2. Flaming/flagrant "fanboyism"/etc. will not be tolerated.</p>
+<p>3. Threads should not devolve into flamewars. Inciting or encouraging such activity will not be tolerated.</p>
+<p>4. Please refrain from reposting. If possible, try to skim the board for threads pertaining to your topics/info that may have already been posted.</p>
+<p>5. Game help and long-term discussion threads should be posted to the <a href="http://dis.4chan.org/games/">http://dis.4chan.org/games/</a> or <a href="http://boards.4chan.org/vg/">http://boards.4chan.org/vg/</a> boards.</p>
+<p>6. "Generals" - long-term, recurring threads about a specific game - should be posted in <a href="http://boards.4chan.org/vg/">http://boards.4chan.org/vg/</a> . This is not to say threads about specific games cannot be created on /v/, just that long-term, recurring threads belong in /vg/.</p>
+
+]]>
+</string>
+
+
+<string name="board_vg_rules">
+<![CDATA[
+<h3>/vg/ - Video Game Generals</h3>
+
+<p>1. This board is for the posting of video game "general" threads, which are long-term, recurring threads about a specific topic.</p>
+<p>2. Western visual novels should be posted here, and Japanese visual novels on <a href="http://boards.4chan.org/jp/">http://boards.4chan.org/jp/</a>. Translated visual novels are allowed on either board.</p>
+
+]]>
+</string>
+
+
+<string name="board_vp_rules">
+<![CDATA[
+<h3>/vp/ - Pokémon</h3>
+
+<p>1. For Pokémon related discussion.</p>
+<p>2. Please respect Global Rules 3 and 5 - no non-work safe or "furry" material should be posted on this board.</p>
+<p>3. Post all Pokégirl hentai to <a href="http://boards.4chan.org/h/">http://boards.4chan.org/h/</a> .</a>
+<p>4. GOTTA CATCH \'EM ALL. <em>This will be severely punished and strictly enforced.</em></p>
+
+]]>
+</string>
+
+
+<string name="board_vr_rules">
+<![CDATA[
+<h3>/vr/ - Retro Games</h3>
+<p>1. This board is for the discussion of classic, or "retro" games. Retro gaming means consoles, computer games, arcade games (including pinball) and any other forms of video games circa 2001 and earlier. Sixth generation and later consoles are not considered retro.</p>
+]]>
+</string>
+
+
+<string name="board_w_rules">
+<![CDATA[
+<h3>/w/ - Anime/Wallpapers</h3>
+
+<p>1. Wallpapers should be distinctly anime or J-pop related. They can be real world pictures, just make sure they\'re noticeably tied to Japanese culture.</p>
+<p>2. Image quality is a must. A minimum resolution of 480x600 pixels is enforced on this board.</p>
+
+]]>
+</string>
+
+
+<string name="board_wg_rules">
+<![CDATA[
+<h3>/wg/ - Wallpapers/General</h3>
+
+<p>1. Wallpapers may depict anything within reason. Please keep adult-oriented pictures and the likes off of this board.</p>
+<p>2. Image quality is a must. A minimum resolution of 480x600 pixels is enforced on this board.</p>
+
+]]>
+</string>
+
+
+<string name="board_wsg_rules">
+<![CDATA[
+<h3>/wsg/ - Worksafe GIF</h3>
+
+<p>1. All worksafe GIFs welcome.</p>
+
+]]>
+</string>
+
+
+<string name="board_x_rules">
+<![CDATA[
+<h3>/x/ - Paranormal</h3>
+
+<p>1. For all your creepy images and stories.</p>
+
+]]>
+</string>
+
+
+<string name="board_y_rules">
+<![CDATA[
+<h3>/y/ - Yaoi</h3>
+
+<p>1. All <em>yaoi</em>, unless otherwise noted, is allowed. This includes <em>bara</em>.</p>
+<p>2. This board is for animated content only. Images depicting "real" people will be removed.</p>
+
+]]>
+</string>
+
 </resources>

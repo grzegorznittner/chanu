@@ -536,9 +536,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 GalleryViewActivity.startOfflineAlbumViewActivity(this, null);
                 return true;
             case R.id.global_rules_menu:
-                RawResourceDialog rawResourceDialog = new RawResourceDialog(this,
-                        R.layout.board_rules_dialog, R.raw.global_rules_header, R.raw.global_rules_detail);
-                rawResourceDialog.show();
+                (new StringResourceDialog(this,
+                        R.layout.board_rules_dialog,
+                        R.string.global_rules_header,
+                        R.string.global_rules_detail))
+                        .show();
                 return true;
             case R.id.web_menu:
                 String url = ChanBoard.boardUrl(boardCode);
@@ -564,17 +566,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void displayBoardRules() {
-        int boardRulesId = R.raw.global_rules_detail;
+        int boardRulesId = R.string.global_rules_detail;
         try {
-            boardRulesId = R.raw.class.getField("board_" + boardCode + "_rules").getInt(null);
+            boardRulesId = R.string.class.getField("board_" + boardCode + "_rules").getInt(null);
         }
         catch (Exception e) {
             Log.e(TAG, "Couldn't find rules for board:" + boardCode);
         }
-        RawResourceDialog rawResourceDialog
-                = new RawResourceDialog(this, R.layout.board_rules_dialog, R.raw.board_rules_header, boardRulesId);
-        rawResourceDialog.show();
-
+        (new StringResourceDialog(this, R.layout.board_rules_dialog, R.string.board_rules_header, boardRulesId)).show();
     }
 
     @Override

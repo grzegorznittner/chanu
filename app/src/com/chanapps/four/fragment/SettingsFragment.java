@@ -5,17 +5,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.Preference;
-import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.widget.BaseAdapter;
-import android.widget.Toast;
-import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.AboutActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
-import com.chanapps.four.component.RawResourceDialog;
-import com.chanapps.four.data.UserStatistics;
-import com.chanapps.four.service.NetworkProfileManager;
 
 
 /**
