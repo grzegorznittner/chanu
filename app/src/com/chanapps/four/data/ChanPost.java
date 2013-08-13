@@ -585,7 +585,7 @@ public class ChanPost {
         return "";
     }
 
-    public String headline(String query, boolean boardLevel, byte[] repliesBlob, boolean showNumReplies) {
+    public String headline(Context context, String query, boolean boardLevel, byte[] repliesBlob, boolean showNumReplies) {
         List<String> items = new ArrayList<String>();
         if (!boardLevel) {
             if (email != null && !email.isEmpty() && email.equals("sage"))
@@ -606,7 +606,7 @@ public class ChanPost {
                 items.add(imageDimensions());
         }
         //if (boardLevel && resto <= 0) {
-            String s = threadInfoLine(boardLevel, showNumReplies);
+            String s = threadInfoLine(context, boardLevel, showNumReplies);
             if (!s.isEmpty())
                 items.add(s);
         //}
@@ -625,31 +625,45 @@ public class ChanPost {
         return highlightComponent(component, query);
     }
 
-    public String threadInfoLine(boolean boardLevel, boolean showNumReplies) {
+    public String threadInfoLine(Context context, boolean boardLevel, boolean showNumReplies) { //FIXME
         if (sticky > 0 && replies == 0)
-            return "STICKY";
-        String text = "";
+            return context.getString(R.string.thread_is_sticky);
+        String text;
         if (showNumReplies) {
-            if (replies > 0)
-                text += replies
-                        + " "
-                        + (replies == 1 ? "post" : "posts")
+            if (replies > 0) {
+                String repliesStr =
+                        String.format(context.getResources().getQuantityString(
+                                R.plurals.thread_num_replies,
+                                replies
+                            ),
+                            replies);
+                String imagesStr = images <= 0
+                        ? context.getString(R.string.thread_has_no_images)
+                        : String.format(context.getResources().getQuantityString(
+                                R.plurals.thread_num_images,
+                                images
+                            ),
+                            images);
+                text = repliesStr
                         + (boardLevel ? HEADLINE_BOARDLEVEL_DELIMITER : HEADLINE_THREADLEVEL_DELIMITER)
-                        + (images > 0 ? images : "no")
-                        + " "
-                        + (images == 1 ? "image" : "images");
-            else
-                text += "no posts";
+                        + imagesStr;
+            }
+            else {
+                text = context.getString(R.string.thread_has_no_posts);
+            }
+        }
+        else {
+            text = "";
         }
         if (!boardLevel && resto == 0) {
             if (imagelimit == 1)
-                text += " (IL)";
+                text += " " + context.getString(R.string.thread_has_imagelimit);
             if (bumplimit == 1)
-                text += " (BL)";
+                text += " " + context.getString(R.string.thread_has_bumplimit);
             if (sticky > 0)
-                text += " STICKY";
+                text += " " + context.getString(R.string.thread_is_sticky);
             if (closed > 0)
-                text += " CLOSED";
+                text += " " + context.getString(R.string.thread_is_closed);
         }
         return text;
     }
@@ -1003,11 +1017,11 @@ public class ChanPost {
         return new MatrixCursor(POST_COLUMNS);
     }
 
-    public Object[] makeRow(String query, int i, byte[] backlinksBlob, byte[] repliesBlob, byte[] sameIdsBlob) {
+    public Object[] makeRow(Context context, String query, int i, byte[] backlinksBlob, byte[] repliesBlob, byte[] sameIdsBlob) {
         String[] textComponents = textComponents(query);
         String[] spoilerComponents = spoilerComponents(query);
         String exifText = exifText();
-        String headline = headline(query, false, repliesBlob, false);
+        String headline = headline(context, query, false, repliesBlob, false);
         int flags = postFlags(false, false, textComponents[0], textComponents[1], exifText, headline);
         if (i == 0)
             flags |= FLAG_IS_HEADER;

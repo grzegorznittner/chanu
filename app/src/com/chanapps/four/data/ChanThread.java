@@ -100,7 +100,7 @@ public class ChanThread extends ChanPost {
                 post.board,
                 post.no,
                 textComponents[0],
-                post.headline(query, true, null, showNumReplies),
+                post.headline(context, query, true, null, showNumReplies),
                 textComponents[1],
                 post.thumbnailUrl(),
                 post.countryFlagUrl(),

@@ -219,6 +219,10 @@
     <string name="thread_closed">Can\'t refresh, thread is closed</string>
     <string name="thread_is_closed">CLOSED</string>
     <string name="thread_is_sticky">STICKY</string>
+    <string name="thread_has_no_posts">no posts</string>
+    <string name="thread_has_no_images">no images</string>
+    <string name="thread_has_bumplimit">(BL)</string>
+    <string name="thread_has_imagelimit">(IL)</string>
     <string name="thread_wait_to_refresh">Min 10 sec between refresh</string>
     <string name="thread_end_of_thread">End of Thread</string>
     <string name="thread_context_select">Done</string>
