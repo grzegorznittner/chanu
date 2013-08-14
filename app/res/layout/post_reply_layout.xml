@@ -107,6 +107,14 @@
             </ImageButton>
 
             <ImageButton
+                    android:id="@+id/post_reply_search_button"
+                    style="@style/PostReplyButton"
+                    android:contentDescription="@string/post_reply_search_hint"
+                    android:hint="@string/post_reply_search_hint"
+                    android:src="@drawable/action_search">
+            </ImageButton>
+
+            <ImageButton
                     android:id="@+id/post_reply_camera_button"
                     style="@style/PostReplyButton"
                     android:contentDescription="@string/post_reply_camera_hint"
@@ -241,6 +249,7 @@
         <Button
                 android:id="@+id/done"
                 style="@style/WidgetConfigureOkButton"
+                android:text="@string/send"
                 />
 
     </LinearLayout>

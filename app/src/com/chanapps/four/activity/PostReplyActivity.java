@@ -1,6 +1,7 @@
 package com.chanapps.four.activity;
 
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.*;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -85,7 +86,7 @@ public class PostReplyActivity
 
     public static final int POST_FINISHED = 0x01;
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static final int PASSWORD_MAX = 100000000;
     private static final Random randomGenerator = new Random();
@@ -102,6 +103,7 @@ public class PostReplyActivity
     private ImageButton cameraButton;
     private ImageButton pictureButton;
     private ImageButton webButton;
+    private ImageButton searchButton;
     private ImageButton deleteButton;
     private ImageButton bumpButton;
     private ImageButton sageButton;
@@ -192,6 +194,7 @@ public class PostReplyActivity
         cameraButton = (ImageButton)findViewById(R.id.post_reply_camera_button);
         pictureButton = (ImageButton)findViewById(R.id.post_reply_picture_button);
         webButton = (ImageButton)findViewById(R.id.post_reply_web_button);
+        searchButton = (ImageButton)findViewById(R.id.post_reply_search_button);
         infoButton = (ImageButton)findViewById(R.id.password_help_icon);
         doneButton = (Button)findViewById(R.id.done);
         deleteButton = (ImageButton)findViewById(R.id.post_reply_delete_button);
@@ -243,6 +246,12 @@ public class PostReplyActivity
                         .show(getSupportFragmentManager(), WebImageDialogFragment.TAG);
             }
         });
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                (new WebImageSearchDialogFragment())
+                        .show(getSupportFragmentManager(), WebImageSearchDialogFragment.TAG);
+            }
+        });
         deleteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 deleteImage();
@@ -288,6 +297,7 @@ public class PostReplyActivity
 
         updatePassRecaptchaViews(isPassEnabled());
     }
+
     /*
     @Override
     protected void onNewIntent(Intent intent) {
@@ -312,7 +322,11 @@ public class PostReplyActivity
         imagePath = null;
         contentType = null;
         orientation = null;
-        if (DEBUG) Log.i(TAG, "setIntent() intent has /" + boardCode + "/" + threadNo + ":" + postNo + " imageUri=" + imageUri);
+        if (DEBUG) Log.i(TAG, "setIntent() intent has /" + boardCode + "/" + threadNo + ":" + postNo
+                + " imageUri=" + imageUri
+                + " subject=" + intent.getStringExtra(SUBJECT)
+                + " text=" + intent.getStringExtra(TEXT));
+        /*
         Bundle bundle = loadBundleFromPrefs();
         if (bundle != null
                 && boardCode != null
@@ -323,6 +337,7 @@ public class PostReplyActivity
             if (DEBUG) Log.i(TAG, "setIntent() found saved bundle for same thread, restoring");
             onRestoreInstanceState(bundle);
         }
+        */
     }
 
     @Override

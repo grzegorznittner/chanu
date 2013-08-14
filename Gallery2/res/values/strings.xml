@@ -75,6 +75,7 @@
   <string name="make_available_offline">Make available offline</string>
   <string name="sync_picasa_albums">Refresh</string>
   <string name="done">Done</string>
+  <string name="send">Send</string>
   <string name="sequence_in_set">%1$d of %2$d items:</string>
   <string name="title">Title</string>
   <string name="description">Description</string>

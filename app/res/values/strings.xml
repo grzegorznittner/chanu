@@ -101,10 +101,14 @@
 
     <!-- web image -->
     <string name="web_image_title">Attach Image from Web</string>
+    <string name="web_image_search_title">Search Web for Image</string>
     <string name="web_image_url_text_hint">Image Url</string>
+    <string name="web_image_search_text_hint">search text</string>
     <string name="web_image_key_download">Load</string>
+    <string name="web_image_key_search">Search</string>
     <string name="web_image_button_download">Download</string>
     <string name="web_image_button_browse">Browse for image</string>
+    <string name="web_image_button_search">Search</string>
     <string name="web_image_button_attach">Attach</string>
     <string name="web_image_input_url_first">Enter url to download image</string>
     <string name="web_image_download_first">Download image before attaching</string>
@@ -123,6 +127,7 @@
     <string name="go_to_end_position_menu">Go to end</string>
     <string name="refresh_board_menu">Refresh</string>
     <string name="refresh_thread_menu">Refresh</string>
+    <string name="scroll_to_bottom_menu">Jump to Bottom</string>
     <string name="new_thread_menu">New thread</string>
     <string name="new_thread_short">New thread</string>
     <string name="prefetch_board_menu">Preload threads</string>
@@ -459,6 +464,7 @@
     <string name="post_reply_text_hint_required">Comment (Required)</string>
     <string name="post_reply_camera_hint">Camera</string>
     <string name="post_reply_web_hint">Download Image</string>
+    <string name="post_reply_search_hint">Search for Image</string>
     <string name="post_reply_picture_hint">Gallery</string>
     <string name="post_reply_delete_hint">Delete Image</string>
     <string name="post_reply_rotate_left_hint">Rotate Left</string>

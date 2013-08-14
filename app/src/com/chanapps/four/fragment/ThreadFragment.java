@@ -392,7 +392,17 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     playMenuItem.setVisible(false);
                 }
             }
+        boolean undead = undead();
+        menu.findItem(R.id.refresh_menu).setVisible(undead);
+        menu.findItem(R.id.post_reply_all_menu).setVisible(undead);
+        menu.findItem(R.id.post_reply_all_quote_menu).setVisible(undead);
+        menu.findItem(R.id.web_menu).setVisible(undead);
         super.onPrepareOptionsMenu(menu);
+    }
+
+    protected boolean undead() {
+        ChanThread thread = ChanFileStorage.loadThreadData(getActivity(), boardCode, threadNo);
+        return !(thread != null && thread.isDead);
     }
 
     @Override
@@ -410,6 +420,21 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 return true;
             case R.id.watch_thread_menu:
                 addToWatchlist();
+                return true;
+            case R.id.scroll_to_bottom_menu:
+                int n = adapter.getCount() - 1;
+                if (n >= 4)
+                    n -= 4; // jump before related boards
+                if (DEBUG) Log.i(TAG, "jumping to item n=" + n);
+                absListView.setSelection(n);
+                return true;
+            case R.id.post_reply_all_menu:
+                long[] postNos = { threadNo };
+                postReply(postNos);
+                return true;
+            case R.id.post_reply_all_quote_menu:
+                String quotesText = selectQuoteText(0);
+                postReply(quotesText);
                 return true;
             /*
             case R.id.download_all_images_menu:
@@ -508,20 +533,24 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     }
 
     protected String selectQuoteText(SparseBooleanArray postPos) {
-        String text = "";
         for (int i = 0; i < absListView.getCount(); i++) {
             if (!postPos.get(i))
                 continue;
-            Cursor cursor = (Cursor) adapter.getItem(i);
-            if (cursor == null)
-                continue;
-            String postNo = cursor.getString(cursor.getColumnIndex(ChanPost.POST_ID));
-            String itemText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
-            if (itemText == null)
-                itemText = "";
-            String postPrefix = ">>" + postNo + "<br/>";
-            text += (text.isEmpty() ? "" : "<br/><br/>") + postPrefix + ChanPost.quoteText(itemText);
+            return selectQuoteText(i);
         }
+        return "";
+    }
+
+    protected String selectQuoteText(int i) {
+        Cursor cursor = (Cursor) adapter.getItem(i);
+        if (cursor == null)
+            return "";
+        String postNo = cursor.getString(cursor.getColumnIndex(ChanPost.POST_ID));
+        String itemText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+        if (itemText == null)
+            itemText = "";
+        String postPrefix = ">>" + postNo + "<br/>";
+        String text = postPrefix + ChanPost.quoteText(itemText);
         if (DEBUG) Log.i(TAG, "Selected quote text: " + text);
         return text;
     }
@@ -968,7 +997,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             }
             updateSharedIntent();
             PopupMenu popup = new PopupMenu(getActivityContext(), v);
-            popup.inflate(R.menu.thread_context_menu);
+            int menuId = undead() ? R.menu.thread_context_menu : R.menu.thread_dead_context_menu;
+            popup.inflate(menuId);
             popup.setOnMenuItemClickListener(popupListener);
             popup.setOnDismissListener(popupDismissListener);
             MenuItem shareItem = popup.getMenu().findItem(R.id.thread_context_share_action_menu);

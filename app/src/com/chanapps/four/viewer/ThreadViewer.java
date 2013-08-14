@@ -392,8 +392,10 @@ public class ThreadViewer {
 
     static private boolean setSubjectIcons(ThreadViewHolder viewHolder, int flags) {
         View deadIcon = viewHolder.list_item_dead_icon;
-        if (deadIcon != null)
-            deadIcon.setVisibility((flags & ChanPost.FLAG_IS_DEAD) > 0 ? View.VISIBLE : View.GONE);
+        if (deadIcon == null)
+            return true;
+        int visibility = (flags & ChanPost.FLAG_IS_DEAD) > 0 ? View.VISIBLE : View.GONE;
+        deadIcon.setVisibility(visibility);
         return true;
     }
 
