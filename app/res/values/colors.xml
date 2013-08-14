@@ -61,4 +61,6 @@
     <color name="DarkPaletteThreadLine">#449def</color>
     <color name="DarkPaletteThreadListBarOverlayFg">#88ffffff</color>
 
+    <color name="ad_background">#121212</color>
+
 </resources>

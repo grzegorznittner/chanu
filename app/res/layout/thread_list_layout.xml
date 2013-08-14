@@ -15,4 +15,7 @@
     <!--
     <include layout="@layout/tutorial_overlay"/>
     -->
+
+    <include layout="@layout/ad_section"/>
+
 </RelativeLayout>

@@ -18,6 +18,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toRightOf="@+id/board_grid_view_tablet"
+            android:layout_above="@+id/board_grid_advert"
+            />
+
+    <include layout="@layout/ad_section"
+             android:id="@+id/board_grid_advert"
+             android:layout_toRightOf="@+id/board_grid_view_tablet"
+             android:layout_alignParentBottom="true"
             />
 
 </RelativeLayout>
