@@ -535,12 +535,19 @@
     <string name="pref_custom_category">Customize</string>
     <string name="pref_custom_category_summ">Customize appearance and behavior</string>
     <string name="pref_show_nsfw_boards">NSFW Boards</string>
-    <string name="pref_show_nsfw_boards_summ_on">Show boards not safe for work</string>
-    <string name="pref_show_nsfw_boards_summ_off">Hide boards not safe for work (default)</string>
+    <string name="pref_show_nsfw_boards_summ_pos">Enable</string>
+    <string name="pref_show_nsfw_boards_summ_neg">Disable (default)</string>
+    <string name="pref_show_nsfw_boards_summ_on">Currently showing all boards</string>
+    <string name="pref_show_nsfw_boards_summ_off">Currently hiding NSFW boards (default)</string>
     <string name="pref_show_nsfw_boards_summ_detail">
         Boards considered NSFW (not safe for work) are hidden by default. These boards are moderated, but may
         potentially contain offensive material. If you are under 18 or it is illegal
         to view restricted content in your jurisdiction, do not check this button.
+    </string>
+    <string name="pref_show_nsfw_boards_summ_message">
+        Boards considered NSFW (not safe for work) are hidden by default. These boards are moderated, but may
+        potentially contain offensive material. You are forbidden from enabling this option if you are under 18
+        or it is illegal to view restricted content in your jurisdiction.
     </string>
     <string name="pref_notifications">Notifications</string>
     <string name="pref_notifications_summ_on">On</string>

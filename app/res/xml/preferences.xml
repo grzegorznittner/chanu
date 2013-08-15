@@ -132,7 +132,7 @@
                     android:summaryOn="@string/pref_use_friendly_ids_summ_on"
                     android:summaryOff="@string/pref_use_friendly_ids_summ_off"
                     android:defaultValue="true" />
-
+            <!--
             <CheckBoxPreference
                     android:key="pref_show_nsfw_boards"
                     android:title="@string/pref_show_nsfw_boards"
@@ -140,6 +140,19 @@
                     android:summaryOn="@string/pref_show_nsfw_boards_summ_on"
                     android:summaryOff="@string/pref_show_nsfw_boards_summ_off"
                     android:defaultValue="false" />
+            -->
+
+            <com.chanapps.four.component.YesNoPreference
+                    android:key="pref_show_nsfw_boards"
+                    android:title="@string/pref_show_nsfw_boards"
+                    android:summary="@string/pref_show_nsfw_boards_summ_off"
+                    android:summaryOn="@string/pref_show_nsfw_boards_summ_on"
+                    android:summaryOff="@string/pref_show_nsfw_boards_summ_off"
+                    android:dialogMessage="@string/pref_show_nsfw_boards_summ_message"
+                    android:positiveButtonText="@string/pref_show_nsfw_boards_summ_pos"
+                    android:negativeButtonText="@string/pref_show_nsfw_boards_summ_neg"
+                    android:defaultValue="false"
+                    />
 
         </PreferenceScreen>
 

@@ -1310,4 +1310,29 @@
     <dimen name="Drawer.layout_width">240dp</dimen>
     <dimen name="Drawer.paddingTop">16dp</dimen>
 
+    <!-- YesNoPreference -->
+
+    <style name="Preference">
+        <item name="android:layout">@layout/preference</item>
+    </style>
+    <style name="Preference.DialogPreference">
+        <item name="android:positiveButtonText">@android:string/ok</item>
+        <item name="android:negativeButtonText">@android:string/cancel</item>
+    </style>
+    <style name="Preference.DialogPreference.YesNoPreference">
+        <item name="android:positiveButtonText">@android:string/yes</item>
+        <item name="android:negativeButtonText">@android:string/no</item>
+    </style>
+    <style name="Preference.Holo">
+        <item name="android:layout">@layout/preference_holo</item>
+    </style>
+    <style name="Preference.Holo.DialogPreference">
+        <item name="android:positiveButtonText">@android:string/ok</item>
+        <item name="android:negativeButtonText">@android:string/cancel</item>
+    </style>
+    <style name="Preference.Holo.DialogPreference.YesNoPreference">
+        <item name="android:positiveButtonText">@android:string/yes</item>
+        <item name="android:negativeButtonText">@android:string/no</item>
+    </style>
+
 </resources>

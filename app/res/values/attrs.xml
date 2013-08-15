@@ -53,5 +53,6 @@
     <attr name="themedStubImageBackgroundColor" format="reference|color"/>
     <attr name="themedHelpIcon" format="reference"/>
     <attr name="themedDeadIcon" format="reference"/>
-
+    <attr name="yesNoPreferenceStyle" format="reference" />
+ 
 </resources>
