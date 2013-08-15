@@ -2,7 +2,7 @@
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/thread_list_layout"
-        style="@style/BoardGridLayout"
+        style="@style/ThreadListLayout"
         >
 
     <include layout="@layout/board_title_bar"/>
@@ -14,6 +14,7 @@
             android:id="@+id/thread_list_view"
             style="@style/ThreadListView"
             android:layout_below="@+id/board_search_results_bar"
+            android:layout_above="@+id/board_grid_advert"
             />
     <!--
     <include layout="@layout/tutorial_overlay"/>

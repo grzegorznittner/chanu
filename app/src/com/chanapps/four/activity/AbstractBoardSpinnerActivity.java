@@ -9,13 +9,19 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.service.NetworkProfileManager;
+import com.google.ads.Ad;
+import com.google.ads.AdListener;
+import com.google.ads.AdRequest;
+import com.google.ads.AdView;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,6 +40,8 @@ abstract public class
     protected long threadNo = 0;
     protected int themeId;
     protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
+    protected AdView adView;
+    protected View advert;
 
     protected boolean mShowNSFW = false;
 
@@ -55,6 +63,17 @@ abstract public class
         createActionBar();
         createPreViews();
         createViews(bundle);
+        setupAdListener();
+    }
+
+    protected void setupAdListener() {
+        advert = findViewById(R.id.board_grid_advert);
+        if (advert == null)
+            return;
+        adView = (AdView)advert.findViewById(R.id.adView);
+        if (adView == null)
+            return;
+        adView.setAdListener(adListener);
     }
 
     @Override
@@ -237,5 +256,28 @@ abstract public class
         }
         actionBar.setSelectedNavigationItem(pos);
     }
+
+    protected AdListener adListener = new AdListener() {
+        @Override
+        public void onReceiveAd(Ad ad) {
+            advert.setVisibility(View.VISIBLE);
+        }
+        @Override
+        public void onFailedToReceiveAd(Ad ad, AdRequest.ErrorCode errorCode) {
+            advert.setVisibility(View.GONE);
+        }
+        @Override
+        public void onPresentScreen(Ad ad) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+        @Override
+        public void onDismissScreen(Ad ad) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+        @Override
+        public void onLeaveApplication(Ad ad) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+    };
 
 }

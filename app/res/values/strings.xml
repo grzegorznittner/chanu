@@ -679,6 +679,7 @@
     <string name="advert_content_description">Advert: Go To J-List</string>
     <string name="jlist_ad_message">J-List is a peaceful island of Japanese pop culture for you</string>
     <string name="jlist_ad_message_compact">Advert</string>
+    <string name="ad_default_text">Chanu is 4chan Reloaded</string>
 
     <!-- fetch and network services -->
     <string name="mark_dead_thread">Thread marked as dead</string>
@@ -849,9 +850,9 @@
     <string name="board_gif">Animated GIF</string>
     <string name="board_type_other">Other</string>
     <string name="board_type_other_desc">Books, travel, fitness and discussion</string>
-    <string name="board_q">4chan Discussion</string>
+    <string name="board_q">4chan Feedback</string>
     <string name="board_trv">Travel</string>
-    <string name="board_fit">Health &amp; Fitness</string>
+    <string name="board_fit">Fitness</string>
     <string name="board_x">Paranormal</string>
     <string name="board_lit">Literature</string>
     <string name="board_adv">Advice</string>
@@ -1166,7 +1167,7 @@
 
 <string name="board_fit_rules">
 <![CDATA[
-<h3>/fit/ - Health &amp; Fitness</h3>
+<h3>/fit/ - Fitness</h3>
 
 <p>1. Images and discussion related to dieting, exercise, healthy living, and workout plans is welcome here.</p>
 <p>2. Relationship, dating advice, and "mental health" threads belong on /adv/.</p>
@@ -1444,7 +1445,7 @@
 
 <string name="board_q_rules">
 <![CDATA[
-<h3>/q/ - 4chan Discussion</h3>
+<h3>/q/ - 4chan Feedback</h3>
 
 <p>1. Users are free to discuss the site amongst themselves and with the 4chan team.</p>
 <p>2. Constructive criticism only. Trolling, flooding, and ban evasion will not be tolerated.</p>
@@ -1528,7 +1529,7 @@
 <p>6. Requesting contact info outside of contact and meetup threads is not allowed. If a user wishes to provide contact info on their own, they are free to do so, but all requests will be deleted.</p>
 <p>7. Asking a user to write on a sign is not allowed, unless said user is actively taking requests.  Timestamp requests are permitted.</p>
 <p>8. Please try to keep duplicate topics to a minimum by always searching for an old or active thread before posting a new one. Do not post a continuation of a thread until the bump limit is reached.</p>
-
+<p>9. Respect the gender of a thread. If the OP specifies women, only women should reply with images (and vice versa for men). tl;dr: Men, don\'t post pictures of yourself or your nether regions in female threads.</p>
 ]]>
 </string>
 

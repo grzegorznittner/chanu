@@ -22,10 +22,16 @@
           android:layout_height="2dip"
           android:background="@color/blue_base" />
 
-    <ListView
-            android:id="@+id/thread_popup_list_view"
-            style="@style/ThreadListView"
-            android:paddingTop="@dimen/BoardGridView.spacing"
-    />
+    <FrameLayout
+            style="@style/ThreadListLayout"
+            >
+
+        <ListView
+                android:id="@+id/thread_popup_list_view"
+                style="@style/ThreadListView"
+                android:paddingTop="@dimen/BoardGridView.spacing"
+                />
+
+    </FrameLayout>
 
 </LinearLayout>

@@ -41,7 +41,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xff;
 
@@ -517,6 +517,11 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         switch (item.getItemId()) {
             case R.id.refresh_menu:
                 onRefresh();
+                return true;
+            case R.id.scroll_to_bottom_menu:
+                int n = adapter.getCount() - 1;
+                if (DEBUG) Log.i(TAG, "jumping to item n=" + n);
+                absListView.setSelection(n);
                 return true;
             case R.id.new_thread_menu:
                 ChanBoard board = ChanBoard.getBoardByCode(this, boardCode);

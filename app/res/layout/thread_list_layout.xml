@@ -2,15 +2,13 @@
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/thread_list_layout"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="0dp"
+        style="@style/ThreadListLayout"
         >
 
     <ListView
             android:id="@+id/thread_list_view"
             style="@style/ThreadListView"
+            android:layout_above="@+id/board_grid_advert"
             />
     <!--
     <include layout="@layout/tutorial_overlay"/>

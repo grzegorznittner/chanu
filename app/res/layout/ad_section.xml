@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<FrameLayout
         android:id="@+id/board_grid_advert"
         android:orientation="vertical"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal|center_vertical"
@@ -11,6 +11,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
         >
+
     <com.google.ads.AdView
             android:id="@+id/adView"
             android:layout_width="wrap_content"
@@ -18,5 +19,7 @@
             ads:adUnitId="a150e4b6d4be55e"
             ads:adSize="BANNER"
             ads:testDevices="42f758079ab89f7f"
-            ads:loadAdOnCreate="true"/>
-</LinearLayout>
+            ads:loadAdOnCreate="true"
+            />
+
+</FrameLayout>

@@ -46,8 +46,6 @@ import java.util.regex.Pattern;
  */
 public class ThreadViewer {
 
-    public static final int ITEM_THUMB_WIDTH_DP = 96;
-    public static final int ITEM_THUMB_MAXHEIGHT_DP = ITEM_THUMB_WIDTH_DP;
     public static final double MAX_HEADER_SCALE = 1.5;
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
@@ -57,8 +55,6 @@ public class ThreadViewer {
     private static DisplayMetrics displayMetrics = null;
     private static Typeface subjectTypeface = null;
     private static int cardPaddingPx = 0;
-    private static int itemThumbWidth = 0;
-    private static int itemThumbMaxHeight = 0;
     private static ImageLoader imageLoader = null;
     private static DisplayImageOptions displayImageOptions = null;
     private static DisplayImageOptions thumbDisplayImageOptions = null;
@@ -73,8 +69,6 @@ public class ThreadViewer {
         cardPaddingPx = res.getDimensionPixelSize(R.dimen.BoardGridView_spacing);
         displayMetrics = res.getDisplayMetrics();
         subjectTypeface = Typeface.createFromAsset(res.getAssets(), SUBJECT_FONT);
-        itemThumbWidth = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_WIDTH_DP);
-        itemThumbMaxHeight = ChanGridSizer.dpToPx(displayMetrics, ITEM_THUMB_MAXHEIGHT_DP);
         displayImageOptions = createDisplayImageOptions(null);
         thumbDisplayImageOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisc()
@@ -540,13 +534,15 @@ public class ThreadViewer {
             return true;
         if (isListLink(flags))
             return displayNonHeaderImage(iv, cursor, imageOnClickListener);
-        View itemView = (View)iv.getParent().getParent().getParent().getParent();
+
+        // display thumb and also expand if available
+        displayNonHeaderImage(iv, cursor, imageOnClickListener);
         if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
         if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
-        return displayNonHeaderImage(iv, cursor, imageOnClickListener);
+        return true;
     }
 
     static private boolean isListLink(int flags) {

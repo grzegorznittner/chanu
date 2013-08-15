@@ -14,6 +14,7 @@
             android:id="@+id/board_grid_view"
             style="@style/BoardGridView"
             android:layout_below="@+id/board_search_results_bar"
+            android:layout_above="@+id/board_grid_advert"
             />
 
     <TextView
