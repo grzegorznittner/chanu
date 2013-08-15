@@ -16,15 +16,34 @@
             >
         <RelativeLayout style="@style/ThreadListItemBar">
             <View style="@style/ThreadListItemBarBackground"/>
-            <RelativeLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper">
-                <ImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
-            </RelativeLayout>
-            <View style="@style/ThreadListItemLeftSpacer" android:id="@+id/list_item_left_spacer"/>
-            <LinearLayout style="@style/ThreadListItemBarAgoWrapper" android:id="@+id/list_item_ago_wrapper">
-                <TextView style="@style/ThreadListItemBarNo" android:id="@+id/list_item_header_bar_no"/>
-                <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_ago"/>
-            </LinearLayout>
-            <FrameLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies">
+
+            <FrameLayout
+                    style="@style/ThreadListItemLeftBarWrap" android:id="@+id/list_item_left_bar_wrapper"
+                    >
+                <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/ThreadListHeader_flowsize"
+                        android:background="@drawable/thread_list_selector_bg"
+                        android:foreground="@drawable/thread_list_selector_bg"
+                        >
+                    <RelativeLayout style="@style/ThreadListItemImageWrapper" android:id="@+id/list_item_image_wrapper">
+                        <ImageView style="@style/ThreadListItemImage" android:id="@+id/list_item_image"/>
+                    </RelativeLayout>
+                    <View style="@style/ThreadListItemLeftSpacer" android:id="@+id/list_item_left_spacer"/>
+                    <LinearLayout style="@style/ThreadListItemBarAgoWrapper" android:id="@+id/list_item_ago_wrapper">
+                        <TextView style="@style/ThreadListItemBarNo" android:id="@+id/list_item_header_bar_no"/>
+                        <TextView style="@style/ThreadListHeaderBarAgo" android:id="@+id/list_item_header_bar_ago"/>
+                    </LinearLayout>
+                </RelativeLayout>
+                <View android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:background="@drawable/thread_list_selector_bg"
+                      android:foreground="@drawable/thread_list_selector_bg"
+                      />
+            </FrameLayout>
+
+            <FrameLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies"
+                    >
 
                 <RelativeLayout
                         android:layout_width="wrap_content"

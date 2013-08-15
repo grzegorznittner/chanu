@@ -652,8 +652,10 @@ public class ThreadViewer {
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         if (url != null && !url.isEmpty()) {
             if (DEBUG) Log.i(TAG, "setImage url=" + url);
-            if (imageOnClickListener != null)
-                iv.setOnClickListener(imageOnClickListener);
+            if (imageOnClickListener != null) {
+                View wrapper = (View)iv.getParent().getParent();
+                wrapper.setOnClickListener(imageOnClickListener);
+            }
             iv.setVisibility(View.VISIBLE);
             imageLoader.displayImage(url, iv, thumbDisplayImageOptions);
         }
