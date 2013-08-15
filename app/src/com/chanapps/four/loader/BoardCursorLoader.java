@@ -19,7 +19,7 @@ import com.chanapps.four.data.*;
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected static final String TAG = BoardCursorLoader.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
     protected static final double AD_PROBABILITY = 0.20;
     protected static final int MINIMUM_AD_SPACING = 4;
@@ -88,22 +88,22 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
     }
 
     protected void loadMetaTypeBoard(MatrixCursor matrixCursor) {
-        if (DEBUG) Log.i(TAG, "loadMetaTypeBoard");
-        boolean showNSFWBoards = PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
+        boolean showNSFWBoards = ChanBoard.showNSFW(context);
+        if (DEBUG) Log.i(TAG, "loadMetaTypeBoard showNSFWBoards=" + showNSFWBoards);
         for (BoardType boardType : BoardType.values()) {
+            if (BoardType.ALL_BOARDS == boardType)
+                continue;
             if (!boardType.isCategory())
                 continue;
             if (!boardType.isSFW() && !showNSFWBoards)
                 continue;
             if (!ChanBoard.isMetaBoard(boardType.boardCode()))
                 continue;
-            if (!boardName.equals(boardType.boardCode()))
+            if (!boardName.equals(boardType.boardCode()) && !boardName.equals(ChanBoard.ALL_BOARDS_BOARD_CODE))
                 continue;
             List<ChanBoard> boards = ChanBoard.getBoardsByType(context, boardType);
             if (boards == null || boards.isEmpty())
-                break;
+                continue;
             if (DEBUG) Log.i(TAG, "Found " + boards.size() + " boards = " + Arrays.toString(boards.toArray()));
             for (ChanBoard board : boards) {
                 if (board.isMetaBoard())
@@ -112,7 +112,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 matrixCursor.addRow(row);
                 if (DEBUG) Log.i(TAG, "Added board row: " + Arrays.toString(row));
             }
-            break;
         }
         if (DEBUG) Log.i(TAG, "Loading boards complete");
     }

@@ -173,7 +173,13 @@ public class ChanBoard {
 
     public static List<ChanBoard> getBoardsByType(Context context, BoardType boardType) {
         initBoards(context);
-        return new ArrayList<ChanBoard>(boardsByType.get(boardType));
+        //boolean showNSFW = showNSFW(context);
+        //if (BoardType.ALL_BOARDS == boardType && showNSFW)
+        //    return new ArrayList<ChanBoard>(boards);
+        //else if (BoardType.ALL_BOARDS == boardType && !showNSFW)
+        //    return new ArrayList<ChanBoard>(safeBoards);
+        //else
+            return new ArrayList<ChanBoard>(boardsByType.get(boardType));
 	}
 
 	public static ChanBoard getBoardByCode(Context context, String boardCode) {

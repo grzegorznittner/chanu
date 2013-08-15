@@ -8,6 +8,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.widget.BaseAdapter;
 import com.chanapps.four.activity.AboutActivity;
+import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 
@@ -111,6 +112,16 @@ public class SettingsFragment
         name.setOnPreferenceClickListener(namesListener);
         email.setOnPreferenceClickListener(namesListener);
         password.setOnPreferenceClickListener(namesListener);
+
+        Preference.OnPreferenceChangeListener nsfwListener = new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                BoardActivity.refreshAllBoards();
+                return true;
+            }
+        };
+        Preference showNsfw = findPreference(SettingsActivity.PREF_SHOW_NSFW_BOARDS);
+        showNsfw.setOnPreferenceChangeListener(nsfwListener);
 
         /*
         Preference.OnPreferenceChangeListener themeListener = new Preference.OnPreferenceChangeListener() {

@@ -45,6 +45,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xff;
 
+    private static WeakReference<BoardActivity> allBoardsActivityRef = null;
     private static WeakReference<BoardActivity> watchlistActivityRef = null;
     private static WeakReference<BoardActivity> favoritesActivityRef = null;
 
@@ -155,6 +156,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
             }
         }
+        if (ChanBoard.ALL_BOARDS_BOARD_CODE.equals(boardCode))
+            setAllBoards(this);
         else if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
             setWatchlist(this);
         else if (ChanBoard.FAVORITES_BOARD_CODE.equals(boardCode))
@@ -181,15 +184,39 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
     };
 
-    protected static void setWatchlist(BoardActivity fragment) {
+    protected static void setAllBoards(BoardActivity activity) {
         synchronized (BoardActivity.class) {
-            watchlistActivityRef = new WeakReference<BoardActivity>(fragment);
+            allBoardsActivityRef = new WeakReference<BoardActivity>(activity);
         }
     }
 
-    protected static void setFavorites(BoardActivity fragment) {
+    protected static void setWatchlist(BoardActivity activity) {
         synchronized (BoardActivity.class) {
-            favoritesActivityRef = new WeakReference<BoardActivity>(fragment);
+            watchlistActivityRef = new WeakReference<BoardActivity>(activity);
+        }
+    }
+
+    protected static void setFavorites(BoardActivity activity) {
+        synchronized (BoardActivity.class) {
+            favoritesActivityRef = new WeakReference<BoardActivity>(activity);
+        }
+    }
+
+    public static void refreshAllBoards() {
+        synchronized (BoardActivity.class) {
+            if (DEBUG) Log.i(TAG, "refreshAllBoards()");
+            BoardActivity allBoards;
+            if (allBoardsActivityRef != null && (allBoards = allBoardsActivityRef.get()) != null) {
+                ChanActivityId activity = NetworkProfileManager.instance().getActivityId();
+                if (activity != null
+                        && activity.activity == LastActivity.BOARD_ACTIVITY
+                        && ChanBoard.ALL_BOARDS_BOARD_CODE.equals(activity.boardCode)
+                        && allBoards.handler != null
+                        )
+                    allBoards.refresh();
+                else
+                    allBoards.backgroundRefresh();
+            }
         }
     }
 
@@ -760,15 +787,15 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     public void backgroundRefresh() {
-        Handler handler = NetworkProfileManager.instance().getActivity().getChanHandler();
-        if (handler != null)
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.swapCursor(null);
-                    setProgress(false);
-                }
-            });
+        if (DEBUG) Log.i(TAG, "backgroundRefresh() /" + boardCode + "/");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (DEBUG) Log.i(TAG, "backgroundRefresh() /" + boardCode + "/ refreshing on UI thread");
+                if (getSupportLoaderManager() != null)
+                    getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
+            }
+        });
     }
 
     @Override
