@@ -810,6 +810,7 @@ public class ThreadActivity
             if (DEBUG) Log.i(TAG, "onLoadFinished /" + boardCode + "/ id=" + loader.getId()
                     + " count=" + (data == null ? 0 : data.getCount()) + " loader=" + loader);
             onBoardsTabletLoadFinished(data);
+            refreshing = false;
         }
 
         @Override

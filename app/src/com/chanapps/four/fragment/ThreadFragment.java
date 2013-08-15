@@ -162,12 +162,22 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         threadListener = new ThreadListener(this, ThemeSelector.instance(getActivity().getApplicationContext()).isDark());
         if (threadNo > 0 && (adapter == null || adapter.getCount() == 0)) {
             ThreadActivity activity = (ThreadActivity)getActivity();
-            if (activity != null && !activity.refreshing) {
-                if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " restarting loader");
-                getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
+            if (activity == null) {
+                if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " activity null, skipping loader");
+            }
+            else if (activity.refreshing) {
+                ChanThread thread = ChanFileStorage.loadThreadData(activity, boardCode, threadNo);
+                if (thread != null && thread.isDead) {
+                    if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " dead thread, restarting loader");
+                    getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
+                }
+                else {
+                    if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " activity refreshing, skipping loader");
+                }
             }
             else {
-                if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " activity null or refreshing, skipping loader");
+                if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " restarting loader");
+                getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
             }
         }
         else {
