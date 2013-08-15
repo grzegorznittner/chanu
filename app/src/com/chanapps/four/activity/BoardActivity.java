@@ -137,7 +137,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
-        createAbsListView();
         emptyText = (TextView)findViewById(R.id.board_grid_empty_text);
         if (boardCode == null || boardCode.isEmpty()) {
             if (ActivityDispatcher.isDispatchable(this)) {
@@ -170,6 +169,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             hideBoardTitle();
 
         BoardGridViewer.initStatics(getApplicationContext(), ThemeSelector.instance(getApplicationContext()).isDark());
+        createAbsListView();
     }
 
     protected PullToRefreshAttacher.OnRefreshListener pullToRefreshListener
@@ -327,6 +327,29 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
+        ChanBoard board = ChanFileStorage.loadBoardData(this, boardCode);
+        if (board != null && (board.isPopularBoard() || !board.isVirtualBoard())) {
+            mPullToRefreshAttacher = new PullToRefreshAttacher(this);
+            mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
+        }
+        else {
+            mPullToRefreshAttacher = null;
+        }
+    }
+
+    protected class LoggingPauseOnScrollListener extends PauseOnScrollListener {
+        public LoggingPauseOnScrollListener(ImageLoader imageLoader, boolean pauseOnScroll, boolean pauseOnFling) {
+            super(imageLoader, pauseOnScroll, pauseOnFling, null);
+        }
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
     }
 
     @Override
@@ -364,13 +387,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         else {
             if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ non-current board data, manual refreshing");
             onRefresh();
-        }
-        if (board.isPopularBoard() || !board.isVirtualBoard()) {
-            mPullToRefreshAttacher = new PullToRefreshAttacher(this);
-            mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
-        }
-        else {
-            mPullToRefreshAttacher = null;
         }
     }
 
