@@ -219,13 +219,11 @@ public class SettingsFragment
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        BillingComponent.getInstance().openStore(activity);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        BillingComponent.getInstance().closeStore();
     }
 
 }

@@ -4,18 +4,17 @@ import android.app.ActionBar;
 import android.content.*;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
-import android.widget.RelativeLayout;
 import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.BillingComponent;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
+import com.chanapps.four.data.ChanBillingAssets;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.google.ads.Ad;
@@ -33,7 +32,7 @@ abstract public class
         ThemeSelector.ThemeActivity
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
     protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
 
     protected String boardCode;
@@ -49,6 +48,7 @@ abstract public class
     protected int mSpinnerArrayId;
     protected String[] mSpinnerArray;
     protected ArrayAdapter<String> mSpinnerAdapter;
+    protected BillingComponent billingComponent;
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -63,17 +63,28 @@ abstract public class
         createActionBar();
         createPreViews();
         createViews(bundle);
-        setupAdListener();
+        setupAds();
     }
 
-    protected void setupAdListener() {
+    protected void setupAds() {
+        boolean hasProkey = BillingComponent.getInstance().hasItem(ChanBillingAssets.NO_ADS_NONCONS_PRODUCT_ID);
         advert = findViewById(R.id.board_grid_advert);
         if (advert == null)
             return;
         adView = (AdView)advert.findViewById(R.id.adView);
         if (adView == null)
             return;
+        if (hasProkey) {
+            if (DEBUG) Log.i(TAG, "setupAds() has prokey, disabling ads");
+            adView.setEnabled(false);
+            adView.setVisibility(View.GONE);
+            return;
+        }
+        if (DEBUG) Log.i(TAG, "setupAds() has no prokey, showing ads");
         adView.setAdListener(adListener);
+        adView.setEnabled(true);
+        adView.loadAd(new AdRequest()); // on ui thread performance?
+        // FIXME: add listener to check to show/hide ads in onStart
     }
 
     @Override
