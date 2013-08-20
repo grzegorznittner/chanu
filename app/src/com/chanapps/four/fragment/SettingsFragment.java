@@ -1,16 +1,21 @@
 package com.chanapps.four.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.util.Log;
 import android.widget.BaseAdapter;
+import android.widget.Toast;
 import com.chanapps.four.activity.AboutActivity;
 import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.component.BillingComponent;
+import com.chanapps.four.data.ChanBillingAssets;
 
 
 /**
@@ -25,7 +30,8 @@ public class SettingsFragment
 //        implements SharedPreferences.OnSharedPreferenceChangeListener
 {
 
-    public static String TAG = SettingsFragment.class.getSimpleName();
+    protected static final boolean DEBUG = true;
+    protected static final String TAG = SettingsFragment.class.getSimpleName();
 
     public Handler handler;
 
@@ -38,6 +44,23 @@ public class SettingsFragment
 
     public void initPreferenceScreen() {
         addPreferencesFromResource(R.xml.preferences);
+
+        Preference purchaseProkeyButton = findPreference(SettingsActivity.PREF_PURCHASE_PROKEY);
+        purchaseProkeyButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                if (DEBUG) Log.i(TAG, "onPreferenceClick() purchase prokey");
+                try {
+                    BillingComponent.getInstance().purchaseItem(ChanBillingAssets.NO_ADS_NONCONS_PRODUCT_ID);
+                    //BillingComponent.getInstance().purchaseItem(ChanBillingAssets.TEST_NONCONS_PRODUCT_ID);
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "onPreferenceClick() exception purchasing prokey", e);
+                    Toast.makeText(getActivity(), "Couldn\'t purchase prokey: " + e, Toast.LENGTH_LONG).show();
+                }
+                return true;
+            }
+        });
 
         Preference blocklistButton = findPreference(SettingsActivity.PREF_BLOCKLIST_BUTTON);
         blocklistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -191,6 +214,18 @@ public class SettingsFragment
         public void handleMessage(Message msg) {
             ((BaseAdapter)fragment.getPreferenceScreen().getRootAdapter()).notifyDataSetInvalidated();
         }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        BillingComponent.getInstance().openStore(activity);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        BillingComponent.getInstance().closeStore();
     }
 
 }

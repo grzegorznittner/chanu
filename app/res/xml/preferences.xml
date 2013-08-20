@@ -2,7 +2,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                   xmlns:chanapps="http://chanapps.com">
 
-<!-- posting -->
+    <PreferenceCategory
+            android:key="pref_prokey"
+            android:title="@string/pref_prokey_category"
+            android:summary="@string/pref_prokey_category_summ"
+            android:persistent="true"
+            >
+
+        <Preference
+                android:key="pref_purchase_prokey"
+                android:title="@string/pref_purchase_prokey"
+                android:summary="@string/pref_purchase_prokey_summ" />
+
+    </PreferenceCategory>
+
+    <!-- posting -->
 
     <PreferenceCategory
             android:key="pref_user_category"
