@@ -151,9 +151,6 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
                 Intent intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.exit_menu:
-                ActivityDispatcher.exitApplication(this);
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

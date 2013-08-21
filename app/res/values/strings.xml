@@ -684,7 +684,6 @@
 
     <!-- Help and about_dialog -->
     <string name="about_menu">About</string>
-    <string name="exit_menu">Exit</string>
     <string name="test_menu">Test</string>
 
     <!-- camera -->

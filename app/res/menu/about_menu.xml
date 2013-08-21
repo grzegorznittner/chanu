@@ -14,8 +14,4 @@
           android:title="@string/settings_menu"
           android:icon="@drawable/action_settings"
             />
-    <item android:id="@+id/exit_menu"
-          android:title="@string/exit_menu"
-          android:icon="@drawable/navigation_cancel"
-            />
 </menu>
