@@ -1,10 +1,18 @@
 package com.chanapps.four.fragment;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.util.Log;
+import android.widget.Toast;
+import com.chanapps.four.activity.AboutActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.BillingComponent;
 
 
 /**
@@ -16,7 +24,7 @@ import com.chanapps.four.component.ActivityDispatcher;
  */
 public class AboutFragment extends PreferenceFragment
 {
-
+    protected static final boolean DEBUG = false;
     public static String TAG = AboutFragment.class.getSimpleName();
 
     @Override
@@ -24,6 +32,10 @@ public class AboutFragment extends PreferenceFragment
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.about_preferences);
+
+        addPurchasePreferences();
+        //addPurchasePreference();
+        //addConsumePreference();
 
         linkPreference("pref_about_icon", "market://search?q=pub:Chanapps Software");
         linkPreference("pref_about_application_version", "market://search?q=pub:Chanapps Software");
@@ -67,4 +79,98 @@ public class AboutFragment extends PreferenceFragment
                 });
     }
     */
+
+    protected void addPurchasePreferences() {
+        boolean hasProkey = BillingComponent.getInstance(getActivity().getApplicationContext()).hasProkey();
+        if (hasProkey) {
+            removePurchasePreference();
+            addInstalledProkeyPreference();
+        }
+        else {
+            addPurchasePreference();
+        }
+    }
+
+    protected void removePurchasePreference() {
+        PreferenceCategory purchaseCategory = (PreferenceCategory)findPreference(AboutActivity.PREF_PURCHASE_CATEGORY);
+        Preference purchaseProkeyButton = findPreference(AboutActivity.PREF_PURCHASE_PROKEY);
+        purchaseCategory.removePreference(purchaseProkeyButton);
+    }
+
+    protected void addInstalledProkeyPreference() {
+        Preference installedProkey = new Preference(getActivity());
+        installedProkey.setKey(AboutActivity.PREF_INSTALLED_PROKEY);
+        installedProkey.setTitle(R.string.pref_installed_prokey);
+        installedProkey.setSummary(R.string.pref_installed_prokey_summ);
+        PreferenceCategory purchaseCategory = (PreferenceCategory)findPreference(AboutActivity.PREF_PURCHASE_CATEGORY);
+        purchaseCategory.addPreference(installedProkey);
+    }
+
+    protected void addPurchasePreference() {
+        Preference purchaseProkeyButton = findPreference(AboutActivity.PREF_PURCHASE_PROKEY);
+        purchaseProkeyButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                if (DEBUG) Log.i(TAG, "onPreferenceClick() purchase prokey");
+                try {
+                    final DialogFragment fragment = new ConnectingToBillingDialogFragment();
+                    fragment.show(getFragmentManager(), SettingsFragment.TAG);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            BillingComponent
+                                    .getInstance(getActivity().getApplicationContext())
+                                    .purchaseProkey(getActivity(), fragment);
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    fragment.dismiss();
+                                }
+                            });
+                        }
+                    }).start();
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "onPreferenceClick() exception purchasing prokey", e);
+                    Toast.makeText(getActivity(), R.string.purchase_error, Toast.LENGTH_LONG).show();
+                }
+                return true;
+            }
+        });
+    }
+    /*
+    protected void addConsumePreference() {
+        Preference consumeProkeyButton = findPreference(AboutActivity.PREF_CONSUME_PROKEY);
+        consumeProkeyButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                if (DEBUG) Log.i(TAG, "onPreferenceClick() consume prokey");
+                try {
+                    final DialogFragment fragment = new ConnectingToBillingDialogFragment();
+                    fragment.show(getFragmentManager(), SettingsFragment.TAG);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            BillingComponent
+                                    .getInstance(getActivity().getApplicationContext())
+                                    .consumeProkey(getActivity(), fragment);
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    fragment.dismiss();
+                                }
+                            });
+                        }
+                    }).start();
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "onPreferenceClick() exception consuming prokey", e);
+                    Toast.makeText(getActivity(), R.string.purchase_error, Toast.LENGTH_LONG).show();
+                }
+                return true;
+            }
+        });
+    }
+    */
+
 }

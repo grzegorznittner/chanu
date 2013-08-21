@@ -5,14 +5,25 @@
         style="@style/BoardGridLayout"
         >
 
-    <include layout="@layout/board_title_bar"/>
+    <include layout="@layout/board_title_bar" android:id="@+id/board_title_bar"/>
 
-    <include layout="@layout/board_refresh_bar"/>
-
+    <!--
+    <include layout="@layout/board_refresh_bar"
+            android:layout_below="@+id/board_title_bar"
+            />
+    -->
+    <!--
+    <TextView
+        android:id="@+id/board_test"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Board Test"
+        />
+    -->
     <GridView
             android:id="@+id/board_grid_view"
             style="@style/BoardGridViewSmall"
-            android:layout_below="@+id/board_refresh_bar"
+            android:layout_below="@+id/board_title_bar"
             android:layout_above="@+id/board_grid_advert"
             />
 

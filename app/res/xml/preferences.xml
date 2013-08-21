@@ -2,20 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                   xmlns:chanapps="http://chanapps.com">
 
-    <PreferenceCategory
-            android:key="pref_prokey"
-            android:title="@string/pref_prokey_category"
-            android:summary="@string/pref_prokey_category_summ"
-            android:persistent="true"
-            >
-
-        <Preference
-                android:key="pref_purchase_prokey"
-                android:title="@string/pref_purchase_prokey"
-                android:summary="@string/pref_purchase_prokey_summ" />
-
-    </PreferenceCategory>
-
     <!-- posting -->
 
     <PreferenceCategory
@@ -155,7 +141,7 @@
                     android:summaryOff="@string/pref_show_nsfw_boards_summ_off"
                     android:defaultValue="false" />
             -->
-
+            <!--
             <com.chanapps.four.component.YesNoPreference
                     android:key="pref_show_nsfw_boards"
                     android:title="@string/pref_show_nsfw_boards"
@@ -167,7 +153,7 @@
                     android:negativeButtonText="@string/pref_show_nsfw_boards_summ_neg"
                     android:defaultValue="false"
                     />
-
+            -->
         </PreferenceScreen>
 
         <Preference

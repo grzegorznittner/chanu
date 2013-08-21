@@ -75,7 +75,17 @@
                 android:summary="@string/pref_about_developer_chanapps_sum"
                 />
 
+        <Preference
+                android:key="pref_purchase_prokey"
+                android:title="@string/pref_purchase_prokey"
+                android:summary="@string/pref_purchase_prokey_summ" />
+
         <!--
+        <Preference
+                android:key="pref_consume_prokey"
+                android:title="@string/pref_consume_prokey"
+                android:summary="@string/pref_consume_prokey_summ" />
+
         <Preference
                 android:key="pref_about_developer_burns"
                 android:title="@string/pref_about_developer_burns"

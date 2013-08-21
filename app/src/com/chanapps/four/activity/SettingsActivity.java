@@ -47,7 +47,6 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_BLOCKLIST_NAME = "prefBlocklistName";
     public static final String PREF_BLOCKLIST_EMAIL = "prefBlocklistEmail";
     public static final String PREF_BLOCKLIST_ID = "prefBlocklistId";
-    public static final String PREF_PURCHASE_PROKEY = "pref_purchase_prokey";
 
     protected int themeId;
     protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;

@@ -116,14 +116,11 @@ public class BoardGridViewer {
             return false;
         String s = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_SUBJECT));
         String t = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_TEXT));
-        if (s != null && !s.isEmpty()) {
-            if (DEBUG) Log.i(TAG, "setGridSubject tv=" + tv + " subject=" + s);
-            tv.setText(Html.fromHtml(s));
-            tv.setVisibility(View.VISIBLE);
-        }
-        else if (t != null && !t.isEmpty()) {
-            if (DEBUG) Log.i(TAG, "setGridSubject tv=" + tv + " no subject, text=" + s);
-            tv.setText(Html.fromHtml(t));
+        String u = (s != null && !s.isEmpty() ? "<b>" + s + "</b><br/>" : "")
+                + t;
+        if (DEBUG) Log.i(TAG, "setGridSubject tv=" + tv + " u=" + u);
+        if (u != null && !u.isEmpty()) {
+            tv.setText(Html.fromHtml(u));
             tv.setVisibility(View.VISIBLE);
         }
         else {

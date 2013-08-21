@@ -15,7 +15,6 @@ import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.BillingComponent;
-import com.chanapps.four.data.ChanBillingAssets;
 
 
 /**
@@ -30,7 +29,7 @@ public class SettingsFragment
 //        implements SharedPreferences.OnSharedPreferenceChangeListener
 {
 
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
     protected static final String TAG = SettingsFragment.class.getSimpleName();
 
     public Handler handler;
@@ -44,23 +43,6 @@ public class SettingsFragment
 
     public void initPreferenceScreen() {
         addPreferencesFromResource(R.xml.preferences);
-
-        Preference purchaseProkeyButton = findPreference(SettingsActivity.PREF_PURCHASE_PROKEY);
-        purchaseProkeyButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                if (DEBUG) Log.i(TAG, "onPreferenceClick() purchase prokey");
-                try {
-                    BillingComponent.getInstance().purchaseItem(ChanBillingAssets.NO_ADS_NONCONS_PRODUCT_ID);
-                    //BillingComponent.getInstance().purchaseItem(ChanBillingAssets.TEST_NONCONS_PRODUCT_ID);
-                }
-                catch (Exception e) {
-                    Log.e(TAG, "onPreferenceClick() exception purchasing prokey", e);
-                    Toast.makeText(getActivity(), "Couldn\'t purchase prokey: " + e, Toast.LENGTH_LONG).show();
-                }
-                return true;
-            }
-        });
 
         Preference blocklistButton = findPreference(SettingsActivity.PREF_BLOCKLIST_BUTTON);
         blocklistButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -135,7 +117,7 @@ public class SettingsFragment
         name.setOnPreferenceClickListener(namesListener);
         email.setOnPreferenceClickListener(namesListener);
         password.setOnPreferenceClickListener(namesListener);
-
+        /*
         Preference.OnPreferenceChangeListener nsfwListener = new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -145,7 +127,7 @@ public class SettingsFragment
         };
         Preference showNsfw = findPreference(SettingsActivity.PREF_SHOW_NSFW_BOARDS);
         showNsfw.setOnPreferenceChangeListener(nsfwListener);
-
+        */
         /*
         Preference.OnPreferenceChangeListener themeListener = new Preference.OnPreferenceChangeListener() {
             @Override

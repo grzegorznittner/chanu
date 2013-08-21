@@ -8,7 +8,10 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
+import com.android.gallery3d.ui.Log;
 import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.BillingComponent;
 import com.chanapps.four.component.StringResourceDialog;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.ChanBoard;
@@ -24,7 +27,13 @@ import com.chanapps.four.fragment.AboutFragment;
  */
 public class AboutActivity extends Activity implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity {
 
+    protected static final boolean DEBUG = false;
     public static final String TAG = AboutActivity.class.getSimpleName();
+    public static final String PREF_PURCHASE_CATEGORY = "pref_about_developer_category";
+    public static final String PREF_PURCHASE_PROKEY = "pref_purchase_prokey";
+    public static final String PREF_INSTALLED_PROKEY = "pref_installed_prokey";
+    public static final String PREF_CONSUME_PROKEY = "pref_consume_prokey"; // TEST ONLY
+    public static final int PURCHASE_REQUEST_CODE = 1987;
 
     protected int themeId;
     protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
@@ -130,6 +139,19 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (DEBUG) Log.i(TAG, "onActivityResult requestCode=" + requestCode + " resultCode=" + resultCode + " data=" + data);
+        if (requestCode != PURCHASE_REQUEST_CODE)
+            return;
+        if (resultCode != RESULT_OK) {
+            Log.e(TAG, "Error while processing purchase request resultCode=" + resultCode);
+            Toast.makeText(this, R.string.purchase_error, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        BillingComponent.getInstance(getApplicationContext()).processPurchaseResponse(data, new Handler());
     }
 
 }

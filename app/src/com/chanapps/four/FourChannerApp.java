@@ -2,6 +2,7 @@ package com.chanapps.four;
 
 import com.android.gallery3d.app.GalleryAppImpl;
 import com.android.gallery3d.data.DataManager;
+import com.chanapps.four.component.BillingComponent;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.gallery.ChanOffLineSource;
@@ -20,5 +21,11 @@ public class FourChannerApp extends GalleryAppImpl {
             mDataManager.addSource(new ChanOffLineSource(this));
         }
         return mDataManager;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        BillingComponent.getInstance(getApplicationContext()).checkForNewPurchases();
     }
 }
