@@ -251,8 +251,12 @@
     <dimen name="tutorial_overlay_button_textSize">18sp</dimen>
 
     <!-- widgets dimension -->
-    <dimen name="widget_board_minWidth">350dp</dimen>
-    <dimen name="widget_board_minHeight">270dp</dimen>
+    <dimen name="widget_board_minWidth">250dp</dimen>
+    <dimen name="widget_board_minHeight">40dp</dimen>
+    <dimen name="widget_board_oneimage_minWidth">110dp</dimen>
+    <dimen name="widget_board_oneimage_minHeight">110dp</dimen>
+    <dimen name="widget_board_coverflow_minWidth">180dp</dimen>
+    <dimen name="widget_board_coverflow_minHeight">180dp</dimen>
 
     <!-- popular / home -->
     <dimen name="PopularTitle_paddingTop">64dp</dimen>

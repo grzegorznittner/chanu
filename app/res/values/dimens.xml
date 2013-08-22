@@ -269,9 +269,13 @@
     <dimen name="PopularItemText_paddingBottom">24dp</dimen>
     <dimen name="PopularItem_textSize">16sp</dimen>
 
-    <!-- widgets dimension -->
-    <dimen name="widget_board_minWidth">294dp</dimen>
-    <dimen name="widget_board_minHeight">72dp</dimen>
+    <!-- widgets dimension 294,72 -->
+    <dimen name="widget_board_minWidth">250dp</dimen>
+    <dimen name="widget_board_minHeight">40dp</dimen>
+    <dimen name="widget_board_oneimage_minWidth">110dp</dimen>
+    <dimen name="widget_board_oneimage_minHeight">110dp</dimen>
+    <dimen name="widget_board_coverflow_minWidth">180dp</dimen>
+    <dimen name="widget_board_coverflow_minHeight">180dp</dimen>
 
     <!-- drawer -->
     <string name="drawer_open">Open navigation drawer</string>

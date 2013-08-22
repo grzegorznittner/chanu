@@ -886,7 +886,7 @@
     <string name="board_r9k">ROBOT9001</string>
     <string name="board_pol">Politically Incorrect</string>
     <string name="board_s4s">Shit 4chan Says</string>
-    <string name="board_soc">Social</string>
+    <string name="board_soc">Cams &amp; Meetups</string>
     <string name="board_watch">Thread Watchlist</string>
     <string name="board_watch_desc">Keep track of interesting discussions</string>
     <string name="board_watch_abbrev">Watch</string>
@@ -1540,7 +1540,7 @@
 
 <string name="board_soc_rules">
 <![CDATA[
-<h3>/soc/ - Social</h3>
+<h3>/soc/ - Cams &amp; Meetups</h3>
 
 <p>1. Created to get "rate me," meetup, report in, and camwhore threads out of /b/ and /r9k/.</p>
 <p>2. No whining (aka "BAWWW") or "life" threads. This is not your personal blog.</p>
