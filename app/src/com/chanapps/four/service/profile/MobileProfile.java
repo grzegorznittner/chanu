@@ -34,8 +34,8 @@ public class MobileProfile extends AbstractNetworkProfile {
         REFRESH_TIME.put(Health.BAD, new FetchParams(1800L, 10L, 20, 15, 0));
         REFRESH_TIME.put(Health.VERY_SLOW, new FetchParams(1500L, 10L, 20, 15, 25000));
         REFRESH_TIME.put(Health.SLOW, new FetchParams(1200L, 10L, 20, 10, 50000));
-        REFRESH_TIME.put(Health.GOOD, new FetchParams(900L, 10L, 12, 8, 100000));
-        REFRESH_TIME.put(Health.PERFECT, new FetchParams(600L, 10L, 8, 4, 250000));
+        REFRESH_TIME.put(Health.GOOD, new FetchParams(900L, 10L, 12, 8, 75000));
+        REFRESH_TIME.put(Health.PERFECT, new FetchParams(600L, 10L, 8, 4, 100000));
     }
 
     @Override

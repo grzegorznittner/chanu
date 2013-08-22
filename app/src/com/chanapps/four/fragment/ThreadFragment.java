@@ -19,6 +19,7 @@ import com.chanapps.four.activity.*;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.AdComponent;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.*;
@@ -157,6 +158,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public void onStart() {
         super.onStart();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo);
+        if (getActivity() != null)
+            (new AdComponent(getActivity().getApplicationContext(), layout.findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
         if (handler == null)
             handler = new Handler();
         threadListener = new ThreadListener(this, ThemeSelector.instance(getActivity().getApplicationContext()).isDark());
@@ -633,6 +636,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 ((ThreadActivity)getActivity()).showThread(threadNo);
             } else {
                 ThreadActivity.startActivity(getActivity(), linkedBoardCode, linkedThreadNo, "");
+                getActivity().finish();
             }
         }
     };
@@ -645,8 +649,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             cursor.moveToPosition(pos);
             String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
             absListView.setItemChecked(pos, false); // gets checked for some reason
-            if (linkedBoardCode != null && !linkedBoardCode.isEmpty())
+            if (linkedBoardCode != null && !linkedBoardCode.isEmpty()) {
                 BoardActivity.startActivity(getActivity(), linkedBoardCode, "");
+                getActivity().finish();
+            }
         }
     };
 

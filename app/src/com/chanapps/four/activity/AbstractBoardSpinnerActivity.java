@@ -10,15 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
-import com.chanapps.four.component.ActivityDispatcher;
-import com.chanapps.four.component.BillingComponent;
+import com.chanapps.four.component.AdComponent;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.service.NetworkProfileManager;
-import com.google.ads.Ad;
-import com.google.ads.AdListener;
-import com.google.ads.AdRequest;
 import com.google.ads.AdView;
 
 import java.util.regex.Matcher;
@@ -31,7 +27,7 @@ abstract public class
         ThemeSelector.ThemeActivity
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
     protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
 
     protected String boardCode;
@@ -61,41 +57,6 @@ abstract public class
         createActionBar();
         createPreViews();
         createViews(bundle);
-    }
-
-    protected void setupAds() {
-        boolean hasProkey = BillingComponent.getInstance(getApplicationContext()).hasProkey();
-        if (hasProkey)
-            disableAds();
-        else
-            enableAds();
-    }
-
-    protected void enableAds() {
-        if (DEBUG) Log.i(TAG, "setupAds() enabling ads");
-        advert = findViewById(R.id.board_grid_advert);
-        if (advert == null)
-            return;
-        adView = (AdView)advert.findViewById(R.id.adView);
-        if (adView == null)
-            return;
-        adView.setAdListener(adListener);
-        adView.setEnabled(true);
-        advert.setVisibility(View.VISIBLE);
-        adView.loadAd(new AdRequest()); // on ui thread performance?
-    }
-
-    protected void disableAds() {
-        if (DEBUG) Log.i(TAG, "setupAds() has prokey, disabling ads");
-        advert = findViewById(R.id.board_grid_advert);
-        if (advert == null)
-            return;
-        adView = (AdView)advert.findViewById(R.id.adView);
-        if (adView == null)
-            return;
-        adView.setEnabled(false);
-        advert.setVisibility(View.GONE);
-        return;
     }
 
     @Override
@@ -145,7 +106,7 @@ abstract public class
     @Override
     protected void onStart() {
         super.onStart();
-        setupAds();
+        (new AdComponent(getApplicationContext(), findViewById(R.id.board_grid_advert))).hideOrDisplayAds();
         boolean newShowNSFW = ChanBoard.showNSFW(getApplicationContext());
         if (newShowNSFW != mShowNSFW) {
             mShowNSFW = newShowNSFW;
@@ -169,10 +130,12 @@ abstract public class
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
+                finish();
                 return true;
             case R.id.about_menu:
                 Intent intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -213,6 +176,7 @@ abstract public class
         if (getString(R.string.about_menu).equals(boardAsMenu)) {
             Intent intent = AboutActivity.createIntent(this);
             startActivity(intent);
+            finish();
             return true;
         }
         BoardType boardType = BoardType.valueOfDrawerString(this, boardAsMenu);
@@ -225,6 +189,7 @@ abstract public class
             if (DEBUG) Log.i(TAG, "matched board type /" + boardTypeCode + "/, starting");
             Intent intent = BoardActivity.createIntent(this, boardTypeCode, "");
             startActivity(intent);
+            finish();
             return true;
         }
         Pattern p = Pattern.compile(BOARD_CODE_PATTERN);
@@ -245,6 +210,7 @@ abstract public class
         Intent intent = BoardActivity.createIntent(this, boardCodeForJump, "");
         if (DEBUG) Log.i(TAG, "matched board /" + boardCodeForJump + "/, starting");
         startActivity(intent);
+        finish();
         return true;
     }
 
@@ -276,28 +242,5 @@ abstract public class
         }
         actionBar.setSelectedNavigationItem(pos);
     }
-
-    protected AdListener adListener = new AdListener() {
-        @Override
-        public void onReceiveAd(Ad ad) {
-            advert.setVisibility(View.VISIBLE);
-        }
-        @Override
-        public void onFailedToReceiveAd(Ad ad, AdRequest.ErrorCode errorCode) {
-            advert.setVisibility(View.GONE);
-        }
-        @Override
-        public void onPresentScreen(Ad ad) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-        @Override
-        public void onDismissScreen(Ad ad) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-        @Override
-        public void onLeaveApplication(Ad ad) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-    };
 
 }

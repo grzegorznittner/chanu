@@ -265,6 +265,7 @@ abstract public class
             if (DEBUG) Log.i(TAG, "matched board type /" + boardTypeCode + "/, starting");
             Intent intent = BoardActivity.createIntent(this, boardTypeCode, "");
             startActivity(intent);
+            finish();
             return true;
         }
         Pattern p = Pattern.compile(BOARD_CODE_PATTERN);
@@ -285,6 +286,7 @@ abstract public class
         Intent intent = BoardActivity.createIntent(this, boardCodeForJump, "");
         if (DEBUG) Log.i(TAG, "matched board /" + boardCodeForJump + "/, starting");
         startActivity(intent);
+        finish();
         return true;
     }
 

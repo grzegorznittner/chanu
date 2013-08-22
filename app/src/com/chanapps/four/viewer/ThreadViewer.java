@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
-import com.chanapps.four.component.ChanGridSizer;
 import com.chanapps.four.component.ThreadImageExpander;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
