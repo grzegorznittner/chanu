@@ -16,6 +16,7 @@
 
 package com.android.gallery3d.app;
 
+import android.os.Handler;
 import com.chanapps.four.gallery3d.R;
 import com.android.gallery3d.data.DataManager;
 import com.android.gallery3d.data.ImageCacheService;
@@ -52,6 +53,7 @@ public class AbstractGalleryActivity extends Activity implements GalleryActivity
         }
     };
     private IntentFilter mMountFilter = new IntentFilter(Intent.ACTION_MEDIA_MOUNTED);
+    private Handler handler;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -129,6 +131,7 @@ public class AbstractGalleryActivity extends Activity implements GalleryActivity
     @Override
     protected void onStart() {
         super.onStart();
+        handler = new Handler();
         if (getExternalCacheDir() == null) {
             OnCancelListener onCancel = new OnCancelListener() {
                 @Override
@@ -156,6 +159,7 @@ public class AbstractGalleryActivity extends Activity implements GalleryActivity
     @Override
     protected void onStop() {
         super.onStop();
+        handler = null;
         if (mAlertDialog != null) {
             unregisterReceiver(mMountReceiver);
             mAlertDialog.dismiss();
@@ -210,4 +214,10 @@ public class AbstractGalleryActivity extends Activity implements GalleryActivity
     public GalleryActionBar getGalleryActionBar() {
         return null;
     }
+
+    @Override
+    public Handler getHandler() {
+        return handler;
+    }
+
 }

@@ -16,6 +16,7 @@
 
 package com.android.gallery3d.app;
 
+import android.os.Handler;
 import com.android.gallery3d.ui.GLRoot;
 import com.android.gallery3d.ui.PositionRepository;
 
@@ -25,4 +26,5 @@ public interface GalleryActivity extends GalleryContext {
     public PositionRepository getPositionRepository();
     public GalleryApp getGalleryApplication();
     public GalleryActionBar getGalleryActionBar();
+    public Handler getHandler();
 }

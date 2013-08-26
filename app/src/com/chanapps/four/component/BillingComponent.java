@@ -12,10 +12,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 import com.android.vending.billing.IInAppBillingService;
-import com.chanapps.four.activity.AboutActivity;
-import com.chanapps.four.activity.BoardActivity;
-import com.chanapps.four.activity.R;
-import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.activity.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -242,12 +239,16 @@ public class BillingComponent {
                 if (DEBUG) Log.i(TAG, "onServiceConnected() name=" + name + " service=" + service);
                 mService = IInAppBillingService.Stub.asInterface(service);
                 purchaseItemViaService(activity, productId);
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        fragment.dismiss();
-                    }
-                });
+                if (activity instanceof ChanIdentifiedActivity) {
+                    Handler handler = ((ChanIdentifiedActivity) activity).getChanHandler();
+                    if (handler != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                fragment.dismiss();
+                            }
+                        });
+                }
                 if (mServiceConn != null) {
                     context.unbindService(mServiceConn); // don't hold resource open
                 }
@@ -352,72 +353,6 @@ public class BillingComponent {
         purchases.add(item.productId);
         overwritePurchasedItems(purchases);
         PreferenceManager.getDefaultSharedPreferences(context).edit().putString(LAST_PURCHASE_TOKEN, item.purchaseToken).commit();
-    }
-
-    /*
-    public void consumeProkey(Activity activity, DialogFragment fragment) {
-        consumeItem(activity, BillingComponent.NO_ADS_NONCONS_PRODUCT_ID, fragment);
-    }
-
-    protected void consumeItem(final Activity activity, final String productId, final DialogFragment fragment) {
-        mServiceConn = new ServiceConnection() {
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                if (DEBUG) Log.i(TAG, "onServiceDisconnected() name=" + name);
-                if (fragment != null)
-                    fragment.dismiss();
-                mService = null;
-            }
-            @Override
-            public void onServiceConnected(ComponentName name,
-                                           IBinder service) {
-                if (DEBUG) Log.i(TAG, "onServiceConnected() name=" + name + " service=" + service);
-                mService = IInAppBillingService.Stub.asInterface(service);
-                consumeItemViaService(activity, productId);
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        fragment.dismiss();
-                    }
-                });
-                if (mServiceConn != null) {
-                    context.unbindService(mServiceConn); // don't hold resource open
-                }
-            }
-        };
-        boolean bound = context.bindService(new Intent("com.android.vending.billing.InAppBillingService.BIND"),
-                mServiceConn, Context.BIND_AUTO_CREATE);
-        if (DEBUG) Log.i(TAG, "startService bound=" + bound);
-    }
-
-    protected void consumeItemViaService(final Activity activity, String sku) {
-        try {
-            if (mService == null) {
-                Log.e(TAG, "consumeItemViaService null service");
-                return;
-            }
-            String purchaseToken = PreferenceManager.getDefaultSharedPreferences(context).getString(LAST_PURCHASE_TOKEN, "");
-            if (DEBUG) Log.i(TAG, "consumeItemViaService consuming purchase sku=" + sku + " token=" + purchaseToken);
-            int responseCode = mService.consumePurchase(3, context.getPackageName(), purchaseToken);
-            if (responseCode != 0) {
-                Log.e(TAG, "consumeItemViaService bad responseCode=" + responseCode);
-                return;
-            }
-            makeToast(activity, R.string.consume_success);
-
-        }
-        catch (RemoteException e) {
-            Log.e(TAG, "consumeItemViaService() remote exception", e);
-        }
-    }
-    */
-    protected void makeToast(final Activity activity, final int stringId) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(activity, stringId, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
 }

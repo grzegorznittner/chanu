@@ -18,6 +18,7 @@ package com.nostra13.universalimageloader.core;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory.Options;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -220,7 +221,15 @@ public final class DisplayImageOptions implements Cloneable {
 	}
 
 	public Handler getHandler() {
-		return (handler == null ? new Handler() : handler);
+        return (handler == null ? new Handler() : handler);
+        /*
+        if (handler != null)
+            return handler;
+        else if (Looper.myLooper() != null)
+            return new Handler();
+        else
+            return null;
+	    */
 	}
 
 	/**

@@ -211,15 +211,21 @@ public class ChanThread extends ChanPost {
 
     public static boolean threadNeedsRefresh(Context context, String boardCode, long threadNo, boolean forceRefresh) {
         ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
-        if (thread == null || thread.defData)
+        if (thread == null)
             return true;
-        else if (thread.posts == null || thread.posts.length == 0)
+        if (forceRefresh)
             return true;
-        else if (thread.posts.length < thread.replies && !thread.isDead)
+        return thread.threadNeedsRefresh();
+    }
+    
+    public boolean threadNeedsRefresh() {
+        if (defData)
             return true;
-        else if (!thread.isCurrent())
+        else if (posts == null || posts.length == 0)
             return true;
-        else if (forceRefresh)
+        else if (posts.length < replies && !isDead)
+            return true;
+        else if (!isCurrent())
             return true;
         else
             return false;

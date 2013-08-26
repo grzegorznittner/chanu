@@ -506,7 +506,7 @@ public class ChanFileStorage {
     public static UserStatistics loadUserStats(Context context) {
         try {
             File userStatsFile = getUserStatsFile(context);
-            if (userStatsFile != null && userStatsFile.exists()) {
+            if (userStatsFile != null && userStatsFile.exists() && userStatsFile.canRead() && userStatsFile.length() > 0) {
                 ObjectMapper mapper = BoardParserService.getJsonMapper();
                 UserStatistics userPrefs = mapper.readValue(userStatsFile, UserStatistics.class);
                 if (userPrefs == null) {

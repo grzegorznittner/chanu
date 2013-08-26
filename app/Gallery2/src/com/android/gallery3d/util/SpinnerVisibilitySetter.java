@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import com.android.gallery3d.app.GalleryActivity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,12 +88,20 @@ public class SpinnerVisibilitySetter {
                         // Even though the spinner isn't visible quite yet, lets set this
                         // here to avoid possible cross-thread synchronization issues.
                         mSpinnerVisibilityStartTime = SystemClock.uptimeMillis();
-                        mActivity.runOnUiThread(new SetProgressVisibilityRunnable(true));
+                        if (mActivity instanceof GalleryActivity) {
+                            Handler handler = ((GalleryActivity) mActivity).getHandler();
+                            if (handler != null)
+                                handler.post(new SetProgressVisibilityRunnable(true));
+                        }
                     }
                     break;
                 case HIDE_SPINNER_DELAY_REACHED:
                     mActiveVisibilityRequest = false;
-                    mActivity.runOnUiThread(new SetProgressVisibilityRunnable(false));
+                    if (mActivity instanceof GalleryActivity) {
+                        Handler handler = ((GalleryActivity) mActivity).getHandler();
+                        if (handler != null)
+                            handler.post(new SetProgressVisibilityRunnable(false));
+                    }
                     break;
             }
         }

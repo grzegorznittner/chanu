@@ -276,6 +276,8 @@
     <dimen name="widget_board_oneimage_minHeight">110dp</dimen>
     <dimen name="widget_board_coverflow_minWidth">180dp</dimen>
     <dimen name="widget_board_coverflow_minHeight">180dp</dimen>
+    <dimen name="widget_board_coverflow_image_width">120dp</dimen>
+    <dimen name="widget_board_coverflow_image_height">120dp</dimen>
 
     <!-- drawer -->
     <string name="drawer_open">Open navigation drawer</string>
@@ -313,4 +315,5 @@
     <dimen name="preference_icon_minWidth">0dp</dimen>
     <dimen name="preference_widget_width">48dp</dimen>
 
+    <dimen name="ad_layout_height">50dp</dimen>
 </resources>

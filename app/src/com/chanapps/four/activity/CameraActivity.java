@@ -15,6 +15,7 @@ import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -47,6 +48,7 @@ public class CameraActivity extends Activity {
 
     private Camera mCamera;
     private CameraPreview mPreview;
+    private Handler handler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -158,7 +160,8 @@ public class CameraActivity extends Activity {
             }
 
             if (!success) {
-                runOnUiThread(new ToastRunnable(CameraActivity.this, R.string.camera_open_error));
+                if (handler != null)
+                    handler.post(new ToastRunnable(CameraActivity.this, R.string.camera_open_error));
             }
             finish();
         }
@@ -380,6 +383,18 @@ public class CameraActivity extends Activity {
                     }
                 }
         );
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        handler = new Handler();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        handler = null;
     }
 
 }

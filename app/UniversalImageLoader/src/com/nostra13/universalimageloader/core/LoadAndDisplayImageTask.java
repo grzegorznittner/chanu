@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
+import android.nfc.Tag;
 import org.apache.commons.io.IOUtils;
 
 import android.graphics.Bitmap;
@@ -164,13 +165,28 @@ final class LoadAndDisplayImageTask implements Runnable {
 			if (bmp != null && options.getFullSizeImageLocation() != null) {
 				File imageFile = getImageFileInDiscCache();
 				if (imageFile != null && imageFile.exists()) {
+                    FileInputStream fis = null;
+                    FileOutputStream fos = null;
 					try {
-						IOUtils.copy(new FileInputStream(imageFile), new FileOutputStream(options.getFullSizeImageLocation()));
+                        fis = new FileInputStream(imageFile);
+                        fos = new FileOutputStream(options.getFullSizeImageLocation());
+						IOUtils.copy(fis, fos);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						L.w(FULL_IMAGE_COPY_ERROR, memoryCacheKey);
 					}
-				}
+                    finally {
+                        try {
+                            if (fis != null)
+                                fis.close();
+                            if (fos != null)
+                                fos.close();
+                        }
+                        catch (IOException e) {
+                        }
+                    }
+
+                }
 			}
 		} finally {
 			loadFromUriLock.unlock();
@@ -222,7 +238,7 @@ final class LoadAndDisplayImageTask implements Runnable {
 
 	/**
 	 * Check whether the image URI of this task matches to image URI which is actual for current ImageView at this
-	 * moment and fire {@link ImageLoadingListener#onLoadingCancelled()} event if it doesn't.
+	 * moment and fire {@link ImageLoadingListener onLoadingCancelled()} event if it doesn't.
 	 */
 	private boolean checkTaskIsNotActual() {
 		String currentCacheKey = engine.getLoadingUriForView(imageView);

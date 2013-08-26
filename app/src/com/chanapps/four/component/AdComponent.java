@@ -56,9 +56,8 @@ public class AdComponent {
         if (advert == null)
             return;
         AdView adView = (AdView)advert.findViewById(R.id.adView);
-        if (adView == null)
-            return;
-        adView.setEnabled(false);
+        if (adView != null)
+            adView.setEnabled(false);
         advert.setVisibility(View.GONE);
         return;
     }

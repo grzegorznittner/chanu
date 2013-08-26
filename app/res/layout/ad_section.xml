@@ -4,7 +4,7 @@
         android:id="@+id/board_grid_advert"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/ad_layout_height"
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal|center_vertical"
         android:background="@color/ad_background"
@@ -20,7 +20,7 @@
             ads:adUnitId="a150e4b6d4be55e"
             ads:adSize="BANNER"
             ads:testDevices="42f758079ab89f7f"
-            ads:loadAdOnCreate="true"
+            ads:loadAdOnCreate="false"
             />
 
 </FrameLayout>

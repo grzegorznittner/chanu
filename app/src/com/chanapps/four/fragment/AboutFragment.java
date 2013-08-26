@@ -1,5 +1,6 @@
 package com.chanapps.four.fragment;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.preference.PreferenceFragment;
 import android.util.Log;
 import android.widget.Toast;
 import com.chanapps.four.activity.AboutActivity;
+import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.BillingComponent;
@@ -121,12 +123,17 @@ public class AboutFragment extends PreferenceFragment
                             BillingComponent
                                     .getInstance(getActivity().getApplicationContext())
                                     .purchaseProkey(getActivity(), fragment);
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    fragment.dismiss();
-                                }
-                            });
+                            Activity activity = getActivity();
+                            if (activity instanceof ChanIdentifiedActivity) {
+                                Handler handler = ((ChanIdentifiedActivity) activity).getChanHandler();
+                                if (handler != null)
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            fragment.dismiss();
+                                        }
+                                    });
+                            }
                         }
                     }).start();
                 }
@@ -138,39 +145,5 @@ public class AboutFragment extends PreferenceFragment
             }
         });
     }
-    /*
-    protected void addConsumePreference() {
-        Preference consumeProkeyButton = findPreference(AboutActivity.PREF_CONSUME_PROKEY);
-        consumeProkeyButton.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                if (DEBUG) Log.i(TAG, "onPreferenceClick() consume prokey");
-                try {
-                    final DialogFragment fragment = new ConnectingToBillingDialogFragment();
-                    fragment.show(getFragmentManager(), SettingsFragment.TAG);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            BillingComponent
-                                    .getInstance(getActivity().getApplicationContext())
-                                    .consumeProkey(getActivity(), fragment);
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    fragment.dismiss();
-                                }
-                            });
-                        }
-                    }).start();
-                }
-                catch (Exception e) {
-                    Log.e(TAG, "onPreferenceClick() exception consuming prokey", e);
-                    Toast.makeText(getActivity(), R.string.purchase_error, Toast.LENGTH_LONG).show();
-                }
-                return true;
-            }
-        });
-    }
-    */
 
 }

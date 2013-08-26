@@ -12,11 +12,12 @@ import com.chanapps.four.component.GlobalAlarmReceiver;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.io.File;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -265,4 +266,40 @@ public final class WidgetProviderUtils {
 
         return widgetThreads;
     }
+
+
+    public static List<ChanPost> coverflowThreads(final Context context, final String boardCode, final int maxThreads) {
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        if (board == null) {
+            Log.e(TAG, "Couldn't load widget null board for boardCode=" + boardCode);
+            return new ArrayList<ChanPost>();
+        }
+
+        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
+                ? board.loadedThreads
+                : board.threads;
+        if (boardThreads == null || boardThreads.length == 0) {
+            Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode);
+            return new ArrayList<ChanPost>();
+        }
+
+        // try to load what we can
+        List<ChanPost> viableThreads = new ArrayList<ChanPost>();
+        for (int i = 0; i < boardThreads.length; i++) {
+            ChanPost thread = boardThreads[i];
+            if (thread != null && thread.sticky <= 0 && thread.tim > 0 && thread.no > 0) {
+                String url = thread.thumbnailUrl();
+                File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
+                if (f != null && f.canRead() && f.length() > 0) {
+                    if (viableThreads.size() < maxThreads)
+                        viableThreads.add(thread);
+                    else
+                        break;
+                }
+            }
+        }
+
+        return viableThreads;
+    }
+
 }

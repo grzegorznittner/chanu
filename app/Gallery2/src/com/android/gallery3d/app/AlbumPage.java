@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.view.ActionMode;
@@ -562,7 +563,9 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
     public void onSyncDone(final MediaSet mediaSet, final int resultCode) {
         Log.d(TAG, "onSyncDone: " + Utils.maskDebugInfo(mediaSet.getName()) + " result="
                 + resultCode);
-        ((Activity) mActivity).runOnUiThread(new Runnable() {
+        Handler handler = mActivity.getHandler();
+        if (handler != null)
+            handler.post(new Runnable() {
             @Override
             public void run() {
                 if (!mIsActive) return;

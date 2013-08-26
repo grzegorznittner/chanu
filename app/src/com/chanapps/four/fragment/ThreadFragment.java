@@ -169,14 +169,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " activity null, skipping loader");
             }
             else if (activity.refreshing) {
-                ChanThread thread = ChanFileStorage.loadThreadData(activity, boardCode, threadNo);
-                if (thread != null && thread.isDead) {
-                    if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " dead thread, restarting loader");
-                    getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
-                }
-                else {
-                    if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " activity refreshing, skipping loader");
-                }
+                restartIfDeadAsync();
             }
             else {
                 if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " restarting loader");
@@ -186,6 +179,29 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         else {
             if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " no thread found, skipping loader");
         }
+    }
+
+    protected void restartIfDeadAsync() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
+                final boolean isDead = thread != null && thread.isDead;
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isDead) {
+                                if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " dead thread, restarting loader");
+                                getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
+                            }
+                            else {
+                                if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " activity refreshing, skipping loader");
+                            }
+                        }
+                    });
+            }
+        }).start();
     }
 
     @Override
@@ -231,7 +247,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (DEBUG) Log.i(TAG, "tryFetchThread /" + boardCode + "/" + threadNo);
         if (handler == null) {
             if (DEBUG) Log.i(TAG, "tryFetchThread not in foreground, exiting");
-            setProgress(false);
+            setProgressAsync(false);
             return;
         }
         NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
@@ -240,31 +256,60 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             String msg = String.format(getString(R.string.mobile_profile_health_status),
                     health.toString().toLowerCase().replaceAll("_", " "));
             Toast.makeText(getActivityContext(), msg, Toast.LENGTH_SHORT).show();
-            setProgress(false);
+            setProgressAsync(false);
             return;
         }
         if (DEBUG) Log.i(TAG, "tryFetchThread calling fetch chan data service");
         if (FetchChanDataService.scheduleThreadFetch(getActivityContext(), boardCode, threadNo, true, false)) {
             if (DEBUG) Log.i(TAG, "tryFetchThread scheduled fetch");
-            setProgress(true);
+            setProgressAsync(true);
         }
         else {
             if (DEBUG) Log.i(TAG, "tryFetchThread couldn't fetch");
-            setProgress(false);
+            setProgressAsync(false);
             return;
         }
+    }
+    
+    protected void setProgressAsync(final boolean on) {
+        if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    setProgress(on);
+                }
+            });
     }
 
     protected void onThreadLoadFinished(Cursor data) {
         adapter.swapCursor(data);
         // retry load if maybe data wasn't there yet
-        ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
+        selectCurrentThreadAsync();
+    }
+
+    protected void selectCurrentThreadAsync() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
+                selectCurrentThread(thread);
+            }
+        }).start();
+    }
+
+    protected void selectCurrentThread(ChanThread thread) {
         if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " thread=" + thread);
         if (query != null && !query.isEmpty()) {
-            displaySearchTitle();
-            setProgress(false);
+            if (handler != null)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        displaySearchTitle();
+                        setProgress(false);
+                    }
+                });
         }
-        else if (ChanThread.threadNeedsRefresh(getActivityContext(), boardCode, threadNo, false)) {
+        else if (thread.threadNeedsRefresh()) {
             if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " trying thread refresh");
             tryFetchThread();
         }
@@ -282,29 +327,41 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 }
                 pos++;
             }
-            if (found) {
-                absListView.setSelection(pos);
-                postNo = -1;
-            }
-            setProgress(false);
-            return;
+            final boolean hasPost = found;
+            final int postPos = pos;
+            if (handler != null)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (hasPost) {
+                            absListView.setSelection(postPos);
+                            postNo = -1;
+                        }
+                        setProgress(false);
+                    }
+                });
         }
         else if (firstVisiblePosition >= 0) {
             if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " scrolling to saved pos=" + firstVisiblePosition);
-            if (absListView instanceof ListView)
-                ((ListView)absListView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
-            else
-                absListView.setSelection(firstVisiblePosition);
-            firstVisiblePosition = -1;
-            firstVisiblePositionOffset = -1;
-            setProgress(false);
+            if (handler != null)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (absListView instanceof ListView)
+                            ((ListView)absListView).setSelectionFromTop(firstVisiblePosition, firstVisiblePositionOffset);
+                        else
+                            absListView.setSelection(firstVisiblePosition);
+                        firstVisiblePosition = -1;
+                        firstVisiblePositionOffset = -1;
+                        setProgress(false);
+                    }
+                });
         }
         else {
             if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " stopping spinner");
-            setProgress(false);
+            setProgressAsync(false);
         }
     }
-
 
     protected void setProgress(boolean on) {
         progressVisible = on;
@@ -405,12 +462,27 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     playMenuItem.setVisible(false);
                 }
             }
-        boolean undead = undead();
-        menu.findItem(R.id.refresh_menu).setVisible(undead);
-        menu.findItem(R.id.post_reply_all_menu).setVisible(undead);
-        menu.findItem(R.id.post_reply_all_quote_menu).setVisible(undead);
-        menu.findItem(R.id.web_menu).setVisible(undead);
+        setDeadStatusAsync(menu);
         super.onPrepareOptionsMenu(menu);
+    }
+
+    protected void setDeadStatusAsync(final Menu menu) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final boolean undead = undead();
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            menu.findItem(R.id.refresh_menu).setVisible(undead);
+                            menu.findItem(R.id.post_reply_all_menu).setVisible(undead);
+                            menu.findItem(R.id.post_reply_all_quote_menu).setVisible(undead);
+                            menu.findItem(R.id.web_menu).setVisible(undead);
+                        }
+                    });
+            }
+        }).start();
     }
 
     protected boolean undead() {

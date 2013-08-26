@@ -4,10 +4,10 @@ import android.app.ActionBar;
 import android.content.*;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import com.chanapps.four.component.AdComponent;
@@ -15,7 +15,6 @@ import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.service.NetworkProfileManager;
-import com.google.ads.AdView;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,14 +27,14 @@ abstract public class
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
     protected static final boolean DEBUG = true;
+    protected static final boolean DEVELOPER_MODE = true;
+
     protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
 
     protected String boardCode;
     protected long threadNo = 0;
     protected int themeId;
     protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
-    protected AdView adView;
-    protected View advert;
 
     protected boolean mShowNSFW = false;
 
@@ -44,10 +43,29 @@ abstract public class
     protected String[] mSpinnerArray;
     protected ArrayAdapter<String> mSpinnerAdapter;
 
+
     @Override
     protected void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
         if (DEBUG) Log.v(TAG, "onCreate");
+        if (DEVELOPER_MODE) {
+            if (DEBUG) Log.i(TAG, "onCreate enabling developer mode");
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectDiskReads()
+                    .detectDiskWrites()
+                    .detectNetwork()   // or .detectAll() for all detectable problems
+                    .penaltyLog()
+                    .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectLeakedSqlLiteObjects()
+                    .detectLeakedClosableObjects()
+                    .penaltyLog()
+                            //.penaltyDeath()
+                    .build());
+            if (DEBUG) Log.i(TAG, "onCreate developer mode enabled");
+        }
+        super.onCreate(bundle);
+
+
         NetworkProfileManager.instance().ensureInitialized(this);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar
         broadcastThemeReceiver = new ThemeSelector.ThemeReceiver(this);
@@ -57,6 +75,7 @@ abstract public class
         createActionBar();
         createPreViews();
         createViews(bundle);
+        if (DEBUG) Log.v(TAG, "onCreate complete");
     }
 
     @Override
@@ -150,10 +169,15 @@ abstract public class
     public void closeSearch() {}
 
     @Override
-    public void setProgress(boolean on) {
+    public void setProgress(final boolean on) {
         Handler handler = getChanHandler();
         if (handler != null)
-            setProgressBarIndeterminateVisibility(on);
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    setProgressBarIndeterminateVisibility(on);
+                }
+            });
     }
 
     abstract public boolean isSelfBoard(String boardAsMenu);

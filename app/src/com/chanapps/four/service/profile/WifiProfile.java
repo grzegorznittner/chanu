@@ -39,6 +39,8 @@ public class WifiProfile extends MobileProfile {
     @Override
     public void onBoardSelected(Context context, String boardCode) {
         super.onBoardSelected(context, boardCode);
+        // seems to overload phone on wifi
+        /*
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
         Health health = getConnectionHealth();
         if (health == Health.GOOD || health == Health.PERFECT) {
@@ -56,6 +58,7 @@ public class WifiProfile extends MobileProfile {
                 }
             }
         }
+        */
 
     }
 
