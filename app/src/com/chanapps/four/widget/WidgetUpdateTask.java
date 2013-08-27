@@ -20,10 +20,15 @@ import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.BaseChanService;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
+import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
+
+import java.io.File;
+import java.util.List;
 
 /**
 * Created with IntelliJ IDEA.
@@ -40,7 +45,7 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
 
     private static DisplayImageOptions optionsWithFakeDisplayer;
     static {
-        optionsWithFakeDisplayer = new DisplayImageOptions.Builder().displayer(new FakeBitmapDisplayer()).build();
+        optionsWithFakeDisplayer = new DisplayImageOptions.Builder().displayer(new FakeBitmapDisplayer()).cacheOnDisc().build();
     }
 
     private Context context;
@@ -77,27 +82,28 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
 
     private void updateWideWidget() {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_board_layout);
-        int[] imageIds = {R.id.image_left, R.id.image_center, R.id.image_right, R.id.image_left1, R.id.image_center1, R.id.image_right1};
-        updateWidgetViews(R.layout.widget_board_layout, R.id.widget_board_container, remoteViews);
-        updateImageWidgetsView(imageIds, remoteViews);
+        bindClickTargets(R.id.widget_board_container, remoteViews);
+        AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, remoteViews);
+        int[] imageIds = {R.id.image_left, R.id.image_center, R.id.image_right};
+        asyncUpdateImages(BoardWidgetProvider.MAX_THREADS, 0, R.layout.widget_board_layout, imageIds);
     }
 
     private void updateOneImageWidget() {
-        int[] imageIds = {R.id.image_left1};
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_board_oneimage_layout);
-        updateWidgetViews(R.layout.widget_board_oneimage_layout, R.id.widget_board_oneimage_container, remoteViews );
-        updateImageWidgetsView(imageIds, remoteViews);
+        bindClickTargets(R.id.widget_board_oneimage_container, remoteViews);
+        AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, remoteViews);
+        int[] imageIds = {R.id.image_left1};
+        asyncUpdateImages(BoardOneImageWidgetProvider.MAX_THREADS, 0, R.layout.widget_board_oneimage_layout, imageIds);
     }
 
     private void updateCoverFlowWidget() {
-
-        final Intent intent = new Intent(context, UpdateWidgetService.class);
+        final Intent intent = new Intent(context, StackWidgetService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_board_coverflow_layout);
         remoteViews.setRemoteAdapter(R.id.stack_view_coverflow, intent);
         remoteViews.setEmptyView(R.id.stack_view_coverflow, R.id.stack_view_empty);
-        updateWidgetViews(R.layout.widget_board_coverflow_layout, R.id.widget_board_coverflow_container, remoteViews );
+        bindClickTargets(R.id.widget_board_coverflow_container, remoteViews);
 
         final Intent viewIntent = new Intent(context, ThreadActivity.class);
         viewIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
@@ -107,6 +113,9 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         remoteViews.setPendingIntentTemplate(R.id.stack_view_coverflow, viewPendingIntent);
 
         AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, remoteViews);
+        AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, R.id.stack_view_coverflow);
+        int maxThreads = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxThumbnailPrefetches;
+        asyncUpdateImages(maxThreads, R.id.stack_view_coverflow, 0, null);
     }
 
     private void loadBoard() {
@@ -120,8 +129,8 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    private void updateWidgetViews(int widgetLayout, int widgetContainer, RemoteViews views) {
-        if (DEBUG) Log.i(TAG, "updateWidgetViews() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
+    private void bindClickTargets(int widgetContainer, RemoteViews views) {
+        if (DEBUG) Log.i(TAG, "bindClickTargets() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
 
         int containerBackground = widgetConf.roundedCorners ? R.drawable.widget_rounded_background : 0;
         views.setInt(widgetContainer, "setBackgroundResource", containerBackground);
@@ -130,7 +139,7 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         if (board == null)
             board = ChanBoard.getBoardByCode(context, ChanBoard.DEFAULT_BOARD_CODE);
         if (board == null) {
-            Log.e(TAG, "updateWidgetViews() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/"
+            Log.e(TAG, "bindClickTargets() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/"
                     + " null board, exiting");
             return;
         }
@@ -146,55 +155,15 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         if (widgetConf.showBoardTitle)
             views.setOnClickPendingIntent(R.id.board_title, makeBoardIntent());
 
-        //views.setInt(R.id.home_button, "setImageResource", R.drawable.app_icon);
-        //views.setOnClickPendingIntent(R.id.home_button, makeHomeIntent());
-
-        int refreshBackground = widgetConf.showRefreshButton ? R.drawable.widget_refresh_gradient_bg : 0;
         int refreshDrawable = widgetConf.showRefreshButton ? R.drawable.widget_refresh_button_selector : 0;
-        views.setInt(R.id.refresh, "setBackgroundResource", refreshBackground);
-        views.setInt(R.id.refresh, "setImageResource", refreshDrawable);
-        views.setOnClickPendingIntent(R.id.refresh, makeRefreshIntent());
+        views.setInt(R.id.refresh_board, "setImageResource", refreshDrawable);
+        views.setOnClickPendingIntent(R.id.refresh_board, makeRefreshIntent());
 
-        int configureBackground = widgetConf.showConfigureButton ? R.drawable.widget_configure_gradient_bg : 0;
         int configureDrawable = widgetConf.showConfigureButton ? R.drawable.widget_configure_button_selector : 0;
-        views.setInt(R.id.configure, "setBackgroundResource", configureBackground);
         views.setInt(R.id.configure, "setImageResource", configureDrawable);
         views.setOnClickPendingIntent(R.id.configure, makeConfigureIntent());
 
-        if (DEBUG) Log.i(TAG, "updateWidgetViews() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ finished");
-    }
-
-    private void updateImageWidgetsView(int [] imageIds, RemoteViews views) {
-        for (int i = 0; i < imageIds.length; i++) {
-            int imageId = imageIds[i];
-            PendingIntent pendingIntent = makeThreadIntent(threads[i], i);
-            views.setOnClickPendingIntent(imageId, pendingIntent);
-        }
-
-        AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, views);
-
-        for (int i = 0; i < imageIds.length; i++) {
-            int imageId = imageIds[i];
-            ChanPost thread = threads[i];
-            String url = ChanBoard.getBestWidgetImageUrl(thread, widgetConf.boardCode, i);
-            asyncUpdateWidgetImageView(views, imageId, url);
-        }
-    }
-
-    private void asyncUpdateWidgetImageView(final RemoteViews views, final int imageId, final String url) {
-        ImageSize minImageSize = new ImageSize(125, 125);
-        ChanImageLoader
-                .getInstance(context)
-                .loadImage(url, minImageSize, optionsWithFakeDisplayer,
-                        new SimpleImageLoadingListener() {
-                            @Override
-                            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                                views.setImageViewBitmap(imageId, loadedImage);
-                                AppWidgetManager
-                                        .getInstance(context)
-                                        .updateAppWidget(widgetConf.appWidgetId, views);
-                            }
-                        });
+        if (DEBUG) Log.i(TAG, "bindClickTargets() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ finished");
     }
 
     private PendingIntent makeThreadIntent(ChanPost thread, int i) {
@@ -204,14 +173,6 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         intent.putExtra(ActivityDispatcher.IGNORE_DISPATCH, true);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         int uniqueId = (100 * widgetConf.appWidgetId) + 5 + i;
-        return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-    }
-
-    private PendingIntent makeHomeIntent() {
-        Intent intent = BoardActivity.createIntent(context, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
-        intent.putExtra(ActivityDispatcher.IGNORE_DISPATCH, true);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        int uniqueId = (100 * widgetConf.appWidgetId) + 1;
         return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -225,8 +186,6 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
 
     private PendingIntent makeRefreshIntent() {
         Intent intent;
-
-        //if (WidgetConstants.WIDGET_TYPE_COVER_FLOW.equalsIgnoreCase(widgetConf.widgetType)) return null;
         if (ChanBoard.WATCHLIST_BOARD_CODE.equals(widgetConf.boardCode)) {
             return null;
         } else if (ChanBoard.isVirtualBoard(widgetConf.boardCode)) {
@@ -258,6 +217,98 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         intent.putExtra(ActivityDispatcher.IGNORE_DISPATCH, true);
         int uniqueId = (100 * widgetConf.appWidgetId) + 4;
         return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private void asyncUpdateImages(final int maxThreads, final int containerId, final int layoutId, final int[] imageIds) {
+        final List<String> preloadURLs = WidgetProviderUtils.preloadCoverflowURLs(context, widgetConf.boardCode, maxThreads);
+        if (preloadURLs == null) {
+            if (DEBUG) Log.i(TAG, "asyncUpdateImages() no images available, fetching board /" + widgetConf.boardCode + "/");
+            FetchChanDataService.scheduleBoardFetch(context, widgetConf.boardCode, true, true);
+            return;
+        }
+        final ImageSize minImageSize = new ImageSize(125, 125);
+        final int numPreloads = preloadURLs.size();
+        if (numPreloads <= 0) {
+            if (DEBUG) Log.i(TAG, "asyncUpdateImages() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/"
+                    + " no preloads needed, directly loading images");
+            updateWidgetIfFinished(0, containerId, layoutId, imageIds);
+            return;
+        }
+        final Decrementor remaining = new Decrementor(numPreloads);
+        if (DEBUG) Log.i(TAG, "asyncUpdateImages() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/"
+                + " preloading " + preloadURLs.size() + " images");
+        for (final String url : preloadURLs) {
+            ChanImageLoader
+                    .getInstance(context)
+                    .loadImage(url, minImageSize, optionsWithFakeDisplayer,
+                            new SimpleImageLoadingListener() {
+                                @Override
+                                public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                                    if (DEBUG) Log.i(TAG, "asyncUpdateImages preloading failed for url=" + url);
+                                    updateWidgetIfFinished(remaining.decrement(), containerId, layoutId, imageIds);
+                                }
+                                @Override
+                                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                                    if (DEBUG) Log.i(TAG, "asyncUpdateImages preloading complete for url=" + url);
+                                    updateWidgetIfFinished(remaining.decrement(), containerId, layoutId, imageIds);
+                                }
+                                @Override
+                                public void onLoadingCancelled(String imageUri, View view) {
+                                    if (DEBUG) Log.i(TAG, "asyncUpdateImages preloading cancelled for url=" + url);
+                                    updateWidgetIfFinished(remaining.decrement(), containerId, layoutId, imageIds);
+                                }
+                            });
+        }
+    }
+
+    private static class Decrementor {
+        int val;
+        public Decrementor(int val) {
+            this.val = val;
+        }
+        public int decrement() {
+            return --val;
+        }
+    }
+
+    private void updateWidgetIfFinished(int remaining, int containerId, int layoutId, int[] imageIds) {
+        if (DEBUG) Log.i(TAG, "updateWidgetIfFinished " + remaining + " images remaining");
+        if (remaining > 0)
+            return;
+        if (containerId > 0)
+            AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, containerId);
+        else if (imageIds != null)
+            updateAppWidgetImages(layoutId, imageIds);
+    }
+
+    private void updateAppWidgetImages(final int layoutId, final int[] imageIds) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), layoutId);
+        List<ChanPost> threads = WidgetProviderUtils.viableThreads(context, widgetConf.boardCode, imageIds.length);
+        if (DEBUG) Log.i(TAG, "updateAppWidgetImages() found " + threads.size() + " viable threads for "
+                + " id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
+
+        int j = 0;
+        for (int i = 0; i < imageIds.length; i++) {
+            int imageId = imageIds[i];
+            ChanPost thread = j >= threads.size() ? null : threads.get(j++);
+            String url = thread == null ? null : thread.thumbnailUrl();
+            File f = thread == null ? null : ChanImageLoader.getInstance(context).getDiscCache().get(url);
+            if (f != null && f.canRead() && f.length() > 0) {
+                views.setImageViewUri(imageId, Uri.parse(f.getAbsolutePath()));
+                if (DEBUG) Log.i(TAG, "updateAppWidgetImages() i=" + i + " url=" + url + " set image to file=" + f.getAbsolutePath());
+            }
+            else {
+                int defaultImageId = ChanBoard.getRandomImageResourceId(widgetConf.boardCode, i);
+                views.setImageViewResource(imageId, defaultImageId);
+                if (DEBUG) Log.i(TAG, "updateAppWidgetImages() i=" + i + " url=" + url + " no file, set image to default resource");
+            }
+            if (thread != null) {
+                PendingIntent pendingIntent = makeThreadIntent(thread, i);
+                views.setOnClickPendingIntent(imageId, pendingIntent);
+            }
+        }
+
+        AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, views);
     }
 
 }

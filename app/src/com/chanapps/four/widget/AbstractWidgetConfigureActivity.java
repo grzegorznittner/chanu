@@ -271,7 +271,7 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
 
     protected void updateContainerBackgroundState() {
         int containerBackground = widgetConf.roundedCorners ? R.drawable.widget_rounded_background : 0;
-        RelativeLayout container = (RelativeLayout) findViewById(R.id.widget_preview);
+        View container = findViewById(R.id.widget_preview);
         container.setBackgroundResource(containerBackground);
     }
 
@@ -291,18 +291,14 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
     }
 
     protected void updateRefreshButtonState() {
-        int refreshBackground = widgetConf.showRefreshButton ? R.drawable.widget_refresh_gradient_bg : 0;
         int refreshDrawable = widgetConf.showRefreshButton ? R.drawable.widget_refresh_button_selector : 0;
-        ImageView refresh = (ImageView) findViewById(R.id.refresh);
-        refresh.setBackgroundResource(refreshBackground);
+        ImageView refresh = (ImageView) findViewById(R.id.refresh_board);
         refresh.setImageResource(refreshDrawable);
     }
 
     protected void updateConfigButtonState() {
-        int configureBackground = widgetConf.showConfigureButton ? R.drawable.widget_configure_gradient_bg : 0;
         int configureDrawable = widgetConf.showConfigureButton ? R.drawable.widget_configure_button_selector : 0;
         ImageView configure = (ImageView) findViewById(R.id.configure);
-        configure.setBackgroundResource(configureBackground);
         configure.setImageResource(configureDrawable);
     }
 

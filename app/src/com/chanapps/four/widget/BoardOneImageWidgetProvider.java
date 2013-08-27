@@ -9,7 +9,7 @@ public class BoardOneImageWidgetProvider extends AbstractBoardWidgetProvider {
 
     public static final String TAG = BoardOneImageWidgetProvider.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    public static final int MAX_THREADS = 1;
 
     @Override
     protected String getWidgetType() {

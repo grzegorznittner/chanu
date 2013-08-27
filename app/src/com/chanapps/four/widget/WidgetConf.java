@@ -29,11 +29,11 @@ public class WidgetConf implements Serializable {
     }
 
     public WidgetConf(int appWidgetId) {
-        this(appWidgetId, ChanBoard.DEFAULT_BOARD_CODE, 0xffffffff, true, true, true, true, WidgetConstants.WIDGET_TYPE_EMPTY);
+        this(appWidgetId, ChanBoard.DEFAULT_BOARD_CODE, 0xffffffff, false, true, true, true, WidgetConstants.WIDGET_TYPE_EMPTY);
     }
 
     public WidgetConf(int appWidgetId, String widgetType) {
-        this(appWidgetId, ChanBoard.DEFAULT_BOARD_CODE, 0xffffffff, true, true, true, true, widgetType);
+        this(appWidgetId, ChanBoard.DEFAULT_BOARD_CODE, 0xffffffff, false, true, true, true, widgetType);
     }
 
     public WidgetConf(int appWidgetId,

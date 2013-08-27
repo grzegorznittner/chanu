@@ -7,7 +7,7 @@
                 android:drawable="@color/blue_base_half" />
         <item
                 android:state_pressed="false"
-                android:drawable="@drawable/widget_refresh_button_drawable"
+                android:drawable="@drawable/widget_refresh_button_oneimage_drawable"
                 />
 
 </selector>
