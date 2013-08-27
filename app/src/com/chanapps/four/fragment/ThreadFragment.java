@@ -365,7 +365,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     protected void setProgress(boolean on) {
         progressVisible = on;
-        ((ThreadActivity)getActivity()).setProgressForFragment(boardCode, threadNo, on);
+        ThreadActivity activity = (ThreadActivity)getActivity();
+        if (activity != null) {
+        	activity.setProgressForFragment(boardCode, threadNo, on);
+        }
     }
     
     protected void createAbsListView() {
