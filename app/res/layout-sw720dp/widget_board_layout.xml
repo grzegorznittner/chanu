@@ -130,7 +130,7 @@
             />
     -->
     <ImageButton
-            android:id="@+id/refresh"
+            android:id="@+id/refresh_board"
             android:layout_height="48dp"
             android:layout_width="48dp"
             android:paddingTop="24dp"
@@ -139,7 +139,7 @@
             android:layout_alignParentRight="true"
             android:scaleType="centerCrop"
             android:src="@drawable/widget_refresh_button_selector"
-            android:background="@drawable/widget_refresh_gradient_bg"
+            android:background="@drawable/widget_refresh_btn_gradient_bg"
             android:contentDescription="@string/widget_refresh"
             />
 

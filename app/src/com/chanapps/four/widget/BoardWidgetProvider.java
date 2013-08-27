@@ -9,7 +9,7 @@ public class BoardWidgetProvider extends AbstractBoardWidgetProvider {
 
     public static final String TAG = BoardWidgetProvider.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    public static final int MAX_THREADS = 3;
 
     @Override
     protected String getWidgetType() {

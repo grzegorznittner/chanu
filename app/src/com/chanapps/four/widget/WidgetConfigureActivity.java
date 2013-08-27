@@ -41,7 +41,7 @@ public class WidgetConfigureActivity extends AbstractWidgetConfigureActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final int[] imageIds = {R.id.image_left, R.id.image_center, R.id.image_right, R.id.image_left1, R.id.image_center1, R.id.image_right1};
+                final int[] imageIds = {R.id.image_left, R.id.image_center, R.id.image_right};
                 final String[] urls = boardThreadUrls(context, boardCode, imageIds.length);
                 handler.post(new Runnable() {
                     @Override

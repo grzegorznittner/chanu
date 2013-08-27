@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/widget_board_coverflow_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/widget_rounded_background"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/widget_board_coverflow_container"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@drawable/widget_rounded_background"
         >
     <StackView xmlns:android="http://schemas.android.com/apk/res/android"
                android:id="@+id/stack_view_coverflow"
@@ -13,72 +13,63 @@
                android:loopViews="true"
                android:fitsSystemWindows="true"
             />
-    <ImageView android:id="@+id/stack_view_empty"
-               android:layout_height="match_parent"
-               android:layout_width="match_parent"
-               android:contentDescription="StackView"
-               android:scaleType="centerCrop"
-               android:src="@drawable/tv"
+    <TextView android:id="@+id/stack_view_empty"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:background="@drawable/widget_title_gradient_bg"
+              android:textColor="@color/PaletteWhite"
+              android:textStyle="bold"
+              android:text="@string/widget_loading"
             />
 
     <TextView
             android:id="@+id/board_title"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
+            android:layout_gravity="left|bottom"
             android:paddingTop="16dp"
             android:paddingBottom="8dp"
             android:paddingLeft="8dp"
             android:paddingRight="16dp"
             android:textColor="@color/PaletteWhite"
-            android:background="@drawable/widget_title_gradient_bg"
+            android:background="@drawable/widget_title_button_selector"
             android:textStyle="bold"
             android:textSize="12sp"
             android:text="@string/board_a"
             />
-    <!--
-    <ImageButton
-            android:id="@+id/home_button"
-            android:layout_height="48dp"
+
+    <ImageView
+            android:id="@+id/refresh_board"
             android:layout_width="48dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:paddingLeft="2dp"
-            android:paddingTop="2dp"
-            android:paddingRight="22dp"
-            android:paddingBottom="22dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/app_icon_grayscale"
-            android:background="@color/PaletteTransparent"
-            android:contentDescription="@string/app_name_home"
-            />
-    -->
-    <ImageButton
-            android:id="@+id/refresh"
             android:layout_height="48dp"
-            android:layout_width="48dp"
-            android:paddingTop="24dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="90dp"
             android:paddingLeft="24dp"
-            android:layout_alignParentBottom="true"
+            android:paddingBottom="24dp"
             android:layout_alignParentRight="true"
+            android:layout_gravity="right"
             android:scaleType="centerCrop"
             android:src="@drawable/widget_refresh_button_selector"
-            android:background="@drawable/widget_refresh_gradient_bg"
             android:contentDescription="@string/widget_refresh"
             />
 
-    <ImageButton
+    <ImageView
             android:id="@+id/configure"
-            android:layout_height="48dp"
             android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="4dp"
             android:paddingLeft="24dp"
             android:paddingBottom="24dp"
-            android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
+            android:layout_gravity="right"
             android:scaleType="centerCrop"
             android:src="@drawable/widget_configure_button_selector"
-            android:background="@drawable/widget_configure_gradient_bg"
             android:contentDescription="@string/widget_configure"
             />
-</RelativeLayout>
+</FrameLayout>

@@ -28,7 +28,7 @@ import java.util.*;
 public final class WidgetProviderUtils {
 
     public static final String TAG = WidgetProviderUtils.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     public static final String WIDGET_PROVIDER_UTILS = "com.chanapps.four.widget.WidgetProviderUtils";
 
     public static Set<String> getActiveWidgetPref(Context context) {
@@ -105,14 +105,14 @@ public final class WidgetProviderUtils {
     public static void update(Context context, int appWidgetId, String widgetType) {
         WidgetConf widgetConf = loadWidgetConf(context, appWidgetId);
         if (widgetConf != null) {
-            if (DEBUG) Log.i(WidgetProviderUtils.TAG, "calling update widget service for widget=" + appWidgetId);
+            if (DEBUG) Log.i(WidgetProviderUtils.TAG, "update() calling update widget service for widget=" + appWidgetId + " /" + widgetConf.boardCode + "/");
             Intent updateIntent = new Intent(context, UpdateWidgetService.class);
             updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             updateIntent.putExtra(WIDGET_PROVIDER_UTILS, widgetType);
             context.startService(updateIntent);
         } else {
             if (DEBUG)
-                Log.i(WidgetProviderUtils.TAG, "widget conf not yet initialized, skipping update for widget=" + appWidgetId);
+                Log.i(WidgetProviderUtils.TAG, "update() widget conf not yet initialized, skipping update for widget=" + appWidgetId);
         }
     }
 
@@ -268,7 +268,40 @@ public final class WidgetProviderUtils {
     }
 
 
-    public static List<ChanPost> coverflowThreads(final Context context, final String boardCode, final int maxThreads) {
+    public static List<String> preloadCoverflowURLs(final Context context, final String boardCode, final int maxThreads) {
+        ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
+        if (board == null) {
+            Log.e(TAG, "Couldn't load widget null board for boardCode=" + boardCode);
+            return null;
+        }
+
+        ChanPost[] boardThreads = board.loadedThreads != null && board.loadedThreads.length > 0
+                ? board.loadedThreads
+                : board.threads;
+        if (boardThreads == null || boardThreads.length == 0 || boardThreads[0] == null || boardThreads[0].defData) {
+            Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode);
+            return null;
+        }
+
+        // try to load what we can
+        int validThreads = 0;
+        List<String> preloadURLs = new ArrayList<String>();
+        for (int i = 0; i < boardThreads.length; i++) {
+            ChanPost thread = boardThreads[i];
+            if (thread != null && thread.sticky <= 0 && thread.tim > 0 && thread.no > 0) {
+                String url = thread.thumbnailUrl();
+                File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
+                if (f == null || !f.canRead() || f.length() <= 0)
+                    preloadURLs.add(url);
+                if (++validThreads >= maxThreads)
+                    break;
+            }
+        }
+
+        return preloadURLs;
+    }
+
+    public static List<ChanPost> viableThreads(final Context context, final String boardCode, final int maxThreads) {
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
         if (board == null) {
             Log.e(TAG, "Couldn't load widget null board for boardCode=" + boardCode);
