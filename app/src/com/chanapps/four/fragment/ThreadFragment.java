@@ -59,7 +59,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xff;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
@@ -255,7 +255,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             if (DEBUG) Log.i(TAG, "tryFetchThread bad health, exiting");
             String msg = String.format(getString(R.string.mobile_profile_health_status),
                     health.toString().toLowerCase().replaceAll("_", " "));
-            Toast.makeText(getActivityContext(), msg, Toast.LENGTH_SHORT).show();
+            NetworkProfileManager.instance().makeToast(msg, Toast.LENGTH_SHORT);
             setProgressAsync(false);
             return;
         }

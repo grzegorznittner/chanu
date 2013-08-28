@@ -379,8 +379,12 @@ public class NetworkProfileManager {
             if (handler != null) {
                 handler.postDelayed(new Runnable() {
                     public void run() {
-                        if (DEBUG) Log.w(TAG, "Calling toast with '" + text + "'");
-                        Toast.makeText(activity.getBaseContext(), text, length).show();
+                    	try {
+                    		if (DEBUG) Log.w(TAG, "Calling toast with '" + text + "'");
+                    		Toast.makeText(activity.getBaseContext(), text, length).show();
+                    	} catch (Exception e) {
+                    		Log.e(TAG, "Error creating toast '" + text + "'", e);
+                    	}
                     }
                 }, 300);
             } else {
