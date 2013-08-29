@@ -5,6 +5,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.http.AndroidHttpClient;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.chanapps.four.activity.SettingsActivity;
@@ -15,8 +18,16 @@ import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpGet;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -333,6 +344,76 @@ public final class WidgetProviderUtils {
         }
 
         return viableThreads;
+    }
+
+    static public void asyncDownloadAndCacheUrl(final Context context, final String url, final Runnable downloadCallback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                downloadAndCacheUrl(context, url, downloadCallback);
+            }
+        }).start();
+    }
+
+    static public void downloadAndCacheUrl(final Context context, final String url, final Runnable downloadCallback) {
+        Bitmap b = downloadBitmap(url);
+        if (b == null || b.getByteCount() <= 0)
+            return;
+        File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
+        if (f == null)
+            return;
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(f);
+            b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            if (DEBUG) Log.i(TAG, "downloadAndCacheUrl complete for url=" + url + " notifying callback");
+            if (downloadCallback != null)
+                downloadCallback.run();
+        }
+        catch (IOException e) {
+            Log.e(TAG, "Coludn't write file " + f.getAbsolutePath(), e);
+        }
+        finally {
+            IOUtils.closeQuietly(fos);
+        }
+    }
+
+    static private Bitmap downloadBitmap(String url) {
+        final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
+        final HttpGet getRequest = new HttpGet(url);
+
+        try {
+            HttpResponse response = client.execute(getRequest);
+            final int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != HttpStatus.SC_OK) {
+                Log.w("ImageDownloader", "Error " + statusCode + " while retrieving bitmap from " + url);
+                return null;
+            }
+
+            final HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                InputStream inputStream = null;
+                try {
+                    inputStream = entity.getContent();
+                    final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    return bitmap;
+                } finally {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                    entity.consumeContent();
+                }
+            }
+        } catch (Exception e) {
+            getRequest.abort();
+            if (DEBUG) Log.i(TAG, "Error while retrieving bitmap from " + url, e);
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+        return null;
     }
 
 }

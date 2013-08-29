@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -22,9 +21,6 @@ import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
-import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
 
 import java.io.File;
@@ -42,11 +38,6 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
     private static final String TAG = WidgetUpdateTask.class.getSimpleName();
     private static final boolean DEBUG = true;
     private static final int NUM_TOP_THREADS = 6;
-
-    private static DisplayImageOptions optionsWithFakeDisplayer;
-    static {
-        optionsWithFakeDisplayer = new DisplayImageOptions.Builder().displayer(new FakeBitmapDisplayer()).cacheOnDisc().build();
-    }
 
     private Context context;
     private WidgetConf widgetConf;
@@ -66,12 +57,6 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
     public Void doInBackground(Void... params) {
         if (DEBUG) Log.i(TAG, "doInBackground() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
         loadBoard();
-        return null;
-    }
-
-    @Override
-    public void onPostExecute(Void result) {
-        if (DEBUG) Log.i(TAG, "onPostExecute() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ type=" + widgetConf.widgetType);
         if (WidgetConstants.WIDGET_TYPE_BOARD.equalsIgnoreCase(widgetConf.widgetType))
             updateWideWidget();
         else if (WidgetConstants.WIDGET_TYPE_ONE_IMAGE.equalsIgnoreCase(widgetConf.widgetType))
@@ -80,6 +65,12 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
             updateCoverFlowWidget();
         else if (WidgetConstants.WIDGET_TYPE_COVER_FLOW_CARD.equalsIgnoreCase(widgetConf.widgetType))
             updateCoverFlowCardWidget();
+        return null;
+    }
+
+    @Override
+    public void onPostExecute(Void result) {
+        if (DEBUG) Log.i(TAG, "onPostExecute() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ type=" + widgetConf.widgetType);
     }
 
     private void updateWideWidget() {
@@ -88,7 +79,7 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         bindClickTargets(R.id.widget_board_container, remoteViews, false);
         AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, remoteViews);
         int[] imageIds = {R.id.image_left, R.id.image_center, R.id.image_right};
-        asyncUpdateImages(BoardWidgetProvider.MAX_THREADS, 0, R.layout.widget_board_layout, imageIds);
+        updateImages(BoardWidgetProvider.MAX_THREADS, 0, R.layout.widget_board_layout, imageIds);
     }
 
     private void updateOneImageWidget() {
@@ -97,7 +88,7 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         bindClickTargets(R.id.widget_board_oneimage_container, remoteViews, true);
         AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, remoteViews);
         int[] imageIds = {R.id.image_left1};
-        asyncUpdateImages(BoardOneImageWidgetProvider.MAX_THREADS, 0, R.layout.widget_board_oneimage_layout, imageIds);
+        updateImages(BoardOneImageWidgetProvider.MAX_THREADS, 0, R.layout.widget_board_oneimage_layout, imageIds);
     }
 
     private void updateCoverFlowWidget() {
@@ -124,7 +115,7 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
                 + "/ type=" + widgetConf.widgetType + " notifying app widget data");
         AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, R.id.stack_view_coverflow);
         int maxThreads = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxThumbnailPrefetches;
-        asyncUpdateImages(maxThreads, R.id.stack_view_coverflow, 0, null);
+        updateImages(maxThreads, R.id.stack_view_coverflow, 0, null);
     }
 
     private void updateCoverFlowCardWidget() {
@@ -151,7 +142,7 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
                 + "/ type=" + widgetConf.widgetType + " notifying app widget data");
         AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, R.id.stack_view_coverflow);
         int maxThreads = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxThumbnailPrefetches;
-        asyncUpdateImages(maxThreads, R.id.stack_view_coverflow, 0, null);
+        updateImages(maxThreads, R.id.stack_view_coverflow, 0, null);
     }
     
     private void loadBoard() {
@@ -261,69 +252,36 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         return PendingIntent.getActivity(context, uniqueId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private void asyncUpdateImages(final int maxThreads, final int containerId, final int layoutId, final int[] imageIds) {
+    private void updateImages(final int maxThreads, final int containerId, final int layoutId, final int[] imageIds) {
         final List<String> preloadURLs = WidgetProviderUtils.preloadThumbnailURLs(context, widgetConf.boardCode, maxThreads);
         if (preloadURLs == null) {
-            if (DEBUG) Log.i(TAG, "asyncUpdateImages() no images available, fetching board /" + widgetConf.boardCode + "/");
+            if (DEBUG) Log.i(TAG, "updateImages() no images available, fetching board /" + widgetConf.boardCode + "/");
             FetchChanDataService.scheduleBoardFetch(context, widgetConf.boardCode, true, true);
             return;
         }
-        final ImageSize minImageSize = new ImageSize(125, 125);
         final int numPreloads = preloadURLs.size();
         if (numPreloads <= 0) {
-            if (DEBUG) Log.i(TAG, "asyncUpdateImages() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/"
+            if (DEBUG) Log.i(TAG, "updateImages() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/"
                     + " no preloads needed, directly loading images");
-            updateWidgetIfFinished(0, containerId, layoutId, imageIds);
+            updateWidget(containerId, layoutId, imageIds);
             return;
         }
-        final Decrementor remaining = new Decrementor(numPreloads);
-        if (DEBUG) Log.i(TAG, "asyncUpdateImages() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/"
+        if (DEBUG) Log.i(TAG, "updateImages() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/"
                 + " preloading " + preloadURLs.size() + " images");
         for (final String url : preloadURLs) {
-            ChanImageLoader
-                    .getInstance(context)
-                    .loadImage(url, minImageSize, optionsWithFakeDisplayer,
-                            new SimpleImageLoadingListener() {
-                                @Override
-                                public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                                    if (DEBUG) Log.i(TAG, "asyncUpdateImages preloading failed for url=" + url);
-                                    updateWidgetIfFinished(remaining.decrement(), containerId, layoutId, imageIds);
-                                }
-                                @Override
-                                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                                    if (DEBUG) Log.i(TAG, "asyncUpdateImages preloading complete for url=" + url);
-                                    updateWidgetIfFinished(remaining.decrement(), containerId, layoutId, imageIds);
-                                }
-                                @Override
-                                public void onLoadingCancelled(String imageUri, View view) {
-                                    if (DEBUG) Log.i(TAG, "asyncUpdateImages preloading cancelled for url=" + url);
-                                    updateWidgetIfFinished(remaining.decrement(), containerId, layoutId, imageIds);
-                                }
-                            });
+            WidgetProviderUtils.downloadAndCacheUrl(context, url, null);
+            if (DEBUG) Log.i(TAG, "updateImages preloaded url=" + url);
         }
+        updateWidget(containerId, layoutId, imageIds);
     }
 
-    private static class Decrementor {
-        int val;
-        public Decrementor(int val) {
-            this.val = val;
-        }
-        public int decrement() {
-            return --val;
-        }
-    }
-
-    private void updateWidgetIfFinished(int remaining, int containerId, int layoutId, int[] imageIds) {
-        if (remaining > 0) {
-            if (DEBUG) Log.i(TAG, "updateWidgetIfFinished() " + remaining + " images remaining, resuming");
-            return;
-        }
-        else if (containerId > 0) {
-            if (DEBUG) Log.i(TAG, "updateWidgetIfFinished() " + remaining + " images remaining, notifying widget data changed");
+    private void updateWidget(int containerId, int layoutId, int[] imageIds) {
+        if (containerId > 0) {
+            if (DEBUG) Log.i(TAG, "updateWidget() notifying widget data changed");
             AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, containerId);
         }
         else if (imageIds != null) {
-            if (DEBUG) Log.i(TAG, "updateWidgetIfFinished() " + remaining + " images remaining, updating app images directly");
+            if (DEBUG) Log.i(TAG, "updateWidget() updating app images directly");
             updateAppWidgetImages(layoutId, imageIds);
         }
     }
