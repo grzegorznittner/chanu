@@ -233,6 +233,7 @@
     <string name="thread_is_sticky">STICKY</string>
     <string name="thread_has_no_posts">no posts</string>
     <string name="thread_has_no_images">no images</string>
+    <string name="thread_has_no_imgs">no imgs</string>
     <string name="thread_has_bumplimit">(BL)</string>
     <string name="thread_has_imagelimit">(IL)</string>
     <string name="thread_wait_to_refresh">Min 10 sec between refresh</string>
@@ -908,6 +909,7 @@
     <string name="board_meta_desc">Board Groups</string>
     <string name="board_all_boards">All Boards</string>
     <string name="board_all_boards_desc">All boards on Chanu</string>
+    <string name="board_vg_abbrev">/vg/</string>
 
     <!-- board descriptions -->
     <string name="board_desc_3">3D Modeling, Imagery</string>

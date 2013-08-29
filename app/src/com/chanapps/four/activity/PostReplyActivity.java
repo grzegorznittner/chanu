@@ -324,7 +324,7 @@ public class PostReplyActivity
         orientation = null;
         if (DEBUG) Log.i(TAG, "setIntent() intent has /" + boardCode + "/" + threadNo + ":" + postNo
                 + " imageUri=" + imageUri
-                + " subject=" + intent.getStringExtra(SUBJECT)
+                + " combinedSubCom=" + intent.getStringExtra(SUBJECT)
                 + " text=" + intent.getStringExtra(TEXT));
         /*
         Bundle bundle = loadBundleFromPrefs();
@@ -718,7 +718,7 @@ public class PostReplyActivity
         else
             spoilerCheckbox.setVisibility(View.GONE);
 
-        // subject hints
+        // combinedSubCom hints
         if (threadNo == 0 && ChanBoard.requiresThreadSubject(boardCode)) {
             messageText.setHint(R.string.post_reply_text_hint_required);
             subjectText.setHint(R.string.post_reply_subject_hint_required);

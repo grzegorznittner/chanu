@@ -76,6 +76,7 @@
     <dimen name="BoardSelectorGridCountryFlag_marginTop">11dp</dimen>
 
     <dimen name="BoardGridCountryFlag_layout_width">16dp</dimen>
+    <dimen name="BoardGridCountryFlag_layout_width_withPadding">24dp</dimen>
     <dimen name="BoardGridCountryFlag_layout_height">11dp</dimen>
     <dimen name="BoardGridCountryFlag_marginTop">4dp</dimen>
 
@@ -272,12 +273,20 @@
     <!-- widgets dimension 294,72 -->
     <dimen name="widget_board_minWidth">250dp</dimen>
     <dimen name="widget_board_minHeight">70dp</dimen>
-    <dimen name="widget_board_oneimage_minWidth">110dp</dimen>
-    <dimen name="widget_board_oneimage_minHeight">110dp</dimen>
+    <dimen name="widget_board_oneimage_minWidth">70dp</dimen>
+    <dimen name="widget_board_oneimage_minHeight">70dp</dimen>
     <dimen name="widget_board_coverflow_minWidth">110dp</dimen>
     <dimen name="widget_board_coverflow_minHeight">110dp</dimen>
     <dimen name="widget_board_coverflow_image_width">110dp</dimen>
     <dimen name="widget_board_coverflow_image_height">110dp</dimen>
+    <dimen name="widget_board_coverflowcard_minWidth">250dp</dimen>
+    <dimen name="widget_board_coverflowcard_minHeight">110dp</dimen>
+    <dimen name="widget_board_coverflowcard_width">250dp</dimen>
+    <dimen name="widget_board_coverflowcard_height">100dp</dimen>
+    <dimen name="widget_board_coverflowcard_image_width">100dp</dimen>
+    <dimen name="widget_board_coverflowcard_image_height">100dp</dimen>
+    <dimen name="widget_board_coverflowcard_text_paddingLeft">108dp</dimen>
+    <dimen name="widget_board_coverflowcard_textSize">12sp</dimen>
 
     <!-- drawer -->
     <string name="drawer_open">Open navigation drawer</string>

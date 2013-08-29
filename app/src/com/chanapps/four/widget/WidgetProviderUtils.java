@@ -268,7 +268,7 @@ public final class WidgetProviderUtils {
     }
 
 
-    public static List<String> preloadCoverflowURLs(final Context context, final String boardCode, final int maxThreads) {
+    public static List<String> preloadThumbnailURLs(final Context context, final String boardCode, final int maxThreads) {
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
         if (board == null) {
             Log.e(TAG, "Couldn't load widget null board for boardCode=" + boardCode);

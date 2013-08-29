@@ -179,6 +179,15 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
         </activity>
+        <activity android:name="com.chanapps.four.widget.WidgetConfigureCoverFlowCardActivity"
+                  android:excludeFromRecents="true"
+                  android:taskAffinity=""
+                  android:launchMode="standard"
+                  android:label="@string/widget_configure_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
+        </activity>
         <receiver android:name="com.chanapps.four.widget.BoardWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
@@ -206,6 +215,15 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_board_coverflow_info"/>
         </receiver>
+        <receiver android:name="com.chanapps.four.widget.BoardCoverFlowCardWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DISABLED"/>
+                <action android:name="android.appwidget.action.APPWIDGET_DELETED"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_board_coverflowcard_info"/>
+        </receiver>
         <receiver android:name="com.chanapps.four.component.GlobalAlarmReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -214,6 +232,7 @@
         </receiver>
         <service android:name="com.chanapps.four.widget.UpdateWidgetService" android:permission="android.permission.BIND_REMOTEVIEWS" android:exported="false"/>
         <service android:name="com.chanapps.four.widget.StackWidgetService" android:permission="android.permission.BIND_REMOTEVIEWS" android:exported="false"/>
+        <service android:name="com.chanapps.four.widget.CardStackWidgetService" android:permission="android.permission.BIND_REMOTEVIEWS" android:exported="false"/>
 
         <!-- Gallery Photo widget -->
         <!-- 

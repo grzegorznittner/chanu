@@ -13,8 +13,6 @@ import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,15 +27,8 @@ import java.util.List;
 */
 public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
-    public static final int MAX_THREADS = 30;
-
     private static final String TAG = StackRemoteViewsFactory.class.getSimpleName();
     private static final boolean DEBUG = true;
-
-    private static DisplayImageOptions optionsWithFakeDisplayer;
-    static {
-        optionsWithFakeDisplayer = new DisplayImageOptions.Builder().displayer(new FakeBitmapDisplayer()).cacheOnDisc().build();
-    }
 
     private Context context;
     private int appWidgetId;
@@ -54,7 +45,7 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         widgetConf = WidgetProviderUtils.loadWidgetConf(context, appWidgetId);
         if (widgetConf == null)
             widgetConf = new WidgetConf(appWidgetId); // new widget or no config;
-        threads = WidgetProviderUtils.viableThreads(context, widgetConf.boardCode, MAX_THREADS);
+        threads = WidgetProviderUtils.viableThreads(context, widgetConf.boardCode, BoardCoverFlowWidgetProvider.MAX_THREADS);
         if (DEBUG) Log.i(TAG, "initWidget() threadCount=" + threads.size());
     }
 

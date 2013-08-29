@@ -23,7 +23,26 @@ public class UpdateWidgetService extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         Log.d(TAG, "onGetViewFactory");
-        return new StackRemoteViewsFactory(getApplicationContext(), intent);
+        int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            Log.e(TAG, "onGetViewFactory() invalid app widget id passed, returning null");
+            return null;
+        }
+        WidgetConf widgetConf = WidgetProviderUtils.loadWidgetConf(this, appWidgetId);
+        if (widgetConf == null)
+            widgetConf = new WidgetConf(appWidgetId); // new widget or no config;
+        if (WidgetConstants.WIDGET_TYPE_COVER_FLOW.equals(widgetConf.widgetType)) {
+            if (DEBUG) Log.i(TAG, "onGetViewFactory() returning StackRemoteViewsFactory");
+            return new StackRemoteViewsFactory(getApplicationContext(), intent);
+        }
+        else if (WidgetConstants.WIDGET_TYPE_COVER_FLOW_CARD.equals(widgetConf.widgetType)) {
+            if (DEBUG) Log.i(TAG, "onGetViewFactory() returning CardStackRemoteViewsFactory");
+            return new CardStackRemoteViewsFactory(getApplicationContext(), intent);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "onGetViewFactory() non-matching card flow type=" + widgetConf.widgetType + " returning null");
+            return null;
+        }
     }
 
     @Override

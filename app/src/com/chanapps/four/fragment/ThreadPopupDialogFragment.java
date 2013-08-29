@@ -287,7 +287,6 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
             return ThreadViewer.setViewValue(view, cursor, boardCode,
-                    false, // never show board list at fragment pop-up level
                     false,
                     0,
                     0,

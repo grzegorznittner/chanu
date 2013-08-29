@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/widget_coverflowcard_item"
+        android:layout_width="@dimen/widget_board_coverflowcard_width"
+        android:layout_height="@dimen/widget_board_coverflowcard_height"
+        android:background="@drawable/widget_card_background_large"
+        >
+
+    <FrameLayout
+            android:id="@+id/widget_coverflowcard_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:foreground="@drawable/board_grid_selector_bg"
+            >
+
+        <ImageView
+                android:id="@+id/widget_coverflowcard_image"
+                android:layout_width="@dimen/widget_board_coverflowcard_image_width"
+                android:layout_height="@dimen/widget_board_coverflowcard_image_height"
+                android:contentDescription="@string/thread_post_image"
+                android:scaleType="centerCrop"
+                />
+
+        <TextView
+                android:id="@+id/widget_coverflowcard_subject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/widget_board_coverflowcard_text_paddingLeft"
+                android:paddingTop="4dp"
+                android:paddingRight="8dp"
+                android:textColor="@color/PaletteDarkGray"
+                android:textSize="@dimen/widget_board_coverflowcard_textSize"
+                android:ellipsize="end"
+                android:maxLines="5"
+                />
+
+        <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:paddingLeft="@dimen/widget_board_coverflowcard_text_paddingLeft"
+                android:paddingBottom="5dp"
+                >
+
+            <TextView
+                    android:id="@+id/widget_coverflowcard_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toLeftOf="@+id/widget_coverflowcard_flag"
+                    android:paddingRight="8dp"
+                    android:gravity="right|bottom"
+                    android:textColor="@color/PaletteLightGray"
+                    android:textSize="@dimen/widget_board_coverflowcard_textSize"
+                    android:maxLines="1"
+                    />
+
+            <ImageView
+                    android:id="@+id/widget_coverflowcard_flag"
+                    android:layout_width="@dimen/BoardGridCountryFlag_layout_width_withPadding"
+                    android:layout_height="@dimen/BoardGridCountryFlag_layout_height"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:paddingRight="8dp"
+                    android:scaleType="fitXY"
+                    android:contentDescription="@string/thread_country_flag"
+                    android:visibility="gone"
+                    />
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+</RelativeLayout>

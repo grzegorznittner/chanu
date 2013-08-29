@@ -90,7 +90,6 @@ public class ThreadViewer {
     }
 
     public static boolean setViewValue(final View view, final Cursor cursor, String groupBoardCode,
-                                       boolean isTablet,
                                        boolean showContextMenu,
                                        int columnWidth,
                                        int columnHeight,
@@ -356,14 +355,6 @@ public class ThreadViewer {
             return true;
         }
         String text = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
-        /*
-        if ((flags & ChanPost.FLAG_IS_HEADER) > 0) {
-            if ((flags & ChanPost.FLAG_IS_CLOSED) > 0)
-                text = tv.getResources().getString(R.string.thread_is_closed) + (text.isEmpty() ? "" : " ") + text;
-            if ((flags & ChanPost.FLAG_IS_DEAD) > 0)
-                text = tv.getResources().getString(R.string.thread_is_dead) + (text.isEmpty() ? "" : " ") + text;
-        }
-        */
         if (DEBUG) Log.v(TAG, "setSubject text=" + text);
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(Html.fromHtml(text, null, spoilerTagHandler));
         if (spannable.length() > 0) {

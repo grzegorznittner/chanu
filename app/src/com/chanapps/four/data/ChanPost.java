@@ -299,6 +299,15 @@ public class ChanPost {
         return o.replaceAll("> >", ">>").replaceAll("\n", "<br/>");
     }
 
+    public String combinedSubCom() {
+        String[] textComponents = textComponents("", false);
+        String s = textComponents[0];
+        String t = textComponents[1];
+        String u = (s != null && !s.isEmpty() ? "<b>" + s + "</b><br/>" : "")
+                + t;
+        return u;
+    }
+
     protected String[] textComponents(String query) {
         return textComponents(query, false);
     }
@@ -331,33 +340,33 @@ public class ChanPost {
         String message = comText != null ? comText : "";
 
         if (resto > 0) {
-            if (DEBUG) Log.v(TAG, "default subject=" + subject + " message=" + message);
+            if (DEBUG) Log.v(TAG, "default combinedSubCom=" + subject + " message=" + message);
             return highlightComponents(cleanSubject(subject), cleanMessage(message), query);
         }
 
-        if (!subject.isEmpty() || message.isEmpty()) { // we have a subject or can't extract from message
-            if (DEBUG) Log.v(TAG, "provided subject=" + subject + " message=" + message);
+        if (!subject.isEmpty() || message.isEmpty()) { // we have a combinedSubCom or can't extract from message
+            if (DEBUG) Log.v(TAG, "provided combinedSubCom=" + subject + " message=" + message);
             return highlightComponents(cleanSubject(subject), cleanMessage(message), query);
         }
-        if (comText.length() <= MAX_SUBJECT_LEN) { // just make message the subject
+        if (comText.length() <= MAX_SUBJECT_LEN) { // just make message the combinedSubCom
             subject = cleanSubject(message);
             message = "";
-            if (DEBUG) Log.v(TAG, "made message the subject=" + subject + " message=" + message);
+            if (DEBUG) Log.v(TAG, "made message the combinedSubCom=" + subject + " message=" + message);
             return highlightComponents(subject, message, query);
         }
 
         /*
-        // start subject extraction process
+        // start combinedSubCom extraction process
         String[] terminators = { "\r", "\n", "<br/>", "<br>", ". ", "! ", "? ", "; ", ": ", ", " };
         message = cleanMessage(message);
         for (String terminator : terminators) {
             int i = message.indexOf(terminator);
-            if (i > MIN_SUBJECT_LEN && i < MAX_SUBJECT_LEN) { // extract the subject
+            if (i > MIN_SUBJECT_LEN && i < MAX_SUBJECT_LEN) { // extract the combinedSubCom
                 int len = terminator.length();
-                subject = cleanSubject(message.substring(0, i + len));
+                combinedSubCom = cleanSubject(message.substring(0, i + len));
                 message = cleanMessage(message.substring(i + len));
-                if (DEBUG) Log.v(TAG, "extracted subject=" + subject + " message=" + message);
-                return highlightComponents(subject, message, query);
+                if (DEBUG) Log.v(TAG, "extracted combinedSubCom=" + combinedSubCom + " message=" + message);
+                return highlightComponents(combinedSubCom, message, query);
             }
         }
 
@@ -366,14 +375,14 @@ public class ChanPost {
         while (!Character.isWhitespace(comText.charAt(i)) && i > 0)
             i--; // rewind until we reach a whitespace character
         if (i > MIN_SUBJECT_LEN) { // we found a suitable cutoff point
-            subject = cleanSubject(comText.substring(0, i));
+            combinedSubCom = cleanSubject(comText.substring(0, i));
             message = cleanMessage(comText.substring(i + 1));
-            if (DEBUG) Log.v(TAG, "cutoff subject=" + subject + " message=" + message);
-            return highlightComponents(subject, message, query);
+            if (DEBUG) Log.v(TAG, "cutoff combinedSubCom=" + combinedSubCom + " message=" + message);
+            return highlightComponents(combinedSubCom, message, query);
         }
         */
         // default
-        if (DEBUG) Log.v(TAG, "default subject=" + subject + " message=" + message);
+        if (DEBUG) Log.v(TAG, "default combinedSubCom=" + subject + " message=" + message);
         return highlightComponents(cleanSubject(subject), cleanMessage(message), query);
     }
 
@@ -606,7 +615,7 @@ public class ChanPost {
                 items.add(imageDimensions());
         }
         //if (boardLevel && resto <= 0) {
-            String s = threadInfoLine(context, boardLevel, showNumReplies);
+            String s = threadInfoLine(context, boardLevel, showNumReplies, false);
             if (!s.isEmpty())
                 items.add(s);
         //}
@@ -625,7 +634,8 @@ public class ChanPost {
         return highlightComponent(component, query);
     }
 
-    public String threadInfoLine(Context context, boolean boardLevel, boolean showNumReplies) { //FIXME
+    public String threadInfoLine(Context context, boolean boardLevel, boolean showNumReplies, boolean abbrev)
+    {
         if (sticky > 0 && replies == 0)
             return context.getString(R.string.thread_is_sticky);
         String text;
@@ -633,14 +643,14 @@ public class ChanPost {
             if (replies > 0) {
                 String repliesStr =
                         String.format(context.getResources().getQuantityString(
-                                R.plurals.thread_num_replies,
+                                abbrev ? R.plurals.thread_num_replies : R.plurals.thread_num_replies,
                                 replies
                             ),
                             replies);
                 String imagesStr = images <= 0
-                        ? context.getString(R.string.thread_has_no_images)
+                        ? context.getString(abbrev ? R.string.thread_has_no_imgs : R.string.thread_has_no_images)
                         : String.format(context.getResources().getQuantityString(
-                                R.plurals.thread_num_images,
+                                abbrev ? R.plurals.thread_num_imgs : R.plurals.thread_num_images,
                                 images
                             ),
                             images);

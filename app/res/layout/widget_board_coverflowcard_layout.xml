@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:id="@+id/widget_board_coverflow_container"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:background="@drawable/widget_rounded_background"
+
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/widget_board_coverflow_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/widget_rounded_background"
         >
-    <StackView android:id="@+id/stack_view_coverflow"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
-               android:gravity="fill"
-               android:loopViews="true"
-               android:fitsSystemWindows="true"
+
+    <StackView
+            android:id="@+id/stack_view_coverflow"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="fill"
+            android:loopViews="true"
+            android:fitsSystemWindows="true"
             />
-    <TextView android:id="@+id/stack_view_empty"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="center"
-              android:background="@drawable/widget_title_gradient_bg"
-              android:textColor="@color/PaletteWhite"
-              android:textStyle="bold"
-              android:text="@string/widget_loading"
+
+    <TextView
+            android:id="@+id/stack_view_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/widget_title_gradient_bg"
+            android:textColor="@color/PaletteWhite"
+            android:textStyle="bold"
+            android:text="@string/widget_loading"
             />
 
     <TextView
@@ -27,18 +33,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="7dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_gravity="left|bottom"
             android:paddingTop="16dp"
-            android:paddingBottom="4dp"
+            android:paddingBottom="5dp"
             android:paddingLeft="8dp"
             android:paddingRight="16dp"
             android:textColor="@color/PaletteWhite"
             android:background="@drawable/widget_title_button_selector"
             android:textStyle="bold"
-            android:textSize="12sp"
+            android:textSize="@dimen/widget_board_coverflowcard_textSize"
             android:text="@string/board_a"
             />
 
@@ -47,13 +53,13 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginTop="4dp"
-            android:layout_marginRight="90dp"
+            android:layout_marginRight="230dp"
             android:paddingLeft="24dp"
             android:paddingBottom="24dp"
             android:layout_alignParentRight="true"
             android:layout_gravity="right"
             android:scaleType="centerCrop"
-            android:src="@drawable/widget_coverflow_refresh_button_selector"
+            android:src="@drawable/widget_refresh_button_selector"
             android:contentDescription="@string/widget_refresh"
             />
 
@@ -71,4 +77,5 @@
             android:src="@drawable/widget_configure_button_selector"
             android:contentDescription="@string/widget_configure"
             />
+
 </FrameLayout>

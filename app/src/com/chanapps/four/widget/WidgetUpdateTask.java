@@ -53,7 +53,7 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
     private ChanPost[] threads = new ChanPost[NUM_TOP_THREADS];
 
     public WidgetUpdateTask(Context context, WidgetConf widgetConf) {
-        if (DEBUG) Log.i(TAG, "WidgetUpdateTask() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
+        if (DEBUG) Log.i(TAG, "WidgetUpdateTask() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ type=" + widgetConf.widgetType);
         this.context = context;
         this.widgetConf = widgetConf;
         if (widgetConf.boardCode == null) {
@@ -71,39 +71,44 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     public void onPostExecute(Void result) {
-        if (DEBUG) Log.i(TAG, "onPostExecute() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
+        if (DEBUG) Log.i(TAG, "onPostExecute() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ type=" + widgetConf.widgetType);
         if (WidgetConstants.WIDGET_TYPE_BOARD.equalsIgnoreCase(widgetConf.widgetType))
             updateWideWidget();
         else if (WidgetConstants.WIDGET_TYPE_ONE_IMAGE.equalsIgnoreCase(widgetConf.widgetType))
             updateOneImageWidget();
         else if (WidgetConstants.WIDGET_TYPE_COVER_FLOW.equalsIgnoreCase(widgetConf.widgetType))
             updateCoverFlowWidget();
+        else if (WidgetConstants.WIDGET_TYPE_COVER_FLOW_CARD.equalsIgnoreCase(widgetConf.widgetType))
+            updateCoverFlowCardWidget();
     }
 
     private void updateWideWidget() {
+        if (DEBUG) Log.i(TAG, "updateWideWidget() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ type=" + widgetConf.widgetType);
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_board_layout);
-        bindClickTargets(R.id.widget_board_container, remoteViews);
+        bindClickTargets(R.id.widget_board_container, remoteViews, false);
         AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, remoteViews);
         int[] imageIds = {R.id.image_left, R.id.image_center, R.id.image_right};
         asyncUpdateImages(BoardWidgetProvider.MAX_THREADS, 0, R.layout.widget_board_layout, imageIds);
     }
 
     private void updateOneImageWidget() {
+        if (DEBUG) Log.i(TAG, "updateOneImageWidget() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ type=" + widgetConf.widgetType);
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_board_oneimage_layout);
-        bindClickTargets(R.id.widget_board_oneimage_container, remoteViews);
+        bindClickTargets(R.id.widget_board_oneimage_container, remoteViews, true);
         AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, remoteViews);
         int[] imageIds = {R.id.image_left1};
         asyncUpdateImages(BoardOneImageWidgetProvider.MAX_THREADS, 0, R.layout.widget_board_oneimage_layout, imageIds);
     }
 
     private void updateCoverFlowWidget() {
+        if (DEBUG) Log.i(TAG, "updateCoverFlowWidget() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ type=" + widgetConf.widgetType);
         final Intent intent = new Intent(context, StackWidgetService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_board_coverflow_layout);
         remoteViews.setRemoteAdapter(R.id.stack_view_coverflow, intent);
         remoteViews.setEmptyView(R.id.stack_view_coverflow, R.id.stack_view_empty);
-        bindClickTargets(R.id.widget_board_coverflow_container, remoteViews);
+        bindClickTargets(R.id.widget_board_coverflow_container, remoteViews, false);
 
         final Intent viewIntent = new Intent(context, ThreadActivity.class);
         viewIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
@@ -112,12 +117,43 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         PendingIntent viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
         remoteViews.setPendingIntentTemplate(R.id.stack_view_coverflow, viewPendingIntent);
 
+        if (DEBUG) Log.i(TAG, "updateCoverFlowWidget() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode
+                + "/ type=" + widgetConf.widgetType + " updating app widget");
         AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, remoteViews);
+        if (DEBUG) Log.i(TAG, "updateCoverFlowWidget() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode
+                + "/ type=" + widgetConf.widgetType + " notifying app widget data");
         AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, R.id.stack_view_coverflow);
         int maxThreads = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxThumbnailPrefetches;
         asyncUpdateImages(maxThreads, R.id.stack_view_coverflow, 0, null);
     }
 
+    private void updateCoverFlowCardWidget() {
+        if (DEBUG) Log.i(TAG, "updateCoverFlowCardWidget() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ type=" + widgetConf.widgetType);
+        final Intent intent = new Intent(context, CardStackWidgetService.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
+        intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_board_coverflowcard_layout);
+        remoteViews.setRemoteAdapter(R.id.stack_view_coverflow, intent);
+        remoteViews.setEmptyView(R.id.stack_view_coverflow, R.id.stack_view_empty);
+        bindClickTargets(R.id.widget_board_coverflow_container, remoteViews, false);
+
+        final Intent viewIntent = new Intent(context, ThreadActivity.class);
+        viewIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
+        viewIntent.putExtra(ThreadActivity.BOARD_CODE, widgetConf.boardCode);
+        viewIntent.setData(Uri.parse(viewIntent.toUri(Intent.URI_INTENT_SCHEME)));
+        PendingIntent viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
+        remoteViews.setPendingIntentTemplate(R.id.stack_view_coverflow, viewPendingIntent);
+
+        if (DEBUG) Log.i(TAG, "updateCoverFlowWidget() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode
+                + "/ type=" + widgetConf.widgetType + " updating app widget");
+        AppWidgetManager.getInstance(context).updateAppWidget(widgetConf.appWidgetId, remoteViews);
+        if (DEBUG) Log.i(TAG, "updateCoverFlowWidget() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode
+                + "/ type=" + widgetConf.widgetType + " notifying app widget data");
+        AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, R.id.stack_view_coverflow);
+        int maxThreads = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxThumbnailPrefetches;
+        asyncUpdateImages(maxThreads, R.id.stack_view_coverflow, 0, null);
+    }
+    
     private void loadBoard() {
         try {
             threads = WidgetProviderUtils.loadBestWidgetThreads(context, widgetConf.boardCode, NUM_TOP_THREADS);
@@ -129,7 +165,7 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    private void bindClickTargets(int widgetContainer, RemoteViews views) {
+    private void bindClickTargets(int widgetContainer, RemoteViews views, boolean boardCodeOnly) {
         if (DEBUG) Log.i(TAG, "bindClickTargets() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
 
         int containerBackground = widgetConf.roundedCorners ? R.drawable.widget_rounded_background : 0;
@@ -144,9 +180,13 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
             return;
         }
 
-        String boardTitle = ChanBoard.isVirtualBoard(board.link)
-                ? board.name
-                : board.name + " /" + board.link + "/";
+        String boardTitle;
+        if (boardCodeOnly)
+            boardTitle = "/" + board.link + "/";
+        else if (ChanBoard.isVirtualBoard(board.link))
+            boardTitle = board.name;
+        else
+            boardTitle = board.name + " /" + board.link + "/";
         int boardTitleColor = widgetConf.boardTitleColor;
         int boardTitleVisibility = widgetConf.showBoardTitle ? View.VISIBLE : View.GONE;
         views.setTextViewText(R.id.board_title, boardTitle);
@@ -211,6 +251,8 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
             intent = new Intent(context, WidgetConfigureActivity.class);
         else if (WidgetConstants.WIDGET_TYPE_COVER_FLOW.equalsIgnoreCase(widgetConf.widgetType))
             intent = new Intent(context, WidgetConfigureCoverFlowActivity.class);
+        else if (WidgetConstants.WIDGET_TYPE_COVER_FLOW_CARD.equalsIgnoreCase(widgetConf.widgetType))
+            intent = new Intent(context, WidgetConfigureCoverFlowCardActivity.class);
         else
             return null;
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetConf.appWidgetId);
@@ -220,7 +262,7 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
     }
 
     private void asyncUpdateImages(final int maxThreads, final int containerId, final int layoutId, final int[] imageIds) {
-        final List<String> preloadURLs = WidgetProviderUtils.preloadCoverflowURLs(context, widgetConf.boardCode, maxThreads);
+        final List<String> preloadURLs = WidgetProviderUtils.preloadThumbnailURLs(context, widgetConf.boardCode, maxThreads);
         if (preloadURLs == null) {
             if (DEBUG) Log.i(TAG, "asyncUpdateImages() no images available, fetching board /" + widgetConf.boardCode + "/");
             FetchChanDataService.scheduleBoardFetch(context, widgetConf.boardCode, true, true);
@@ -272,13 +314,18 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
     }
 
     private void updateWidgetIfFinished(int remaining, int containerId, int layoutId, int[] imageIds) {
-        if (DEBUG) Log.i(TAG, "updateWidgetIfFinished " + remaining + " images remaining");
-        if (remaining > 0)
+        if (remaining > 0) {
+            if (DEBUG) Log.i(TAG, "updateWidgetIfFinished() " + remaining + " images remaining, resuming");
             return;
-        if (containerId > 0)
+        }
+        else if (containerId > 0) {
+            if (DEBUG) Log.i(TAG, "updateWidgetIfFinished() " + remaining + " images remaining, notifying widget data changed");
             AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, containerId);
-        else if (imageIds != null)
+        }
+        else if (imageIds != null) {
+            if (DEBUG) Log.i(TAG, "updateWidgetIfFinished() " + remaining + " images remaining, updating app images directly");
             updateAppWidgetImages(layoutId, imageIds);
+        }
     }
 
     private void updateAppWidgetImages(final int layoutId, final int[] imageIds) {

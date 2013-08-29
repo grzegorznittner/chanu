@@ -8,10 +8,9 @@
 
     <include
             android:id="@+id/widget_preview"
-            android:layout_width="220dp"
+            android:layout_width="match_parent"
             android:layout_height="220dp"
-            android:layout_centerHorizontal="true"
-            layout="@layout/widget_board_coverflow_layout"/>
+            layout="@layout/widget_board_coverflowcard_layout"/>
 
     <LinearLayout
             android:layout_width="match_parent"

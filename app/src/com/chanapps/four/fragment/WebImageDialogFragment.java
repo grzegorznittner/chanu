@@ -20,10 +20,8 @@ import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import java.io.File;
@@ -78,7 +76,7 @@ public class WebImageDialogFragment extends DialogFragment {
                 return true;
             }
         });
-        webImage = (ImageView)view.findViewById(R.id.image);
+        webImage = (ImageView)view.findViewById(R.id.widget_coverflowcard_image);
         webProgress = (ProgressBar)view.findViewById(R.id.progress_bar);
         webButton = (ImageButton)view.findViewById(R.id.button);
         webButton.setOnClickListener(new View.OnClickListener() {
