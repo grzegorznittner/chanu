@@ -253,9 +253,16 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
         if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
             if (DEBUG) Log.i(TAG, "tryFetchThread bad health, exiting");
-            String msg = String.format(getString(R.string.mobile_profile_health_status),
-                    health.toString().toLowerCase().replaceAll("_", " "));
-            Toast.makeText(getActivityContext(), msg, Toast.LENGTH_SHORT).show();
+            if (handler != null) {
+                final String msg = String.format(getString(R.string.mobile_profile_health_status),
+                        health.toString().toLowerCase().replaceAll("_", " "));
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getActivityContext(), msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
             setProgressAsync(false);
             return;
         }
@@ -1313,7 +1320,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
             return ThreadViewer.setViewValue(view, cursor, boardCode,
-                    onTablet(),
                     true,
                     0,
                     0,
