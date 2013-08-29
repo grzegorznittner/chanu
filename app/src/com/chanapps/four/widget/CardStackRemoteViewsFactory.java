@@ -3,7 +3,10 @@ package com.chanapps.four.widget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -15,8 +18,18 @@ import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.loader.ChanImageLoader;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpGet;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +44,14 @@ public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteVie
 
     private static final String TAG = CardStackRemoteViewsFactory.class.getSimpleName();
     private static final boolean DEBUG = true;
+
+    private static final int COUNTRY_FLAG_WIDTH_PX = 16;
+    private static final int COUNTRY_FLAG_HEIGHT_PX = 11;
+
+    private static DisplayImageOptions optionsWithFakeDisplayer;
+    static {
+        optionsWithFakeDisplayer = new DisplayImageOptions.Builder().displayer(new FakeBitmapDisplayer()).cacheOnDisc().build();
+    }
 
     private Context context;
     private int appWidgetId;
@@ -139,11 +160,28 @@ public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteVie
 
     private void setCountryFlag(RemoteViews views, ChanPost thread) {
         String url = thread.countryFlagUrl();
-        if (url != null) {
-            views.setImageViewUri(R.id.widget_coverflowcard_flag, Uri.parse(url));
+        if (url == null)
+            return;
+        File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
+        if (f != null && f.canRead() && f.length() > 0) {
+            views.setImageViewUri(R.id.widget_coverflowcard_flag, Uri.parse(f.getAbsolutePath()));
             views.setViewVisibility(R.id.widget_coverflowcard_flag, View.VISIBLE);
+            if (DEBUG) Log.i(TAG, "getViewAt() url=" + url + " set country flag to file=" + f.getAbsolutePath());
+        }
+        else {
+            asyncDownloadAndCacheUrl(url, urlDownloadCallback);
+            if (DEBUG) Log.i(TAG, "getViewAt() url=" + url + " no file, downloading country flag");
         }
     }
+
+    private Runnable urlDownloadCallback = new Runnable() {
+        @Override
+        public void run() {
+            AppWidgetManager
+                    .getInstance(context)
+                    .notifyAppWidgetViewDataChanged(widgetConf.appWidgetId, R.id.widget_board_coverflow_container);
+        }
+    };
 
     private void setClickTarget(RemoteViews views, ChanPost thread) {
         Bundle extras = new Bundle();
@@ -151,6 +189,73 @@ public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteVie
         Intent intent = new Intent();
         intent.putExtras(extras);
         views.setOnClickFillInIntent(R.id.widget_coverflowcard_frame, intent);
+    }
+
+    private void asyncDownloadAndCacheUrl(final String url, final Runnable downloadCallback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap b = downloadBitmap(url);
+                if (b == null || b.getByteCount() <= 0)
+                    return;
+                File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
+                if (f == null)
+                    return;
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(f);
+                    b.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    fos.flush();
+                    if (DEBUG) Log.i(TAG, "asyncDownloadAndCacheUrl complete for url=" + url + " notifying callback");
+                    downloadCallback.run();
+
+                }
+                catch (IOException e) {
+                    Log.e(TAG, "Coludn't write file " + f.getAbsolutePath(), e);
+                }
+                finally {
+                    IOUtils.closeQuietly(fos);
+                }
+            }
+        }).start();
+    }
+
+
+    static Bitmap downloadBitmap(String url) {
+        final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
+        final HttpGet getRequest = new HttpGet(url);
+
+        try {
+            HttpResponse response = client.execute(getRequest);
+            final int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != HttpStatus.SC_OK) {
+                Log.w("ImageDownloader", "Error " + statusCode + " while retrieving bitmap from " + url);
+                return null;
+            }
+
+            final HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                InputStream inputStream = null;
+                try {
+                    inputStream = entity.getContent();
+                    final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    return bitmap;
+                } finally {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                    entity.consumeContent();
+                }
+            }
+        } catch (Exception e) {
+            getRequest.abort();
+            if (DEBUG) Log.i(TAG, "Error while retrieving bitmap from " + url, e);
+        } finally {
+            if (client != null) {
+                client.close();
+            }
+        }
+        return null;
     }
 
 }
