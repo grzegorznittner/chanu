@@ -2,11 +2,17 @@ package com.chanapps.four.widget;
 
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
+import android.content.Context;
 import android.content.Intent;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.data.ChanBoard;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,7 +20,7 @@ import com.chanapps.four.activity.R;
  * Date: 1/15/13
  * Time: 11:07 PM
  */
-public class WidgetConfigureCoverFlowCardActivity extends AbstractWidgetConfigureActivity {
+public class WidgetConfigureCoverFlowCardActivity extends WidgetConfigureCoverFlowActivity {
 
     public static final String TAG = WidgetConfigureCoverFlowCardActivity.class.getSimpleName();
     private static final boolean DEBUG = false;
@@ -24,8 +30,9 @@ public class WidgetConfigureCoverFlowCardActivity extends AbstractWidgetConfigur
         return R.layout.widget_configure_coverflowcard_layout;
     }
 
-    protected void setBoardImages() {
-        Log.d(TAG,"Set Board Images");
+    @Override
+    protected Class getWidgetProviderClass() {
+        return BoardCoverFlowCardWidgetProvider.class;
     }
 
     @Override
@@ -34,31 +41,26 @@ public class WidgetConfigureCoverFlowCardActivity extends AbstractWidgetConfigur
     }
 
     @Override
-    protected void addDoneClickHandler() {
-        Button doneButton = (Button) findViewById(R.id.done);
-        if (doneButton == null)
-            return;
-        final WidgetConfigureCoverFlowCardActivity activity = this;
-        doneButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (DEBUG)
-                    Log.i(TAG, "Configured widget=" + appWidgetId + " configuring for board=" + widgetConf.boardCode);
-                WidgetProviderUtils.storeWidgetConf(activity, widgetConf);
-                Intent intent = new Intent();
-                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-                intent.putExtra(WidgetProviderUtils.WIDGET_PROVIDER_UTILS, activity.getWidgetType());
-                activity.setResult(Activity.RESULT_OK, intent);
-                Intent updateWidget = new Intent(activity, BoardCoverFlowCardWidgetProvider.class);
-                updateWidget.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-                int[] ids = {appWidgetId};
-                updateWidget.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
-                updateWidget.putExtra(WidgetProviderUtils.WIDGET_PROVIDER_UTILS, activity.getWidgetType());
-                activity.sendBroadcast(updateWidget);
-                activity.finish();
-            }
-        });
+    protected BaseAdapter createAdapter() {
+        return new CardCoverflowStackAdapter(this, R.layout.widget_coverflowcard_item, R.id.widget_coverflowcard_image);
+    }
 
+    protected class CardCoverflowStackAdapter extends CoverflowStackAdapter {
+
+        public CardCoverflowStackAdapter(Context context, int layoutId, int imageId) {
+            super(context, layoutId, imageId);
+        }
+
+        @Override
+        public View getView(int position, View view, ViewGroup parent) {
+            View item = super.getView(position, view, parent);
+            ChanBoard board = ChanBoard.getBoardByCode(context, widgetConf.boardCode);
+            TextView sub = (TextView)item.findViewById(R.id.widget_coverflowcard_subject);
+            String html = "<b>" + board.name + "</b><br/>" + board.getDescription(context);
+            sub.setText(Html.fromHtml(html));
+            return item;
+        }
 
     }
+
 }

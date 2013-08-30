@@ -22,7 +22,6 @@ public class WidgetConfigureActivity extends AbstractWidgetConfigureActivity {
 
     public static final String TAG = WidgetConfigureActivity.class.getSimpleName();
     private static final boolean DEBUG = false;
-    private static final long DELAY_BOARD_IMAGE_MS = 5 * 1000; // give board fetch time to finish
 
     @Override
     protected int getContentViewLayout() {
@@ -34,6 +33,7 @@ public class WidgetConfigureActivity extends AbstractWidgetConfigureActivity {
         return WidgetConstants.WIDGET_TYPE_BOARD;
     }
 
+    @Override
     protected void setBoardImages() {
         final Context context = getApplicationContext();
         final String boardCode = widgetConf.boardCode;

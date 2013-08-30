@@ -20,7 +20,7 @@ import com.google.ads.AdView;
 public class AdComponent {
 
     protected static final String TAG = AdComponent.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
 
     protected Context context;
     protected View advert;

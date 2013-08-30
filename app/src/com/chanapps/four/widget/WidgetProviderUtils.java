@@ -39,7 +39,7 @@ import java.util.*;
 public final class WidgetProviderUtils {
 
     public static final String TAG = WidgetProviderUtils.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     public static final String WIDGET_PROVIDER_UTILS = "com.chanapps.four.widget.WidgetProviderUtils";
 
     public static Set<String> getActiveWidgetPref(Context context) {
@@ -228,7 +228,16 @@ public final class WidgetProviderUtils {
                 ? board.loadedThreads
                 : board.threads;
         if (boardThreads == null || boardThreads.length == 0) {
-            Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode);
+            Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode + " making pseudo threads");
+            for (int i = 0; i < numThreads; i++) {
+                ChanPost p = new ChanPost();
+                p.board = boardCode;
+                p.no = i;
+                p.resto = 0;
+                p.sub = board.name;
+                p.com = board.getDescription(context);
+                widgetThreads[i] = p;
+            }
             return widgetThreads;
         }
 

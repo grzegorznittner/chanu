@@ -28,7 +28,7 @@ import java.util.*;
 public class BillingComponent {
 
     protected static final String TAG = BillingComponent.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
 
     protected static final String GOOGLE_LICENSE_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjGGm5BxvO9AYTYKEwNqsLnNDwrCWxR6i8y7/6oO3HM83wCu6snmefngL/7DuJc9/6xcAtrb7DKSCCKoqKP+7m9hku6e8uHKiaZK2ixU/GGgzKR7QcxtyckaCuYE9vc8nXetpn82/OPxraJzB769dI7hXwpcZeOVxHgYhby0vgl6BBNtQMohklKx4M8Kn2kJklRbQUZS/5vTLB3V4wEK9AGKq/S3ETo5ChCRgd55gHlci9yWrcvdUWIHikzsTPwrZaSvnRnT208Ona1UhyUOtcVytbzi65yKh2P9weqygIzivbizAXZvHLCtfuySbJZYojDEPdwGei0kQaRk0Sm4aPQIDAQAB";
     protected static final String STORAGE_SECRET_KEY = "MsouCDI0ZDRbvse4SFm3vEhAl2wVvCRPvL1yjf6LnBUb7yYLfnzfDbHGl7HIstoa";

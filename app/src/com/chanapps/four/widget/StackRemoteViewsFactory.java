@@ -28,7 +28,7 @@ import java.util.List;
 public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private static final String TAG = StackRemoteViewsFactory.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private Context context;
     private int appWidgetId;

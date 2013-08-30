@@ -20,7 +20,7 @@ import com.chanapps.four.data.ChanBoard;
 public class BoardCoverFlowWidgetProvider extends AbstractBoardWidgetProvider {
 
     public static final String TAG = BoardCoverFlowWidgetProvider.class.getSimpleName();
-    public static final int MAX_THREADS = 30;
+    public static final int MAX_THREADS = 20;
 
     @Override
     protected String getWidgetType() {

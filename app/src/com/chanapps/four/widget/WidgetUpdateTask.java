@@ -36,7 +36,7 @@ import java.util.List;
 public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = WidgetUpdateTask.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private static final int NUM_TOP_THREADS = 6;
 
     private Context context;
