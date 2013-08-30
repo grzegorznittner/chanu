@@ -247,9 +247,18 @@ public class ThreadViewer {
         View wrapper = viewHolder.list_item_num_images;
         View spinner = viewHolder.list_item_num_images_spinner;
         if (wrapper != null) {
-            wrapper.setOnClickListener(i > 0 ? imagesOnClickListener : null);
-            if (spinner != null)
-                spinner.setVisibility(i > 0 ? View.VISIBLE : View.GONE);
+            if (i > 0 && imagesOnClickListener != null) {
+                wrapper.setOnClickListener(imagesOnClickListener);
+                wrapper.setClickable(true);
+                if (spinner != null)
+                    spinner.setVisibility(View.VISIBLE);
+            }
+            else {
+                wrapper.setOnClickListener(null);
+                wrapper.setClickable(false);
+                if (spinner != null)
+                    spinner.setVisibility(View.GONE);
+            }
         }
 
         displayNumDirectReplies(viewHolder, cursor, showContextMenu, repliesOnClickListener); //, false);
