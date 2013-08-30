@@ -55,14 +55,6 @@ public class BoardGridViewer {
     public static boolean setViewValue(View view, Cursor cursor, String groupBoardCode,
                                        int columnWidth, int columnHeight,
                                        View.OnClickListener overlayListener,
-                                       View.OnClickListener overflowListener)
-    {
-        return setViewValue(view, cursor, groupBoardCode, columnWidth, columnHeight, overlayListener, overflowListener, 0);
-    }
-
-    public static boolean setViewValue(View view, Cursor cursor, String groupBoardCode,
-                                       int columnWidth, int columnHeight,
-                                       View.OnClickListener overlayListener,
                                        View.OnClickListener overflowListener,
                                        int options)
     {
@@ -92,8 +84,15 @@ public class BoardGridViewer {
             }
         }
         ViewGroup overlay = viewHolder.grid_item_overlay;
-        if (overlay != null)
-            overlay.setOnClickListener(overlayListener);
+        if (overlay != null) {
+            if (overlayListener != null) {
+                overlay.setOnClickListener(overlayListener);
+                overlay.setClickable(true);
+            }
+            else {
+                overlay.setClickable(false);
+            }
+        }
         return true;
     }
     

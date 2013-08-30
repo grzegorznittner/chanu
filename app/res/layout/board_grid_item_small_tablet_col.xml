@@ -1,0 +1,54 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/grid_item"
+                style="@style/BoardGridItemSmall"
+                android:layout_width="@dimen/BoardGridViewTablet_layout_width_afterPadding"
+                android:layout_height="@dimen/BoardGridViewTablet_layout_height_afterPadding"
+        >
+
+    <FrameLayout
+            android:id="@+id/grid_item_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:foreground="@drawable/board_grid_selector_bg"
+            >
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <ImageView
+                    android:id="@+id/grid_item_thread_thumb"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/BoardGridViewTablet_layout_width_afterPadding"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/thread_post_image"
+                    android:visibility="gone"
+                    android:background="@drawable/board_grid_selector_bg"
+                    />
+
+        </FrameLayout>
+
+        <ImageView
+                android:id="@+id/grid_item_country_flag"
+                android:layout_width="@dimen/BoardGridCountryFlag_layout_width"
+                android:layout_height="@dimen/BoardGridCountryFlag_layout_height"
+                android:scaleType="fitXY"
+                android:layout_gravity="top|right"
+                android:contentDescription="@string/thread_country_flag"
+                android:visibility="gone"
+                />
+
+        <TextView
+                android:id="@+id/grid_item_thread_subject"
+                style="@style/BoardGridItemSmallTabletColSubject"
+                />
+
+        <TextView
+                android:id="@+id/grid_item_thread_info"
+                style="@style/BoardGridItemSmallTabletColInfo"
+                />
+
+    </FrameLayout>
+
+</RelativeLayout>

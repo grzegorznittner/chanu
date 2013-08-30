@@ -105,6 +105,18 @@
         <item name="android:maxLines">2</item>
     </style>
 
+    <style name="BoardGridItemSmallTabletColSubject" parent="AppTheme">
+        <item name="android:layout_width">@dimen/BoardGridViewTablet_layout_width_afterTextPadding</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/BoardGridViewTablet_layout_marginHeight_belowImage</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:textSize">@dimen/BoardGridSubject</item>
+        <item name="android:ellipsize">none</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:maxLines">5</item>
+    </style>
+
     <style name="BoardGridItemSmallInfo" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -115,6 +127,16 @@
         <item name="android:textColor">@color/PaletteLightGray</item>
         <item name="android:textSize">@dimen/BoardGridInfo</item>
         <item name="android:maxLines">2</item>
+    </style>
+
+    <style name="BoardGridItemSmallTabletColInfo" parent="AppTheme">
+        <item name="android:layout_width">@dimen/BoardGridViewTablet_layout_width_afterTextPadding</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">bottom|center_horizontal</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textColor">@color/PaletteLightGray</item>
+        <item name="android:textSize">@dimen/BoardGridInfo</item>
+        <item name="android:maxLines">1</item>
     </style>
 
     <!--
@@ -1153,6 +1175,24 @@
         <item name="android:textColor">?themedCardSubjectTextColor</item>
         <item name="android:imeOptions">actionSend</item>
         <item name="android:imeActionLabel">@string/post_reply_send</item>
+    </style>
+
+    <style name="PostReplyImageUrlEditText" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/PostReplyEditText_padding</item>
+        <item name="android:textSize">@dimen/PostReplyEditText</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginLeft">@dimen/PostReplyEditText_layout_marginLeft</item>
+        <item name="android:layout_marginRight">@dimen/PostReplyEditText_layout_marginRight</item>
+        <item name="android:scrollbars">none</item>
+        <item name="android:gravity">top|left</item>
+        <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:imeActionLabel">@string/web_image_key_download</item>
+        <item name="android:hint">@string/web_image_url_text_hint</item>
+        <item name="android:inputType">textUri</item>
+        <item name="android:imeOptions">actionUnspecified</item>
+        <item name="android:maxLength">255</item>
     </style>
 
     <style name="PostReplyCheckbox" parent="AppTheme">

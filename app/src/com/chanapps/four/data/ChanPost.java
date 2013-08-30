@@ -594,7 +594,8 @@ public class ChanPost {
         return "";
     }
 
-    public String headline(Context context, String query, boolean boardLevel, byte[] repliesBlob, boolean showNumReplies) {
+    public String headline(Context context, String query, boolean boardLevel, byte[] repliesBlob,
+                           boolean showNumReplies, boolean abbrev) {
         List<String> items = new ArrayList<String>();
         if (!boardLevel) {
             if (email != null && !email.isEmpty() && email.equals("sage"))
@@ -615,7 +616,7 @@ public class ChanPost {
                 items.add(imageDimensions());
         }
         //if (boardLevel && resto <= 0) {
-            String s = threadInfoLine(context, boardLevel, showNumReplies, false);
+            String s = threadInfoLine(context, boardLevel, showNumReplies, abbrev);
             if (!s.isEmpty())
                 items.add(s);
         //}
@@ -1031,7 +1032,7 @@ public class ChanPost {
         String[] textComponents = textComponents(query);
         String[] spoilerComponents = spoilerComponents(query);
         String exifText = exifText();
-        String headline = headline(context, query, false, repliesBlob, false);
+        String headline = headline(context, query, false, repliesBlob, false, false);
         int flags = postFlags(false, false, textComponents[0], textComponents[1], exifText, headline);
         if (i == 0)
             flags |= FLAG_IS_HEADER;

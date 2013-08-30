@@ -1,5 +1,6 @@
 package com.chanapps.four.fragment;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -112,6 +113,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         */
         boardTitleBar = layout.findViewById(R.id.board_title_bar);
         boardSearchResultsBar = layout.findViewById(R.id.board_search_results_bar);
+        setHasOptionsMenu(true);
         return layout;
     }
 
@@ -253,13 +255,14 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
         if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
             if (DEBUG) Log.i(TAG, "tryFetchThread bad health, exiting");
-            if (handler != null) {
+            final Context context = getActivityContext();
+            if (handler != null && context != null) {
                 final String msg = String.format(getString(R.string.mobile_profile_health_status),
                         health.toString().toLowerCase().replaceAll("_", " "));
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivityContext(), msg, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -547,7 +550,11 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 String url = ChanThread.threadUrl(boardCode, threadNo);
                 ActivityDispatcher.launchUrlInBrowser(getActivityContext(), url);
             default:
-                return super.onOptionsItemSelected(item);
+                ThreadActivity activity = (ThreadActivity)getActivity();
+                if (activity != null)
+                    return activity.onOptionsItemSelected(item);
+                else
+                    return super.onOptionsItemSelected(item);
         }
     }
 
@@ -1366,6 +1373,15 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             boardIcon.setAlpha(alpha);
         }
         boardTitleBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.thread_menu, menu);
+        ThreadActivity activity = (ThreadActivity)getActivity();
+        if (activity != null)
+            activity.createSearchView(menu);
+        super.onCreateOptionsMenu(menu, menuInflater);
     }
 
 }

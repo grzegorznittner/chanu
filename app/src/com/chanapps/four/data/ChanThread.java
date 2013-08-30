@@ -83,16 +83,9 @@ public class ChanThread extends ChanPost {
             flags |= THREAD_FLAG_STICKY;
         return flags;
     }
-    /*
-    public static Object[] makeRow(Context context, ChanPost post, String query) {
-        return makeRow(context, post, query, 0);
-    }
-    */
-    public static Object[] makeRow(Context context, ChanPost post, String query, int extraFlags) {
-        return makeRow(context, post, query, extraFlags, true);
-    }
 
-    public static Object[] makeRow(Context context, ChanPost post, String query, int extraFlags, boolean showNumReplies) {
+    public static Object[] makeRow(Context context, ChanPost post, String query, int extraFlags,
+                                   boolean showNumReplies, boolean abbrev) {
         String id = post.board + "/" + post.no;
         String[] textComponents = post.textComponents(query);
         return new Object[] {
@@ -100,7 +93,7 @@ public class ChanThread extends ChanPost {
                 post.board,
                 post.no,
                 textComponents[0],
-                post.headline(context, query, true, null, showNumReplies),
+                post.headline(context, query, true, null, showNumReplies, abbrev),
                 textComponents[1],
                 post.thumbnailUrl(),
                 post.countryFlagUrl(),

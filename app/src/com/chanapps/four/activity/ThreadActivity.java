@@ -22,6 +22,8 @@ import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.BoardGridCursorAdapter;
+import com.chanapps.four.adapter.BoardGridSmallCursorAdapter;
+import com.chanapps.four.adapter.BoardGridSmallTabletColCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
@@ -130,9 +132,6 @@ public class ThreadActivity
 
         mPullToRefreshAttacher = new PullToRefreshAttacher(this);
         ThreadViewer.initStatics(getApplicationContext(), ThemeSelector.instance(getApplicationContext()).isDark());
-
-        if (onTablet())
-            createAbsListView();
     }
 
     protected void createPager(final ChanBoard board) {
@@ -140,14 +139,33 @@ public class ThreadActivity
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mAdapter = new ThreadPagerAdapter(getSupportFragmentManager());
-                    mAdapter.setBoard(board);
-                    mAdapter.setQuery(query);
-                    mPager = (ViewPager) findViewById(R.id.pager);
-                    mPager.setOffscreenPageLimit(OFFSCREEN_PAGE_LIMIT);
-                    mPager.setAdapter(mAdapter);
+                    createPagerSync(board);
                 }
             });
+    }
+
+    protected void createPagerAndSetCurrentItemAsync(final ChanBoard board) {
+        if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (onTablet())
+                        createAbsListView();
+                    createPagerSync(board);
+                    setCurrentItemToThread();
+                }
+            });
+    }
+
+    protected void createPagerSync(final ChanBoard board) {
+        if (onTablet())
+            getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
+        mAdapter = new ThreadPagerAdapter(getSupportFragmentManager());
+        mAdapter.setBoard(board);
+        mAdapter.setQuery(query);
+        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager.setOffscreenPageLimit(OFFSCREEN_PAGE_LIMIT);
+        mPager.setAdapter(mAdapter);
     }
 
     public void showThread(long threadNo) {
@@ -291,7 +309,8 @@ public class ThreadActivity
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo);
         if (handler == null)
             handler = new Handler();
-
+        if (onTablet())
+            createAbsListView();
         createPagerAsync();
     }
 
@@ -303,15 +322,11 @@ public class ThreadActivity
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
         if (board.hasData() && board.isCurrent()) {
             if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " board has current data, loading");
-            if (onTablet())
-                getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
             createPager(board);
         }
         else if (board.hasData() && NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
                 == NetworkProfile.Health.NO_CONNECTION) {
             if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " board has old data but connection down, loading");
-            if (onTablet())
-                getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
             createPager(board);
         }
         else if (NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
@@ -475,11 +490,14 @@ public class ThreadActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.thread_menu, menu);
-        searchMenuItem = menu.findItem(R.id.search_menu);
-        SearchActivity.createSearchView(this, searchMenuItem);
+        createSearchView(menu);
         return super.onCreateOptionsMenu(menu);
     }
 
+    public void createSearchView(Menu menu) {
+        searchMenuItem = menu.findItem(R.id.search_menu);
+        SearchActivity.createSearchView(this, searchMenuItem);
+    }
     public ChanActivityId getChanActivityId() {
         return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo, postNo, query);
     }
@@ -780,7 +798,6 @@ public class ThreadActivity
         }
     }
 
-    // tablet
     public boolean onTablet() {
         initTablet();
         return boardGrid != null;
@@ -794,7 +811,7 @@ public class ThreadActivity
                 1,
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
-        adapterBoardsTablet = new BoardGridCursorAdapter(this, viewBinder);
+        adapterBoardsTablet = new BoardGridSmallTabletColCursorAdapter(this, viewBinder);
         boardGrid.setAdapter(adapterBoardsTablet);
         boardGrid.setOnItemClickListener(boardGridListener);
         boardGrid.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
@@ -852,7 +869,7 @@ public class ThreadActivity
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ id=" + id);
             //setProgress(true);
-            return new BoardCursorLoader(getActivityContext(), boardCode, "");
+            return new BoardCursorLoader(getActivityContext(), boardCode, "", true);
         }
 
         @Override
@@ -873,7 +890,7 @@ public class ThreadActivity
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null, null);
+            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null, null, BoardGridViewer.SMALL_GRID);
         }
     };
 
@@ -919,10 +936,7 @@ public class ThreadActivity
                 ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
                 if (board.defData)
                     return;
-                if (onTablet())
-                    createAbsListView();
-                createPager(board);
-                setCurrentItemToThread();
+                createPagerAndSetCurrentItemAsync(board);
             }
         }).start();
     }

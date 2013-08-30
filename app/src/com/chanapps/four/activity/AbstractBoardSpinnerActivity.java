@@ -15,6 +15,7 @@ import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.service.NetworkProfileManager;
+import com.chanapps.four.viewer.BoardGridViewer;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,6 +66,7 @@ abstract public class
         }
         super.onCreate(bundle);
 
+        BoardGridViewer.initStatics(getApplicationContext(), ThemeSelector.instance(getApplicationContext()).isDark());
 
         NetworkProfileManager.instance().ensureInitialized(this);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS); // for spinning action bar

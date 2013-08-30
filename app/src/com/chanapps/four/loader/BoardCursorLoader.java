@@ -31,6 +31,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected String boardName;
     protected String query;
+    protected boolean abbrev;
 
     protected long generatorSeed;
     protected Random generator;
@@ -40,11 +41,12 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         mObserver = new ForceLoadContentObserver();
     }
 
-    public BoardCursorLoader(Context context, String boardName, String query) {
+    public BoardCursorLoader(Context context, String boardName, String query, boolean abbrev) {
         this(context);
         this.context = context;
         this.boardName = boardName;
         this.query = query == null ? "" : query.toLowerCase().trim();
+        this.abbrev = abbrev;
         initRandomGenerator();
     }
 
@@ -158,7 +160,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                     numQueryMatches++;
                 Object[] row = thread.no <= 0
                     ? ChanThread.makeBoardRow(context, thread.board, thread.sub, ChanBoard.getImageResourceId(thread.board, 0, 0))
-                    : ChanThread.makeRow(context, thread, query, 0, !board.isVirtualBoard());
+                    : ChanThread.makeRow(context, thread, query, 0, !board.isVirtualBoard(), abbrev);
                 matrixCursor.addRow(row);
                 i++;
                 if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));

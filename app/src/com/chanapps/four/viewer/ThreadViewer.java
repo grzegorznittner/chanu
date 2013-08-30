@@ -58,6 +58,7 @@ public class ThreadViewer {
     private static DisplayImageOptions displayImageOptions = null;
     private static DisplayImageOptions thumbDisplayImageOptions = null;
     private static int stub;
+    private static int boardTabletViewWidthPx = 0;
 
     public static void initStatics(Context context, boolean isDark) {
         imageLoader = ChanImageLoader.getInstance(context);
@@ -66,6 +67,7 @@ public class ThreadViewer {
                 : R.drawable.stub_image_background;
         Resources res = context.getResources();
         cardPaddingPx = res.getDimensionPixelSize(R.dimen.BoardGridView_spacing);
+        boardTabletViewWidthPx = res.getDimensionPixelSize(R.dimen.BoardGridViewTablet_layout_width);
         displayMetrics = res.getDisplayMetrics();
         subjectTypeface = Typeface.createFromAsset(res.getAssets(), SUBJECT_FONT);
         displayImageOptions = createDisplayImageOptions(null);
@@ -109,7 +111,7 @@ public class ThreadViewer {
         int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
         int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
         if (flags < 0) // we are on board list
-            return BoardGridViewer.setViewValue(view, cursor, groupBoardCode, columnWidth, columnHeight, null, null);
+            return BoardGridViewer.setViewValue(view, cursor, groupBoardCode, columnWidth, columnHeight, null, null, 0);
         //else if ((flags & ChanPost.FLAG_IS_URLLINK) > 0)
         //    return setUrlLinkView(view, cursor);
         else if ((flags & ChanPost.FLAG_IS_TITLE) > 0)
@@ -678,6 +680,7 @@ public class ThreadViewer {
         return true;
     }
     */
+
     public static Point sizeHeaderImage(final int tn_w, final int tn_h) {
         Point imageSize = new Point();
         double aspectRatio = (double) tn_w / (double) tn_h;
@@ -697,17 +700,23 @@ public class ThreadViewer {
     }
 
     public static int cardMaxImageWidth() {
+        int naiveMax;
         if (displayMetrics.widthPixels < displayMetrics.heightPixels) // portrait
-            return displayMetrics.widthPixels - cardPaddingPx - cardPaddingPx;
+            naiveMax = displayMetrics.widthPixels - cardPaddingPx - cardPaddingPx;
         else // landscape
-            return displayMetrics.widthPixels / 2 - cardPaddingPx - cardPaddingPx;
+            naiveMax = displayMetrics.widthPixels / 2 - cardPaddingPx - cardPaddingPx;
+        naiveMax -= boardTabletViewWidthPx;
+        return naiveMax;
     }
 
     public static int cardMaxImageHeight() {
+        int naiveMax;
         if (displayMetrics.widthPixels < displayMetrics.heightPixels) // portrait
-            return displayMetrics.heightPixels / 2 - cardPaddingPx - cardPaddingPx;
+            naiveMax = displayMetrics.heightPixels / 2 - cardPaddingPx - cardPaddingPx;
         else // landscape
-            return displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
+            naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
+        naiveMax -= boardTabletViewWidthPx;
+        return naiveMax;
     }
 
     /*

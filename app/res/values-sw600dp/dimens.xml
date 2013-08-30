@@ -35,7 +35,11 @@
 
     <!-- Padding & Margins -->
 
-    <dimen name="BoardGridViewTablet_layout_width">150dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width">180dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width_afterPadding">156dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_marginHeight_belowImage">160dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width_afterTextPadding">140dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_height_afterPadding">282dp</dimen>
     <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
     <dimen name="BoardTypeText_padding">8dp</dimen>
 
@@ -127,7 +131,7 @@
     <dimen name="ThreadListHeader_mini_padding">6dp</dimen>
     <dimen name="ThreadListHeader_micro_padding">4dp</dimen>
 
-    <dimen name="ThreadListHeaderImage_layout_marginTop">16dp</dimen>
+    <dimen name="ThreadListHeaderImage_layout_marginTop">0dp</dimen>
     <dimen name="ThreadListHeaderImage_layout_marginBottom">0dp</dimen>
 
     <dimen name="ThreadListHeaderSubject_layout_marginLeft">16dp</dimen>

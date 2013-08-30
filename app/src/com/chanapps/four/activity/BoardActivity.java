@@ -143,7 +143,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             return;
         if (DEBUG) Log.i(TAG, "createViews /" + boardCode + "/ q=" + query);
         setupStaticBoards();
-        BoardGridViewer.initStatics(getApplicationContext(), ThemeSelector.instance(getApplicationContext()).isDark());
         createAbsListView();
         setupBoardTitle();
     }
@@ -539,7 +538,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ q=" + query + " id=" + id);
             setProgress(true);
-            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, query);
+            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, query, false);
             return cursorLoader;
         }
         @Override

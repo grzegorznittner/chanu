@@ -32,16 +32,8 @@
 
         <EditText
                 android:id="@+id/text"
-                style="@style/PostReplyEditText"
-                android:layout_marginLeft="0dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
+                style="@style/PostReplyImageUrlEditText"
                 android:layout_toLeftOf="@+id/button"
-                android:hint="@string/web_image_url_text_hint"
-                android:inputType="textUri"
-                android:imeOptions="actionUnspecified"
-                android:imeActionLabel="@string/web_image_key_download"
-                android:maxLength="255"
                 >
         </EditText>
 
