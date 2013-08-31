@@ -20,6 +20,7 @@ import com.chanapps.four.service.BaseChanService;
 import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
 import com.chanapps.four.service.NetworkProfileManager;
+import com.chanapps.four.service.profile.NetworkProfile;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
 
@@ -57,6 +58,13 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
     public Void doInBackground(Void... params) {
         if (DEBUG) Log.i(TAG, "doInBackground() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/");
         loadBoard();
+        NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
+        if (ChanBoard.boardNeedsRefresh(context, widgetConf.boardCode, false)
+                &&  health != NetworkProfile.Health.NO_CONNECTION
+                && health != NetworkProfile.Health.BAD) {
+            if (DEBUG) Log.i(TAG, "doInBackground() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ scheduling board fetch");
+            FetchChanDataService.scheduleBoardFetch(context, widgetConf.boardCode, false, true);
+        }
         if (WidgetConstants.WIDGET_TYPE_BOARD.equalsIgnoreCase(widgetConf.widgetType))
             updateWideWidget();
         else if (WidgetConstants.WIDGET_TYPE_ONE_IMAGE.equalsIgnoreCase(widgetConf.widgetType))

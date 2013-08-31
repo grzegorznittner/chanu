@@ -271,23 +271,32 @@
     <dimen name="PopularItemText_paddingBottom">24dp</dimen>
     <dimen name="PopularItem_textSize">16sp</dimen>
 
-    <!-- widgets dimension 294,72 -->
-    <dimen name="widget_board_minWidth">250dp</dimen>
-    <dimen name="widget_board_minHeight">70dp</dimen>
-    <dimen name="widget_board_oneimage_minWidth">70dp</dimen>
-    <dimen name="widget_board_oneimage_minHeight">70dp</dimen>
-    <dimen name="widget_board_coverflow_minWidth">110dp</dimen>
-    <dimen name="widget_board_coverflow_minHeight">110dp</dimen>
-    <dimen name="widget_board_coverflow_image_width">110dp</dimen>
-    <dimen name="widget_board_coverflow_image_height">110dp</dimen>
-    <dimen name="widget_board_coverflowcard_minWidth">250dp</dimen>
-    <dimen name="widget_board_coverflowcard_minHeight">110dp</dimen>
-    <dimen name="widget_board_coverflowcard_width">250dp</dimen>
-    <dimen name="widget_board_coverflowcard_height">100dp</dimen>
-    <dimen name="widget_board_coverflowcard_image_width">100dp</dimen>
-    <dimen name="widget_board_coverflowcard_image_height">100dp</dimen>
-    <dimen name="widget_board_coverflowcard_text_paddingLeft">108dp</dimen>
-    <dimen name="widget_board_coverflowcard_textSize">12sp</dimen>
+    <!-- widgets -->
+    <!-- newskool dp = 70n - 30 -->
+    <dimen name="widget_onecol">40dp</dimen>
+    <dimen name="widget_twocol">110dp</dimen>
+    <dimen name="widget_fourcol">250dp</dimen>
+    <dimen name="widget_twocol_inner">100dp</dimen>
+    <dimen name="widget_twocol_inner_paddingLeft">108dp</dimen>
+    <dimen name="widget_textSize">12sp</dimen>
+
+    <dimen name="widget_board_minWidth">@dimen/widget_fourcol</dimen>
+    <dimen name="widget_board_minHeight">@dimen/widget_onecol</dimen>
+    <dimen name="widget_board_oneimage_minWidth">@dimen/widget_onecol</dimen>
+    <dimen name="widget_board_oneimage_minHeight">@dimen/widget_onecol</dimen>
+    <dimen name="widget_board_coverflow_minWidth">@dimen/widget_twocol</dimen>
+    <dimen name="widget_board_coverflow_minHeight">@dimen/widget_twocol</dimen>
+    <dimen name="widget_board_coverflowcard_minWidth">@dimen/widget_fourcol</dimen>
+    <dimen name="widget_board_coverflowcard_minHeight">@dimen/widget_twocol</dimen>
+
+    <dimen name="widget_board_coverflow_image_width">@dimen/widget_twocol</dimen>
+    <dimen name="widget_board_coverflow_image_height">@dimen/widget_twocol</dimen>
+    <dimen name="widget_board_coverflowcard_width">@dimen/widget_fourcol</dimen>
+    <dimen name="widget_board_coverflowcard_height">@dimen/widget_twocol_inner</dimen>
+    <dimen name="widget_board_coverflowcard_image_width">@dimen/widget_twocol_inner</dimen>
+    <dimen name="widget_board_coverflowcard_image_height">@dimen/widget_twocol_inner</dimen>
+    <dimen name="widget_board_coverflowcard_text_paddingLeft">@dimen/widget_twocol_inner_paddingLeft</dimen>
+    <dimen name="widget_board_coverflowcard_textSize">@dimen/widget_textSize</dimen>
 
     <!-- drawer -->
     <string name="drawer_open">Open navigation drawer</string>

@@ -125,6 +125,7 @@ public class ThemeSelector {
             id = ambientLuxTheme(); // should be fixed to check sensor lux levels
         else
             id = DEFAULT_THEME;
+        if (DEBUG) Log.i(TAG, "calcThemeId('" + theme + "') = " + id);
         return id;
     }
 
