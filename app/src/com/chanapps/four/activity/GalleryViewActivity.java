@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,6 +27,7 @@ import com.android.gallery3d.ui.GLRootView;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
+import com.chanapps.four.service.profile.NetworkProfile;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
 
@@ -37,7 +37,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     public static final String THREAD_NO = "threadNo";
     public static final String POST_NO = "postNo";
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     public static final String VIEW_TYPE = "viewType";
 
@@ -48,20 +48,23 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         OFFLINE_ALBUMSET_VIEW
     }
 
-    private ViewType viewType = ViewType.PHOTO_VIEW; // default single image view
-
     public static final int PROGRESS_REFRESH_MSG = 0;
 	public static final int FINISHED_DOWNLOAD_MSG = 2;
 	public static final int DOWNLOAD_ERROR_MSG = 3;
 	public static final int UPDATE_POSTNO_MSG = 4;
 
+    private ViewType viewType = ViewType.PHOTO_VIEW; // default single image view
     private String boardCode = null;
     private long threadNo = 0;
     private long postNo = 0;
     private ChanPost post = null;
     private LayoutInflater inflater;
     protected Handler handler;
+    private Handler postHandler;
     private GalleryActionBar actionBar;
+    private String title;
+    private ChanThread thread;
+    private ProgressBar progressBar;
 
     public static void startActivity(Context from, AdapterView<?> adapterView, View view, int position, long id) {
         Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
@@ -125,7 +128,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     private void loadChanPostData() {
         post = null;
         try {
-            ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, threadNo);
+            thread = ChanFileStorage.loadThreadData(getBaseContext(), boardCode, threadNo);
             if (thread != null) {
                 for (ChanPost post : thread.posts) {
                     if (post.no == postNo) {
@@ -154,7 +157,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         actionBar = new GalleryActionBar(this);
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         setContentView(R.layout.gallery_layout);
-
+        progressBar = (ProgressBar)findViewById(R.id.full_screen_progress_bar);
         if (bundle != null)
             onRestoreInstanceState(bundle);
         else
@@ -202,22 +205,21 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	protected void onStart() {
 		super.onStart();
 		if (DEBUG) Log.i(TAG, "onStart");
-        loadChanPostData();
-        setActionBarTitle();
+        postHandler = new Handler();
+        loadDataAsync();
     }
 
     @Override
     protected void onStop () {
     	super.onStop();
     	if (DEBUG) Log.i(TAG, "onStop");
+        postHandler = null;
     }
 
     @Override
 	protected void onResume () {
 		super.onResume();
 		if (DEBUG) Log.i(TAG, "onResume");
-		prepareGalleryView();
-        NetworkProfileManager.instance().activityChange(this);
 	}
 	
 	public void onWindowFocusChanged (boolean hasFocus) {
@@ -270,7 +272,76 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     	super.onConfigurationChanged(newConfig);
     	prepareGalleryView();
     }
-    
+
+    private void loadDataAsync() {
+        setProgressBar(true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                delayLoop();
+            }
+        }).start();
+    }
+
+    private void delayLoop() {
+        loadChanPostData();
+        loadActionBarTitle();
+        final long delayMs = calcDelayMs();
+        if (DEBUG) Log.i(TAG, "loadDataAsync() delayMs=" + delayMs);
+        if (delayMs <= 0) {
+            displayGallery(); // load now
+            return;
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(delayMs);
+                    delayLoop();
+                }
+                catch (InterruptedException e) {
+                    delayLoop();
+                }
+            }
+        }).start();
+    }
+
+    private void displayGallery() {
+        if (postHandler != null)
+            postHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    setActionBarTitle();
+                    setProgressBar(false);
+                    prepareGalleryView();
+                    NetworkProfileManager.instance().activityChange(GalleryViewActivity.this);
+                }
+            });
+    }
+
+    private void setProgressBar(boolean on) {
+        if (progressBar != null) {
+            if (DEBUG) Log.i(TAG, "setProgressBar(" + on + ")");
+            if (on)
+                progressBar.setVisibility(View.VISIBLE);
+            else
+                progressBar.setVisibility(View.GONE);
+        }
+    }
+
+    private long calcDelayMs() {
+        if (DEBUG) Log.i(TAG, "calcDelayMs() thread=" + thread.toString());
+        if (thread != null && !thread.defData
+                && thread.posts != null && thread.posts.length > 0
+                && thread.posts[0] != null && !thread.posts[0].defData
+                && thread.posts.length >= thread.posts[0].images)
+            return 0;
+        else if (NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION)
+            return 0;
+        else
+            return NetworkProfileManager.instance().getFetchParams().readTimeout / 10;
+    }
+
     private void prepareGalleryView() {
     	handler = new ProgressHandler(this);
     	View contentView = inflater.inflate(R.layout.gallery_layout,
@@ -411,9 +482,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         return true;
     }
 
-    private void setActionBarTitle() {
-        if (DEBUG) Log.i(TAG, "setting action bar based on viewType=" + viewType);
-        String title = "";
+    private void loadActionBarTitle() {
+        title = "";
         if (boardCode != null && !boardCode.isEmpty()) {
             if (DEBUG) Log.i(TAG, "about to load board data for action bar board=" + boardCode);
             ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
@@ -433,6 +503,10 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             }
             */
         }
+    }
+
+    private void setActionBarTitle() {
+        if (DEBUG) Log.i(TAG, "setting action bar based on viewType=" + viewType);
         if (getActionBar() == null) {
             if (DEBUG) Log.i(TAG, "Action bar was null");
             return;
@@ -454,7 +528,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         if (DEBUG) Log.i(TAG, "Set action bar");
     }
 
-    private static class ProgressHandler extends Handler {
+    private class ProgressHandler extends Handler {
     	GalleryViewActivity activity;
     	ProgressHandler(GalleryViewActivity activity) {
     		super();
@@ -470,7 +544,6 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 	            int totalFileSize = msg.arg2;
 	            if (DEBUG) Log.i(TAG, "handle message: updating progress bar " + localFileSize);
 	            
-	            ProgressBar progressBar = (ProgressBar)activity.findViewById(R.id.full_screen_progress_bar);
 	            if (progressBar != null) {
 		            if (localFileSize != totalFileSize) {
 			            progressBar.setVisibility(ProgressBar.VISIBLE);

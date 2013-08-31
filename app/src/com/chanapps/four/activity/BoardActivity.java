@@ -30,6 +30,7 @@ import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.*;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
+import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.viewer.BoardGridViewer;
@@ -1010,6 +1011,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             switch (item.getItemId()) {
                 case R.id.board_thread_watch_menu:
                     ThreadFragment.addToWatchlist(BoardActivity.this, handler, boardCode, threadNo);
+                    return true;
+                case R.id.board_thread_gallery_menu:
+                    FetchChanDataService.scheduleThreadFetch(BoardActivity.this, boardCode, threadNo, true, false);
+                    GalleryViewActivity.startAlbumViewActivity(BoardActivity.this, boardCode, threadNo);
                     return true;
                 case R.id.board_add_to_favorites_menu:
                     addToFavorites(BoardActivity.this, handler, boardCode);

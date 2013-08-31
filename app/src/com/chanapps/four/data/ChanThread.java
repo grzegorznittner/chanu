@@ -225,8 +225,8 @@ public class ChanThread extends ChanPost {
     }
 
     public String toString() {
-		return "Thread " + no + ", com: " + com + ", sub:" + sub + ", posts: " + posts.length
-				+ (posts.length > 0 ? ", posts[0].no: " + posts[0].no : "")
+		return "Thread " + no + ", images: " + images + " com: " + com + ", sub:" + sub + ", posts: " + posts.length
+				+ (posts.length > 0 ? ", posts[0].no: " + posts[0].no + ", posts[0].images: " + posts[0].images : "")
 				+ ", thumb: " + thumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
 	}
 	
@@ -342,7 +342,9 @@ public class ChanThread extends ChanPost {
 
     public boolean isCurrent() {
         FetchParams params = NetworkProfileManager.instance().getCurrentProfile().getFetchParams();
-        if (lastFetched <= 0)
+        if (defData)
+            return false;
+        else if (lastFetched <= 0)
             return false;
         else if (Math.abs(new Date().getTime() - lastFetched) > params.refreshDelay)
             return false;
