@@ -49,7 +49,9 @@ public class ChanSource extends MediaSource {
         	String board = elems[1];
         	String threadStr = elems[2];
     		long threadNo = Long.parseLong(threadStr);
-    		ChanThread thread = ChanFileStorage.getCachedThreadData(mApplication.getAndroidContext(), board, threadNo);
+            //ChanThread thread = ChanFileStorage.getCachedThreadData(mApplication.getAndroidContext(), board, threadNo);
+            // really should not be on main thread, but gallery not yet setup to async load thread data on start without crashing
+            ChanThread thread = ChanFileStorage.loadThreadData(mApplication.getAndroidContext(), board, threadNo);
             if (DEBUG) Log.i(TAG, "createMediaObject() path=" + path + " found cached thread=" + thread);
         	if (thread == null) {
                 return null;

@@ -1,5 +1,8 @@
 package com.chanapps.four.activity;
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import com.android.gallery3d.app.*;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.data.*;
@@ -28,6 +31,9 @@ import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
+
+import javax.security.auth.login.LoginException;
+import java.util.List;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
 
@@ -475,6 +481,19 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     private void navigateUp() {
+        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
+        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
+        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        if (task != null) {
+            if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
+            if (task.baseActivity != null && !this.getClass().getName().equals(task.baseActivity.getClassName())) {
+                if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
+                        + this.getClass().getName() + " base=" + task.baseActivity.getClassName());
+                finish();
+                return;
+            }
+        }
+
     	Intent intent = null;
     	switch(viewType) {
     	case PHOTO_VIEW:
@@ -603,8 +622,27 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     
     @Override
 	public ChanActivityId getChanActivityId() {
-		return new ChanActivityId(LastActivity.GALLERY_ACTIVITY, boardCode, threadNo, postNo, currentViewType());
-	}
+        ViewType type;
+        try {
+            type = currentViewType();
+        }
+        catch (AssertionError e) {
+            if (DEBUG) Log.i(TAG, "getChanActivityId() /" + boardCode + "/" + threadNo + " buggered out on view type error, defaulting", e);
+            type = defaultViewType();
+        }
+        return new ChanActivityId(LastActivity.GALLERY_ACTIVITY, boardCode, threadNo, postNo, type);
+    }
+
+    protected ViewType defaultViewType() {
+        if (boardCode == null || boardCode.isEmpty())
+            return ViewType.OFFLINE_ALBUMSET_VIEW;
+        else if (threadNo <= 0)
+            return ViewType.OFFLINE_ALBUM_VIEW;
+        else if (postNo <= 0)
+            return ViewType.ALBUM_VIEW;
+        else
+            return ViewType.PHOTO_VIEW;
+    }
 
     protected ViewType currentViewType() {
         ActivityState activityState = getStateManager().getTopState();
