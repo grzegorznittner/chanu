@@ -320,7 +320,10 @@ public class ThreadActivity
             @Override
             public void run() {
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        if (board.hasData() && board.isCurrent()) {
+        if (mAdapter != null && mAdapter.getCount() > 0 && board.hasData() && board.isCurrent()) {
+            if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " adapter already loaded, skipping");
+        }
+        else if (board.hasData() && board.isCurrent()) {
             if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " board has current data, loading");
             createPager(board);
         }
@@ -420,6 +423,11 @@ public class ThreadActivity
     }
 
     protected void setCurrentItemToThreadAsync() {
+        if (mAdapter != null && mAdapter.getCount() > 0) {
+            if (DEBUG) Log.i(TAG, "setCurrentItemToThreadAsync() /" + boardCode + "/" + threadNo + " adapter already loaded, skipping");
+            return;
+        }
+        if (DEBUG) Log.i(TAG, "setCurrentItemToThreadAsync() /" + boardCode + "/" + threadNo + " selecting current item in pager");
         final ChanIdentifiedActivity activity = this;
         new Thread(new Runnable() {
             @Override
@@ -813,6 +821,11 @@ public class ThreadActivity
 
     protected void createAbsListView() {
         initTablet();
+        if (adapterBoardsTablet != null && adapterBoardsTablet.getCount() > 0) {
+            if (DEBUG) Log.i(TAG, "createAbsListView() /" + boardCode + "/" + threadNo + " adapter already loaded, skipping");
+            return;
+        }
+        if (DEBUG) Log.i(TAG, "createAbsListView() /" + boardCode + "/" + threadNo + " creating adapter");
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivityContext());
         columnWidth = ChanGridSizer.getCalculatedWidth(
                 getResources().getDimensionPixelSize(R.dimen.BoardGridViewTablet_layout_width),
