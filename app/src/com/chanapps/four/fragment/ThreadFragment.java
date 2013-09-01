@@ -60,7 +60,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xff;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/translate_t?langpair=auto|";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
@@ -104,13 +104,13 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         int layoutId = query != null && !query.isEmpty() ? R.layout.thread_list_layout_search : R.layout.thread_list_layout;
         layout = inflater.inflate(layoutId, viewGroup, false);
         createAbsListView();
-        /*
+
         if (threadNo > 0)
             getLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks);
         else
             if (DEBUG) Log.i(TAG, "onCreateView /" + boardCode + "/" + threadNo + "#p" + postNo
                     + " no thread found, skipping loader");
-        */
+
         boardTitleBar = layout.findViewById(R.id.board_title_bar);
         boardSearchResultsBar = layout.findViewById(R.id.board_search_results_bar);
         setHasOptionsMenu(true);
@@ -245,7 +245,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         handler = null;
     }
 
-    protected void tryFetchThread() {
+    public void tryFetchThread() {
         if (DEBUG) Log.i(TAG, "tryFetchThread /" + boardCode + "/" + threadNo);
         if (handler == null) {
             if (DEBUG) Log.i(TAG, "tryFetchThread not in foreground, exiting");
@@ -269,8 +269,18 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             setProgressAsync(false);
             return;
         }
-        if (DEBUG) Log.i(TAG, "tryFetchThread calling fetch chan data service");
-        if (FetchChanDataService.scheduleThreadFetch(getActivityContext(), boardCode, threadNo, true, false)) {
+        ThreadActivity activity = (ThreadActivity)getActivity();
+        ThreadFragment primary = activity == null ? null : activity.getPrimaryItem();
+        if (primary == null || primary != this) {
+            if (DEBUG) Log.i(TAG, "tryFetchThread exiting since non-primary item this=" + this + " is not primary=" + primary);
+            setProgressAsync(false);
+            return;
+        }
+        if (DEBUG) Log.i(TAG, "tryFetchThread clearing fetch chan data service queue");
+        FetchChanDataService.clearServiceQueue(getActivityContext());
+        if (DEBUG) Log.i(TAG, "tryFetchThread calling fetch chan data service for /" + boardCode + "/" + threadNo);
+        boolean fetchScheduled = FetchChanDataService.scheduleThreadFetch(getActivityContext(), boardCode, threadNo, true, false);
+        if (fetchScheduled) {
             if (DEBUG) Log.i(TAG, "tryFetchThread scheduled fetch");
             setProgressAsync(true);
         }
@@ -319,10 +329,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     }
                 });
         }
-        else if (thread.threadNeedsRefresh()) {
-            if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " trying thread refresh");
-            tryFetchThread();
-        }
+        //else if (thread.threadNeedsRefresh()) {
+        //    if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " trying thread refresh");
+        //    tryFetchThread();
+        //}
         else if (postNo > 0) {
             if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " scrolling to postNo=" + postNo);
             Cursor cursor = adapter.getCursor();
@@ -488,10 +498,17 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            menu.findItem(R.id.refresh_menu).setVisible(undead);
-                            menu.findItem(R.id.post_reply_all_menu).setVisible(undead);
-                            menu.findItem(R.id.post_reply_all_quote_menu).setVisible(undead);
-                            menu.findItem(R.id.web_menu).setVisible(undead);
+                            if (menu == null)
+                                return;
+                            MenuItem item;
+                            if ((item = menu.findItem(R.id.refresh_menu)) != null)
+                                item.setVisible(undead);
+                            if ((item = menu.findItem(R.id.post_reply_all_menu)) != null)
+                                item.setVisible(undead);
+                            if ((item = menu.findItem(R.id.post_reply_all_quote_menu)) != null)
+                                item.setVisible(undead);
+                            if ((item = menu.findItem(R.id.web_menu)) != null)
+                                item.setVisible(undead);
                         }
                     });
             }
@@ -1039,20 +1056,25 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     }
 
     public void refreshThread(final String message) {
-        if (handler != null)
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " restarting loader");
-                    ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
-                    if (thread != null && thread.isDead) {
-                        if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " found dead thread");
-                    }
-                    getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
-                    if (message != null)
-                        Toast.makeText(getActivityContext(), message, Toast.LENGTH_SHORT).show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
+                if (thread != null && thread.isDead) {
+                    if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " found dead thread");
                 }
-            });
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " restarting loader");
+                            getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
+                            if (message != null)
+                                Toast.makeText(getActivityContext(), message, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            }
+        }).start();
     }
 
     private static final String IMAGE_SEARCH_ROOT = "http://tineye.com/search?url=";

@@ -27,6 +27,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Base service class based on IntentService class
@@ -214,7 +215,9 @@ public abstract class BaseChanService extends Service {
 		        tc.disconnect();
 			} catch (Exception e) {
 				Log.e(TAG, "Error closing connection", e);
-			}
+			} finally {
+                tc = null;
+            }
 		}
 	}
 	

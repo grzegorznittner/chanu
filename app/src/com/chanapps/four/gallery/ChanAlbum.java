@@ -6,10 +6,12 @@ package com.chanapps.four.gallery;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.nfc.Tag;
 import com.android.gallery3d.app.GalleryApp;
 import com.android.gallery3d.data.MediaItem;
 import com.android.gallery3d.data.MediaSet;
 import com.android.gallery3d.data.Path;
+import com.android.gallery3d.ui.Log;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
@@ -20,6 +22,10 @@ import com.chanapps.four.data.ChanThread;
  *
  */
 public class ChanAlbum extends MediaSet {
+
+    private static final String TAG = ChanAlbum.class.getSimpleName();
+    private static final boolean DEBUG = true;
+
 	private GalleryApp application;
 	private String name;
 	private String board;
@@ -40,9 +46,11 @@ public class ChanAlbum extends MediaSet {
 		this.board = thread.board;
 		this.name = "/" + board + "/" + thread.no;
 		this.threadNo = thread.no;
+        if (DEBUG) Log.i(TAG, "ChanAlbum thread=" + thread);
 		for (ChanPost post : thread.posts) {
 			if (post.tim != 0) {
-				posts.add(post);
+				post.isDead = thread.isDead;
+                posts.add(post);
 			}
 		}
 	}

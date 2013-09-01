@@ -225,7 +225,7 @@ public class ChanThread extends ChanPost {
     }
 
     public String toString() {
-		return "Thread " + no + ", images: " + images + " com: " + com + ", sub:" + sub + ", posts: " + posts.length
+		return "Thread " + no + ", dead:" + isDead + ", images: " + images + " com: " + com + ", sub:" + sub + ", posts: " + posts.length
 				+ (posts.length > 0 ? ", posts[0].no: " + posts[0].no + ", posts[0].images: " + posts[0].images : "")
 				+ ", thumb: " + thumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
 	}

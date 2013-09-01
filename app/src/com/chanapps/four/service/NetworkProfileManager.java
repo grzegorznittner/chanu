@@ -126,21 +126,21 @@ public class NetworkProfileManager {
         }
     }
 
-    public void activityChange(ChanIdentifiedActivity newActivity) {
+    public void activityChange(final ChanIdentifiedActivity newActivity) {
 		if (DEBUG) Log.i(TAG, "activityChange to " + newActivity.getChanActivityId() + " receiver=" + receiver
                 + " lastActivity=" + currentActivity);
 
         ensureInitialized(newActivity);
         ActivityDispatcher.store(newActivity);
 
-        ChanActivityId lastActivity = currentActivityId;
+        final ChanActivityId lastActivity = currentActivityId;
         currentActivityId = newActivity.getChanActivityId();
 		currentActivity = newActivity;
 
 		if (userStats == null) {
-			userStats = ChanFileStorage.loadUserStats(newActivity.getBaseContext());
-		}
-		userStats.registerActivity(newActivity);
+            userStats = ChanFileStorage.loadUserStats(newActivity.getBaseContext());
+        }
+        userStats.registerActivity(newActivity);
 
         switch(currentActivityId.activity) {
             case BOARD_ACTIVITY:

@@ -357,6 +357,13 @@ public class ChanFileStorage {
         return board;
     }
 
+    public static ChanThread getCachedThreadData(Context context, String boardCode, long threadNo) {
+        // WARNING: loads only cached copy of the data
+        // data may be stale or thread may be null, handle this situation
+        // only call if you are in a non-backgroundable UI mode and must avoid file access
+        return threadCache.get(boardCode + "/" + threadNo);
+    }
+
     public static ChanThread loadThreadData(Context context, String boardCode, long threadNo) {
         if (boardCode == null || threadNo <= 0) {
             if (DEBUG)
@@ -384,6 +391,7 @@ public class ChanFileStorage {
             ObjectMapper mapper = BoardParserService.getJsonMapper();
             ChanThread thread = mapper.readValue(threadFile, ChanThread.class);
             thread.loadedFromBoard = false;
+            threadCache.put(thread.board + "/" + thread.no, thread);
             if (DEBUG)
                 Log.i(TAG, "Loaded thread '" + boardCode + FILE_SEP + threadNo + "' with " + thread.posts.length + " posts");
             return thread;

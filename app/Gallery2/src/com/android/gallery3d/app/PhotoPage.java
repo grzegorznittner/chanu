@@ -322,7 +322,7 @@ public class PhotoPage extends ActivityState
         */
     }
 
-    private void updateCurrentPhoto(MediaItem photo) {
+    private void updateCurrentPhoto(final MediaItem photo) {
         if (mCurrentPhoto == photo) return;
         mCurrentPhoto = photo;
         if (mCurrentPhoto == null) return;
@@ -333,8 +333,12 @@ public class PhotoPage extends ActivityState
         setTitle(photo.getName());
         mPhotoView.showVideoPlayIcon(
                 photo.getMediaType() == MediaObject.MEDIA_TYPE_VIDEO);
-
-        updateShareURI(photo.getPath());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                updateShareURI(photo.getPath()); // run off UI thread since disk access is involved
+            }
+        }).start();
     }
 
     private void updateMenuOperations() {

@@ -487,10 +487,10 @@ public class ThreadActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.thread_menu, menu);
-        createSearchView(menu);
+    public boolean onCreateOptionsMenu(Menu menu) { // menu creation handled at fragment level instead
+        //MenuInflater inflater = getMenuInflater();
+        //inflater.inflate(R.menu.thread_menu, menu);
+        //createSearchView(menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -701,6 +701,7 @@ public class ThreadActivity
             long postNo = (boardCode != null
                     && boardCode.equals(ThreadActivity.this.boardCode)
                     && threadNo == ThreadActivity.this.threadNo)
+                    && ThreadActivity.this.postNo > 0
                     ? ThreadActivity.this.postNo
                     : -1;
             String query = this.query;
@@ -743,6 +744,7 @@ public class ThreadActivity
                 if (primaryItem != null)
                     primaryItem.setPullToRefreshAttacher(null);
                 primaryItem = fragment;
+                primaryItem.tryFetchThread(); // update if necessary
                 /*
                 ChanActivityId activityId = fragment.getChanActivityId();
                 if (activityId != null
@@ -766,8 +768,14 @@ public class ThreadActivity
             }
             super.setPrimaryItem(container, position, object);
         }
-
         protected ThreadFragment primaryItem = null;
+    }
+
+    public ThreadFragment getPrimaryItem() {
+        if (mAdapter == null)
+            return null;
+        else
+            return mAdapter.primaryItem;
     }
 
     public void setProgressForFragment(String boardCode, long threadNo, boolean on) {

@@ -866,12 +866,6 @@ public class PostReplyActivity
         return b;
     }
 
-    private void resetImagePreview() {
-        deleteButton.setVisibility(View.VISIBLE);
-        imagePreview.setVisibility(View.VISIBLE);
-        imagePreview.setPadding(0, 0, 0, 16);
-    }
-
     protected void setImagePreview() {
         try {
             if (imageUri == null) {
@@ -879,7 +873,6 @@ public class PostReplyActivity
                 if (DEBUG) Log.i(TAG, "No image uri found, not setting image");
                 return;
             }
-            imagePreview.setVisibility(View.VISIBLE);
             DisplayImageOptions options = (new DisplayImageOptions.Builder())
                     .cacheOnDisc()
                     .showStubImage(R.drawable.stub_image_background)
@@ -917,15 +910,18 @@ public class PostReplyActivity
         @Override
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
             previewProgress.setVisibility(View.GONE);
+            deleteImage();
             //Toast.makeText(view.getContext(), R.string.web_image_download_failed, Toast.LENGTH_SHORT).show();
         }
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            deleteButton.setVisibility(View.VISIBLE);
             previewProgress.setVisibility(View.GONE);
         }
         @Override
         public void onLoadingCancelled(String imageUri, View view) {
             previewProgress.setVisibility(View.GONE);
+            deleteImage();
             //Toast.makeText(view.getContext(), R.string.web_image_download_failed, Toast.LENGTH_SHORT).show();
         }
     };
@@ -1207,6 +1203,8 @@ public class PostReplyActivity
 
                 if (!postSuccessful(chanPostResponse))
                     return R.string.post_reply_error;
+
+                clearPrefs(); // clear on successful response
 
                 return updateThreadsAndWatchlist(chanPostResponse);
             }

@@ -314,9 +314,22 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
                     setActionBarTitle();
                     setProgressBar(false);
                     prepareGalleryView();
-                    NetworkProfileManager.instance().activityChange(GalleryViewActivity.this);
+                    activityChangeAsync();
                 }
             });
+    }
+
+    protected void activityChangeAsync() {
+        final ChanIdentifiedActivity activity = this;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (NetworkProfileManager.instance().getActivity() != activity) {
+                    if (DEBUG) Log.i(TAG, "onResume() activityChange to /" + boardCode + "/");
+                    NetworkProfileManager.instance().activityChange(activity);
+                }
+            }
+        }).start();
     }
 
     private void setProgressBar(boolean on) {
@@ -330,17 +343,34 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     }
 
     private long calcDelayMs() {
-        if (DEBUG) Log.i(TAG, "calcDelayMs() thread=" + thread.toString());
-        if (thread != null && !thread.defData
-                && thread.posts != null && thread.posts.length > 0
-                && thread.posts[0] != null && !thread.posts[0].defData
-                && thread.posts.length >= thread.posts[0].images)
+        boolean loaded;
+        if (thread == null || thread.defData)
+            loaded = false;
+        else if (thread.posts == null || thread.posts.length == 0)
+            loaded = false;
+        else if (thread.posts[0] == null || thread.posts[0].defData)
+            loaded = false;
+        else if (thread.posts.length < thread.posts[0].images)
+            loaded = false;
+        else
+            loaded = true;
+
+        if (DEBUG) Log.i(TAG, "calcDelayMs() loaded=" + loaded + " tryCount=" + loadTryCount + " thread=" + thread.toString());
+
+        if (++loadTryCount > MAX_LOAD_TRIES) {
+            loadTryCount = 0;
+            return 0;
+        }
+        else if (loaded)
             return 0;
         else if (NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth() == NetworkProfile.Health.NO_CONNECTION)
             return 0;
         else
             return NetworkProfileManager.instance().getFetchParams().readTimeout / 10;
     }
+
+    private static final int MAX_LOAD_TRIES = 5;
+    private int loadTryCount = 0;
 
     private void prepareGalleryView() {
     	handler = new ProgressHandler(this);

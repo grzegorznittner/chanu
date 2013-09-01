@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
 
+import com.chanapps.four.data.ChanThread;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -63,6 +64,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     private final int tn_h, tn_w;
     private final int fsize;
     private final String ext;
+    private final boolean isDead;
 
     private int width;
     private int height;
@@ -81,6 +83,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         h = post.h;
         fsize = post.fsize;
         ext = post.ext;
+        isDead = post.isDead;
         name = "/" + post.board + "/" + (post.resto != 0 ? post.resto : post.no);
         localImagePath = ChanFileStorage.getBoardCacheDirectory(mApplication.getAndroidContext(), post.board) + "/" + post.imageName();
         mApplication = Utils.checkNotNull(application);
@@ -103,7 +106,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     private class RegionDecoderJob implements Job<BitmapRegionDecoder> {
         public BitmapRegionDecoder run(JobContext jc) {
         	File localImageFile = new File(localImagePath);
-        	if (!localImageFile.exists()) {
+        	if (!localImageFile.exists() && !isDead) {
         		downloadFullImage();
         	}
 
@@ -144,11 +147,16 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 			File targetFile = new File(localImagePath);
 			
 			conn = (HttpURLConnection)new URL(url).openConnection();
-			FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
-			// we need to double read timeout as file might be large
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+                Log.e(TAG, "downloadFullImage() no longer exists url=" + url);
+                return;
+            }
+            FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
+            // we need to double read timeout as file might be large
 			conn.setReadTimeout(fetchParams.readTimeout * 2);
 			conn.setConnectTimeout(fetchParams.connectTimeout);
-			
+            //conn.setRequestProperty("connection", "close"); // prevent keep-alive on big images
+
 			in = conn.getInputStream();
 			out = new FileOutputStream(targetFile);
 			byte[] buffer = new byte[IMAGE_BUFFER_SIZE];
@@ -163,23 +171,29 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 			    	lastNotify = Calendar.getInstance().getTimeInMillis();
 			    }
 			}
-			
 			long endTime = Calendar.getInstance().getTimeInMillis();
-			NetworkProfileManager.instance().finishedImageDownload(this, (int)(endTime - startTime), fileLength);
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
+            closeConnection(conn);
+
+            NetworkProfileManager.instance().finishedImageDownload(this, (int)(endTime - startTime), fileLength);
             if (DEBUG) Log.i(TAG, "Stored image " + url + " to file "
             		+ targetFile.getAbsolutePath() + " in " + (endTime - startTime) + "ms.");
             
 		    //notifyDownloadFinished(fileLength);
 		} catch (Exception e) {
-            Log.e(TAG, "Error in image download service", e);
+            Log.e(TAG, "Error in image download service url=" + url, e);
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
+            closeConnection(conn);
             NetworkProfileManager.instance().failedFetchingData(this, NetworkProfile.Failure.NETWORK);
             //notifyDownloadError();
 		} finally {
-			notifyDownloadProgress(fsize);
 			IOUtils.closeQuietly(in);
 			IOUtils.closeQuietly(out);
 			closeConnection(conn);
-		}
+            notifyDownloadProgress(fsize);
+        }
 	}
 	
 	private void notifyDownloadProgress(int fileLength) {
@@ -199,7 +213,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 		if (tc != null) {
 			try {
 		        tc.disconnect();
-			} catch (Exception e) {
+            } catch (Exception e) {
 				Log.e(TAG, "Error closing connection", e);
 			}
 		}
@@ -249,7 +263,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
             Bitmap bitmap = null;
             try {
             	File localImageFile = new File(localImagePath);
-            	if (!localImageFile.exists()) {
+            	if (!localImageFile.exists() && !isDead) {
             		downloadFullImage();
             	}
 

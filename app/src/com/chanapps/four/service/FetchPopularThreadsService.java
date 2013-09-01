@@ -4,7 +4,9 @@
 package com.chanapps.four.service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -119,10 +121,18 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 	}
 
 	private void handlePopularThreadsFetch() {
+        URL chanApi;
+        try {
+            chanApi = new URL("http://www.4chan.org/");
+        }
+        catch (MalformedURLException e) {
+            Log.e(TAG, "malformed url", e);
+            return;
+        }
+
         HttpURLConnection tc = null;
-		try {			
-			URL chanApi = new URL("http://www.4chan.org/");
-			
+		try {
+
     		long startTime = Calendar.getInstance().getTimeInMillis();
             tc = (HttpURLConnection) chanApi.openConnection();
             FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
@@ -148,52 +158,75 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
             }
 
             if (tc.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+                closeConnection(tc);
                 if (DEBUG) Log.i(TAG, "Got 404 during popular threads fetch");
                 board.lastFetched = new Date().getTime();
                 ChanFileStorage.storeBoardData(getBaseContext(), board);
             } else if (contentType == null || !contentType.contains("text/html")) {
                 // happens if 4chan is temporarily down or when access requires authentication to wifi router
+                closeConnection(tc);
                 if (DEBUG) Log.i(TAG, "Wrong content type returned board=" + board + " contentType='" + contentType + "' responseCode=" + tc.getResponseCode() + " content=" + tc.getContent().toString());
             } else {
             	// long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo, new InputStreamReader(tc.getInputStream()));
-            	String response = IOUtils.toString(tc.getInputStream());
-            	long lastFetched = new Date().getTime();
-            	int fetchTime = (int)(lastFetched - startTime);
-
-            	parsePopularThreads(board, response);
-            	board.lastFetched = lastFetched;
-            	ChanFileStorage.storeBoardData(getBaseContext(), board);
-            	
-            	ChanBoard latestBoard = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.LATEST_BOARD_CODE);
-            	parseLatestPosts(latestBoard, response);
-            	latestBoard.lastFetched = lastFetched;
-            	ChanFileStorage.storeBoardData(getBaseContext(), latestBoard);
-            	
-            	ChanBoard imagesBoard = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.LATEST_IMAGES_BOARD_CODE);
-            	parseLatestImages(imagesBoard, response);
-            	imagesBoard.lastFetched = lastFetched;
-            	ChanFileStorage.storeBoardData(getBaseContext(), imagesBoard);
-                
-                if (DEBUG) Log.w(TAG, "Fetched and stored " + chanApi + " in " + fetchTime + "ms, size " + response.length());
-                NetworkProfileManager.instance().finishedFetchingData(this, fetchTime, (int)response.length());
-                NetworkProfileManager.instance().finishedParsingData(this);
+                InputStream is = null;
+                try {
+                    is = tc.getInputStream();
+                    String response = IOUtils.toString(is);
+                    IOUtils.closeQuietly(is);
+                    closeConnection(tc);
+                    parseAndStore(board, response, startTime);
+                }
+                catch (IOException e) {
+                    Log.e(TAG, "IO Error reading response url=" + chanApi, e);
+                    NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
+                }
+                finally {
+                    IOUtils.closeQuietly(is);
+                    closeConnection(tc);
+                }
             }
         } catch (IOException e) {
             //toastUI(R.string.board_service_couldnt_read);
-            Log.e(TAG, "IO Error fetching Chan web page", e);
+            closeConnection(tc);
+            Log.e(TAG, "IO Error fetching Chan web page url=" + chanApi, e);
             NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
 		} catch (Exception e) {
             //toastUI(R.string.board_service_couldnt_load);
-            Log.e(TAG, "Exception fetching Chan web page", e);
+            closeConnection(tc);
+            Log.e(TAG, "Exception fetching Chan web page url=" + chanApi, e);
             NetworkProfileManager.instance().failedFetchingData(this, Failure.WRONG_DATA);
 		} catch (Error e) {
             //toastUI(R.string.board_service_couldnt_load);
-            Log.e(TAG, "Error fetching Chan web page", e);
+            closeConnection(tc);
+            Log.e(TAG, "Error fetching Chan web page url=" + chanApi, e);
             NetworkProfileManager.instance().failedFetchingData(this, Failure.WRONG_DATA);
 		} finally {
 			closeConnection(tc);
 		}
 	}
+
+    protected void parseAndStore(ChanBoard board, String response, long startTime) throws IOException {
+        long lastFetched = new Date().getTime();
+        int fetchTime = (int)(lastFetched - startTime);
+
+        parsePopularThreads(board, response);
+        board.lastFetched = lastFetched;
+        ChanFileStorage.storeBoardData(getBaseContext(), board);
+
+        ChanBoard latestBoard = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.LATEST_BOARD_CODE);
+        parseLatestPosts(latestBoard, response);
+        latestBoard.lastFetched = lastFetched;
+        ChanFileStorage.storeBoardData(getBaseContext(), latestBoard);
+
+        ChanBoard imagesBoard = ChanFileStorage.loadBoardData(getBaseContext(), ChanBoard.LATEST_IMAGES_BOARD_CODE);
+        parseLatestImages(imagesBoard, response);
+        imagesBoard.lastFetched = lastFetched;
+        ChanFileStorage.storeBoardData(getBaseContext(), imagesBoard);
+
+        if (DEBUG) Log.w(TAG, "Fetched and stored /" + board.link + "/ in " + fetchTime + "ms, size " + response.length());
+        NetworkProfileManager.instance().finishedFetchingData(this, fetchTime, (int)response.length());
+        NetworkProfileManager.instance().finishedParsingData(this);
+    }
 
 	private static final String DIV_CLASS_BOX_OUTER_RIGHT_BOX = "class=\"box-outer right-box\"";
 	private static final String ID_POPULAR_THREADS = "id=\"popular-threads\"";

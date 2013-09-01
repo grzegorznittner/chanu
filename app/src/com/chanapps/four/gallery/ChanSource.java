@@ -30,6 +30,7 @@ import com.chanapps.four.data.ChanThread;
 
 public class ChanSource extends MediaSource {
     private static final String TAG = "ChanSource";
+    private static final boolean DEBUG = true;
     public static final String KEY_BUCKET_ID = "bucketId";
 
     private GalleryApp mApplication;
@@ -48,8 +49,12 @@ public class ChanSource extends MediaSource {
         	String board = elems[1];
         	String threadStr = elems[2];
     		long threadNo = Long.parseLong(threadStr);
-    		ChanThread thread = ChanFileStorage.loadThreadData(mApplication.getAndroidContext(), board, threadNo);
-        	if (elems.length == 3) {
+    		ChanThread thread = ChanFileStorage.getCachedThreadData(mApplication.getAndroidContext(), board, threadNo);
+            if (DEBUG) Log.i(TAG, "createMediaObject() path=" + path + " found cached thread=" + thread);
+        	if (thread == null) {
+                return null;
+            }
+            else if (elems.length == 3) {
         		return new ChanAlbum(path, mApplication, thread);
         	} else {
         		long postNo = Long.parseLong(elems[3]);
