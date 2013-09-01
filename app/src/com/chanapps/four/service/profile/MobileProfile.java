@@ -428,10 +428,12 @@ public class MobileProfile extends AbstractNetworkProfile {
             return;
         }
         // user is on the same page and it's a manual refresh, reload it
-        Handler handler = activity.getChanHandler();
+        Handler handler = activity == null ? null : activity.getChanHandler();
         boolean hasHandler = handler != null;
-        boolean isPriority = currentActivityId.priority || data.priority;
-        boolean sameActivity = (currentActivityId.activity == LastActivity.BOARD_ACTIVITY && board.isVirtualBoard());
+        boolean isPriority = (currentActivityId != null && currentActivityId.priority) || data.priority;
+        boolean sameActivity = currentActivityId != null
+                && currentActivityId.activity == LastActivity.BOARD_ACTIVITY
+                && board.isVirtualBoard();
         if (hasHandler && isPriority && sameActivity)
             handler.post(new Runnable() {
                 @Override
@@ -513,7 +515,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
 
         final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-        Handler handler = activity.getChanHandler();
+        Handler handler = activity == null ? null : activity.getChanHandler();
         if (DEBUG) Log.i(TAG, "Board /" + data.boardCode + "/ loaded, activity=" + activity + " lastActivity=" + data.activity);
         if (handler != null && activity instanceof ThreadActivity && handler != null && data.secondaryThreadNo <= 0) { // refresh view pager
             handler.post(new Runnable() {
@@ -536,7 +538,7 @@ public class MobileProfile extends AbstractNetworkProfile {
                     data.secondaryThreadNo, true, false);
         }
         else {
-            ChanActivityId aid = activity.getChanActivityId();
+            ChanActivityId aid = activity == null ? null : activity.getChanActivityId();
             final boolean sameBoard = aid != null
                     && aid.boardCode != null
                     && aid.boardCode.equals(data.boardCode);

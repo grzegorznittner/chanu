@@ -129,15 +129,6 @@
                 </ImageButton>
 
                 <ImageButton
-                        android:id="@+id/post_reply_delete_button"
-                        style="@style/PostReplyButton"
-                        android:visibility="gone"
-                        android:contentDescription="@string/post_reply_delete_hint"
-                        android:hint="@string/post_reply_delete_hint"
-                        android:src="@drawable/content_backspace">
-                </ImageButton>
-
-                <ImageButton
                         android:id="@+id/post_reply_bump_button"
                         style="@style/PostReplyButton"
                         android:contentDescription="@string/post_reply_bump_hint"
@@ -178,7 +169,7 @@
                     style="@style/PostReplyCheckbox"
                     android:text="@string/post_reply_spoiler" />
 
-            <RelativeLayout
+            <FrameLayout
                     android:id="@+id/post_reply_preview_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -200,7 +191,24 @@
                         android:background="@drawable/stub_image_background">
                 </ImageView>
                 <ProgressBar style="@style/WebImageProgressBar" android:id="@+id/post_reply_preview_progress_bar"/>
-            </RelativeLayout>
+                <View
+                        android:id="@+id/post_reply_delete_button_bg"
+                        style="@style/PostReplyButton"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@color/PaletteBlack34Opacity"
+                        />
+                <ImageView
+                        android:id="@+id/post_reply_delete_button"
+                        style="@style/PostReplyButton"
+                        android:layout_gravity="center_horizontal"
+                        android:visibility="gone"
+                        android:contentDescription="@string/post_reply_delete_hint"
+                        android:hint="@string/post_reply_delete_hint"
+                        android:src="@drawable/navigation_cancel"
+                        >
+                </ImageView>
+
+            </FrameLayout>
 
             <EditText
                     android:id="@+id/post_reply_name"

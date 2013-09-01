@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
@@ -36,12 +35,12 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
     private static final boolean DEBUG = false;
 
     private Context context = null;
-    private ImageButton recaptchaButton = null;
+    private ImageView recaptchaButton = null;
     private ImageView recaptchaLoading = null;
     private String recaptchaChallenge = null;
     private Bitmap recaptchaBitmap = null;
 
-    public LoadCaptchaTask(Context context, ImageButton recaptchaButton, ImageView recaptchaLoading) {
+    public LoadCaptchaTask(Context context, ImageView recaptchaButton, ImageView recaptchaLoading) {
         this.context = context;
         this.recaptchaButton = recaptchaButton;
         this.recaptchaLoading = recaptchaLoading;

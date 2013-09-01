@@ -661,16 +661,21 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     }
 
     protected String selectQuoteText(int i) {
-        Cursor cursor = (Cursor) adapter.getItem(i);
+        Cursor cursor = adapter.getCursor();
         if (cursor == null)
             return "";
+        cursor.moveToPosition(i);
         String postNo = cursor.getString(cursor.getColumnIndex(ChanPost.POST_ID));
-        String itemText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+        String t = cursor.getString(cursor.getColumnIndex(ChanPost.POST_SUBJECT_TEXT));
+        String u = cursor.getString(cursor.getColumnIndex(ChanPost.POST_TEXT));
+        String itemText = (t == null ? "" : t)
+                + (t != null && u != null && !t.isEmpty() && !u.isEmpty() ? "<br/>" : "")
+                + (u == null ? "" : u);
         if (itemText == null)
             itemText = "";
-        String postPrefix = ">>" + postNo + "<br/>";
+        String postPrefix = ">>" + postNo + "\n";
         String text = postPrefix + ChanPost.quoteText(itemText);
-        if (DEBUG) Log.i(TAG, "Selected quote text: " + text);
+        if (DEBUG) Log.i(TAG, "Selected itemText=" + itemText + " resulting quoteText=" + text);
         return text;
     }
 

@@ -12,6 +12,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.chanapps.four.activity.PostReplyActivity;
@@ -42,7 +43,7 @@ public class WebImageDialogFragment extends DialogFragment {
     private String boardCode;
     private long threadNo;
 
-    private RelativeLayout frame;
+    private ViewGroup frame;
     private EditText urlTextView;
     private ImageView webImage;
     private ProgressBar webProgress;
@@ -92,7 +93,7 @@ public class WebImageDialogFragment extends DialogFragment {
                 ActivityDispatcher.launchUrlInBrowser(getActivity(), SEARCH_IMAGE);
             }
         });
-        frame = (RelativeLayout)view.findViewById(R.id.frame);
+        frame = (ViewGroup)view.findViewById(R.id.frame);
         return new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .setPositiveButton(R.string.web_image_button_attach, null)

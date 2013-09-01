@@ -1,7 +1,5 @@
 package com.chanapps.four.activity;
 
-import android.app.AlertDialog;
-import android.app.SearchManager;
 import android.content.*;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -49,7 +47,6 @@ import org.apache.http.protocol.HttpContext;
 
 import java.io.*;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class PostReplyActivity
@@ -58,6 +55,7 @@ public class PostReplyActivity
 {
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
+    private static final boolean DEBUG = true;
 
     public static final String BOARD_CODE = "postReplyBoardCode";
     public static final String THREAD_NO = "postReplyThreadNo";
@@ -86,8 +84,6 @@ public class PostReplyActivity
 
     public static final int POST_FINISHED = 0x01;
 
-    private static final boolean DEBUG = false;
-
     public static final int PASSWORD_MAX = 100000000;
     private static final Random randomGenerator = new Random();
     private static final DecimalFormat eightDigits = new DecimalFormat("00000000");
@@ -100,23 +96,24 @@ public class PostReplyActivity
 
     private LinearLayout wrapperLayout;
 
-    private ImageButton cameraButton;
-    private ImageButton pictureButton;
-    private ImageButton webButton;
-    private ImageButton searchButton;
-    private ImageButton deleteButton;
-    private ImageButton bumpButton;
-    private ImageButton sageButton;
-    private ImageButton passEnableButton;
-    private ImageButton passDisableButton;
+    private ImageView cameraButton;
+    private ImageView pictureButton;
+    private ImageView webButton;
+    private ImageView searchButton;
+    private ImageView deleteButton;
+    private View deleteButtonBg;
+    private ImageView bumpButton;
+    private ImageView sageButton;
+    private ImageView passEnableButton;
+    private ImageView passDisableButton;
     private Handler handler;
 
     private FrameLayout recaptchaFrame;
-    private ImageButton recaptchaButton;
+    private ImageView recaptchaButton;
     private ImageView recaptchaLoading;
     private EditText recaptchaText;
     private LoadCaptchaTask loadCaptchaTask;
-    private ImageButton infoButton;
+    private ImageView infoButton;
     private Button doneButton;
 
     private EditText messageText;
@@ -126,7 +123,7 @@ public class PostReplyActivity
     private EditText subjectText;
     private EditText passwordText;
     private CheckBox spoilerCheckbox;
-    private RelativeLayout previewFrame;
+    private ViewGroup previewFrame;
     private ImageView imagePreview;
     private ProgressBar previewProgress;
     private TextView.OnEditorActionListener fastSend;
@@ -170,10 +167,10 @@ public class PostReplyActivity
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
+
         camera = new CameraComponent(getApplicationContext(), imageUri);
         if (boardCode == null || boardCode.isEmpty())
             boardCode = ChanBoard.DEFAULT_BOARD_CODE;
-        setViews();
     }
 
     @Override
@@ -188,20 +185,21 @@ public class PostReplyActivity
 
     protected void createViews() {
         wrapperLayout = (LinearLayout)findViewById(R.id.post_reply_wrapper);
-        previewFrame = (RelativeLayout)findViewById(R.id.post_reply_preview_frame);
+        previewFrame = (ViewGroup)findViewById(R.id.post_reply_preview_frame);
         imagePreview = (ImageView)findViewById(R.id.post_reply_preview_image);
         previewProgress = (ProgressBar)findViewById(R.id.post_reply_preview_progress_bar);
-        cameraButton = (ImageButton)findViewById(R.id.post_reply_camera_button);
-        pictureButton = (ImageButton)findViewById(R.id.post_reply_picture_button);
-        webButton = (ImageButton)findViewById(R.id.post_reply_web_button);
-        searchButton = (ImageButton)findViewById(R.id.post_reply_search_button);
-        infoButton = (ImageButton)findViewById(R.id.password_help_icon);
+        cameraButton = (ImageView)findViewById(R.id.post_reply_camera_button);
+        pictureButton = (ImageView)findViewById(R.id.post_reply_picture_button);
+        webButton = (ImageView)findViewById(R.id.post_reply_web_button);
+        searchButton = (ImageView)findViewById(R.id.post_reply_search_button);
+        infoButton = (ImageView)findViewById(R.id.password_help_icon);
         doneButton = (Button)findViewById(R.id.done);
-        deleteButton = (ImageButton)findViewById(R.id.post_reply_delete_button);
-        bumpButton = (ImageButton)findViewById(R.id.post_reply_bump_button);
-        sageButton = (ImageButton)findViewById(R.id.post_reply_sage_button);
-        passEnableButton = (ImageButton)findViewById(R.id.post_reply_pass_enable_button);
-        passDisableButton = (ImageButton)findViewById(R.id.post_reply_pass_disable_button);
+        deleteButtonBg = findViewById(R.id.post_reply_delete_button_bg);
+        deleteButton = (ImageView)findViewById(R.id.post_reply_delete_button);
+        bumpButton = (ImageView)findViewById(R.id.post_reply_bump_button);
+        sageButton = (ImageView)findViewById(R.id.post_reply_sage_button);
+        passEnableButton = (ImageView)findViewById(R.id.post_reply_pass_enable_button);
+        passDisableButton = (ImageView)findViewById(R.id.post_reply_pass_disable_button);
         messageText = (EditText)findViewById(R.id.post_reply_text);
         passStatusText = (TextView)findViewById(R.id.post_reply_pass_status);
         nameText = (EditText)findViewById(R.id.post_reply_name);
@@ -287,7 +285,7 @@ public class PostReplyActivity
             }
         });
 
-        recaptchaButton = (ImageButton) findViewById(R.id.post_reply_recaptcha_imgview);
+        recaptchaButton = (ImageView) findViewById(R.id.post_reply_recaptcha_imgview);
         recaptchaButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 reloadCaptcha();
@@ -301,10 +299,12 @@ public class PostReplyActivity
     /*
     @Override
     protected void onNewIntent(Intent intent) {
+        if (DEBUG) Log.i(TAG, "onNewIntent()");
         setIntent(intent);
         setFromIntent(intent);
     }
     */
+
     protected void setFromIntent(Intent intent) {
         boardCode = intent.getStringExtra(ChanBoard.BOARD_CODE);
         threadNo = intent.getLongExtra(ChanThread.THREAD_NO, 0);
@@ -375,6 +375,7 @@ public class PostReplyActivity
     }
 
     protected Bundle saveStateToBundle(Bundle bundle) {
+        if (DEBUG) Log.i(TAG, "saveStateToBundle()");
         bundle.putString(ChanBoard.BOARD_CODE, boardCode);
         bundle.putLong(ChanThread.THREAD_NO, threadNo);
         bundle.putLong(ChanPost.POST_NO, postNo);
@@ -390,6 +391,7 @@ public class PostReplyActivity
     }
 
     protected void saveBundleToPrefs(Bundle bundle) {
+        if (DEBUG) Log.i(TAG, "saveBundleToPrefs()");
         SharedPreferences.Editor editor = ensurePrefs().edit();
         editor.putString(BOARD_CODE, boardCode);
         editor.putLong(THREAD_NO, threadNo);
@@ -583,7 +585,6 @@ public class PostReplyActivity
     public void onStart() {
         super.onStart();
         if (DEBUG) Log.i(TAG, "onStart");
-        setImagePreview();
         //if (threadNo <= 0)
         //    NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.ADD_THREAD);
         //else
@@ -598,14 +599,15 @@ public class PostReplyActivity
         updateBump();
         adjustFieldVisibility();
         defaultEmptyUserFieldsFromPrefs();
-        setImagePreview();
         setActionBarTitle();
+        setImagePreview();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if (DEBUG) Log.i(TAG, "onResume");
+        setViews();
     }
 
     @Override
@@ -647,25 +649,6 @@ public class PostReplyActivity
         if (!passEnabled || !isPassAvailable())
             reloadCaptcha();
         updatePassRecaptchaViews(passEnabled);
-    }
-
-    public void setImageUri(String imageUrl) {
-        if (imageUrl != null && !imageUrl.isEmpty())
-            try {
-                imageUri = Uri.parse(imageUrl);
-                setImagePreview();
-                if (DEBUG) Log.i(TAG, "successfully parsed imageUri=" + imageUri);
-            }
-            catch (Exception e) {
-                Log.e(TAG, "Couldn't parse image uri=" + imageUri, e);
-                imageUri = null;
-                imagePreview.setVisibility(View.GONE);
-            }
-        else {
-            imageUri = null;
-            imagePreview.setVisibility(View.GONE);
-            if (DEBUG) Log.i(TAG, "imageUrl passed was null or empty");
-        }
     }
 
     public void setImageUri(Uri uri) {
@@ -873,6 +856,7 @@ public class PostReplyActivity
                 if (DEBUG) Log.i(TAG, "No image uri found, not setting image");
                 return;
             }
+            if (DEBUG) Log.i(TAG, "Setting preview image to uri=" + imageUri);
             DisplayImageOptions options = (new DisplayImageOptions.Builder())
                     .cacheOnDisc()
                     .showStubImage(R.drawable.stub_image_background)
@@ -915,6 +899,8 @@ public class PostReplyActivity
         }
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            imagePreview.setVisibility(View.VISIBLE);
+            deleteButtonBg.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.VISIBLE);
             previewProgress.setVisibility(View.GONE);
         }
@@ -928,6 +914,7 @@ public class PostReplyActivity
 
     private void deleteImage() {
         imagePreview.setVisibility(View.GONE);
+        deleteButtonBg.setVisibility(View.GONE);
         deleteButton.setVisibility(View.GONE);
         imageUri = null;
         imagePath = null;
