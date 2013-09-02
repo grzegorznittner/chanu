@@ -18,7 +18,7 @@ import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
 public class UpdateWidgetService extends RemoteViewsService {
 
     public static final String TAG = UpdateWidgetService.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {

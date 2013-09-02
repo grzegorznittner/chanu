@@ -39,7 +39,7 @@ import java.util.*;
 public final class WidgetProviderUtils {
 
     public static final String TAG = WidgetProviderUtils.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     public static final String WIDGET_PROVIDER_UTILS = "com.chanapps.four.widget.WidgetProviderUtils";
 
     public static Set<String> getActiveWidgetPref(Context context) {
@@ -140,7 +140,7 @@ public final class WidgetProviderUtils {
     }
 
     public static void updateAll(Context context, String boardCode) {
-        if (DEBUG) Log.i(WidgetProviderUtils.TAG, "updateAll boardCode=" + boardCode);
+        if (DEBUG) Log.i(TAG, "updateAll boardCode=" + boardCode);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         Set<String> widgetBoards = prefs.getStringSet(SettingsActivity.PREF_WIDGET_BOARDS, new HashSet<String>());
         for (String widgetBoard : widgetBoards) {
@@ -324,7 +324,7 @@ public final class WidgetProviderUtils {
     public static List<ChanPost> viableThreads(final Context context, final String boardCode, final int maxThreads) {
         ChanBoard board = ChanFileStorage.loadBoardData(context, boardCode);
         if (board == null) {
-            Log.e(TAG, "Couldn't load widget null board for boardCode=" + boardCode);
+            Log.e(TAG, "viableThreads() couldn't load widget null board for boardCode=" + boardCode);
             return new ArrayList<ChanPost>();
         }
 
@@ -332,23 +332,35 @@ public final class WidgetProviderUtils {
                 ? board.loadedThreads
                 : board.threads;
         if (boardThreads == null || boardThreads.length == 0) {
-            Log.e(TAG, "Couldn't load widget no threads for boardCode=" + boardCode);
+            Log.e(TAG, "viableThreads() couldn't load widget no threads for boardCode=" + boardCode);
             return new ArrayList<ChanPost>();
         }
 
         // try to load what we can
+        if (DEBUG) Log.i(TAG, "viableThreads checking " + boardThreads.length + " threads");
         List<ChanPost> viableThreads = new ArrayList<ChanPost>();
         for (int i = 0; i < boardThreads.length; i++) {
             ChanPost thread = boardThreads[i];
-            if (thread != null && thread.sticky <= 0 && thread.tim > 0 && thread.no > 0) {
-                String url = thread.thumbnailUrl();
-                File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
-                if (f != null && f.canRead() && f.length() > 0) {
-                    if (viableThreads.size() < maxThreads)
-                        viableThreads.add(thread);
-                    else
-                        break;
-                }
+            boolean viable;
+            if (thread == null)
+                viable = false;
+            else if (board.isPopularBoard()) // never have images or sticky, so always viable
+                viable = true;
+            else if (thread.sticky <= 0 && thread.tim > 0 && thread.no > 0)
+                viable = true;
+            else
+                viable = false;
+            if (!viable)
+                continue;
+            String url = thread.thumbnailUrl();
+            File f = ChanImageLoader.getInstance(context).getDiscCache().get(url);
+            if (f == null || !f.canRead() || f.length() <= 0)
+                continue;
+            if (viableThreads.size() < maxThreads) {
+                if (DEBUG) Log.i(TAG, "viableThreads adding " + thread);
+                viableThreads.add(thread);
+                if (viableThreads.size() >= maxThreads)
+                    break;
             }
         }
 

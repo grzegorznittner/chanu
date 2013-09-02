@@ -21,8 +21,6 @@ import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.FetchPopularThreadsService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.display.FakeBitmapDisplayer;
 
 import java.io.File;
 import java.util.List;
@@ -37,7 +35,7 @@ import java.util.List;
 public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = WidgetUpdateTask.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final int NUM_TOP_THREADS = 6;
 
     private Context context;
@@ -186,6 +184,8 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
             boardTitle = board.name;
         else
             boardTitle = board.name + " /" + board.link + "/";
+        Log.e(TAG, "bindClickTargets() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/"
+                + " boardTitle=" + boardTitle);
         int boardTitleColor = widgetConf.boardTitleColor;
         int boardTitleVisibility = widgetConf.showBoardTitle ? View.VISIBLE : View.GONE;
         views.setTextViewText(R.id.board_title, boardTitle);

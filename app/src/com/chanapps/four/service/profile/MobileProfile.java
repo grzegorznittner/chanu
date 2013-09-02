@@ -559,10 +559,6 @@ public class MobileProfile extends AbstractNetworkProfile {
             }
         }
 
-        // prefetch first thumbnails, also needed for widgets
-        if (DEBUG) Log.i(TAG, "Calling thumbnail prefetch for /" + data.boardCode + "/");
-
-
         // tell it to refresh widgets for board if any are configured
         if (DEBUG) Log.i(TAG, "Calling widget provider update for boardCode=" + data.boardCode);
         WidgetProviderUtils.updateAll(service.getApplicationContext(), data.boardCode);

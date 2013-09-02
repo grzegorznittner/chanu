@@ -1061,7 +1061,15 @@ public class ChanBoard {
         boardDrawables.put("pol", new int[]{ R.drawable.pol, R.drawable.pol_2, R.drawable.pol_3 } );
         boardDrawables.put("soc", new int[]{ R.drawable.soc, R.drawable.soc_2, R.drawable.soc_3 } );
         boardDrawables.put("s4s", new int[]{ R.drawable.s4s, R.drawable.s4s_2, R.drawable.s4s_3 } );
+        boardDrawables.put("popular", new int[]{ R.drawable.popular, R.drawable.popular_2, R.drawable.popular_3 } );
+        boardDrawables.put("latest", new int[]{ R.drawable.latest, R.drawable.latest_2, R.drawable.latest_3 } );
+        boardDrawables.put("images", new int[]{ R.drawable.images, R.drawable.images_2, R.drawable.images_3 } );
+        boardDrawables.put("watchlist", new int[]{ R.drawable.watch, R.drawable.watch_2, R.drawable.watch_3 } );
         for (String boardCode : VIRTUAL_BOARDS) {
+            if (isPopularBoard(boardCode))
+                continue;
+            if (WATCHLIST_BOARD_CODE.equals(boardCode))
+                continue;
             BoardType type = BoardType.valueOfBoardCode(boardCode);
             if (type != null)
                 boardDrawables.put(boardCode, new int[]{ type.drawableId(), type.drawableId(), type.drawableId() });

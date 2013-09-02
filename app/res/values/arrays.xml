@@ -226,10 +226,12 @@
         <item>/wsg/ Worksafe GIF</item>
         <item>/x/ Paranormal</item>
         <item>/y/ Yaoi</item>
+        <!--
         <item>@string/board_popular</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
         <item>@string/board_watch</item>
+        -->
     </string-array>
 
     <string-array name="widget_board_array_worksafe">
@@ -278,10 +280,12 @@
         <item>/wg/ Wallpapers/General</item>
         <item>/wsg/ Worksafe GIF</item>
         <item>/x/ Paranormal</item>
+        <!--
         <item>@string/board_popular</item>
         <item>@string/board_latest</item>
         <item>@string/board_latest_images</item>
         <item>@string/board_watch</item>
+        -->
     </string-array>
 
     <!-- spinner dropdown -->
