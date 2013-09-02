@@ -1,6 +1,7 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -520,14 +521,36 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         return !(thread != null && thread.isDead);
     }
 
+    protected void navigateUp() {
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+
+        ActivityManager manager = (ActivityManager)activity.getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
+        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
+        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        if (task != null) {
+            if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
+            if (task.baseActivity != null && !activity.getClass().getName().equals(task.baseActivity.getClassName())) {
+                if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
+                        + activity.getClass().getName() + " base=" + task.baseActivity.getClassName());
+                activity.finish();
+                return;
+            }
+        }
+
+        Intent intent = BoardActivity.createIntent(getActivityContext(), boardCode, "");
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        activity.finish();
+    }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent intent = BoardActivity.createIntent(getActivityContext(), boardCode, "");
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                getActivity().finish();
+                navigateUp();
                 return true;
             case R.id.refresh_menu:
                 setProgress(true);
