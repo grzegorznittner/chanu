@@ -461,7 +461,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         updateThreadsAsync();
         invalidateOptionsMenu(); // for correct spinner display
         activityChangeAsync();
-        new TutorialOverlay(layout, Page.BOARD);
     }
 
     protected void updateThreadsAsync() {
@@ -494,6 +493,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 if (NetworkProfileManager.instance().getActivity() != activity) {
                     if (DEBUG) Log.i(TAG, "onResume() activityChange to /" + boardCode + "/");
                     NetworkProfileManager.instance().activityChange(activity);
+                    if (handler != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                new TutorialOverlay(layout, Page.BOARD);
+                            }
+                        });
                 }
             }
         }).start();

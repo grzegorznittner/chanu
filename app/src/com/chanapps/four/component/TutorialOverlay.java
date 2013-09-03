@@ -20,7 +20,7 @@ import com.chanapps.four.service.NetworkProfileManager;
 public class TutorialOverlay {
 
     protected static final String TAG = TutorialOverlay.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
     public enum Page {
         //BOARDLIST,
