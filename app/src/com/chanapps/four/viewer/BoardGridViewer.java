@@ -83,7 +83,7 @@ public class BoardGridViewer {
                 overflow.setVisibility(View.GONE);
             }
         }
-        ViewGroup overlay = viewHolder.grid_item_overlay;
+        ViewGroup overlay = viewHolder.grid_item;
         if (overlay != null) {
             if (overlayListener != null) {
                 overlay.setOnClickListener(overlayListener);

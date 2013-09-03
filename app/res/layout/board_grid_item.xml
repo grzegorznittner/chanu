@@ -1,93 +1,72 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/grid_item"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?themedLargeCardBackground"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/grid_item"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="?themedLargeCardBackground"
+             android:foreground="@drawable/board_grid_selector_bg"
         >
 
-    <FrameLayout
-            android:id="@+id/grid_item_overlay"
+    <ImageView
+            android:id="@+id/grid_item_thread_thumb"
+            android:layout_width="@dimen/BoardGridTextHeight"
+            android:layout_height="@dimen/BoardGridTextHeight"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/thread_post_image"
+            android:visibility="gone"
+            android:background="@drawable/board_grid_selector_bg"
+            />
+
+    <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:foreground="@drawable/board_grid_selector_bg"
+            android:layout_height="@dimen/BoardGridTextHeight"
+            android:layout_marginLeft="@dimen/BoardGridTextHeight"
+            android:paddingTop="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="24dp"
+            android:paddingBottom="4dp"
             >
 
-        <RelativeLayout
+        <TextView
+                android:id="@+id/grid_item_thread_subject"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                >
+                android:textColor="?themedCardSubjectTextColor"
+                android:textSize="@dimen/BoardGridSubject"
+                android:visibility="gone"
+                android:ellipsize="none"
+                android:maxLines="4"
+                />
 
-            <RelativeLayout
-                    android:id="@+id/grid_item_thread_image_wrap"
-                    android:layout_width="@dimen/BoardGridTextHeight"
-                    android:layout_height="@dimen/BoardGridTextHeight"
-                    >
+        <ImageView
+                android:id="@+id/grid_item_country_flag"
+                android:layout_width="@dimen/BoardGridCountryFlag_layout_width"
+                android:layout_height="@dimen/BoardGridCountryFlag_layout_height"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="3dp"
+                android:scaleType="fitXY"
+                android:layout_alignParentBottom="true"
+                android:contentDescription="@string/thread_country_flag"
+                android:visibility="gone"
+                />
 
-                <ImageView
-                        android:id="@+id/grid_item_thread_thumb"
-                        android:layout_width="@dimen/BoardGridTextHeight"
-                        android:layout_height="@dimen/BoardGridTextHeight"
-                        android:scaleType="centerCrop"
-                        android:contentDescription="@string/thread_post_image"
-                        android:visibility="gone"
-                        android:background="@drawable/board_grid_selector_bg"
-                        />
-            </RelativeLayout>
+        <TextView
+                android:id="@+id/grid_item_thread_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/grid_item_country_flag"
+                android:layout_alignParentBottom="true"
+                android:textColor="@color/PaletteLightGray"
+                android:textSize="@dimen/BoardGridInfo"
+                android:maxLines="2"
+                />
 
-            <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/BoardGridTextHeight"
-                    android:layout_toRightOf="@+id/grid_item_thread_image_wrap"
-                    android:paddingTop="4dp"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="24dp"
-                    android:paddingBottom="4dp"
-                    >
-
-                <TextView
-                        android:id="@+id/grid_item_thread_subject"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="?themedCardSubjectTextColor"
-                        android:textSize="@dimen/BoardGridSubject"
-                        android:visibility="gone"
-                        android:ellipsize="none"
-                        android:maxLines="4"
-                        />
-
-                <ImageView
-                        android:id="@+id/grid_item_country_flag"
-                        android:layout_width="@dimen/BoardGridCountryFlag_layout_width"
-                        android:layout_height="@dimen/BoardGridCountryFlag_layout_height"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginBottom="3dp"
-                        android:scaleType="fitXY"
-                        android:layout_alignParentBottom="true"
-                        android:contentDescription="@string/thread_country_flag"
-                        android:visibility="gone"
-                        />
-
-                <TextView
-                        android:id="@+id/grid_item_thread_info"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_toRightOf="@+id/grid_item_country_flag"
-                        android:layout_alignParentBottom="true"
-                        android:textColor="@color/PaletteLightGray"
-                        android:textSize="@dimen/BoardGridInfo"
-                        android:maxLines="2"
-                        />
-
-            </RelativeLayout>
-
-        </RelativeLayout>
-
-    </FrameLayout>
+    </RelativeLayout>
 
     <ImageView
             android:id="@+id/grid_item_overflow_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="right"
             android:layout_alignParentRight="true"
             android:paddingRight="5dp"
             android:paddingTop="4dp"
@@ -95,4 +74,4 @@
             android:background="@drawable/board_grid_selector_bg"
             />
 
-</RelativeLayout>
+</FrameLayout>

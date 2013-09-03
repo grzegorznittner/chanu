@@ -1,81 +1,69 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/grid_item"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/BoardGridItemSmall"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/grid_item"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             style="@style/BoardGridItemSmall"
+             android:foreground="@drawable/board_grid_selector_bg"
+
         >
 
-    <FrameLayout
-            android:id="@+id/grid_item_overlay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:foreground="@drawable/board_grid_selector_bg"
+    <RelativeLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
             >
 
-        <RelativeLayout
+        <FrameLayout
+                android:id="@+id/grid_item_thumb_frame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 >
 
-            <RelativeLayout
-                    android:id="@+id/grid_item_thread_image_wrap"
+            <ImageView
+                    android:id="@+id/grid_item_thread_thumb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/thread_post_image"
+                    android:visibility="gone"
+                    android:background="@drawable/board_grid_selector_bg"
+                    />
 
-                <ImageView
-                        android:id="@+id/grid_item_thread_thumb"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:scaleType="centerCrop"
-                        android:contentDescription="@string/thread_post_image"
-                        android:visibility="gone"
-                        android:background="@drawable/board_grid_selector_bg"
-                        />
-                <ImageView
-                        android:id="@+id/grid_item_country_flag"
-                        android:layout_width="@dimen/BoardGridCountryFlag_layout_width"
-                        android:layout_height="@dimen/BoardGridCountryFlag_layout_height"
-                        android:scaleType="fitXY"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentRight="true"
-                        android:contentDescription="@string/thread_country_flag"
-                        android:visibility="gone"
-                        />
-            </RelativeLayout>
+            <ImageView
+                    android:id="@+id/grid_item_country_flag"
+                    android:layout_width="@dimen/BoardGridCountryFlag_layout_width"
+                    android:layout_height="@dimen/BoardGridCountryFlag_layout_height"
+                    android:scaleType="fitXY"
+                    android:layout_alignParentRight="true"
+                    android:contentDescription="@string/thread_country_flag"
+                    android:visibility="gone"
+                    />
 
-            <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/BoardGridTextHeightSmall"
-                    android:layout_below="@+id/grid_item_thread_image_wrap"
-                    >
+        </FrameLayout>
 
-                <TextView
-                        android:id="@+id/grid_item_thread_subject"
-                        style="@style/BoardGridItemSmallSubject"
-                        />
+        <TextView
+                android:id="@+id/grid_item_thread_subject"
+                style="@style/BoardGridItemSmallSubject"
+                android:layout_below="@+id/grid_item_thumb_frame"
+                />
 
-                <TextView
-                        android:id="@+id/grid_item_thread_info"
-                        style="@style/BoardGridItemSmallInfo"
-                        />
+        <TextView
+                android:id="@+id/grid_item_thread_info"
+                style="@style/BoardGridItemSmallInfo"
+                android:layout_below="@+id/grid_item_thread_subject"
+                />
 
-            </RelativeLayout>
+        <ImageView
+                android:id="@+id/grid_item_overflow_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:paddingRight="5dp"
+                android:paddingBottom="4dp"
+                android:src="@drawable/card_overflow_icon"
+                android:background="@drawable/board_grid_selector_bg"
+                />
 
-        </RelativeLayout>
+    </RelativeLayout>
 
-    </FrameLayout>
+</FrameLayout>
 
-    <ImageView
-            android:id="@+id/grid_item_overflow_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:paddingRight="5dp"
-            android:paddingBottom="4dp"
-            android:layout_alignParentBottom="true"
-            android:src="@drawable/card_overflow_icon"
-            android:background="@drawable/board_grid_selector_bg"
-            />
-
-</RelativeLayout>
