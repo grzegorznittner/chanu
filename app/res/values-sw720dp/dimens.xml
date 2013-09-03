@@ -114,6 +114,7 @@
 
     <dimen name="ThreadListHeader_flowsize">64dp</dimen>
     <dimen name="ThreadListHeader_subjectHeight">30dp</dimen>
+    <dimen name="ThreadListHeader_paddingPlusLeft">80dp</dimen>
     <dimen name="ThreadListHeader_padding">32dp</dimen>
     <dimen name="ThreadListHeader_med_padding">24dp</dimen>
     <dimen name="ThreadListHeader_small_padding">16dp</dimen>

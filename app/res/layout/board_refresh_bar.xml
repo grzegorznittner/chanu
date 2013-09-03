@@ -4,6 +4,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/board_refresh_bar"
         style="@style/BoardRefreshBar"
+        android:layout_below="@+id/board_title_bar"
         >
 
     <TextView

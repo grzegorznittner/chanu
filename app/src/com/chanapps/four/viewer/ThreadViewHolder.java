@@ -15,26 +15,24 @@ import com.chanapps.four.activity.R;
 public class ThreadViewHolder {
 
     public ViewGroup list_item;
-    public FrameLayout list_item_num_direct_replies;
+    public ViewGroup list_item_num_direct_replies;
     public ImageView list_item_country_flag;
     public ImageView list_item_dead_icon;
     public ImageView list_item_header_bar_chat;
     public ImageView list_item_header_bar_overflow;
-    public ImageView list_item_header_bar_reply;
     public ImageView list_item_image;
     public ImageView list_item_image_expanded;
     public ImageView list_item_num_images_spinner;
-    public LinearLayout list_item_ago_wrapper;
-    public LinearLayout list_item_header_bar_chat_wrapper;
-    public LinearLayout list_item_header_bar_overflow_wrapper;
-    public LinearLayout list_item_header_bar_reply_wrapper;
-    public LinearLayout list_item_subject_icons;
+    public ViewGroup list_item_ago_wrapper;
+    public ViewGroup list_item_header_bar_chat_wrapper;
+    public ViewGroup list_item_header_bar_overflow_wrapper;
+    public ViewGroup list_item_subject_icons;
     public ProgressBar list_item_expanded_progress_bar;
-    public RelativeLayout list_item_header_wrapper;
-    public RelativeLayout list_item_image_expanded_wrapper;
-    public RelativeLayout list_item_image_wrapper;
-    public RelativeLayout list_item_num_images;
-    public RelativeLayout list_item_num_replies;
+    public ViewGroup list_item_header_wrapper;
+    public ViewGroup list_item_image_expanded_wrapper;
+    public ViewGroup list_item_image_wrapper;
+    public ViewGroup list_item_num_images;
+    public ViewGroup list_item_num_replies;
     public TextView list_item_exif_text;
     public TextView list_item_header;
     public TextView list_item_header_bar_ago;
@@ -54,26 +52,24 @@ public class ThreadViewHolder {
 
     public ThreadViewHolder(View item) {
         list_item = (ViewGroup)item;
-        list_item_num_direct_replies = (FrameLayout)item.findViewById(R.id.list_item_num_direct_replies);
+        list_item_num_direct_replies = (ViewGroup)item.findViewById(R.id.list_item_num_direct_replies);
         list_item_country_flag = (ImageView)item.findViewById(R.id.list_item_country_flag);
         list_item_dead_icon = (ImageView)item.findViewById(R.id.list_item_dead_icon);
         list_item_header_bar_chat = (ImageView)item.findViewById(R.id.list_item_header_bar_chat);
         list_item_header_bar_overflow = (ImageView)item.findViewById(R.id.list_item_header_bar_overflow);
-        list_item_header_bar_reply = (ImageView)item.findViewById(R.id.list_item_header_bar_reply);
         list_item_image = (ImageView)item.findViewById(R.id.list_item_image);
         list_item_image_expanded = (ImageView)item.findViewById(R.id.list_item_image_expanded);
         list_item_num_images_spinner = (ImageView)item.findViewById(R.id.list_item_num_images_spinner);
-        list_item_ago_wrapper = (LinearLayout)item.findViewById(R.id.list_item_ago_wrapper);
-        list_item_header_bar_chat_wrapper = (LinearLayout)item.findViewById(R.id.list_item_header_bar_chat_wrapper);
-        list_item_header_bar_overflow_wrapper = (LinearLayout)item.findViewById(R.id.list_item_header_bar_overflow_wrapper);
-        list_item_header_bar_reply_wrapper = (LinearLayout)item.findViewById(R.id.list_item_header_bar_reply_wrapper);
-        list_item_subject_icons = (LinearLayout)item.findViewById(R.id.list_item_subject_icons);
+        list_item_ago_wrapper = (ViewGroup)item.findViewById(R.id.list_item_ago_wrapper);
+        list_item_header_bar_chat_wrapper = (ViewGroup)item.findViewById(R.id.list_item_header_bar_chat_wrapper);
+        list_item_header_bar_overflow_wrapper = (ViewGroup)item.findViewById(R.id.list_item_header_bar_overflow_wrapper);
+        list_item_subject_icons = (ViewGroup)item.findViewById(R.id.list_item_subject_icons);
         list_item_expanded_progress_bar = (ProgressBar)item.findViewById(R.id.list_item_expanded_progress_bar);
-        list_item_header_wrapper = (RelativeLayout)item.findViewById(R.id.list_item_header_wrapper);
-        list_item_image_expanded_wrapper = (RelativeLayout)item.findViewById(R.id.list_item_image_expanded_wrapper);
-        list_item_image_wrapper = (RelativeLayout)item.findViewById(R.id.list_item_image_wrapper);
-        list_item_num_images = (RelativeLayout)item.findViewById(R.id.list_item_num_images);
-        list_item_num_replies = (RelativeLayout)item.findViewById(R.id.list_item_num_replies);
+        list_item_header_wrapper = (ViewGroup)item.findViewById(R.id.list_item_header_wrapper);
+        list_item_image_expanded_wrapper = (ViewGroup)item.findViewById(R.id.list_item_image_expanded_wrapper);
+        list_item_image_wrapper = (ViewGroup)item.findViewById(R.id.list_item_image_wrapper);
+        list_item_num_images = (ViewGroup)item.findViewById(R.id.list_item_num_images);
+        list_item_num_replies = (ViewGroup)item.findViewById(R.id.list_item_num_replies);
         list_item_exif_text = (TextView)item.findViewById(R.id.list_item_exif_text);
         list_item_header = (TextView)item.findViewById(R.id.list_item_header);
         list_item_header_bar_ago = (TextView)item.findViewById(R.id.list_item_header_bar_ago);
@@ -86,10 +82,10 @@ public class ThreadViewHolder {
         list_item_subject = (TextView)item.findViewById(R.id.list_item_subject);
         list_item_text = (TextView)item.findViewById(R.id.list_item_text);
         list_item_title = (TextView)item.findViewById(R.id.list_item_title);
-        list_item_image_expanded_click_effect = (View)item.findViewById(R.id.list_item_image_expanded_click_effect);
-        list_item_left_spacer = (View)item.findViewById(R.id.list_item_left_spacer);
-        list_item_num_horizontal_border = (View)item.findViewById(R.id.list_item_num_horizontal_border);
-        list_item_num_vertical_border = (View)item.findViewById(R.id.list_item_num_vertical_border);
+        list_item_image_expanded_click_effect = item.findViewById(R.id.list_item_image_expanded_click_effect);
+        list_item_left_spacer = item.findViewById(R.id.list_item_left_spacer);
+        list_item_num_horizontal_border = item.findViewById(R.id.list_item_num_horizontal_border);
+        list_item_num_vertical_border = item.findViewById(R.id.list_item_num_vertical_border);
     }
 
 }
