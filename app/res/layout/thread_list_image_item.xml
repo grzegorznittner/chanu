@@ -43,25 +43,15 @@
                       />
             </FrameLayout>
 
-            <FrameLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies"
-                    >
-                <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/ThreadListHeader_flowsize"
+            <FrameLayout style="@style/ThreadListItemReplyWrap" android:id="@+id/list_item_num_direct_replies">
+                <FrameLayout
+                        android:id="@+id/list_item_header_bar_chat_wrapper"
+                        style="@style/ThreadListItemBarChat"
+                        android:foreground="@drawable/thread_list_direct_replies_overlay"
                         >
-                    <LinearLayout style="@style/ThreadListItemBarChat" android:id="@+id/list_item_header_bar_chat_wrapper">
-                        <FrameLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:foreground="@drawable/thread_list_direct_replies_overlay"
-                                >
-                            <ImageView style="@style/ThreadListItemBarChatIcon" android:id="@+id/list_item_header_bar_chat"/>
-                        </FrameLayout>
-                    </LinearLayout>
-                    <TextView style="@style/ThreadListItemReplyNum" android:id="@+id/list_item_num_direct_replies_text"
-                              android:layout_toRightOf="@+id/list_item_header_bar_chat_wrapper"
-                            />
-                </RelativeLayout>
+                    <ImageView style="@style/ThreadListItemBarChatIcon" android:id="@+id/list_item_header_bar_chat"/>
+                </FrameLayout>
+                <TextView style="@style/ThreadListItemReplyNum" android:id="@+id/list_item_num_direct_replies_text"/>
             </FrameLayout>
 
             <FrameLayout style="@style/ThreadListItemBarOverflow" android:id="@+id/list_item_header_bar_overflow_wrapper">
