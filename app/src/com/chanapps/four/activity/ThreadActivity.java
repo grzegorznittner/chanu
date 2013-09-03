@@ -307,6 +307,9 @@ public class ThreadActivity
     protected void onStart() {
         super.onStart();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo);
+        if (getIntent() != null) {
+            if (DEBUG) Log.i(TAG, "onStart intent=/" + getIntent().getStringExtra(BOARD_CODE) + "/" + getIntent().getLongExtra(THREAD_NO, 0));
+        }
         if (handler == null)
             handler = new Handler();
         if (onTablet())

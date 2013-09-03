@@ -43,6 +43,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
 	public static final boolean DEBUG = true;
+
+    public static String topBoardCode = null;
+
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xff;
 
@@ -398,6 +401,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (handler == null)
             handler = new Handler();
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query);
+        topBoardCode = boardCode;
         startLoaderAsync();
     }
 

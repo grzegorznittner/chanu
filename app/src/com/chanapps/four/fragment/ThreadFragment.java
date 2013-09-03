@@ -531,7 +531,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
         if (task != null) {
             if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
-            if (task.baseActivity != null && !activity.getClass().getName().equals(task.baseActivity.getClassName())) {
+            if (task.baseActivity != null
+                    && !activity.getClass().getName().equals(task.baseActivity.getClassName())
+                    && boardCode.equals(BoardActivity.topBoardCode)
+                    ) {
                 if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
                         + activity.getClass().getName() + " base=" + task.baseActivity.getClassName());
                 activity.finish();
