@@ -20,6 +20,8 @@ import com.chanapps.four.viewer.BoardGridViewer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 abstract public class
         AbstractBoardSpinnerActivity
         extends FragmentActivity
@@ -43,7 +45,6 @@ abstract public class
     protected int mSpinnerArrayId;
     protected String[] mSpinnerArray;
     protected ArrayAdapter<String> mSpinnerAdapter;
-
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -136,6 +137,13 @@ abstract public class
         else if (!allAdaptersSet()) {
             setAdapters();
         }
+        EasyTracker.getInstance().activityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EasyTracker.getInstance().activityStop(this);
     }
 
     @Override

@@ -35,8 +35,9 @@
 
     <!-- Padding & Margins -->
 
-    <dimen name="BoardGridViewTablet_layout_width">150dp</dimen>
-    <dimen name="BoardGridViewTablet_layout_width_afterPadding">118dp</dimen>
+    <dimen name="BoardGridViewTablet_image_width">112dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width">336dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width_afterPadding">304dp</dimen>
     <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
     <dimen name="BoardTypeText_padding">16dp</dimen>
 
@@ -112,14 +113,14 @@
     <dimen name="BoardListText_paddingBottom">16dp</dimen>
     <dimen name="BoardListText_textSize">16sp</dimen>
 
-    <dimen name="ThreadListHeader_flowsize">64dp</dimen>
+    <dimen name="ThreadListHeader_flowsize">48dp</dimen>
     <dimen name="ThreadListHeader_subjectHeight">30dp</dimen>
-    <dimen name="ThreadListHeader_paddingPlusLeft">80dp</dimen>
-    <dimen name="ThreadListHeader_padding">32dp</dimen>
-    <dimen name="ThreadListHeader_med_padding">24dp</dimen>
-    <dimen name="ThreadListHeader_small_padding">16dp</dimen>
-    <dimen name="ThreadListHeader_mini_padding">12dp</dimen>
-    <dimen name="ThreadListHeader_micro_padding">8dp</dimen>
+    <dimen name="ThreadListHeader_paddingPlusLeft">64dp</dimen>
+    <dimen name="ThreadListHeader_padding">16dp</dimen>
+    <dimen name="ThreadListHeader_med_padding">12dp</dimen>
+    <dimen name="ThreadListHeader_small_padding">8dp</dimen>
+    <dimen name="ThreadListHeader_mini_padding">6dp</dimen>
+    <dimen name="ThreadListHeader_micro_padding">4dp</dimen>
 
     <dimen name="ThreadListHeaderImage_layout_marginTop">0dp</dimen>
     <dimen name="ThreadListHeaderImage_layout_marginBottom">0dp</dimen>
@@ -259,8 +260,11 @@
     <dimen name="widget_twocol_inner_paddingLeft">108dp</dimen>
     <dimen name="widget_textSize">12sp</dimen>
 
+    <integer name="BoardGridView.maxLines">6</integer>
+    <dimen name="BoardGridView.halfSpacing">8dp</dimen>
     <dimen name="BoardGridView.spacing">16dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">16dp</dimen>
+    <dimen name="BoardGridViewTablet.quarterSpacing">4dp</dimen>
 
     <integer name="BoardGridView.numColumns">2</integer>
     <integer name="BoardGridViewSmall.numColumns">5</integer>
@@ -270,6 +274,8 @@
     <dimen name="drawer_spacer_width">80dp</dimen>
     <dimen name="drawer_spacer_height">32dp</dimen>
 
-    <dimen name="ad_layout_height">90dp</dimen>
+    <dimen name="ad_layout_height">50px</dimen>
+
+    <bool name="wide_tablet">true</bool>
 
 </resources>

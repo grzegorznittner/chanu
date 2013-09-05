@@ -21,7 +21,7 @@
     <style name="ThreadListView" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_centerInParent">true</item>
+        <!--<item name="android:layout_centerInParent">true</item>-->
         <item name="android:smoothScrollbar">false</item>
         <item name="android:verticalSpacing">0dp</item>
         <item name="android:horizontalSpacing">0dp</item>
@@ -105,11 +105,14 @@
     </style>
 
     <style name="BoardGridItemSmallTabletColSubject" parent="AppTheme">
-        <item name="android:layout_width">@dimen/BoardGridViewTablet_layout_width_afterTextPadding</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/BoardGridViewTablet_layout_marginHeight_belowImage</item>
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:textColor">?themedCardSubjectTextColor</item>
+        <item name="android:paddingLeft">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingRight">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingTop">@dimen/BoardGridView.halfSpacing</item>
         <item name="android:textSize">@dimen/BoardGridSubject</item>
         <item name="android:ellipsize">none</item>
         <item name="android:singleLine">false</item>
@@ -128,10 +131,12 @@
     </style>
 
     <style name="BoardGridItemSmallTabletColInfo" parent="AppTheme">
-        <item name="android:layout_width">@dimen/BoardGridViewTablet_layout_width_afterTextPadding</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|center_horizontal</item>
-        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingLeft">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingRight">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingBottom">@dimen/BoardGridView.halfSpacing</item>
         <item name="android:textColor">@color/PaletteLightGray</item>
         <item name="android:textSize">@dimen/BoardGridInfo</item>
         <item name="android:maxLines">1</item>
@@ -175,7 +180,7 @@
 
     <style name="BoardGridViewTablet" parent="AppTheme">
         <item name="android:layout_width">@dimen/BoardGridViewTablet_layout_width</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/BoardGridView.spacing</item>
         <item name="android:clipToPadding">false</item>
         <item name="android:divider">@color/PaletteTransparent</item>
@@ -696,6 +701,7 @@
     <style name="ThreadListItemBarOverflowIcon" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:src">@drawable/card_overflow_icon</item>
     </style>
 

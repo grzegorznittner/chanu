@@ -41,6 +41,7 @@
 
     <!-- Padding & Margins -->
 
+    <dimen name="BoardGridViewTablet_image_width">0dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width">0dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterPadding">0dp</dimen>
     <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
@@ -321,6 +322,8 @@
     <integer name="BoardGridView.numColumns">1</integer>
     <integer name="BoardGridViewSmall.numColumns">3</integer>
     <integer name="BoardTabletGridView.numColumns">1</integer>
+    <integer name="BoardGridView.maxLines">4</integer>
+    <dimen name="BoardGridView.halfSpacing">4dp</dimen>
     <dimen name="BoardGridView.spacing">8dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">8dp</dimen>
     <dimen name="BoardGridTextHeight">96dp</dimen>
@@ -335,5 +338,8 @@
     <dimen name="preference_icon_minWidth">0dp</dimen>
     <dimen name="preference_widget_width">48dp</dimen>
 
-    <dimen name="ad_layout_height">50dp</dimen>
+    <dimen name="ad_layout_height">50px</dimen>
+
+    <bool name="wide_tablet">false</bool>
+
 </resources>

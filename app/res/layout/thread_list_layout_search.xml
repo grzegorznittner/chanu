@@ -14,12 +14,15 @@
             android:id="@+id/thread_list_view"
             style="@style/ThreadListView"
             android:layout_below="@+id/board_search_results_bar"
+    />
+
+    <!--
             android:layout_above="@+id/board_grid_advert"
             />
-    <!--
+
     <include layout="@layout/tutorial_overlay"/>
-    -->
+
 
     <include layout="@layout/ad_section"/>
-
+    -->
 </RelativeLayout>

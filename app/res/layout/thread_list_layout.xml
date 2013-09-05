@@ -8,14 +8,14 @@
     <ListView
             android:id="@+id/thread_list_view"
             style="@style/ThreadListView"
-            android:layout_above="@+id/board_grid_advert"
             />
     <!--
     <include layout="@layout/tutorial_overlay"/>
     -->
-
+    <!--
+            android:layout_above="@+id/board_grid_advert"
     <include layout="@layout/ad_section"
             android:id="@+id/board_grid_advert"
             />
-
+     -->
 </RelativeLayout>

@@ -35,11 +35,12 @@
 
     <!-- Padding & Margins -->
 
+    <dimen name="BoardGridViewTablet_image_width">180dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width">180dp</dimen>
-    <dimen name="BoardGridViewTablet_layout_width_afterPadding">156dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_width_afterPadding">282dp</dimen>
     <dimen name="BoardGridViewTablet_layout_marginHeight_belowImage">160dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterTextPadding">140dp</dimen>
-    <dimen name="BoardGridViewTablet_layout_height_afterPadding">282dp</dimen>
+    <dimen name="BoardGridViewTablet_layout_height_afterPadding">300dp</dimen>
     <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
     <dimen name="BoardTypeText_padding">8dp</dimen>
 
@@ -281,6 +282,8 @@
     <dimen name="ItemsDialogFragment_title_paddingRight">24dp</dimen>
     <dimen name="ItemsDialogFragment_title_textSize">28sp</dimen>
 
+    <integer name="BoardGridView.maxLines">5</integer>
+    <dimen name="BoardGridView.halfSpacing">6dp</dimen>
     <dimen name="BoardGridView.spacing">12dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">12dp</dimen>
     <dimen name="BoardGridTextHeight">96dp</dimen>
@@ -293,6 +296,8 @@
     <dimen name="drawer_spacer_width">80dp</dimen>
     <dimen name="drawer_spacer_height">32dp</dimen>
 
-    <dimen name="ad_layout_height">60dp</dimen>
+    <dimen name="ad_layout_height">50px</dimen>
+
+    <bool name="wide_tablet">false</bool>
 
 </resources>

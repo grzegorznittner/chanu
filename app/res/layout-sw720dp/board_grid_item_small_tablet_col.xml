@@ -1,29 +1,29 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:id="@+id/grid_item"
              android:layout_width="match_parent"
-             android:layout_height="wrap_content"
+             android:layout_height="match_parent"
              android:background="?themedLargeCardBackground"
              android:foreground="@drawable/board_grid_selector_bg"
         >
 
     <ImageView
             android:id="@+id/grid_item_thread_thumb"
-            android:layout_width="@dimen/BoardGridTextHeight"
-            android:layout_height="@dimen/BoardGridTextHeight"
+            android:layout_width="@dimen/BoardGridViewTablet_image_width"
+            android:layout_height="@dimen/BoardGridViewTablet_image_width"
             android:scaleType="centerCrop"
+            android:src="@drawable/a"
             android:contentDescription="@string/thread_post_image"
-            android:visibility="gone"
             android:background="@drawable/board_grid_selector_bg"
             />
 
     <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/BoardGridTextHeight"
-            android:layout_marginLeft="@dimen/BoardGridTextHeight"
-            android:paddingTop="@dimen/BoardGridView.halfSpacing"
+            android:layout_height="@dimen/BoardGridViewTablet_image_width"
+            android:layout_marginLeft="@dimen/BoardGridViewTablet_image_width"
+            android:paddingTop="@dimen/BoardGridViewTablet.quarterSpacing"
             android:paddingLeft="@dimen/BoardGridView.spacing"
-            android:paddingRight="24dp"
-            android:paddingBottom="@dimen/BoardGridView.halfSpacing"
+            android:paddingRight="@dimen/BoardGridView.spacing"
+            android:paddingBottom="@dimen/BoardGridViewTablet.quarterSpacing"
             >
 
         <TextView
@@ -34,7 +34,7 @@
                 android:textSize="@dimen/BoardGridSubject"
                 android:visibility="gone"
                 android:ellipsize="none"
-                android:maxLines="@integer/BoardGridView.maxLines"
+                android:maxLines="4"
                 />
 
         <ImageView
@@ -57,7 +57,7 @@
                 android:layout_alignParentBottom="true"
                 android:textColor="@color/PaletteLightGray"
                 android:textSize="@dimen/BoardGridInfo"
-                android:maxLines="2"
+                android:maxLines="1"
                 />
 
     </RelativeLayout>

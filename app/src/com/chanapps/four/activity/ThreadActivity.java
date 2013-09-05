@@ -21,8 +21,6 @@ import android.view.*;
 import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
-import com.chanapps.four.adapter.BoardGridCursorAdapter;
-import com.chanapps.four.adapter.BoardGridSmallCursorAdapter;
 import com.chanapps.four.adapter.BoardGridSmallTabletColCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
@@ -68,6 +66,7 @@ public class ThreadActivity
     protected MenuItem searchMenuItem;
     protected long postNo; // for direct jumps from latest post / recent images
     protected PullToRefreshAttacher mPullToRefreshAttacher;
+    protected boolean wideTablet;
 
     //tablet layout
     protected AbstractBoardCursorAdapter adapterBoardsTablet;
@@ -132,6 +131,8 @@ public class ThreadActivity
 
         mPullToRefreshAttacher = new PullToRefreshAttacher(this);
         ThreadViewer.initStatics(getApplicationContext(), ThemeSelector.instance(getApplicationContext()).isDark());
+
+        wideTablet = getResources().getBoolean(R.bool.wide_tablet);
     }
 
     protected void createPager(final ChanBoard board) {
@@ -773,8 +774,13 @@ public class ThreadActivity
                 */
                 fragment.setPullToRefreshAttacher(mPullToRefreshAttacher);
                 if (onTablet()) {
-                    if (DEBUG) Log.i(TAG, "smooth scrolling to position=" + position);
-                    boardGrid.setSelection(position);
+                    int first = boardGrid.getFirstVisiblePosition();
+                    int last = boardGrid.getLastVisiblePosition();
+                    boolean positionVisible = first <= position && position <= last;
+                    if (!positionVisible) {
+                        if (DEBUG) Log.i(TAG, "smooth scrolling to position=" + position);
+                        boardGrid.setSelection(position);
+                    }
                 }
             }
             super.setPrimaryItem(container, position, object);
@@ -831,7 +837,7 @@ public class ThreadActivity
         if (DEBUG) Log.i(TAG, "createAbsListView() /" + boardCode + "/" + threadNo + " creating adapter");
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivityContext());
         columnWidth = ChanGridSizer.getCalculatedWidth(
-                getResources().getDimensionPixelSize(R.dimen.BoardGridViewTablet_layout_width),
+                getResources().getDimensionPixelSize(R.dimen.BoardGridViewTablet_image_width),
                 1,
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
@@ -914,7 +920,8 @@ public class ThreadActivity
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null, null, BoardGridViewer.SMALL_GRID);
+            int options = wideTablet ? 0 : BoardGridViewer.SMALL_GRID;
+            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null, null, options);
         }
     };
 

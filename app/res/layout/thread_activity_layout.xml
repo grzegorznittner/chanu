@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- The main content view -->
-<FrameLayout
+<RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
     <android.support.v4.view.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_above="@+id/board_grid_advert"
             />
 
-</FrameLayout>
+    <include layout="@layout/ad_section"
+             android:id="@+id/board_grid_advert"
+            />
+
+</RelativeLayout>
