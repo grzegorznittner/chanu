@@ -318,7 +318,34 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         }).start();
     }
 
-    protected void selectCurrentThread(ChanThread thread) {
+    protected static final int FROM_BOARD_THREAD_ADAPTER_COUNT = 5; // thread header + related title + 3 related boards
+
+    protected void setProgressFromThreadState(final ChanThread thread) {
+        if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " listViewCount=" + (absListView == null ? 0 : absListView.getCount()));
+        if (!NetworkProfileManager.isConnected()) {
+            if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " no connection, setting load finished for thread=" + thread);
+            setProgress(false);
+        }
+        else if (thread.isDead) {
+            if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " dead thread, setting load finished for thread=" + thread);
+            setProgress(false);
+        }
+        else if (thread != null && thread.posts != null && thread.posts.length <= 1 && thread.posts[0].replies > 0
+                && absListView != null && absListView.getCount() <= FROM_BOARD_THREAD_ADAPTER_COUNT) {
+            if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " thread not fully loaded, awaiting load thread=" + thread);
+        }
+        else if (!thread.defData
+                && thread.posts != null && thread.posts.length > 0
+                && thread.posts[0] != null && !thread.posts[0].defData && thread.posts[0].replies >= 0) { // post is loaded
+            if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " thread loaded, setting load finished for thread=" + thread);
+            setProgress(false);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " thread not yet loaded, awaiting load thread=" + thread);
+        }    
+    }
+    
+    protected void selectCurrentThread(final ChanThread thread) {
         if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " thread=" + thread);
         if (query != null && !query.isEmpty()) {
             if (handler != null)
@@ -326,7 +353,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     @Override
                     public void run() {
                         displaySearchTitle();
-                        setProgress(false);
+                        setProgressFromThreadState(thread);
                     }
                 });
         }
@@ -358,7 +385,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             absListView.setSelection(postPos);
                             postNo = -1;
                         }
-                        setProgress(false);
+                        setProgressFromThreadState(thread);
                     }
                 });
         }
@@ -374,13 +401,19 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             absListView.setSelection(firstVisiblePosition);
                         firstVisiblePosition = -1;
                         firstVisiblePositionOffset = -1;
-                        setProgress(false);
+                        setProgressFromThreadState(thread);
                     }
                 });
         }
         else {
-            if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " stopping spinner");
-            setProgressAsync(false);
+            if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " setting spinner from thread state");
+            if (handler != null)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setProgressFromThreadState(thread);
+                    }
+                });
         }
     }
 
@@ -1234,7 +1267,11 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/" + threadNo + " id=" + id);
             setProgress(true);
-            return new ThreadCursorLoader(getActivityContext(), boardCode, threadNo, query, !onTablet());
+            boolean showRelatedBoards;
+            if (onTablet())
+                showRelatedBoards = false;
+            else showRelatedBoards = true;
+            return new ThreadCursorLoader(getActivityContext(), boardCode, threadNo, query, showRelatedBoards);
         }
 
         @Override

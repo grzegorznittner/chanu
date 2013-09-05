@@ -536,61 +536,59 @@ public class ThreadActivity
         new Thread(new Runnable() {
             @Override
             public void run() {
-        if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " message=" + message);
-        ChanBoard fragmentBoard = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        if (mPager == null && !fragmentBoard.defData) {
-            if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " board loaded, creating pager");
-            createPager(fragmentBoard);
-            setCurrentItemToThread();
-            setProgress(false);
-        }
-        if (mPager == null) {
-            if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " skipping, null pager");
-            setProgress(false);
-            return;
-        }
-        if (mAdapter == null) {
-            if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " skipping, null adapter");
-            setProgress(false);
-            return;
-        }
-        int current = mPager.getCurrentItem();
-        int delta = mPager.getOffscreenPageLimit();
-        boolean found = false;
-        for (int i = current - delta; i < current + delta + 1; i++) {
-            if (refreshFragmentAtPosition(boardCode, threadNo, i, i == current ? message : null))
-                found = true;
-        }
-        if (!found) {
-            if (DEBUG) Log.i(TAG, "refreshFragment() no fragment found");
-            ThreadFragment fragment = getCurrentFragment();
-            ChanActivityId activityId = fragment == null ? null : fragment.getChanActivityId();
-            if (fragment == null
-                    || activityId == null
-                    || activityId.threadNo <= 0) { // recreate, nothing displayed
-                if (DEBUG) Log.i(TAG, "refreshFragment() nothing displayed, recreating pager");
-                createPager(fragmentBoard);
-                if (mAdapter != null && mAdapter.getCount() > 0) {
-                    int pos = getCurrentThreadPos();
-                    if (pos == -1) {
-                        if (DEBUG) Log.i(TAG, "refreshFragment() thread not found in board, setting pos to 0");
-                        pos = 0;
+                if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " message=" + message);
+                ChanBoard fragmentBoard = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+                if (mPager == null && !fragmentBoard.defData) {
+                    if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " board loaded, creating pager");
+                    createPager(fragmentBoard);
+                    setCurrentItemToThread();
+                    setProgress(false);
+                }
+                if (mPager == null) {
+                    if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " skipping, null pager");
+                    setProgress(false);
+                    return;
+                }
+                if (mAdapter == null) {
+                    if (DEBUG) Log.i(TAG, "refreshFragment /" + boardCode + "/" + threadNo + " skipping, null adapter");
+                    setProgress(false);
+                    return;
+                }
+                int current = mPager.getCurrentItem();
+                int delta = mPager.getOffscreenPageLimit();
+                boolean found = false;
+                for (int i = current - delta; i < current + delta + 1; i++) {
+                    if (refreshFragmentAtPosition(boardCode, threadNo, i, i == current ? message : null))
+                        found = true;
+                }
+                if (!found) {
+                    if (DEBUG) Log.i(TAG, "refreshFragment() no fragment found");
+                    ThreadFragment fragment = getCurrentFragment();
+                    ChanActivityId activityId = fragment == null ? null : fragment.getChanActivityId();
+                    if (fragment == null
+                            || activityId == null
+                            || activityId.threadNo <= 0) { // recreate, nothing displayed
+                        if (DEBUG) Log.i(TAG, "refreshFragment() nothing displayed, recreating pager");
+                        createPager(fragmentBoard);
+                        if (mAdapter != null && mAdapter.getCount() > 0) {
+                            int pos = getCurrentThreadPos();
+                            if (pos == -1) {
+                                if (DEBUG) Log.i(TAG, "refreshFragment() thread not found in board, setting pos to 0");
+                                pos = 0;
+                            }
+                            if (DEBUG) Log.i(TAG, "refreshFragment() setting item to pos=" + pos);
+                            mPager.setCurrentItem(pos, false);
+                            ThreadFragment fragment2;
+                            if ((fragment2 = getFragmentAtPosition(pos)) != null
+                                    && fragment2.getChanActivityId() != null
+                                    && fragment2.getChanActivityId().threadNo > 0)
+                                fragment2.refreshThread(null);
+                        }
+                        else {
+                            if (DEBUG) Log.i(TAG, "refreshFragment() empty adapter, skipping fragment refresh");
+                        }
                     }
-                    if (DEBUG) Log.i(TAG, "refreshFragment() setting item to pos=" + pos);
-                    mPager.setCurrentItem(pos, false);
-                    ThreadFragment fragment2;
-                    if ((fragment2 = getFragmentAtPosition(pos)) != null
-                            && fragment2.getChanActivityId() != null
-                            && fragment2.getChanActivityId().threadNo > 0)
-                        fragment2.refreshThread(null);
                 }
-                else {
-                    if (DEBUG) Log.i(TAG, "refreshFragment() empty adapter, skipping fragment refresh");
-                }
-            }
-        }
-        setProgress(false);
-                //To change body of implemented methods use File | Settings | File Templates.
             }
         }).start();
     }

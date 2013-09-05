@@ -155,7 +155,15 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         }
         */
         // put related boards at the bottom
-        if (showRelatedBoards && (query == null || query.isEmpty())) {
+        boolean showRelated;
+        if (query != null && !query.isEmpty())
+            showRelated = false;
+        else if (thread.posts == null || thread.posts.length <= 0 || thread.posts[0] == null
+                || (thread.posts[0].replies > 0 && thread.posts.length == 1))
+            showRelated = false;
+        else
+            showRelated = showRelatedBoards;
+        if (showRelated) {
             List<ChanBoard> boardRows = board.relatedBoards(context, threadNo);
             if (boardRows.size() > 0) {
                 matrixCursor.addRow(board.makePostRelatedBoardsHeaderRow(context));
