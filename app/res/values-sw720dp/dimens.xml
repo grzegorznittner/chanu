@@ -39,6 +39,7 @@
     <dimen name="BoardGridViewTablet_layout_width">336dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterPadding">304dp</dimen>
     <dimen name="BoardGridViewTablet_paddingRight">2dp</dimen>
+
     <dimen name="BoardTypeText_padding">16dp</dimen>
 
     <dimen name="BoardSelectorOverlay_paddingTop">16dp</dimen>

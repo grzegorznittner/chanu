@@ -778,8 +778,17 @@ public class ThreadActivity
                     int last = boardGrid.getLastVisiblePosition();
                     boolean positionVisible = first <= position && position <= last;
                     if (!positionVisible) {
-                        if (DEBUG) Log.i(TAG, "smooth scrolling to position=" + position);
-                        boardGrid.setSelection(position);
+                        if (DEBUG) Log.i(TAG, "scrolling to pos=" + position + " not in range [" + first + "," + last + "]");
+                        final int toPos = position;
+                        boardGrid.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                boardGrid.setSelection(toPos);
+                            }
+                        });
+                    }
+                    else {
+                        if (DEBUG) Log.i(TAG, "not scrolling to pos=" + position + " in range [" + first + "," + last + "]");
                     }
                 }
             }

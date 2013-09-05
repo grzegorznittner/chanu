@@ -286,6 +286,7 @@
     <dimen name="BoardGridView.halfSpacing">6dp</dimen>
     <dimen name="BoardGridView.spacing">12dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">12dp</dimen>
+    <dimen name="BoardGridViewTablet.quarterSpacing">4dp</dimen>
     <dimen name="BoardGridTextHeight">96dp</dimen>
    
     <integer name="BoardGridView.numColumns">2</integer>

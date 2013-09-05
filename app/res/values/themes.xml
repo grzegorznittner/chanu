@@ -16,6 +16,7 @@
         <item name="themedHelpIcon">@drawable/action_about_light</item>
         <item name="themedDeadIcon">@drawable/skull_light</item>
         <item name="yesNoPreferenceStyle">@style/Preference.DialogPreference.YesNoPreference</item>
+        <item name="themedBoardGridTabletBackground">@color/PaletteYellowWhite</item>
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.Dark">
@@ -34,6 +35,7 @@
         <item name="themedHelpIcon">@drawable/action_about</item>
         <item name="themedDeadIcon">@drawable/skull</item>
         <item name="yesNoPreferenceStyle">@style/Preference.Holo.DialogPreference.YesNoPreference</item>
+        <item name="themedBoardGridTabletBackground">@color/PaletteDarkYellowWhite</item>
     </style>
 
 </resources>

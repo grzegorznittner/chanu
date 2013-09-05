@@ -54,5 +54,6 @@
     <attr name="themedHelpIcon" format="reference"/>
     <attr name="themedDeadIcon" format="reference"/>
     <attr name="yesNoPreferenceStyle" format="reference" />
- 
+    <attr name="themedBoardGridTabletBackground" format="reference|color"/>
+
 </resources>

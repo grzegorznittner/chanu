@@ -32,6 +32,7 @@
     <color name="PaletteTransparent">#00000000</color>
     <color name="PaletteGreen">#43c279</color>
     <color name="PaletteYellowWhite">#ecebe7</color>
+    <color name="PaletteDarkYellowWhite">#2c2b27</color>
     <color name="PaletteWhite">#f7f7f7</color>
     <color name="PaletteOffWhite">#e4e4e4</color>
     <color name="PaletteLightestGray">#ccc</color>
