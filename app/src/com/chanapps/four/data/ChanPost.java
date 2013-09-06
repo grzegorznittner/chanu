@@ -80,7 +80,8 @@ public class ChanPost {
     public static final int FLAG_IS_HEADER = 0x2000;
     public static final int FLAG_IS_URLLINK = 0x4000;
     public static final int FLAG_NO_EXPAND = 0x8000;
-    public static final int FLAG_HAS_HEAD = 0x10000;
+    public static final int FLAG_HAS_HEAD  = 0x10000;
+    public static final int FLAG_IS_STICKY = 0x20000;
 
     public static String planifyText(String text) {
         return text.replaceAll("<br/?>", "\n").replaceAll("<[^>]*>", "");
@@ -129,6 +130,8 @@ public class ChanPost {
             flags |= FLAG_IS_DEAD;
         if (closed > 0)
             flags |= FLAG_IS_CLOSED;
+        if (sticky > 0)
+            flags |= FLAG_IS_STICKY;
         if (isAd)
             flags |= FLAG_IS_AD;
         if (isThreadLink)
@@ -638,7 +641,7 @@ public class ChanPost {
     public String threadInfoLine(Context context, boolean boardLevel, boolean showNumReplies, boolean abbrev)
     {
         if (sticky > 0 && replies == 0)
-            return context.getString(R.string.thread_is_sticky);
+            return context.getString(R.string.thread_is_sticky) + (closed > 0 ? " " + context.getString(R.string.thread_is_closed) : "");
         String text;
         if (showNumReplies) {
             if (replies > 0) {

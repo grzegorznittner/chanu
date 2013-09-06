@@ -230,6 +230,7 @@ public class ChanThread extends ChanPost {
 				+ (posts.length > 0
                     ? ", posts[0].no: " + posts[0].no + ", posts[0].replies: " + posts[0].replies
                     + ", posts[0].images: " + posts[0].images + ", posts[0].defData: " + posts[0].defData
+                    + ", posts[0].isDead: " + posts[0].isDead
                     : "")
 				+ ", thumb: " + thumbnailUrl() + " tn_w: " + tn_w + " tn_h: " + tn_h;
 	}

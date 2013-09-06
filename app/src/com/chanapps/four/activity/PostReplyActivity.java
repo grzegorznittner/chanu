@@ -1,5 +1,7 @@
 package com.chanapps.four.activity;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.*;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -1086,6 +1088,20 @@ public class PostReplyActivity
     }
 
     public void navigateUp() {
+        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
+        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
+        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        if (task != null) {
+            if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
+            if (task.baseActivity != null && !this.getClass().getName().equals(task.baseActivity.getClassName())) {
+                if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
+                        + this.getClass().getName() + " base=" + task.baseActivity.getClassName());
+                finish();
+                return;
+            }
+        }
+
+        if (DEBUG) Log.i(TAG, "navigateUp() launching intent /" + boardCode + "/" + threadNo + "#p" + postNo);
         Intent intent = ThreadActivity.createIntent(this, boardCode, threadNo, postNo, "");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);

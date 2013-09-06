@@ -49,7 +49,7 @@ public class ThreadViewer {
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static DisplayMetrics displayMetrics = null;
     private static Typeface subjectTypeface = null;
@@ -382,11 +382,18 @@ public class ThreadViewer {
     }
 
     static private boolean setSubjectIcons(ThreadViewHolder viewHolder, int flags) {
-        View deadIcon = viewHolder.list_item_dead_icon;
-        if (deadIcon == null)
-            return true;
-        int visibility = (flags & ChanPost.FLAG_IS_DEAD) > 0 ? View.VISIBLE : View.GONE;
-        deadIcon.setVisibility(visibility);
+        if (viewHolder.list_item_dead_icon != null)
+            viewHolder.list_item_dead_icon.setVisibility((flags & ChanPost.FLAG_IS_DEAD) > 0 ? View.VISIBLE : View.GONE);
+        if (viewHolder.list_item_closed_icon != null)
+            viewHolder.list_item_closed_icon.setVisibility((flags & ChanPost.FLAG_IS_CLOSED) > 0 ? View.VISIBLE : View.GONE);
+        if (viewHolder.list_item_sticky_icon != null)
+            viewHolder.list_item_sticky_icon.setVisibility((flags & ChanPost.FLAG_IS_STICKY) > 0 ? View.VISIBLE : View.GONE);
+        if (DEBUG)
+            Log.i(TAG, "setSubjectIcons()"
+                    + " dead=" + ((flags & ChanPost.FLAG_IS_DEAD) > 0)
+                    + " closed=" + ((flags & ChanPost.FLAG_IS_CLOSED) > 0)
+                    + " sticky=" + ((flags & ChanPost.FLAG_IS_STICKY) > 0)
+            );
         return true;
     }
 

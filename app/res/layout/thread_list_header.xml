@@ -48,21 +48,45 @@
         </FrameLayout>
 
         <RelativeLayout style="@style/ThreadListHeaderHeadWrapper" android:id="@+id/list_item_header_wrapper">
-            <FrameLayout
+            <LinearLayout
                     android:id="@+id/list_item_subject_icons"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/ThreadListHeader_subjectHeight"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">      <!-- layout_height @dimen/ThreadListHeader_subjectHeight -->
                 <ImageView
                         android:id="@+id/list_item_dead_icon"
                         android:layout_width="@dimen/ThreadListHeaderSubject"
                         android:layout_height="@dimen/ThreadListHeaderSubject"
                         android:layout_gravity="center_vertical"
                         android:layout_marginRight="@dimen/ThreadListHeader_med_padding"
+                        android:layout_marginTop="@dimen/ThreadListHeader_micro_padding"
+                        android:layout_marginBottom="@dimen/ThreadListHeader_micro_padding"
                         android:src="?themedDeadIcon"
                         android:scaleType="fitCenter"
                         android:visibility="gone"/>
-            </FrameLayout>
+                <ImageView
+                        android:id="@+id/list_item_sticky_icon"
+                        android:layout_width="@dimen/ThreadListHeaderSubject"
+                        android:layout_height="@dimen/ThreadListHeaderSubject"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="@dimen/ThreadListHeader_med_padding"
+                        android:layout_marginTop="@dimen/ThreadListHeader_micro_padding"
+                        android:layout_marginBottom="@dimen/ThreadListHeader_micro_padding"
+                        android:src="?themedStickyIcon"
+                        android:scaleType="fitCenter"
+                        android:visibility="gone"/>
+                <ImageView
+                        android:id="@+id/list_item_closed_icon"
+                        android:layout_width="@dimen/ThreadListHeaderSubject"
+                        android:layout_height="@dimen/ThreadListHeaderSubject"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="@dimen/ThreadListHeader_med_padding"
+                        android:layout_marginTop="@dimen/ThreadListHeader_micro_padding"
+                        android:layout_marginBottom="@dimen/ThreadListHeader_micro_padding"
+                        android:src="?themedClosedIcon"
+                        android:scaleType="fitCenter"
+                        android:visibility="gone"/>
+            </LinearLayout>
             <TextView style="@style/ThreadListHeaderSubject" android:id="@+id/list_item_subject"
                     android:layout_toRightOf="@+id/list_item_subject_icons"
                     />
@@ -71,13 +95,16 @@
                       android:layout_below="@+id/list_item_subject"
                     />
             <ImageView style="@style/ThreadListItemCountryFlag" android:id="@+id/list_item_country_flag"
+                       android:layout_toRightOf="@+id/list_item_subject_icons"
                        android:layout_below="@+id/list_item_text"
                     />
             <TextView style="@style/ThreadListHeaderHead" android:id="@+id/list_item_header"
+                      android:layout_toRightOf="@+id/list_item_subject_icons"
                       android:layout_below="@+id/list_item_country_flag"
                     />
 
             <TextView style="@style/ThreadListHeaderExifText" android:id="@+id/list_item_exif_text"
+                      android:layout_toRightOf="@+id/list_item_subject_icons"
                       android:layout_below="@+id/list_item_header"
                     />
         </RelativeLayout>

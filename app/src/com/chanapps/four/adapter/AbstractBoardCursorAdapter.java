@@ -27,7 +27,7 @@ import com.chanapps.four.data.ChanThread;
  */
 abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
 	protected static final String TAG = AbstractBoardCursorAdapter.class.getSimpleName();
-	protected static final boolean DEBUG = false;
+	protected static final boolean DEBUG = true;
     protected static final String ID_COL = "_id";
 
     /**
@@ -76,12 +76,14 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+        final int pos = cursor == null ? -1 : cursor.getPosition();
+        if (DEBUG) Log.i(TAG, "bindView() for pos=" + pos);
         final ViewBinder binder = mViewBinder;
         Object tag = view.getTag();
         if (tag != null && tag instanceof Long) {
             long viewPostId = (Long)tag;
             long cursorPostId = cursor.getLong(cursor.getColumnIndex(ID_COL));
-            if (viewPostId == cursorPostId) {
+            if (viewPostId == cursorPostId && pos != 0) { // only 0th item can change
                 if (DEBUG) Log.i(TAG, "view already set, bypassing pos=" + cursor.getPosition());
                 return;
             }

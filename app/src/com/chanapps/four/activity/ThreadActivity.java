@@ -984,4 +984,14 @@ public class ThreadActivity
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean warnedAboutNetworkDown = false;
+
+    public boolean warnedAboutNetworkDown() {
+        return warnedAboutNetworkDown;
+    }
+
+    public void warnedAboutNetworkDown(boolean set) {
+        warnedAboutNetworkDown = set;
+    }
+
 }

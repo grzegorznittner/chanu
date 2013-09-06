@@ -15,6 +15,8 @@
         <item name="themedStubImageBackgroundColor">@color/PaletteImagePlaceholder</item>
         <item name="themedHelpIcon">@drawable/action_about_light</item>
         <item name="themedDeadIcon">@drawable/skull_light</item>
+        <item name="themedClosedIcon">@drawable/lock_light</item>
+        <item name="themedStickyIcon">@drawable/thumbtack_light</item>
         <item name="yesNoPreferenceStyle">@style/Preference.DialogPreference.YesNoPreference</item>
         <item name="themedBoardGridTabletBackground">@color/PaletteYellowWhite</item>
     </style>
@@ -34,6 +36,8 @@
         <item name="themedStubImageBackgroundColor">@color/DarkPaletteImagePlaceholder</item>
         <item name="themedHelpIcon">@drawable/action_about</item>
         <item name="themedDeadIcon">@drawable/skull</item>
+        <item name="themedClosedIcon">@drawable/lock</item>
+        <item name="themedStickyIcon">@drawable/thumbtack</item>
         <item name="yesNoPreferenceStyle">@style/Preference.Holo.DialogPreference.YesNoPreference</item>
         <item name="themedBoardGridTabletBackground">@color/PaletteDarkYellowWhite</item>
     </style>

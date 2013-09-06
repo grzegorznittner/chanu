@@ -246,6 +246,22 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         handler = null;
     }
 
+    protected boolean warnedAboutNetworkDown() {
+        ThreadActivity activity = (ThreadActivity)getActivity();
+        if (activity == null)
+            return false;
+        else
+            return activity.warnedAboutNetworkDown();
+    }
+
+    protected void warnedAboutNetworkDown(boolean set) {
+        ThreadActivity activity = (ThreadActivity)getActivity();
+        if (activity == null)
+            return;
+        else
+            activity.warnedAboutNetworkDown(set);
+    }
+
     public void tryFetchThread() {
         if (DEBUG) Log.i(TAG, "tryFetchThread /" + boardCode + "/" + threadNo);
         if (handler == null) {
@@ -257,7 +273,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
             if (DEBUG) Log.i(TAG, "tryFetchThread bad health, exiting");
             final Context context = getActivityContext();
-            if (handler != null && context != null) {
+            if (handler != null && context != null && !warnedAboutNetworkDown()) {
+                warnedAboutNetworkDown(true);
                 final String msg = String.format(getString(R.string.mobile_profile_health_status),
                         health.toString().toLowerCase().replaceAll("_", " "));
                 handler.post(new Runnable() {
@@ -269,6 +286,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             }
             setProgressAsync(false);
             return;
+        }
+        else {
+            warnedAboutNetworkDown(false);
         }
         ThreadActivity activity = (ThreadActivity)getActivity();
         ThreadFragment primary = activity == null ? null : activity.getPrimaryItem();
@@ -361,6 +381,17 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         //    if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " trying thread refresh");
         //    tryFetchThread();
         //}
+        else if (thread.isDead) {
+            if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " dead thread, redisplaying");
+            if (handler != null)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //absListView.invalidateViews();
+                        setProgressFromThreadState(thread);
+                    }
+                });
+        }
         else if (postNo > 0) {
             if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " scrolling to postNo=" + postNo);
             Cursor cursor = adapter.getCursor();

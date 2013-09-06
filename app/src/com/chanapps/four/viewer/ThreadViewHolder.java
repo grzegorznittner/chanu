@@ -18,6 +18,8 @@ public class ThreadViewHolder {
     public ViewGroup list_item_num_direct_replies;
     public ImageView list_item_country_flag;
     public ImageView list_item_dead_icon;
+    public ImageView list_item_closed_icon;
+    public ImageView list_item_sticky_icon;
     public ImageView list_item_header_bar_chat;
     public ImageView list_item_header_bar_overflow;
     public ImageView list_item_image;
@@ -55,6 +57,8 @@ public class ThreadViewHolder {
         list_item_num_direct_replies = (ViewGroup)item.findViewById(R.id.list_item_num_direct_replies);
         list_item_country_flag = (ImageView)item.findViewById(R.id.list_item_country_flag);
         list_item_dead_icon = (ImageView)item.findViewById(R.id.list_item_dead_icon);
+        list_item_closed_icon = (ImageView)item.findViewById(R.id.list_item_closed_icon);
+        list_item_sticky_icon = (ImageView)item.findViewById(R.id.list_item_sticky_icon);
         list_item_header_bar_chat = (ImageView)item.findViewById(R.id.list_item_header_bar_chat);
         list_item_header_bar_overflow = (ImageView)item.findViewById(R.id.list_item_header_bar_overflow);
         list_item_image = (ImageView)item.findViewById(R.id.list_item_image);
