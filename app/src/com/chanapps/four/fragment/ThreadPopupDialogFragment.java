@@ -225,7 +225,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
     }
 
     protected void init() {
-        adapter = new ThreadListCursorAdapter(getActivity(), viewBinder);
+        adapter = new ThreadListCursorAdapter(getActivity(), viewBinder, false);
         absListView = (ListView) layout.findViewById(R.id.thread_popup_list_view);
         absListView.setAdapter(adapter);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());

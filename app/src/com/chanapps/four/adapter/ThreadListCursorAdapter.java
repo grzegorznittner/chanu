@@ -2,12 +2,16 @@ package com.chanapps.four.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.fragment.ThreadPopupDialogFragment;
 import com.chanapps.four.viewer.ThreadViewHolder;
+import com.chanapps.four.viewer.ThreadViewer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,7 +23,7 @@ import com.chanapps.four.viewer.ThreadViewHolder;
 public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
 
     protected static final String TAG = ThreadListCursorAdapter.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
     protected static final int TYPE_MAX_COUNT = 5;
     protected static final int TYPE_HEADER = 0;
@@ -28,11 +32,13 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     protected static final int TYPE_TITLE = 3;
     protected static final int TYPE_LINK = 4;
 
+    protected boolean showContextMenu;
+
     protected ThreadListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);
     }
 
-    public ThreadListCursorAdapter(Context context, ViewBinder viewBinder) {
+    public ThreadListCursorAdapter(Context context, ViewBinder viewBinder, boolean showContextMenu) {
         this(context,
                 R.layout.thread_list_image_item,
                 viewBinder,
@@ -58,6 +64,7 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
                         R.id.list_item_country_flag,
                         R.id.list_item_exif_text
                 });
+        this.showContextMenu = showContextMenu;
     }
 
     @Override
@@ -118,6 +125,49 @@ public class ThreadListCursorAdapter extends AbstractThreadCursorAdapter {
     @Override
     public int getViewTypeCount() {
         return TYPE_MAX_COUNT;
+    }
+
+    @Override
+    protected void updateView(final View view, final Cursor cursor, final int pos) {
+        final String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+        final long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID)); // id of header is the threadNo
+        final long resto = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO)); // resto of item is the threadNo
+        final long threadNo = resto > 0 ? resto : postId;
+        final long postNo = resto > 0 ? postId : 0;
+        ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
+        if (resto == 0) { // it's a header
+            if (DEBUG) Log.i(TAG, "view already set for thread header, only adjusting status icons and num comments/images/replies");
+            int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
+            int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
+            ThreadViewer.setSubjectIcons(viewHolder, flags);
+            ThreadViewer.setHeaderNumRepliesImages(viewHolder, cursor, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    GalleryViewActivity.startAlbumViewActivity(context, boardCode, threadNo);
+                }
+            });
+            ThreadViewer.displayNumDirectReplies(viewHolder, cursor, showContextMenu, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (context instanceof FragmentActivity)
+                        (new ThreadPopupDialogFragment(boardCode, threadNo, threadNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES))
+                                .show(((FragmentActivity)context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
+                }
+            });
+            return;
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "view already set for thread item, only adjusting num replies");
+            ThreadViewer.displayNumDirectReplies(viewHolder, cursor, showContextMenu, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (context instanceof FragmentActivity)
+                        (new ThreadPopupDialogFragment(boardCode, threadNo, postNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES))
+                                .show(((FragmentActivity)context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
+                }
+            });
+            return;
+        }
     }
 
 }

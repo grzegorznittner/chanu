@@ -293,7 +293,6 @@ public class ThreadViewer {
             wrapper.setVisibility(View.GONE);
             return 0;
         }
-
         TextView numDirectReplies = viewHolder.list_item_num_direct_replies_text;
         if (numDirectReplies == null)
             return 0;
