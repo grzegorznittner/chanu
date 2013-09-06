@@ -411,6 +411,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             @Override
             public void run() {
                 final ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+                updateThreads(board);
                 if (handler != null)
                     handler.post(new Runnable() {
                         @Override
@@ -425,21 +426,24 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     protected void startLoader(final ChanBoard board) {
         if (board.isVirtualBoard() && !board.isPopularBoard()) { // always ready, start loading
-            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ non-popular virtual board, loading immediately");
-            getSupportLoaderManager().initLoader(0, null, loaderCallbacks);
+            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ non-popular virtual board, loading immediately");
+            if (adapter == null || adapter.getCount() == 0)
+                getSupportLoaderManager().initLoader(0, null, loaderCallbacks);
         }
         else if (board.hasData() && board.isCurrent()) {
-            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ board has current data, loading");
-            getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
+            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has current data, loading");
+            if (adapter == null || adapter.getCount() == 0)
+                getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
         }
         else if (board.hasData() && NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
                 == NetworkProfile.Health.NO_CONNECTION) {
-            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ board has old data but connection down, loading");
-            getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
+            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection down, loading");
+            if (adapter == null || adapter.getCount() == 0)
+                getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
         }
         else if (NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
                 == NetworkProfile.Health.NO_CONNECTION) {
-            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ no board data and connection is down");
+            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ no board data and connection is down");
             Toast.makeText(getApplicationContext(), R.string.board_no_connection_load, Toast.LENGTH_SHORT).show();
             if (emptyText != null) {
                 emptyText.setText(R.string.board_no_connection_load);
@@ -448,7 +452,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             setProgress(false);
         }
         else {
-            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ non-current board data, manual refreshing");
+            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ non-current board data, manual refreshing");
             onRefresh();
         }
     }
@@ -459,31 +463,26 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "onResume /" + boardCode + "/ q=" + query);
         if (handler == null)
             handler = new Handler();
-        updateThreadsAsync();
-        invalidateOptionsMenu(); // for correct spinner display
+        //invalidateOptionsMenu();
         activityChangeAsync();
     }
 
-    protected void updateThreadsAsync() {
-        new Thread(new Runnable() {
+    protected void updateThreads(ChanBoard board) { // WARNING don't call on UI thread
+        if (board.shouldSwapThreads())
+            board.swapLoadedThreads();
+        //handleUpdatedThreads(board);
+        /*
+        if (handler != null)
+        handler.post(new Runnable() {
             @Override
             public void run() {
-                final ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-                if (board.shouldSwapThreads())
-                    board.swapLoadedThreads();
-                handleUpdatedThreads(board);
-                if (handler != null)
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if ((adapter == null || adapter.getCount() == 0)
-                                    && board.hasData()
-                                    && board.isCurrent())
-                                getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
-                        }
-                    });
+                if ((adapter == null || adapter.getCount() == 0)
+                        && board.hasData()
+                        && board.isCurrent())
+                    getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
             }
-        }).start();
+        });
+        */
     }
 
     protected void activityChangeAsync() {

@@ -428,10 +428,10 @@ public class ThreadActivity
     }
 
     protected void setCurrentItemToThreadAsync() {
-        if (mAdapter != null && mAdapter.getCount() > 0) {
-            if (DEBUG) Log.i(TAG, "setCurrentItemToThreadAsync() /" + boardCode + "/" + threadNo + " adapter already loaded, skipping");
-            return;
-        }
+        //if (mAdapter != null && mAdapter.getCount() > 0) {
+        //    if (DEBUG) Log.i(TAG, "setCurrentItemToThreadAsync() /" + boardCode + "/" + threadNo + " adapter already loaded, skipping");
+        //    return;
+        //}
         if (DEBUG) Log.i(TAG, "setCurrentItemToThreadAsync() /" + boardCode + "/" + threadNo + " selecting current item in pager");
         final ChanIdentifiedActivity activity = this;
         new Thread(new Runnable() {
