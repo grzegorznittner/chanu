@@ -223,16 +223,15 @@ public class ThreadViewer {
         return true;
     }
 
-    static protected void displayHeaderCountFields(ThreadViewHolder viewHolder, Cursor cursor, boolean showContextMenu,
-                                                   View.OnClickListener imagesOnClickListener,
-                                                   View.OnClickListener repliesOnClickListener) {
-        displayHeaderBarAgoNo(viewHolder, cursor);
+    static public void setHeaderNumRepliesImages(ThreadViewHolder viewHolder, Cursor cursor, View.OnClickListener imagesOnClickListener) {
         int r = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_REPLIES));
         int i = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_NUM_IMAGES));
         TextView numReplies = viewHolder.list_item_num_replies_text;
         TextView numImages = viewHolder.list_item_num_images_text;
         TextView numRepliesLabel = viewHolder.list_item_num_replies_label;
         TextView numImagesLabel = viewHolder.list_item_num_images_label;
+        View wrapper = viewHolder.list_item_num_images;
+        View spinner = viewHolder.list_item_num_images_spinner;
         if (numReplies != null)
             numReplies.setText(String.valueOf(r));
         if (numImages != null)
@@ -241,9 +240,6 @@ public class ThreadViewer {
             numRepliesLabel.setText(numRepliesLabel.getResources().getQuantityString(R.plurals.thread_num_replies_label, r));
         if (numImagesLabel != null)
             numImagesLabel.setText(numImagesLabel.getResources().getQuantityString(R.plurals.thread_num_images_label, i));
-
-        View wrapper = viewHolder.list_item_num_images;
-        View spinner = viewHolder.list_item_num_images_spinner;
         if (wrapper != null) {
             if (i > 0 && imagesOnClickListener != null) {
                 wrapper.setOnClickListener(imagesOnClickListener);
@@ -258,8 +254,14 @@ public class ThreadViewer {
                     spinner.setVisibility(View.GONE);
             }
         }
+    }
 
-        displayNumDirectReplies(viewHolder, cursor, showContextMenu, repliesOnClickListener); //, false);
+    static protected void displayHeaderCountFields(ThreadViewHolder viewHolder, Cursor cursor, boolean showContextMenu,
+                                                   View.OnClickListener imagesOnClickListener,
+                                                   View.OnClickListener repliesOnClickListener) {
+        displayHeaderBarAgoNo(viewHolder, cursor);
+        setHeaderNumRepliesImages(viewHolder, cursor, imagesOnClickListener);
+        displayNumDirectReplies(viewHolder, cursor, showContextMenu, repliesOnClickListener);
     }
 
     static protected void displayHeaderBarAgoNo(ThreadViewHolder viewHolder, Cursor cursor) {
@@ -281,7 +283,7 @@ public class ThreadViewer {
         displayNumDirectReplies(viewHolder, cursor, showContextMenu, repliesOnClickListener); //, true);
     }
 
-    static protected int displayNumDirectReplies(ThreadViewHolder viewHolder, Cursor cursor, boolean showContextMenu,
+    static public int displayNumDirectReplies(ThreadViewHolder viewHolder, Cursor cursor, boolean showContextMenu,
                                                   View.OnClickListener repliesOnClickListener) { //,
                                                   //boolean markVisibility) {
         View wrapper = viewHolder.list_item_num_direct_replies;
@@ -381,7 +383,7 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean setSubjectIcons(ThreadViewHolder viewHolder, int flags) {
+    static public boolean setSubjectIcons(ThreadViewHolder viewHolder, int flags) {
         if (viewHolder.list_item_dead_icon != null)
             viewHolder.list_item_dead_icon.setVisibility((flags & ChanPost.FLAG_IS_DEAD) > 0 ? View.VISIBLE : View.GONE);
         if (viewHolder.list_item_closed_icon != null)

@@ -3,17 +3,23 @@
  */
 package com.chanapps.four.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ResourceCursorAdapter;
 
+import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.fragment.ThreadPopupDialogFragment;
+import com.chanapps.four.viewer.ThreadViewHolder;
+import com.chanapps.four.viewer.ThreadViewer;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -75,7 +81,7 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
         final int pos = cursor == null ? -1 : cursor.getPosition();
         if (DEBUG) Log.i(TAG, "bindView() for pos=" + pos);
         final ViewBinder binder = mViewBinder;
@@ -83,9 +89,35 @@ abstract public class AbstractBoardCursorAdapter extends ResourceCursorAdapter {
         if (tag != null && tag instanceof Long) {
             long viewPostId = (Long)tag;
             long cursorPostId = cursor.getLong(cursor.getColumnIndex(ID_COL));
-            if (viewPostId == cursorPostId && pos != 0) { // only 0th item can change
-                if (DEBUG) Log.i(TAG, "view already set, bypassing pos=" + cursor.getPosition());
-                return;
+            if (viewPostId == cursorPostId) { // prevent flickering caused by redrawing when not needed
+                if (this instanceof ThreadListCursorAdapter && pos == 0) {
+                    if (DEBUG) Log.i(TAG, "view already set for thread header, only adjusting status icons and num comments/images");
+                    ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
+                    int flagIdx = cursor.getColumnIndex(ChanPost.POST_FLAGS);
+                    int flags = flagIdx >= 0 ? cursor.getInt(flagIdx) : -1;
+                    ThreadViewer.setSubjectIcons(viewHolder, flags);
+                    final String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+                    final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID)); // id of header is the threadNo
+                    ThreadViewer.setHeaderNumRepliesImages(viewHolder, cursor, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            GalleryViewActivity.startAlbumViewActivity(context, boardCode, threadNo);
+                        }
+                    });
+                    ThreadViewer.displayNumDirectReplies(viewHolder, cursor, true, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (context instanceof FragmentActivity)
+                                (new ThreadPopupDialogFragment(boardCode, threadNo, threadNo, pos, ThreadPopupDialogFragment.PopupType.REPLIES))
+                                        .show(((FragmentActivity)context).getSupportFragmentManager(), ThreadPopupDialogFragment.TAG);
+                        }
+                    });
+                    return;
+                }
+                else {
+                    if (DEBUG) Log.i(TAG, "view already set, bypassing pos=" + cursor.getPosition());
+                    return;
+                }
             }
         }
         if (binder != null)
