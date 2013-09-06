@@ -132,6 +132,14 @@
                     android:summaryOn="@string/pref_use_friendly_ids_summ_on"
                     android:summaryOff="@string/pref_use_friendly_ids_summ_off"
                     android:defaultValue="true" />
+
+            <CheckBoxPreference
+                    android:key="pref_use_analytics"
+                    android:title="@string/pref_use_google_analytics"
+                    android:summaryOn="@string/pref_use_google_analytics_summ_on"
+                    android:summaryOff="@string/pref_use_google_analytics_summ_off"
+                    android:defaultValue="true" />
+
             <!--
             <CheckBoxPreference
                     android:key="pref_show_nsfw_boards"

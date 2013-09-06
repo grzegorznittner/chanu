@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.SearchView;
 import com.android.gallery3d.ui.Log;
+import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.service.NetworkProfileManager;
 
 /**
@@ -107,5 +108,18 @@ public class SearchActivity extends Activity {
         if (DEBUG) Log.i(TAG, "handleIntent start search /" + boardCode + "/" + threadNo + " q=" + query);
         ThreadActivity.startActivity(this, boardCode, threadNo, query);
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        AnalyticsComponent.onStart(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        AnalyticsComponent.onStop(this);
+    }
+
 }
 

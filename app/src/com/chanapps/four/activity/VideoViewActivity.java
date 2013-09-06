@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.webkit.WebView;
 
+import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.service.ImageDownloadService;
 
 /**
@@ -71,5 +72,17 @@ public class VideoViewActivity extends Activity {
         }
         return true;
     }
-    	
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        AnalyticsComponent.onStart(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        AnalyticsComponent.onStop(this);
+    }
+
 }

@@ -316,6 +316,7 @@ public class ThreadActivity
         if (onTablet())
             createAbsListView();
         createPagerAsync();
+        AnalyticsComponent.onStart(this);
     }
 
     protected void createPagerAsync() {
@@ -441,13 +442,13 @@ public class ThreadActivity
                     NetworkProfileManager.instance().activityChange(activity);
                 }
                 int idx = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode).getThreadIndex(boardCode, threadNo);
-        if (idx == -1) {
-            if (DEBUG) Log.i(TAG, "onResume() thread not in board, waiting for board refresh");
-        }
-        else {
-            if (DEBUG) Log.i(TAG, "onResume() set current item to thread");
-            setCurrentItemToThread();
-        }
+                if (idx == -1) {
+                    if (DEBUG) Log.i(TAG, "onResume() thread not in board, waiting for board refresh");
+                }
+                else {
+                    if (DEBUG) Log.i(TAG, "onResume() set current item to thread");
+                    setCurrentItemToThread();
+                }
                 //To change body of implemented methods use File | Settings | File Templates.
             }
         }).start();
@@ -484,6 +485,7 @@ public class ThreadActivity
             getSupportLoaderManager().destroyLoader(LOADER_ID);
         }
         setProgress(false);
+        AnalyticsComponent.onStop(this);
     }
 
     private void postReply(long postNos[]) {

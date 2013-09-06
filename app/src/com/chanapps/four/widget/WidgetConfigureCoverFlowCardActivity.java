@@ -12,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.data.ChanBoard;
 
 /**
@@ -61,6 +62,18 @@ public class WidgetConfigureCoverFlowCardActivity extends WidgetConfigureCoverFl
             return item;
         }
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        AnalyticsComponent.onStart(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        AnalyticsComponent.onStop(this);
     }
 
 }

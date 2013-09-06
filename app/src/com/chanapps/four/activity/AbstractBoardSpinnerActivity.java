@@ -5,12 +5,14 @@ import android.content.*;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import com.chanapps.four.component.AdComponent;
+import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.BoardType;
 import com.chanapps.four.data.ChanBoard;
@@ -137,13 +139,11 @@ abstract public class
         else if (!allAdaptersSet()) {
             setAdapters();
         }
-        EasyTracker.getInstance().activityStart(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        EasyTracker.getInstance().activityStop(this);
     }
 
     @Override

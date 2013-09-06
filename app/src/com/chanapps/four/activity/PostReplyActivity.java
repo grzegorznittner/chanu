@@ -20,10 +20,7 @@ import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
 import android.widget.*;
-import com.chanapps.four.component.ActivityDispatcher;
-import com.chanapps.four.component.CameraComponent;
-import com.chanapps.four.component.ChanGridSizer;
-import com.chanapps.four.component.ThemeSelector;
+import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.*;
@@ -593,6 +590,7 @@ public class PostReplyActivity
         //    NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.POST);
         if ((!isPassEnabled() || !isPassAvailable()) && recaptchaButton.getDrawable() == null)
             refresh();
+        AnalyticsComponent.onStart(this);
     }
 
     protected void setViews() {
@@ -625,6 +623,7 @@ public class PostReplyActivity
         handler = null;
         if (!exitingOnSuccess)
             saveBundleToPrefs(saveStateToBundle(new Bundle()));
+        AnalyticsComponent.onStop(this);
     }
 
     @Override

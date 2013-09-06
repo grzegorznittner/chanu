@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.component.ToastRunnable;
 
 import java.io.*;
@@ -389,12 +390,14 @@ public class CameraActivity extends Activity {
     protected void onStart() {
         super.onStart();
         handler = new Handler();
+        AnalyticsComponent.onStart(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         handler = null;
+        AnalyticsComponent.onStop(this);
     }
 
 }

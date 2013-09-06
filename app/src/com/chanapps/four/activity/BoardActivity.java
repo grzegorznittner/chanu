@@ -403,6 +403,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/ q=" + query);
         topBoardCode = boardCode;
         startLoaderAsync();
+        AnalyticsComponent.onStart(this);
     }
 
     protected void startLoaderAsync() {
@@ -524,6 +525,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         getLoaderManager().destroyLoader(0);
         closeSearch();
     	handler = null;
+        AnalyticsComponent.onStop(this);
     }
 
     @Override

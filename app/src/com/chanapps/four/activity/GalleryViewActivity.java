@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import com.android.gallery3d.app.*;
 import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.data.*;
 import android.content.Context;
 import android.content.Intent;
@@ -213,6 +214,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 		if (DEBUG) Log.i(TAG, "onStart");
         postHandler = new Handler();
         loadDataAsync();
+        AnalyticsComponent.onStart(this);
     }
 
     @Override
@@ -220,6 +222,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
     	super.onStop();
     	if (DEBUG) Log.i(TAG, "onStop");
         postHandler = null;
+        AnalyticsComponent.onStop(this);
     }
 
     @Override

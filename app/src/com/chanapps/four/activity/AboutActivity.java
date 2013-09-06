@@ -10,10 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.android.gallery3d.ui.Log;
-import com.chanapps.four.component.ActivityDispatcher;
-import com.chanapps.four.component.BillingComponent;
-import com.chanapps.four.component.StringResourceDialog;
-import com.chanapps.four.component.ThemeSelector;
+import com.chanapps.four.component.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.AboutFragment;
@@ -63,6 +60,13 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
     @Override
     protected void onStart() {
         super.onStart();
+        AnalyticsComponent.onStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        AnalyticsComponent.onStop(this);
     }
 
     @Override

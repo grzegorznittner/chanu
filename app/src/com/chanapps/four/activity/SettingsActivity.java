@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.chanapps.four.component.ActivityDispatcher;
+import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.component.StringResourceDialog;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.ChanBoard;
@@ -28,6 +29,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     public static final String PREF_SHOW_NSFW_BOARDS = "pref_show_nsfw_boards";
     public static final String PREF_NOTIFICATIONS = "pref_notifications";
     public static final String PREF_USE_FRIENDLY_IDS = "pref_use_friendly_ids";
+    public static final String PREF_USE_GOOGLE_ANALYTICS = "pref_use_google_analytics";
     public static final String PREF_THEME = "pref_theme";
     public static final String PREF_USER_NAME = "pref_user_name";
     public static final String PREF_USER_EMAIL = "pref_user_email";
@@ -74,8 +76,15 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
+        AnalyticsComponent.onStart(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        AnalyticsComponent.onStop(this);
     }
 
     @Override
