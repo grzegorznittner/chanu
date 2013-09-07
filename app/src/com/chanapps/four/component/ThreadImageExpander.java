@@ -172,8 +172,14 @@ public class ThreadImageExpander {
                 if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
                     viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
                 if (viewHolder.list_item_image_expanded_click_effect != null) {
-                    viewHolder.list_item_image_expanded_click_effect.setVisibility(View.VISIBLE);
-                    viewHolder.list_item_image_expanded_click_effect.setOnClickListener(expandedImageListener);
+                    if (expandedImageListener != null) {
+                        viewHolder.list_item_image_expanded_click_effect.setVisibility(View.VISIBLE);
+                        viewHolder.list_item_image_expanded_click_effect.setOnClickListener(expandedImageListener);
+                    }
+                    else {
+                        viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
+                        viewHolder.list_item_image_expanded_click_effect.setOnClickListener(null);
+                    }
                 }
             }
 
@@ -182,8 +188,14 @@ public class ThreadImageExpander {
                 if (viewHolder.list_item_expanded_progress_bar != null && withProgress)
                     viewHolder.list_item_expanded_progress_bar.setVisibility(View.GONE);
                 if (viewHolder.list_item_image_expanded_click_effect != null) {
-                    viewHolder.list_item_image_expanded_click_effect.setVisibility(View.VISIBLE);
-                    viewHolder.list_item_image_expanded_click_effect.setOnClickListener(expandedImageListener);
+                    if (expandedImageListener != null) {
+                        viewHolder.list_item_image_expanded_click_effect.setVisibility(View.VISIBLE);
+                        viewHolder.list_item_image_expanded_click_effect.setOnClickListener(expandedImageListener);
+                    }
+                    else {
+                        viewHolder.list_item_image_expanded_click_effect.setVisibility(View.GONE);
+                        viewHolder.list_item_image_expanded_click_effect.setOnClickListener(null);
+                    }
                 }
                 if (withProgress)
                     hideThumbnail();

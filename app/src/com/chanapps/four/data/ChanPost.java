@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.util.Log;
 
+import android.view.View;
 import com.chanapps.four.activity.R;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;

@@ -1439,8 +1439,12 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     @Override
     public void showDialog(String boardCode, long threadNo, long postNo, int pos, ThreadPopupDialogFragment.PopupType popupType) {
         if (DEBUG) Log.i(TAG, "showDialog /" + boardCode + "/" + threadNo + "#p" + postNo + " pos=" + pos);
-        (new ThreadPopupDialogFragment(boardCode, threadNo, postNo, pos, popupType))
-                .show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
+        if (popupType == ThreadPopupDialogFragment.PopupType.SELF)
+            (new ThreadSinglePopupDialogFragment(boardCode, threadNo, postNo, pos))
+                    .show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
+        else
+            (new ThreadPopupDialogFragment(boardCode, threadNo, postNo, pos, popupType))
+                    .show(getFragmentManager(), ThreadPopupDialogFragment.TAG);
     }
 
     public String toString() {
@@ -1460,7 +1464,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     threadListener.repliesOnClickListener,
                     threadListener.sameIdOnClickListener,
                     threadListener.exifOnClickListener,
-                    postReplyListener,
+                    //postReplyListener,
                     overflowListener,
                     threadListener.expandedImageListener,
                     startActionModeListener);

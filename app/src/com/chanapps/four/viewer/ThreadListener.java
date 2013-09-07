@@ -1,15 +1,20 @@
 package com.chanapps.four.viewer;
 
+import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.component.ThreadExpandExifOnClickListener;
 import com.chanapps.four.component.ThreadImageExpander;
 import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.fragment.ThreadPopupDialogFragment;
+
+import java.util.HashSet;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,7 +26,7 @@ import com.chanapps.four.fragment.ThreadPopupDialogFragment;
 public class ThreadListener {
 
     private static final String TAG = ThreadListener.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private ThreadViewable threadViewable;
     private boolean isDark;
@@ -31,25 +36,81 @@ public class ThreadListener {
         this.isDark = isDark;
     }
 
-    private final View.OnClickListener createPopupListener(final ThreadPopupDialogFragment.PopupType popupType) {
-        return new View.OnClickListener() {
+    private final SpannableOnClickListener createPopupListener(final ThreadPopupDialogFragment.PopupType popupType) {
+        return new SpannableOnClickListener() {
+            private int pos;
+            private String boardCode;
+            private long threadNo;
+            private long postNo;
+            private void locatePost(View v) {
+                Cursor cursor = threadViewable.getAdapter().getCursor();
+                pos = threadViewable.getAbsListView().getPositionForView(v);
+                if (DEBUG) Log.i(TAG, "locatePost() no cursorId, current pos=" + pos);
+                if (cursor.moveToPosition(pos)) {
+                    postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+                    boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+                    threadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
+                    if (threadNo <= 0)
+                        threadNo = postNo;
+                }
+                else {
+                    pos = -1;
+                }
+            }
+            private void locatePost(View v, long cursorId) {
+                Cursor cursor = threadViewable.getAdapter().getCursor();
+                postNo = cursorId;
+                if (DEBUG) Log.i(TAG, "locatePost() looking for postNo=" + postNo
+                        + " out of " + cursor.getCount() + " cursor items");
+                // not efficient, but won't be more than a few hundred or thousand results
+                final int col = cursor.getColumnIndex(ChanPost.POST_ID);
+                pos = -1;
+                cursor.moveToPosition(-1);
+                while (cursor.moveToNext())
+                    if (cursor.getLong(col) == postNo) {
+                        pos = cursor.getPosition();
+                        break;
+                    }
+                if (cursor.moveToPosition(pos)) {
+                    boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+                    threadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
+                    if (threadNo <= 0)
+                        threadNo = postNo;
+                }
+                else {
+                    pos = -1;
+                }
+                if (DEBUG) Log.i(TAG, "locatePost() cursorId=" + cursorId + " found pos=" + pos);
+            }
+            private void launchThread(Activity activity, long threadNo) {
+                Cursor cursor = threadViewable.getAdapter().getCursor();
+                if (cursor.moveToFirst()) {
+                    boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+                    if (DEBUG) Log.i(TAG, "locatePost() launching thread activity /" + boardCode + "/" + threadNo);
+                    ThreadActivity.startActivity(activity, boardCode, threadNo, "");
+                }
+            }
             @Override
             public void onClick(View v) {
-                int pos = threadViewable.getAbsListView().getPositionForView(v);
-                Cursor cursor = threadViewable.getAdapter().getCursor();
-                cursor.moveToPosition(pos);
-                String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
-                long linkedThreadNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_RESTO));
-                long linkedPostNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-                if (linkedThreadNo <= 0)
-                    linkedThreadNo = linkedPostNo;
+                locatePost(v);
                 if (DEBUG) Log.i(TAG, "popupListener clicked pos=" + pos + " type=" + popupType);
-                threadViewable.showDialog(linkedBoardCode, linkedThreadNo, linkedPostNo, pos, popupType);
+                if (pos >= 0)
+                    threadViewable.showDialog(boardCode, threadNo, postNo, pos, popupType);
+            }
+            @Override
+            public void onClick(View v, long cursorId) {
+                locatePost(v, cursorId);
+                if (DEBUG) Log.i(TAG, "popupListener clicked pos=" + pos + " type=" + popupType + " popup postNo=" + postNo);
+                if (pos >= 0)
+                    threadViewable.showDialog(boardCode, threadNo, postNo, pos, ThreadPopupDialogFragment.PopupType.SELF);
+                else if (v.getContext() instanceof Activity)
+                    launchThread((Activity)v.getContext(), cursorId);
             }
         };
     }
 
-    public final View.OnClickListener backlinkOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.BACKLINKS);
+    public final SpannableOnClickListener backlinkOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.SELF);
+    //public final View.OnClickListener backlinkOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.BACKLINKS);
     public final View.OnClickListener repliesOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.REPLIES);
     public final View.OnClickListener sameIdOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.SAME_ID);
 

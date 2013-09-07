@@ -416,6 +416,7 @@
     <string name="thread_backlinks">References</string>
     <string name="thread_replies">Replies</string>
     <string name="thread_same_id">Same Id</string>
+    <string name="thread_post">Post</string>
     <string name="thread_info">Thread Info</string>
     <string name="highlight_replies">Highlight Replies</string>
     <string name="highlight_previous">Highlight References</string>
