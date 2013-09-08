@@ -4,10 +4,12 @@
         style="@style/ThreadListItemLayout"
         android:id="@+id/list_item"
         android:descendantFocusability="blocksDescendants"
+        >
+        <!--
         android:paddingLeft="@dimen/BoardGridView.spacing"
         android:paddingRight="@dimen/BoardGridView.spacing"
         >
-
+        -->
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

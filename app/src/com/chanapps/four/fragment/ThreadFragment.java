@@ -174,9 +174,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             else if (activity.refreshing) {
                 restartIfDeadAsync();
             }
-            else {
-                if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " restarting loader");
-                getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
+            else if (!getLoaderManager().hasRunningLoaders()) {
+                if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " no data and no running loaders, restarting loader");
+                //getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
             }
         }
         else {
@@ -262,7 +262,37 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             activity.warnedAboutNetworkDown(set);
     }
 
-    public void tryFetchThread() {
+    public void fetchIfNeeded() {
+        if (DEBUG) Log.i(TAG, "fetchIfNeeded() /" + boardCode + "/" + threadNo);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
+                if (thread == null) {
+                    if (DEBUG) Log.i(TAG, "fetchIfNeeded() /" + boardCode + "/" + threadNo + " null thread");
+                    return;
+                }
+                if (thread.isDead) {
+                    if (DEBUG) Log.i(TAG, "fetchIfNeeded() /" + boardCode + "/" + threadNo + " dead thread");
+                    return;
+                }
+                final int replies = thread.replies;
+                if (DEBUG) Log.i(TAG, "fetchIfNeeded() /" + boardCode + "/" + threadNo + " checking thread replies=" + thread.replies);
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (replies < 0 || replies > absListView.getCount() - 1) {
+                                if (DEBUG) Log.i(TAG, "fetchIfNeeded() /" + boardCode + "/" + threadNo + " should fetch more, trying");
+                                tryFetchThread();
+                            }
+                        }
+                    });
+            }
+        }).start();
+    }
+
+    protected void tryFetchThread() {
         if (DEBUG) Log.i(TAG, "tryFetchThread /" + boardCode + "/" + threadNo);
         if (handler == null) {
             if (DEBUG) Log.i(TAG, "tryFetchThread not in foreground, exiting");
@@ -1075,6 +1105,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     public void updateSharedIntent() {
         SparseBooleanArray postPos = absListView.getCheckedItemPositions();
+        if (postPos == null)
+            return;
         if (DEBUG) Log.i(TAG, "updateSharedIntent() checked count=" + postPos.size());
         String linkUrl = (postNo > 0 && postNo != threadNo)
                 ? ChanPost.postUrl(boardCode, threadNo, postNo)

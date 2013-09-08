@@ -756,7 +756,8 @@ public class ThreadActivity
                 if (primaryItem != null)
                     primaryItem.setPullToRefreshAttacher(null);
                 primaryItem = fragment;
-                primaryItem.tryFetchThread(); // update if necessary
+                primaryItem.fetchIfNeeded();
+                //primaryItem.tryFetchThread(); // update if necessary
                 /*
                 ChanActivityId activityId = fragment.getChanActivityId();
                 if (activityId != null

@@ -33,6 +33,8 @@
         <item name="android:scrollbarStyle">outsideOverlay</item>
         <item name="android:paddingTop">@dimen/BoardGridView.spacing</item>
         <item name="android:paddingBottom">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingLeft">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingRight">@dimen/BoardGridView.spacing</item>
         <item name="android:clipToPadding">false</item>
         <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
         <item name="android:drawSelectorOnTop">true</item>
@@ -591,12 +593,6 @@
     <style name="ThreadListItemBar" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
-    </style>
-
-    <style name="ThreadListItemBarBackground" parent="AppTheme">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:background">?themedCardListBarBg</item>
     </style>
 
     <style name="ThreadListItemLeftSpacer" parent="AppTheme">

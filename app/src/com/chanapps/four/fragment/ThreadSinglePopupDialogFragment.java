@@ -22,6 +22,7 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
+import com.chanapps.four.adapter.ThreadSingleItemListCursorAdapter;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.ChanBoard;
@@ -196,7 +197,7 @@ public class ThreadSinglePopupDialogFragment extends DialogFragment implements T
     }
 
     protected void init() {
-        adapter = new ThreadListCursorAdapter(getActivity(), viewBinder, false);
+        adapter = new ThreadSingleItemListCursorAdapter(getActivity(), viewBinder, false);
         absListView = (ListView) layout.findViewById(R.id.thread_popup_list_view);
         absListView.setAdapter(adapter);
         absListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

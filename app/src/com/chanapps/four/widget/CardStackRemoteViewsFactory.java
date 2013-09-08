@@ -17,6 +17,7 @@ import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.loader.ChanImageLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -38,7 +39,7 @@ import java.util.List;
 public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private static final String TAG = CardStackRemoteViewsFactory.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private Context context;
     private int appWidgetId;
@@ -77,10 +78,17 @@ public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteVie
 
     @Override
     public RemoteViews getViewAt(int i) {
-        if (DEBUG) Log.i(TAG, "getViewAt() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ pos=" + i);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_coverflowcard_item);
-        if (i >= 0 && i< threads.size() && threads.get(i) != null)
-            setThreadView(views, threads.get(i), i);
+        ChanPost thread = i >= 0 && i < threads.size() ? threads.get(i) : null;
+        if (thread != null) {
+            if (DEBUG) Log.i(TAG, "getViewAt() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ pos=" + i
+                + " set thread no=" + thread.no);
+            setThreadView(views, thread, i);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "getViewAt() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/ pos=" + i
+                    + " no thread found at position");
+        }
         return views;
     }
 
