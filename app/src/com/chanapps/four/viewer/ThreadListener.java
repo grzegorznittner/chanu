@@ -26,7 +26,7 @@ import java.util.HashSet;
 public class ThreadListener {
 
     private static final String TAG = ThreadListener.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private ThreadViewable threadViewable;
     private boolean isDark;

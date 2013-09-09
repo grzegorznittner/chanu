@@ -664,6 +664,8 @@
     <string name="pref_about_developer_category">Product Info</string>
     <string name="pref_about_developer_chanapps">Chanapps Software</string>
     <string name="pref_about_developer_chanapps_sum">See our other offerings</string>
+    <string name="pref_about_store_chanapps">Chanapps Store</string>
+    <string name="pref_about_store_chanapps_sum">Buy a Chanu T-shirt</string>
     <string name="pref_about_developer_burns">John Burns</string>
     <string name="pref_about_developer_burns_sum">johnarleyburns@gmail.com</string>
     <string name="pref_about_developer_nittner">Grzegorz Nittner</string>
@@ -975,7 +977,7 @@
     <string name="board_desc_vr">Pre-2000 video games</string>
     <string name="board_desc_w">J-pop and anime pics</string>
     <string name="board_desc_wg">Highres non-anime pics</string>
-    <string name="board_desc_wsg">Loops of humor</string>
+    <string name="board_desc_wsg">Repeating loops of humor</string>
     <string name="board_desc_x">Aliens, ghosts, metaphysics</string>
     <string name="board_desc_y">Homosexual anime</string>
     <string name="categories" value="Categories"/>

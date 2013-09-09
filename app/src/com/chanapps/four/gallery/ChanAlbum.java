@@ -24,7 +24,7 @@ import com.chanapps.four.data.ChanThread;
 public class ChanAlbum extends MediaSet {
 
     private static final String TAG = ChanAlbum.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
 	private GalleryApp application;
 	private String name;

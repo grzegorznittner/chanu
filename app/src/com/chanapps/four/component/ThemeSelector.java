@@ -20,7 +20,7 @@ import com.chanapps.four.activity.SettingsActivity;
 public class ThemeSelector {
 
     protected static final String TAG = ThemeSelector.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
 
     public static final String ACTION_THEME_CHANGED = "themeChangedAction";
     public static final String EXTRA_THEME_ID = "themeId";

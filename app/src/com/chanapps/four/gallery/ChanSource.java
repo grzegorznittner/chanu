@@ -30,7 +30,7 @@ import com.chanapps.four.data.ChanThread;
 
 public class ChanSource extends MediaSource {
     private static final String TAG = "ChanSource";
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     public static final String KEY_BUCKET_ID = "bucketId";
 
     private GalleryApp mApplication;

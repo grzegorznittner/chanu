@@ -103,6 +103,7 @@
         <item name="android:textSize">@dimen/BoardGridSubject</item>
         <item name="android:visibility">gone</item>
         <item name="android:ellipsize">end</item>
+        <item name="android:lines">2</item>
         <item name="android:maxLines">2</item>
     </style>
 
@@ -129,6 +130,7 @@
         <item name="android:paddingBottom">8dp</item>
         <item name="android:textColor">@color/PaletteLightGray</item>
         <item name="android:textSize">@dimen/BoardGridInfo</item>
+        <item name="android:lines">2</item>
         <item name="android:maxLines">2</item>
     </style>
 

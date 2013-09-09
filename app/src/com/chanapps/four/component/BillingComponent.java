@@ -181,6 +181,13 @@ public class BillingComponent {
         for (NonConsumableItem item : ITEMS) {
             supportedSkus.add(item.productId);
         }
+
+        List<NonConsumableItem> items = new ArrayList<NonConsumableItem>();
+        if (ownedItems == null) {
+            if (DEBUG) Log.i(TAG, "extractPurchasedItems no owned items found");
+            return items;
+        }
+
         List<String> ownedSkus =
                 ownedItems.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
         List<String> purchaseDataList =
@@ -189,9 +196,7 @@ public class BillingComponent {
                 ownedItems.getStringArrayList("INAPP_DATA_SIGNATURE");
         //String continuationToken =
         //        ownedItems.getString("INAPP_CONTINUATION_TOKEN");
-
-        List<NonConsumableItem> items = new ArrayList<NonConsumableItem>();
-        if (ownedItems == null) {
+        if (ownedSkus == null) {
             if (DEBUG) Log.i(TAG, "extractPurchasedItems no owned skus found");
             return items;
         }

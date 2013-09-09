@@ -19,7 +19,7 @@ import com.chanapps.four.viewer.ThreadViewHolder;
 public class ThreadSingleItemListCursorAdapter extends ThreadListCursorAdapter {
 
     protected static final String TAG = ThreadSingleItemListCursorAdapter.class.getSimpleName();
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
 
     protected ThreadSingleItemListCursorAdapter(Context context, int layout, ViewBinder viewBinder, String[] from, int[] to) {
         super(context, layout, viewBinder, from, to);

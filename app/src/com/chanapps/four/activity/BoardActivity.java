@@ -42,7 +42,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
     public static String topBoardCode = null;
 
@@ -550,7 +550,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             if (DEBUG) Log.i(TAG, "onCreateLoader /" + boardCode + "/ q=" + query + " id=" + id);
             setProgress(true);
-            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, query, false);
+            boolean abbrev = getResources().getBoolean(R.bool.BoardGridView_abbrev);
+            cursorLoader = new BoardCursorLoader(getApplicationContext(), boardCode, query, abbrev);
             return cursorLoader;
         }
         @Override

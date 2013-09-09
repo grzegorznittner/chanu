@@ -53,6 +53,7 @@ abstract public class
         if (DEBUG) Log.v(TAG, "onCreate");
         if (DEVELOPER_MODE) {
             if (DEBUG) Log.i(TAG, "onCreate enabling developer mode");
+            // only enable in development for UI-thread / mem leak testing
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectDiskReads()
                     .detectDiskWrites()

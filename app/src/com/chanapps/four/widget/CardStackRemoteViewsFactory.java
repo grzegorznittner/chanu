@@ -39,7 +39,7 @@ import java.util.List;
 public class CardStackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private static final String TAG = CardStackRemoteViewsFactory.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private Context context;
     private int appWidgetId;

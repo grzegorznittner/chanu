@@ -54,7 +54,7 @@ public class PostReplyActivity
 {
 
     public static final String TAG = PostReplyActivity.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     public static final String BOARD_CODE = "postReplyBoardCode";
     public static final String THREAD_NO = "postReplyThreadNo";

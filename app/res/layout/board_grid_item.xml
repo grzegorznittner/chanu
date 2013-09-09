@@ -57,7 +57,7 @@
                 android:layout_alignParentBottom="true"
                 android:textColor="@color/PaletteLightGray"
                 android:textSize="@dimen/BoardGridInfo"
-                android:maxLines="2"
+                android:maxLines="1"
                 />
 
     </RelativeLayout>
