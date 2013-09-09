@@ -275,7 +275,7 @@
     <dimen name="drawer_spacer_width">80dp</dimen>
     <dimen name="drawer_spacer_height">32dp</dimen>
 
-    <dimen name="ad_layout_height">50px</dimen>
+    <dimen name="ad_layout_height">90dp</dimen>
 
     <bool name="wide_tablet">true</bool>
     <bool name="BoardGridView.abbrev">false</bool>

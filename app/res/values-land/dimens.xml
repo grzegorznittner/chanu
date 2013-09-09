@@ -5,7 +5,7 @@
     <integer name="BoardGridView.numColumns">2</integer>
     <integer name="BoardGridViewSmall.numColumns">5</integer>
 
-    <dimen name="ad_layout_height">32px</dimen>
+    <dimen name="ad_layout_height">32dp</dimen>
     <bool name="BoardGridView.abbrev">false</bool>
 
 </resources>
