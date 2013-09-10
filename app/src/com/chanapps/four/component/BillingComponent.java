@@ -95,8 +95,8 @@ public class BillingComponent {
         return purchased;
     }
 
-    public void purchaseProkey(Activity activity, DialogFragment fragment) {
-        purchaseItem(activity, BillingComponent.NO_ADS_NONCONS_PRODUCT_ID, fragment);
+    public void purchaseProkey(Activity activity) { //}, DialogFragment fragment) {
+        purchaseItem(activity, BillingComponent.NO_ADS_NONCONS_PRODUCT_ID); //, fragment);
     }
 
     protected static class NonConsumableItem {
@@ -229,13 +229,13 @@ public class BillingComponent {
             BoardActivity.refreshAllBoards();
     }
 
-    protected void purchaseItem(final Activity activity, final String productId, final DialogFragment fragment) {
+    protected void purchaseItem(final Activity activity, final String productId) { //, final DialogFragment fragment) {
         mServiceConn = new ServiceConnection() {
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 if (DEBUG) Log.i(TAG, "onServiceDisconnected() name=" + name);
-                if (fragment != null)
-                    fragment.dismiss();
+                //if (fragment != null)
+                //    fragment.dismiss();
                 mService = null;
             }
             @Override
@@ -243,17 +243,18 @@ public class BillingComponent {
                                            IBinder service) {
                 if (DEBUG) Log.i(TAG, "onServiceConnected() name=" + name + " service=" + service);
                 mService = IInAppBillingService.Stub.asInterface(service);
-                purchaseItemViaService(activity, productId);
-                if (activity instanceof ChanIdentifiedActivity) {
-                    Handler handler = ((ChanIdentifiedActivity) activity).getChanHandler();
-                    if (handler != null)
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                fragment.dismiss();
-                            }
-                        });
-                }
+                Handler handler = activity instanceof ChanIdentifiedActivity ? ((ChanIdentifiedActivity)activity).getChanHandler() : null;
+                purchaseItemViaService(activity, productId, handler);
+                //if (activity instanceof ChanIdentifiedActivity) {
+                //    Handler handler = ((ChanIdentifiedActivity) activity).getChanHandler();
+                //    if (handler != null)
+                //        handler.post(new Runnable() {
+                //            @Override
+                //            public void run() {
+                //                fragment.dismiss();
+                //            }
+                //        });
+                //}
                 if (mServiceConn != null) {
                     context.unbindService(mServiceConn); // don't hold resource open
                 }
@@ -264,10 +265,11 @@ public class BillingComponent {
         if (DEBUG) Log.i(TAG, "startService bound=" + bound);
     }
 
-    protected void purchaseItemViaService(Activity activity, String sku) {
+    protected void purchaseItemViaService(Activity activity, String sku, Handler handler) {
         try {
             if (mService == null) {
                 Log.e(TAG, "purchaseItemViaService null service");
+                makeToast(handler, R.string.purchase_error);
                 return;
             }
             if (DEBUG) Log.i(TAG, "purchaseItemViaService getting buy intent from service");
@@ -276,16 +278,19 @@ public class BillingComponent {
             if (DEBUG) Log.i(TAG, "purchaseItemViaService returned bundle=" + buyIntentBundle);
             if (buyIntentBundle == null) {
                 Log.e(TAG, "purchaseItemViaService null bundle");
+                makeToast(handler, R.string.purchase_error);
                 return;
             }
             int responseCode = buyIntentBundle.getInt("BILLING_RESPONSE_RESULT_OK");
             if (responseCode != 0) {
                 Log.e(TAG, "purchaseItemViaService bad responseCode=" + responseCode);
+                makeToast(handler, R.string.purchase_error);
                 return;
             }
             PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
             if (pendingIntent == null) {
                 Log.e(TAG, "purchaseItemViaService bad pendingIntent=" + pendingIntent);
+                makeToast(handler, R.string.purchase_error);
                 return;
             }
             if (DEBUG) Log.i(TAG, "purchaseItemViaService calling purchase from pendingIntent=" + pendingIntent
@@ -297,10 +302,12 @@ public class BillingComponent {
             }
             catch (IntentSender.SendIntentException e) {
                 Log.e(TAG, "purchaseItemViaService couldn't start purchase intent", e);
+                makeToast(handler, R.string.purchase_error);
             }
         }
         catch (RemoteException e) {
             Log.e(TAG, "purchaseItemViaService() remote exception", e);
+            makeToast(handler, R.string.purchase_error);
         }
     }
 
@@ -346,12 +353,13 @@ public class BillingComponent {
     }
 
     protected void makeToast(Handler handler, final int stringId) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
+                }
+            });
     }
 
     protected void recordPurchase(NonConsumableItem item) {

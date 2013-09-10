@@ -18,6 +18,18 @@
         <item>@string/pref_theme_auto_value</item>
     </string-array>
 
+    <string-array name="pref_autoload_images_entries">
+        <item>@string/pref_autoload_images_never</item>
+        <item>@string/pref_autoload_images_always</item>
+        <item>@string/pref_autoload_images_auto</item>
+    </string-array>
+
+    <string-array name="pref_autoload_images_entry_values">
+        <item>@string/pref_autoload_images_never_value</item>
+        <item>@string/pref_autoload_images_always_value</item>
+        <item>@string/pref_autoload_images_auto_value</item>
+    </string-array>
+
     <string-array name="long_drawer_array">
         <item>@string/board_all_boards</item>
         <item>@string/board_favorites</item>

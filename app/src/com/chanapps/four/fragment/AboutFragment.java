@@ -45,7 +45,7 @@ public class AboutFragment extends PreferenceFragment
         linkPreference("pref_about_data_4chan", "https://github.com/4chan/4chan-API");
         linkPreference("pref_about_data_uil", "https://github.com/nostra13/Android-Universal-Image-Loader");
         linkPreference("pref_about_data_color", "https://code.google.com/p/color-picker-view/");
-        linkPreference("pref_about_developer_chanapps", "http://www.nibelungenliedstudios.com");
+        //linkPreference("pref_about_developer_chanapps", "http://www.nibelungenliedstudios.com");
         linkPreference("pref_about_store_chanapps", "http://www.skreened.com/chanapps/");
 
         /*
@@ -115,32 +115,38 @@ public class AboutFragment extends PreferenceFragment
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 if (DEBUG) Log.i(TAG, "onPreferenceClick() purchase prokey");
+                //DialogFragment outerFragment = null;
                 try {
-                    final DialogFragment fragment = new ConnectingToBillingDialogFragment();
-                    fragment.show(getFragmentManager(), SettingsFragment.TAG);
+                    //final DialogFragment fragment = new ConnectingToBillingDialogFragment();
+                    //outerFragment = fragment;
+                    //fragment.show(getFragmentManager(), SettingsFragment.TAG);
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            BillingComponent
-                                    .getInstance(getActivity().getApplicationContext())
-                                    .purchaseProkey(getActivity(), fragment);
                             Activity activity = getActivity();
-                            if (activity instanceof ChanIdentifiedActivity) {
-                                Handler handler = ((ChanIdentifiedActivity) activity).getChanHandler();
-                                if (handler != null)
-                                    handler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            fragment.dismiss();
-                                        }
-                                    });
-                            }
+                            if (activity == null)
+                                return;
+                            BillingComponent
+                                    .getInstance(activity.getApplicationContext())
+                                    .purchaseProkey(getActivity()); //, fragment);
+                            //if (activity instanceof ChanIdentifiedActivity) {
+                            //    Handler handler = ((ChanIdentifiedActivity) activity).getChanHandler();
+                            //    if (handler != null)
+                            //        handler.post(new Runnable() {
+                            //            @Override
+                            //            public void run() {
+                            //                fragment.dismiss();
+                            //            }
+                            //        });
+                            //}
                         }
                     }).start();
                 }
                 catch (Exception e) {
                     Log.e(TAG, "onPreferenceClick() exception purchasing prokey", e);
                     Toast.makeText(getActivity(), R.string.purchase_error, Toast.LENGTH_LONG).show();
+                    //if (outerFragment != null)
+                    //    outerFragment.dismiss();
                 }
                 return true;
             }

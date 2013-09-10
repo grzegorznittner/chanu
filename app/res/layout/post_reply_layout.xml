@@ -47,12 +47,13 @@
 
             <FrameLayout
                     android:id="@+id/post_reply_recaptcha_frame"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="@dimen/PostReplyRecaptcha.marginLeft"
+                    android:layout_marginRight="@dimen/PostReplyRecaptcha.marginRight"
+                    android:layout_marginBottom="@dimen/PostReplyRecaptcha.marginBottom"
                     android:gravity="center"
                     android:layout_width="match_parent"
-                    android:layout_height="80dp">
+                    android:layout_height="@dimen/PostReplyRecaptcha.layoutHeight"
+                    >
                 <ImageButton
                         android:id="@+id/post_reply_recaptcha_imgview"
                         android:scaleType="fitCenter"
@@ -92,9 +93,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/PostReplyButton_layout_height"
                     android:orientation="horizontal"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginLeft="@dimen/PostReplyButton.marginLeft"
+                    android:layout_marginRight="@dimen/PostReplyButton.marginRight"
+                    android:layout_marginBottom="@dimen/PostReplyButton.marginBottom">
 
                 <ImageButton
                         android:id="@+id/post_reply_picture_button"

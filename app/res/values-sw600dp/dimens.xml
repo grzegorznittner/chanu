@@ -302,4 +302,18 @@
     <bool name="wide_tablet">false</bool>
     <bool name="BoardGridView.abbrev">true</bool>
 
+    <dimen name="PostReplyRecaptcha.marginLeft">20dp</dimen>
+    <dimen name="PostReplyRecaptcha.marginRight">20dp</dimen>
+    <dimen name="PostReplyRecaptcha.marginBottom">8dp</dimen>
+    <dimen name="PostReplyRecaptcha.layoutHeight">80dp</dimen>
+    <dimen name="PostReplyButton.marginLeft">16dp</dimen>
+    <dimen name="PostReplyButton.marginRight">16dp</dimen>
+    <dimen name="PostReplyButton.marginBottom">8dp</dimen>
+
+    <dimen name="ThreadListItemReplyWrap_marginRight">@dimen/ThreadListHeader_flowsize</dimen>
+    <dimen name="ThreadListItemReplyNum_marginLeft">@dimen/ThreadListHeader_flowsize</dimen>
+    <dimen name="ThreadListItemBarOverflow_layout_width">@dimen/ThreadListHeader_flowsize</dimen>
+
+    <string name="list_item_ago_date_separator">~</string>
+
 </resources>

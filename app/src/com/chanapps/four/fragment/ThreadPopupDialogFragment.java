@@ -96,12 +96,14 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         init();
         setStyle(STYLE_NO_TITLE, 0);
         if (DEBUG) Log.i(TAG, "creating dialog");
-        return builder
+        Dialog dialog = builder
                 .setView(layout)
                 //.setPositiveButton(R.string.thread_popup_reply, postReplyListener)
                 //.setNeutralButton(R.string.thread_popup_goto, null)
                 .setNegativeButton(R.string.dialog_close, dismissListener)
                 .create();
+        dialog.setCanceledOnTouchOutside(true);
+        return dialog;
     }
 
     private String popupTitle() {

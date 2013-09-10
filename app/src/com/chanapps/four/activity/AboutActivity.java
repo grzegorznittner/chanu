@@ -34,6 +34,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
 
     protected int themeId;
     protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
+    protected Handler handler;
 
     public static Intent createIntent(Context from) {
         return new Intent(from, AboutActivity.class);
@@ -60,12 +61,14 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
     @Override
     protected void onStart() {
         super.onStart();
+        handler = new Handler();
         AnalyticsComponent.onStart(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        handler = null;
         AnalyticsComponent.onStop(this);
     }
 
@@ -92,7 +95,7 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
 
     @Override
     public Handler getChanHandler() {
-        return null;
+        return handler;
     }
 
     @Override

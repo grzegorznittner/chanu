@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="ThreadListHeader_paddingPlusLeft">64dp</dimen>
+
+    <dimen name="ThreadListItemReplyWrap_marginRight">@dimen/ThreadListHeader_flowsize</dimen>
+
+    <dimen name="ThreadListItemReplyNum_marginLeft">@dimen/ThreadListHeader_flowsize</dimen>
+
+    <dimen name="ThreadListItemBarOverflow_layout_width">@dimen/ThreadListHeader_flowsize</dimen>
+
+    <string name="list_item_ago_date_separator">~</string>
+
+</resources>
