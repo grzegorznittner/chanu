@@ -106,9 +106,13 @@ public class MobileProfile extends AbstractNetworkProfile {
     }
 
     private void makeHealthStatusToast(Context context, Health health) {
-        postStopMessage(NetworkProfileManager.instance().getActivity().getChanHandler(),
-                String.format(context.getString(R.string.mobile_profile_health_status),
-                        health.toString().toLowerCase().replaceAll("_", " ")));
+        Handler handler = NetworkProfileManager.instance().getActivity() != null
+            ? NetworkProfileManager.instance().getActivity().getChanHandler()
+            : null;
+        if (handler != null)
+            postStopMessage(handler,
+                    String.format(context.getString(R.string.mobile_profile_health_status),
+                            health.toString().toLowerCase().replaceAll("_", " ")));
     }
 
     private void prefetchDefaultBoards(Context context) {

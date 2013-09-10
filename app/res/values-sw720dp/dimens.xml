@@ -204,7 +204,7 @@
     <dimen name="ThreadListItemFullText_paddingLeft">0dp</dimen>
     <dimen name="ThreadListItemFullTextHeader_paddingLeft">0dp</dimen>
 
-    <dimen name="PostReplyEditText_padding">32dp</dimen>
+    <dimen name="PostReplyEditText_padding">16dp</dimen>
     <dimen name="PostReplyEditText_layout_marginLeft">32dp</dimen>
     <dimen name="PostReplyEditText_layout_marginRight">32dp</dimen>
     <dimen name="PostReplyEditText_layout_marginBottom">32dp</dimen>
@@ -212,8 +212,8 @@
     <dimen name="PostReplyCheckbox_layout_marginLeft">40dp</dimen>
     <dimen name="PostReplyCheckbox_layout_marginBottom">32dp</dimen>
 
-    <dimen name="PostReplyButton_layout_width">192dp</dimen>
-    <dimen name="PostReplyButton_layout_height">192dp</dimen>
+    <dimen name="PostReplyButton_layout_width">64dp</dimen>
+    <dimen name="PostReplyButton_layout_height">64dp</dimen>
 
     <dimen name="PopupFullTextScrollLayout_marginTop">96dp</dimen>
     <dimen name="PopupFullTextScrollLayout_marginLeft">96dp</dimen>
@@ -280,4 +280,19 @@
     <bool name="wide_tablet">true</bool>
     <bool name="BoardGridView.abbrev">false</bool>
 
+    <dimen name="PostReplyRecaptcha.marginLeft">256dp</dimen>
+    <dimen name="PostReplyRecaptcha.marginRight">256dp</dimen>
+    <dimen name="PostReplyRecaptcha.marginBottom">32dp</dimen>
+    <dimen name="PostReplyRecaptcha.layoutHeight">128dp</dimen>
+    <dimen name="PostReplyButton.marginLeft">32dp</dimen>
+    <dimen name="PostReplyButton.marginRight">32dp</dimen>
+    <dimen name="PostReplyButton.marginBottom">32dp</dimen>
+
+    <!--
+            <item name="android:padding">@dimen/PostReplyEditText_padding</item>
+        <item name="android:textSize">@dimen/PostReplyEditText</item>
+        <item name="android:layout_marginLeft">@dimen/PostReplyEditText_layout_marginLeft</item>
+        <item name="android:layout_marginRight">@dimen/PostReplyEditText_layout_marginRight</item>
+        <item name="android:layout_marginBottom">@dimen/PostReplyEditText_layout_marginBottom</item>
+    -->
 </resources>
