@@ -288,11 +288,10 @@
     <dimen name="PostReplyButton.marginRight">32dp</dimen>
     <dimen name="PostReplyButton.marginBottom">32dp</dimen>
 
-    <!--
-            <item name="android:padding">@dimen/PostReplyEditText_padding</item>
-        <item name="android:textSize">@dimen/PostReplyEditText</item>
-        <item name="android:layout_marginLeft">@dimen/PostReplyEditText_layout_marginLeft</item>
-        <item name="android:layout_marginRight">@dimen/PostReplyEditText_layout_marginRight</item>
-        <item name="android:layout_marginBottom">@dimen/PostReplyEditText_layout_marginBottom</item>
-    -->
+    <dimen name="ThreadListItemReplyWrap_marginRight">@dimen/ThreadListHeader_flowsize</dimen>
+    <dimen name="ThreadListItemReplyNum_marginLeft">@dimen/ThreadListHeader_flowsize</dimen>
+    <dimen name="ThreadListItemBarOverflow_layout_width">@dimen/ThreadListHeader_flowsize</dimen>
+
+    <string name="list_item_ago_date_separator">~</string>
+
 </resources>

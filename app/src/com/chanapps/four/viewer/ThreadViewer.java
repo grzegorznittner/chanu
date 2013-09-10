@@ -273,8 +273,12 @@ public class ThreadViewer {
     static protected void displayHeaderBarAgoNo(ThreadViewHolder viewHolder, Cursor cursor) {
         String dateText = cursor.getString(cursor.getColumnIndex(ChanPost.POST_DATE_TEXT));
         TextView ago = viewHolder.list_item_header_bar_ago;
-        if (ago != null)
-            ago.setText("~  " + dateText);
+        if (ago != null) {
+            String sep = ago.getResources().getString(R.string.list_item_ago_date_separator);
+            if (sep != null && !sep.isEmpty())
+                sep += " ";
+            ago.setText(sep + dateText);
+        }
         long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         TextView no = viewHolder.list_item_header_bar_no;
         if (no != null)

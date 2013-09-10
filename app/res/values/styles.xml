@@ -688,7 +688,7 @@
     </style>
 
     <style name="ThreadListItemBarOverflow" parent="AppTheme">
-        <item name="android:layout_width">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_width">@dimen/ThreadListItemBarOverflow_layout_width</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_alignParentRight">true</item>
@@ -727,7 +727,7 @@
     <style name="ThreadListItemReplyWrap" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
-        <item name="android:layout_marginRight">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_marginRight">@dimen/ThreadListItemReplyWrap_marginRight</item>
         <item name="android:layout_gravity">right</item>
         <item name="android:foreground">@drawable/thread_list_selector_bg</item>
         <item name="android:orientation">horizontal</item>
@@ -765,7 +765,7 @@
     <style name="ThreadListItemReplyNum" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
-        <item name="android:layout_marginLeft">@dimen/ThreadListHeader_flowsize</item>
+        <item name="android:layout_marginLeft">@dimen/ThreadListItemReplyNum_marginLeft</item>
         <item name="android:paddingRight">@dimen/ThreadListHeader_micro_padding</item>
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/ThreadListHeaderHead</item>
