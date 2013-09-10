@@ -119,6 +119,14 @@
                     android:entryValues="@array/pref_theme_entry_values"
                     android:defaultValue="@string/pref_theme_default_value" />
 
+            <ListPreference
+                    android:key="pref_autoload_images"
+                    android:title="@string/pref_autoload_images_title"
+                    android:summary="@string/pref_autoload_images_summary"
+                    android:entries="@array/pref_autoload_images_entries"
+                    android:entryValues="@array/pref_autoload_images_entry_values"
+                    android:defaultValue="@string/pref_autoload_images_default_value" />
+
             <CheckBoxPreference
                     android:key="pref_notifications"
                     android:title="@string/pref_notifications"

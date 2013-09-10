@@ -1,6 +1,7 @@
 package com.chanapps.four.viewer;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.text.*;
 import android.text.method.LinkMovementMethod;
 import android.text.style.*;
@@ -19,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.gallery3d.ui.Log;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
 import com.chanapps.four.component.ThreadImageExpander;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
@@ -635,18 +638,34 @@ public class ThreadViewer {
 
     static private boolean prefetchExpandedImage(ThreadViewHolder viewHolder, final Cursor cursor,
                                                             final View.OnClickListener expandedImageListener) {
-        int fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
-        int maxAutoloadFSize = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxAutoLoadFSize;
-        if (fsize <= maxAutoloadFSize) {
-            if (DEBUG) Log.i(TAG, "prefetchExpandedImage auto-expanding since fsize=" + fsize + " < " + maxAutoloadFSize);
-            ThreadImageExpander expander =
-                    (new ThreadImageExpander(viewHolder, cursor, expandedImageListener, true, stub));
-            expander.displayImage();
-            return true;
-        }
-        return false;
+        if (viewHolder.list_item == null)
+            return false;
+        boolean autoload = shouldAutoload(viewHolder.list_item.getContext(), cursor);
+        if (!autoload)
+            return false;
+        ThreadImageExpander expander =
+                (new ThreadImageExpander(viewHolder, cursor, expandedImageListener, true, stub));
+        expander.displayImage();
+        return true;
     }
 
+    static private boolean shouldAutoload(Context context, final Cursor cursor) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String autoloadType = prefs.getString(SettingsActivity.PREF_AUTOLOAD_IMAGES,
+                context.getString(R.string.pref_autoload_images_default_value));
+        if (context.getString(R.string.pref_autoload_images_never_value).equals(autoloadType))
+            return false;
+        else if (context.getString(R.string.pref_autoload_images_always_value).equals(autoloadType))
+            return true;
+        //else if (context.getString(R.string.pref_autoload_images_auto_value).equals(autoloadType))
+        else {
+            int fsize = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_FSIZE));
+            int maxAutoloadFSize = NetworkProfileManager.instance().getCurrentProfile().getFetchParams().maxAutoLoadFSize;
+            //if (DEBUG) Log.i(TAG, "prefetchExpandedImage auto-expanding since fsize=" + fsize + " < " + maxAutoloadFSize);
+            return (fsize <= maxAutoloadFSize);
+        }
+    }
+    
     static private boolean displayCachedExpandedImage(ThreadViewHolder viewHolder, final Cursor cursor,
                                                       final View.OnClickListener expandedImageListener) {
         File file = fullSizeImageFile(viewHolder.list_item.getContext(), cursor); // try for full size first

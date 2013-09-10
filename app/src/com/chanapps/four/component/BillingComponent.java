@@ -95,8 +95,8 @@ public class BillingComponent {
         return purchased;
     }
 
-    public void purchaseProkey(Activity activity, DialogFragment fragment) {
-        purchaseItem(activity, BillingComponent.NO_ADS_NONCONS_PRODUCT_ID, fragment);
+    public void purchaseProkey(Activity activity) { //}, DialogFragment fragment) {
+        purchaseItem(activity, BillingComponent.NO_ADS_NONCONS_PRODUCT_ID); //, fragment);
     }
 
     protected static class NonConsumableItem {
@@ -229,13 +229,13 @@ public class BillingComponent {
             BoardActivity.refreshAllBoards();
     }
 
-    protected void purchaseItem(final Activity activity, final String productId, final DialogFragment fragment) {
+    protected void purchaseItem(final Activity activity, final String productId) { //, final DialogFragment fragment) {
         mServiceConn = new ServiceConnection() {
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 if (DEBUG) Log.i(TAG, "onServiceDisconnected() name=" + name);
-                if (fragment != null)
-                    fragment.dismiss();
+                //if (fragment != null)
+                //    fragment.dismiss();
                 mService = null;
             }
             @Override
@@ -244,16 +244,16 @@ public class BillingComponent {
                 if (DEBUG) Log.i(TAG, "onServiceConnected() name=" + name + " service=" + service);
                 mService = IInAppBillingService.Stub.asInterface(service);
                 purchaseItemViaService(activity, productId);
-                if (activity instanceof ChanIdentifiedActivity) {
-                    Handler handler = ((ChanIdentifiedActivity) activity).getChanHandler();
-                    if (handler != null)
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                fragment.dismiss();
-                            }
-                        });
-                }
+                //if (activity instanceof ChanIdentifiedActivity) {
+                //    Handler handler = ((ChanIdentifiedActivity) activity).getChanHandler();
+                //    if (handler != null)
+                //        handler.post(new Runnable() {
+                //            @Override
+                //            public void run() {
+                //                fragment.dismiss();
+                //            }
+                //        });
+                //}
                 if (mServiceConn != null) {
                     context.unbindService(mServiceConn); // don't hold resource open
                 }
