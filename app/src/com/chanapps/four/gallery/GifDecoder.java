@@ -560,14 +560,16 @@ public class GifDecoder {
 		if (err()) {
 			return;
 		}
-		frameCount++;
-		// create new image to receive frame data
-		image = Bitmap.createBitmap(width, height, Config.ARGB_4444);
-		setPixels(); // transfer pixel data to image
-		frames.addElement(new GifFrame(image, delay)); // add image to frame
-		// list
-		if (transparency) {
-			act[transIndex] = save;
+		if (frameCount == 0) {
+			frameCount++;
+			// create new image to receive frame data
+			image = Bitmap.createBitmap(width, height, Config.ARGB_4444);
+			setPixels(); // transfer pixel data to image
+			frames.addElement(new GifFrame(image, delay)); // add image to frame
+			// list
+			if (transparency) {
+				act[transIndex] = save;
+			}
 		}
 		resetFrame();
 	}
