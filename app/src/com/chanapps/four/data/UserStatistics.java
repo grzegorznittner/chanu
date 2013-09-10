@@ -3,16 +3,7 @@
  */
 package com.chanapps.four.data;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import android.util.Log;
 
@@ -27,8 +18,8 @@ import com.chanapps.four.service.NetworkProfileManager;
  *
  */
 public class UserStatistics {
-	public static final String TAG = "UserPreferences";
-	public static final boolean DEBUG = false;
+	public static final String TAG = UserStatistics.class.getSimpleName();
+	public static final boolean DEBUG = true;
 	
 	public static final int MIN_TOP_BOARDS = 5;
 	public static final int MAX_TOP_THREADS = 50;
@@ -38,9 +29,10 @@ public class UserStatistics {
 	public static enum ChanFeature {
 		NONE,
 	    INTRO_DESC,
-	    SECTION_DESC,
+	    //SECTION_DESC,
         BOARD_DESC,
         THREAD_DESC,
+        POST_DESC,
         FINISHED_DESC
         //POPULAR_DESC,
         //WATCHLIST_DESC,
@@ -52,9 +44,10 @@ public class UserStatistics {
 	}
     public static ChanFeature[] MAIN_TUTORIAL_FEATURES = new ChanFeature[]{
             ChanFeature.INTRO_DESC,
-            ChanFeature.SECTION_DESC,
+            //ChanFeature.SECTION_DESC,
             ChanFeature.BOARD_DESC,
             ChanFeature.THREAD_DESC,
+            ChanFeature.POST_DESC,
             ChanFeature.FINISHED_DESC
     };
 	/*
@@ -332,6 +325,7 @@ public class UserStatistics {
 			return ChanFeature.NONE;
 		}
         */
+        if (DEBUG) Log.i(TAG, "nextTipForPage tipSet=" + Arrays.toString(tipSet) + " displayedTips=" + Arrays.toString(displayedTips.toArray()));
 		for (ChanFeature feature : tipSet) {
 			//if (!usedFeatures.contains(feature) && !displayedTips.contains(feature)) {
 			if (!displayedTips.contains(feature)) {
@@ -351,7 +345,7 @@ public class UserStatistics {
 		
 		Log.e(TAG, "tipDisplayed " + feature);
 		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		if (activity != null && new Date().getTime() - lastStored > MIN_STORE_DELAY) {
+		if (activity != null) { // && new Date().getTime() - lastStored > MIN_STORE_DELAY) {
 			FileSaverService.startService(activity.getBaseContext(), FileSaverService.FileType.USER_STATISTICS);
 			Log.e(TAG, "User stats scheduled for save tip " + feature);
 		}
@@ -364,15 +358,10 @@ public class UserStatistics {
         tipDisplayed = new Date().getTime();
         
 		ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-		if (activity != null && new Date().getTime() - lastStored > MIN_STORE_DELAY) {
+		if (activity != null) { // && new Date().getTime() - lastStored > MIN_STORE_DELAY) {
 			FileSaverService.startService(activity.getBaseContext(), FileSaverService.FileType.USER_STATISTICS);
 		}
     }
-
-    public boolean tipShouldBeDisplayed() {
-		long currentTime = new Date().getTime();
-		return currentTime - tipDisplayed > MIN_DELAY_FOR_TIPS;
-	}
 
 	private String logBoardStats(List<ChanBoardStat> boards) {
 		StringBuffer buf = new StringBuffer();

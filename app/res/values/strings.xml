@@ -751,15 +751,19 @@
     <string name="tutorial_overlay_finished">Done</string>
 
     <string name="tutorial_intro_desc">Welcome</string>
-    <string name="tutorial_intro_desc_detail">Chanu is an anonymous discussion board, with fast-changing frequent updates and image content from 4chan.</string>
+    <string name="tutorial_intro_desc_detail">Chanu is an anonymous forum backed with content from 4chan.</string>
+    <!--
     <string name="tutorial_section_desc">Categories</string>
     <string name="tutorial_section_desc_detail">Categories group discussion boards such as Japanese Culture, Interests, Creative, and Other.</string>
+    -->
     <string name="tutorial_board_desc">Boards</string>
-    <string name="tutorial_board_desc_detail">Each board has its own topic such as Anime, Video Games, and Sports, where anyone can start new discussions.</string>
+    <string name="tutorial_board_desc_detail">Each board has its own theme where anyone can start new threads.</string>
     <string name="tutorial_thread_desc">Threads</string>
-    <string name="tutorial_thread_desc_detail">Each discussion thread starts with an image and then expires when the board or comment limit is reached.</string>
+    <string name="tutorial_thread_desc_detail">Each discussion starts with an image and text topic.</string>
+    <string name="tutorial_post_desc">Posts</string>
+    <string name="tutorial_post_desc_detail">Anyone can post comments and images until the thread expires.</string>
     <string name="tutorial_finished_desc">Finished</string>
-    <string name="tutorial_finished_desc_detail">You\'ve now covered the basics.  Click a section such as Popular Threads to start browsing for content.</string>
+    <string name="tutorial_finished_desc_detail">Click a board to start browsing content.</string>
 
     <!--
     <string name="tutorial_boardselector_desc">Welcome to the Boards</string>
