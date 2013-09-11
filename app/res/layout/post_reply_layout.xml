@@ -113,62 +113,6 @@
                     android:textStyle="bold"
                     />
 
-            <!--
-            <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/PostReplyButton_layout_height"
-                    android:orientation="horizontal"
-                    android:layout_marginLeft="@dimen/PostReplyButton.marginLeft"
-                    android:layout_marginRight="@dimen/PostReplyButton.marginRight"
-                    android:layout_marginBottom="@dimen/PostReplyButton.marginBottom"
-                    >
-                <ImageButton
-                        android:id="@+id/post_reply_picture_button"
-                        style="@style/PostReplyButton"
-                        android:contentDescription="@string/post_reply_picture_hint"
-                        android:hint="@string/post_reply_picture_hint"
-                        android:src="@drawable/content_picture"
-                        />
-                <ImageButton
-                        android:id="@+id/post_reply_web_button"
-                        style="@style/PostReplyButton"
-                        android:contentDescription="@string/post_reply_web_hint"
-                        android:hint="@string/post_reply_web_hint"
-                        android:src="@drawable/location_web_site"
-                        />
-                <ImageButton
-                        android:id="@+id/post_reply_camera_button"
-                        style="@style/PostReplyButton"
-                        android:contentDescription="@string/post_reply_camera_hint"
-                        android:hint="@string/post_reply_camera_hint"
-                        android:src="@drawable/device_access_camera"
-                        />
-                <ImageButton
-                        android:id="@+id/post_reply_bump_button"
-                        style="@style/PostReplyButton"
-                        android:contentDescription="@string/post_reply_bump_hint"
-                        android:hint="@string/post_reply_bump_hint"
-                        android:src="@drawable/rating_good"
-                        />
-                <ImageButton
-                        android:id="@+id/post_reply_pass_enable_button"
-                        style="@style/PostReplyButton"
-                        android:contentDescription="@string/post_reply_pass_enable_hint"
-                        android:hint="@string/post_reply_pass_enable_hint"
-                        android:src="@drawable/device_access_accounts"
-                        android:visibility="gone"
-                        />
-                <ImageButton
-                        android:id="@+id/post_reply_pass_disable_button"
-                        style="@style/PostReplyButton"
-                        android:contentDescription="@string/post_reply_pass_disable_hint"
-                        android:hint="@string/post_reply_pass_disable_hint"
-                        android:src="@drawable/device_access_accounts"
-                        android:visibility="gone"
-                        />
-            </LinearLayout>
-            -->
-
             <CheckBox
                     android:id="@+id/post_reply_spoiler_checkbox"
                     style="@style/PostReplyCheckbox"
@@ -223,7 +167,7 @@
                     style="@style/PostReplyEditText"
                     android:maxLength="100"
                     />
-
+            <!--
             <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -238,10 +182,10 @@
                         android:maxLength="100"
                         android:layout_alignParentLeft="true"
                         android:layout_width="0dp"
-                        android:layout_toLeftOf="@+id/post_reply_sage_button"
+                        android:layout_toLeftOf="@+id/post_reply_sage"
                         />
                 <ImageButton
-                        android:id="@+id/post_reply_sage_button"
+                        android:id="@+id/post_reply_sage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
@@ -288,6 +232,84 @@
                         android:src="?themedHelpIcon"
                         android:background="@drawable/board_grid_selector_bg"
                         />
+            </RelativeLayout>
+            -->
+            <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/PostReplyEditText_layout_marginLeft"
+                    android:layout_marginRight="@dimen/PostReplyEditText_layout_marginRight"
+                    android:layout_marginBottom="@dimen/PostReplyEditText_layout_marginBottom"
+                    >
+                <EditText
+                        android:id="@+id/post_reply_email"
+                        android:hint="@string/post_reply_email_hint"
+                        android:inputType="textEmailSubject"
+                        style="@style/PostReplyEditText"
+                        android:maxLength="100"
+                        android:layout_width="0dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_toLeftOf="@+id/post_reply_sage"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="0dp"
+                        android:layout_marginBottom="0dp"
+                        />
+                <FrameLayout
+                        android:id="@+id/post_reply_sage"
+                        style="@style/ThreadListItemBarOverflow"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:clickable="true"
+                        >
+                    <ImageView style="@style/ThreadListItemBarOverflowIcon"
+                               android:layout_gravity="top|right"
+                               android:contentDescription="@string/post_reply_sage_hint"
+                               android:src="@drawable/rating_bad"
+                            />
+                </FrameLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/PostReplyEditText_layout_marginRight"
+                    android:layout_marginBottom="@dimen/PostReplyEditText_layout_marginBottom"
+                    >
+                <TextView
+                        android:id="@+id/password_label"
+                        style="@style/PostReplyEditText"
+                        android:layout_width="wrap_content"
+                        android:layout_marginBottom="0dp"
+                        android:layout_marginRight="0dp"
+                        android:layout_alignParentLeft="true"
+                        android:text="@string/post_reply_password_text"
+                        />
+                <EditText
+                        android:id="@+id/post_reply_password"
+                        android:hint="@string/post_reply_password_hint"
+                        android:inputType="text|textVisiblePassword|numberPassword"
+                        style="@style/PostReplyEditText"
+                        android:maxLength="8"
+                        android:layout_width="0dp"
+                        android:layout_toRightOf="@+id/password_label"
+                        android:layout_toLeftOf="@+id/password_help_icon"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="0dp"
+                        />
+                <FrameLayout
+                        android:id="@+id/password_help_icon"
+                        style="@style/ThreadListItemBarOverflow"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:clickable="true"
+                        >
+                    <ImageView style="@style/ThreadListItemBarOverflowIcon"
+                               android:layout_gravity="top|right"
+                               android:contentDescription="@string/post_reply_password_info_hint"
+                               android:src="?themedHelpIcon"
+                            />
+                </FrameLayout>
             </RelativeLayout>
 
             <View

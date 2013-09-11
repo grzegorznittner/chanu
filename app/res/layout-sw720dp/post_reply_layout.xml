@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+    <ScrollView
+            android:id="@+id/post_reply_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/done"
+            android:scrollbars="vertical"
+            android:background="?themedCardListBackground"
+            >
+
+        <LinearLayout
+                android:id="@+id/post_reply_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:descendantFocusability="beforeDescendants"
+                android:focusableInTouchMode="true">
+
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:descendantFocusability="beforeDescendants"
+                    android:focusableInTouchMode="true">
+
+                <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/PostReplyEditText_layout_marginLeft"
+                        android:layout_marginRight="@dimen/PostReplyEditText_layout_marginRight"
+                        android:layout_marginBottom="0dp"
+                        android:layout_marginTop="@dimen/PostReplyEditText_layout_marginBottom"
+                        >
+                    <EditText
+                            android:id="@+id/post_reply_subject"
+                            android:hint="@string/post_reply_subject_hint"
+                            android:inputType="textEmailSubject"
+                            style="@style/PostReplyEditText"
+                            android:maxLength="100"
+                            android:layout_width="0dp"
+                            android:layout_alignParentLeft="true"
+                            android:layout_toLeftOf="@+id/post_reply_overflow"
+                            android:layout_marginTop="0dp"
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginRight="0dp"
+                            android:layout_marginBottom="0dp"
+                            />
+                    <FrameLayout
+                            android:id="@+id/post_reply_overflow"
+                            style="@style/ThreadListItemBarOverflow"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:clickable="true"
+                            >
+                        <ImageView style="@style/ThreadListItemBarOverflowIcon"
+                                   android:layout_gravity="top|right"
+                                />
+                    </FrameLayout>
+                </RelativeLayout>
+
+                <EditText
+                        android:id="@+id/post_reply_text"
+                        style="@style/PostReplyEditText"
+                        android:hint="@string/post_reply_text_hint"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:scrollbars="none"
+                        android:minLines="10"
+                        android:paddingTop="0dp"
+                        android:layout_marginRight="@dimen/PostReplyEditText_leftCol_layout_marginRight"
+                        />
+
+                <EditText
+                        android:id="@+id/post_reply_name"
+                        android:hint="@string/post_reply_name_hint"
+                        android:inputType="textPersonName"
+                        style="@style/PostReplyEditText"
+                        android:maxLength="100"
+                        android:layout_marginRight="@dimen/PostReplyEditText_leftCol_layout_marginRight"
+                        />
+
+                <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/PostReplyEditText_layout_marginLeft"
+                        android:layout_marginRight="@dimen/PostReplyEditText_layout_marginRight"
+                        android:layout_marginBottom="@dimen/PostReplyEditText_layout_marginBottom"
+                        >
+                    <EditText
+                            android:id="@+id/post_reply_email"
+                            android:hint="@string/post_reply_email_hint"
+                            android:inputType="textEmailSubject"
+                            style="@style/PostReplyEditText"
+                            android:maxLength="100"
+                            android:layout_width="0dp"
+                            android:layout_alignParentLeft="true"
+                            android:layout_toLeftOf="@+id/post_reply_sage"
+                            android:layout_marginTop="0dp"
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginRight="0dp"
+                            android:layout_marginBottom="0dp"
+                            />
+                    <FrameLayout
+                            android:id="@+id/post_reply_sage"
+                            style="@style/ThreadListItemBarOverflow"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:clickable="true"
+                            >
+                        <ImageView style="@style/ThreadListItemBarOverflowIcon"
+                                   android:layout_gravity="top|right"
+                                   android:contentDescription="@string/post_reply_sage_hint"
+                                   android:src="@drawable/rating_bad"
+                                />
+                    </FrameLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/PostReplyEditText_layout_marginRight"
+                        android:layout_marginBottom="@dimen/PostReplyEditText_layout_marginBottom"
+                        >
+                    <TextView
+                            android:id="@+id/password_label"
+                            style="@style/PostReplyEditText"
+                            android:layout_width="wrap_content"
+                            android:layout_marginBottom="0dp"
+                            android:layout_marginRight="0dp"
+                            android:layout_alignParentLeft="true"
+                            android:text="@string/post_reply_password_text"
+                            />
+                    <EditText
+                            android:id="@+id/post_reply_password"
+                            android:hint="@string/post_reply_password_hint"
+                            android:inputType="text|textVisiblePassword|numberPassword"
+                            style="@style/PostReplyEditText"
+                            android:maxLength="8"
+                            android:layout_width="0dp"
+                            android:layout_toRightOf="@+id/password_label"
+                            android:layout_toLeftOf="@+id/password_help_icon"
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginRight="0dp"
+                            />
+                    <FrameLayout
+                            android:id="@+id/password_help_icon"
+                            style="@style/ThreadListItemBarOverflow"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:clickable="true"
+                            >
+                        <ImageView style="@style/ThreadListItemBarOverflowIcon"
+                                   android:layout_gravity="top|right"
+                                   android:contentDescription="@string/post_reply_password_info_hint"
+                                   android:src="?themedHelpIcon"
+                                />
+                    </FrameLayout>
+                </RelativeLayout>
+
+                <View
+                        android:id="@+id/spacer"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/PostReplyEditText_layout_marginBottom"
+                        />
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:descendantFocusability="beforeDescendants"
+                    android:focusableInTouchMode="true">
+
+                <FrameLayout
+                        android:id="@+id/post_reply_recaptcha_frame"
+                        android:layout_marginTop="@dimen/PostReplyEditText_layout_marginBottom"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="@dimen/PostReplyRecaptcha.marginRight"
+                        android:layout_marginBottom="@dimen/PostReplyRecaptcha.marginBottom"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/PostReplyRecaptcha.layoutHeight"
+                        >
+                    <ImageButton
+                            android:id="@+id/post_reply_recaptcha_imgview"
+                            android:scaleType="fitCenter"
+                            android:layout_gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#ffffffff"
+                            />
+                    <ImageView
+                            android:id="@+id/post_reply_recaptcha_loading"
+                            android:src="@drawable/navigation_refresh_light"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            />
+                </FrameLayout>
+
+                <EditText
+                        android:id="@+id/post_reply_recaptcha_response"
+                        style="@style/PostReplyEditText"
+                        android:hint="@string/post_reply_recaptcha_hint"
+                        android:inputType="textNoSuggestions"
+                        android:imeOptions="actionSend"
+                        android:imeActionLabel="@string/post_reply_send"
+                        android:maxLength="100"
+                        android:layout_marginLeft="0dp"
+                        />
+
+                <TextView
+                        android:id="@+id/post_reply_pass_status"
+                        style="@style/PostReplyEditText"
+                        android:layout_marginLeft="0dp"
+                        android:textStyle="bold"
+                        />
+
+                <CheckBox
+                        android:id="@+id/post_reply_spoiler_checkbox"
+                        style="@style/PostReplyCheckbox"
+                        android:text="@string/post_reply_spoiler"
+                        />
+
+                <FrameLayout
+                        android:id="@+id/post_reply_preview_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="@dimen/PostReplyRecaptcha.marginRight"
+                        android:layout_marginBottom="@dimen/PostReplyRecaptcha.marginBottom"
+                        android:layout_marginTop="@dimen/PostReplyRecaptcha.marginBottom"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        >
+                    <ImageView
+                            android:id="@+id/post_reply_preview_image"
+                            android:scaleType="fitCenter"
+                            android:layout_gravity="center"
+                            android:adjustViewBounds="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:contentDescription="post_reply_add_image"
+                            android:background="@drawable/stub_image_background"
+                            />
+                    <ProgressBar style="@style/WebImageProgressBar" android:id="@+id/post_reply_preview_progress_bar"
+                            />
+                    <View
+                            android:id="@+id/post_reply_delete_button_bg"
+                            style="@style/PostReplyButton"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@color/PaletteBlack34Opacity"
+                            />
+                    <ImageView
+                            android:id="@+id/post_reply_delete_button"
+                            style="@style/PostReplyButton"
+                            android:layout_gravity="center_horizontal"
+                            android:visibility="gone"
+                            android:contentDescription="@string/post_reply_delete_hint"
+                            android:hint="@string/post_reply_delete_hint"
+                            android:src="@drawable/navigation_cancel"
+                            />
+
+                </FrameLayout>
+
+                <View
+                        android:id="@+id/spacer"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/PostReplyEditText_layout_marginBottom"
+                        />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <Button
+            android:id="@+id/done"
+            style="@style/WidgetConfigureOkButton"
+            android:text="@string/send"
+            />
+
+</RelativeLayout>

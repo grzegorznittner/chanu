@@ -208,8 +208,9 @@
     <dimen name="PostReplyEditText_layout_marginLeft">32dp</dimen>
     <dimen name="PostReplyEditText_layout_marginRight">32dp</dimen>
     <dimen name="PostReplyEditText_layout_marginBottom">32dp</dimen>
+    <dimen name="PostReplyEditText_leftCol_layout_marginRight">80dp</dimen>
 
-    <dimen name="PostReplyCheckbox_layout_marginLeft">40dp</dimen>
+    <dimen name="PostReplyCheckbox_layout_marginLeft">8dp</dimen>
     <dimen name="PostReplyCheckbox_layout_marginBottom">32dp</dimen>
 
     <dimen name="PostReplyButton_layout_width">64dp</dimen>
@@ -280,8 +281,8 @@
     <bool name="wide_tablet">true</bool>
     <bool name="BoardGridView.abbrev">false</bool>
 
-    <dimen name="PostReplyRecaptcha.marginLeft">256dp</dimen>
-    <dimen name="PostReplyRecaptcha.marginRight">256dp</dimen>
+    <dimen name="PostReplyRecaptcha.marginLeft">32dp</dimen>
+    <dimen name="PostReplyRecaptcha.marginRight">32dp</dimen>
     <dimen name="PostReplyRecaptcha.marginBottom">32dp</dimen>
     <dimen name="PostReplyRecaptcha.layoutHeight">128dp</dimen>
     <dimen name="PostReplyButton.marginLeft">32dp</dimen>

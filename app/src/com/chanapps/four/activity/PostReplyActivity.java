@@ -105,7 +105,7 @@ public class PostReplyActivity
     */
     private ImageView deleteButton;
     private View deleteButtonBg;
-    private ImageView sageButton;
+    private View sageButton;
     private Handler handler;
 
     private FrameLayout recaptchaFrame;
@@ -113,7 +113,7 @@ public class PostReplyActivity
     private ImageView recaptchaLoading;
     private EditText recaptchaText;
     private LoadCaptchaTask loadCaptchaTask;
-    private ImageView infoButton;
+    private View infoButton;
     private Button doneButton;
 
     private EditText messageText;
@@ -210,11 +210,11 @@ public class PostReplyActivity
         passDisableButton = (ImageView)findViewById(R.id.post_reply_pass_disable_button);
         bumpButton = (ImageView)findViewById(R.id.post_reply_bump_button);
         */
-        infoButton = (ImageView)findViewById(R.id.password_help_icon);
+        infoButton = findViewById(R.id.password_help_icon);
         doneButton = (Button)findViewById(R.id.done);
         deleteButtonBg = findViewById(R.id.post_reply_delete_button_bg);
         deleteButton = (ImageView)findViewById(R.id.post_reply_delete_button);
-        sageButton = (ImageView)findViewById(R.id.post_reply_sage_button);
+        sageButton = findViewById(R.id.post_reply_sage);
         messageText = (EditText)findViewById(R.id.post_reply_text);
         passStatusText = (TextView)findViewById(R.id.post_reply_pass_status);
         nameText = (EditText)findViewById(R.id.post_reply_name);
@@ -690,7 +690,7 @@ public class PostReplyActivity
 
     protected void adjustFieldVisibility() {
         if (threadNo == 0) // new thread
-            sageButton.setVisibility(View.GONE);
+            sageButton.setVisibility(View.INVISIBLE);
 
         if (ChanBoard.hasName(boardCode))
             nameText.setVisibility(View.VISIBLE);
