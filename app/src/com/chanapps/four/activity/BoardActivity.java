@@ -437,7 +437,19 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         else if (board.hasData() && NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
                 == NetworkProfile.Health.NO_CONNECTION) {
-            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection down, loading");
+            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection down, loading immediately");
+            if (adapter == null || adapter.getCount() == 0)
+                getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
+        }
+        else if (board.hasData() && NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
+                == NetworkProfile.Health.BAD) {
+            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection bad, loading immediately");
+            if (adapter == null || adapter.getCount() == 0)
+                getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
+        }
+        else if (board.hasData() && NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
+                == NetworkProfile.Health.VERY_SLOW) {
+            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection bad, loading immediately");
             if (adapter == null || adapter.getCount() == 0)
                 getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
         }

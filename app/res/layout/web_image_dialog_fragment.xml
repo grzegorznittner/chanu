@@ -50,9 +50,9 @@
                 android:id="@+id/browse"
                 style="@style/PostReplyButton"
                 android:layout_alignParentRight="true"
-                android:contentDescription="@string/web_image_button_browse"
-                android:hint="@string/web_image_button_browse"
-                android:src="@drawable/location_web_site">
+                android:contentDescription="@string/post_reply_search_hint"
+                android:hint="@string/post_reply_search_hint"
+                android:src="@drawable/action_search">
         </ImageButton>
 
     </RelativeLayout>

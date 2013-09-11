@@ -49,7 +49,6 @@ public class CameraComponent {
     public CameraComponent(Context context, Uri existingImageUri) {
         this.context = context;
         this.imageUri = existingImageUri;
-
     }
 
     public Uri startCamera(Activity activity) {

@@ -95,16 +95,17 @@ public class PostReplyActivity
 
     private LinearLayout wrapperLayout;
 
+    /*
     private ImageView cameraButton;
     private ImageView pictureButton;
     private ImageView webButton;
-    private ImageView searchButton;
-    private ImageView deleteButton;
-    private View deleteButtonBg;
-    private ImageView bumpButton;
-    private ImageView sageButton;
     private ImageView passEnableButton;
     private ImageView passDisableButton;
+    private ImageView bumpButton;
+    */
+    private ImageView deleteButton;
+    private View deleteButtonBg;
+    private ImageView sageButton;
     private Handler handler;
 
     private FrameLayout recaptchaFrame;
@@ -139,6 +140,10 @@ public class PostReplyActivity
     protected int themeId;
     protected ThemeSelector.ThemeReceiver broadcastThemeReceiver;
 
+    protected boolean showPassEnable = true;
+    protected boolean showPassDisable = false;
+
+
     public static void startActivity(Context context, String boardCode, long threadNo, long postNo, String replyText) {
         Intent intent = createIntent(context, boardCode, threadNo, postNo, replyText);
         context.startActivity(intent);
@@ -166,10 +171,20 @@ public class PostReplyActivity
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
-
-        camera = new CameraComponent(getApplicationContext(), imageUri);
         if (boardCode == null || boardCode.isEmpty())
             boardCode = ChanBoard.DEFAULT_BOARD_CODE;
+        setupCamera();
+    }
+
+    protected void setupCamera() {
+        boolean hasCameraFeature = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+        int numCameras = Camera.getNumberOfCameras();
+        boolean hasCamera = hasCameraFeature && numCameras > 0;
+        if (DEBUG) Log.i(TAG, "has cameraFeature=" + hasCameraFeature + " numCameras=" + numCameras + " hasCamera=" + hasCamera);
+        if (hasCamera)
+            camera = new CameraComponent(getApplicationContext(), imageUri);
+        else
+            camera = null;
     }
 
     @Override
@@ -187,18 +202,19 @@ public class PostReplyActivity
         previewFrame = (ViewGroup)findViewById(R.id.post_reply_preview_frame);
         imagePreview = (ImageView)findViewById(R.id.post_reply_preview_image);
         previewProgress = (ProgressBar)findViewById(R.id.post_reply_preview_progress_bar);
+        /*
         cameraButton = (ImageView)findViewById(R.id.post_reply_camera_button);
         pictureButton = (ImageView)findViewById(R.id.post_reply_picture_button);
         webButton = (ImageView)findViewById(R.id.post_reply_web_button);
-        searchButton = (ImageView)findViewById(R.id.post_reply_search_button);
+        passEnableButton = (ImageView)findViewById(R.id.post_reply_pass_enable_button);
+        passDisableButton = (ImageView)findViewById(R.id.post_reply_pass_disable_button);
+        bumpButton = (ImageView)findViewById(R.id.post_reply_bump_button);
+        */
         infoButton = (ImageView)findViewById(R.id.password_help_icon);
         doneButton = (Button)findViewById(R.id.done);
         deleteButtonBg = findViewById(R.id.post_reply_delete_button_bg);
         deleteButton = (ImageView)findViewById(R.id.post_reply_delete_button);
-        bumpButton = (ImageView)findViewById(R.id.post_reply_bump_button);
         sageButton = (ImageView)findViewById(R.id.post_reply_sage_button);
-        passEnableButton = (ImageView)findViewById(R.id.post_reply_pass_enable_button);
-        passDisableButton = (ImageView)findViewById(R.id.post_reply_pass_disable_button);
         messageText = (EditText)findViewById(R.id.post_reply_text);
         passStatusText = (TextView)findViewById(R.id.post_reply_pass_status);
         nameText = (EditText)findViewById(R.id.post_reply_name);
@@ -231,7 +247,12 @@ public class PostReplyActivity
             }
         });
 
-        setupCameraButton();
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                deleteImage();
+            }
+        });
+        /*
         pictureButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 startGallery();
@@ -243,28 +264,7 @@ public class PostReplyActivity
                         .show(getSupportFragmentManager(), WebImageDialogFragment.TAG);
             }
         });
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                (new WebImageSearchDialogFragment())
-                        .show(getSupportFragmentManager(), WebImageSearchDialogFragment.TAG);
-            }
-        });
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                deleteImage();
-            }
-        });
-        bumpButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                bump();
-            }
-        });
-        sageButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                sage();
-            }
-        });
-        passEnableButton.setOnClickListener(new View.OnClickListener() {
+               passEnableButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (!isPassEnabled() && isPassAvailable())
                     showPassFragment();
@@ -277,6 +277,18 @@ public class PostReplyActivity
                 }
             }
         });
+                bumpButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                bump();
+            }
+        });
+        */
+        sageButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                sage();
+            }
+        });
+
         passStatusText.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (!isPassEnabled() && isPassAvailable())
@@ -291,6 +303,12 @@ public class PostReplyActivity
             }
         });
         recaptchaLoading = (ImageView) findViewById(R.id.post_reply_recaptcha_loading);
+
+        View overflow = findViewById(R.id.post_reply_overflow);
+        if (overflow != null) {
+            overflow.setOnClickListener(overflowListener);
+            overflow.setVisibility(View.VISIBLE);
+        }
 
         updatePassRecaptchaViews(isPassEnabled());
     }
@@ -459,24 +477,6 @@ public class PostReplyActivity
         wrapperLayout.setVisibility(View.GONE);
     }
 
-    private void setupCameraButton() {
-        boolean hasCameraFeature = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
-        int numCameras = Camera.getNumberOfCameras();
-        boolean hasCamera = hasCameraFeature && numCameras > 0;
-        if (DEBUG) Log.i(TAG, "has cameraFeature=" + hasCameraFeature + " numCameras=" + numCameras + " hasCamera=" + hasCamera);
-        if (hasCamera) {
-            cameraButton.setVisibility(View.VISIBLE);
-            cameraButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
-                    imageUri = camera.startCamera(PostReplyActivity.this);
-                }
-            });
-        }
-        else {
-            cameraButton.setVisibility(View.GONE);
-        }
-    }
-
     private boolean isPassEnabled() {
         return ensurePrefs().getBoolean(SettingsActivity.PREF_PASS_ENABLED, false);
     }
@@ -537,18 +537,18 @@ public class PostReplyActivity
     }
 
     private void setPassUnavailable() {
-        passEnableButton.setVisibility(View.GONE);
-        passDisableButton.setVisibility(View.GONE);
+        showPassEnable = false;
+        showPassDisable = false;
     }
 
     private void setPassEnabled() {
-        passEnableButton.setVisibility(View.GONE);
-        passDisableButton.setVisibility(View.VISIBLE);
+        showPassEnable = false;
+        showPassDisable = true;
     }
 
     private void setPassDisabled() {
-        passEnableButton.setVisibility(View.VISIBLE);
-        passDisableButton.setVisibility(View.GONE);
+        showPassEnable = true;
+        showPassDisable = false;
     }
 
     private void setRecaptchaEnabled() {
@@ -596,7 +596,7 @@ public class PostReplyActivity
     protected void setViews() {
         if (messageText.getText().length() == 0 && postNo != 0)
             setMessage(">>" + postNo + "\n");
-        updateBump();
+        //updateBump();
         adjustFieldVisibility();
         defaultEmptyUserFieldsFromPrefs();
         setActionBarTitle();
@@ -923,6 +923,7 @@ public class PostReplyActivity
         orientation = null;
     }
 
+    /*
     private void updateBump() {
         String s = messageText.getText().toString().trim();
         if (DEBUG) Log.i(TAG, "updateBump for s=" + s);
@@ -937,6 +938,7 @@ public class PostReplyActivity
         if (s == null || s.isEmpty())
             setMessage("bump");
     }
+    */
 
     private void sage() {
         emailText.setText("sage"); // 4chan way to post without bumping
@@ -1020,7 +1022,7 @@ public class PostReplyActivity
 
     public void setMessage(String text) {
         messageText.setText(text);
-        updateBump();
+        //updateBump();
     }
 
     public String getName() {
@@ -1481,5 +1483,59 @@ public class PostReplyActivity
         }
 
     }
+
+    protected View.OnClickListener overflowListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            PopupMenu popup = new PopupMenu(PostReplyActivity.this, v);
+            popup.inflate(R.menu.post_reply_context_menu);
+            Menu menu = popup.getMenu();
+            if (menu != null)
+                adjustMenuVisibility(menu);
+            popup.setOnMenuItemClickListener(popupListener);
+            //popup.setOnDismissListener(popupDismissListener);
+            popup.show();
+        }
+    };
+
+    protected void adjustMenuVisibility(Menu menu) {
+        MenuItem item = menu.findItem(R.id.post_reply_camera_menu);
+        if (item != null)
+            item.setVisible(camera != null);
+        MenuItem item2 = menu.findItem(R.id.post_reply_pass_enable_menu);
+        if (item2 != null)
+            item2.setVisible(showPassEnable);
+        MenuItem item3 = menu.findItem(R.id.post_reply_pass_disable_menu);
+        if (item3 != null)
+            item3.setVisible(showPassDisable);
+    }
+
+    protected PopupMenu.OnMenuItemClickListener popupListener = new PopupMenu.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.post_reply_web_menu:
+                    (new WebImageDialogFragment(boardCode, threadNo))
+                            .show(getSupportFragmentManager(), WebImageDialogFragment.TAG);
+                    return true;
+                case R.id.post_reply_picture_menu:
+                    startGallery();
+                    return true;
+                case R.id.post_reply_camera_menu:
+                    imageUri = camera.startCamera(PostReplyActivity.this);
+                    return true;
+                case R.id.post_reply_pass_enable_menu:
+                    if (!isPassEnabled() && isPassAvailable())
+                        showPassFragment();
+                    return true;
+                case R.id.post_reply_pass_disable_menu:
+                    if (isPassEnabled())
+                        disablePass();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    };
 
 }

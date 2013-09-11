@@ -471,6 +471,13 @@
     <string name="post_reply_thread_title">New Thread</string>
     <string name="post_reply_text_hint">Comment (Optional)</string>
     <string name="post_reply_text_hint_required">Comment (Required)</string>
+
+    <string name="post_reply_web_menu">Add web image</string>
+    <string name="post_reply_picture_menu">Add gallery image</string>
+    <string name="post_reply_camera_menu">Add camera image</string>
+    <string name="post_reply_pass_enable_menu">Authorize 4chan pass</string>
+    <string name="post_reply_pass_disable_menu">Logout 4chan pass</string>
+
     <string name="post_reply_camera_hint">Camera</string>
     <string name="post_reply_web_hint">Download Image</string>
     <string name="post_reply_search_hint">Search for Image</string>

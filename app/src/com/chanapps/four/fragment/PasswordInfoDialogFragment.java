@@ -32,7 +32,7 @@ public class PasswordInfoDialogFragment extends DialogFragment {
         title.setText(R.string.post_reply_password_text);
         message.setText(R.string.post_reply_password_info_detail);
         setStyle(STYLE_NO_TITLE, 0);
-        return (new AlertDialog.Builder(getActivity()))
+        Dialog dialog = (new AlertDialog.Builder(getActivity()))
                 .setView(layout)
                 .setNeutralButton(R.string.done,
                         new DialogInterface.OnClickListener() {
@@ -41,5 +41,7 @@ public class PasswordInfoDialogFragment extends DialogFragment {
                             }
                         })
                 .create();
+        dialog.setCanceledOnTouchOutside(true);
+        return dialog;
     }
 }

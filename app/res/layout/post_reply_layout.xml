@@ -23,30 +23,56 @@
                 android:descendantFocusability="beforeDescendants"
                 android:focusableInTouchMode="true">
 
-            <EditText
-                    android:id="@+id/post_reply_subject"
-                    android:hint="@string/post_reply_subject_hint"
-                    android:inputType="textEmailSubject"
-                    style="@style/PostReplyEditText"
-                    android:maxLength="100"
-                    android:layout_marginTop="8dp"
+
+            <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/PostReplyEditText_layout_marginLeft"
+                    android:layout_marginRight="@dimen/PostReplyEditText_layout_marginRight"
                     android:layout_marginBottom="0dp"
+                    android:layout_marginTop="@dimen/PostReplyEditText_layout_marginBottom"
                     >
-            </EditText>
+                <EditText
+                        android:id="@+id/post_reply_subject"
+                        android:hint="@string/post_reply_subject_hint"
+                        android:inputType="textEmailSubject"
+                        style="@style/PostReplyEditText"
+                        android:maxLength="100"
+                        android:layout_width="0dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_toLeftOf="@+id/post_reply_overflow"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="0dp"
+                        android:layout_marginBottom="0dp"
+                        />
+                <FrameLayout
+                        android:id="@+id/post_reply_overflow"
+                        style="@style/ThreadListItemBarOverflow"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:clickable="true"
+                        >
+                    <ImageView style="@style/ThreadListItemBarOverflowIcon"
+                            android:layout_gravity="top|right"
+                            />
+                </FrameLayout>
+            </RelativeLayout>
 
             <EditText
                     android:id="@+id/post_reply_text"
                     style="@style/PostReplyEditText"
                     android:hint="@string/post_reply_text_hint"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="0dp"
                     android:scrollbars="none"
-                    android:minLines="7"
-                    >
-            </EditText>
+                    android:minLines="4"
+                    android:paddingTop="0dp"
+                    />
 
             <FrameLayout
                     android:id="@+id/post_reply_recaptcha_frame"
+                    android:layout_marginTop="@dimen/PostReplyEditText_layout_marginBottom"
                     android:layout_marginLeft="@dimen/PostReplyRecaptcha.marginLeft"
                     android:layout_marginRight="@dimen/PostReplyRecaptcha.marginRight"
                     android:layout_marginBottom="@dimen/PostReplyRecaptcha.marginBottom"
@@ -60,15 +86,15 @@
                         android:layout_gravity="center"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="#ffffffff">
-                </ImageButton>
+                        android:background="#ffffffff"
+                        />
                 <ImageView
                         android:id="@+id/post_reply_recaptcha_loading"
                         android:src="@drawable/navigation_refresh_light"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center">
-                </ImageView>
+                        android:layout_gravity="center"
+                        />
             </FrameLayout>
 
             <EditText
@@ -79,96 +105,75 @@
                     android:imeOptions="actionSend"
                     android:imeActionLabel="@string/post_reply_send"
                     android:maxLength="100"
-                    >
-            </EditText>
+                    />
 
             <TextView
                     android:id="@+id/post_reply_pass_status"
                     style="@style/PostReplyEditText"
                     android:textStyle="bold"
-                    >
-            </TextView>
+                    />
 
+            <!--
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/PostReplyButton_layout_height"
                     android:orientation="horizontal"
                     android:layout_marginLeft="@dimen/PostReplyButton.marginLeft"
                     android:layout_marginRight="@dimen/PostReplyButton.marginRight"
-                    android:layout_marginBottom="@dimen/PostReplyButton.marginBottom">
-
+                    android:layout_marginBottom="@dimen/PostReplyButton.marginBottom"
+                    >
                 <ImageButton
                         android:id="@+id/post_reply_picture_button"
                         style="@style/PostReplyButton"
                         android:contentDescription="@string/post_reply_picture_hint"
                         android:hint="@string/post_reply_picture_hint"
-                        android:src="@drawable/content_picture">
-                </ImageButton>
-
+                        android:src="@drawable/content_picture"
+                        />
                 <ImageButton
                         android:id="@+id/post_reply_web_button"
                         style="@style/PostReplyButton"
                         android:contentDescription="@string/post_reply_web_hint"
                         android:hint="@string/post_reply_web_hint"
-                        android:src="@drawable/location_web_site">
-                </ImageButton>
-
-                <ImageButton
-                        android:id="@+id/post_reply_search_button"
-                        style="@style/PostReplyButton"
-                        android:contentDescription="@string/post_reply_search_hint"
-                        android:hint="@string/post_reply_search_hint"
-                        android:src="@drawable/action_search">
-                </ImageButton>
-
+                        android:src="@drawable/location_web_site"
+                        />
                 <ImageButton
                         android:id="@+id/post_reply_camera_button"
                         style="@style/PostReplyButton"
                         android:contentDescription="@string/post_reply_camera_hint"
                         android:hint="@string/post_reply_camera_hint"
-                        android:src="@drawable/device_access_camera">
-                </ImageButton>
-
+                        android:src="@drawable/device_access_camera"
+                        />
                 <ImageButton
                         android:id="@+id/post_reply_bump_button"
                         style="@style/PostReplyButton"
                         android:contentDescription="@string/post_reply_bump_hint"
                         android:hint="@string/post_reply_bump_hint"
-                        android:src="@drawable/rating_good">
-                </ImageButton>
-
-                <ImageButton
-                        android:id="@+id/post_reply_sage_button"
-                        style="@style/PostReplyButton"
-                        android:contentDescription="@string/post_reply_sage_hint"
-                        android:hint="@string/post_reply_sage_hint"
-                        android:src="@drawable/rating_bad">
-                </ImageButton>
-
+                        android:src="@drawable/rating_good"
+                        />
                 <ImageButton
                         android:id="@+id/post_reply_pass_enable_button"
                         style="@style/PostReplyButton"
                         android:contentDescription="@string/post_reply_pass_enable_hint"
                         android:hint="@string/post_reply_pass_enable_hint"
                         android:src="@drawable/device_access_accounts"
-                        android:visibility="gone">
-                </ImageButton>
-
+                        android:visibility="gone"
+                        />
                 <ImageButton
                         android:id="@+id/post_reply_pass_disable_button"
                         style="@style/PostReplyButton"
                         android:contentDescription="@string/post_reply_pass_disable_hint"
                         android:hint="@string/post_reply_pass_disable_hint"
                         android:src="@drawable/device_access_accounts"
-                        android:visibility="gone">
-                </ImageButton>
-
+                        android:visibility="gone"
+                        />
             </LinearLayout>
+            -->
 
             <CheckBox
                     android:id="@+id/post_reply_spoiler_checkbox"
                     style="@style/PostReplyCheckbox"
-                    android:text="@string/post_reply_spoiler" />
+                    android:text="@string/post_reply_spoiler"
+                    />
 
             <FrameLayout
                     android:id="@+id/post_reply_preview_frame"
@@ -189,9 +194,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:contentDescription="post_reply_add_image"
-                        android:background="@drawable/stub_image_background">
-                </ImageView>
-                <ProgressBar style="@style/WebImageProgressBar" android:id="@+id/post_reply_preview_progress_bar"/>
+                        android:background="@drawable/stub_image_background"
+                        />
+                <ProgressBar style="@style/WebImageProgressBar" android:id="@+id/post_reply_preview_progress_bar"
+                        />
                 <View
                         android:id="@+id/post_reply_delete_button_bg"
                         style="@style/PostReplyButton"
@@ -206,8 +212,7 @@
                         android:contentDescription="@string/post_reply_delete_hint"
                         android:hint="@string/post_reply_delete_hint"
                         android:src="@drawable/navigation_cancel"
-                        >
-                </ImageView>
+                        />
 
             </FrameLayout>
 
@@ -217,21 +222,42 @@
                     android:inputType="textPersonName"
                     style="@style/PostReplyEditText"
                     android:maxLength="100"
-                    >
-            </EditText>
-
-            <EditText
-                    android:id="@+id/post_reply_email"
-                    android:hint="@string/post_reply_email_hint"
-                    android:inputType="textEmailAddress"
-                    style="@style/PostReplyEditText"
-                    android:maxLength="100"
-                    >
-            </EditText>
+                    />
 
             <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/PostReplyEditText_layout_marginRight"
+                    android:layout_marginBottom="@dimen/PostReplyEditText_layout_marginBottom"
+                    >
+                <EditText
+                        android:id="@+id/post_reply_email"
+                        android:hint="@string/post_reply_email_hint"
+                        android:inputType="textEmailAddress"
+                        style="@style/PostReplyEditText"
+                        android:maxLength="100"
+                        android:layout_alignParentLeft="true"
+                        android:layout_width="0dp"
+                        android:layout_toLeftOf="@+id/post_reply_sage_button"
+                        />
+                <ImageButton
+                        android:id="@+id/post_reply_sage_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:contentDescription="@string/post_reply_sage_hint"
+                        android:hint="@string/post_reply_sage_hint"
+                        android:src="@drawable/rating_bad"
+                        android:background="@drawable/board_grid_selector_bg"
+                        />
+            </RelativeLayout>
+
+            <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/PostReplyEditText_layout_marginRight"
+                    android:layout_marginBottom="@dimen/PostReplyEditText_layout_marginBottom"
                     >
                 <TextView
                         android:id="@+id/password_label"
@@ -239,27 +265,36 @@
                         android:layout_width="wrap_content"
                         android:layout_marginBottom="0dp"
                         android:layout_marginRight="0dp"
-                        android:text="@string/post_reply_password_text"/>
+                        android:layout_alignParentLeft="true"
+                        android:text="@string/post_reply_password_text"
+                        />
+                <EditText
+                        android:id="@+id/post_reply_password"
+                        android:hint="@string/post_reply_password_hint"
+                        android:inputType="text|textVisiblePassword|numberPassword"
+                        style="@style/PostReplyEditText"
+                        android:maxLength="8"
+                        android:layout_width="0dp"
+                        android:layout_toRightOf="@+id/password_label"
+                        android:layout_toLeftOf="@+id/password_help_icon"
+                        />
                 <ImageButton
                         android:id="@+id/password_help_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_toRightOf="@+id/password_label"
+                        android:layout_alignParentRight="true"
                         android:hint="@string/post_reply_password_info_hint"
                         android:src="?themedHelpIcon"
                         android:background="@drawable/board_grid_selector_bg"
                         />
             </RelativeLayout>
 
-            <EditText
-                    android:id="@+id/post_reply_password"
-                    android:hint="@string/post_reply_password_hint"
-                    android:inputType="text|textVisiblePassword|numberPassword"
-                    style="@style/PostReplyEditText"
-                    android:maxLength="8"
-                    >
-            </EditText>
+            <View
+                    android:id="@+id/spacer"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/PostReplyEditText_layout_marginBottom"
+                    />
 
         </LinearLayout>
 
