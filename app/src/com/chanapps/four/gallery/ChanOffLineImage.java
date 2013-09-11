@@ -40,8 +40,9 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
     private String contentType;
     private String ext;
 
-    private int width;
-    private int height;
+    private int width = 0;
+    private int height = 0;
+    private long size = 0;
 
     private GalleryApp mApplication;
 
@@ -70,6 +71,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
         name = "Cached /" + dir + "/" + imageFile.getName();
         mApplication = Utils.checkNotNull(application);
         contentType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
+        size = imageFile.length();
 	}
 
     @Override
@@ -128,29 +130,20 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
                 }
 
     			try {
-                    // center crop
-    				dstBmp = BitmapFactory.decodeStream(imageStream, null, options);
-                    /*
-                    srcBmp = BitmapFactory.decodeStream(imageStream, null, options);
-                    if (srcBmp.getWidth() >= srcBmp.getHeight()){
-                        dstBmp = Bitmap.createBitmap(
-                                srcBmp,
-                                srcBmp.getWidth()/2 - srcBmp.getHeight()/2,
-                                0,
-                                srcBmp.getHeight(),
-                                srcBmp.getHeight()
-                        );
-                    }else{
-                        dstBmp = Bitmap.createBitmap(
-                                srcBmp,
-                                0,
-                                srcBmp.getHeight()/2 - srcBmp.getWidth()/2,
-                                srcBmp.getWidth(),
-                                srcBmp.getWidth()
-                        );
-                    }
-                    */
-
+    				if ("gif".equals(ext)) {
+                		GifDecoder decoder = new GifDecoder();
+                		int status = decoder.read(imageStream);
+                		Log.w(TAG, "Status " + (status == 0 ? "OK" : status == 1 ? "FORMAT_ERROR" : "OPEN_ERROR") + " for file " + imageFile.getName());
+                		if (status == 0) {
+                			dstBmp = decoder.getBitmap();
+                		} else if (status == 1) {
+                			dstBmp = BitmapFactory.decodeStream(new FileInputStream(imageFile), null, options);
+                			Log.w(TAG, imageFile.getName() + (dstBmp == null ? " not" : "") + " loaded via BitmapFactor");
+                		}
+                	} else {
+                		// center crop
+                		dstBmp = BitmapFactory.decodeStream(imageStream, null, options);
+                	}
                 }
                 catch (Exception e) {
                     Log.e(TAG, "Couldn't decode bitmap file " + imageFile, e);
@@ -218,7 +211,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
         if ("jpg".equals(ext) || "jpeg".equals(ext) || "png".equals(ext)) {
             supported |= SUPPORT_FULL_IMAGE;
         }
-        if ("gif".equals(ext)) {
+        if (isAnimatedGif()) {
         	supported |= SUPPORT_PLAY;
         }
         if (DEBUG) {
@@ -238,11 +231,22 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 
     @Override
     public int getMediaType() {
-    	if ("gif".equals(ext)) {
+    	if (isAnimatedGif()) {
     		return MEDIA_TYPE_VIDEO;
     	} else {
     		return MEDIA_TYPE_IMAGE;
     	}
+    }
+    
+    private boolean isAnimatedGif() {
+    	if ("gif".equals(ext)) {
+    		if (width > 0 && height > 0) {
+    			return size > width * height * 8 / 10;
+    		} else {
+    			return size > 128000;
+    		}
+    	}
+    	return false;
     }
     
     @Override

@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.Calendar;
 
 import com.chanapps.four.data.ChanThread;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -46,7 +47,7 @@ import com.nostra13.universalimageloader.core.download.URLConnectionImageDownloa
 
 public class ChanImage extends MediaItem implements ChanIdentifiedService {
     private static final String TAG = "ChanImage";
-    public static final boolean DEBUG  = false;
+    public static final boolean DEBUG  = true;
     
     private static final int MIN_DOWNLOAD_PROGRESS_UPDATE = 300;
 	private static final int IMAGE_BUFFER_SIZE = 20480;
@@ -229,7 +230,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         public Bitmap run(JobContext jc) {
         	try {
         		Bitmap bitmap = null;
-        		if (type == TYPE_THUMBNAIL) {
+        		if (type == TYPE_THUMBNAIL && !isAnimatedGif()) {
         			bitmap = downloadFullImageAsThumb();
         			if (bitmap != null) {
         				return bitmap;
@@ -266,9 +267,19 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
             	if (!localImageFile.exists() && !isDead) {
             		downloadFullImage();
             	}
+            	Options options = getBitmapOptions(localImageFile);
 
-            	if (localImageFile.exists()) {
-            		Options options = getBitmapOptions(localImageFile);
+            	if (".gif".equals(ext)) {            		
+            		GifDecoder decoder = new GifDecoder();
+            		int status = decoder.read(new FileInputStream(localImageFile));
+            		Log.w(TAG, "Status " + (status == 0 ? "OK" : status == 1 ? "FORMAT_ERROR" : "OPEN_ERROR") + " for file " + localImageFile.getName());
+            		if (status == 0) {
+            			bitmap = decoder.getBitmap();
+            		} else if (status == 1) {
+            			bitmap = BitmapFactory.decodeStream(new FileInputStream(localImageFile), null, options);
+            			Log.w(TAG, localImageFile.getName() + (bitmap == null ? " not" : "") + " loaded via BitmapFactor");
+            		}
+            	} else if (localImageFile.exists()) {
             		bitmap = BitmapFactory.decodeFile(localImageFile.getAbsolutePath(), options);
             	}
             } catch (Throwable e) {
@@ -314,7 +325,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         if (".jpg".equals(ext) || ".jpeg".equals(ext) || ".png".equals(ext)) {
             supported |= SUPPORT_FULL_IMAGE;
         }
-        if (".gif".equals(ext)) {
+        if (isAnimatedGif()) {
         	supported |= SUPPORT_PLAY;
         }
         return supported;
@@ -326,11 +337,20 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
     @Override
     public int getMediaType() {
-    	if (".gif".equals(ext)) {
+    	if (isAnimatedGif()) {
     		return MEDIA_TYPE_VIDEO;
     	} else {
     		return MEDIA_TYPE_IMAGE;
     	}
+    }
+    
+    private boolean isAnimatedGif() {
+    	if (".gif".equals(ext)) {
+    		if (fsize > 0) {
+    			return fsize > w * h * 8 / 10;
+    		}
+    	}
+    	return false;
     }
     
     @Override
