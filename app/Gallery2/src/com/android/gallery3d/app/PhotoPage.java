@@ -292,15 +292,23 @@ public class PhotoPage extends ActivityState
         mPhotoView.setOpenedItem(itemPath);
     }
 
-    private void updateShareURI(Path path) {
+    private void updateShareURI(Path path, Handler handler) {
         if (mShareActionProvider != null) {
             DataManager manager = mActivity.getDataManager();
             int type = manager.getMediaType(path);
-            Intent intent = new Intent(Intent.ACTION_SEND);
+            final Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType(MenuExecutor.getMimeType(type));
             intent.putExtra(Intent.EXTRA_STREAM, manager.getContentUri(path));
-            mShareActionProvider.setShareIntent(intent);
-            mPendingSharePath = null;
+            if (handler != null)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mShareActionProvider.setShareIntent(intent);
+                        mPendingSharePath = null;
+                    }
+                });
+            else
+                mPendingSharePath = path;
         } else {
             // This happens when ActionBar is not created yet.
             mPendingSharePath = path;
@@ -333,12 +341,22 @@ public class PhotoPage extends ActivityState
         setTitle(photo.getName());
         mPhotoView.showVideoPlayIcon(
                 photo.getMediaType() == MediaObject.MEDIA_TYPE_VIDEO);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                updateShareURI(photo.getPath()); // run off UI thread since disk access is involved
-            }
-        }).start();
+        Handler handler = null;
+        try {
+            handler = new Handler();
+        }
+        catch (Exception e) {
+            Log.e(TAG, "updateCurrentPhoto exception creating handler", e);
+        }
+        if (handler != null) {
+            final Handler finalHandler = handler;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    updateShareURI(photo.getPath(), finalHandler); // run off UI thread since disk access is involved
+                }
+            }).start();
+        }
     }
 
     private void updateMenuOperations() {
@@ -439,7 +457,22 @@ public class PhotoPage extends ActivityState
             MenuItem item = menu.findItem(R.id.action_slideshow);
             if (item != null) item.setVisible(mMediaSet != null && !(mMediaSet instanceof MtpDevice));
             mShareActionProvider = GalleryActionBar.initializeShareActionProvider(menu);
-            if (mPendingSharePath != null) updateShareURI(mPendingSharePath);
+            Handler handler = null;
+            try {
+                handler = new Handler();
+            }
+            catch (Exception e) {
+                Log.e(TAG, "onCreateActionBar exception creating handler", e);
+            }
+            if (mPendingSharePath != null && handler != null) {
+                final Handler finalHandler = handler;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateShareURI(mPendingSharePath, finalHandler);
+                    }
+                }).start();
+            }
             mMenu = menu;
             mShowBars = true;
             updateMenuOperations();
