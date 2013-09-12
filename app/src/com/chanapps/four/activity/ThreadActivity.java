@@ -579,12 +579,7 @@ public class ThreadActivity
                                 pos = 0;
                             }
                             if (DEBUG) Log.i(TAG, "refreshFragment() setting item to pos=" + pos);
-                            mPager.setCurrentItem(pos, false);
-                            ThreadFragment fragment2;
-                            if ((fragment2 = getFragmentAtPosition(pos)) != null
-                                    && fragment2.getChanActivityId() != null
-                                    && fragment2.getChanActivityId().threadNo > 0)
-                                fragment2.refreshThread(null);
+                            setCurrentItemAsync(pos, false);
                         }
                         else {
                             if (DEBUG) Log.i(TAG, "refreshFragment() empty adapter, skipping fragment refresh");
@@ -594,6 +589,22 @@ public class ThreadActivity
             }
         }).start();
     }
+
+    protected void setCurrentItemAsync(final int pos, final boolean smooth) {
+        if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mPager.setCurrentItem(pos, smooth);
+                    ThreadFragment fragment2;
+                    if ((fragment2 = getFragmentAtPosition(pos)) != null
+                            && fragment2.getChanActivityId() != null
+                            && fragment2.getChanActivityId().threadNo > 0)
+                        fragment2.refreshThread(null);
+                }
+            });
+    }
+
 
     protected boolean refreshFragmentAtPosition(String boardCode, long threadNo, int pos, String message) {
         ThreadFragment fragment;
