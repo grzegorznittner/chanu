@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.data.UserStatistics;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.widget.WidgetProviderUtils;
 
@@ -60,7 +61,9 @@ public class ResetPreferencesDialogFragment extends DialogFragment {
                                         .putStringSet(SettingsActivity.PREF_WIDGET_BOARDS, savedWidgetConf)
                                         .commit();
 
-                                NetworkProfileManager.instance().getUserStatistics().reset();
+                                UserStatistics stats = NetworkProfileManager.instance().getUserStatistics();
+                                if (stats != null)
+                                    stats.reset();
                                 fragment.setPreferenceScreen(null);
                                 fragment.initPreferenceScreen();
                                 Toast.makeText(getActivity(), R.string.dialog_reset_preferences, Toast.LENGTH_SHORT).show();
