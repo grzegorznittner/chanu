@@ -130,4 +130,27 @@
   <string name="group_by">Group by</string>
   <string name="settings">Settings</string>
   <string name="add_account">Add account</string>
+
+    <plurals name="number_of_items_selected">
+        <item quantity="zero">%1$d item selected</item>
+        <item quantity="one">%1$d item selected</item>
+        <item quantity="other">%1$d items selected</item>
+    </plurals>
+
+    <!-- String indicating how many media album(s) is(are) selected
+            eg. 1 album selected [CHAR LIMIT=30] -->
+    <plurals name="number_of_albums_selected">
+        <item quantity="zero">%1$d album selected</item>
+        <item quantity="one">%1$d album selected</item>
+        <item quantity="other">%1$d albums selected</item>
+    </plurals>
+
+    <!-- String indicating how many media group(s) is(are) selected
+            eg. 1 group selected [CHAR LIMIT=30] -->
+    <plurals name="number_of_groups_selected">
+        <item quantity="zero">%1$d group selected</item>
+        <item quantity="one">%1$d group selected</item>
+        <item quantity="other">%1$d groups selected</item>
+    </plurals>
+
 </resources>
