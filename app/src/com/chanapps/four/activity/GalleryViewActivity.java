@@ -249,14 +249,23 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         root.lockRenderThread();
         try {
         	if (DEBUG) Log.i(TAG, "Gallery state stack: " + getStateManager().getStackDescription());
-        	getStateManager().compactActivityStateStack();
+            getStateManager().compactActivityStateStack();
         	if (getStateManager().getStateCount() > 1) {
         		getStateManager().onBackPressed();
         	} else {
                 finish();
         		//navigateUp();
         	}
-        } finally {
+        }
+        catch (Exception e) {
+            Log.e(TAG, "onBackPressed() exception", e);
+            finish();
+        }
+        catch (Error e) {
+            Log.e(TAG, "onBackPressed() error (probably assertion error)", e);
+            finish();
+        }
+        finally {
             root.unlockRenderThread();
         }
     }
