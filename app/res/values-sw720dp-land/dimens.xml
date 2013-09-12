@@ -9,4 +9,5 @@
 
     <dimen name="ad_layout_height">90dp</dimen>
 
+    <integer name="PostReplyComment_minLines">10</integer>
 </resources>

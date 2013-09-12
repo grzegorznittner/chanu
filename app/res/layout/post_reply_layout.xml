@@ -66,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
                     android:scrollbars="none"
-                    android:minLines="4"
+                    android:minLines="@integer/PostReplyComment_minLines"
                     android:paddingTop="0dp"
                     />
 
@@ -123,10 +123,10 @@
                     android:id="@+id/post_reply_preview_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="@dimen/PostReplyRecaptcha.marginLeft"
+                    android:layout_marginRight="@dimen/PostReplyRecaptcha.marginRight"
+                    android:layout_marginBottom="@dimen/PostReplyRecaptcha.marginBottom"
+                    android:layout_marginTop="0dp"
                     android:gravity="center"
                     android:visibility="gone"
                     >
