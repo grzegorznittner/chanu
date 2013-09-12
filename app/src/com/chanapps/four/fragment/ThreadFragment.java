@@ -643,29 +643,13 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         Activity activity = getActivity();
         if (activity == null)
             return;
-
-        ActivityManager manager = (ActivityManager)activity.getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
-        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
-        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
-        if (task != null) {
-            if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
-            if (task.baseActivity != null
-                    && !activity.getClass().getName().equals(task.baseActivity.getClassName())
-                    && boardCode.equals(BoardActivity.topBoardCode)
-                    ) {
-                if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
-                        + activity.getClass().getName() + " base=" + task.baseActivity.getClassName());
-                activity.finish();
-                return;
-            }
-        }
-
-        Intent intent = BoardActivity.createIntent(getActivityContext(), boardCode, "");
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        activity.finish();
+        if (activity instanceof ThreadActivity)
+            ((ThreadActivity)activity).navigateUp();
+        else if (activity instanceof BoardActivity)
+            ((BoardActivity)activity).navigateUp();
+        else
+            activity.finish();
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

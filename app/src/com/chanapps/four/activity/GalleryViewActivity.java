@@ -237,7 +237,12 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
 
     @Override
 	protected void onPause() {
-        super.onPause();
+        try {
+            super.onPause();
+        }
+        catch (IllegalArgumentException e) {
+            Log.e(TAG, "onPause() illegal argument exception", e);
+        }
         if (DEBUG) Log.i(TAG, "onPause");
     }
 

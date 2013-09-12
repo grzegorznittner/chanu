@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -165,8 +166,20 @@ public class ThreadActivity
         mAdapter.setBoard(board);
         mAdapter.setQuery(query);
         mPager = (ViewPager) findViewById(R.id.pager);
-        mPager.setOffscreenPageLimit(OFFSCREEN_PAGE_LIMIT);
-        mPager.setAdapter(mAdapter);
+        try {
+            //mPager.setOffscreenPageLimit(OFFSCREEN_PAGE_LIMIT);
+            mPager.setAdapter(mAdapter);
+        }
+        catch (IllegalStateException e) {
+            Log.e(TAG, "Error: pager state exception", e);
+            if (handler != null)
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(ThreadActivity.this, R.string.thread_couldnt_create_pager, Toast.LENGTH_SHORT);
+                    }
+                });
+        }
     }
 
     public void showThread(long threadNo) {
@@ -1006,6 +1019,38 @@ public class ThreadActivity
 
     public void warnedAboutNetworkDown(boolean set) {
         warnedAboutNetworkDown = set;
+    }
+
+    @Override
+    public void onBackPressed() {
+        navigateUp();
+    }
+
+    public void navigateUp() {
+        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
+        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
+        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        if (task != null) {
+            if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
+            if (task.baseActivity != null
+                    && !getClass().getName().equals(task.baseActivity.getClassName())
+                    && boardCode.equals(BoardActivity.topBoardCode)
+                    ) {
+                if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
+                        + getClass().getName() + " base=" + task.baseActivity.getClassName());
+                finish();
+                return;
+            }
+            else if (task.baseActivity != null && tasks.size() >= 2) {
+                if (DEBUG) Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + tasks.size());
+                finish();
+                return;
+            }
+        }
+        Intent intent = BoardActivity.createIntent(getActivityContext(), boardCode, "");
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
 }

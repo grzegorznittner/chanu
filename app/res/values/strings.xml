@@ -247,6 +247,7 @@
     <string name="thread_couldnt_load_image">Couldn\'t load image: %1$s</string>
     <string name="thread_couldnt_download_image_down">Network issue, can\'t download image</string>
     <string name="thread_couldnt_download_image">Couldn\'t download image</string>
+    <string name="thread_couldnt_create_pager">Couldn\'t create pager</string>
     <string name="thread_no_prev_posts_found">No referenced posts found</string>
     <string name="thread_no_replies">NO REPLIES</string>
     <string name="thread_no_replies_found">No replies found</string>

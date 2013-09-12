@@ -176,10 +176,12 @@ public class ThreadSinglePopupDialogFragment extends DialogFragment implements T
             @Override
             public void run() {
                 final Cursor detailCursor = detailsCursor();
-                handler.post(new Runnable() {
+                if (handler != null)
+                    handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        adapter.swapCursor(detailCursor);
+                        if (adapter != null && detailCursor != null)
+                            adapter.swapCursor(detailCursor);
                     }
                 });
             }
