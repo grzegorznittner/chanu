@@ -1038,7 +1038,7 @@ public class ChanPost {
         String exifText = exifText();
         String headline = headline(context, query, false, repliesBlob, false, false);
         int flags = postFlags(false, false, textComponents[0], textComponents[1], exifText, headline);
-        if (i == 0)
+        if (resto == 0)
             flags |= FLAG_IS_HEADER;
         return new Object[] {
                 no,
