@@ -56,6 +56,12 @@
                 />
 
         <Preference
+                android:key="pref_about_data_pulltorefresh"
+                android:title="@string/pref_about_data_pulltorefresh"
+                android:summary="@string/pref_about_data_pulltorefresh_sum"
+                />
+
+        <Preference
                 android:key="pref_about_data_color"
                 android:title="@string/pref_about_data_color"
                 android:summary="@string/pref_about_data_color_sum"

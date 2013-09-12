@@ -995,8 +995,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected View.OnClickListener overflowListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (absListView == null)
+                return;
             checkedPos = absListView.getPositionForView(v);
-            PopupMenu popup = new PopupMenu(BoardActivity.this, v);
+            final PopupMenu popup = new PopupMenu(BoardActivity.this, v);
             int menuId;
             if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
                 menuId = R.menu.watchlist_context_menu;
@@ -1007,11 +1009,52 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             else
                 menuId = R.menu.board_context_menu;
             popup.inflate(menuId);
-            popup.setOnMenuItemClickListener(popupListener);
-            popup.setOnDismissListener(popupDismissListener);
-            popup.show();
+            if (menuId == R.menu.board_context_menu) {
+                if (adapter == null)
+                    return;
+                Cursor cursor = adapter.getCursor();
+                if (cursor == null)
+                    return;
+                if (!cursor.moveToPosition(checkedPos))
+                    return;
+                final String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+                final long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showOverflowMenuAsync(popup, boardCode, threadNo);
+                    }
+                }).start();
+            }
+            else {
+                popup.setOnMenuItemClickListener(popupListener);
+                popup.setOnDismissListener(popupDismissListener);
+                popup.show();
+            }
         }
     };
+
+    protected void showOverflowMenuAsync(final PopupMenu popup, String boardCode, long threadNo) {
+        final ChanThread thread = ChanFileStorage.loadThreadData(BoardActivity.this, boardCode, threadNo);
+        final boolean watched = ChanFileStorage.isThreadWatched(BoardActivity.this, thread);
+        if (handler != null)
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Menu menu = popup.getMenu();
+                    if (menu == null)
+                        return;
+                    MenuItem item;
+                    if ((item = menu.findItem(R.id.board_thread_watch_menu)) != null)
+                        item.setVisible(!watched);
+                    if ((item = menu.findItem(R.id.board_thread_watch_remove_menu)) != null)
+                        item.setVisible(watched);
+                    popup.setOnMenuItemClickListener(popupListener);
+                    popup.setOnDismissListener(popupDismissListener);
+                    popup.show();
+                }
+            });
+    }
 
     protected PopupMenu.OnDismissListener popupDismissListener = new PopupMenu.OnDismissListener() {
         @Override
@@ -1035,6 +1078,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             switch (item.getItemId()) {
                 case R.id.board_thread_watch_menu:
                     ThreadFragment.addToWatchlist(BoardActivity.this, handler, boardCode, threadNo);
+                    return true;
+                case R.id.board_thread_watch_remove_menu:
+                    ThreadFragment.removeFromWatchlist(BoardActivity.this, handler, boardCode, threadNo);
                     return true;
                 case R.id.board_thread_gallery_menu:
                     FetchChanDataService.scheduleThreadFetch(BoardActivity.this, boardCode, threadNo, true, false);

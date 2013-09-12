@@ -774,7 +774,7 @@ public class ChanFileStorage {
     }
 
     private static boolean isThreadWatched(ChanBoard board, ChanThread thread) {
-        if (board == null || board.threads == null)
+        if (board == null || board.threads == null || thread == null)
             return false;
         for (ChanPost post : board.threads) {
             if (post.board != null && post.board.equals(thread.board) && post.no == thread.no) {

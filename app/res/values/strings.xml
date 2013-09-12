@@ -141,11 +141,12 @@
     <string name="board_thread_info_menu">Info</string>
     <string name="board_thread_view_menu">View</string>
     <string name="board_thread_gallery_menu">Gallery</string>
-    <string name="board_thread_watch_menu">Watch</string>
+    <string name="board_thread_watch_menu">Add to watchlist</string>
     <string name="board_add_to_favorites_menu">Add to favorites</string>
-    <string name="board_thread_remove_menu">Remove</string>
-    <string name="favorites_remove_board_menu">Remove</string>
-    <string name="watch_thread_menu">Add to Watchlist</string>
+    <string name="board_thread_remove_menu">Remove from watchlist</string>
+    <string name="favorites_remove_board_menu">Remove from favorites</string>
+    <string name="watch_thread_menu">Add to watchlist</string>
+    <string name="watch_remove_thread_menu">Remove from watchlist</string>
     <string name="watch_thread_not_found">Couldn\'t remove thread from watchlist</string>
     <string name="view_as_grid_menu">View as grid</string>
     <string name="view_as_list_menu">View as list</string>
@@ -342,6 +343,7 @@
     <string name="thread_not_added_to_watchlist">Couldn\'t add thread to watchlist</string>
     <string name="board_not_added_to_favorites">Couldn\'t add board to favorites</string>
     <string name="thread_added_to_watchlist">Thread added to watchlist</string>
+    <string name="thread_deleted_from_watchlist">Thread added to watchlist</string>
     <string name="board_added_to_favorites">Board added to favorites</string>
     <string name="thread_added_to_watchlist_activity_based">Thread auto-added to watchlist</string>
     <string name="thread_watchlist_cleared">Cleared watchlist</string>
@@ -676,6 +678,8 @@
     <string name="pref_about_data_4chan_sum">Data sourced live via the 4chan API</string>
     <string name="pref_about_data_uil">Universal Image Loader</string>
     <string name="pref_about_data_uil_sum">Courtesy of Sergey Tarasevich</string>
+    <string name="pref_about_data_pulltorefresh">ActionBar-PullToRefresh</string>
+    <string name="pref_about_data_pulltorefresh_sum">Courtesy of Chris Banes</string>
     <string name="pref_about_data_color">mColorPicker</string>
     <string name="pref_about_data_color_sum">Courtesy of Daniel Nilsson</string>
     <string name="pref_about_developer_category">Product Info</string>

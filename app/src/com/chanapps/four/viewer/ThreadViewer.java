@@ -48,6 +48,7 @@ import java.util.regex.Pattern;
  */
 public class ThreadViewer {
 
+    //public static final double MAX_HEADER_SCALE = 1.5;
     public static final double MAX_HEADER_SCALE = 1.5;
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
@@ -749,20 +750,22 @@ public class ThreadViewer {
 
     public static int cardMaxImageWidth() {
         int naiveMax;
-        if (displayMetrics.widthPixels < displayMetrics.heightPixels) // portrait
+        //if (displayMetrics.widthPixels < displayMetrics.heightPixels) // portrait
             naiveMax = displayMetrics.widthPixels - cardPaddingPx - cardPaddingPx;
-        else // landscape
-            naiveMax = displayMetrics.widthPixels / 2 - cardPaddingPx - cardPaddingPx;
+        //else // landscape
+        //    naiveMax = displayMetrics.widthPixels - cardPaddingPx - cardPaddingPx;
+            //naiveMax = displayMetrics.widthPixels / 2 - cardPaddingPx - cardPaddingPx;
         naiveMax -= boardTabletViewWidthPx;
         return naiveMax;
     }
 
     public static int cardMaxImageHeight() {
         int naiveMax;
-        if (displayMetrics.widthPixels < displayMetrics.heightPixels) // portrait
-            naiveMax = displayMetrics.heightPixels / 2 - cardPaddingPx - cardPaddingPx;
-        else // landscape
+        //if (displayMetrics.widthPixels < displayMetrics.heightPixels) // portrait
             naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
+        //else // landscape
+        //    naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
+            //naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
         naiveMax -= boardTabletViewWidthPx;
         return naiveMax;
     }

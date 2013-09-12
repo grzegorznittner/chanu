@@ -88,10 +88,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected PullToRefreshAttacher mPullToRefreshAttacher;
     protected View boardTitleBar;
     protected View boardSearchResultsBar;
-
     protected ThreadListener threadListener;
-
     protected boolean progressVisible = false;
+    protected Menu menu = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle bundle) {
@@ -568,6 +567,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
+        this.menu = menu;
         MenuItem playMenuItem = menu.findItem(R.id.play_thread_menu);
         if (playMenuItem != null)
             synchronized (this) {
@@ -580,11 +580,12 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     playMenuItem.setVisible(false);
                 }
             }
-        setDeadStatusAsync(menu);
+        setDeadStatusAsync();
+        setWatchMenuAsync();
         super.onPrepareOptionsMenu(menu);
     }
 
-    protected void setDeadStatusAsync(final Menu menu) {
+    protected void setDeadStatusAsync() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -604,6 +605,29 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                                 item.setVisible(undead);
                             if ((item = menu.findItem(R.id.web_menu)) != null)
                                 item.setVisible(undead);
+                        }
+                    });
+            }
+        }).start();
+    }
+
+    protected void setWatchMenuAsync() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
+                final boolean watched = ChanFileStorage.isThreadWatched(getActivityContext(), thread);
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (menu == null)
+                                return;
+                            MenuItem item;
+                            if ((item = menu.findItem(R.id.watch_thread_menu)) != null)
+                                item.setVisible(!watched);
+                            if ((item = menu.findItem(R.id.watch_remove_thread_menu)) != null)
+                                item.setVisible(watched);
                         }
                     });
             }
@@ -656,6 +680,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             case R.id.watch_thread_menu:
                 addToWatchlist();
                 return true;
+            case R.id.watch_remove_thread_menu:
+                removeFromWatchlist();
+                return true;
             case R.id.scroll_to_bottom_menu:
                 int n = adapter.getCount() - 1;
                 if (n >= 4)
@@ -697,6 +724,12 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     protected void addToWatchlist() {
         addToWatchlist(getActivityContext(), handler, boardCode, threadNo);
+        setWatchMenuAsync();
+    }
+
+    protected void removeFromWatchlist() {
+        removeFromWatchlist(getActivityContext(), handler, boardCode, threadNo);
+        setWatchMenuAsync();
     }
 
     public static void addToWatchlist(final Context context, final Handler handler,
@@ -721,6 +754,41 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 catch (IOException e) {
                     msgId = R.string.thread_not_added_to_watchlist;
                     Log.e(TAG, "Exception adding /" + boardCode + "/" + threadNo + " to watchlist", e);
+                }
+                final int stringId = msgId;
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+            }
+        }).start();
+    }
+
+    public static void removeFromWatchlist(final Context context, final Handler handler,
+                                      final String boardCode, final long threadNo) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int msgId;
+                try {
+                    final ChanThread thread = ChanFileStorage.loadThreadData(context, boardCode, threadNo);
+                    if (thread == null) {
+                        Log.e(TAG, "Couldn't remove thread /" + boardCode + "/" + threadNo + " from watchlist");
+                        msgId = R.string.thread_watchlist_not_deleted_thread;
+                    }
+                    else {
+                        ChanFileStorage.deleteWatchedThread(context, thread);
+                        BoardActivity.refreshWatchlist();
+                        msgId = R.string.thread_deleted_from_watchlist;
+                        if (DEBUG) Log.i(TAG, "Deleted /" + boardCode + "/" + threadNo + " from watchlist");
+                    }
+                }
+                catch (IOException e) {
+                    msgId = R.string.thread_watchlist_not_deleted_thread;
+                    Log.e(TAG, "Exception deleting /" + boardCode + "/" + threadNo + " from watchlist", e);
                 }
                 final int stringId = msgId;
                 if (handler != null)

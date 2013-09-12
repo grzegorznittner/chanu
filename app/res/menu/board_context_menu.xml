@@ -5,6 +5,11 @@
           android:title="@string/board_thread_watch_menu"
             />
 
+    <item android:id="@+id/board_thread_watch_remove_menu"
+          android:title="@string/board_thread_remove_menu"
+          android:visible="false"
+            />
+
     <item android:id="@+id/board_thread_gallery_menu"
           android:title="@string/board_thread_gallery_menu"
             />
