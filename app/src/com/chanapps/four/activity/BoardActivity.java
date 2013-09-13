@@ -437,6 +437,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     }
 
     protected void startLoader(final ChanBoard board) {
+        NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
         if (board.isVirtualBoard() && !board.isPopularBoard()) { // always ready, start loading
             if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ non-popular virtual board, loading immediately");
             if (adapter == null || adapter.getCount() == 0)
@@ -447,26 +448,17 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             if (adapter == null || adapter.getCount() == 0)
                 getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
         }
-        else if (board.hasData() && NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
-                == NetworkProfile.Health.NO_CONNECTION) {
-            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection down, loading immediately");
+        else if (board.hasData() &&
+                (health == NetworkProfile.Health.NO_CONNECTION
+                        || health == NetworkProfile.Health.BAD
+                        || health == NetworkProfile.Health.VERY_SLOW
+                        || health == NetworkProfile.Health.SLOW))
+        {
+            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection " + health + ", loading immediately");
             if (adapter == null || adapter.getCount() == 0)
                 getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
         }
-        else if (board.hasData() && NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
-                == NetworkProfile.Health.BAD) {
-            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection bad, loading immediately");
-            if (adapter == null || adapter.getCount() == 0)
-                getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
-        }
-        else if (board.hasData() && NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
-                == NetworkProfile.Health.VERY_SLOW) {
-            if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection bad, loading immediately");
-            if (adapter == null || adapter.getCount() == 0)
-                getSupportLoaderManager().initLoader(0, null, loaderCallbacks); // data is ready, load it
-        }
-        else if (NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
-                == NetworkProfile.Health.NO_CONNECTION) {
+        else if (health == NetworkProfile.Health.NO_CONNECTION) {
             if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ no board data and connection is down");
             Toast.makeText(getApplicationContext(), R.string.board_no_connection_load, Toast.LENGTH_SHORT).show();
             if (emptyText != null) {

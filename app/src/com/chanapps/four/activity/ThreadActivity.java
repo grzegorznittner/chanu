@@ -343,58 +343,62 @@ public class ThreadActivity
         new Thread(new Runnable() {
             @Override
             public void run() {
-        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        if (mAdapter != null && mAdapter.getCount() > 0 && board.hasData() && board.isCurrent()) {
-            if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " adapter already loaded, skipping");
-        }
-        else if (board.hasData() && board.isCurrent()) {
-            if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " board has current data, loading");
-            createPager(board);
-        }
-        else if (board.hasData() && NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
-                == NetworkProfile.Health.NO_CONNECTION) {
-            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " board has old data but connection down, loading");
-            createPager(board);
-        }
-        else if (NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth()
-                == NetworkProfile.Health.NO_CONNECTION) {
-            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " no board data and connection is down");
-            if (handler != null)
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), R.string.board_no_connection_load, Toast.LENGTH_SHORT).show();
-                        setProgress(false);
+                NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
+                ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+                if (mAdapter != null && mAdapter.getCount() > 0 && board.hasData() && board.isCurrent()) {
+                    if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " adapter already loaded, skipping");
+                }
+                else if (board.hasData() && board.isCurrent()) {
+                    if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " board has current data, loading");
+                    createPager(board);
+                }
+                else if (board.hasData() &&
+                        (health == NetworkProfile.Health.NO_CONNECTION
+                                || health == NetworkProfile.Health.BAD
+                                || health == NetworkProfile.Health.VERY_SLOW
+                                || health == NetworkProfile.Health.SLOW))
+                {
+                    if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " board has old data but connection " + health + ", loading");
+                    createPager(board);
+                }
+                else if (health == NetworkProfile.Health.NO_CONNECTION) {
+                    if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " no board data and connection is down");
+                    if (handler != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), R.string.board_no_connection_load, Toast.LENGTH_SHORT).show();
+                                setProgress(false);
+                            }
+                        });
+                    /*
+                    if (emptyText != null) {
+                        emptyText.setText(R.string.board_no_connection_load);
+                        emptyText.setVisibility(View.VISIBLE);
                     }
-                });
-            /*
-            if (emptyText != null) {
-                emptyText.setText(R.string.board_no_connection_load);
-                emptyText.setVisibility(View.VISIBLE);
-            }
-            */
+                    */
+                }
+                else {
+                    /*
+                    if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " non-current board data, loading");
+                    if (onTablet())
+                        getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
+                    createPager();
+                    */
+                    if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " non-current board data, manual refreshing");
+                    if (handler != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                setProgress(true);
+                            }
+                        });
+                    NetworkProfileManager.instance().manualRefresh(activity);
+                    refreshing = true;
+                }
+                }
+            }).start();
         }
-        else {
-            /*
-            if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " non-current board data, loading");
-            if (onTablet())
-                getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
-            createPager();
-            */
-            if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " non-current board data, manual refreshing");
-            if (handler != null)
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        setProgress(true);
-                    }
-                });
-            NetworkProfileManager.instance().manualRefresh(activity);
-            refreshing = true;
-        }
-            }
-        }).start();
-    }
 
     public boolean refreshing = false;
 
