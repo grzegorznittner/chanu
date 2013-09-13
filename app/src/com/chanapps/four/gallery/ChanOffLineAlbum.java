@@ -96,6 +96,10 @@ public class ChanOffLineAlbum extends MediaSet {
 	}
 
 	private void loadData() {
+        if (dir == null) {
+            Log.e(TAG, "loadData() null directory, exiting");
+            return;
+        }
 		Log.i(TAG, "Loading data from " + dir.getAbsolutePath());
 		File[] files = dir.listFiles(new FilenameFilter() {
             public boolean accept(File directory, String fileName) {
@@ -103,6 +107,10 @@ public class ChanOffLineAlbum extends MediaSet {
                 return !fileName.endsWith(".txt");
             }
         });
+        if (files == null || files.length == 0) {
+            Log.e(TAG, "loadData() exiting, no gallery images found in dir=" + dir);
+            return;
+        }
         String dirName = dir.getName();
         for (File file : files) {
         	Path path = Path.fromString("/" + ChanOffLineSource.SOURCE_PREFIX + "/" + dir.getName() + "/" + file.getName());

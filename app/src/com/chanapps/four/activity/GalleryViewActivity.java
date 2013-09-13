@@ -240,8 +240,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         try {
             super.onPause();
         }
-        catch (IllegalArgumentException e) {
-            Log.e(TAG, "onPause() illegal argument exception", e);
+        catch (Exception e) {
+            Log.e(TAG, "onPause() gallery state exception", e);
         }
         if (DEBUG) Log.i(TAG, "onPause");
     }

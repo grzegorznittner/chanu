@@ -412,18 +412,28 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+                ChanBoard board = null;
+                try {
+                    board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "startLoaderAsync() exception loading board", e);
+                }
+                if (board == null) {
+                    Log.e(TAG, "startLoaderAsync() couldn't load board /" + boardCode + "/");
+                    return;
+                }
                 updateThreads(board);
+                final ChanBoard finalBoard = board;
                 if (handler != null)
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            startLoader(board);
+                            startLoader(finalBoard);
                         }
                     });
             }
         }).start();
-
     }
 
     protected void startLoader(final ChanBoard board) {
@@ -960,9 +970,13 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 ? R.string.board_search_results
                 : R.string.board_search_no_results;
         String results = String.format(getString(resultsId), query);
-        TextView searchResultsTextView = (TextView)boardSearchResultsBar.findViewById(R.id.board_search_results_text);
-        searchResultsTextView.setText(results);
-        boardSearchResultsBar.setVisibility(View.VISIBLE);
+        if (boardSearchResultsBar != null) {
+            TextView searchResultsTextView = (TextView)boardSearchResultsBar.findViewById(R.id.board_search_results_text);
+            if (searchResultsTextView != null) {
+                searchResultsTextView.setText(results);
+                boardSearchResultsBar.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     protected void displayTitleBar(String title, int lightIconId, int darkIconId) {
@@ -997,7 +1011,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected View.OnClickListener overflowListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (absListView == null)
+            if (absListView == null || v == null)
                 return;
             checkedPos = absListView.getPositionForView(v);
             final PopupMenu popup = new PopupMenu(BoardActivity.this, v);

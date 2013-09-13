@@ -130,7 +130,13 @@ public class ThreadActivity
         if (threadNo <= 0)
             redirectToBoard();
 
-        mPullToRefreshAttacher = new PullToRefreshAttacher(this, new PullToRefreshAttacher.Options());
+        try {
+            mPullToRefreshAttacher = new PullToRefreshAttacher(this, new PullToRefreshAttacher.Options());
+        }
+        catch (OutOfMemoryError e) {
+            Log.e(TAG, "createViews() couldn't load pull to refresh, out of memory");
+            mPullToRefreshAttacher = null;
+        }
         ThreadViewer.initStatics(getApplicationContext(), ThemeSelector.instance(getApplicationContext()).isDark());
 
         wideTablet = getResources().getBoolean(R.bool.wide_tablet);
