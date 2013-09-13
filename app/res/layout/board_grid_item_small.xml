@@ -4,7 +4,6 @@
              android:layout_height="wrap_content"
              style="@style/BoardGridItemSmall"
              android:foreground="@drawable/board_grid_selector_bg"
-
         >
 
     <RelativeLayout android:layout_width="match_parent"

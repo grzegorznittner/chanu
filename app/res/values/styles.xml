@@ -36,8 +36,10 @@
         <item name="android:paddingLeft">@dimen/BoardGridView.spacing</item>
         <item name="android:paddingRight">@dimen/BoardGridView.spacing</item>
         <item name="android:clipToPadding">false</item>
+        <!--
         <item name="android:listSelector">@drawable/board_grid_selector_bg</item>
         <item name="android:drawSelectorOnTop">true</item>
+        -->
     </style>
 
     <!-- SELECTOR GRID STYLES -->
