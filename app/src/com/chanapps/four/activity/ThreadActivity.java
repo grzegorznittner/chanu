@@ -1063,4 +1063,20 @@ public class ThreadActivity
         finish();
     }
 
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (DEBUG) Log.i(TAG, "dispatchKeyEvent event=" + event.toString());
+        ThreadFragment fragment = getCurrentFragment();
+        if (fragment == null) {
+            if (DEBUG) Log.i(TAG, "dispatchKeyEvent current fragment is null, ignoring");
+            return super.dispatchKeyEvent(event);
+        }
+        AbsListView absListView = fragment.getAbsListView();
+        boolean handled = ListViewKeyScroller.dispatchKeyEvent(event, absListView);
+        if (handled)
+            return true;
+        else
+            return super.dispatchKeyEvent(event);
+    }
+
 }

@@ -1208,4 +1208,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         finish();
     }
 
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (DEBUG) Log.i(TAG, "dispatchKeyEvent event=" + event.toString());
+        boolean handled = ListViewKeyScroller.dispatchKeyEvent(event, absListView);
+        if (handled)
+            return true;
+        else
+            return super.dispatchKeyEvent(event);
+    }
+
 }
