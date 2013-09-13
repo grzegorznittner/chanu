@@ -650,11 +650,11 @@
     <string name="pref_theme_light">Light</string>
     <string name="pref_theme_dark">Dark</string>
     <string name="pref_theme_auto">Auto</string>
-    <string name="pref_theme_default">@string/pref_theme_auto</string>
+    <string name="pref_theme_default">@string/pref_theme_light</string>
     <string name="pref_theme_light_value">0</string>
     <string name="pref_theme_dark_value">1</string>
     <string name="pref_theme_auto_value">2</string>
-    <string name="pref_theme_default_value">@string/pref_theme_auto_value</string>
+    <string name="pref_theme_default_value">@string/pref_theme_light_value</string>
     <string name="pref_autoload_images_title">Autoload Thread Images</string>
     <string name="pref_autoload_images_summary">Never, always, or auto based on connection speed</string>
     <string name="pref_autoload_images_never">Never</string>
@@ -764,10 +764,6 @@
 
     <string name="tutorial_intro_desc">Welcome</string>
     <string name="tutorial_intro_desc_detail">Chanu is an anonymous forum backed with content from 4chan.</string>
-    <!--
-    <string name="tutorial_section_desc">Categories</string>
-    <string name="tutorial_section_desc_detail">Categories group discussion boards such as Japanese Culture, Interests, Creative, and Other.</string>
-    -->
     <string name="tutorial_board_desc">Boards</string>
     <string name="tutorial_board_desc_detail">Each board has its own theme where anyone can start new threads.</string>
     <string name="tutorial_thread_desc">Threads</string>
@@ -776,74 +772,6 @@
     <string name="tutorial_post_desc_detail">Anyone can post comments and images until the thread expires.</string>
     <string name="tutorial_finished_desc">Finished</string>
     <string name="tutorial_finished_desc_detail">Click a board to start browsing content.</string>
-
-    <!--
-    <string name="tutorial_boardselector_desc">Welcome to the Boards</string>
-    <string name="tutorial_boardselector_desc_detail">On Chanu, people post images on boards and discuss them. Click a
-        board to see its posts.
-    </string>
-    <string name="tutorial_all_cached_images">All Boards Gallery</string>
-    <string name="tutorial_all_cached_images_detail">This menu shows all cached images grouped by board</string>
-    <string name="tutorial_popular_desc">Popular Threads</string>
-    <string name="tutorial_popular_desc_detail">Browse popular threads, visit recent posts, and view the latest images
-    </string>
-    <string name="tutorial_watchlist_desc">Watchlist</string>
-    <string name="tutorial_watchlist_desc_detail">Keep track of threads with the watchlist.</string>
-    <string name="tutorial_watchlist_clean">Clean Watchlist</string>
-    <string name="tutorial_watchlist_clean_detail">You can use the trash icon to remove all dead threads from the
-        watchlist
-    </string>
-    <string name="tutorial_watchlist_delete">Delete Watchlist</string>
-    <string name="tutorial_watchlist_delete_detail">You can use the \'X\' icon to clear the watchlist</string>
-    <string name="tutorial_board_select">Select Board</string>
-    <string name="tutorial_board_select_detail">Use the Select Board spinner to quickly jump to a board</string>
-    <string name="tutorial_manual_refresh">Manual Refresh</string>
-    <string name="tutorial_manual_refresh_detail">Use the refresh button to update the page</string>
-    <string name="tutorial_search_board">Thread Search</string>
-    <string name="tutorial_search_board_detail">Click the search button to find matching threads</string>
-    <string name="tutorial_board_list_view">View as List</string>
-    <string name="tutorial_board_list_view_detail">Click the list button to view threads as a list</string>
-    <string name="tutorial_add_thread">New Thread</string>
-    <string name="tutorial_add_thread_detail">Click the add button to post a new thread</string>
-    <string name="tutorial_cached_board_images">Board Image Gallery</string>
-    <string name="tutorial_cached_board_images_detail">This menu shows all cached images for the board grouped by
-        thread
-    </string>
-    <string name="tutorial_board_rules">Board Rules</string>
-    <string name="tutorial_board_rules_detail">This menu shows the rules for this board, read before posting</string>
-    <string name="tutorial_gallery_view">Gallery View</string>
-    <string name="tutorial_gallery_view_detail">Click the image button to go to the thread gallery view</string>
-    <string name="tutorial_search_thread">Post Search</string>
-    <string name="tutorial_search_thread_detail">Click the search button to find matching posts</string>
-    <string name="tutorial_post">Post Reply</string>
-    <string name="tutorial_post_detail">Click the reply button to make a new post</string>
-    <string name="tutorial_watch_thread">Watch Thread</string>
-    <string name="tutorial_watch_thread_detail">This menu adds the current thread to your watchlist</string>
-    <string name="tutorial_play_thread">Play Thread</string>
-    <string name="tutorial_play_thread_detail">This menu scrolls through the thread at reading speed, the Stop Thread
-        menu stops it
-    </string>
-    <string name="tutorial_preload_all_images">Preload All Images</string>
-    <string name="tutorial_preload_all_images_detail">This menu preloads all images at full size for faster gallery
-        browsing
-    </string>
-    <string name="tutorial_download_all_images_to_gallery">Download to Gallery</string>
-    <string name="tutorial_download_all_images_to_gallery_detail">This menu downloads all thread images to your Android
-        gallery
-    </string>
-    <string name="tutorial_settings_names">User Info</string>
-    <string name="tutorial_settings_names_detail">You can optionally enter the name, email and password you would like
-        to auto-fill for posting
-    </string>
-    <string name="tutorial_settings_4chan_pass">4chan Pass</string>
-    <string name="tutorial_settings_4chan_pass_detail">Purchase a 4chan Pass and enter here to bypass captcha when
-        posting
-    </string>
-    <string name="tutorial_settings_cache_size">Cache Size</string>
-    <string name="tutorial_settings_cache_size_detail">Adjust cache parameters to optimize browsing speed</string>
-    <string name="tutorial_settings_watchlist">Watchlist</string>
-    <string name="tutorial_settings_watchlist_detail">Adjust watchlist parameters for automatic list cleaning</string>
-    -->
 
     <!-- board names -->
     <string name="board_type_worksafe">Worksafe</string>
