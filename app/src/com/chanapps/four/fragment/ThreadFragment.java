@@ -492,7 +492,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         absListView.setAdapter(adapter);
         absListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
         absListView.setOnCreateContextMenuListener(this);
-        absListView.setOnItemClickListener(threadItemListener);
+        //absListView.setOnItemClickListener(threadItemListener);
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
     }
 
@@ -502,6 +502,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
     }
 
+    /*
     protected AbsListView.OnItemClickListener threadItemListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -522,6 +523,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 itemBoardLinkListener.onClick(view);
         }
     };
+    */
 
     private void postReply(long postNos[]) {
         String replyText = "";
@@ -542,6 +544,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         }
     };
 
+    /*
     protected View.OnClickListener postReplyListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -557,6 +560,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             PostReplyActivity.startActivity(getActivityContext(), boardCode, threadNo, postNo, ChanPost.planifyText(""));
         }
     };
+    */
 
     protected boolean isThreadPlayable() {
         return adapter != null
@@ -859,7 +863,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         clipboard.setPrimaryClip(clip);
         Toast.makeText(getActivityContext(), R.string.copy_text_complete, Toast.LENGTH_SHORT).show();
     }
-
+    /*
     protected View.OnClickListener itemAdListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -938,6 +942,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             }
         }
     };
+    */
 
     protected View.OnLongClickListener startActionModeListener = new View.OnLongClickListener() {
         @Override
@@ -1553,7 +1558,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     //postReplyListener,
                     overflowListener,
                     threadListener.expandedImageListener,
-                    startActionModeListener);
+                    threadListener.itemBoardLinkListener,
+                    startActionModeListener
+            );
         }
     };
 

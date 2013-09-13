@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.View;
+import android.widget.AbsListView;
+import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.activity.ThreadActivity;
@@ -217,4 +219,25 @@ public class ThreadListener {
         }
     };
 
+    public View.OnClickListener itemBoardLinkListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            AbsListView absListView = threadViewable.getAbsListView();
+            if (absListView == null)
+                return;
+            int pos = absListView.getPositionForView(v);
+            Cursor cursor = threadViewable.getAdapter() == null ? null : threadViewable.getAdapter().getCursor();
+            if (cursor == null)
+                return;
+            if (!cursor.moveToPosition(pos))
+                return;
+            String linkedBoardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
+            absListView.setItemChecked(pos, false); // gets checked for some reason
+            if (linkedBoardCode != null && !linkedBoardCode.isEmpty() && v.getContext() instanceof Activity) {
+                Activity activity = (Activity)v.getContext();
+                BoardActivity.startActivity(activity, linkedBoardCode, "");
+                activity.finish();
+            }
+        }
+    };
 }

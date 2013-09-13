@@ -255,6 +255,7 @@ public class ThreadSinglePopupDialogFragment extends DialogFragment implements T
                     //null,
                     null,
                     null,
+                    null,
                     null);
         }
     };

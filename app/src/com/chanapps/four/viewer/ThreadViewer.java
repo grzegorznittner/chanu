@@ -108,6 +108,7 @@ public class ThreadViewer {
                                        //View.OnClickListener postReplyListener,
                                        View.OnClickListener overflowListener,
                                        View.OnClickListener expandedImageListener,
+                                       View.OnClickListener itemBoardLinkListener,
                                        View.OnLongClickListener startActionModeListener
                                        ) {
         if (imageLoader == null)
@@ -124,8 +125,8 @@ public class ThreadViewer {
         //    return setButtonView(view, cursor);
         //else if ((flags & ChanPost.FLAG_IS_AD) > 0)
         //    return setBannerAdView(view, cursor, isTablet);
-        else if ((flags & (ChanPost.FLAG_IS_BOARDLINK | ChanPost.FLAG_IS_THREADLINK)) > 0)
-            return setListLinkView(view, cursor, flags);
+        else if (isListLink(flags))
+            return setListLinkView(view, cursor, flags, itemBoardLinkListener);
         else
             return setListItemView(view, cursor, flags,
                     showContextMenu,
@@ -141,9 +142,9 @@ public class ThreadViewer {
                     startActionModeListener);
     }
 
-    protected static boolean setListLinkView(final View view, final Cursor cursor, int flags) {
+    protected static boolean setListLinkView(final View view, final Cursor cursor, int flags, View.OnClickListener itemBoardLinkListener) {
         ThreadViewHolder viewHolder = (ThreadViewHolder)view.getTag(R.id.VIEW_HOLDER);
-        setItem(viewHolder, cursor, flags, false, null, null, null);
+        setItem(viewHolder, cursor, flags, false, null, null, null, itemBoardLinkListener);
         setImageWrapper(viewHolder, flags);
         setImage(viewHolder, cursor, flags, null, null);
         setCountryFlag(viewHolder, cursor, flags);
@@ -172,7 +173,8 @@ public class ThreadViewer {
                 imagesOnClickListener,
                 repliesOnClickListener,
                 //postReplyListener,
-                overflowListener);
+                overflowListener,
+                null);
         setImageWrapper(viewHolder, flags);
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
             setHeaderImage(viewHolder, cursor, flags, imageOnClickListener, expandedImageListener);
@@ -193,16 +195,28 @@ public class ThreadViewer {
                                      View.OnClickListener imagesOnClickListener,
                                      View.OnClickListener repliesOnClickListener,
                                      //View.OnClickListener postReplyListener,
-                                     View.OnClickListener overflowListener) {
+                                     View.OnClickListener overflowListener,
+                                     View.OnClickListener itemBoardLinkListener)
+    {
         ViewGroup item = viewHolder.list_item;
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         item.setTag((flags & ChanPost.FLAG_IS_AD) > 0 ? null : postId);
         item.setTag(R.id.THREAD_VIEW_IS_IMAGE_EXPANDED, Boolean.FALSE);
         item.setTag(R.id.THREAD_VIEW_IS_EXIF_EXPANDED, Boolean.FALSE);
+
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
             displayHeaderCountFields(viewHolder, cursor, showContextMenu, imagesOnClickListener, repliesOnClickListener);
         else
             displayItemCountFields(viewHolder, cursor, showContextMenu, repliesOnClickListener);
+
+        if (isListLink(flags)) {
+            viewHolder.list_item.setOnClickListener(itemBoardLinkListener);
+        }
+        else {
+            viewHolder.list_item.setOnClickListener(null);
+            viewHolder.list_item.setClickable(false);
+        }
+
         View listItemLeftSpacer = viewHolder.list_item_left_spacer;
         if (listItemLeftSpacer != null)
             listItemLeftSpacer.setVisibility((flags & ChanPost.FLAG_HAS_IMAGE) > 0 ? View.GONE : View.VISIBLE);

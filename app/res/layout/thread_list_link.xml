@@ -4,52 +4,61 @@
         style="@style/ThreadListItemLayout"
         android:id="@+id/list_item"
         >
-        <!--
-        android:paddingLeft="@dimen/BoardGridView.spacing"
-        android:paddingRight="@dimen/BoardGridView.spacing"
-        >
-        -->
-    <LinearLayout
+    <!--
+    android:paddingLeft="@dimen/BoardGridView.spacing"
+    android:paddingRight="@dimen/BoardGridView.spacing"
+    >
+    -->
+    <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:foreground="@drawable/board_grid_selector_bg"
             android:background="?themedLargeCardBackground"
             >
-
-        <RelativeLayout
+        <!--
+        <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/list_item_header_wrapper"
+                android:orientation="vertical"
+                android:background="?themedLargeCardBackground"
                 >
-
-            <ImageView style="@style/ThreadListLinkImage" android:id="@+id/list_item_image"
-                    />
-
-            <LinearLayout
+        -->
+            <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/list_item_image"
-                    android:layout_centerVertical="true"
-                    android:paddingLeft="@dimen/ThreadListHeader_padding"
-                    android:paddingRight="@dimen/ThreadListHeader_padding"
-                    android:paddingTop="@dimen/ThreadListHeader_small_padding"
-                    android:paddingBottom="@dimen/ThreadListHeader_small_padding"
-                    android:orientation="vertical"
+                    android:id="@+id/list_item_header_wrapper"
                     >
 
-                <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"
-                          android:textColor="@color/PaletteDarkGray"
-                          android:linksClickable="false"
-                          android:autoLink="none"
+                <ImageView style="@style/ThreadListLinkImage" android:id="@+id/list_item_image"
                         />
-                <TextView style="@style/ThreadListLinkHead" android:id="@+id/list_item_header"
-                          android:linksClickable="false"
-                          android:autoLink="none"
-                        />
-            </LinearLayout>
 
-        </RelativeLayout>
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/list_item_image"
+                        android:layout_centerVertical="true"
+                        android:paddingLeft="@dimen/ThreadListHeader_padding"
+                        android:paddingRight="@dimen/ThreadListHeader_padding"
+                        android:paddingTop="@dimen/ThreadListHeader_small_padding"
+                        android:paddingBottom="@dimen/ThreadListHeader_small_padding"
+                        android:orientation="vertical"
+                        >
 
-    </LinearLayout>
+                    <TextView style="@style/ThreadListItemSubject" android:id="@+id/list_item_subject"
+                              android:textColor="@color/PaletteDarkGray"
+                              android:linksClickable="false"
+                              android:autoLink="none"
+                            />
+                    <TextView style="@style/ThreadListLinkHead" android:id="@+id/list_item_header"
+                              android:linksClickable="false"
+                              android:autoLink="none"
+                            />
+                </LinearLayout>
+
+            </RelativeLayout>
+        <!--
+        </LinearLayout>
+        -->
+    </FrameLayout>
 
 </com.chanapps.four.component.CheckableLinearLayout>
