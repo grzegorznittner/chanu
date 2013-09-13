@@ -160,12 +160,12 @@ abstract public class
                 if (DEBUG) Log.i(TAG, "Starting settings activity");
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
                 startActivity(settingsIntent);
-                finish();
+                //finish();
                 return true;
             case R.id.about_menu:
                 Intent intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);
-                finish();
+                //finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

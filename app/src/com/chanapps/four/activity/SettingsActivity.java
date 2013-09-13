@@ -1,11 +1,13 @@
 package com.chanapps.four.activity;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,6 +19,8 @@ import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.SettingsFragment;
 
+import java.util.List;
+
 /**
  * User: mpop
  * Date: 11/20/12
@@ -25,6 +29,7 @@ import com.chanapps.four.fragment.SettingsFragment;
 public class SettingsActivity extends Activity implements ChanIdentifiedActivity, ThemeSelector.ThemeActivity {
 
     public static final String TAG = SettingsActivity.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     public static final String PREF_SHOW_NSFW_BOARDS = "pref_show_nsfw_boards";
     public static final String PREF_NOTIFICATIONS = "pref_notifications";
@@ -164,6 +169,39 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (DEBUG) Log.i(TAG, "onBackPressed()");
+        navigateUp();
+    }
+
+    protected void navigateUp() { // either pop off stack, or go up to all boards
+        if (DEBUG) Log.i(TAG, "navigateUp()");
+        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
+        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
+        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        if (task != null) {
+            if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
+            if (task.baseActivity != null
+                    && !getClass().getName().equals(task.baseActivity.getClassName())) {
+                if (DEBUG) Log.i(TAG, "navigateUp() using finish instead of intents with me="
+                        + getClass().getName() + " base=" + task.baseActivity.getClassName());
+                finish();
+                return;
+            }
+            else if (task.baseActivity != null && tasks.size() >= 2) {
+                if (DEBUG) Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + tasks.size());
+                finish();
+                return;
+            }
+        }
+        // otherwise go back to the all boards page
+        Intent intent = BoardActivity.createIntent(this, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
 }

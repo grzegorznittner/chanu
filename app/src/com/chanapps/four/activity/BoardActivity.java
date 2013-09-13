@@ -44,7 +44,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
     public static String topBoardCode = null;
 
@@ -1166,10 +1166,12 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     @Override
     public void onBackPressed() {
+        if (DEBUG) Log.i(TAG, "onBackPressed() /" + boardCode + "/");
         navigateUp();
     }
 
     public void navigateUp() { // either pop off stack, or go up to all boards
+        if (DEBUG) Log.i(TAG, "navigateUp() /" + boardCode + "/");
         ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
         List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
         ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;

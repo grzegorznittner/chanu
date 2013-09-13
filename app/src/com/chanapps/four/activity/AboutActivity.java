@@ -1,6 +1,7 @@
 package com.chanapps.four.activity;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import com.chanapps.four.component.*;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.AboutFragment;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -156,6 +159,39 @@ public class AboutActivity extends Activity implements ChanIdentifiedActivity, T
             return;
         }
         BillingComponent.getInstance(getApplicationContext()).processPurchaseResponse(data, new Handler());
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (DEBUG) android.util.Log.i(TAG, "onBackPressed()");
+        navigateUp();
+    }
+
+    protected void navigateUp() { // either pop off stack, or go up to all boards
+        if (DEBUG) android.util.Log.i(TAG, "navigateUp()");
+        ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
+        List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
+        ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        if (task != null) {
+            if (DEBUG) android.util.Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
+            if (task.baseActivity != null
+                    && !getClass().getName().equals(task.baseActivity.getClassName())) {
+                if (DEBUG) android.util.Log.i(TAG, "navigateUp() using finish instead of intents with me="
+                        + getClass().getName() + " base=" + task.baseActivity.getClassName());
+                finish();
+                return;
+            }
+            else if (task.baseActivity != null && tasks.size() >= 2) {
+                if (DEBUG) android.util.Log.i(TAG, "navigateUp() using finish as task has at least one parent, size=" + tasks.size());
+                finish();
+                return;
+            }
+        }
+        // otherwise go back to the all boards page
+        Intent intent = BoardActivity.createIntent(this, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
 }
