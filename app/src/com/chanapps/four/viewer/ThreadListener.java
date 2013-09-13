@@ -116,7 +116,7 @@ public class ThreadListener {
     public final View.OnClickListener repliesOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.REPLIES);
     public final View.OnClickListener sameIdOnClickListener = createPopupListener(ThreadPopupDialogFragment.PopupType.SAME_ID);
 
-    public final View.OnClickListener imageOnClickListener = new View.OnClickListener() {
+    public final View.OnClickListener thumbOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int pos = threadViewable.getAbsListView().getPositionForView(v);

@@ -197,6 +197,10 @@ public class ThreadImageExpander {
                         viewHolder.list_item_image_expanded_click_effect.setOnClickListener(null);
                     }
                 }
+                if (viewHolder.list_item_image_expansion_target != null) {
+                    viewHolder.list_item_image_expansion_target.setOnClickListener(null);
+                    viewHolder.list_item_image_expansion_target.setForeground(view.getResources().getDrawable(R.drawable.null_selector_bg));
+                }
                 if (withProgress)
                     hideThumbnail();
                 if (viewHolder.list_item != null)

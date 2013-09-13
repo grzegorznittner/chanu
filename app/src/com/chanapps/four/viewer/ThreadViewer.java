@@ -17,6 +17,7 @@ import android.text.style.*;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.android.gallery3d.ui.Log;
@@ -99,7 +100,7 @@ public class ThreadViewer {
                                        boolean showContextMenu,
                                        int columnWidth,
                                        int columnHeight,
-                                       View.OnClickListener imageOnClickListener,
+                                       View.OnClickListener thumbOnClickListener,
                                        SpannableOnClickListener backlinkOnClickListener,
                                        View.OnClickListener imagesOnClickListener,
                                        View.OnClickListener repliesOnClickListener,
@@ -130,7 +131,7 @@ public class ThreadViewer {
         else
             return setListItemView(view, cursor, flags,
                     showContextMenu,
-                    imageOnClickListener,
+                    thumbOnClickListener,
                     backlinkOnClickListener,
                     imagesOnClickListener,
                     repliesOnClickListener,
@@ -155,7 +156,7 @@ public class ThreadViewer {
 
     protected static boolean setListItemView(final View view, final Cursor cursor, int flags,
                                           boolean showContextMenu,
-                                          View.OnClickListener imageOnClickListener,
+                                          View.OnClickListener thumbOnClickListener,
                                           SpannableOnClickListener backlinkOnClickListener,
                                           View.OnClickListener imagesOnClickListener,
                                           View.OnClickListener repliesOnClickListener,
@@ -177,9 +178,9 @@ public class ThreadViewer {
                 null);
         setImageWrapper(viewHolder, flags);
         if ((flags & ChanPost.FLAG_IS_HEADER) > 0)
-            setHeaderImage(viewHolder, cursor, flags, imageOnClickListener, expandedImageListener);
+            setHeaderImage(viewHolder, cursor, flags, thumbOnClickListener, expandedImageListener);
         else
-            setImage(viewHolder, cursor, flags, imageOnClickListener, expandedImageListener);
+            setImage(viewHolder, cursor, flags, thumbOnClickListener, expandedImageListener);
         setCountryFlag(viewHolder, cursor, flags);
         setHeaderValue(viewHolder, cursor, sameIdOnClickListener);
         setSubject(viewHolder, cursor, flags, backlinkOnClickListener);
@@ -556,7 +557,7 @@ public class ThreadViewer {
     }
 
     static private boolean setHeaderImage(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
-                                    View.OnClickListener imageOnClickListener,
+                                    View.OnClickListener thumbOnClickListener,
                                     View.OnClickListener expandedImageListener) {
         ImageView iv = viewHolder.list_item_image;
         if (iv == null)
@@ -569,11 +570,11 @@ public class ThreadViewer {
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
         if (!isDead && prefetchExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
-        return displayHeaderImage(viewHolder, cursor, flags, imageOnClickListener);
+        return displayHeaderImage(viewHolder, cursor, flags, thumbOnClickListener);
     }
 
     static private boolean setImage(ThreadViewHolder viewHolder, final Cursor cursor, int flags,
-                                    View.OnClickListener imageOnClickListener,
+                                    View.OnClickListener thumbOnClickListener,
                                     View.OnClickListener expandedImageListener) {
         ImageView iv = viewHolder.list_item_image;
         if (iv == null)
@@ -581,10 +582,10 @@ public class ThreadViewer {
         if (hideNoImage(iv, flags))
             return true;
         if (isListLink(flags))
-            return displayNonHeaderImage(iv, cursor, imageOnClickListener);
+            return displayNonHeaderImage(iv, null, cursor, null);
 
         // display thumb and also expand if available
-        displayNonHeaderImage(iv, cursor, imageOnClickListener);
+        displayNonHeaderImage(iv, viewHolder.list_item_image_expansion_target, cursor, thumbOnClickListener);
         if (displayCachedExpandedImage(viewHolder, cursor, expandedImageListener))
             return true;
         boolean isDead = (flags & ChanPost.FLAG_IS_DEAD) > 0;
@@ -598,7 +599,7 @@ public class ThreadViewer {
     }
 
     static private boolean displayHeaderImage(ThreadViewHolder viewHolder, Cursor cursor, int flags,
-                                           View.OnClickListener imageOnClickListener) {
+                                           View.OnClickListener thumbOnClickListener) {
         ImageView iv = viewHolder.list_item_image;
         int tn_w = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_W));
         int tn_h = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_TN_H));
@@ -630,8 +631,8 @@ public class ThreadViewer {
         DisplayImageOptions options = createDisplayImageOptions(displayImageSize);
 
         // display image
-        if (imageOnClickListener != null)
-            iv.setOnClickListener(imageOnClickListener);
+        if (thumbOnClickListener != null)
+            iv.setOnClickListener(thumbOnClickListener);
         viewHolder.list_item_image_expanded_wrapper.setVisibility(View.VISIBLE);
         iv.setVisibility(View.VISIBLE);
         //ImageLoadingListener listener = ((flags & ChanPost.FLAG_IS_AD) > 0) ? adImageLoadingListener : null;
@@ -711,14 +712,20 @@ public class ThreadViewer {
         return true;
     }
 
-    static private boolean displayNonHeaderImage(final ImageView iv, final Cursor cursor,
-                                                 View.OnClickListener imageOnClickListener) {
+    static private boolean displayNonHeaderImage(final ImageView iv, final FrameLayout wrapper, final Cursor cursor,
+                                                 View.OnClickListener thumbOnClickListener) {
         String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
         if (url != null && !url.isEmpty()) {
             if (DEBUG) Log.i(TAG, "setImage url=" + url);
-            if (imageOnClickListener != null) {
-                View wrapper = (View)iv.getParent().getParent();
-                wrapper.setOnClickListener(imageOnClickListener);
+            if (wrapper != null) {
+                if (thumbOnClickListener != null) {
+                    wrapper.setOnClickListener(thumbOnClickListener);
+                    wrapper.setForeground(wrapper.getResources().getDrawable(R.drawable.thread_list_selector_bg));
+                }
+                else {
+                    wrapper.setOnClickListener(null);
+                    wrapper.setForeground(wrapper.getResources().getDrawable(R.drawable.null_selector_bg));
+                }
             }
             iv.setVisibility(View.VISIBLE);
             imageLoader.displayImage(url, iv, thumbDisplayImageOptions);
@@ -727,6 +734,10 @@ public class ThreadViewer {
             if (DEBUG) Log.i(TAG, "setImage null image");
             iv.setVisibility(View.GONE);
             iv.setImageBitmap(null);
+            if (wrapper != null) {
+                wrapper.setOnClickListener(null);
+                wrapper.setForeground(wrapper.getResources().getDrawable(R.drawable.null_selector_bg));
+            }
         }
         return true;
     }

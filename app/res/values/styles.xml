@@ -724,7 +724,7 @@
     <style name="ThreadListItemLeftBarWrap" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/ThreadListHeader_flowsize</item>
-        <item name="android:foreground">@drawable/thread_list_selector_bg</item>
+        <!-- <item name="android:foreground">@drawable/thread_list_selector_bg</item> -->
     </style>
 
     <style name="ThreadListItemReplyWrap" parent="AppTheme">

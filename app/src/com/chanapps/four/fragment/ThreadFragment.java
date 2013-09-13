@@ -1,7 +1,6 @@
 package com.chanapps.four.fragment;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -1549,7 +1548,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     true,
                     0,
                     0,
-                    threadListener.imageOnClickListener,
+                    threadListener.thumbOnClickListener,
                     threadListener.backlinkOnClickListener,
                     imagesOnClickListener,
                     threadListener.repliesOnClickListener,

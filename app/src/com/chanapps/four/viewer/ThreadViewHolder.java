@@ -23,6 +23,7 @@ public class ThreadViewHolder {
     public ImageView list_item_header_bar_chat;
     public ImageView list_item_header_bar_overflow;
     public ImageView list_item_image;
+    public FrameLayout list_item_image_expansion_target;
     public ImageView list_item_image_expanded;
     public ImageView list_item_num_images_spinner;
     public ViewGroup list_item_ago_wrapper;
@@ -62,6 +63,7 @@ public class ThreadViewHolder {
         list_item_header_bar_chat = (ImageView)item.findViewById(R.id.list_item_header_bar_chat);
         list_item_header_bar_overflow = (ImageView)item.findViewById(R.id.list_item_header_bar_overflow);
         list_item_image = (ImageView)item.findViewById(R.id.list_item_image);
+        list_item_image_expansion_target = (FrameLayout)item.findViewById(R.id.list_item_image_expansion_target);
         list_item_image_expanded = (ImageView)item.findViewById(R.id.list_item_image_expanded);
         list_item_num_images_spinner = (ImageView)item.findViewById(R.id.list_item_num_images_spinner);
         list_item_ago_wrapper = (ViewGroup)item.findViewById(R.id.list_item_ago_wrapper);
