@@ -272,7 +272,8 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
     }
 
     protected int addBlobRows(MatrixCursor matrixCursor, String columnName) {
-        cursor.moveToPosition(pos);
+        if (!cursor.moveToPosition(pos))
+            return 0;
         byte[] b = cursor.getBlob(cursor.getColumnIndex(columnName));
         if (b == null || b.length == 0)
             return 0;
@@ -280,11 +281,13 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         if (links == null || links.size() <= 0)
             return 0;
         int count = links.size();
-        cursor.moveToFirst();
+        if (!cursor.moveToFirst())
+            return 0;
         while (!cursor.isAfterLast()) {
             if (links.contains(cursor.getLong(0)))
                 matrixCursor.addRow(ChanPost.extractPostRow(cursor));
-            cursor.moveToNext();
+            if (!cursor.moveToNext())
+                break;
         }
         return count;
     }

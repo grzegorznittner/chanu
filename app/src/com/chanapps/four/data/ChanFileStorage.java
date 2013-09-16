@@ -543,7 +543,8 @@ public class ChanFileStorage {
     public static boolean deleteCacheDirectory(Context context) {
         // do this jazz to save widget conf even on clear because you can't programmatically remove widgets
         Set<String> savedWidgetConf = WidgetProviderUtils.getActiveWidgetPref(context);
-
+        ChanBoard favoritesBoard = loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
+        ChanBoard watchlistBoard = loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
         try {
             String cacheDir = getRootCacheDirectory(context);
             File cacheFolder = StorageUtils.getOwnCacheDirectory(context, cacheDir);
@@ -577,8 +578,23 @@ public class ChanFileStorage {
             Log.e(TAG, "Exception deleting cache", e);
             return false;
         } finally {
-            // add back widget conf
-            WidgetProviderUtils.saveWidgetBoardPref(context, savedWidgetConf);
+            // add back user data
+            if (savedWidgetConf != null && savedWidgetConf.size() > 0)
+                WidgetProviderUtils.saveWidgetBoardPref(context, savedWidgetConf);
+            if (favoritesBoard != null && favoritesBoard.threads != null && favoritesBoard.threads.length > 0)
+                try {
+                storeBoardData(context, favoritesBoard);
+                }
+                catch (IOException e) {
+                    Log.e(TAG, "Exception restoring favorites after deleting cache", e);
+                }
+            if (watchlistBoard != null && watchlistBoard.threads != null && watchlistBoard.threads.length > 0)
+                try {
+                storeBoardData(context, watchlistBoard);
+                }
+                catch (IOException e) {
+                    Log.e(TAG, "Exception restoring watchlist after deleting cache", e);
+                }
         }
     }
 

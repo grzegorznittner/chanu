@@ -1248,14 +1248,16 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 if (thread != null && thread.isDead) {
                     if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " found dead thread");
                 }
-                if (handler != null)
+                if (handler != null && getActivity() != null && getActivity().getLoaderManager() != null)
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
                             if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " restarting loader");
-                            getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
-                            if (message != null)
-                                Toast.makeText(getActivityContext(), message, Toast.LENGTH_SHORT).show();
+                            if (getActivity() != null && getActivity().getLoaderManager() != null) {
+                                getLoaderManager().restartLoader(LOADER_ID, null, loaderCallbacks);
+                                if (message != null)
+                                    Toast.makeText(getActivityContext(), message, Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
             }

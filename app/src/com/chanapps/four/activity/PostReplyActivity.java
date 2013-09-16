@@ -1466,7 +1466,8 @@ public class PostReplyActivity
                 String error = context.getString(result) + (errorMessage == null ? "" : ": " + errorMessage);
                 Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
                 reloadCaptcha();
-                dialogFragment.dismiss();
+                if (dialogFragment != null)
+                    dialogFragment.dismiss();
                 return;
             }
 
@@ -1476,7 +1477,8 @@ public class PostReplyActivity
             else {
                 Toast.makeText(context, R.string.post_reply_posted_reply, Toast.LENGTH_SHORT).show();
             }
-            dialogFragment.dismiss();
+            if (dialogFragment != null)
+                dialogFragment.dismiss();
             clearPrefs();
             exitingOnSuccess = true;
             Message.obtain(getHandler(), POST_FINISHED).sendToTarget();
