@@ -215,18 +215,18 @@ public class BillingComponent {
 
     protected void overwritePurchasedItems(Set<String> newItems) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean oldHasProkey = prefs.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
-        boolean newHasProkey = newItems.contains(NO_ADS_NONCONS_PRODUCT_ID);
+        //boolean oldHasProkey = prefs.getBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, false);
+        //boolean newHasProkey = newItems.contains(NO_ADS_NONCONS_PRODUCT_ID);
         SharedPreferences.Editor edit = prefs.edit();
         edit.putStringSet(PREF_PURCHASES, newItems);
-        if (newHasProkey != oldHasProkey)
-            edit.putBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, newHasProkey);
+        //if (newHasProkey != oldHasProkey)
+        //    edit.putBoolean(SettingsActivity.PREF_SHOW_NSFW_BOARDS, newHasProkey);
         edit.commit();
         synchronized (this) {
             purchases = newItems;
         }
-        if (newHasProkey != oldHasProkey)
-            BoardActivity.refreshAllBoards();
+        //if (newHasProkey != oldHasProkey)
+        //    BoardActivity.refreshAllBoards();
     }
 
     protected void purchaseItem(final Activity activity, final String productId) { //, final DialogFragment fragment) {

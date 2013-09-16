@@ -157,7 +157,6 @@
                     android:summaryOff="@string/pref_show_nsfw_boards_summ_off"
                     android:defaultValue="false" />
             -->
-            <!--
             <com.chanapps.four.component.YesNoPreference
                     android:key="pref_show_nsfw_boards"
                     android:title="@string/pref_show_nsfw_boards"
@@ -169,7 +168,7 @@
                     android:negativeButtonText="@string/pref_show_nsfw_boards_summ_neg"
                     android:defaultValue="false"
                     />
-            -->
+
         </PreferenceScreen>
 
         <Preference

@@ -22,6 +22,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
+import com.chanapps.four.activity.BoardActivity;
 import com.chanapps.four.activity.R;
 
 /**
@@ -72,6 +73,7 @@ public class YesNoPreference extends DialogPreference {
     protected void setSummary(boolean value) {
         int id = value ? R.string.pref_show_nsfw_boards_summ_on : R.string.pref_show_nsfw_boards_summ_off;
         setSummary(id);
+        BoardActivity.refreshAllBoards();
     }
 
     /**
