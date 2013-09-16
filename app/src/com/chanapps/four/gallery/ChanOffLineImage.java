@@ -107,57 +107,77 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 
         public Bitmap run(JobContext jc) {
             //Bitmap srcBmp = null;
-        	Bitmap dstBmp = null;
     		try {
-    			Options options = new Options();
-    			options.inPreferredConfig = Config.ARGB_8888;
-    			switch (type) {
-                case TYPE_THUMBNAIL:
-        			options.inSampleSize = computeImageScale(200, 200);
-        			break;
-                case TYPE_MICROTHUMBNAIL:
-                default:
-        			options.inSampleSize = computeImageScale(100, 100);
-    			}
-
-                InputStream imageStream;
-    			try {
-                    imageStream = new FileInputStream(imageFile);
-                }
-                catch (Exception e) {
-                    Log.e(TAG, "Couldn't load image file " + imageFile, e);
-                    return null;
-                }
-
-    			try {
-    				if ("gif".equals(ext)) {
-                		GifDecoder decoder = new GifDecoder();
-                		int status = decoder.read(imageStream);
-                		Log.w(TAG, "Status " + (status == 0 ? "OK" : status == 1 ? "FORMAT_ERROR" : "OPEN_ERROR") + " for file " + imageFile.getName());
-                		if (status == 0) {
-                			dstBmp = decoder.getBitmap();
-                		} else if (status == 1) {
-                			dstBmp = BitmapFactory.decodeStream(new FileInputStream(imageFile), null, options);
-                			Log.w(TAG, imageFile.getName() + (dstBmp == null ? " not" : "") + " loaded via BitmapFactor");
-                		}
-                	} else {
-                		// center crop
-                		dstBmp = BitmapFactory.decodeStream(imageStream, null, options);
-                	}
-                }
-                catch (Exception e) {
-                    Log.e(TAG, "Couldn't decode bitmap file " + imageFile, e);
-                    return null;
-                }
-                finally {
-    				IOUtils.closeQuietly(imageStream);
-    			}
-	            //return ensureGLCompatibleBitmap(bitmap);
-    			return dstBmp;
+    			Bitmap bmp = getBitmap();
+        		if (bmp != null && type == TYPE_MICROTHUMBNAIL) {
+        			bmp = centerCrop(bmp);
+        		}
+        		return bmp;
 			} catch (Throwable e) {
 				Log.e(TAG, "Bitmap docode error for " + imageFile.getName(), e);
 				return null;
 			}
+        }
+
+		private Bitmap getBitmap() throws IOException {
+			Bitmap dstBmp = null;
+			Options options = new Options();
+			options.inPreferredConfig = Config.ARGB_8888;
+			switch (type) {
+			case TYPE_THUMBNAIL:
+				options.inSampleSize = computeImageScale(200, 200);
+				break;
+			case TYPE_MICROTHUMBNAIL:
+			default:
+				options.inSampleSize = computeImageScale(100, 100);
+			}
+
+			InputStream imageStream;
+			try {
+			    imageStream = new FileInputStream(imageFile);
+			}
+			catch (Exception e) {
+			    Log.e(TAG, "Couldn't load image file " + imageFile, e);
+			    return null;
+			}
+
+			try {
+				if ("gif".equals(ext)) {
+					GifDecoder decoder = new GifDecoder();
+					int status = decoder.read(imageStream);
+					Log.w(TAG, "Status " + (status == 0 ? "OK" : status == 1 ? "FORMAT_ERROR" : "OPEN_ERROR") + " for file " + imageFile.getName());
+					if (status == 0) {
+						dstBmp = decoder.getBitmap();
+					} else if (status == 1) {
+						dstBmp = BitmapFactory.decodeStream(new FileInputStream(imageFile), null, options);
+						Log.w(TAG, imageFile.getName() + (dstBmp == null ? " not" : "") + " loaded via BitmapFactor");
+					}
+				} else {
+					// center crop
+					dstBmp = BitmapFactory.decodeStream(imageStream, null, options);
+				}
+			}
+			catch (Exception e) {
+			    Log.e(TAG, "Couldn't decode bitmap file " + imageFile, e);
+			    return null;
+			}
+			finally {
+				IOUtils.closeQuietly(imageStream);
+			}
+			//return ensureGLCompatibleBitmap(bitmap);
+			return dstBmp;
+		}
+        
+        private Bitmap centerCrop(Bitmap srcBmp) {
+			Bitmap dstBmp = null;
+			if (srcBmp.getWidth() >= srcBmp.getHeight()) {
+				dstBmp = Bitmap.createBitmap(srcBmp, srcBmp.getWidth() / 2 - srcBmp.getHeight() / 2, 0,
+						srcBmp.getHeight(), srcBmp.getHeight());
+			} else {
+				dstBmp = Bitmap.createBitmap(srcBmp, 0, srcBmp.getHeight() / 2 - srcBmp.getWidth() / 2,
+						srcBmp.getWidth(), srcBmp.getWidth());
+			}
+			return dstBmp;
         }
 
 		private int computeImageScale(int targetWidth, int targetHeight) throws IOException {

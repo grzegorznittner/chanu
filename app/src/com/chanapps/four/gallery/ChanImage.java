@@ -8,14 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
 
-import com.chanapps.four.data.ChanThread;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import android.content.Context;
@@ -229,20 +225,40 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
         public Bitmap run(JobContext jc) {
         	try {
-        		Bitmap bitmap = null;
-        		if (type == TYPE_THUMBNAIL && !isAnimatedGif()) {
-        			bitmap = downloadFullImageAsThumb();
-        			if (bitmap != null) {
-        				return bitmap;
-        			}
+        		Bitmap bmp = getBitmap();
+        		if (bmp != null && type == TYPE_MICROTHUMBNAIL) {
+        			bmp = centerCrop(bmp);
         		}
-            	return downloadThumbnail();
+        		return bmp;
         	} catch (Throwable e) {
 				Log.e(TAG, "Bitmap docode error for " + localImagePath, e);
 				return null;
 			}
         }
 
+		private Bitmap getBitmap() {
+			Bitmap bitmap = null;
+			if (type == TYPE_THUMBNAIL && !isAnimatedGif()) {
+				bitmap = downloadFullImageAsThumb();
+				if (bitmap != null) {
+					return bitmap;
+				}
+			}
+			return downloadThumbnail();
+		}
+
+        private Bitmap centerCrop(Bitmap srcBmp) {
+			Bitmap dstBmp = null;
+			if (srcBmp.getWidth() >= srcBmp.getHeight()) {
+				dstBmp = Bitmap.createBitmap(srcBmp, srcBmp.getWidth() / 2 - srcBmp.getHeight() / 2, 0,
+						srcBmp.getHeight(), srcBmp.getHeight());
+			} else {
+				dstBmp = Bitmap.createBitmap(srcBmp, 0, srcBmp.getHeight() / 2 - srcBmp.getWidth() / 2,
+						srcBmp.getWidth(), srcBmp.getWidth());
+			}
+			return dstBmp;
+        }
+        
         private Bitmap downloadThumbnail() {
 			File thumbFile = ImageLoader.getInstance().getDiscCache().get(thumbUrl);
             Bitmap bitmap = null;
