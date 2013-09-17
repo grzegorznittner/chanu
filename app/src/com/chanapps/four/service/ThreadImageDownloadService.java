@@ -16,10 +16,11 @@ import java.net.URI;
 import java.net.URL;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.chanapps.four.activity.*;
-import com.chanapps.four.data.*;
 import org.apache.commons.io.IOUtils;
 
 import android.app.Notification;
@@ -36,6 +37,18 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.chanapps.four.activity.ChanActivityId;
+import com.chanapps.four.activity.ChanIdentifiedService;
+import com.chanapps.four.activity.GalleryViewActivity;
+import com.chanapps.four.activity.R;
+import com.chanapps.four.activity.SettingsActivity;
+import com.chanapps.four.activity.SettingsActivity.DownloadImages;
+import com.chanapps.four.activity.ThreadActivity;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
+import com.chanapps.four.data.ChanPost;
+import com.chanapps.four.data.ChanThread;
+import com.chanapps.four.data.FetchParams;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
@@ -45,13 +58,15 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
 public class ThreadImageDownloadService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = ThreadImageDownloadService.class.getSimpleName();
     private static final boolean DEBUG = false;
-    
+
     private static final String TARGET_TYPE = "ThreadImageDownloadService.targetType";
     private static final String START_POST_NO = "ThreadImageDownloadService.startPostNo";
     private static final String RESTART_COUNTER = "ThreadImageDownloadService.restartCounter";
     private static final String TARGET_FOLDER = "ThreadImageDownloadService.folder";
     private static final String SCHEDULE_TIME = "ThreadImageDownloadService.startTime";
     private static final String POST_NOS = "ThreadImageDownloadService.postNos";
+    
+    private static final String CHANU_FOLDER = "chanu" + File.separator;
 
     private enum TargetType {TO_BOARD, TO_GALLERY, TO_ZIP};
     
@@ -135,13 +150,26 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		
 		ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), board, threadNo);
 		if (targetType == TargetType.TO_GALLERY && targetFolder == null) {
-			Format formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-			String now = formatter.format(scheduleTime);
-            String galleryPrefix = getString(R.string.app_name);
-			targetFolder = galleryPrefix + "_" + thread.board + "_" + now;
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+			DownloadImages downloadType = DownloadImages.valueOf(prefs.getString(
+					SettingsActivity.PREF_DOWNLOAD_IMAGES, DownloadImages.ALL_IN_ONE.toString()));
+
+			switch(downloadType) {
+			case ALL_IN_ONE:
+				targetFolder = "";
+				break;
+			case PER_BOARD:
+				targetFolder = "board_" + thread.board;
+				break;
+			case PER_THREAD:
+//				Format formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+//				String now = formatter.format(scheduleTime);
+				targetFolder = "board_" + thread.board + "_" + thread.no;
+				break;
+			}
 		}
 		
-		try {			
+		try {
 			if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") 
 	        		+ " handling all image download service for thread " + board + "/" + threadNo
 	        		+ (postNos.length == 0 ? "" : " for posts " + Arrays.toString(postNos))
@@ -236,7 +264,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			
 			in = new FileInputStream(imageFile);
 			File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 
-			    targetFolder);
+					CHANU_FOLDER + targetFolder);
 			if (!galleryFolder.exists() || !galleryFolder.isDirectory()) {
 				galleryFolder.mkdirs();
 			}
@@ -318,7 +346,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	
 	private Uri getGalleryURIForFirstImage(ChanThread thread) {
 		File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 
-			    targetFolder);
+				CHANU_FOLDER + targetFolder);
 		for (ChanPost post : thread.posts) {
 			if (post.tim != 0) {
 				File image = new File(galleryFolder, post.imageName());
@@ -384,7 +412,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		@Override
 		public void onMediaScannerConnected() {
 			File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 
-				    targetFolder);
+					CHANU_FOLDER + targetFolder);
 			for (ChanPost post : thread.posts) {
 				if (post.tim != 0) {
 					File image = new File(galleryFolder, post.imageName());
@@ -406,7 +434,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
             if (DEBUG) Log.i(TAG, "Finished scan: " + path + " counter=" + scansScheduled);
 			if (scansScheduled <= 0) {
 				File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 
-					    targetFolder);
+						CHANU_FOLDER + targetFolder);
 				notifyDownloadFinished(context, targetType, thread, board, threadNo, firstImage);
 				scannerConn.disconnect();
 			}

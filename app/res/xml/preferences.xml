@@ -136,6 +136,14 @@
                     android:defaultValue="true" />
             -->
 
+            <ListPreference
+                    android:key="pref_download_images"
+                    android:title="@string/pref_download_images_title"
+                    android:summary="@string/pref_download_images_summary"
+                    android:entries="@array/pref_download_images_entries"
+                    android:entryValues="@array/pref_download_images_entry_values"
+                    android:defaultValue="ALL_IN_ONE" />
+            
             <CheckBoxPreference
                     android:key="pref_notifications"
                     android:title="@string/pref_notifications"

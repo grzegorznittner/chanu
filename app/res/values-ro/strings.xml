@@ -3,47 +3,47 @@
     <!-- titles -->
     <string name="app_name">Chanu</string>
     <string name="app_name_title">Chanu</string>
-    <string name="app_name_home">Go to Chanu</string>
+    <string name="app_name_home">Accesare Chanu</string>
     <string name="application_name">Chanu</string>
     <string name="application_tagname">4chan Reloaded</string>
-    <string name="title_item_detail">Item Detail</string>
-    <string name="title_item_list">Items</string>
-    <string name="fragment_layout">2 Pane Layout</string>
-    <string name="thread_activity">Thread</string>
-    <string name="board_activity">Board</string>
-    <string name="title_photogrid_activity">PhotoGrid</string>
-    <string name="full_screen_image_activity">View Image</string>
-    <string name="post_reply_activity">Post Reply</string>
+    <string name="title_item_detail">Detaliu articol</string>
+    <string name="title_item_list">Articole</string>
+    <string name="fragment_layout">Amplasare 2 panouri</string>
+    <string name="thread_activity">Fir de discuție</string>
+    <string name="board_activity">Planșă</string>
+    <string name="title_photogrid_activity">Grilă de poze</string>
+    <string name="full_screen_image_activity">Vizualizare imagine</string>
+    <string name="post_reply_activity">Postează răspuns</string>
     <string name="post_reply_share_activity">Chanu</string>
-    <string name="settings_activity">Settings</string>
-    <string name="about_activity">About/Purchase</string>
-    <string name="board_image">Board Image</string>
-    <string name="thread_post_image">Thread Image</string>
-    <string name="thread_post_image_expanded">Expanded Thread Image</string>
-    <string name="thread_post_reply_button">Reply</string>
-    <string name="thread_post_expand_button">Expand</string>
-    <string name="thread_post_collapse_button">Collapse</string>
-    <string name="thread_country_flag">Country Flag</string>
-    <string name="not_implemented">Not yet implemented</string>
-    <string name="thread_related_threads_title">Related Threads</string>
-    <string name="thread_related_threads_desc">Threads on /%1$s/ covering a similar topic</string>
-    <string name="board_search">Search</string>
-    <string name="thread_search">Search</string>
-    <string name="search_title">Search</string>
-    <string name="search_hint">Enter text</string>
-    <string name="search_results_title">Search Results</string>
-    <string name="board_search_results">Threads matching \"%1$s\"</string>
-    <string name="board_search_no_results">No threads matching \"%1$s\"</string>
-    <string name="thread_search_results">Posts matching \"%1$s\"</string>
-    <string name="thread_search_no_results">No posts matching \"%1$s\"</string>
-    <string name="board_related_boards_title">Related Boards</string>
-    <string name="board_related_boards_desc">Boards having similar topics to /%1$s/</string>
+    <string name="settings_activity">Setări</string>
+    <string name="about_activity">Despre</string>
+    <string name="board_image">Imagine planșă</string>
+    <string name="thread_post_image">Fir de imagini</string>
+    <string name="thread_post_image_expanded">Expandează fir de imagini</string>
+    <string name="thread_post_reply_button">Răspunde</string>
+    <string name="thread_post_expand_button">Extinde</string>
+    <string name="thread_post_collapse_button">Minimizează fir mesaje</string>
+    <string name="thread_country_flag">Steag tară</string>
+    <string name="not_implemented">Înca nu este implementată</string>
+    <string name="thread_related_threads_title">Fire de discuție similare</string>
+    <string name="thread_related_threads_desc">Fire în /%1$s/ cu topic similar</string>
+    <string name="board_search">Caută</string>
+    <string name="thread_search">Caută</string>
+    <string name="search_title">Caută</string>
+    <string name="search_hint">Introdu text</string>
+    <string name="search_results_title">Rezultate căutare</string>
+    <string name="board_search_results">Fire de discuție conform criteriului \"%1$s\"</string>
+    <string name="board_search_no_results">Nici un fir de discuție conform \"%1$s\"</string>
+    <string name="thread_search_results">Postări conform criteriului \"%1$s\"</string>
+    <string name="thread_search_no_results">Nici o postare conform criteriului \"%1$s\"</string>
+    <string name="board_related_boards_title">Planșe similare</string>
+    <string name="board_related_boards_desc">Planșe similare cu /%1$s/</string>
 
     <!-- blocklist -->
-    <string name="blocklist_button">Block Posts With Id</string>
-    <string name="blocklist_title">Blocklist</string>
-    <string name="blocklist_title_with_type">%1$s Blocklist</string>
-    <string name="blocklist_title_remove">Select to remove from blocklist</string>
+    <string name="blocklist_button">Interzice postări cu Id</string>
+    <string name="blocklist_title">Interzice listă</string>
+    <string name="blocklist_title_with_type">%1$s Listă interzisă</string>
+    <string name="blocklist_title_remove">Selecteză pentru a scoate de pe lista interzisă</string>
     <string name="blocklist_message">Select to remove from blocklist</string>
     <string name="blocklist_message_empty">Your blocklist is empty</string>
     <string name="blocklist_removed_id">Removed %1$s from blocklist</string>
@@ -548,7 +548,7 @@
     <string name="popular_title_recommended">RECOMMENDED</string>
 
     <!-- preferences -->
-    <string name="pref_about_category">About/Purchase</string>
+    <string name="pref_about_category">About</string>
     <string name="pref_advanced_category">Advanced</string>
     <string name="pref_watchlist_category">Thread Watchlist</string>
     <string name="pref_custom_category">Customize</string>
@@ -579,11 +579,6 @@
     <string name="pref_use_friendly_ids">Use Friendly Ids</string>
     <string name="pref_use_friendly_ids_summ_on">Post Ids have readable names</string>
     <string name="pref_use_friendly_ids_summ_off">Post Ids are left unchanged</string>
-    <!--
-    <string name="pref_start_with_favorites">Start Behavior</string>
-    <string name="pref_start_with_favorites_summ_on">Start with favorites board, or all boards if no favorites</string>
-    <string name="pref_start_with_favorites_summ_off">Start with last visited location</string>
-    -->
     <string name="pref_use_google_analytics">Google Analytics</string>
     <string name="pref_use_google_analytics_summ_on">Send anonymous usage data</string>
     <string name="pref_use_google_analytics_summ_off">Don\'t send anonymous usage data</string>
@@ -621,8 +616,8 @@
     <string name="pref_clear_cache_error">Couldn\'t clear cache</string>
     <string name="pref_clear_cache_success">Cleared cache successfully</string>
     <string name="pref_clear_cache_notification_title">Chanu Cache Status</string>
-    <string name="pref_about">About/Purchase Page</string>
-    <string name="pref_about_summ">Authorship and ad-free prokey information</string>
+    <string name="pref_about">About App</string>
+    <string name="pref_about_summ">Authorship and licensing information</string>
     <string name="pref_reset_to_defaults">Reset</string>
     <string name="pref_reset_to_defaults_summ">Restore all settings to their factory default</string>
     <string name="pref_prokey_category">Prokey</string>
@@ -688,7 +683,7 @@
     <string name="pref_about_data_pulltorefresh_sum">Courtesy of Chris Banes</string>
     <string name="pref_about_data_color">mColorPicker</string>
     <string name="pref_about_data_color_sum">Courtesy of Daniel Nilsson</string>
-    <string name="pref_about_developer_category">Purchase Info</string>
+    <string name="pref_about_developer_category">Product Info</string>
     <string name="pref_about_developer_chanapps">Chanapps Software</string>
     <string name="pref_about_developer_chanapps_sum">See our other offerings</string>
     <string name="pref_about_store_chanapps">Chanapps Store</string>
@@ -718,7 +713,7 @@
     <string name="widget_loading">Loading...</string>
 
     <!-- Help and about_dialog -->
-    <string name="about_menu">About/Purchase</string>
+    <string name="about_menu">About</string>
     <string name="test_menu">Test</string>
 
     <!-- camera -->
@@ -1701,32 +1696,10 @@
 ]]>
 </string>
 
-    <string name="pref_download_images_title">Organize Downloaded Images</string>
-    <string name="pref_download_images_summary">Defines how images are organized in the Gallery</string>
-    <string name="pref_download_images_all_in_chanu_folder">All in \'Chanu\' folder</string>
-    <string name="pref_download_images_per_board">Per board (eg. board_a)</string>
-    <string name="pref_download_images_per_thread">Per thread (eg. board_a_1234567)</string>
-    <string name="pref_download_images_default">@string/pref_download_images_all_in_chanu_folder</string>
-
     <!-- CHANGES AFTER TRANSLATION -->
     <!--
-    MODIFIED
     <string name="pref_purchase_prokey_summ">Go ad-free, purchase only once, enables all devices</string>
-    <string name="pref_installed_prokey_summ">No ads are shown, prokey enabled for all devices</string>
-    <string name="about_activity">About/Purchase</string>
-    <string name="pref_about">About/Purchase Page</string>
-    <string name="pref_about_summ">Authorship and ad-free prokey information</string>
-    <string name="pref_about_category">About/Purchase</string>
-    <string name="pref_about_developer_category">Purchase Info</string>
-
-    NEW
-    <string name="pref_download_images_title">Organize Downloaded Images</string>
-    <string name="pref_download_images_summary">Defines how images are organized in the Gallery</string>
-    <string name="pref_download_images_all_in_chanu_folder">All in \'Chanu\' folder</string>
-    <string name="pref_download_images_per_board">Per board (eg. board_a)</string>
-    <string name="pref_download_images_per_thread">Per thread (eg. board_a_1234567)</string>
-    <string name="pref_download_images_default">@string/pref_download_images_all_in_chanu_folder</string>
-
+    <string name="pref_installed_prokey_summ">No ads are shown, enabled for all devices</string>
     -->
 
 </resources>

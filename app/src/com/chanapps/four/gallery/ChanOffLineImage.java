@@ -148,8 +148,12 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 					Log.w(TAG, "Status " + (status == 0 ? "OK" : status == 1 ? "FORMAT_ERROR" : "OPEN_ERROR") + " for file " + imageFile.getName());
 					if (status == 0) {
 						dstBmp = decoder.getBitmap();
+						width = dstBmp.getWidth();
+						height = dstBmp.getHeight();
 					} else if (status == 1) {
-						dstBmp = BitmapFactory.decodeStream(new FileInputStream(imageFile), null, options);
+						IOUtils.closeQuietly(imageStream);
+						imageStream = new FileInputStream(imageFile);
+						dstBmp = BitmapFactory.decodeStream(imageStream, null, options);
 						Log.w(TAG, imageFile.getName() + (dstBmp == null ? " not" : "") + " loaded via BitmapFactor");
 					}
 				} else {
@@ -232,14 +236,14 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
             supported |= SUPPORT_FULL_IMAGE;
         }
         if (isAnimatedGif()) {
-        	supported |= SUPPORT_PLAY;
+        	supported |= SUPPORT_ANIMATED_GIF;
         }
         if (DEBUG) {
         	StringBuffer buf = new StringBuffer();
         	buf.append((supported & SUPPORT_SETAS) > 0? "SUPPORT_SETAS " : "");
         	buf.append((supported & SUPPORT_SHARE) > 0? "SUPPORT_SHARE " : "");
         	buf.append((supported & SUPPORT_FULL_IMAGE) > 0? "SUPPORT_FULL_IMAGE " : "");
-        	buf.append((supported & SUPPORT_PLAY) > 0? "SUPPORT_PLAY " : "");
+        	buf.append((supported & SUPPORT_ANIMATED_GIF) > 0? "SUPPORT_ANIMATED_GIF " : "");
         	Log.i(TAG, "Supported operations for " + this.name + " " + buf.toString());
         }
         return supported;
@@ -251,11 +255,7 @@ public class ChanOffLineImage extends MediaItem implements ChanIdentifiedService
 
     @Override
     public int getMediaType() {
-    	if (isAnimatedGif()) {
-    		return MEDIA_TYPE_VIDEO;
-    	} else {
-    		return MEDIA_TYPE_IMAGE;
-    	}
+		return MEDIA_TYPE_IMAGE;
     }
     
     private boolean isAnimatedGif() {

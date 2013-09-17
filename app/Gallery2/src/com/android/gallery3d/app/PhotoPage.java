@@ -16,7 +16,28 @@
 
 package com.android.gallery3d.app;
 
-import com.chanapps.four.gallery3d.R;
+import android.app.ActionBar;
+import android.app.ActionBar.OnMenuVisibilityListener;
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.MeasureSpec;
+import android.view.WindowManager;
+import android.webkit.WebView;
+import android.widget.FrameLayout;
+import android.widget.ShareActionProvider;
+import android.widget.Toast;
+
 import com.android.gallery3d.data.DataManager;
 import com.android.gallery3d.data.MediaDetails;
 import com.android.gallery3d.data.MediaItem;
@@ -44,27 +65,9 @@ import com.chanapps.four.activity.ChanIdentifiedActivity;
 import com.chanapps.four.activity.GalleryViewActivity;
 import com.chanapps.four.activity.VideoViewActivity;
 import com.chanapps.four.data.LastActivity;
+import com.chanapps.four.gallery3d.R;
 import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
-
-import android.app.ActionBar;
-import android.app.ActionBar.OnMenuVisibilityListener;
-import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.MeasureSpec;
-import android.view.WindowManager;
-import android.widget.ShareActionProvider;
-import android.widget.Toast;
 
 public class PhotoPage extends ActivityState
         implements PhotoView.PhotoTapListener, FilmStripView.Listener,
@@ -111,6 +114,14 @@ public class PhotoPage extends ActivityState
     private MenuExecutor mMenuExecutor;
     private boolean mIsActive;
     private ShareActionProvider mShareActionProvider;
+    
+    public static final String HTML_START = "<!DOCTYPE html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><meta http-equiv=\"cache-control\" content=\"no-cache\"/>" +
+    		"<meta name=\"viewport\" content=\"width=device-width, target-densitydpi=device-dpi, user-scalable=no\"/>" +
+    		"<style type=\"text/css\">" +
+    		"html, body {height: 100%;width: 100%;color: black;background: black;}" +
+    		"#image {position:fixed;top:0;left:0;text-align:center;}" +
+    		"</style></head><body><div id=\"image\"><img src=\"";
+    public static final String HTML_END = "\" unselectable=\"on\" alt=\"\" title=\"\"/></div></body></html>";
 
     public static interface Model extends PhotoView.Model {
         public void resume();
@@ -191,88 +202,13 @@ public class PhotoPage extends ActivityState
             mMediaSet = (MediaSet)
                     mActivity.getDataManager().getMediaObject(setPathString);
             if (mMediaSet == null) {
-                Log.w(TAG, "failed to restore " + setPathString);
+                if (DEBUG) Log.w(TAG, "failed to restore " + setPathString);
+                getDefaultMediaSet(itemPath);
+            } else {
+            	createData(itemPath);
             }
-            mCurrentIndex = mMediaSet.getIndexOfItem(itemPath, 0);
-            if (DEBUG) Log.i(TAG, "Current index from getIndexOfItem: " + mCurrentIndex + " total count: " + mMediaSet.getTotalMediaItemCount());
-            if (mCurrentIndex < 0 || mCurrentIndex > mMediaSet.getTotalMediaItemCount()) {
-            	mCurrentIndex = 0;
-            }
-            PhotoDataAdapter pda = new PhotoDataAdapter(mActivity, mPhotoView, mMediaSet, itemPath, mCurrentIndex);
-            mModel = pda;
-            mPhotoView.setModel(mModel);
-
-            mResultIntent.putExtra(KEY_INDEX_HINT, mCurrentIndex);
-            setStateResult(Activity.RESULT_OK, mResultIntent);
-
-            pda.setDataListener(new PhotoDataAdapter.DataListener() {
-
-                @Override
-                public void onPhotoChanged(int index, Path item) {
-                	if (DEBUG) Log.i(TAG, "Photo changed to " + index + ", path " + item);
-                    if (mFilmStripView != null) mFilmStripView.setFocusIndex(index);
-                    mCurrentIndex = index;
-                    mResultIntent.putExtra(KEY_INDEX_HINT, index);
-                    if (item != null) {
-                        mResultIntent.putExtra(KEY_MEDIA_ITEM_PATH, item.toString());
-                        MediaItem photo = mModel.getCurrentMediaItem();
-                        if (photo != null) updateCurrentPhoto(photo);
-                    } else {
-                        mResultIntent.removeExtra(KEY_MEDIA_ITEM_PATH);
-                    }
-                    setStateResult(Activity.RESULT_OK, mResultIntent);
-                    
-                    notifyPhotoChanged(item);
-                }
-
-				private void notifyPhotoChanged(Path item) {
-					ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
-                    if (DEBUG) Log.i(TAG, "Current activity: " + activity.getChanActivityId());
-            		if (activity != null && activity.getChanActivityId().activity == LastActivity.GALLERY_ACTIVITY) {
-            			Handler handler = activity.getChanHandler();
-            			if (handler != null && item != null) {
-            				String[] pathParts = item.split();
-            				if (pathParts.length == 4) {
-            					Message msg = handler.obtainMessage(GalleryViewActivity.UPDATE_POSTNO_MSG, 0, 0);
-            					msg.obj = pathParts[3];
-            					handler.sendMessage(msg);
-            				}
-            			}
-            		}
-				}
-
-                @Override
-                public void onLoadingFinished() {
-                	if (DEBUG) Log.i(TAG, "Loading finished ...");
-                    GalleryUtils.setSpinnerVisibility((Activity) mActivity, false);
-                    if (!mModel.isEmpty()) {
-                        MediaItem photo = mModel.getCurrentMediaItem();
-                        if (photo != null) updateCurrentPhoto(photo);
-                        if (DEBUG) Log.i(TAG, "    photo updated " + photo.getPath());
-                    } else if (mIsActive) {
-                        mActivity.getStateManager().finishState(PhotoPage.this);
-                    }
-                }
-
-                @Override
-                public void onLoadingStarted() {
-                	if (DEBUG) Log.i(TAG, "Loading started ...");
-                    GalleryUtils.setSpinnerVisibility((Activity) mActivity, true);
-                }
-
-                @Override
-                public void onPhotoAvailable(long version, boolean fullImage) {
-                	if (DEBUG) Log.i(TAG, "Photo available version: " + version + ", fullImage: " + fullImage);
-                    if (mFilmStripView == null) initFilmStripView();
-                }
-            });
         } else {
-            // Get default media set by the URI
-            MediaItem mediaItem = (MediaItem)
-                    mActivity.getDataManager().getMediaObject(itemPath);
-            mModel = new SinglePhotoDataAdapter(mActivity, mPhotoView, mediaItem);
-            mPhotoView.setModel(mModel);
-            updateCurrentPhoto(mediaItem);
+            getDefaultMediaSet(itemPath);
         }
 
         mHandler = new SynchronizedHandler(mActivity.getGLRoot()) {
@@ -291,6 +227,96 @@ public class PhotoPage extends ActivityState
         // start the opening animation
         mPhotoView.setOpenedItem(itemPath);
     }
+
+	private void createData(final Path itemPath) {
+		mCurrentIndex = mMediaSet.getIndexOfItem(itemPath, 0);
+		if (DEBUG) Log.i(TAG, "Current index from getIndexOfItem: " + mCurrentIndex + " total count: " + mMediaSet.getTotalMediaItemCount());
+		if (mCurrentIndex < 0 || mCurrentIndex > mMediaSet.getTotalMediaItemCount()) {
+			mCurrentIndex = 0;
+		}
+		PhotoDataAdapter pda = new PhotoDataAdapter(mActivity, mPhotoView, mMediaSet, itemPath, mCurrentIndex);
+		mModel = pda;
+		mPhotoView.setModel(mModel);
+
+		mResultIntent.putExtra(KEY_INDEX_HINT, mCurrentIndex);
+		setStateResult(Activity.RESULT_OK, mResultIntent);
+
+		pda.setDataListener(new PhotoDataAdapter.DataListener() {
+
+		    @Override
+		    public void onPhotoChanged(int index, Path item) {
+		    	if (DEBUG) Log.w(TAG, "Photo changed to " + index + ", path " + item);
+		        if (mFilmStripView != null) mFilmStripView.setFocusIndex(index);
+		        mCurrentIndex = index;
+		        mResultIntent.putExtra(KEY_INDEX_HINT, index);
+		        if (item != null) {
+		            mResultIntent.putExtra(KEY_MEDIA_ITEM_PATH, item.toString());
+		            MediaItem photo = mModel.getCurrentMediaItem();
+		            if (photo != null) updateCurrentPhoto(photo);
+		        } else {
+		            mResultIntent.removeExtra(KEY_MEDIA_ITEM_PATH);
+		        }
+		        setStateResult(Activity.RESULT_OK, mResultIntent);
+		        
+		        notifyPhotoChanged(item);
+		    }
+
+			private void notifyPhotoChanged(Path item) {
+				ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
+		        if (DEBUG) Log.i(TAG, "Current activity: " + activity.getChanActivityId());
+				if (activity != null && activity.getChanActivityId().activity == LastActivity.GALLERY_ACTIVITY) {
+					Handler handler = activity.getChanHandler();
+					if (handler != null && item != null) {
+						String[] pathParts = item.split();
+						if (pathParts.length == 4) {
+							Message msg = handler.obtainMessage(GalleryViewActivity.UPDATE_POSTNO_MSG, 0, 0);
+							msg.obj = pathParts[3];
+							handler.sendMessage(msg);
+						}
+					}
+				}
+			}
+
+		    @Override
+		    public void onLoadingFinished() {
+		    	if (DEBUG) Log.i(TAG, "Loading finished ...");
+		        GalleryUtils.setSpinnerVisibility((Activity) mActivity, false);
+		        if (!mModel.isEmpty()) {
+		            MediaItem photo = mModel.getCurrentMediaItem();
+		            if (photo != null) updateCurrentPhoto(photo);
+		            if (DEBUG) Log.i(TAG, "    photo updated " + photo.getPath());
+		        } else if (mIsActive) {
+		            mActivity.getStateManager().finishState(PhotoPage.this);
+		        }
+		    }
+
+		    @Override
+		    public void onLoadingStarted() {
+		    	if (DEBUG) Log.i(TAG, "Loading started ...");
+		        GalleryUtils.setSpinnerVisibility((Activity) mActivity, true);
+		    }
+
+		    @Override
+		    public void onPhotoAvailable(long version, boolean fullImage) {
+		    	if (DEBUG) Log.w(TAG, "Photo available version: " + version + ", fullImage: " + fullImage);
+
+	    		MediaItem photo = mModel.getCurrentMediaItem();
+	    		if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
+	        		playAnimatedGif(photo);
+	        	}
+		        if (mFilmStripView == null) initFilmStripView();
+		    }
+		});
+	}
+
+	private void getDefaultMediaSet(final Path itemPath) {
+		// Get default media set by the URI
+		MediaItem mediaItem = (MediaItem)
+		        mActivity.getDataManager().getMediaObject(itemPath);
+		mModel = new SinglePhotoDataAdapter(mActivity, mPhotoView, mediaItem);
+		mPhotoView.setModel(mModel);
+		updateCurrentPhoto(mediaItem);
+	}
 
     private void updateShareURI(Path path, Handler handler) {
         if (mShareActionProvider != null) {
@@ -331,6 +357,10 @@ public class PhotoPage extends ActivityState
     }
 
     private void updateCurrentPhoto(final MediaItem photo) {
+    	if (DEBUG) Log.w(TAG, "updateCurrentPhoto photo: " + photo.getPath() + ", uri: " + photo.getPlayUri());
+    	if (photo != null && photo.getPlayUri() != null && (photo.getSupportedOperations() & MediaObject.SUPPORT_ANIMATED_GIF) > 0) {
+    		playAnimatedGif(photo);
+    	}
         if (mCurrentPhoto == photo) return;
         mCurrentPhoto = photo;
         if (mCurrentPhoto == null) return;
@@ -574,7 +604,7 @@ public class PhotoPage extends ActivityState
         }
 
         if (playVideo) {
-            playVideo((Activity) mActivity, item.getPlayUri(), item.getPath());
+    		playVideo((Activity) mActivity, item.getPlayUri(), item.getPath());
         } else {
             onUserInteractionTap();
         }
@@ -589,7 +619,8 @@ public class PhotoPage extends ActivityState
         	} else if (parts.length == 4) {
         		title = "/" + parts[1] + "/" + parts[2] + ":" + parts[3];
         	}
-            Intent intent = new Intent(activity.getBaseContext(), VideoViewActivity.class);
+        	
+	    	Intent intent = new Intent(activity.getBaseContext(), VideoViewActivity.class);
             intent.putExtra(ImageDownloadService.IMAGE_URL, uri.toString());
             intent.putExtra(Intent.EXTRA_TITLE, title);
             activity.startActivity(intent);
@@ -597,6 +628,39 @@ public class PhotoPage extends ActivityState
             Toast.makeText(activity, activity.getString(R.string.video_err), Toast.LENGTH_SHORT).show();
         }
     }
+    
+	public void playAnimatedGif(MediaItem item) {
+		Activity activity = (Activity)NetworkProfileManager.instance().getActivity();
+		View rootView = activity.findViewById(android.R.id.content).getRootView();
+		View view = activity.findViewById(com.chanapps.four.activity.R.id.gifview);
+		if (view == null || view.getVisibility() != View.GONE) {
+			return;
+		}
+		
+		if (DEBUG) Log.w(TAG, "Screen size w: " + rootView.getMeasuredWidth() + " h: " + rootView.getMeasuredHeight());
+		if (DEBUG) Log.w(TAG, "Image  size w: " + item.getWidth() + " h: " + item.getHeight());
+
+		int maxWidth = rootView.getMeasuredWidth() == 0 ? 200 : rootView.getMeasuredWidth();
+		int maxHeight = (rootView.getMeasuredHeight() == 0 ? 200 : rootView.getMeasuredHeight());
+
+		int itemWidth = item.getWidth() == 0 ? maxWidth : item.getWidth();
+		int itemHeight = item.getHeight() == 0 ? maxHeight : item.getHeight();
+		int scale = Math.min(maxWidth * 100 / itemWidth, maxHeight * 100 / itemHeight);
+		if (DEBUG) Log.w(TAG, "scale: " + scale);
+    	
+    	WebView myWebView = (WebView) activity.findViewById(com.chanapps.four.activity.R.id.video_view);
+    	myWebView.setLayoutParams(new FrameLayout.LayoutParams(itemWidth * scale / 100, itemHeight * scale / 100));
+    	myWebView.setInitialScale(scale);
+    	myWebView.getRootView().setBackgroundColor(0xffffff);
+    	myWebView.setBackgroundColor(0xffffff);
+    	myWebView.getSettings().setJavaScriptEnabled(false);
+    	myWebView.getSettings().setBuiltInZoomControls(false);
+
+    	myWebView.loadUrl(item.getPlayUri().toString());
+
+		view.setVisibility(View.VISIBLE);
+	}
+
 
     // Called by FileStripView.
     // Returns false if it cannot jump to the specified index at this time.
