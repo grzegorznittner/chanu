@@ -1,0 +1,1705 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
+
+    <!-- titles -->
+    <string name="app_name">Chanu</string>
+    <string name="app_name_title">Chanu</string>
+    <string name="app_name_home">Accesare Chanu</string>
+    <string name="application_name">Chanu</string>
+    <string name="application_tagname">4chan Reloaded</string>
+    <string name="title_item_detail">Detaliu articol</string>
+    <string name="title_item_list">Articole</string>
+    <string name="fragment_layout">Amplasare 2 panouri</string>
+    <string name="thread_activity">Fir de discuție</string>
+    <string name="board_activity">Planșă</string>
+    <string name="title_photogrid_activity">Grilă de poze</string>
+    <string name="full_screen_image_activity">Vizualizare imagine</string>
+    <string name="post_reply_activity">Postează răspuns</string>
+    <string name="post_reply_share_activity">Chanu</string>
+    <string name="settings_activity">Setări</string>
+    <string name="about_activity">Despre</string>
+    <string name="board_image">Imagine planșă</string>
+    <string name="thread_post_image">Fir de imagini</string>
+    <string name="thread_post_image_expanded">Expandează fir de imagini</string>
+    <string name="thread_post_reply_button">Răspunde</string>
+    <string name="thread_post_expand_button">Extinde</string>
+    <string name="thread_post_collapse_button">Minimizează fir mesaje</string>
+    <string name="thread_country_flag">Steag tară</string>
+    <string name="not_implemented">Înca nu este implementată</string>
+    <string name="thread_related_threads_title">Fire de discuție similare</string>
+    <string name="thread_related_threads_desc">Fire în /%1$s/ cu topic similar</string>
+    <string name="board_search">Caută</string>
+    <string name="thread_search">Caută</string>
+    <string name="search_title">Caută</string>
+    <string name="search_hint">Introdu text</string>
+    <string name="search_results_title">Rezultate căutare</string>
+    <string name="board_search_results">Fire de discuție conform criteriului \"%1$s\"</string>
+    <string name="board_search_no_results">Nici un fir de discuție conform \"%1$s\"</string>
+    <string name="thread_search_results">Postări conform criteriului \"%1$s\"</string>
+    <string name="thread_search_no_results">Nici o postare conform criteriului \"%1$s\"</string>
+    <string name="board_related_boards_title">Planșe similare</string>
+    <string name="board_related_boards_desc">Planșe similare cu /%1$s/</string>
+
+    <!-- blocklist -->
+    <string name="blocklist_button">Interzice postări cu Id</string>
+    <string name="blocklist_title">Interzice listă</string>
+    <string name="blocklist_title_with_type">%1$s Listă interzisă</string>
+    <string name="blocklist_title_remove">Selecteză pentru a scoate de pe lista interzisă</string>
+    <string name="blocklist_message">Select to remove from blocklist</string>
+    <string name="blocklist_message_empty">Your blocklist is empty</string>
+    <string name="blocklist_removed_id">Removed %1$s from blocklist</string>
+    <string name="blocklist_add_id_confirm">Add %1$s%2$s %3$s to blocklist?</string>
+    <string name="blocklist_remove_id_confirm">Remove %1$s%2$s %3$s from blocklist?</string>
+    <string name="blocklist_select_view_type">Select Block Type</string>
+    <string name="blocklist_select_type">Select Block Type</string>
+    <string name="blocklist_no_types_found">No blockable tripcode, name, email or id found</string>
+    <string name="blocklist_empty">Blocklist is empty, visit threads to select tripcode, name, email or id to block
+    </string>
+
+    <!-- delete post -->
+    <string name="delete_button">Delete Post</string>
+    <string name="delete_post_title">Delete Post</string>
+    <string name="delete_post_title_confirm">Password for Delete</string>
+    <string name="delete_post_password_hint">Password for Post</string>
+    <string name="delete_post_enter_password">Enter a password to delete</string>
+    <string name="delete_post_deleting">Deleting Post...</string>
+    <string name="delete_post_deleting_image">Deleting Post Image...</string>
+    <string name="delete_post_error">Couldn\'t delete post</string>
+    <string name="delete_post_no_response">Couldn\'t delete post, no response</string>
+    <string name="delete_post_cancelled">Cancelled delete post</string>
+    <string name="delete_post_successful">Deleted post</string>
+    <string name="delete_post_successful_image">Deleted post image</string>
+    <string name="delete_post_response_error">Couldn\'t delete post, unknown response</string>
+    <string name="delete_post_only_image">Delete Only Image?</string>
+
+    <!-- billing -->
+    <string name="connect_to_billing_title">Purchase</string>
+    <string name="connect_to_billing_msg">Connecting to Google Play...</string>
+    <string name="purchase_error">Couldn\'t purchase, try again later</string>
+    <string name="purchase_success">Ads are now disabled</string>
+    <string name="consume_success">Consume success!</string>
+
+    <!-- thread popup -->
+    <string name="thread_popup_title">Post %1$d</string>
+    <string name="thread_popup_reply">Reply</string>
+    <string name="thread_popup_goto">Goto</string>
+
+    <string name="dialog_color_picker_title">Pick a Color</string>
+
+    <!-- report post -->
+    <string name="report_button">Report Post</string>
+    <string name="report_post_title">Report Post</string>
+    <string name="report_post_title_type">Reason for report</string>
+    <string name="report_post">Report</string>
+    <string name="report_post_select_type">Select a report type</string>
+    <string name="report_post_reporting">Reporting...</string>
+    <string name="report_post_successful">Reported post</string>
+    <string name="report_post_cancelled">Cancelled report post</string>
+    <string name="report_post_error">Couldn\'t report post</string>
+    <string name="report_post_no_response">Couldn\'t report post, no response</string>
+    <string name="report_post_bug_warning">Due to a 4chan limitation, only post %1$s will be reported</string>
+    <string name="authorize_pass_successful">Authorized</string>
+    <string name="authorize_pass_cancelled">Cancelled authorization</string>
+    <string name="authorize_pass_error">Couldn\'t authorize</string>
+    <string name="authorize_pass_no_response">Couldn\'t authorize, no response</string>
+    <string name="logout_pass_successful">Pass logout successful</string>
+    <string name="logout_pass_cancelled">Cancelled pass logout</string>
+    <string name="logout_pass_error">Couldn\'t logout</string>
+    <string name="logout_pass_no_response">Couldn\'t logout, no response</string>
+
+    <!-- web image -->
+    <string name="web_image_title">Attach Image from Web</string>
+    <string name="web_image_search_title">Search Web for Image</string>
+    <string name="web_image_url_text_hint">Image Url</string>
+    <string name="web_image_search_text_hint">search text</string>
+    <string name="web_image_key_download">Load</string>
+    <string name="web_image_key_search">Search</string>
+    <string name="web_image_button_download">Download</string>
+    <string name="web_image_button_browse">Browse for image</string>
+    <string name="web_image_button_search">Search</string>
+    <string name="web_image_button_attach">Attach</string>
+    <string name="web_image_input_url_first">Enter url to download image</string>
+    <string name="web_image_download_first">Download image before attaching</string>
+    <string name="web_image_download_hint">Download image</string>
+    <string name="web_image_download_failed">Couldn\'t download image</string>
+
+    <!-- menus -->
+    <string name="web_menu">4chan.org</string>
+    <string name="direct_web_menu">View on 4chan.org</string>
+    <string name="settings_menu">Settings</string>
+    <string name="global_rules_menu">Global rules</string>
+    <string name="board_rules_menu">Board rules</string>
+    <string name="go_to_top_position_menu">Go to top</string>
+    <string name="play_thread_menu">Play thread</string>
+    <string name="play_thread_stop_menu">Stop thread</string>
+    <string name="go_to_end_position_menu">Go to end</string>
+    <string name="refresh_board_menu">Refresh</string>
+    <string name="refresh_thread_menu">Refresh</string>
+    <string name="scroll_to_bottom_menu">Jump to Bottom</string>
+    <string name="new_thread_menu">New thread</string>
+    <string name="new_thread_short">New thread</string>
+    <string name="prefetch_board_menu">Preload threads</string>
+    <string name="board_thread_info_menu">Info</string>
+    <string name="board_thread_view_menu">View</string>
+    <string name="board_thread_gallery_menu">Gallery</string>
+    <string name="board_thread_watch_menu">Add to watchlist</string>
+    <string name="board_add_to_favorites_menu">Add to favorites</string>
+    <string name="board_thread_remove_menu">Remove from watchlist</string>
+    <string name="favorites_remove_board_menu">Remove from favorites</string>
+    <string name="watch_thread_menu">Add to watchlist</string>
+    <string name="watch_remove_thread_menu">Remove from watchlist</string>
+    <string name="watch_thread_not_found">Couldn\'t remove thread from watchlist</string>
+    <string name="view_as_grid_menu">View as grid</string>
+    <string name="view_as_list_menu">View as list</string>
+    <string name="thread_image_popup_menu">Thread images</string>
+    <string name="thread_navigate_popup_menu">Thread navigation</string>
+    <string name="thread_reply_menu">Reply to thread</string>
+    <string name="post_reply_menu">Reply to thread</string>
+    <string name="post_reply_quote_menu">Post quoted reply</string>
+    <string name="post_reply_all_menu">Reply to post</string>
+    <string name="post_reply_all_quote_menu">Reply with quoted post</string>
+    <string name="go_to_link_menu">Go to link</string>
+    <string name="go_to_link_not_found">No links found in posts</string>
+    <string name="select_text_menu">Select text</string>
+    <string name="select_text_hint">Select text</string>
+    <string name="copy_text_menu">Copy post text</string>
+    <string name="delete_report_posts_menu">Delete/report posts</string>
+    <string name="delete_posts_menu">Delete post</string>
+    <string name="delete_blocks_menu">Delete block</string>
+    <string name="report_posts_menu">Report post</string>
+    <string name="block_posts_menu">Block post</string>
+    <string name="translate_posts_menu">Translate post</string>
+    <string name="translate_no_text">No text found to translate</string>
+    <string name="share_image">Share post</string>
+    <string name="share_text">Share post</string>
+    <string name="share_text_default">Thread /</string>
+    <string name="share_text_empty">No text found to share</string>
+    <string name="toggle_image_only_menu">Toggle image only</string>
+    <string name="prev_image_menu">Prev image</string>
+    <string name="next_image_menu">Next image</string>
+    <string name="download_all_images_menu">Prefetch images</string>
+    <string name="download_all_images_to_gallery_menu">Download images</string>
+    <string name="download_images_to_gallery_menu">Download image</string>
+    <string name="download_image_menu">Save to gallery</string>
+    <string name="set_as_wallpaper_menu">Set as wallpaper</string>
+    <string name="view_image_gallery_menu">Thread gallery</string>
+    <string name="image_search_menu">Tineye image search</string>
+    <string name="anime_image_search_menu">IQDB image search</string>
+    <string name="share_image_menu">Share image</string>
+    <string name="share_text_menu">Share text</string>
+    <string name="post_reply_send_menu">Send</string>
+    <string name="offline_board_view_menu">Board gallery</string>
+    <string name="offline_board_view_title">%1$s</string>
+    <string name="offline_chan_view_menu">All boards gallery</string>
+
+    <!-- board types tab -->
+    <string name="japanese_culture">Japanese Culture</string>
+    <string name="interests">Interests</string>
+    <string name="creative">Creative</string>
+    <string name="adult">Adult</string>
+    <string name="other">Other</string>
+    <string name="misc">Misc.</string>
+
+    <!-- Board selector activity -->
+    <string name="board_selector_all_boards_title">All Boards</string>
+    <string name="board_selector_all_boards_desc">All boards on Chanu</string>
+    <string name="board_selector_watchlist_title">Thread Watchlist</string>
+    <string name="board_selector_recent_title">Popular Threads</string>
+    <string name="board_selector_popular_title">Popular Threads</string>
+    <string name="board_selector_popular_desc">The current top ten threads</string>
+    <string name="board_selector_latest_title">Latest Posts</string>
+    <string name="board_selector_latest_desc">The ten latest posts</string>
+    <string name="board_selector_latest_images_title">Recent Images</string>
+    <string name="board_selector_latest_images_desc">The three latest uploaded images</string>
+    <string name="board_selector_boardlist_title">Categories</string>
+
+    <!-- board activity -->
+    <string name="board_activity_couldnt_open_db">Couldn\'t open cache</string>
+    <string name="board_end_of_board">End of Board</string>
+    <string name="board_click_for_more">(click for more)</string>
+    <string name="board_just_now">just now</string>
+    <string name="board_last_updated">Last updated %s</string>
+    <string name="board_wait_to_refresh">Min 10 sec between refresh</string>
+    <string name="board_offline_refresh">Cannot refresh, network offline</string>
+    <string name="board_refresh_button_text">Refresh</string>
+    <string name="board_ignore_button_text">Ignore</string>
+
+    <!-- thread activity -->
+    <string name="thread_activity_refresh">Refreshing thread...</string>
+    <string name="thread_activity_fresh">Thread is current</string>
+    <string name="thread_activity_nochange">No new comments</string>
+    <string name="thread_dead">Can\'t refresh, thread is dead</string>
+    <string name="thread_is_dead">DEAD THREAD</string>
+    <string name="thread_closed">Can\'t refresh, thread is closed</string>
+    <string name="thread_is_closed">CLOSED</string>
+    <string name="thread_is_sticky">STICKY</string>
+    <string name="thread_has_no_posts">no posts</string>
+    <string name="thread_has_no_images">no images</string>
+    <string name="thread_has_no_imgs">no imgs</string>
+    <string name="thread_has_bumplimit">(BL)</string>
+    <string name="thread_has_imagelimit">(IL)</string>
+    <string name="thread_wait_to_refresh">Min 10 sec between refresh</string>
+    <string name="thread_end_of_thread">End of Thread</string>
+    <string name="thread_context_select">Done</string>
+    <string name="board_no_threads_selected">No threads selected</string>
+    <string name="thread_no_posts_selected">No posts selected</string>
+    <string name="thread_couldnt_load">Couldn\'t load thread</string>
+    <string name="thread_couldnt_load_image_cancelled">Couldn\'t load image, cancelled</string>
+    <string name="thread_couldnt_load_image">Couldn\'t load image: %1$s</string>
+    <string name="thread_couldnt_download_image_down">Network issue, can\'t download image</string>
+    <string name="thread_couldnt_download_image">Couldn\'t download image</string>
+    <string name="thread_couldnt_create_pager">Couldn\'t create pager</string>
+    <string name="thread_no_prev_posts_found">No referenced posts found</string>
+    <string name="thread_no_replies">NO REPLIES</string>
+    <string name="thread_no_replies_found">No replies found</string>
+    <string name="thread_no_same_poster_found">No posts found with same poster</string>
+    <string name="thread_prev_replies_found">Found %1$d references</string>
+    <string name="thread_next_replies_found">Found %1$d replies</string>
+    <string name="thread_no_id_found">No other posts found for %1$s</string>
+    <string name="thread_invalid_id">No thread found</string>
+    <string name="thread_id_found">Found %1$d other posts for same posters</string>
+    <string name="thread_no_text_subject"></string>
+    <string name="thread_not_found">Thread not found, showing first thread</string>
+    <string name="thread_go_to_link">Go To Link</string>
+    <string name="thread_image_download_error">Error downloading thread images</string>
+    <string name="thread_no_start_play">Can\'t start play, already at end</string>
+    <string name="thread_post_title">Post</string>
+
+    <string name="board_grid_item_no_replies">No replies</string>
+    <plurals name="thread_activity_updated">
+        <item quantity="one">%1$d new comment</item>
+        <item quantity="other">%1$d new comments</item>
+    </plurals>
+    <plurals name="board_grid_item_num_replies">
+        <item quantity="zero">No replies</item>
+        <item quantity="one">View 1 post</item>
+        <item quantity="other">View %1$d posts</item>
+    </plurals>
+    <string name="board_grid_item_no_images">No images</string>
+    <plurals name="board_grid_item_num_imgs">
+        <item quantity="zero"></item>
+        <item quantity="one">View 1 img</item>
+        <item quantity="other">View %1$d imgs</item>
+    </plurals>
+    <string name="board_grid_item_no_threads">View threads</string>
+    <plurals name="board_grid_item_num_threads">
+        <item quantity="zero">View threads</item>
+        <item quantity="one">View 1 thread</item>
+        <item quantity="other">View %1$d threads</item>
+    </plurals>
+
+    <plurals name="thread_num_replies">
+        <item quantity="zero">no replies</item>
+        <item quantity="one">1 post</item>
+        <item quantity="other">%1$d posts</item>
+    </plurals>
+    <plurals name="thread_num_images">
+        <item quantity="zero">no images</item>
+        <item quantity="one">1 image</item>
+        <item quantity="other">%1$d images</item>
+    </plurals>
+    <plurals name="thread_num_imgs">
+        <item quantity="zero">no imgs</item>
+        <item quantity="one">1 img</item>
+        <item quantity="other">%1$d imgs</item>
+    </plurals>
+    <plurals name="thread_num_backlinks">
+        <item quantity="zero">no backlinks</item>
+        <item quantity="one">1 backlink</item>
+        <item quantity="other">%1$d backlinks</item>
+    </plurals>
+    <plurals name="thread_num_links">
+        <item quantity="zero">no links</item>
+        <item quantity="one">1 link</item>
+        <item quantity="other">%1$d links</item>
+    </plurals>
+
+    <plurals name="thread_num_replies_label">
+        <item quantity="zero">COMMENTS</item>
+        <item quantity="one">COMMENT</item>
+        <item quantity="other">COMMENTS</item>
+    </plurals>
+    <plurals name="thread_num_images_label">
+        <item quantity="zero">IMAGES</item>
+        <item quantity="one">IMAGE</item>
+        <item quantity="other">IMAGES</item>
+    </plurals>
+    <plurals name="thread_num_direct_replies_label">
+        <item quantity="zero">REPLIES</item>
+        <item quantity="one">REPLY</item>
+        <item quantity="other">REPLIES</item>
+    </plurals>
+
+    <!-- watchlist -->
+    <string name="board_empty_all_boards">Unable to load boards</string>
+    <string name="board_end_of_watchlist">End of Watchlist</string>
+    <string name="board_empty_watchlist">Thread watchlist empty\n\nWatch a thread to add it here</string>
+    <string name="board_empty_favorites">Favorite boards empty\n\nStar a board to add it here</string>
+    <string name="board_empty_recent">Unable to load latest images</string>
+    <string name="board_empty_popular">Unable to load popular threads</string>
+    <string name="board_empty_latest">Unable to load latest posts</string>
+    <string name="board_empty_meta">Unable to load boards</string>
+    <string name="board_empty_images">Unable to load latest images</string>
+    <string name="board_empty_default">Unable to load board</string>
+    <string name="thread_already_in_watchlist">Thread already in watchlist</string>
+    <string name="thread_not_added_to_watchlist">Couldn\'t add thread to watchlist</string>
+    <string name="board_not_added_to_favorites">Couldn\'t add board to favorites</string>
+    <string name="thread_added_to_watchlist">Thread added to watchlist</string>
+    <string name="thread_deleted_from_watchlist">Thread added to watchlist</string>
+    <string name="board_added_to_favorites">Board added to favorites</string>
+    <string name="thread_added_to_watchlist_activity_based">Thread auto-added to watchlist</string>
+    <string name="thread_watchlist_cleared">Cleared watchlist</string>
+    <string name="favorites_cleared">Cleared favorites</string>
+    <string name="thread_watchlist_not_cleared">Couldn\'t clear watchlist</string>
+    <string name="favorites_not_cleared">Couldn\'t clear favorites</string>
+    <string name="thread_watchlist_not_deleted_thread">Couldn\'t delete thread from watchlist</string>
+    <string name="favorites_not_deleted_board">Couldn\'t delete board from favorites</string>
+    <string name="thread_watchlist_default_name">Watched Thread</string>
+
+
+    <!-- board service -->
+    <string name="board_service_couldnt_fetch">Couldn\'t get board</string>
+    <string name="board_service_couldnt_read">Couldn\'t read board</string>
+    <string name="board_service_couldnt_load">Couldn\'t load board</string>
+    <string name="board_service_couldnt_read_db">Couldn\'t read board data</string>
+
+    <!-- thread service -->
+    <string name="thread_service_no_thread">Couldn\'t find thread</string>
+    <string name="thread_service_not_found">Thread no longer exists</string>
+    <string name="thread_service_couldnt_read">Couldn\'t read thread</string>
+    <string name="thread_service_couldnt_load">Couldn\'t load thread</string>
+    <string name="thread_service_couldnt_read_db">Couldn\'t read thread data</string>
+
+    <!-- full screen image activity -->
+    <string name="full_screen_saving_image">Saving image...</string>
+    <string name="full_screen_setting_wallpaper">Setting wallpaper...</string>
+    <string name="full_screen_save_image_error">Couldn\'t save image to gallery</string>
+    <string name="full_screen_view_image_error">Couldn\'t load image</string>
+    <string name="full_screen_view_gallery_error">Couldn\'t view image in gallery</string>
+    <string name="full_screen_download_description">Downloaded from 4chan URL:</string>
+    <string name="full_screen_image_saved">Image saved</string>
+    <string name="full_screen_wallpaper_set">Wallpaper set</string>
+    <string name="full_screen_wallpaper_error">Couldn\'t set wallpaper</string>
+    <string name="full_screen_share_image_intent">Share Image</string>
+    <string name="full_screen_image_shared">Image shared</string>
+    <string name="full_screen_sharing_error">Couldn\'t share image</string>
+    <string name="full_screen_saved_to_gallery">Saved image to gallery</string>
+    <string name="full_screen_wait_until_downloaded">Wait until downloaded</string>
+    <string name="full_screen_image_search_not_found">Couldn\'t find image for search</string>
+    <string name="full_screen_image_search_error">Couldn\'t search for image</string>
+    <string name="fullscreen_image_progress_upper">Loading an Image</string>
+    <string name="fullscreen_image_offline_upper">Offline mode</string>
+    <string name="full_screen_cancel_button">Cancel Download</string>
+    <string name="full_screen_close_button">Close</string>
+    <string name="download_all_images_notice_prefetch">You will be notified when preload finishes</string>
+    <string name="download_all_images_notice">You will be notified when download finishes</string>
+    <string name="download_all_images_complete">Download complete</string>
+    <string name="download_all_images_complete_detail">/%1$s/%2$d saved to gallery</string>
+    <string name="download_all_images_info">Download complete</string>
+
+    <!-- popup text -->
+    <string name="spoiler">Show Spoilers</string>
+    <string name="spoiler_show">Show Spoilers</string>
+    <string name="spoiler_title">Spoiler</string>
+    <string name="exif">EXIF Data</string>
+    <string name="exif_show">EXIF Data</string>
+    <string name="exif_title">EXIF Data</string>
+    <string name="copy_text">Copy</string>
+    <string name="copy_text_complete">Copied text</string>
+    <string name="translate">Translate post</string>
+    <string name="report">Report Post</string>
+    <string name="reply">Post Reply</string>
+    <string name="reply_short">Reply</string>
+    <string name="quote">Quote</string>
+    <string name="dismiss">Close</string>
+    <string name="dead_thread_reply">Dead Thread No Reply</string>
+    <string name="closed_thread_reply">Closed Thread No Reply</string>
+    <string name="dead_thread_abbrev">D</string>
+    <string name="closed_thread_abbrev">C</string>
+    <string name="sticky_thread_abbrev">S</string>
+    <string name="thread_backlinks">References</string>
+    <string name="thread_replies">Replies</string>
+    <string name="thread_same_id">Same Id</string>
+    <string name="thread_post">Post</string>
+    <string name="thread_info">Thread Info</string>
+    <string name="highlight_replies">Highlight Replies</string>
+    <string name="highlight_previous">Highlight References</string>
+    <string name="highlight_ids">Highlight Poster</string>
+    <string name="popup_country_flag">Country Flag</string>
+    <string name="popup_show_image">Show Image</string>
+    <string name="popup_show_text">Show Text</string>
+    <string name="popup_header_text_format">Post %1$d</string>
+    <string name="popup_go_to_thread">Go To Thread</string>
+
+    <!-- dialog text -->
+    <string name="dialog_cache">Cache</string>
+    <string name="dialog_blocklist">Blocklist</string>
+    <string name="dialog_pass">4chan Pass</string>
+    <string name="dialog_logout_pass">Logging out Pass...</string>
+    <string name="dialog_authorizing_pass">Authorizing Pass...</string>
+    <string name="dialog_report_post">Report Post</string>
+    <string name="dialog_post">Post Reply</string>
+    <string name="dialog_new_thread">New Thread</string>
+    <string name="dialog_posting_reply">Posting...</string>
+    <string name="dialog_delete_watchlist_thread">Remove thread from watchlist?</string>
+    <string name="dialog_delete_favorites_board">Remove board from favorites?</string>
+    <string name="dialog_clear_watchlist">Clear watchlist?</string>
+    <string name="dialog_clear_favorites">Clear favorites?</string>
+    <string name="dialog_clean_watchlist">Clean dead threads?</string>
+    <string name="dialog_set_wallpaper">Set as wallpaper?</string>
+    <string name="dialog_clear_cache_confirm">Clear all cached data? This may take several minutes.</string>
+    <string name="dialog_reset_preferences_confirm">Reset all preferences to default?</string>
+    <string name="dialog_authorize">Authorize</string>
+    <string name="dialog_close">Close</string>
+    <string name="dialog_add">Add</string>
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_remove">Remove</string>
+    <string name="dialog_clear">Clear</string>
+    <string name="dialog_clean">Clean</string>
+    <string name="dialog_set">Set</string>
+    <string name="dialog_reset">Reset</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_watchlist">Thread Watchlist</string>
+    <string name="dialog_favorites">Favorite Boards</string>
+    <string name="dialog_added_to_watchlist">Added to watchlist</string>
+    <string name="dialog_deleted_from_watchlist">Removed from watchlist</string>
+    <string name="dialog_cleared_watchlist">Watchlist cleared</string>
+    <string name="dialog_cleaning_watchlist">Cleaning watchlist...</string>
+    <string name="dialog_cleaned_watchlist">Watchlist cleaned</string>
+    <string name="dialog_watchlist_cleaning_error">Couldn\'t clean watchlist</string>
+    <string name="dialog_reset_title">Reset Preferences</string>
+    <string name="dialog_reset_preferences">Preferences reset to defaults</string>
+
+    <!-- post reply activity -->
+    <string name="post_reply_title">Post Reply</string>
+    <string name="post_reply_thread_title">New Thread</string>
+    <string name="post_reply_text_hint">Comment (Optional)</string>
+    <string name="post_reply_text_hint_required">Comment (Required)</string>
+
+    <string name="post_reply_web_menu">Add web image</string>
+    <string name="post_reply_picture_menu">Add gallery image</string>
+    <string name="post_reply_camera_menu">Add camera image</string>
+    <string name="post_reply_pass_enable_menu">Authorize 4chan pass</string>
+    <string name="post_reply_pass_disable_menu">Logout 4chan pass</string>
+
+    <string name="post_reply_camera_hint">Camera</string>
+    <string name="post_reply_web_hint">Download Image</string>
+    <string name="post_reply_search_hint">Search for Image</string>
+    <string name="post_reply_picture_hint">Gallery</string>
+    <string name="post_reply_delete_hint">Delete Image</string>
+    <string name="post_reply_rotate_left_hint">Rotate Left</string>
+    <string name="post_reply_rotate_right_hint">Rotate Right</string>
+    <string name="post_reply_bump_hint">Bump</string>
+    <string name="post_reply_sage_hint">Sage</string>
+    <string name="post_reply_pass_enabled_text">Bypassing captcha with 4chan Pass</string>
+    <string name="post_reply_pass_enable_text">Bypass captcha with 4chan Pass</string>
+    <string name="post_reply_pass_disabled_text">4chan Pass logged out</string>
+    <string name="post_reply_pass_mobile_text">4chan Pass unavailable on mobile data</string>
+    <string name="post_reply_pass_no_connection_text">Cannot post while connection is down</string>
+    <string name="post_reply_pass_enable_hint">Authorize 4chan Pass</string>
+    <string name="post_reply_pass_disable_hint">Logout 4chan Pass</string>
+    <string name="post_reply_reload_captcha_hint">Reload Captcha</string>
+    <string name="post_reply_recaptcha_hint">reCAPTCHA Challenge (Required)</string>
+    <string name="post_reply_name_hint">Name (Optional)</string>
+    <string name="post_reply_email_hint">Email (Optional)</string>
+    <string name="post_reply_subject_hint">Subject (Optional)</string>
+    <string name="post_reply_subject_hint_required">Subject (Required)</string>
+    <string name="post_reply_password_hint">Password (Optional)</string>
+    <string name="post_reply_password_info_hint">Password usage info</string>
+    <string name="post_reply_password_info_detail">The password is a random number which lets you delete your post later.
+        This number has been generated for you, but you may change it if you wish.</string>
+    <string name="post_reply_password_text">Password</string>
+    <string name="post_reply_spoiler">Spoiler Image</string>
+    <string name="post_reply_recaptcha_url_root">
+        http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc
+    </string>
+    <string name="post_reply_no_board">Can\'t post, unknown board</string>
+    <string name="post_reply_added_image">Added image to post</string>
+    <string name="post_reply_no_load_camera_image">Couldn\'t load camera image</string>
+    <string name="post_reply_no_load_gallery_image">Couldn\'t load gallery image</string>
+    <string name="post_reply_no_load_image">Couldn\'t load image</string>
+    <string name="post_reply_no_image">Couldn\'t load image</string>
+    <string name="post_reply_no_image_rotate">Couldn\'t rotate image</string>
+    <string name="post_reply_no_camera">Couldn\'t load camera</string>
+    <string name="post_reply_camera_capture">Camera image</string>
+    <string name="post_reply_posting">Posting</string>
+    <string name="post_reply_captcha_error">Couldn\'t load captcha</string>
+    <string name="post_reply_enter_captcha">Enter captcha</string>
+    <string name="post_reply_add_image">Add image for a new thread</string>
+    <string name="post_reply_add_text_or_image">Add comment or image</string>
+    <string name="post_reply_board_requires_subject">Add a subject</string>
+    <string name="post_reply_response_error">Couldn\'t post, unknown response</string>
+    <string name="post_reply_no_response">Couldn\'t post, no response</string>
+    <string name="post_reply_error">Couldn\'t post</string>
+    <string name="post_reply_cancelled">Cancelled post</string>
+    <string name="post_reply_posted_reply">Posted reply</string>
+    <string name="post_reply_posted_thread">Posted new thread</string>
+    <string name="post_reply_send">Send</string>
+    <string name="post_reply_share_error">Couldn\'t share image to Chanu</string>
+    <string name="post_reply_new_thread_error">Couldn\'t post new thread</string>
+    <string name="post_reply_share_pick_board">New Thread - Pick Board</string>
+    <string name="post_reply_new_thread_pick_board">New Thread - Pick Board</string>
+    <string name="favorites_pick_board">Pick Favorites Board</string>
+    <string name="favorites_pick_board_error">Couldn\'t pick favorites board</string>
+
+    <!-- cover page -->
+    <string name="popular_title_popular">Popular Threads</string>
+    <string name="popular_title_latest">Latest Posts</string>
+    <string name="popular_title_recent">Recent Images</string>
+    <string name="popular_title_recommended">RECOMMENDED</string>
+
+    <!-- preferences -->
+    <string name="pref_about_category">About</string>
+    <string name="pref_advanced_category">Advanced</string>
+    <string name="pref_watchlist_category">Thread Watchlist</string>
+    <string name="pref_custom_category">Customize</string>
+    <string name="pref_custom_category_summ">Customize appearance and behavior</string>
+    <string name="pref_show_nsfw_boards">NSFW Boards</string>
+    <string name="pref_show_nsfw_boards_summ_pos">Enable</string>
+    <string name="pref_show_nsfw_boards_summ_neg">Disable (default)</string>
+    <string name="pref_show_nsfw_boards_summ_on">Currently showing all boards</string>
+    <string name="pref_show_nsfw_boards_summ_off">Currently hiding NSFW boards (default)</string>
+    <string name="pref_show_nsfw_boards_summ_detail">
+        Boards considered NSFW (not safe for work) are hidden by default. These boards are moderated, but may
+        potentially contain offensive material. If you are under 18 or it is illegal
+        to view restricted content in your jurisdiction, do not check this button.
+    </string>
+    <string name="pref_show_nsfw_boards_summ_message">
+        Boards considered NSFW (not safe for work) are hidden by default. These boards are moderated, but may
+        potentially contain offensive material. You are forbidden from enabling this option if you are under 18
+        or it is illegal to view restricted content in your jurisdiction.
+    </string>
+    <string name="pref_notifications">Notifications</string>
+    <string name="pref_notifications_summ_on">On</string>
+    <string name="pref_notifications_summ_off">Off</string>
+    <string name="pref_hide_post_numbers">Post Numbers</string>
+    <string name="pref_hide_post_numbers_summ_on">Post numbers are hidden except on /b/</string>
+    <string name="pref_hide_post_numbers_summ_off">Post numbers are always shown</string>
+    <string name="pref_hide_post_numbers_turn_on">Hide Post No.</string>
+    <string name="pref_hide_post_numbers_turn_off">Show Post No.</string>
+    <string name="pref_use_friendly_ids">Use Friendly Ids</string>
+    <string name="pref_use_friendly_ids_summ_on">Post Ids have readable names</string>
+    <string name="pref_use_friendly_ids_summ_off">Post Ids are left unchanged</string>
+    <string name="pref_use_google_analytics">Google Analytics</string>
+    <string name="pref_use_google_analytics_summ_on">Send anonymous usage data</string>
+    <string name="pref_use_google_analytics_summ_off">Don\'t send anonymous usage data</string>
+    <string name="pref_automatically_manage_watchlist">Auto-Manage Watchlist</string>
+    <string name="pref_automatically_manage_watchlist_summ_on">Add and remove threads automatically</string>
+    <string name="pref_automatically_manage_watchlist_summ_off">Manually add and remove threads</string>
+    <string name="pref_blocklist_button">Blocklist</string>
+    <string name="pref_blocklist_button_summ">Filter threads and posts</string>
+    <string name="pref_cache_category">Cache</string>
+    <string name="pref_cache_category_summ">Space to use for storing threads and images</string>
+    <string name="pref_clear_cache">Clear Cache</string>
+    <string name="pref_clear_cache_summ">Remove all cached data and images</string>
+    <string name="pref_purchase_prokey">Purchase Prokey</string>
+    <string name="pref_purchase_prokey_summ">Go ad-free, purchase only once, enables all devices</string>
+    <string name="pref_installed_prokey">Prokey Installed</string>
+    <string name="pref_installed_prokey_summ">No ads are shown, enabled for all devices</string>
+    <string name="pref_consume_prokey">Consume Prokey</string>
+    <string name="pref_consume_prokey_summ">Remove all record of prokey</string>
+    <string name="pref_cache_size">Cache size</string>
+    <string name="pref_cache_size_summ">Adjust cache size</string>
+    <string name="pref_watchlist_retention">Watchlist Retention</string>
+    <string name="pref_watchlist_retention_summ">Clear dead threads after</string>
+    <string name="pref_watchlist_retention_units">days</string>
+    <string name="pref_clean_watchlist">Clean Watchlist</string>
+    <string name="pref_clean_watchlist_summ">Remove dead threads from watchlist</string>
+    <string name="pref_clear_watchlist">Clear Watchlist</string>
+    <string name="pref_clear_watchlist_summ">Empty all threads from watchlist</string>
+    <string name="pref_clear_favorites">Clear Favorites</string>
+    <string name="pref_clear_favorites_summ">Remove all boards from favorites</string>
+    <string name="pref_clear_cache_pre_execute">Clearing cache, you will be notified when complete</string>
+    <string name="pref_clear_cache_pre_execute_no_notify">Clearing cache, you will receive a popup message when
+        complete
+    </string>
+    <string name="pref_clear_cache_already_running">Already clearing cache, you will be notified when complete</string>
+    <string name="pref_clear_cache_error">Couldn\'t clear cache</string>
+    <string name="pref_clear_cache_success">Cleared cache successfully</string>
+    <string name="pref_clear_cache_notification_title">Chanu Cache Status</string>
+    <string name="pref_about">About App</string>
+    <string name="pref_about_summ">Authorship and licensing information</string>
+    <string name="pref_reset_to_defaults">Reset</string>
+    <string name="pref_reset_to_defaults_summ">Restore all settings to their factory default</string>
+    <string name="pref_prokey_category">Prokey</string>
+    <string name="pref_prokey_category_summ">Purchase Pro-Key</string>
+    <string name="pref_user_category">User Info</string>
+    <string name="pref_user_category_summ">Name, email and password for posting</string>
+    <string name="pref_user_name">Name</string>
+    <string name="pref_user_name_summ">Use as name for posting</string>
+    <string name="pref_user_email">Email</string>
+    <string name="pref_user_email_summ">Use as email address for posting</string>
+    <string name="pref_user_password">Password</string>
+    <string name="pref_user_password_summ">Use as password for deleting</string>
+    <string name="pref_pass_category">4chan Pass</string>
+    <string name="pref_pass_category_summ">Token and PIN to bypass captcha</string>
+    <string name="pref_pass_token">Token</string>
+    <string name="pref_pass_token_hint">Enter Token</string>
+    <string name="pref_pass_token_summ">Your 10-character 4chan pass token</string>
+    <string name="pref_pass_token_invalid">Token invalid</string>
+    <string name="pref_pass_pin">PIN</string>
+    <string name="pref_pass_pin_hint">Enter PIN</string>
+    <string name="pref_pass_pin_summ">Your 6-character 4chan pass PIN</string>
+    <string name="pref_pass_pin_invalid">PIN invalid</string>
+    <string name="pref_pass_enabled">Enabled</string>
+    <string name="pref_pass_enabled_summ_on">Use pass to bypass captcha</string>
+    <string name="pref_pass_enabled_summ_off">Pass logged out</string>
+    <string name="pref_pass_purchase">Purchase</string>
+    <string name="pref_pass_purchase_hint">Don\'t have a pass? Get one.</string>
+    <string name="pref_theme_title">Theme</string>
+    <string name="pref_theme_summary">Light, dark, or auto for ambient light selection</string>
+    <string name="pref_theme_light">Light</string>
+    <string name="pref_theme_dark">Dark</string>
+    <string name="pref_theme_auto">Auto</string>
+    <string name="pref_theme_default">@string/pref_theme_light</string>
+    <string name="pref_theme_light_value">0</string>
+    <string name="pref_theme_dark_value">1</string>
+    <string name="pref_theme_auto_value">2</string>
+    <string name="pref_theme_default_value">@string/pref_theme_light_value</string>
+    <string name="pref_autoload_images_title">Autoload Thread Images</string>
+    <string name="pref_autoload_images_summary">Never, always, or auto based on connection speed</string>
+    <string name="pref_autoload_images_never">Never</string>
+    <string name="pref_autoload_images_always">Always</string>
+    <string name="pref_autoload_images_auto">Auto</string>
+    <string name="pref_autoload_images_default">@string/pref_autoload_images_auto</string>
+    <string name="pref_autoload_images_never_value">0</string>
+    <string name="pref_autoload_images_always_value">1</string>
+    <string name="pref_autoload_images_auto_value">2</string>
+    <string name="pref_autoload_images_default_value">@string/pref_autoload_images_auto_value</string>
+
+    <!-- about preference -->
+    <string name="pref_about_title">Chanu</string>
+    <string name="pref_about_title_sum">4chan Reloaded</string>
+    <string name="pref_about_application_category">Application</string>
+    <string name="pref_about_application_version">Version 1.25 RC1</string>
+    <string name="pref_about_application_version_sum">Released 13 Sep 2013</string>
+    <string name="pref_about_application_rate">Rate Us</string>
+    <string name="pref_about_application_rate_sum">Visit Chanu on Google Play</string>
+    <string name="pref_about_data_category">Uses</string>
+    <string name="pref_about_data_4chan">4chan API</string>
+    <string name="pref_about_data_4chan_sum">Data sourced live via the 4chan API</string>
+    <string name="pref_about_data_uil">Universal Image Loader</string>
+    <string name="pref_about_data_uil_sum">Courtesy of Sergey Tarasevich</string>
+    <string name="pref_about_data_pulltorefresh">ActionBar-PullToRefresh</string>
+    <string name="pref_about_data_pulltorefresh_sum">Courtesy of Chris Banes</string>
+    <string name="pref_about_data_color">mColorPicker</string>
+    <string name="pref_about_data_color_sum">Courtesy of Daniel Nilsson</string>
+    <string name="pref_about_developer_category">Product Info</string>
+    <string name="pref_about_developer_chanapps">Chanapps Software</string>
+    <string name="pref_about_developer_chanapps_sum">See our other offerings</string>
+    <string name="pref_about_store_chanapps">Chanapps Store</string>
+    <string name="pref_about_store_chanapps_sum">Buy a Chanu T-shirt</string>
+    <string name="pref_about_developer_burns">John Burns</string>
+    <string name="pref_about_developer_burns_sum">johnarleyburns@gmail.com</string>
+    <string name="pref_about_developer_nittner">Grzegorz Nittner</string>
+    <string name="pref_about_developer_nittner_sum">grzegorz.nittner@gmail.com</string>
+    <string name="pref_about_developer_pop">Mircea Pop</string>
+    <string name="pref_about_developer_pop_sum">mircea.pop.ro@gmail.com</string>
+    <string name="pref_about_developer_milas">Dimitris Milas</string>
+    <string name="pref_about_developer_milas_sum">dimitris.leonida.milas@gmail.com</string>
+    <string name="pref_about_send_email">Send email</string>
+
+    <!-- widgets -->
+    <string name="widget_board">Pick Board</string>
+    <string name="widget_board_summ">Board for widget images</string>
+    <string name="widget_board_add_error">Couldn\'t add widget</string>
+    <string name="widget_refresh">Refresh</string>
+    <string name="widget_configure">Configure</string>
+    <string name="widget_configure_title">Chanu Widget Configuration</string>
+    <string name="widget_configure_board_title_color">Board Title Color</string>
+    <string name="widget_configure_corners">Show Border</string>
+    <string name="widget_configure_board">Show Board Title</string>
+    <string name="widget_configure_refresh">Show Refresh Button</string>
+    <string name="widget_configure_config">Show Configure Button</string>
+    <string name="widget_loading">Loading...</string>
+
+    <!-- Help and about_dialog -->
+    <string name="about_menu">About</string>
+    <string name="test_menu">Test</string>
+
+    <!-- camera -->
+    <string name="camera_capture">Capture picture</string>
+    <string name="camera_open_error">Couldn\'t open camera</string>
+    <string name="camera_capture_error">Couldn\'t take picture</string>
+    <string name="camera_folder_name">Chanu Camera</string>
+
+    <!-- ads -->
+    <string name="board_advert_subject">Advert</string>
+    <string name="board_advert_info">Go To J-List</string>
+    <string name="board_advert_full">Advert&lt;br/&gt;Go To J-List</string>
+    <string name="advert_header">Advert</string>
+    <string name="advert_content_description">Advert: Go To J-List</string>
+    <string name="jlist_ad_message">J-List is a peaceful island of Japanese pop culture for you</string>
+    <string name="jlist_ad_message_compact">Advert</string>
+    <string name="ad_default_text">Chanu is 4chan Reloaded</string>
+
+    <!-- fetch and network services -->
+    <string name="mark_dead_thread">Thread marked as dead</string>
+    <string name="network_profile_health_bad">Internet connection slow</string>
+    <string name="mobile_profile_loading_board">Loading board</string>
+    <string name="mobile_profile_loading_thread">Loading thread</string>
+    <string name="mobile_profile_loading_image">Loading image</string>
+    <string name="mobile_profile_preloading_defaults">Preloading boards /a/, /b/, /v/, /vg/ and /s/</string>
+    <string name="mobile_profile_health_status">Network %1$s couldn\'t load</string>
+    <string name="mobile_profile_no_auto_refresh">Auto refresh disabled</string>
+    <string name="mobile_profile_loaded_board">Loaded /%1$s/</string>
+    <string name="mobile_profile_loaded_thread">Loaded /%1$s/%2$d</string>
+    <string name="mobile_profile_fetch_failure">Couldn\'t load data</string>
+    <string name="mobile_profile_fetch_unmodified">Data unchanged</string>
+    <string name="mobile_profile_fetch_thread_fail">Couldn\'t load /%1$s/%2$d</string>
+    <string name="mobile_profile_fetch_dead_thread">Thread is dead</string>
+    <string name="mobile_profile_parse_board_fail">Couldn\'t parse /%1$s/</string>
+    <string name="mobile_profile_parse_thread_fail">Couldn\'t parse /%1$s/%2$d</string>
+    <string name="no_connection_profile">Offline mode</string>
+    <string name="board_no_connection_load">Can\'t load board, no connection</string>
+
+    <string name="board_grid_item_view_thread_desc">View thread</string>
+    <string name="board_grid_item_view_posts_desc">View posts</string>
+    <string name="board_grid_item_view_images_desc">View images</string>
+    <string name="board_grid_item_view_board_desc">View board</string>
+
+    <!-- tutorial -->
+    <string name="tutorial_overlay_button">Next</string>
+    <string name="tutorial_overlay_dismiss">Dismiss</string>
+    <string name="tutorial_overlay_finished">Done</string>
+
+    <string name="tutorial_intro_desc">Welcome</string>
+    <string name="tutorial_intro_desc_detail">Chanu is an anonymous forum backed with content from 4chan.</string>
+    <string name="tutorial_board_desc">Boards</string>
+    <string name="tutorial_board_desc_detail">Each board has its own theme where anyone can start new threads.</string>
+    <string name="tutorial_thread_desc">Threads</string>
+    <string name="tutorial_thread_desc_detail">Each discussion starts with an image and text topic.</string>
+    <string name="tutorial_post_desc">Posts</string>
+    <string name="tutorial_post_desc_detail">Anyone can post comments and images until the thread expires.</string>
+    <string name="tutorial_finished_desc">Finished</string>
+    <string name="tutorial_finished_desc_detail">Click a board to start browsing content.</string>
+
+    <!-- board names -->
+    <string name="board_type_worksafe">Worksafe</string>
+    <string name="board_type_japanese_culture">Japanese Culture</string>
+    <string name="board_type_japanese_culture_desc">Anime, cosplay and Japan</string>
+    <string name="board_a">Anime &amp; Manga</string>
+    <string name="board_c">Anime/Cute</string>
+    <string name="board_w">Anime/Wallpapers</string>
+    <string name="board_m">Mecha</string>
+    <string name="board_cgl">Cosplay &amp; EGL</string>
+    <string name="board_cm">Cute/Male</string>
+    <string name="board_n">Transport</string>
+    <string name="board_jp">Otaku Culture</string>
+    <string name="board_vp">Pokemon</string>
+    <string name="board_type_interests">Interests</string>
+    <string name="board_type_interests_desc">Video games, media, sports and culture</string>
+    <string name="board_v">Video Games</string>
+    <string name="board_vg">Video Game Generals</string>
+    <string name="board_vr">Retro Games</string>
+    <string name="board_co">Comics &amp; Cartoons</string>
+    <string name="board_g">Technology</string>
+    <string name="board_tv">Television &amp; Film</string>
+    <string name="board_k">Weapons</string>
+    <string name="board_o">Auto</string>
+    <string name="board_an">Animals &amp; Nature</string>
+    <string name="board_tg">Traditional Games</string>
+    <string name="board_sp">Sports</string>
+    <string name="board_asp">Alternative Sports</string>
+    <string name="board_sci">Science &amp; Math</string>
+    <string name="board_int">International</string>
+    <string name="board_out">Outdoors</string>
+    <string name="board_type_creative">Creative</string>
+    <string name="board_type_creative_desc">Art, photography, cooking and projects</string>
+    <string name="board_i">Oekaki</string>
+    <string name="board_po">Papercraft &amp; Origami</string>
+    <string name="board_p">Photography</string>
+    <string name="board_ck">Food &amp; Cooking</string>
+    <string name="board_ic">Artwork/Critique</string>
+    <string name="board_wg">Wallpapers/General</string>
+    <string name="board_mu">Music</string>
+    <string name="board_fa">Fashion</string>
+    <string name="board_toy">Toys</string>
+    <string name="board_3">3DCG</string>
+    <string name="board_gd">Graphic Design</string>
+    <string name="board_diy">Do-It-Yourself</string>
+    <string name="board_wsg">Worksafe GIF</string>
+    <string name="board_type_adult">Adult</string>
+    <string name="board_type_adult_desc">Not-safe-for-work images and content</string>
+    <string name="board_s">Sexy Beautiful Women</string>
+    <string name="board_hc">Hardcore</string>
+    <string name="board_hm">Handsome Men</string>
+    <string name="board_h">Hentai</string>
+    <string name="board_e">Ecchi</string>
+    <string name="board_u">Yuri</string>
+    <string name="board_d">Hentai/Alternative</string>
+    <string name="board_y">Yaoi</string>
+    <string name="board_t">Torrents</string>
+    <string name="board_hr">High Resolution</string>
+    <string name="board_gif">Animated GIF</string>
+    <string name="board_type_other">Other</string>
+    <string name="board_type_other_desc">Books, travel, fitness and discussion</string>
+    <string name="board_q">4chan Feedback</string>
+    <string name="board_trv">Travel</string>
+    <string name="board_fit">Fitness</string>
+    <string name="board_x">Paranormal</string>
+    <string name="board_lit">Literature</string>
+    <string name="board_adv">Advice</string>
+    <string name="board_lgbt">LGBT</string>
+    <string name="board_mlp">Pony</string>
+    <string name="board_type_misc">Misc</string>
+    <string name="board_type_misc_desc">Politics, camwhores, and /b/</string>
+    <string name="board_b">Random</string>
+    <string name="board_r">Request</string>
+    <string name="board_r9k">ROBOT9001</string>
+    <string name="board_pol">Politically Incorrect</string>
+    <string name="board_s4s">Shit 4chan Says</string>
+    <string name="board_soc">Cams &amp; Meetups</string>
+    <string name="board_watch">Thread Watchlist</string>
+    <string name="board_watch_desc">Keep track of interesting discussions</string>
+    <string name="board_watch_abbrev">Watch</string>
+    <string name="board_favorites">Favorite Boards</string>
+    <string name="board_favorites_desc">Shortcut to your most loved topics</string>
+    <string name="board_favorites_abbrev">Fav</string>
+    <string name="board_type_recent">Popular Threads</string>
+    <string name="board_type_recent_abbrev">Popular Threads</string>
+    <string name="board_popular">Popular Threads</string>
+    <string name="board_popular_abbrev">Popular Threads</string>
+    <string name="board_latest">Latest Posts</string>
+    <string name="board_latest_abbrev">Latest Posts</string>
+    <string name="board_latest_images">Latest Images</string>
+    <string name="board_latest_images_abbrev">Latest Imgs</string>
+    <string name="board_select">Select Board</string>
+    <string name="board_select_abbrev">Select Board</string>
+    <string name="board_meta">Board Groups</string>
+    <string name="board_meta_desc">Board Groups</string>
+    <string name="board_all_boards">All Boards</string>
+    <string name="board_all_boards_desc">All boards on Chanu</string>
+    <string name="board_vg_abbrev">/vg/</string>
+
+    <!-- board descriptions -->
+    <string name="board_desc_3">Modeling and imagery</string>
+    <string name="board_desc_a">Novels and vids</string>
+    <string name="board_desc_adv">Ask and you shall receive</string>
+    <string name="board_desc_an">Pets, plants, cuddlies</string>
+    <string name="board_desc_asp">BMX, skiing, parachuting</string>
+    <string name="board_desc_b">Anarchists Anonymous</string>
+    <string name="board_desc_c">Waifus and others</string>
+    <string name="board_desc_cgl">Costumes and lolita</string>
+    <string name="board_desc_ck">Recipies and kitchenware</string>
+    <string name="board_desc_cm">Male anime and manga</string>
+    <string name="board_desc_co">Western style</string>
+    <string name="board_desc_d">Bondage and tentacles</string>
+    <string name="board_desc_diy">Plans and projects</string>
+    <string name="board_desc_e">Softcore anime females</string>
+    <string name="board_desc_fa">Closets and outfits</string>
+    <string name="board_desc_fit">Lifting for gains</string>
+    <string name="board_desc_g">Geeks and gadgets</string>
+    <string name="board_desc_gd">Websites and logos</string>
+    <string name="board_desc_gif">Uncensored loops</string>
+    <string name="board_desc_h">Anime sex and nudity</string>
+    <string name="board_desc_hc">Live action hardcore</string>
+    <string name="board_desc_hm">Male softcore</string>
+    <string name="board_desc_hr">Artwork and scans</string>
+    <string name="board_desc_i">App drawings</string>
+    <string name="board_desc_ic">Post, rate, and improve</string>
+    <string name="board_desc_int">Culture and language</string>
+    <string name="board_desc_jp">Hello Kitty, J-pop</string>
+    <string name="board_desc_k">Guns and military</string>
+    <string name="board_desc_lgbt">Lesbian, gay, bi, trans</string>
+    <string name="board_desc_lit">Books and writing</string>
+    <string name="board_desc_m">Humanoid battle robots</string>
+    <string name="board_desc_mlp">Bronie heaven</string>
+    <string name="board_desc_mu">Fans, haters, and audio</string>
+    <string name="board_desc_n">Trains and bikes</string>
+    <string name="board_desc_o">Rides and car talk</string>
+    <string name="board_desc_out">Hiking and camping</string>
+    <string name="board_desc_p">Content and criticism</string>
+    <string name="board_desc_po">Folding and cutouts</string>
+    <string name="board_desc_pol">Politics 4chan style</string>
+    <string name="board_desc_q">Mods and features</string>
+    <string name="board_desc_r">Ask for images and videos</string>
+    <string name="board_desc_r9k">No-repeats community</string>
+    <string name="board_desc_s">Female softcore</string>
+    <string name="board_desc_s4s">Currated craziness</string>
+    <string name="board_desc_sci">Nerd heaven</string>
+    <string name="board_desc_soc">Ideals, rate-me</string>
+    <string name="board_desc_sp">Pro sports and teams</string>
+    <string name="board_desc_t">Share links</string>
+    <string name="board_desc_tg">Boards and roleplay</string>
+    <string name="board_desc_toy">Figures and collectibles</string>
+    <string name="board_desc_trv">Journeys, adventures</string>
+    <string name="board_desc_tv">Series and sets</string>
+    <string name="board_desc_u">Lesbian anime</string>
+    <string name="board_desc_v">Console and PC games</string>
+    <string name="board_desc_vg">Long-lived discussions</string>
+    <string name="board_desc_vp">Training, evolving</string>
+    <string name="board_desc_vr">Pre-2000 video games</string>
+    <string name="board_desc_w">J-pop and anime pics</string>
+    <string name="board_desc_wg">Highres non-anime</string>
+    <string name="board_desc_wsg">Loops of humor</string>
+    <string name="board_desc_x">Aliens and spirits</string>
+    <string name="board_desc_y">Homosexual anime</string>
+    <string name="categories" value="Categories"/>
+
+    <!-- rules dialog strings -->
+
+    <string name="board_rules_header">Board Rules</string>
+
+    <string name="global_rules_header">Global Rules</string>
+    <string name="global_rules_detail">
+        <![CDATA[
+        <p>1. Do not upload, post, discuss, request, or link to, anything that violates local or United States law. This will be severely punished and strictly enforced.</p>
+        <p>2. If you are under the age of 18, or it is illegal for you to view the materials contained on this website, discontinue browsing immediately.</p>
+        <p>3. Do not post the following outside of /b/: Trolls, flames, racism, off-topic replies, uncalled for catchphrases, macro image replies, indecipherable text (example: "lol u tk him 2da bar|?"), anthropomorphic ("furry"), grotesque ("guro"), post number GETs ("dubs"), or loli/shota pornography.</p>
+        <p>4. The posting of personal information or calls to invasion is prohibited.</p>
+        <p>5. All boards that default to the Yotsuba B or Burichan (blue) theme are to be considered "work safe." Violators may be temporarily banned and their posts removed. Note: Spoilered pornography or other not safe for work content is NOT allowed.</p>
+        <p>6. The quality of posts is extremely important to this community. Contributors are encouraged to provide high-quality images and informative comments.</p>
+        <p>7. Submitting false reports or otherwise abusing the report system will result in a ban of indeterminate length. Replying to a thread stating that you\'ve reported it or another post is also disallowed - please do not announce your reports.</p>
+        <p>8. Complaining about 4chan (its policies, moderation, etc.) on the imageboards can result in post deletion and banishment. The administrator faq at <a href="http://4chan.org/faq#whoadmin">http://4chan.org/faq#whoadmin</a> will address your questions, comments, complaints, and concerns via e-mail. Constructive criticism and feedback should be posted to <a href="http://boards.4chan.org/q/">http://boards.4chan.org/q/</a>.</p>
+        <p>9. Ban evasion will result in permanent bans - no exceptions. Instead, wait and appeal it at <a href="http://4chan.org/faq#banappeal">http://4chan.org/faq#banappeal</a></p>
+        <p>10. No spamming or flooding of any kind.</p>
+        <p>11. Advertising (all forms) is also not welcome - this includes any type of referral linking, "offers", stream threads, etc.</p>
+        <p>12. Impersonating the 4chan administrator, moderators, or janitors is strictly forbidden.</p>
+        <p>13. Do not use avatars or attach signatures to your posts.</p>
+        <p>14. The use of scrapers, bots, or other automated posting or downloading scripts is prohibited. Users may not post from proxies or Tor exit nodes.</p>
+        <p>15. All pony/brony threads, images, and avatars belong on the <a href="http://boards.4chan.org/mlp/">http://boards.4chan.org/mlp/</a> board.</p>
+        <p>16. All requests belong on the requests board at <a href="http://boards.4chan.org/r/">http://boards.4chan.org/r/</a> unless otherwise noted.</p>
+        <p>17. Remember: The use of 4chan is a privilege, not a right. The 4chan staff reserves the right to revoke access and remove content for any reason without notice.</p>
+        <p>Global rules apply to all boards unless otherwise noted.</p>
+        ]]>
+    </string>
+
+<string name="board_3_rules">
+<![CDATA[
+<h3>/3/ - 3DCG</h3>
+<p>Images and discussion should relate to 3D modeling and imagery.</p>
+<p>Remember: This is a worksafe board! No adult content is allowed.</p>
+]]>
+</string>
+
+
+<string name="board_a_rules">
+<![CDATA[
+<h3>/a/ - Anime &amp; Manga</h3>
+<p>1. All images and resulting discussion should pertain to anime or manga. For long-term series discussion, please refer to the <a href="http://dis.4chan.org/anime/">http://dis.4chan.org/anime/</a> board.</p>
+<p>2. The use of spoiler tags is highly recommended. To spoilerize text, enclose it like so: [spoiler]spoiled text[/spoiler]. In addition, images may be spoilerized by checking the "[Spoiler Image?]" box on the submission form.</p>
+<p>3. Purposeful spoiling of a series may result in post deletion and temporary ban.</p>
+<p>4. The discussion of "live action" television shows is permitted so long as they are distinctly rooted in, or based off of an anime or manga series.</p>
+<p>5. Japanese visual novels should be posted in <a href="http://boards.4chan.org/jp/">http://boards.4chan.org/jp/</a> , and Western on <a href="http://boards.4chan.org/vg/">http://boards.4chan.org/vg/</a> .</p>
+
+]]>
+</string>
+
+
+<string name="board_adv_rules">
+<![CDATA[
+<h3>/adv/ - Advice</h3>
+
+<p>1. All advice threads welcome. Offering or requesting is allowed.</p>
+<p>2. This is the destination for <strong>all</strong> questions regarding specific personal problems.</p>
+<p>3. All threads are expected to be constructive in nature; BAWWWing and venting is discouraged.</p>
+<p>4. No hookup or camwhore threads! Take that to /soc/.</p>
+
+]]>
+</string>
+
+
+<string name="board_an_rules">
+<![CDATA[
+<h3>/an/ - Animals &amp; Nature</h3>
+
+<p>1. All images of animals and nature are welcome.</p>
+<p>2. Posting images depicting animal cruelty is strictly forbidden.</p>
+
+]]>
+</string>
+
+
+<string name="board_asp_rules">
+<![CDATA[
+<h3>/asp/ - Alternative Sports</h3>
+<p>1. This board is for discussion of sports other than the major professional sports. This includes topics such as skydiving, surfing, skateboarding, rock-climing, bungee-jumping, BMX, wrestling, paintball and other "extreme" sports.</p>
+<p>2. Discussions about professional sports teams, leagues, and athletes should be posted to /sp/. Discussions about eSports should be posted to /vg/.</p>
+]]>
+</string>
+
+
+<string name="board_b_rules">
+<![CDATA[
+<h3>/b/ - Random</h3>
+
+<p>1. ZOMG NONE!!!1*</p>
+<p>2. Global rules 1, 2, 4, 7, 9, 10, 11, 13, 14, and 15 are enforced.</p>
+
+<p><strong><em>Note: "ZOMG NONE!!!1" applies to moderators as well.</em></strong></p>
+
+]]>
+</string>
+
+
+<string name="board_c_rules">
+<![CDATA[
+<h3>/c/ - Anime/Cute</h3>
+
+<p>1. Images should be cute ("moe") in nature.</p>
+<p>2. <em>Ecchi</em> belongs on its respective board. Males belong on the <em>cute/male</em> board.</p>
+<p>3. Heterosexual couples are allowed.</p>
+
+]]>
+</string>
+
+
+<string name="board_cgl_rules">
+<![CDATA[
+<h3>/cgl/ - Cosplay &amp; EGL</h3>
+
+<p>1. Pictures depicting those in costume play ("cosplay") and elegant gothic lolita ("EGL") dress are welcome.</p>
+<p>2. Don\'t bring community drama into this board. Singling out individual cosplayers and trolling them will not be tolerated.</p>
+<p>3. J-fashion is allowed. Models can be of any ethnicity, but the fashion should be of Japanese origin.</p>
+<p>4. "What Are You Wearing Today" threads should be cosplay/EGL/J-fashion focused. General fashion threads should be posted to /fa/.</p>
+<p>5. Health threads belong on /adv/ or /fit/.</p>
+
+]]>
+</string>
+
+
+<string name="board_ck_rules">
+<![CDATA[
+<h3>/ck/ - Food &amp; Cooking</h3>
+
+<p>1. Images and discussion should relate to food and cooking.</p>
+<p>2. Recipes are welcome! Feel free to talk about your favorite dishes and discuss past cooking experiences.</p>
+
+]]>
+</string>
+
+
+<string name="board_cm_rules">
+<![CDATA[
+<h3>/cm/ - Cute/Male</h3>
+
+<p>1. Images should depict animated males and be cute ("moe") in nature. Shounen-ai images are permitted.</p>
+<p>2. <em>Yaoi</em> belongs on its own respective board. Couples belong on the <em>anime/cute</em> board.</p>
+<p>3. This board is for animated content only. Images depicting "real" people will be removed.</p>
+
+
+]]>
+</string>
+
+
+<string name="board_co_rules">
+<![CDATA[
+<h3>/co/ - Comics &amp; Cartoons</h3>
+
+<p>1. Images and discussion should pertain to media of Western origin.</p>
+<p>2. Spoiler tag use is enforced. Don\'t know how to use spoiler tags?  Read about spoilers at <a href="http://4chan.org/faq#spoiler">http://4chan.org/faq#spoiler</a> .</p>
+
+]]>
+</string>
+
+
+<string name="board_d_rules">
+<![CDATA[
+<h3>/d/ - Hentai/Alternative</h3>
+
+<p>1. "Alternative" images including: futanari, bondage, tentacles, etc. are welcome. Caveats below.</p>
+<p>2. Images depicting bestiality, guro, scat, or generally seen to be "extreme" in nature are not to be uploaded.</p>
+
+]]>
+</string>
+
+
+<string name="board_diy_rules">
+<![CDATA[
+<h3>/diy/ - Do-It-Yourself</h3>
+
+<p>1. MAKERS GONNA MAKE!</p>
+<p>2. Do not post instructions for how to make weapons or any device that might bring harm to a person. Think "Instructables" and "Make Magazine" <em>not</em> "Anarchist\'s Cookbook."</p>
+
+]]>
+</string>
+
+
+<string name="board_e_rules">
+<![CDATA[
+<h3>/e/ - Ecchi</h3>
+
+<p>1. Only softcore nudity is permitted. Hardcore images should remain on the <em>hentai</em> board.</p>
+<p>2. Ecchi material is suggestive and often times cute, however, it should not be mistaken for the <em>cute</em> board.</p>
+
+]]>
+</string>
+
+
+<string name="board_f_rules">
+<![CDATA[
+<h3>/f/ - Flash</h3>
+
+<p>1. All uploaded files should be uniquely Japanese (pertain to Japanese culture). "Run of the mill" content is to be had elsewhere.</p>
+<p>2. Posting retail Flash files or Flash exploits is prohibited.</p>
+<p>3. The tagging of uploaded files is mandatory. Improperly tagged items may be removed without notice. Abuse of the tagging system may result in temporary ban.</p>
+<p>4. If your file is to be tagged as "[?] Other", re-examine the first rule before submission.</p>
+
+]]>
+</string>
+
+
+<string name="board_fa_rules">
+<![CDATA[
+<h3>/fa/ - Fashion</h3>
+
+<p>1. Images and discussion should pertain to fashion and apparel.</p>
+
+]]>
+</string>
+
+
+<string name="board_fit_rules">
+<![CDATA[
+<h3>/fit/ - Fitness</h3>
+
+<p>1. Images and discussion related to dieting, exercise, healthy living, and workout plans is welcome here.</p>
+<p>2. Relationship, dating advice, and "mental health" threads belong on /adv/.</p>
+
+]]>
+</string>
+
+
+<string name="board_g_rules">
+<![CDATA[
+<h3>/g/ - Technology</h3>
+
+<p>1. Images depicting the technology of past, present, and future are all welcome here.</p>
+<p>2. Support threads are allowed, but discouraged. Please consult a search engine before making such threads. "Obvious advice" threads may be removed at the discretion of the staff.</p>
+<p>3. Check out the boards at <a href="http://dis.4chan.org/comp/">http://dis.4chan.org/comp/</a> , <a href="http://dis.4chan.org/tech/">http://http://dis.4chan.org/tech/</a> , and <a href="http://dis.4chan.org/prog/">http://dis.4chan.org/prog/</a> as discussion-oriented alternatives to this imageboard.</p>
+<p>You may use [code] tags to highlight syntax and preserve whitespace. To use them, just wrap your code snippets [code]like this[/code].</p>
+
+]]>
+</string>
+
+
+<string name="board_gd_rules">
+<![CDATA[
+<h3>/gd/ - Graphic Design</h3>
+<p>1. This board is for the discussion of graphic design software and computer-aided graphic design techniques (ie. "Photoshopping").</p>
+<p>2. Requests for Photoshopping or any other work should go on /r/.</p>
+]]>
+</string>
+
+
+<string name="board_gif_rules">
+<![CDATA[
+<h3>/gif/ - Animated GIF</h3>
+
+<p>1. All GIFs should be animated - no static images.</p>
+
+]]>
+</string>
+
+
+<string name="board_h_rules">
+<![CDATA[
+<h3>/h/ - Hentai</h3>
+
+<p>1. Information pertaining to the artist, character\'s name, originating manga/doujin, etc. is highly valued. Please provide this information if it is available to you.</p>
+<p>2. Images should depict "of-age" females (use discretion).</p>
+<p>3. In addition, <em>alternative</em>, <em>ecchi</em>, <em>shota</em>, <em>yuri</em>, and <em>yaoi</em> content belong on their respective boards.</p>
+<p>4. The posting of paysite passwords is forbidden.</p>
+<p>5. Western drawn/styled ("toon") pictures and fan drawn ("fanart") images are not allowed at this time.</p>
+
+]]>
+</string>
+
+
+<string name="board_hc_rules">
+<![CDATA[
+<h3>/hc/ - Hardcore</h3>
+
+<p>1. Only tasteful hardcore pornography allowed.</p>
+<p>2. Do not post fake nudes or photos depicting abuse.</p>
+<p>3. This board is for straight content.</p>
+<p>4. Requests belong in <a href="http://boards.4chan.org/r/">http://boards.4chan.org/r/</a> !</p>
+
+]]>
+</string>
+
+
+<string name="board_hm_rules">
+<![CDATA[
+<h3>/hm/ - Handsome Men</h3>
+
+<p>1. Only tasteful photos and pornography allowed.</p>
+<p>2. This board is for gay, male content only. Do not post traps or trans here.</p>
+<p>3. Please no self pics, cock shots, etc.</p>
+<p>4. Absolutely no underage content (under 18) of any sort. Violators will be issued permanent bans.</p>
+
+]]>
+</string>
+
+
+<string name="board_hr_rules">
+<![CDATA[
+<h3>/hr/ - High Resolution</h3>
+
+<p>1. Post <em>quality</em> high-resolution 2D/3D artwork, scans, photography, and images of interest here.</p>
+<p>2. Do not simply post images because they have large dimensions. If an image would be of interest to another board, please crosspost the image (resizing if necessary).</p>
+<p>3. The <em>high resolution</em> board was created to provide a venue for extremely large images. It is not intended to be a <em>random</em> board.</p>
+<p>4. Non-worksafe images are allowed, however content must be kept tasteful (no grossout images).</p>
+
+]]>
+</string>
+
+
+<string name="board_i_rules">
+<![CDATA[
+<h3>/i/ - Oekaki</h3>
+
+<p>1. Oekakis can be random in nature, but please, no "junk" drawings.  Quality over quantity!</p>
+
+]]>
+</string>
+
+
+<string name="board_ic_rules">
+<![CDATA[
+<h3>/ic/ - Artwork/Critique</h3>
+
+<p>1. User-drawn works are to be submitted for critiquing. Do not submit work that you have not personally drawn or contributed to.</p>
+<p>2. Only constructive criticism will be accepted. Rude or offensive comments will result in a ban.</p>
+<p>3. Requests for free work of any sort are forbidden.</p>
+<p>4. Discussion of drawing tablets belongs in /g/.</p>
+
+]]>
+</string>
+
+
+<string name="board_int_rules">
+<![CDATA[
+<h3>/int/ - International</h3>
+
+<p>1. This board is for the discussion of foreign culture and language. Please be respectful.</p>
+<p>2. Posting in languages other than English is allowed - and encouraged!</p>
+
+]]>
+</string>
+
+
+<string name="board_jp_rules">
+<![CDATA[
+<h3>/jp/ - Otaku Culture</h3>
+
+<p>1. All images and discussion should pertain to light and visual novels, figures and other otaku paraphernalia, Touhou Project, Vocaloid, doujin works and music, NEET lifestyle, and diverse niche Japanese interests (kigurumi, idols, mahjong, tea).</p>
+<p>2. This is the appropriate board for the discussion of Japanese visual novels, and light novels without an animated adaptation. Western visual novels should be posted to /vg/, and translated visual novels are fine on either board.</p> 
+
+]]>
+</string>
+
+
+<string name="board_k_rules">
+<![CDATA[
+<h3>/k/ - Weapons</h3>
+
+<p>1. All weaponry is welcome. Military vehicles/knives/other weapons are included, this board isn\'t just for firearms!</p>
+
+]]>
+</string>
+
+
+<string name="board_lgbt_rules">
+<![CDATA[
+<h3>/lgbt/ - LGBT</h3>
+<p>1. This board is for the respectful discussion of LGBT lifestyle and the LGBT community.</p>
+<p>2. Hookup and "rate me"/camwhore threads belong on /soc/.</p>
+<p>3. Remember, this is a WORKSAFE BOARD. Absolutely no nudity or pornography!</p>
+]]>
+</string>
+
+
+<string name="board_lit_rules">
+<![CDATA[
+<h3>/lit/ - Literature</h3>
+
+<p>1. All literature discussion is welcome, however fan-fic is not allowed.</p>
+
+]]>
+</string>
+
+
+<string name="board_m_rules">
+<![CDATA[
+<h3>/m/ - Mecha</h3>
+
+<p>1. All mecha and mecha-related (ex: pilots, core fighter, mecha girl, hobby model) images are allowed.</p>
+
+]]>
+</string>
+
+
+<string name="board_mlp_rules">
+<![CDATA[
+<h3>/mlp/ - Pony</h3>
+
+<p>1. This is the destination for <u>all</u> My Little Pony related content on 4chan.</p>
+<p>2. This is a work safe board. No pornographic images or other not safe for work content is allowed. This includes clop clop!</p>
+<p>3. Do not post "dubs" threads.</p>
+<p>4. Please no roleplay threads.</p>
+<p>5. Threads should be about some<em>thing</em> show related, not some<em>one</em>.</p>
+<p>6. Please keep it civil! Bronies and ponies should play nicely, and if necessary keep to their own threads.</p>
+<p>7. Ponies only! No anthro.</p>
+<p>8. Global rule 13 does not apply to this board.</p>
+<p>9. Remember, <em>friendship is magic!</em></p>
+
+]]>
+</string>
+
+
+<string name="board_mu_rules">
+<![CDATA[
+<h3>/mu/ - Music</h3>
+
+<p>1. Discuss music, artists, and instruments here. All images should relate to the topic at hand.</p>
+<p>2. Trolling, instigating, or participating in a flamewar will result in a ban.</p>
+
+]]>
+</string>
+
+
+<string name="board_n_rules">
+<![CDATA[
+<h3>/n/ - Transportation</h3>
+
+<p>1. All sorts of transportation pictures and discussion welcome.  Trains, planes, ships, bicycles, flying elevators - post \'em all!</p>
+<p>2. Please keep automobiles on the <em>auto</em> board.
+<p>3. Military vehicles should be posted on the <em>weapons</em> board.</p>
+
+]]>
+</string>
+
+
+<string name="board_o_rules">
+<![CDATA[
+<h3>/o/ - Auto</h3>
+
+<p>1. All motor vehicle pictures are allowed.</p>
+<p>2. Photos of models and "race queens" are permitted, so long as they are sufficiently clothed.</p>
+
+]]>
+</string>
+
+
+<string name="board_out_rules">
+<![CDATA[
+<h3>/out/ - Outdoors</h3>
+<p>1. This board is for discussions about hiking, camping, geocaching, orienteering, farming, gardening, etc.</p>
+<p>2. GO OUTSIDE AND TOSS A BALL OR SOMETHING.</p>
+]]>
+</string>
+
+
+<string name="board_p_rules">
+<![CDATA[
+<h3>/p/ - Photography</h3>
+
+<p>1. Only upload images that you, the photographer, have taken.</p>
+<p>2. Post only photos that show at least trace amounts of thoughtful composition. Do not upload random snapshots.</p>
+<p>3. Even though EXIF data is made available when encoded, please post as much relevant technical information as possible, such as: camera, kit, lens, etc.</p>
+<p>4. Include a short description with your photograph, such as when and where it was photographed and under what circumstances.</p>
+<p>5. As with the <em>art</em> critique board, only constructive criticism will be tolerated.</p>
+
+]]>
+</string>
+
+
+<string name="board_po_rules">
+<![CDATA[
+<h3>/po/ - Papercraft &amp; Origami</h3>
+
+<p>1. Upload your papercraft and origami images here!</p>
+<p>2. Requesting is permitted.</p>
+
+]]>
+</string>
+
+
+<string name="board_pol_rules">
+<![CDATA[
+<h3>/pol/ - Politically Incorrect</h3>
+
+<p>1. Debate and discussion related to politics and current events is welcome.</p>
+<p>2. You are free to speak your mind, but <em>do not attack other users</em>. You may challenge one another, but <em>keep it civil</em>!</p>
+
+]]>
+</string>
+
+
+<string name="board_q_rules">
+<![CDATA[
+<h3>/q/ - 4chan Feedback</h3>
+
+<p>1. Users are free to discuss the site amongst themselves and with the 4chan team.</p>
+<p>2. Constructive criticism only. Trolling, flooding, and ban evasion will not be tolerated.</p>
+
+]]>
+</string>
+
+
+<string name="board_r9k_rules">
+<![CDATA[
+<h3>/r9k/ - ROBOT9001</h3>
+
+<p>1. The robot is reborn! A place for hanging out and posting greentext stories.</p>
+<p>2. Global Rule #3 is in effect - /b/ material belongs on /b/.</p>
+<p>3. Advice threads belong on /adv/, and "rate me," meetup, and camwhore threads on /soc/.</p>
+
+]]>
+</string>
+
+
+<string name="board_r_rules">
+<![CDATA[
+<h3>/r/ - Request</h3>
+
+<p>1. All requests, be they for content or reseeds, belong here.</p>
+<p>2. Provide ample information in your request. Be specific - requests for "hentai" instead of "Shirow - x Works" may be removed. Link back to existing post(s) if possible.</p>
+<p>3. Check the board for pre-existing and similar requests before reposting.</p>
+<p>4. Do not request or discuss material protected by United States copyright law.</p>
+
+]]>
+</string>
+
+
+<string name="board_rs_rules">
+<![CDATA[
+<h3>/rs/ - Rapidshares</h3>
+
+<p>1. Do not submit links for fileshares that violate the global rules.</p>
+<p>2. Be sure to include the proper password(s) if your files are password protected.</p>
+
+]]>
+</string>
+
+
+<string name="board_s_rules">
+<![CDATA[
+<h3>/s/ - Sexy Beautiful Women</h3>
+
+<p>1. All images should depict women <em>sexy</em> and beautiful in nature. Images should also be relatively high in quality and resolution.</p>
+<p>2. If you know any information about a photo not already submitted, post it! (ex: model\'s name, where to find the full set, link(s) to more/similar content, etc.)</p>
+<p>3. No hardcore or related fetish images allowed. Take it to <a href="http://boards.4chan.org/hc/">http://boards.4chan.org/hc/</a> !</p>
+<p>4. Racist remarks, trolls, and bump-replies (ex: "moar!") are not welcome.</p>
+<p>5. The posting of paysite passwords is forbidden. In addition, "fakes" (photo manipulations) are not to be uploaded.</p>
+<p>6. Absolutely no underage content (under 18) of any sort. Violators will be issued permanent bans.</p>
+
+]]>
+</string>
+
+
+<string name="board_sci_rules">
+<![CDATA[
+<h3>/sci/ - Science &amp; Math</h3>
+
+<p>1. All science and math related topics welcome.</p>
+<p>2. Homework threads will be deleted, and the poster banned.</p>
+<p>3. No "religion vs. science" threads.</p>
+
+]]>
+</string>
+
+
+<string name="board_soc_rules">
+<![CDATA[
+<h3>/soc/ - Cams &amp; Meetups</h3>
+
+<p>1. Created to get "rate me," meetup, report in, and camwhore threads out of /b/ and /r9k/.</p>
+<p>2. No whining (aka "BAWWW") or "life" threads. This is not your personal blog.</p>
+<p>3. Tinychat and Amazon wishlist/begging threads are not allowed.</p>
+<p>4. Soliciting or offering payments for photos, webcam shows, etc is not allowed.</p>
+<p>5. Do not stalk or harass any users. Be civil to camwhores.</p>
+<p>6. Requesting contact info outside of contact and meetup threads is not allowed. If a user wishes to provide contact info on their own, they are free to do so, but all requests will be deleted.</p>
+<p>7. Asking a user to write on a sign is not allowed, unless said user is actively taking requests.  Timestamp requests are permitted.</p>
+<p>8. Please try to keep duplicate topics to a minimum by always searching for an old or active thread before posting a new one. Do not post a continuation of a thread until the bump limit is reached.</p>
+<p>9. Respect the gender of a thread. If the OP specifies women, only women should reply with images (and vice versa for men). tl;dr: Men, don\'t post pictures of yourself or your nether regions in female threads.</p>
+]]>
+</string>
+
+
+<string name="board_sp_rules">
+<![CDATA[
+<h3>/sp/ - Sports</h3>
+
+<p>1. All sports welcome.</p>
+<p>2. In the interest of keeping this board general, please combine threads related to similar topics (example: specific teams, games, players, etc.).</p>
+
+]]>
+</string>
+
+
+<string name="board_t_rules">
+<![CDATA[
+<h3>/t/ - Torrents</h3>
+
+<p>1. All material licensed in the United States is prohibited. This includes music, manga, hentai, artbooks, and anything else protected by United States copyright law. (Note: 99% of what you will find on the internet is probably unlicensed, however first check and make sure it is before posting!)</p>
+<p>2. There will be no "warez" allowed. Warez is classified as: retail software, games, movies, etc. See the above rule.</p>
+<p>3. Content should be Japanese in theme or origin. The torrents board is not your standard anime tracker. As such, no anime of any kind is to be posted on this board.</p>
+<p>4. Threads should not consist of filedump links. <em>Replying</em> to a pre-existing thread with RapidShare/Putfile/Megaupload/YouTube links is allowed, so long as the original post contains a torrent.  Check out <a href="http://rs.4chan.org/">http://rs.4chan.org/</a> for these types of links.</p>
+
+]]>
+</string>
+
+
+<string name="board_tg_rules">
+<![CDATA[
+<h3>/tg/ - Traditional Games</h3>
+
+<p>1. Board games, paper games, war games, card games, etc. go here!</p>
+
+]]>
+</string>
+
+
+<string name="board_toy_rules">
+<![CDATA[
+<h3>/toy/ - Toys</h3>
+
+<p>1. Toys, toys, toys!</p>
+<p>2. Absolutely no Japanese figurines. Action figures are permitted.</p>
+<p>3. No "hot glue" fetish images.</p>
+
+]]>
+</string>
+
+
+<string name="board_trv_rules">
+<![CDATA[
+<h3>/trv/ - Travel</h3>
+
+<p>1. Post images and information about various locales, places you\'ve traveled, or hope to visit in the future.</p>
+<p>2. Feel free to ask questions about other cultures, and post in native languages.</p>
+<p>3. This board is for all the countries of the world. The more diverse, the better!</p>
+
+]]>
+</string>
+
+
+<string name="board_tv_rules">
+<![CDATA[
+<h3>/tv/ - Television &amp; Film</h3>
+
+<p>1. Content should pertain to television shows, movies, actors/actresses, film equipment, etc.</p>
+<p>2. No "waifu" or "husbando" threads.</p>
+
+]]>
+</string>
+
+
+<string name="board_u_rules">
+<![CDATA[
+<h3>/u/ - Yuri</h3>
+
+<p>1. <em>Yuri</em> pictures are lesbian and/or softcore in nature.  Images should contain two or more women, and not contain men.</p>
+
+]]>
+</string>
+
+
+<string name="board_v_rules">
+<![CDATA[
+<h3>/v/ - Video Games</h3>
+
+<p>1. All posts should pertain to video games, their consoles, and video game culture.  Threads should remain on topic and stay in theme with the board.  Don\'t post off-topic garbage.</p>
+<p>2. Flaming/flagrant "fanboyism"/etc. will not be tolerated.</p>
+<p>3. Threads should not devolve into flamewars. Inciting or encouraging such activity will not be tolerated.</p>
+<p>4. Please refrain from reposting. If possible, try to skim the board for threads pertaining to your topics/info that may have already been posted.</p>
+<p>5. Game help and long-term discussion threads should be posted to the <a href="http://dis.4chan.org/games/">http://dis.4chan.org/games/</a> or <a href="http://boards.4chan.org/vg/">http://boards.4chan.org/vg/</a> boards.</p>
+<p>6. "Generals" - long-term, recurring threads about a specific game - should be posted in <a href="http://boards.4chan.org/vg/">http://boards.4chan.org/vg/</a> . This is not to say threads about specific games cannot be created on /v/, just that long-term, recurring threads belong in /vg/.</p>
+
+]]>
+</string>
+
+
+<string name="board_vg_rules">
+<![CDATA[
+<h3>/vg/ - Video Game Generals</h3>
+
+<p>1. This board is for the posting of video game "general" threads, which are long-term, recurring threads about a specific topic.</p>
+<p>2. Western visual novels should be posted here, and Japanese visual novels on <a href="http://boards.4chan.org/jp/">http://boards.4chan.org/jp/</a>. Translated visual novels are allowed on either board.</p>
+
+]]>
+</string>
+
+
+<string name="board_vp_rules">
+<![CDATA[
+<h3>/vp/ - Pokémon</h3>
+
+<p>1. For Pokémon related discussion.</p>
+<p>2. Please respect Global Rules 3 and 5 - no non-work safe or "furry" material should be posted on this board.</p>
+<p>3. Post all Pokégirl hentai to <a href="http://boards.4chan.org/h/">http://boards.4chan.org/h/</a> .</a>
+<p>4. GOTTA CATCH \'EM ALL. <em>This will be severely punished and strictly enforced.</em></p>
+
+]]>
+</string>
+
+
+<string name="board_vr_rules">
+<![CDATA[
+<h3>/vr/ - Retro Games</h3>
+<p>1. This board is for the discussion of classic, or "retro" games. Retro gaming means consoles, computer games, arcade games (including pinball) and any other forms of video games circa 2001 and earlier. Sixth generation and later consoles are not considered retro.</p>
+]]>
+</string>
+
+
+<string name="board_w_rules">
+<![CDATA[
+<h3>/w/ - Anime/Wallpapers</h3>
+
+<p>1. Wallpapers should be distinctly anime or J-pop related. They can be real world pictures, just make sure they\'re noticeably tied to Japanese culture.</p>
+<p>2. Image quality is a must. A minimum resolution of 480x600 pixels is enforced on this board.</p>
+
+]]>
+</string>
+
+
+<string name="board_wg_rules">
+<![CDATA[
+<h3>/wg/ - Wallpapers/General</h3>
+
+<p>1. Wallpapers may depict anything within reason. Please keep adult-oriented pictures and the likes off of this board.</p>
+<p>2. Image quality is a must. A minimum resolution of 480x600 pixels is enforced on this board.</p>
+
+]]>
+</string>
+
+
+<string name="board_wsg_rules">
+<![CDATA[
+<h3>/wsg/ - Worksafe GIF</h3>
+
+<p>1. All worksafe GIFs welcome.</p>
+
+]]>
+</string>
+
+
+<string name="board_x_rules">
+<![CDATA[
+<h3>/x/ - Paranormal</h3>
+
+<p>1. For all your creepy images and stories.</p>
+
+]]>
+</string>
+
+
+<string name="board_y_rules">
+<![CDATA[
+<h3>/y/ - Yaoi</h3>
+
+<p>1. All <em>yaoi</em>, unless otherwise noted, is allowed. This includes <em>bara</em>.</p>
+<p>2. This board is for animated content only. Images depicting "real" people will be removed.</p>
+
+]]>
+</string>
+
+    <!-- CHANGES AFTER TRANSLATION -->
+    <!--
+    <string name="pref_purchase_prokey_summ">Go ad-free, purchase only once, enables all devices</string>
+    <string name="pref_installed_prokey_summ">No ads are shown, enabled for all devices</string>
+    -->
+
+</resources>
