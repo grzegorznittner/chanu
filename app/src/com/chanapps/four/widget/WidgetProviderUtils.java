@@ -102,9 +102,10 @@ public final class WidgetProviderUtils {
         }
         for (String boardCode : boardsToFetch) {
             if (DEBUG) Log.i(WidgetProviderUtils.TAG, "fetchAllWidgets board=" + boardCode + " scheduling fetch");
-            if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
-                GlobalAlarmReceiver.fetchWatchlistThreads(context);
-            else if (ChanBoard.isPopularBoard(boardCode))
+            //if (ChanBoard.WATCHLIST_BOARD_CODE.equals(boardCode))
+            //    GlobalAlarmReceiver.fetchWatchlistThreads(context);
+            //else
+            if (ChanBoard.isPopularBoard(boardCode))
                 FetchPopularThreadsService.schedulePopularFetchService(context, false, true);
             else if (ChanBoard.isVirtualBoard(boardCode))
                 ;// skip
@@ -192,18 +193,18 @@ public final class WidgetProviderUtils {
                 if (hasWidgets)
                     fetchAllWidgets(context);
 
-                ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
-                boolean hasWatchlist = (board != null && board.threads != null && board.threads.length > 0);
-                if (hasWatchlist)
-                    GlobalAlarmReceiver.fetchWatchlistThreads(context);
+                //ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+                //boolean hasWatchlist = (board != null && board.threads != null && board.threads.length > 0);
+                //if (hasWatchlist)
+                //    GlobalAlarmReceiver.fetchWatchlistThreads(context);
 
-                board = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
+                //board = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
                 //boolean hasFavorites = (board != null && board.threads != null && board.threads.length > 0);
                 //if (hasFavorites)
                 //    GlobalAlarmReceiver.fetchFavoriteBoards(context);
 
-                if (hasWidgets || hasWatchlist)
-                    scheduleGlobalAlarm(context);
+                //if (hasWidgets || hasWatchlist)
+                //    scheduleGlobalAlarm(context);
             }
         });
     }

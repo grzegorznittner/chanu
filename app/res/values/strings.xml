@@ -16,7 +16,7 @@
     <string name="post_reply_activity">Post Reply</string>
     <string name="post_reply_share_activity">Chanu</string>
     <string name="settings_activity">Settings</string>
-    <string name="about_activity">About</string>
+    <string name="about_activity">About/Purchase</string>
     <string name="board_image">Board Image</string>
     <string name="thread_post_image">Thread Image</string>
     <string name="thread_post_image_expanded">Expanded Thread Image</string>
@@ -548,7 +548,7 @@
     <string name="popular_title_recommended">RECOMMENDED</string>
 
     <!-- preferences -->
-    <string name="pref_about_category">About</string>
+    <string name="pref_about_category">About/Purchase</string>
     <string name="pref_advanced_category">Advanced</string>
     <string name="pref_watchlist_category">Thread Watchlist</string>
     <string name="pref_custom_category">Customize</string>
@@ -579,6 +579,11 @@
     <string name="pref_use_friendly_ids">Use Friendly Ids</string>
     <string name="pref_use_friendly_ids_summ_on">Post Ids have readable names</string>
     <string name="pref_use_friendly_ids_summ_off">Post Ids are left unchanged</string>
+    <!--
+    <string name="pref_start_with_favorites">Start Behavior</string>
+    <string name="pref_start_with_favorites_summ_on">Start with favorites board, or all boards if no favorites</string>
+    <string name="pref_start_with_favorites_summ_off">Start with last visited location</string>
+    -->
     <string name="pref_use_google_analytics">Google Analytics</string>
     <string name="pref_use_google_analytics_summ_on">Send anonymous usage data</string>
     <string name="pref_use_google_analytics_summ_off">Don\'t send anonymous usage data</string>
@@ -616,8 +621,8 @@
     <string name="pref_clear_cache_error">Couldn\'t clear cache</string>
     <string name="pref_clear_cache_success">Cleared cache successfully</string>
     <string name="pref_clear_cache_notification_title">Chanu Cache Status</string>
-    <string name="pref_about">About App</string>
-    <string name="pref_about_summ">Authorship and licensing information</string>
+    <string name="pref_about">About/Purchase Page</string>
+    <string name="pref_about_summ">Authorship and ad-free prokey information</string>
     <string name="pref_reset_to_defaults">Reset</string>
     <string name="pref_reset_to_defaults_summ">Restore all settings to their factory default</string>
     <string name="pref_prokey_category">Prokey</string>
@@ -683,7 +688,7 @@
     <string name="pref_about_data_pulltorefresh_sum">Courtesy of Chris Banes</string>
     <string name="pref_about_data_color">mColorPicker</string>
     <string name="pref_about_data_color_sum">Courtesy of Daniel Nilsson</string>
-    <string name="pref_about_developer_category">Product Info</string>
+    <string name="pref_about_developer_category">Purchase Info</string>
     <string name="pref_about_developer_chanapps">Chanapps Software</string>
     <string name="pref_about_developer_chanapps_sum">See our other offerings</string>
     <string name="pref_about_store_chanapps">Chanapps Store</string>
@@ -713,7 +718,7 @@
     <string name="widget_loading">Loading...</string>
 
     <!-- Help and about_dialog -->
-    <string name="about_menu">About</string>
+    <string name="about_menu">About/Purchase</string>
     <string name="test_menu">Test</string>
 
     <!-- camera -->
@@ -1698,8 +1703,14 @@
 
     <!-- CHANGES AFTER TRANSLATION -->
     <!--
+    MODIFIED
     <string name="pref_purchase_prokey_summ">Go ad-free, purchase only once, enables all devices</string>
-    <string name="pref_installed_prokey_summ">No ads are shown, enabled for all devices</string>
+    <string name="pref_installed_prokey_summ">No ads are shown, prokey enabled for all devices</string>
+    <string name="about_activity">About/Purchase</string>
+    <string name="pref_about">About/Purchase Page</string>
+    <string name="pref_about_summ">Authorship and ad-free prokey information</string>
+    <string name="pref_about_category">About/Purchase</string>
+    <string name="pref_about_developer_category">Purchase Info</string>
     -->
 
 </resources>

@@ -127,6 +127,15 @@
                     android:entryValues="@array/pref_autoload_images_entry_values"
                     android:defaultValue="@string/pref_autoload_images_default_value" />
 
+            <!--
+            <CheckBoxPreference
+                    android:key="pref_start_with_favorites"
+                    android:title="@string/pref_start_with_favorites"
+                    android:summaryOn="@string/pref_start_with_favorites_summ_on"
+                    android:summaryOff="@string/pref_start_with_favorites_summ_off"
+                    android:defaultValue="true" />
+            -->
+
             <CheckBoxPreference
                     android:key="pref_notifications"
                     android:title="@string/pref_notifications"

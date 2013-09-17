@@ -15,8 +15,10 @@ import android.widget.Toast;
 import com.chanapps.four.activity.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.service.BoardParserService;
+import com.chanapps.four.service.CleanUpService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.ThreadParserService;
+import com.chanapps.four.widget.WidgetProviderUtils;
 
 /**
  * @author "Grzegorz Nittner" <grzegorz.nittner@gmail.com>
@@ -125,6 +127,15 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 	public void onApplicationStart(Context context) {
 		if (DEBUG) Log.d(TAG, "onApplicationStart called");
 		usageCounter++;
+        CleanUpService.startService(context);
+        NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
+        Health health = getConnectionHealth();
+        if (health != Health.NO_CONNECTION && health != Health.BAD && health != Health.VERY_SLOW) {
+            //WidgetProviderUtils.asyncUpdateWidgetsAndWatchlist(context);
+        } else {
+            makeHealthStatusToast(context, health);
+        }
+        WidgetProviderUtils.scheduleGlobalAlarm(context);
     }
 
 	@Override
@@ -334,4 +345,15 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
             }
         });
     }
+
+    protected void makeHealthStatusToast(Context context, Health health) {
+        Handler handler = NetworkProfileManager.instance().getActivity() != null
+                ? NetworkProfileManager.instance().getActivity().getChanHandler()
+                : null;
+        if (handler != null)
+            postStopMessage(handler,
+                    String.format(context.getString(R.string.mobile_profile_health_status),
+                            health.toString().toLowerCase().replaceAll("_", " ")));
+    }
+
 }

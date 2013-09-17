@@ -27,34 +27,30 @@ public class ChanImageLoader {
 
     static private ImageLoader imageLoader = null;
 
-    static public ImageLoader getInstance(Context context) {
+    static public synchronized ImageLoader getInstance(Context context) {
         if (imageLoader == null) {
-        	synchronized (ChanImageLoader.class) {
-				if (imageLoader == null) {
-		            DisplayMetrics displayMetrics = new DisplayMetrics();
-		            WindowManager manager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-		            manager.getDefaultDisplay().getMetrics(displayMetrics);
-		            int padding = ChanGridSizer.dpToPx(displayMetrics, FULL_SCREEN_IMAGE_PADDING_DP);
-		            final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.widthPixels) - 2 * padding;
-		            final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.heightPixels) - 2 * padding;
-		            imageLoader = ImageLoader.getInstance();
-		            imageLoader.init(
-                            new ImageLoaderConfiguration
-                                    .Builder(context)
-                                    //.memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
-                                    .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            WindowManager manager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+            manager.getDefaultDisplay().getMetrics(displayMetrics);
+            int padding = ChanGridSizer.dpToPx(displayMetrics, FULL_SCREEN_IMAGE_PADDING_DP);
+            final int maxWidth = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.widthPixels) - 2 * padding;
+            final int maxHeight = ChanGridSizer.dpToPx(displayMetrics, displayMetrics.heightPixels) - 2 * padding;
+            imageLoader = ImageLoader.getInstance();
+            imageLoader.init(
+                    new ImageLoaderConfiguration
+                            .Builder(context)
+                            //.memoryCacheExtraOptions(MAX_MEMORY_WIDTH, MAX_MEMORY_HEIGHT)
+                            .discCacheExtraOptions(maxWidth, maxHeight, Bitmap.CompressFormat.JPEG, 85)
                                     //.imageDownloader(new ExtendedImageDownloader(context))
                                     //.threadPriority(Thread.MIN_PRIORITY+1)
-                                    .threadPoolSize(5)
-                                    .discCacheFileNameGenerator(new FileNameGenerator() {
-                                        @Override
-                                        public String generate(String imageUri) {
-                                            return String.valueOf(Math.abs(imageUri.hashCode())) + ".jpg";
-                                        }
-                                    })
-                                    .build());
-				}
-        	}
+                            .threadPoolSize(5)
+                            .discCacheFileNameGenerator(new FileNameGenerator() {
+                                @Override
+                                public String generate(String imageUri) {
+                                    return String.valueOf(Math.abs(imageUri.hashCode())) + ".jpg";
+                                }
+                            })
+                            .build());
         }
         return imageLoader;
     }

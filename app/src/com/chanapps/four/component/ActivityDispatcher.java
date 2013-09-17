@@ -9,6 +9,8 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.chanapps.four.activity.*;
+import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanFileStorage;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,15 +39,55 @@ public class ActivityDispatcher {
         if (DEBUG) Log.i(TAG, "store() stored " + activityId);
     }
 
+    /*
     public static boolean isDispatchable(ChanIdentifiedActivity activity) {
         return PreferenceManager
                 .getDefaultSharedPreferences(activity.getBaseContext())
                 .getString(LAST_ACTIVITY, null)
                 != null;
     }
+    */
 
-    public static boolean dispatch(ChanIdentifiedActivity activity) {
+    public static void dispatch(final ChanIdentifiedActivity activity) {
+        if (activity == null || !(activity instanceof Activity)) {
+            Log.e(TAG, "dispatch() prematurely terminating since called with invalid activity=" + activity);
+            return;
+        }
+        /*
+        boolean startWithFavorites = PreferenceManager.getDefaultSharedPreferences(activity.getBaseContext())
+                .getBoolean(SettingsActivity.PREF_START_WITH_FAVORITES, true);
+        if (startWithFavorites) {
+        */
+        if (DEBUG) Log.i(TAG, "dispatch() startWithFavorites=true, starting async dispatch");
+            asyncDispatch((Activity)activity);
+    /*
+    }
+        else {
+            if (DEBUG) Log.i(TAG, "dispatch() startWithFavorites=false, starting dispatch process immediately");
+            syncDispatch(activity);
+        }
+        */
+    }
 
+    protected static void asyncDispatch(final Activity activity) { // assume only called if startWithFavorites is true
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ChanBoard board = ChanFileStorage.loadBoardData(activity, ChanBoard.FAVORITES_BOARD_CODE);
+                if (board != null && board.hasData()) {
+                    if (DEBUG) Log.i(TAG, "asyncDispatch found non-empty favorites board, dispatching to favorites");
+                    dispatchToBoard(activity, ChanBoard.FAVORITES_BOARD_CODE);
+                }
+                else {
+                    if (DEBUG) Log.i(TAG, "asyncDispatch found empty favorites board, dispatching to allBoards");
+                    dispatchToBoard(activity, ChanBoard.ALL_BOARDS_BOARD_CODE);
+                }
+            }
+        }).start();
+    }
+
+    /*
+    protected static boolean syncDispatch(final ChanIdentifiedActivity activity) {
         Intent intent = ((Activity)activity).getIntent();
         if (intent.hasExtra(IGNORE_DISPATCH) && intent.getBooleanExtra(IGNORE_DISPATCH, false)) {
             if (DEBUG) Log.i(TAG, "dispatch ignored by intent");
@@ -67,12 +109,21 @@ public class ActivityDispatcher {
 
         if (DEBUG) Log.i(TAG, "dispatch() deserialized " + activityId);
         Intent newIntent = activityId.createIntent((Activity)activity);
-        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         if (DEBUG) Log.i(TAG, "dispatch() created intent=" + newIntent
                 + " boardCode=" + newIntent.getStringExtra("boardCode"));
         ((Activity)activity).startActivity(newIntent);
         ((Activity)activity).finish();
         return true;
+    }
+    */
+
+    protected static void dispatchToBoard(Activity activity, String boardCode) {
+        Intent newIntent = BoardActivity.createIntent(activity, boardCode, "");
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        if (DEBUG) Log.i(TAG, "dispatchToBoard() /" + boardCode + "/");
+        activity.startActivity(newIntent);
+        activity.finish();
     }
 
     public static void launchUrlInBrowser(Context context, String url) {

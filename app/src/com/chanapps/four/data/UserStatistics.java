@@ -19,7 +19,7 @@ import com.chanapps.four.service.NetworkProfileManager;
  */
 public class UserStatistics {
 	public static final String TAG = UserStatistics.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	
 	public static final int MIN_TOP_BOARDS = 5;
 	public static final int MAX_TOP_THREADS = 50;

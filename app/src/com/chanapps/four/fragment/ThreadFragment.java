@@ -378,7 +378,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " dead thread, setting load finished for thread=" + thread);
             setProgress(false);
         }
-        else if (thread != null && thread.posts != null && thread.posts.length <= 1 && thread.posts[0].replies > 0
+        else if (thread != null && thread.posts != null && thread.posts.length == 1 && thread.posts[0].replies > 0
                 && absListView != null && absListView.getCount() <= FROM_BOARD_THREAD_ADAPTER_COUNT) {
             if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " thread not fully loaded, awaiting load thread=" + thread);
         }

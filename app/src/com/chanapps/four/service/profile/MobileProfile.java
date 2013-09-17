@@ -105,16 +105,6 @@ public class MobileProfile extends AbstractNetworkProfile {
 
     }
 
-    private void makeHealthStatusToast(Context context, Health health) {
-        Handler handler = NetworkProfileManager.instance().getActivity() != null
-            ? NetworkProfileManager.instance().getActivity().getChanHandler()
-            : null;
-        if (handler != null)
-            postStopMessage(handler,
-                    String.format(context.getString(R.string.mobile_profile_health_status),
-                            health.toString().toLowerCase().replaceAll("_", " ")));
-    }
-
     private void prefetchDefaultBoards(Context context) {
         // makeToast(R.string.mobile_profile_preloading_defaults);
         //FetchPopularThreadsService.schedulePopularFetchService(context);
@@ -135,15 +125,6 @@ public class MobileProfile extends AbstractNetworkProfile {
     @Override
     public void onApplicationStart(Context context) {
         super.onApplicationStart(context);
-        CleanUpService.startService(context);
-        NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
-        Health health = getConnectionHealth();
-        WidgetProviderUtils.asyncUpdateWidgetsAndWatchlist(context);
-        if (health != Health.BAD && health != Health.VERY_SLOW) {
-            //    prefetchDefaultBoards(context);
-        } else {
-            makeHealthStatusToast(context, health);
-        }
     }
 
     @Override

@@ -44,7 +44,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
     public static String topBoardCode = null;
 
@@ -155,6 +155,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     protected boolean handleNoBoardCode() {
         if (boardCode == null || boardCode.isEmpty()) {
+            /*
             if (ActivityDispatcher.isDispatchable(this)) {
                 if (DEBUG) Log.i(TAG, "empty board code, dispatching");
                 if (ActivityDispatcher.dispatch(this)) {
@@ -167,9 +168,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 }
             }
             else {
+            */
                 if (DEBUG) Log.i(TAG, "empty board code, not dispatchable, setting to all boards");
                 boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
-            }
+            //}
         }
         return false;
     }
@@ -1126,6 +1128,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     protected OnClickListener overlayListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
+            if (view == null)
+                return;
+            if (absListView == null)
+                return;
             int pos = absListView.getPositionForView(view);
             if (DEBUG) Log.i(TAG, "overlayListener pos=" + pos);
             Cursor cursor = adapter.getCursor();
