@@ -3,10 +3,12 @@ package com.chanapps.four.activity;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ComponentName;
+
 import com.android.gallery3d.app.*;
 import com.chanapps.four.component.ActivityDispatcher;
 import com.chanapps.four.component.AnalyticsComponent;
 import com.chanapps.four.data.*;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -19,12 +21,14 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import com.android.gallery3d.data.Path;
 import com.android.gallery3d.ui.GLRoot;
 import com.android.gallery3d.ui.GLRootView;
@@ -34,6 +38,7 @@ import com.chanapps.four.service.ThreadImageDownloadService;
 import com.chanapps.four.service.profile.NetworkProfile;
 
 import javax.security.auth.login.LoginException;
+
 import java.util.List;
 
 public class GalleryViewActivity extends AbstractGalleryActivity implements ChanIdentifiedActivity {
@@ -681,7 +686,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
         }
         return ViewType.OFFLINE_ALBUMSET_VIEW;
     }
-
+    
 	@Override
 	public Handler getChanHandler() {
 		return handler;

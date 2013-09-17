@@ -43,7 +43,7 @@ import com.nostra13.universalimageloader.core.download.URLConnectionImageDownloa
 
 public class ChanImage extends MediaItem implements ChanIdentifiedService {
     private static final String TAG = "ChanImage";
-    public static final boolean DEBUG  = true;
+    public static final boolean DEBUG  = false;
     
     private static final int MIN_DOWNLOAD_PROGRESS_UPDATE = 300;
 	private static final int IMAGE_BUFFER_SIZE = 20480;
@@ -229,6 +229,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         		if (bmp != null && type == TYPE_MICROTHUMBNAIL) {
         			bmp = centerCrop(bmp);
         		}
+        		if (DEBUG) Log.w(TAG, "Bitmap loaded for " + name);
         		return bmp;
         	} catch (Throwable e) {
 				Log.e(TAG, "Bitmap docode error for " + localImagePath, e);
@@ -238,7 +239,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
 		private Bitmap getBitmap() {
 			Bitmap bitmap = null;
-			if (type == TYPE_THUMBNAIL && !isAnimatedGif()) {
+			if (type == TYPE_THUMBNAIL) {
 				bitmap = downloadFullImageAsThumb();
 				if (bitmap != null) {
 					return bitmap;
@@ -278,28 +279,39 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
         private Bitmap downloadFullImageAsThumb() {
             Bitmap bitmap = null;
+            FileInputStream io = null;
             try {
             	File localImageFile = new File(localImagePath);
-            	if (!localImageFile.exists() && !isDead) {
+            	if (localImageFile.exists()) {
+            		if (DEBUG) Log.w(TAG, "Expected size: " + fsize + ", onDisk: " + localImageFile.length() + ", path: " + localImageFile.getAbsolutePath());
+            	}
+            	if ((!localImageFile.exists() || localImageFile.length() < (fsize / 2) ) && !isDead) {
             		downloadFullImage();
             	}
-            	Options options = getBitmapOptions(localImageFile);
 
-            	if (".gif".equals(ext)) {            		
+            	if (".gif".equals(ext)) {
             		GifDecoder decoder = new GifDecoder();
-            		int status = decoder.read(new FileInputStream(localImageFile));
-            		Log.w(TAG, "Status " + (status == 0 ? "OK" : status == 1 ? "FORMAT_ERROR" : "OPEN_ERROR") + " for file " + localImageFile.getName());
+            		io = new FileInputStream(localImageFile);
+            		int status = decoder.read(io);
+            		if (DEBUG) Log.w(TAG, "Status " + (status == 0 ? "OK" : status == 1 ? "FORMAT_ERROR" : "OPEN_ERROR") + " for file " + localImageFile.getName());
             		if (status == 0) {
             			bitmap = decoder.getBitmap();
+            			if (DEBUG) Log.w(TAG, "Gif size w:" + bitmap.getWidth() + " h:" + bitmap.getWidth());
             		} else if (status == 1) {
-            			bitmap = BitmapFactory.decodeStream(new FileInputStream(localImageFile), null, options);
-            			Log.w(TAG, localImageFile.getName() + (bitmap == null ? " not" : "") + " loaded via BitmapFactor");
+            			Options options = getBitmapOptions(localImageFile);
+            			IOUtils.closeQuietly(io);
+            			io = new FileInputStream(localImageFile);
+            			bitmap = BitmapFactory.decodeStream(io, null, options);
+            			if (DEBUG) Log.w(TAG, localImageFile.getName() + (bitmap == null ? " not" : "") + " loaded via BitmapFactory");
             		}
             	} else if (localImageFile.exists()) {
+            		Options options = getBitmapOptions(localImageFile);
             		bitmap = BitmapFactory.decodeFile(localImageFile.getAbsolutePath(), options);
             	}
             } catch (Throwable e) {
         		Log.e(TAG, "Error loading/transforming full image", e);
+        	} finally {
+        		IOUtils.closeQuietly(io);
         	}
 			return bitmap;
 		}
@@ -342,7 +354,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
             supported |= SUPPORT_FULL_IMAGE;
         }
         if (isAnimatedGif()) {
-        	supported |= SUPPORT_PLAY;
+        	supported |= SUPPORT_ANIMATED_GIF;
         }
         return supported;
     }
@@ -353,11 +365,7 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
     @Override
     public int getMediaType() {
-    	if (isAnimatedGif()) {
-    		return MEDIA_TYPE_VIDEO;
-    	} else {
-    		return MEDIA_TYPE_IMAGE;
-    	}
+		return MEDIA_TYPE_IMAGE;
     }
     
     private boolean isAnimatedGif() {
@@ -372,10 +380,10 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
     @Override
 	public Uri getPlayUri() {
     	File localFile = new File (localImagePath);
-    	if (localFile.exists()) {
+    	if (localFile.exists() && isAnimatedGif()) {
     		return Uri.fromFile(localFile);
     	} else {
-    		return Uri.parse(url);
+    		return null;
     	}
 	}
 
@@ -412,12 +420,12 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 
     @Override
     public int getWidth() {
-        return width;
+        return w;
     }
 
     @Override
     public int getHeight() {
-        return height;
+        return h;
     }
 
 	@Override
@@ -443,8 +451,8 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
 		try {
 			BitmapFactory.decodeStream(imageStream, null, options);
 			int scale = 1;
-			int imageWidth = width = options.outWidth;
-			int imageHeight = height = options.outHeight;
+			int imageWidth = options.outWidth;
+			int imageHeight = options.outHeight;
 
 			while (imageWidth / 2 >= targetWidth && imageHeight / 2 >= targetHeight) { // &&
 				imageWidth /= 2;
@@ -485,5 +493,13 @@ public class ChanImage extends MediaItem implements ChanIdentifiedService {
         	buf.append("0x").append(Integer.toHexString((0xF0 & b) >>> 4)).append(Integer.toHexString(0x0F & b)).append(" ");
         }
         return buf.toString();
+	}
+
+	public int getW() {
+		return w;
+	}
+	
+	public int getH() {
+		return h;
 	}
 }
