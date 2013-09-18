@@ -299,6 +299,22 @@ public class ChanBoard {
         }
     }
 
+    public String getName(Context context) {
+        return getName(context, link);
+    }
+
+    public static String getName(Context context, String boardCode) {
+        String stringName = "board_" + boardCode;
+        try {
+            int id = context.getResources().getIdentifier(stringName, "string", context.getPackageName());
+            return context.getString(id);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Couldn't find board description for boardCode=" + boardCode);
+            return "";
+        }
+    }
+
     private static String[][] initRelatedBoards() {
         String[][] relatedBoardCodes = {
                 { "a", "c", "w", "m", "cgl", "cm", "jp", "vg", "vp", "co", "tv", "h", "d", "e", "y", "u", "d", "t" },
@@ -991,7 +1007,7 @@ public class ChanBoard {
         ChanThread thread = new ChanThread();
         thread.board = boardCode;
         thread.no = 0;
-        thread.sub = board.name;
+        thread.sub = getName(context, boardCode);
         thread.com = getDescription(context, boardCode);
         return thread;
     }

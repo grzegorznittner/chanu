@@ -37,7 +37,8 @@ public class ChanAlbum extends MediaSet {
         if (thread == null) { // in case something went wrong
             this.board = ChanBoard.DEFAULT_BOARD_CODE;
             ChanBoard board = ChanBoard.getBoardByCode(application.getAndroidContext(), this.board);
-            this.name = (board == null ? "" : board.name + " ")
+            String rawName = ChanBoard.getName(application.getAndroidContext(), this.board);
+            this.name = (rawName == null ? "" : rawName + " ")
                     + "/" + this.board + "/";
             this.threadNo = 0;
             return;

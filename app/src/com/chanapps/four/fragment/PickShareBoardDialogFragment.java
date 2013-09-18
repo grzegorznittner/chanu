@@ -38,7 +38,7 @@ public class PickShareBoardDialogFragment extends ListDialogFragment {
         int i = 0;
         for (ChanBoard chanBoard : chanBoards) {
             String boardCode = chanBoard.link;
-            String boardName = chanBoard.name;
+            String boardName = chanBoard.getName(context);
             String boardLine = "/" + boardCode + " " + boardName;
             boards[i] = boardLine;
             i++;

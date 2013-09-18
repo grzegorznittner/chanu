@@ -561,7 +561,8 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             if (board == null) {
                 board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
             }
-            title = (board == null ? "Board" : board.name) + " /" + boardCode + "/";
+            String rawTitle = ChanBoard.getName(getApplicationContext(), boardCode);
+            title = (rawTitle == null ? "Board" : rawTitle) + " /" + boardCode + "/";
             /*
             if (threadNo > 0) {
                 String threadTitle = "";

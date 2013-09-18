@@ -255,7 +255,7 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 				}
 			}
 		}
-		if (DEBUG) Log.i(TAG, "board " + board.name + " has " + board.threads.length + " threads\n\n");
+		if (DEBUG) Log.i(TAG, "board /" + board.link + "/ has " + board.threads.length + " threads\n\n");
 	}
 
 	private void parseLatestPosts(ChanBoard board, String response) {
@@ -277,8 +277,8 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 			}
 			board.threads = threads.toArray(new ChanThread[]{});
 		}
-		if (DEBUG) Log.i(TAG, "board " + board.name + " has " + board.threads.length + " threads\n\n");
-	}
+        if (DEBUG) Log.i(TAG, "board /" + board.link + "/ has " + board.threads.length + " threads\n\n");
+    }
 
 	
 	private void parsePopularThreads(ChanBoard board, String response) {
@@ -305,8 +305,8 @@ public class FetchPopularThreadsService extends BaseChanService implements ChanI
 			}
 			board.threads = threads.toArray(new ChanThread[]{});
 		}
-		if (DEBUG) Log.i(TAG, "board " + board.name + " has " + board.threads.length + " threads\n\n");
-	}
+        if (DEBUG) Log.i(TAG, "board /" + board.link + "/ has " + board.threads.length + " threads\n\n");
+    }
 
     private ChanThread parseThread(String threadStr) {
 		ChanThread thread = new ChanThread();

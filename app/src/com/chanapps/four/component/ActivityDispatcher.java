@@ -23,7 +23,7 @@ public class ActivityDispatcher {
 
     private static final String TAG = ActivityDispatcher.class.getSimpleName();
     private static final String LAST_ACTIVITY = "ActivityDispatcherLastActivity";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     public static final String IGNORE_DISPATCH = "ignoreDispatch";
 
     public static void store(ChanIdentifiedActivity activity) {

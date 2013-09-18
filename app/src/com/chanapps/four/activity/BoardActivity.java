@@ -44,7 +44,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
     public static String topBoardCode = null;
 
@@ -155,6 +155,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     protected boolean handleNoBoardCode() {
         if (boardCode == null || boardCode.isEmpty()) {
+            if (DEBUG) Log.i(TAG, "empty board code, dispatching to activity dispatcher");
+            ActivityDispatcher.dispatch(this);
             /*
             if (ActivityDispatcher.isDispatchable(this)) {
                 if (DEBUG) Log.i(TAG, "empty board code, dispatching");
@@ -168,10 +170,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 }
             }
             else {
-            */
                 if (DEBUG) Log.i(TAG, "empty board code, not dispatchable, setting to all boards");
                 boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
-            //}
+            }
+            */
         }
         return false;
     }
@@ -945,8 +947,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     protected void displayBoardTitle() {
         if (DEBUG) Log.i(TAG, "displayBoardTitle /" + boardCode + "/");
-        ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        String title = board == null || board.name == null ? "" : board.name.toLowerCase();
+        String rawTitle = ChanBoard.getName(getApplicationContext(), boardCode);
+        String title = rawTitle == null ? "" : rawTitle.toLowerCase();
         int lightIconId = 0;
         int darkIconId = 0;
         BoardType type = BoardType.valueOfBoardCode(boardCode);

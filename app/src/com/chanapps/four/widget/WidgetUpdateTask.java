@@ -181,9 +181,9 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
         if (boardCodeOnly)
             boardTitle = "/" + board.link + "/";
         else if (ChanBoard.isVirtualBoard(board.link))
-            boardTitle = board.name;
+            boardTitle = board.getName(context);
         else
-            boardTitle = board.name + " /" + board.link + "/";
+            boardTitle = board.getName(context) + " /" + board.link + "/";
         Log.e(TAG, "bindClickTargets() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/"
                 + " boardTitle=" + boardTitle);
         int boardTitleColor = widgetConf.boardTitleColor;

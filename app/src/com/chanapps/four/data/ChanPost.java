@@ -1087,7 +1087,7 @@ public class ChanPost {
                 board.getDescription(context),
                 0,
                 0,
-                board.name,
+                board.getName(context),
                 "",
                 "",
                 250,

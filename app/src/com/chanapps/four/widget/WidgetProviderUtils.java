@@ -235,7 +235,7 @@ public final class WidgetProviderUtils {
                 p.board = boardCode;
                 p.no = i;
                 p.resto = 0;
-                p.sub = board.name;
+                p.sub = board.getName(context);
                 p.com = board.getDescription(context);
                 widgetThreads[i] = p;
             }

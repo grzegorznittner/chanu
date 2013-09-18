@@ -263,73 +263,11 @@
     <string name="thread_image_download_error">Error downloading thread images</string>
     <string name="thread_no_start_play">Can\'t start play, already at end</string>
     <string name="thread_post_title">Post</string>
-
     <string name="board_grid_item_no_replies">No replies</string>
-    <plurals name="thread_activity_updated">
-        <item quantity="one">%1$d new comment</item>
-        <item quantity="other">%1$d new comments</item>
-    </plurals>
-    <plurals name="board_grid_item_num_replies">
-        <item quantity="zero">No replies</item>
-        <item quantity="one">View 1 post</item>
-        <item quantity="other">View %1$d posts</item>
-    </plurals>
-    <string name="board_grid_item_no_images">No images</string>
-    <plurals name="board_grid_item_num_imgs">
-        <item quantity="zero"></item>
-        <item quantity="one">View 1 img</item>
-        <item quantity="other">View %1$d imgs</item>
-    </plurals>
     <string name="board_grid_item_no_threads">View threads</string>
-    <plurals name="board_grid_item_num_threads">
-        <item quantity="zero">View threads</item>
-        <item quantity="one">View 1 thread</item>
-        <item quantity="other">View %1$d threads</item>
-    </plurals>
+    <string name="board_grid_item_no_images">No images</string>
 
-    <plurals name="thread_num_replies">
-        <item quantity="zero">no replies</item>
-        <item quantity="one">1 post</item>
-        <item quantity="other">%1$d posts</item>
-    </plurals>
-    <plurals name="thread_num_images">
-        <item quantity="zero">no images</item>
-        <item quantity="one">1 image</item>
-        <item quantity="other">%1$d images</item>
-    </plurals>
-    <plurals name="thread_num_imgs">
-        <item quantity="zero">no imgs</item>
-        <item quantity="one">1 img</item>
-        <item quantity="other">%1$d imgs</item>
-    </plurals>
-    <plurals name="thread_num_backlinks">
-        <item quantity="zero">no backlinks</item>
-        <item quantity="one">1 backlink</item>
-        <item quantity="other">%1$d backlinks</item>
-    </plurals>
-    <plurals name="thread_num_links">
-        <item quantity="zero">no links</item>
-        <item quantity="one">1 link</item>
-        <item quantity="other">%1$d links</item>
-    </plurals>
-
-    <plurals name="thread_num_replies_label">
-        <item quantity="zero">COMMENTS</item>
-        <item quantity="one">COMMENT</item>
-        <item quantity="other">COMMENTS</item>
-    </plurals>
-    <plurals name="thread_num_images_label">
-        <item quantity="zero">IMAGES</item>
-        <item quantity="one">IMAGE</item>
-        <item quantity="other">IMAGES</item>
-    </plurals>
-    <plurals name="thread_num_direct_replies_label">
-        <item quantity="zero">REPLIES</item>
-        <item quantity="one">REPLY</item>
-        <item quantity="other">REPLIES</item>
-    </plurals>
-
-    <!-- watchlist -->
+   <!-- watchlist -->
     <string name="board_empty_all_boards">Unable to load boards</string>
     <string name="board_end_of_watchlist">End of Watchlist</string>
     <string name="board_empty_watchlist">Thread watchlist empty\n\nWatch a thread to add it here</string>
@@ -509,9 +447,6 @@
         This number has been generated for you, but you may change it if you wish.</string>
     <string name="post_reply_password_text">Password</string>
     <string name="post_reply_spoiler">Spoiler Image</string>
-    <string name="post_reply_recaptcha_url_root">
-        http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc
-    </string>
     <string name="post_reply_no_board">Can\'t post, unknown board</string>
     <string name="post_reply_added_image">Added image to post</string>
     <string name="post_reply_no_load_camera_image">Couldn\'t load camera image</string>
@@ -656,20 +591,12 @@
     <string name="pref_theme_dark">Dark</string>
     <string name="pref_theme_auto">Auto</string>
     <string name="pref_theme_default">@string/pref_theme_light</string>
-    <string name="pref_theme_light_value">0</string>
-    <string name="pref_theme_dark_value">1</string>
-    <string name="pref_theme_auto_value">2</string>
-    <string name="pref_theme_default_value">@string/pref_theme_light_value</string>
     <string name="pref_autoload_images_title">Autoload Thread Images</string>
     <string name="pref_autoload_images_summary">Never, always, or auto based on connection speed</string>
     <string name="pref_autoload_images_never">Never</string>
     <string name="pref_autoload_images_always">Always</string>
     <string name="pref_autoload_images_auto">Auto</string>
     <string name="pref_autoload_images_default">@string/pref_autoload_images_auto</string>
-    <string name="pref_autoload_images_never_value">0</string>
-    <string name="pref_autoload_images_always_value">1</string>
-    <string name="pref_autoload_images_auto_value">2</string>
-    <string name="pref_autoload_images_default_value">@string/pref_autoload_images_auto_value</string>
 
     <!-- about preference -->
     <string name="pref_about_title">Chanu</string>
@@ -693,15 +620,9 @@
     <string name="pref_about_developer_chanapps_sum">See our other offerings</string>
     <string name="pref_about_store_chanapps">Chanapps Store</string>
     <string name="pref_about_store_chanapps_sum">Buy a Chanu T-shirt</string>
-    <string name="pref_about_developer_burns">John Burns</string>
-    <string name="pref_about_developer_burns_sum">johnarleyburns@gmail.com</string>
-    <string name="pref_about_developer_nittner">Grzegorz Nittner</string>
-    <string name="pref_about_developer_nittner_sum">grzegorz.nittner@gmail.com</string>
-    <string name="pref_about_developer_pop">Mircea Pop</string>
-    <string name="pref_about_developer_pop_sum">mircea.pop.ro@gmail.com</string>
-    <string name="pref_about_developer_milas">Dimitris Milas</string>
-    <string name="pref_about_developer_milas_sum">dimitris.leonida.milas@gmail.com</string>
     <string name="pref_about_send_email">Send email</string>
+    <string name="pref_about_translations_category">Translations</string>
+    <string name="pref_about_translations_de">German</string>
 
     <!-- widgets -->
     <string name="widget_board">Pick Board</string>
@@ -1708,25 +1629,100 @@
     <string name="pref_download_images_per_thread">Per thread (eg. board_a_1234567)</string>
     <string name="pref_download_images_default">@string/pref_download_images_all_in_chanu_folder</string>
 
-    <!-- CHANGES AFTER TRANSLATION -->
-    <!--
-    MODIFIED
-    <string name="pref_purchase_prokey_summ">Go ad-free, purchase only once, enables all devices</string>
-    <string name="pref_installed_prokey_summ">No ads are shown, prokey enabled for all devices</string>
-    <string name="about_activity">About/Purchase</string>
-    <string name="pref_about">About/Purchase Page</string>
-    <string name="pref_about_summ">Authorship and ad-free prokey information</string>
-    <string name="pref_about_category">About/Purchase</string>
-    <string name="pref_about_developer_category">Purchase Info</string>
+<!-- MOVED FROM ARRAYS.XML -->
 
-    NEW
-    <string name="pref_download_images_title">Organize Downloaded Images</string>
-    <string name="pref_download_images_summary">Defines how images are organized in the Gallery</string>
-    <string name="pref_download_images_all_in_chanu_folder">All in \'Chanu\' folder</string>
-    <string name="pref_download_images_per_board">Per board (eg. board_a)</string>
-    <string name="pref_download_images_per_thread">Per thread (eg. board_a_1234567)</string>
-    <string name="pref_download_images_default">@string/pref_download_images_all_in_chanu_folder</string>
+<string name="board_3_with_abbrev">/3/ 3DCG</string>
+<string name="board_a_with_abbrev">/a/ Anime &amp; Manga</string>
+<string name="board_adv_with_abbrev">/adv/ Advice</string>
+<string name="board_an_with_abbrev">/an/ Animals &amp; Nature</string>
+<string name="board_asp_with_abbrev">/asp/ Alternative Sports</string>
+<string name="board_b_with_abbrev">/b/ Random</string>
+<string name="board_c_with_abbrev">/c/ Anime/Cute</string>
+<string name="board_cgl_with_abbrev">/cgl/ Cosplay &amp; EGL</string>
+<string name="board_ck_with_abbrev">/ck/ Food &amp; Cooking</string>
+<string name="board_cm_with_abbrev">/cm/ Cute/Male</string>
+<string name="board_co_with_abbrev">/co/ Comics &amp; Cartoons</string>
+<string name="board_d_with_abbrev">/d/ Hentai/Alternative</string>
+<string name="board_diy_with_abbrev">/diy/ Do-It-Yourself</string>
+<string name="board_e_with_abbrev">/e/ Ecchi</string>
+<string name="board_fa_with_abbrev">/fa/ Fashion</string>
+<string name="board_fit_with_abbrev">/fit/ Fitness</string>
+<string name="board_g_with_abbrev">/g/ Technology</string>
+<string name="board_gd_with_abbrev">/gd/ Graphic Design</string>
+<string name="board_gif_with_abbrev">/gif/ Animated GIF</string>
+<string name="board_h_with_abbrev">/h/ Hentai</string>
+<string name="board_hc_with_abbrev">/hc/ Hardcore</string>
+<string name="board_hm_with_abbrev">/hm/ Handsome Men</string>
+<string name="board_hr_with_abbrev">/hr/ High Resolution</string>
+<string name="board_i_with_abbrev">/i/ Oekaki</string>
+<string name="board_ic_with_abbrev">/ic/ Artwork/Critique</string>
+<string name="board_int_with_abbrev">/int/ International</string>
+<string name="board_jp_with_abbrev">/jp/ Otaku Culture</string>
+<string name="board_k_with_abbrev">/k/ Weapons</string>
+<string name="board_lgbt_with_abbrev">/lgbt/ LGBT</string>
+<string name="board_lit_with_abbrev">/lit/ Literature</string>
+<string name="board_m_with_abbrev">/m/ Mecha</string>
+<string name="board_mlp_with_abbrev">/mlp/ Pony</string>
+<string name="board_mu_with_abbrev">/mu/ Music</string>
+<string name="board_n_with_abbrev">/n/ Transport</string>
+<string name="board_o_with_abbrev">/o/ Auto</string>
+<string name="board_out_with_abbrev">/out/ Outdoors</string>
+<string name="board_p_with_abbrev">/p/ Photography</string>
+<string name="board_po_with_abbrev">/po/ Papercraft &amp; Origami</string>
+<string name="board_pol_with_abbrev">/pol/ Politically Incorrect</string>
+<string name="board_q_with_abbrev">/q/ 4chan Feedback</string>
+<string name="board_r_with_abbrev">/r/ Request</string>
+<string name="board_r9k_with_abbrev">/r9k/ ROBOT9001</string>
+<string name="board_s_with_abbrev">/s/ Sexy Beautiful Women</string>
+<string name="board_s4s_with_abbrev">/s4s/ Shit 4chan Says</string>
+<string name="board_sci_with_abbrev">/sci/ Science &amp; Math</string>
+<string name="board_soc_with_abbrev">/soc/ Cams &amp; Meetups</string>
+<string name="board_sp_with_abbrev">/sp/ Sports</string>
+<string name="board_t_with_abbrev">/t/ Torrents</string>
+<string name="board_tg_with_abbrev">/tg/ Traditional Games</string>
+<string name="board_toy_with_abbrev">/toy/ Toys</string>
+<string name="board_trv_with_abbrev">/trv/ Travel</string>
+<string name="board_tv_with_abbrev">/tv/ Television &amp; Film</string>
+<string name="board_u_with_abbrev">/u/ Yuri</string>
+<string name="board_v_with_abbrev">/v/ Video Games</string>
+<string name="board_vg_with_abbrev">/vg/ Video Game Generals</string>
+<string name="board_vp_with_abbrev">/vp/ Pokemon</string>
+<string name="board_vr_with_abbrev">/vr/ Retro Games</string>
+<string name="board_w_with_abbrev">/w/ Anime/Wallpapers</string>
+<string name="board_wg_with_abbrev">/wg/ Wallpapers/General</string>
+<string name="board_wsg_with_abbrev">/wsg/ Worksafe GIF</string>
+<string name="board_x_with_abbrev">/x/ Paranormal</string>
+<string name="board_y_with_abbrev">/y/ Yaoi</string>
 
-    -->
+<string name="report_post_type_rule">Rule violation</string>
+<string name="report_post_type_illegal">Illegal content</string>
+<string name="report_post_type_spam">Commercial spam/advertising</string>
+
+<!-- MOVED FROM PLURALS.XML -->
+
+<string name="plurals_thread_activity_udpdated_one">%1$d new comment</string>
+<string name="plurals_thread_actviity_updated_other">%1$d new comments</string>
+<string name="plurals_board_grid_item_num_replies_one">View 1 post</string>
+<string name="plurals_board_grid_item_num_replies_other">View %1$d posts</string>
+<string name="plurals_board_grid_item_num_imgs_one">View 1 img</string>
+<string name="plurals_board_grid_item_num_imgs_other">View %1$d imgs</string>
+<string name="plurals_board_grid_item_num_threads_one">View 1 thread</string>
+<string name="plurals_board_grid_item_num_threads_other">View %1$d threads</string>
+<string name="plurals_thread_num_replies_one">1 post</string>
+<string name="plurals_thread_num_replies_other">%1$d posts</string>
+<string name="plurals_thread_num_images_one">1 image</string>
+<string name="plurals_thread_num_images_other">%1$d images</string>
+<string name="plurals_thread_num_imgs_one">1 img</string>
+<string name="plurals_thread_num_imgs_other">%1$d imgs</string>
+<string name="plurals_thread_num_backlinks_one">1 backlink</string>
+<string name="plurals_thread_num_backlinks_other">%1$d backlinks</string>
+<string name="plurals_thread_num_links_one">1 link</string>
+<string name="plurals_thread_num_links_other">%1$d links</string>
+<string name="plurals_thread_num_replies_label_one">COMMENT</string>
+<string name="plurals_thread_num_replies_label_other">COMMENTS</string>
+<string name="plurals_thread_num_images_label_one">IMAGE</string>
+<string name="plurals_thread_num_images_label_other">IMAGES</string>
+<string name="plurals_thread_num_direct_replies_label_one">REPLY</string>
+<string name="plurals_thread_num_direct_replies_label_other">REPLIES</string>
 
 </resources>

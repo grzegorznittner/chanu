@@ -48,6 +48,7 @@ public class AboutFragment extends PreferenceFragment
         linkPreference("pref_about_data_color", "https://code.google.com/p/color-picker-view/");
         //linkPreference("pref_about_developer_chanapps", "http://www.nibelungenliedstudios.com");
         linkPreference("pref_about_store_chanapps", "http://www.skreened.com/chanapps/");
+        linkPreference("pref_about_translations_de", "http://www.reddit.com/user/le_avx");
 
         /*
         emailPreference("pref_about_developer_burns", getString(R.string.pref_about_developer_burns_sum));

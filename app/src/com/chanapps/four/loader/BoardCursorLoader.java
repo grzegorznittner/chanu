@@ -209,7 +209,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 ChanBoard relatedBoard = ChanBoard.getBoardByCode(context, relatedCode);
                 if (relatedBoard != null) {
                     ChanBoard addBoard = relatedBoard.copy();
-                    //addBoard.name = context.getString(stringId);
                     matrixCursor.addRow(addBoard.makeRow(context, threadNo));
                 }
             }
@@ -222,7 +221,6 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             /*
             for (ChanBoard relatedBoard : board.relatedBoards(context, threadNo)) {
                 ChanBoard addBoard = relatedBoard.copy();
-                //addBoard.name = context.getString(stringId);
                 matrixCursor.addRow(addBoard.makeRow(context, threadNo));
             }
         }

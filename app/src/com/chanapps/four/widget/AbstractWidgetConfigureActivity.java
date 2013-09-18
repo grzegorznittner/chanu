@@ -283,9 +283,9 @@ public abstract class AbstractWidgetConfigureActivity extends FragmentActivity {
         if (WidgetConstants.WIDGET_TYPE_ONE_IMAGE.equals(widgetConf.widgetType))
             boardTitle = "/" + board.link + "/";
         else if (ChanBoard.isVirtualBoard(board.link))
-            boardTitle = board.name;
+            boardTitle = board.getName(this);
         else
-            boardTitle = board.name + " /" + board.link + "/";
+            boardTitle = board.getName(this) + " /" + board.link + "/";
         int boardTitleColor = widgetConf.boardTitleColor;
         int boardTitleVisibility = widgetConf.showBoardTitle ? View.VISIBLE : View.GONE;
         TextView tv = (TextView) findViewById(R.id.board_title);

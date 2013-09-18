@@ -128,4 +128,18 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+            android:key="pref_about_translations_category"
+            android:title="@string/pref_about_translations_category"
+            android:persistent="true"
+            >
+
+        <Preference
+                android:key="pref_about_translations_de"
+                android:title="@string/pref_about_translations_de"
+                android:summary="@string/pref_about_translations_de_sum"
+                />
+
+    </PreferenceCategory>
+    
 </PreferenceScreen>

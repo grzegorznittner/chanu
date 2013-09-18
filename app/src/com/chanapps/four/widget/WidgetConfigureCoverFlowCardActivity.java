@@ -57,7 +57,7 @@ public class WidgetConfigureCoverFlowCardActivity extends WidgetConfigureCoverFl
             View item = super.getView(position, view, parent);
             ChanBoard board = ChanBoard.getBoardByCode(context, widgetConf.boardCode);
             TextView sub = (TextView)item.findViewById(R.id.widget_coverflowcard_subject);
-            String html = "<b>" + board.name + "</b><br/>" + board.getDescription(context);
+            String html = "<b>" + board.getName(context) + "</b><br/>" + board.getDescription(context);
             sub.setText(Html.fromHtml(html));
             return item;
         }

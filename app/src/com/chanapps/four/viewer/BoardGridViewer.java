@@ -101,8 +101,9 @@ public class BoardGridViewer {
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         if (boardCode != null && !boardCode.isEmpty() && !boardCode.equals(groupBoardCode)) {
             ChanBoard board = ChanBoard.getBoardByCode(context, boardCode);
-            if (board != null)
-                threadAbbrev += board.name;
+            String name = board == null ? null : board.getName(context);
+            if (name != null)
+                threadAbbrev += name;
             else
                 threadAbbrev += "/" + boardCode + "/";
         }

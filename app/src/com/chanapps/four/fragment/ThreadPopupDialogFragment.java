@@ -81,6 +81,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        /*
         if (savedInstanceState != null && savedInstanceState.containsKey(ChanBoard.BOARD_CODE)) {
             boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
             threadNo = savedInstanceState.getLong(ChanThread.THREAD_NO);
@@ -88,6 +89,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
             pos = savedInstanceState.getInt(LAST_POSITION);
             popupType = PopupType.valueOf(savedInstanceState.getString(POPUP_TYPE));
         }
+        */
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         layout = inflater.inflate(R.layout.thread_popup_dialog_fragment, null);
@@ -119,7 +121,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                 return getString(R.string.thread_post);
         }
     }
-
+    /*
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(ChanBoard.BOARD_CODE, boardCode);
@@ -128,7 +130,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         outState.putInt(LAST_POSITION, pos);
         outState.putString(POPUP_TYPE, popupType.toString());
     }
-
+    */
     protected DialogInterface.OnClickListener postReplyListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
