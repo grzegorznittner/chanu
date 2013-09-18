@@ -60,7 +60,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xff;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/#auto";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
@@ -260,7 +260,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             activity.warnedAboutNetworkDown(set);
     }
 
-    public void fetchIfNeeded() {
+    public void fetchIfNeeded(final Handler activityHandler) {
         if (DEBUG) Log.i(TAG, "fetchIfNeeded() /" + boardCode + "/" + threadNo);
         new Thread(new Runnable() {
             @Override
@@ -276,8 +276,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 }
                 final int replies = thread.replies;
                 if (DEBUG) Log.i(TAG, "fetchIfNeeded() /" + boardCode + "/" + threadNo + " checking thread replies=" + thread.replies);
-                if (handler != null)
-                    handler.post(new Runnable() {
+                if (activityHandler != null)
+                    activityHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             if (replies < 0 || replies > absListView.getCount() - 1) {
@@ -663,6 +663,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             case R.id.refresh_menu:
                 setProgress(true);
                 NetworkProfileManager.instance().manualRefresh(getChanActivity());
+                return true;
+            case R.id.view_image_gallery_menu:
+                GalleryViewActivity.startAlbumViewActivity(getActivityContext(), boardCode, threadNo);
                 return true;
             case R.id.watch_thread_menu:
                 addToWatchlist();

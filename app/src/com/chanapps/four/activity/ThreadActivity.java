@@ -50,7 +50,7 @@ public class ThreadActivity
 {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String BOARD_CODE = "boardCode";
     public static final String THREAD_NO = "threadNo";
@@ -790,7 +790,7 @@ public class ThreadActivity
                 if (primaryItem != null)
                     primaryItem.setPullToRefreshAttacher(null);
                 primaryItem = fragment;
-                primaryItem.fetchIfNeeded();
+                primaryItem.fetchIfNeeded(handler);
                 //primaryItem.tryFetchThread(); // update if necessary
                 /*
                 ChanActivityId activityId = fragment.getChanActivityId();

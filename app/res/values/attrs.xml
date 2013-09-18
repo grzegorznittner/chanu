@@ -39,6 +39,12 @@
         <attr name="inverseForeground" format="reference"/>
     </declare-styleable>
 
+    <!--
+    <declare-styleable name="GalleryFrameLayout">
+
+    </declare-styleable>
+    -->
+
     <attr name="themedCardChatIcon" format="reference"/>
     <attr name="themedCardLineBackground" format="reference|color"/>
     <attr name="themedCardListBackground" format="reference|color"/>

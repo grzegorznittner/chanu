@@ -23,7 +23,7 @@ import com.chanapps.four.data.*;
 public class ThreadCursorLoader extends BoardCursorLoader {
 
     private static final String TAG = ThreadCursorLoader.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     protected SharedPreferences prefs;
     protected long threadNo;
@@ -40,7 +40,8 @@ public class ThreadCursorLoader extends BoardCursorLoader {
         this.boardName = boardName;
         this.threadNo = threadNo;
         this.query = query == null ? "" : query.toLowerCase().trim();
-        this.showRelatedBoards = showRelatedBoards;
+        //this.showRelatedBoards = showRelatedBoards;
+        this.showRelatedBoards = false; // not so nice design
         initRandomGenerator();
         if (threadNo <= 0)
             throw new ExceptionInInitializerError("Can't have zero threadNo in a thread cursor loader");
