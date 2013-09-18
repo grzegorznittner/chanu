@@ -19,10 +19,10 @@ import com.chanapps.four.data.*;
 public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
 
     protected static final String TAG = BoardCursorLoader.class.getSimpleName();
-    protected static final boolean DEBUG = false;
+    protected static final boolean DEBUG = true;
 
-    protected static final double AD_PROBABILITY = 0.20;
-    protected static final int MINIMUM_AD_SPACING = 4;
+    //protected static final double AD_PROBABILITY = 0.20;
+    //protected static final int MINIMUM_AD_SPACING = 4;
 
     protected final ForceLoadContentObserver mObserver;
 
@@ -48,6 +48,7 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
         this.query = query == null ? "" : query.toLowerCase().trim();
         this.abbrev = abbrev;
         initRandomGenerator();
+        ChanBoard.initBoards(context);
     }
 
     protected void initRandomGenerator() { // to allow repeatable positions for ads
@@ -158,9 +159,18 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 }
                 if (!query.isEmpty())
                     numQueryMatches++;
-                Object[] row = thread.no <= 0
-                    ? ChanThread.makeBoardRow(context, thread.board, thread.sub, ChanBoard.getImageResourceId(thread.board, 0, 0))
-                    : ChanThread.makeRow(context, thread, query, 0, !board.isVirtualBoard(), abbrev);
+                Object row[];
+                if (thread.no <= 0) {
+                    int imageId = ChanBoard.getImageResourceId(thread.board, 0, 0);
+                    if (DEBUG) Log.i(TAG, "loadBoard adding board link row /" + thread.board
+                            + "/ sub=" + thread.sub
+                            + " resourceId=" + imageId);
+                    row = ChanThread.makeBoardRow(context, thread.board, thread.sub, imageId);
+                }
+                else {
+                    if (DEBUG) Log.i(TAG, "loadBoard adding thread row " + thread);
+                    row = ChanThread.makeRow(context, thread, query, 0, !board.isVirtualBoard(), abbrev);
+                }
                 matrixCursor.addRow(row);
                 i++;
                 if (DEBUG) Log.v(TAG, "Added board row: " + Arrays.toString(row));

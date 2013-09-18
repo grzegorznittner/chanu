@@ -33,7 +33,7 @@ public class BoardGridViewer {
     public static final int SMALL_GRID = 0x01;
 
     private static String TAG = BoardGridViewer.class.getSimpleName();
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
 
     private static ImageLoader imageLoader;
     private static DisplayImageOptions displayImageOptions;
@@ -157,6 +157,7 @@ public class BoardGridViewer {
         else {
             url = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_THUMBNAIL_URL));
             String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+            if (DEBUG) Log.i(TAG, "setImage() /" + boardCode + "/ url=" + url);
             long threadNo = cursor.getLong(cursor.getColumnIndex(ChanThread.THREAD_NO));
             int i = (new Long(threadNo % 3)).intValue();
             String defaultUrl = ChanBoard.getIndexedImageDrawableUrl(boardCode, i);
@@ -182,6 +183,7 @@ public class BoardGridViewer {
                     params.height = columnWidth; // force square
                 }
             }
+            if (DEBUG) Log.i(TAG, "setImage() displaying url=" + url);
             imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
         }
         return true;

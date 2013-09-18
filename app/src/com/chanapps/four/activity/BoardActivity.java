@@ -144,19 +144,25 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             onRestoreInstanceState(bundle);
         else
             setFromIntent(getIntent());
-        boolean dispatched = handleNoBoardCode();
-        if (dispatched)
-            return;
+        if (boardCode == null || boardCode.isEmpty())
+            setBoardCodeToDefault();
         if (DEBUG) Log.i(TAG, "createViews /" + boardCode + "/ q=" + query);
         setupStaticBoards();
         createAbsListView();
         setupBoardTitle();
     }
 
-    protected boolean handleNoBoardCode() {
-        if (boardCode == null || boardCode.isEmpty()) {
-            if (DEBUG) Log.i(TAG, "empty board code, dispatching to activity dispatcher");
-            ActivityDispatcher.dispatch(this);
+    protected void setBoardCodeToDefault() {
+            if (DEBUG) Log.i(TAG, "empty board code, checking for favorites");
+            ChanBoard board = ChanFileStorage.loadBoardData(this, ChanBoard.FAVORITES_BOARD_CODE);
+            if (board != null && board.hasData()) {
+                if (DEBUG) Log.i(TAG, "favorites found, defaulting board code to favorites");
+                boardCode = ChanBoard.FAVORITES_BOARD_CODE;
+            }
+            else {
+                if (DEBUG) Log.i(TAG, "favorites not found, defaulting board code to all boards");
+                boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
+            }
             /*
             if (ActivityDispatcher.isDispatchable(this)) {
                 if (DEBUG) Log.i(TAG, "empty board code, dispatching");
@@ -174,8 +180,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 boardCode = ChanBoard.ALL_BOARDS_BOARD_CODE;
             }
             */
-        }
-        return false;
     }
 
     protected void setupStaticBoards() {

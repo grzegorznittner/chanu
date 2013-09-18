@@ -651,7 +651,7 @@ public class ChanBoard {
     }
 
     public Object[] makeRow(Context context, long threadNo) { // for board selector
-        return ChanThread.makeBoardRow(context, link, name, getRandomImageResourceId(link, threadNo));
+        return ChanThread.makeBoardRow(context, link, getName(context), getRandomImageResourceId(link, threadNo));
     }
     /*
     public Object[] makeThreadAdRow(Context context, int pos) {

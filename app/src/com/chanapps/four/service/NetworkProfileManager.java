@@ -122,7 +122,7 @@ public class NetworkProfileManager {
 
             activeProfile.onApplicationStart(newActivity.getBaseContext());
             if (DEBUG) Log.i(TAG, "ensureInitialized initializing dispatching newActivity=" + newActivity.getChanActivityId());
-            ActivityDispatcher.dispatch(newActivity);
+            //ActivityDispatcher.dispatch(newActivity);
         }
     }
 
