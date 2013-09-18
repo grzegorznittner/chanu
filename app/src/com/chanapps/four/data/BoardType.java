@@ -48,7 +48,7 @@ public enum BoardType {
     WATCHLIST (R.string.board_watch, R.string.board_watch_desc,
             R.drawable.document_magnify, R.drawable.document_magnify_light,
             false, false, true, "watchlist", R.string.board_empty_watchlist, R.string.board_watch),
-    FAVORITES (R.string.board_watch, R.string.board_favorites_desc,
+    FAVORITES (R.string.board_favorites, R.string.board_favorites_desc,
             R.drawable.star, R.drawable.star_light,
             false, false, true, "favorites", R.string.board_empty_favorites, R.string.board_favorites);
 
