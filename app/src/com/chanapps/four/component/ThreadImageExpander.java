@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.chanapps.four.activity.R;
 import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
@@ -14,6 +15,7 @@ import com.chanapps.four.loader.ChanImageLoader;
 import com.chanapps.four.viewer.ThreadViewHolder;
 import com.chanapps.four.viewer.ThreadViewer;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -32,7 +34,7 @@ import java.net.URI;
 public class ThreadImageExpander {
 
     private static final String TAG = ThreadImageExpander.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     //private static final double MAX_EXPANDED_SCALE = 1.5;
 
     private ThreadViewHolder viewHolder;
@@ -59,7 +61,13 @@ public class ThreadImageExpander {
         postW = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_W));
         postH = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_H));
         postImageUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_FULL_IMAGE_URL));
-        fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
+        if (postImageUrl != null && postImageUrl.endsWith(".gif")) {
+        	String thumbUrl = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL));
+        	File thumbFile = ImageLoader.getInstance().getDiscCache().get(thumbUrl);
+        	fullImagePath = thumbFile != null ? thumbFile.getAbsolutePath() : null;
+        } else {
+        	fullImagePath = (new File(URI.create(uri.toString()))).getAbsolutePath();
+        }
         if (DEBUG) Log.i(TAG, "postUrl=" + postImageUrl + " postSize=" + postW + "x" + postH);
     }
 
