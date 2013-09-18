@@ -947,14 +947,18 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
 
     protected void displayBoardTitle() {
         if (DEBUG) Log.i(TAG, "displayBoardTitle /" + boardCode + "/");
-        String rawTitle = ChanBoard.getName(getApplicationContext(), boardCode);
-        String title = rawTitle == null ? "" : rawTitle.toLowerCase();
+        String title = "";
         int lightIconId = 0;
         int darkIconId = 0;
         BoardType type = BoardType.valueOfBoardCode(boardCode);
         if (type != null) {
+            title = getString(type.displayStringId());
             lightIconId = type.drawableId();
             darkIconId = type.darkDrawableId();
+        }
+        else {
+            String rawTitle = ChanBoard.getName(getApplicationContext(), boardCode);
+            title = rawTitle == null ? "/" + boardCode + "/" : rawTitle.toLowerCase();
         }
         displayTitleBar(title, lightIconId, darkIconId);
     }
