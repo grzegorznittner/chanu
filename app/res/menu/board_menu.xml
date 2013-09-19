@@ -6,7 +6,10 @@
           android:icon="@drawable/action_search"
           android:showAsAction="collapseActionView"
           android:actionViewClass="android.widget.SearchView"/>
-
+    <item android:id="@+id/refresh_menu"
+          android:title="@string/refresh_board_menu"
+          android:icon="@drawable/navigation_refresh"
+            />
     <item android:id="@+id/clear_watchlist_menu"
           android:title="@string/pref_clear_watchlist"
           android:icon="@drawable/content_discard"
@@ -21,10 +24,6 @@
           android:title="@string/pref_clear_favorites"
           android:icon="@drawable/content_discard"
           android:visible="false"
-            />
-    <item android:id="@+id/refresh_menu"
-          android:title="@string/refresh_board_menu"
-          android:icon="@drawable/navigation_refresh"
             />
     <item android:id="@+id/scroll_to_bottom_menu"
           android:title="@string/scroll_to_bottom_menu"
