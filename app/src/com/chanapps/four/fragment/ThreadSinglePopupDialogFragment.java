@@ -235,8 +235,11 @@ public class ThreadSinglePopupDialogFragment extends DialogFragment implements T
     }
 
     protected void addSelfRow(MatrixCursor matrixCursor) {
-        if (cursor.moveToPosition(pos))
-            matrixCursor.addRow(ChanPost.extractPostRow(cursor));
+        if (cursor.moveToPosition(pos)) {
+            Object[] row = ChanPost.extractPostRow(cursor);
+            if (row != null)
+                matrixCursor.addRow(row);
+        }
     }
 
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {

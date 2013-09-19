@@ -101,7 +101,7 @@
         <item>@string/board_p_with_abbrev</item>
         <item>@string/board_po_with_abbrev</item>
         <item>@string/board_pol_with_abbrev</item>
-        <item>@string/board_q_with_abbrev</item>
+        <!--<item>@string/board_q_with_abbrev</item>-->
         <item>@string/board_r_with_abbrev</item>
         <item>@string/board_r9k_with_abbrev</item>
         <item>@string/board_s_with_abbrev</item>
@@ -158,7 +158,7 @@
         <item>@string/board_out_with_abbrev</item>
         <item>@string/board_p_with_abbrev</item>
         <item>@string/board_po_with_abbrev</item>
-        <item>@string/board_q_with_abbrev</item>
+        <!--<item>@string/board_q_with_abbrev</item>-->
         <item>@string/board_sci_with_abbrev</item>
         <item>@string/board_sp_with_abbrev</item>
         <item>@string/board_tg_with_abbrev</item>
@@ -215,7 +215,7 @@
         <item>@string/board_p_with_abbrev</item>
         <item>@string/board_po_with_abbrev</item>
         <item>@string/board_pol_with_abbrev</item>
-        <item>@string/board_q_with_abbrev</item>
+        <!--<item>@string/board_q_with_abbrev</item>-->
         <item>@string/board_r_with_abbrev</item>
         <item>@string/board_r9k_with_abbrev</item>
         <item>@string/board_s_with_abbrev</item>
@@ -277,7 +277,7 @@
         <item>@string/board_out_with_abbrev</item>
         <item>@string/board_p_with_abbrev</item>
         <item>@string/board_po_with_abbrev</item>
-        <item>@string/board_q_with_abbrev</item>
+        <!--<item>@string/board_q_with_abbrev</item>-->
         <item>@string/board_sci_with_abbrev</item>
         <item>@string/board_sp_with_abbrev</item>
         <item>@string/board_tg_with_abbrev</item>

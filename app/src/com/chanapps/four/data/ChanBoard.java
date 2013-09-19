@@ -60,6 +60,17 @@ public class ChanBoard {
             META_ADULT_BOARD_CODE, META_MISC_BOARD_CODE };
     public static final String[] POPULAR_BOARDS = { POPULAR_BOARD_CODE, LATEST_BOARD_CODE, LATEST_IMAGES_BOARD_CODE };
 
+    private static final Set<String> removedBoards = new HashSet<String>();
+    private static final String[] REMOVED_BOARDS = { "q" };
+    static {
+        removedBoards.clear();
+        for (String boardCode : REMOVED_BOARDS)
+            removedBoards.add(boardCode);
+    }
+    public static boolean isRemoved(String boardCode) {
+        return removedBoards.contains(boardCode);
+    }
+
     public static final String DEFAULT_BOARD_CODE = "a";
     public static final String PAGE = "pageNo";
     public static final String BOARD_CATALOG = "boardCatalog";
@@ -186,8 +197,8 @@ public class ChanBoard {
         initBoards(context);
         return boardByCode.get(boardCode);
 	}
-	
-	public static synchronized void initBoards(Context ctx) {
+
+    public static synchronized void initBoards(Context ctx) {
         if (boards != null && boards.size() > 0) {
             return;
         }

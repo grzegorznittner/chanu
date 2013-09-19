@@ -230,6 +230,7 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <!--
     <style name="BoardButtonText" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -243,6 +244,7 @@
         <item name="android:textStyle">bold</item>
         <item name="android:visibility">gone</item>
     </style>
+    -->
 
     <style name="BoardTypeBannerAd" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
@@ -384,6 +386,7 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <!--
     <style name="BoardListButton" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -399,7 +402,7 @@
         <item name="android:background">@drawable/thread_button_selector_bg</item>
         <item name="android:visibility">gone</item>
     </style>
-
+    -->
     <style name="BoardListTitleBar" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/ThreadListHeaderBar_layout_height</item>
@@ -482,13 +485,14 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <!--
     <style name="ThreadListButtonLayout" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
         <item name="android:background">@drawable/thread_button_selector_bg</item>
     </style>
-
+    -->
     <!-- THREAD LIST TYPE_HEADER -->
 
     <style name="ThreadListHeaderImageSection" parent="AppTheme">

@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.MatrixCursor;
 import android.util.Log;
 
@@ -1220,26 +1221,32 @@ public class ChanPost {
         int timIdx = cursor.getColumnIndex(POST_TIM);
         int c = cursor.getColumnCount();
         Object[] o = new Object[c];
-        for (int i = 0; i < c; i++) {
-            if (i == flagIdx) {
-                int flags = cursor.getInt(flagIdx);
-                flags |= FLAG_NO_EXPAND;
-                o[i] = flags;
-                continue;
+        try {
+            for (int i = 0; i < c; i++) {
+                if (i == flagIdx) {
+                    int flags = cursor.getInt(flagIdx);
+                    flags |= FLAG_NO_EXPAND;
+                    o[i] = flags;
+                    continue;
+                }
+                if (i == postNoIdx || i == restoIdx || i == timIdx) {
+                    o[i] = cursor.getLong(i);
+                    continue;
+                }
+                int type = cursor.getType(i);
+                switch (type) {
+                    case Cursor.FIELD_TYPE_BLOB: o[i] = cursor.getBlob(i); break;
+                    case Cursor.FIELD_TYPE_FLOAT: o[i] = cursor.getFloat(i); break;
+                    case Cursor.FIELD_TYPE_INTEGER: o[i] = cursor.getInt(i); break;
+                    case Cursor.FIELD_TYPE_STRING: o[i] = cursor.getString(i); break;
+                    case Cursor.FIELD_TYPE_NULL:
+                    default: o[i] = null; break;
+                }
             }
-            if (i == postNoIdx || i == restoIdx || i == timIdx) {
-                o[i] = cursor.getLong(i);
-                continue;
-            }
-            int type = cursor.getType(i);
-            switch (type) {
-                case Cursor.FIELD_TYPE_BLOB: o[i] = cursor.getBlob(i); break;
-                case Cursor.FIELD_TYPE_FLOAT: o[i] = cursor.getFloat(i); break;
-                case Cursor.FIELD_TYPE_INTEGER: o[i] = cursor.getInt(i); break;
-                case Cursor.FIELD_TYPE_STRING: o[i] = cursor.getString(i); break;
-                case Cursor.FIELD_TYPE_NULL:
-                default: o[i] = null; break;
-            }
+        }
+        catch (CursorIndexOutOfBoundsException e) {
+            Log.e(TAG, "Cursor index out of bounds, returning null");
+            return null;
         }
         return o;
     }

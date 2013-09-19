@@ -4,7 +4,7 @@
 
         <item
                 android:state_pressed="true"
-                android:drawable="@color/PaletteSelector"
+                android:drawable="?android:attr/selectableItemBackground"
                 />
         <item
                 android:state_pressed="false"

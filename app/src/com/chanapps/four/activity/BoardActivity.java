@@ -1142,7 +1142,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 return;
             if (absListView == null)
                 return;
-            int pos = absListView.getPositionForView(view);
+            int pos;
+            try {
+                pos = absListView.getPositionForView(view);
+            }
+            catch (Exception e) {
+                Log.e(TAG, "overlayListener:onClick() unable to determine position, exiting");
+                return;
+            }
             if (DEBUG) Log.i(TAG, "overlayListener pos=" + pos);
             Cursor cursor = adapter.getCursor();
             if (!cursor.moveToPosition(pos))

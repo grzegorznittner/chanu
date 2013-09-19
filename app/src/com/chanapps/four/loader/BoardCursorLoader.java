@@ -111,6 +111,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
             for (ChanBoard board : boards) {
                 if (board.isMetaBoard())
                     continue;
+                if (ChanBoard.isRemoved(board.link)) {
+                    if (DEBUG) Log.i(TAG, "Board /" + board.link + "/ has been removed from 4chan");
+                    continue;
+                }
                 Object[] row = board.makeRow(context);
                 matrixCursor.addRow(row);
                 if (DEBUG) Log.i(TAG, "Added board row: " + Arrays.toString(row));
@@ -155,6 +159,10 @@ public class BoardCursorLoader extends AsyncTaskLoader<Cursor> {
                 }
                 if (!thread.matchesQuery(query)) {
                     if (DEBUG) Log.i(TAG, "Skipped non-matching to query thread " + thread);
+                    continue;
+                }
+                if (ChanBoard.isRemoved(thread.board)) {
+                    if (DEBUG) Log.i(TAG, "Board /" + thread.board + "/ has been removed from 4chan");
                     continue;
                 }
                 if (!query.isEmpty())
