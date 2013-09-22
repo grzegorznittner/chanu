@@ -43,33 +43,32 @@
     <string name="blocklist_button">Interzice postări cu Id</string>
     <string name="blocklist_title">Interzice listă</string>
     <string name="blocklist_title_with_type">%1$s Listă interzisă</string>
-    <string name="blocklist_title_remove">Selecteză pentru a scoate de pe lista interzisă</string>
-    <string name="blocklist_message">Select to remove from blocklist</string>
-    <string name="blocklist_message_empty">Your blocklist is empty</string>
-    <string name="blocklist_removed_id">Removed %1$s from blocklist</string>
-    <string name="blocklist_add_id_confirm">Add %1$s%2$s %3$s to blocklist?</string>
-    <string name="blocklist_remove_id_confirm">Remove %1$s%2$s %3$s from blocklist?</string>
-    <string name="blocklist_select_view_type">Select Block Type</string>
-    <string name="blocklist_select_type">Select Block Type</string>
-    <string name="blocklist_no_types_found">No blockable tripcode, name, email or id found</string>
-    <string name="blocklist_empty">Blocklist is empty, visit threads to select tripcode, name, email or id to block
-    </string>
+    <string name="blocklist_title_remove">Selecteză pentru a scoate de pe lista de blocare</string>
+    <string name="blocklist_message">Selectează pentru a scoate de pe lista de blocare</string>
+    <string name="blocklist_message_empty">List ta de blocare este goală</string>
+    <string name="blocklist_removed_id">Scoate %1$s de pe lista de blocare</string>
+    <string name="blocklist_add_id_confirm">Adaugă %1$s%2$s %3$s în lista de blocare?</string>
+    <string name="blocklist_remove_id_confirm">Scoate %1$s%2$s %3$s din lista de blocare?</string>
+    <string name="blocklist_select_view_type">Selectează tip de blocare</string>
+    <string name="blocklist_select_type">Selectează tip de blocare</string>
+    <string name="blocklist_no_types_found">Nici un cod de blocare, nume, email sau id găsit</string>
+    <string name="blocklist_empty">Lista de blocare este goală. Vizitează fire de discuție pentru a selecta cod de blocare, nume, email sau id pentru blocare</string>
 
     <!-- delete post -->
-    <string name="delete_button">Delete Post</string>
-    <string name="delete_post_title">Delete Post</string>
-    <string name="delete_post_title_confirm">Password for Delete</string>
-    <string name="delete_post_password_hint">Password for Post</string>
-    <string name="delete_post_enter_password">Enter a password to delete</string>
-    <string name="delete_post_deleting">Deleting Post...</string>
-    <string name="delete_post_deleting_image">Deleting Post Image...</string>
-    <string name="delete_post_error">Couldn\'t delete post</string>
-    <string name="delete_post_no_response">Couldn\'t delete post, no response</string>
-    <string name="delete_post_cancelled">Cancelled delete post</string>
-    <string name="delete_post_successful">Deleted post</string>
-    <string name="delete_post_successful_image">Deleted post image</string>
-    <string name="delete_post_response_error">Couldn\'t delete post, unknown response</string>
-    <string name="delete_post_only_image">Delete Only Image?</string>
+    <string name="delete_button">Șterge postare</string>
+    <string name="delete_post_title">Șterge postare</string>
+    <string name="delete_post_title_confirm">Parolă pentru ștergere</string>
+    <string name="delete_post_password_hint">Parolă pentru postare</string>
+    <string name="delete_post_enter_password">Introdu parola pentru a șterge</string>
+    <string name="delete_post_deleting">Șterge postare...</string>
+    <string name="delete_post_deleting_image">Șterge imagine postare...</string>
+    <string name="delete_post_error">Nu am putut șterge postarea</string>
+    <string name="delete_post_no_response">Nu am putut șterge postarea, nici un răspuns primit</string>
+    <string name="delete_post_cancelled">Anulare ștergere postare</string>
+    <string name="delete_post_successful">Success ștergere postare</string>
+    <string name="delete_post_successful_image">Succes ștergere imagine postare</string>
+    <string name="delete_post_response_error">Nu am putut șterge postare</string>
+    <string name="delete_post_only_image">Șterge doar imagine postare?</string>
 
     <!-- billing -->
     <string name="connect_to_billing_title">Purchase</string>
