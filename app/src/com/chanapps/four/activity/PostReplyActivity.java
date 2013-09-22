@@ -1054,7 +1054,10 @@ public class PostReplyActivity
     }
 
     public String getRecaptchaResponse() {
-        return recaptchaText.getText().toString();
+        String t = recaptchaText.getText().toString();
+        if (t.indexOf(" ") == -1) // autodoubling for quick entry
+            t = t + " " + t;
+        return t;
     }
 
     private String validatePost() {
@@ -1466,8 +1469,7 @@ public class PostReplyActivity
                 String error = context.getString(result) + (errorMessage == null ? "" : ": " + errorMessage);
                 Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
                 reloadCaptcha();
-                if (dialogFragment != null)
-                    dialogFragment.dismiss();
+                safeDismiss();
                 return;
             }
 
@@ -1477,11 +1479,20 @@ public class PostReplyActivity
             else {
                 Toast.makeText(context, R.string.post_reply_posted_reply, Toast.LENGTH_SHORT).show();
             }
-            if (dialogFragment != null)
-                dialogFragment.dismiss();
+            safeDismiss();
             clearPrefs();
             exitingOnSuccess = true;
             Message.obtain(getHandler(), POST_FINISHED).sendToTarget();
+        }
+
+        protected void safeDismiss() {
+            if (dialogFragment != null)
+                try {
+                    dialogFragment.dismiss();
+                }
+                catch (Exception e) {
+                    Log.e(TAG, "Exception while dismissing dialog", e);
+                }
         }
 
     }

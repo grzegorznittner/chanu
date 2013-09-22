@@ -27,9 +27,8 @@
             android:textColor="?themedBoardGridTitleTextColor"
             android:textSize="@dimen/BoardTypeText"
             android:textAllCaps="true"
-            android:textStyle="bold"
             android:textIsSelectable="false"/>
-
+            <!-- android:textStyle="bold" -->
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

@@ -19,16 +19,28 @@ import com.chanapps.four.activity.R;
 * To change this template use File | Settings | File Templates.
 */
 public class PostingReplyDialogFragment extends DialogFragment {
+
     public static final String TAG = PostingReplyDialogFragment.class.getSimpleName();
-    PostReplyActivity.PostReplyTask task;
-    long threadNo;
+
+    protected static final String THREAD_NO = "threadNo";
+    protected PostReplyActivity.PostReplyTask task;
+    protected long  threadNo;
+
+    public PostingReplyDialogFragment() { // when on-create gets called
+        super();
+    }
+
     public PostingReplyDialogFragment(PostReplyActivity.PostReplyTask task, long threadNo) {
         super();
         this.task = task;
         this.threadNo = threadNo;
     }
+
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle bundle) {
+        if (bundle != null) { // recalled on existing task
+           this.threadNo = bundle.getLong(THREAD_NO);
+        }
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View layout = inflater.inflate(R.layout.message_dialog_fragment, null);
         TextView title = (TextView)layout.findViewById(R.id.title);
@@ -43,9 +55,16 @@ public class PostingReplyDialogFragment extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                task.cancel(true);
+                                if (task != null)
+                                    task.cancel(true);
                             }
                         })
                 .create();
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putLong(THREAD_NO, threadNo);
+    }
+
 }

@@ -1102,5 +1102,9 @@ public class ChanBoard {
                 boardDrawables.put(boardCode, new int[]{ type.drawableId(), type.drawableId(), type.drawableId() });
         }
     }
-    
+
+    public static boolean hasFavorites(Context context) {
+        ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
+        return (board != null && board.threads != null && board.threads.length > 0);
+    }
 }

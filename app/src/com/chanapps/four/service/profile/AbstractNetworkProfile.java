@@ -131,7 +131,7 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
         Health health = getConnectionHealth();
         if (health != Health.NO_CONNECTION && health != Health.BAD && health != Health.VERY_SLOW) {
-            //WidgetProviderUtils.asyncUpdateWidgetsAndWatchlist(context);
+            WidgetProviderUtils.asyncUpdateWidgetsAndWatchlist(context);
         } else {
             makeHealthStatusToast(context, health);
         }
