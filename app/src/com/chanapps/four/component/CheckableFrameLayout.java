@@ -11,13 +11,14 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Checkable;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import com.chanapps.four.activity.R;
 
-public class CheckableLinearLayout extends LinearLayout implements Checkable {
+public class CheckableFrameLayout extends FrameLayout implements Checkable {
 
     boolean isChecked = false;
-    public CheckableLinearLayout(Context context, AttributeSet attrs) {
+    public CheckableFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -46,17 +47,16 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
 
     protected void setBackground() {
         if (isChecked) {
-            //setBackgroundColor(R.color.PaletteChanuGreenHalfOpacity);
+            setForeground(getResources().getDrawable(R.color.PaletteSelectorFourth));
             /*
-            setBackgroundColor(R.color.blue_base);
+            //setBackgroundColor(R.color.PaletteSelectorHalf);
             View v = getChildAt(0);
             if (v != null)
                 v.setBackgroundColor(R.color.blue_base);
                 */
-            ;
         }
         else {
-            setBackgroundDrawable(null);
+            setForeground(null);
         }
     }
 }

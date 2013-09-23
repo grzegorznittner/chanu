@@ -1,5 +1,6 @@
 package com.chanapps.four.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -84,7 +85,6 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         if (savedInstanceState != null && savedInstanceState.containsKey(ChanBoard.BOARD_CODE)) {
             boardCode = savedInstanceState.getString(ChanBoard.BOARD_CODE);
             threadNo = savedInstanceState.getLong(ChanThread.THREAD_NO);
@@ -101,8 +101,8 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         layout = inflater.inflate(R.layout.thread_popup_dialog_fragment, null);
-        TextView title = (TextView)layout.findViewById(R.id.thread_popup_dialog_title);
-        title.setText(popupTitle());
+        //TextView title = (TextView)layout.findViewById(R.id.thread_popup_dialog_title);
+        //title.setText(popupTitle());
         init();
         setStyle(STYLE_NO_TITLE, 0);
         if (DEBUG) Log.i(TAG, "creating dialog");
@@ -110,11 +110,12 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                 .setView(layout)
                 //.setPositiveButton(R.string.thread_popup_reply, postReplyListener)
                 //.setNeutralButton(R.string.thread_popup_goto, null)
-                .setNegativeButton(R.string.dialog_close, dismissListener)
-                .setOnCancelListener(cancelListener)
-                .setOnKeyListener(keyListener)
+                //.setNegativeButton(R.string.dialog_close, dismissListener)
+                //.setNegativeButton(R.string.dialog_close, null)
                 .create();
         dialog.setCanceledOnTouchOutside(true);
+        //dialog.setOnCancelListener(cancelListener);
+        //dialog.setOnKeyListener(keyListener);
         return dialog;
     }
 
@@ -134,6 +135,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        if (DEBUG) Log.i(TAG, "onSaveInstanceState /" + boardCode + "/" + threadNo);
         outState.putString(ChanBoard.BOARD_CODE, boardCode);
         outState.putLong(ChanThread.THREAD_NO, threadNo);
         outState.putLong(ChanPost.POST_NO, postNo);
@@ -141,6 +143,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         outState.putString(POPUP_TYPE, popupType.toString());
     }
 
+    /*
     protected DialogInterface.OnClickListener postReplyListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
@@ -177,19 +180,12 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
             return false;
         }
     };
+    */
 
     @Override
     public void onActivityCreated(Bundle bundle) {
         super.onActivityCreated(bundle);
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-    }
-
-    @Override
-    public void onCancel(DialogInterface dialog) {
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
     }
 
     @Override
@@ -240,12 +236,13 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
             @Override
             public void run() {
                 final Cursor detailCursor = detailsCursor();
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter.swapCursor(detailCursor);
-                    }
-                });
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.swapCursor(detailCursor);
+                        }
+                    });
             }
         }).start();
     }
@@ -266,10 +263,31 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         adapter = new ThreadListCursorAdapter(getActivity(), viewBinder, false);
         absListView = (ListView) layout.findViewById(R.id.thread_popup_list_view);
         absListView.setAdapter(adapter);
+        absListView.setOnItemClickListener(itemListener);
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivity().getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
         threadListener = new ThreadListener(this, ThemeSelector.instance(getActivity().getApplicationContext()).isDark());
     }
+
+    protected AdapterView.OnItemClickListener itemListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (DEBUG) Log.i(TAG, "onItemClick() pos=" + position + " postNo=" + id);
+            dismiss();
+            Activity activity = getActivity();
+            if (activity == null || !(activity instanceof ThreadActivity)) {
+                if (DEBUG) Log.i(TAG, "onItemClick() no activity");
+                return;
+            }
+            ThreadFragment fragment = ((ThreadActivity) activity).getCurrentFragment();
+            if (fragment == null) {
+                if (DEBUG) Log.i(TAG, "onItemClick() no thread fragment");
+                return;
+            }
+            if (DEBUG) Log.i(TAG, "onItemClick() scrolling to postNo=" + id);
+            fragment.scrollToPostAsync(id);
+        }
+    };
 
     @Override
     public AbsListView getAbsListView() {
@@ -344,12 +362,12 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                     false,
                     0,
                     0,
-                    threadListener.thumbOnClickListener,
+                    null, //threadListener.thumbOnClickListener,
                     null, //threadListener.backlinkOnClickListener,
                     null,
                     null, //threadListener.repliesOnClickListener,
                     null, //threadListener.sameIdOnClickListener,
-                    threadListener.exifOnClickListener,
+                    null, //threadListener.exifOnClickListener,
                     //null,
                     null,
                     null,

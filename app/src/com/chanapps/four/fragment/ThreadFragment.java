@@ -60,7 +60,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xff;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/#auto";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
@@ -232,7 +232,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public void onPause() {
         super.onPause();
         if (DEBUG) Log.i(TAG, "onPause /" + boardCode + "/" + threadNo);
-        handler = null;
     }
 
     @Override
@@ -392,7 +391,82 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " thread not yet loaded, awaiting load thread=" + thread);
         }    
     }
-    
+
+    public void scrollToPostAsync(final long scrollToPostNo) {
+        if (DEBUG) Log.i(TAG, "scrollToPostAsync() postNo=" + scrollToPostNo);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                scrollToPost(scrollToPostNo, new Runnable() {
+                    @Override
+                    public void run() {
+                        if (absListView == null)
+                            return;
+                        View v = absListView.getSelectedView();
+                        if (v == null)
+                            return;
+                        v.setBackgroundResource(R.color.PaletteGreen);
+                    }
+                });
+            }
+        }).start();
+    }
+
+    protected void scrollToPost(final long scrollToPostNo, final Runnable uiCallback) {
+        if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " begin");
+        if (adapter == null) {
+            if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " null adapter, exiting");
+            return;
+        }
+        Cursor cursor = adapter.getCursor();
+        cursor.moveToPosition(-1);
+        boolean found = false;
+        int pos = 0;
+        while (cursor.moveToNext()) {
+            long postNoAtPos = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
+            if (postNoAtPos == scrollToPostNo) {
+                found = true;
+                break;
+            }
+            pos++;
+        }
+        final boolean hasPost = found;
+        final int postPos = pos;
+        if (hasPost) {
+            if (DEBUG) Log.i(TAG, "scrollToPost() found postNo=" + scrollToPostNo + " at pos=" + pos);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "scrollToPost() didn't find postNo=" + scrollToPostNo);
+        }
+        if (handler == null) {
+            if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " null handler, exiting");
+            return;
+        }
+        if (handler != null && (hasPost || uiCallback != null))
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (hasPost) {
+                        if (absListView == null) {
+                            if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " null list view, exiting");
+                            return;
+                        }
+                        if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " scrolling to pos=" + postPos + " on UI thread");
+                        absListView.smoothScrollToPosition(postPos);
+                        //absListView.setSelection(postPos);
+                        SparseBooleanArray booleanArray = absListView.getCheckedItemPositions();
+                        for (int i = 0; i < absListView.getCount(); i++)
+                            if (booleanArray.get(i, false))
+                                absListView.setItemChecked(i, false);
+                        absListView.setItemChecked(postPos, true);
+                        postNo = -1;
+                    }
+                    if (uiCallback != null)
+                        uiCallback.run();
+                }
+            });
+    }
+
     protected void selectCurrentThread(final ChanThread thread) {
         if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " thread=" + thread);
         if (query != null && !query.isEmpty()) {
@@ -422,31 +496,12 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         }
         else if (postNo > 0) {
             if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " scrolling to postNo=" + postNo);
-            Cursor cursor = adapter.getCursor();
-            cursor.moveToPosition(-1);
-            boolean found = false;
-            int pos = 0;
-            while (cursor.moveToNext()) {
-                long postNoAtPos = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
-                if (postNoAtPos == postNo) {
-                    found = true;
-                    break;
+            scrollToPost(postNo, new Runnable() {
+                @Override
+                public void run() {
+                    setProgressFromThreadState(thread);
                 }
-                pos++;
-            }
-            final boolean hasPost = found;
-            final int postPos = pos;
-            if (handler != null)
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (hasPost) {
-                            absListView.setSelection(postPos);
-                            postNo = -1;
-                        }
-                        setProgressFromThreadState(thread);
-                    }
-                });
+            });
         }
         else if (firstVisiblePosition >= 0) {
             if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " scrolling to saved pos=" + firstVisiblePosition);
@@ -675,8 +730,6 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 return true;
             case R.id.scroll_to_bottom_menu:
                 int n = adapter.getCount() - 1;
-                if (n >= 4)
-                    n -= 4; // jump before related boards
                 if (DEBUG) Log.i(TAG, "jumping to item n=" + n);
                 absListView.setSelection(n);
                 return true;

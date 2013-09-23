@@ -1,5 +1,6 @@
 package com.chanapps.four.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -8,6 +9,7 @@ import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.*;
 import android.widget.AbsListView;
@@ -92,13 +94,13 @@ public class ThreadSinglePopupDialogFragment extends DialogFragment implements T
                 //.setNeutralButton(R.string.thread_popup_goto, null)
                 //.setNegativeButton(R.string.dialog_close, dismissListener)
                 //.setNegativeButton(R.string.dialog_close, dismissListener)
-                .setOnCancelListener(cancelListener)
-                .setOnKeyListener(keyListener)
+                //.setOnCancelListener(cancelListener)
+                //.setOnKeyListener(keyListener)
                 .create();
         dialog.setCanceledOnTouchOutside(true);
         return dialog;
     }
-
+    /*
     protected DialogInterface.OnCancelListener cancelListener = new DialogInterface.OnCancelListener() {
         @Override
         public void onCancel(DialogInterface dialog) {
@@ -119,7 +121,7 @@ public class ThreadSinglePopupDialogFragment extends DialogFragment implements T
             return false;
         }
     };
-
+    */
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(ChanBoard.BOARD_CODE, boardCode);
@@ -128,25 +130,19 @@ public class ThreadSinglePopupDialogFragment extends DialogFragment implements T
         outState.putInt(LAST_POSITION, pos);
     }
 
+    /*
     protected DialogInterface.OnClickListener dismissListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             ThreadSinglePopupDialogFragment.this.dismiss();
         }
     };
+    */
 
     @Override
     public void onActivityCreated(Bundle bundle) {
         super.onActivityCreated(bundle);
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-    }
-
-    @Override
-    public void onCancel(DialogInterface dialog) {
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
     }
 
     @Override
@@ -225,14 +221,29 @@ public class ThreadSinglePopupDialogFragment extends DialogFragment implements T
         adapter = new ThreadSingleItemListCursorAdapter(getActivity(), viewBinder, false);
         absListView = (ListView) layout.findViewById(R.id.thread_popup_list_view);
         absListView.setAdapter(adapter);
-        absListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                dismiss();
-            }
-        });
+        absListView.setOnItemClickListener(itemListener);
         threadListener = new ThreadListener(this, ThemeSelector.instance(getActivity().getApplicationContext()).isDark());
     }
+
+    protected AdapterView.OnItemClickListener itemListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (DEBUG) Log.i(TAG, "onItemClick() pos=" + position + " postNo=" + id);
+            dismiss();
+            Activity activity = getActivity();
+            if (activity == null || !(activity instanceof ThreadActivity)) {
+                if (DEBUG) Log.i(TAG, "onItemClick() no activity");
+                return;
+            }
+            ThreadFragment fragment = ((ThreadActivity) activity).getCurrentFragment();
+            if (fragment == null) {
+                if (DEBUG) Log.i(TAG, "onItemClick() no thread fragment");
+                return;
+            }
+            if (DEBUG) Log.i(TAG, "onItemClick() scrolling to postNo=" + id);
+            fragment.scrollToPostAsync(id);
+        }
+    };
 
     @Override
     public AbsListView getAbsListView() {

@@ -3,6 +3,7 @@ package com.chanapps.four.component;
 import android.database.Cursor;
 import android.text.Html;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
@@ -26,9 +27,9 @@ public class ThreadExifOnClickListener implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         ViewParent parent = v.getParent();
-        if (parent == null || !(parent instanceof CheckableLinearLayout))
+        if (parent == null || !(parent instanceof ViewGroup))
             return;
-        CheckableLinearLayout layout = (CheckableLinearLayout)parent;
+        ViewGroup layout = (ViewGroup)parent;
         TextView listItemText = (TextView)layout.findViewById(R.id.list_item_exif_text);
         listItemText.setText(Html.fromHtml(exifText));
         listItemText.setVisibility(View.VISIBLE);

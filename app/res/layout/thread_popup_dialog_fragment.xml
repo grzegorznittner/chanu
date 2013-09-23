@@ -8,6 +8,7 @@
         android:orientation="vertical">
 <!--         android:id="@+id/thread_list_layout" -->
                                                           <!-- style="?android:attr/windowTitleStyle" -->
+    <!--
     <TextView android:id="@+id/thread_popup_dialog_title"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -21,17 +22,23 @@
           android:layout_width="match_parent"
           android:layout_height="2dip"
           android:background="@color/blue_base" />
-
+    -->
     <FrameLayout
             style="@style/ThreadListLayout"
+            android:background="@color/PaletteTransparent"
             >
 
         <ListView
                 android:id="@+id/thread_popup_list_view"
                 style="@style/ThreadListView"
-                android:paddingTop="@dimen/BoardGridView.spacing"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
                 />
-
+         <!--
+                         android:paddingTop="@dimen/BoardGridView.spacing"
+        -->
     </FrameLayout>
 
 </LinearLayout>

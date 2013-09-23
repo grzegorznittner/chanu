@@ -213,11 +213,15 @@ public class ChanThread extends ChanPost {
     }
     
     public boolean threadNeedsRefresh() {
-        if (defData)
+        if (isDead)
+            return false;
+        else if (defData)
             return true;
         else if (posts == null || posts.length == 0)
             return true;
-        else if (posts.length < replies && !isDead)
+        else if (posts[0] == null || posts[0].defData)
+            return true;
+        else if (posts.length < replies)
             return true;
         else if (!isCurrent())
             return true;

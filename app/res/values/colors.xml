@@ -34,6 +34,7 @@
     -->
     <color name="PaletteSelector">#33b5e5</color>
     <color name="PaletteSelectorHalf">#8833b5e5</color>
+    <color name="PaletteSelectorFourth">#4433b5e5</color>
     <!--<color name="PaletteThreadListBarOverlayBg">#88f4f4f4</color>-->
     <color name="PaletteThreadListBarOverlayFg">#88000000</color>
     <color name="PaletteThreadTitleSecondaryText">@color/PaletteLightGray</color>
