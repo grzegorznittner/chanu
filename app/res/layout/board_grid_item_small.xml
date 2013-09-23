@@ -22,8 +22,17 @@
                     android:layout_height="wrap_content"
                     android:scaleType="centerCrop"
                     android:contentDescription="@string/thread_post_image"
+                    />
+
+            <TextView
+                    android:id="@+id/grid_item_board_code"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/BoardGridBoardCode"
+                    android:textStyle="bold"
+                    android:textColor="@color/PaletteBoardCodeText"
                     android:visibility="gone"
-                    android:background="@drawable/board_grid_selector_bg"
                     />
 
             <ImageView
@@ -38,17 +47,23 @@
 
         </FrameLayout>
 
-        <TextView
-                android:id="@+id/grid_item_thread_subject"
-                style="@style/BoardGridItemSmallSubject"
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/BoardGridItemSmallHeight"
+                android:orientation="vertical"
                 android:layout_below="@+id/grid_item_thumb_frame"
-                />
-
-        <TextView
-                android:id="@+id/grid_item_thread_info"
-                style="@style/BoardGridItemSmallInfo"
-                android:layout_below="@+id/grid_item_thread_subject"
-                />
+                >
+            <TextView
+                    android:id="@+id/grid_item_thread_subject"
+                    style="@style/BoardGridItemSmallSubject"
+                    android:layout_below="@+id/grid_item_thumb_frame"
+                    />
+            <TextView
+                    android:id="@+id/grid_item_thread_info"
+                    style="@style/BoardGridItemSmallInfo"
+                    android:layout_below="@+id/grid_item_thread_subject"
+                    />
+        </LinearLayout>
 
         <ImageView
                 android:id="@+id/grid_item_overflow_icon"

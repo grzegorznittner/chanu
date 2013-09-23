@@ -193,18 +193,19 @@ public final class WidgetProviderUtils {
                 if (hasWidgets)
                     fetchAllWidgets(context);
 
-                //ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
-                //boolean hasWatchlist = (board != null && board.threads != null && board.threads.length > 0);
-                //if (hasWatchlist)
-                //    GlobalAlarmReceiver.fetchWatchlistThreads(context);
+                /*
+                ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.WATCHLIST_BOARD_CODE);
+                boolean hasWatchlist = (board != null && board.threads != null && board.threads.length > 0);
+                if (hasWatchlist)
+                    GlobalAlarmReceiver.fetchWatchlistThreads(context);
+                */
 
-                //board = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
-                //boolean hasFavorites = (board != null && board.threads != null && board.threads.length > 0);
-                //if (hasFavorites)
-                //    GlobalAlarmReceiver.fetchFavoriteBoards(context);
+                boolean hasFavorites = ChanBoard.hasFavorites(context);
+                if (hasFavorites)
+                    GlobalAlarmReceiver.fetchFavoriteBoards(context);
 
-                //if (hasWidgets || hasWatchlist)
-                //    scheduleGlobalAlarm(context);
+                if (hasWidgets || hasFavorites)
+                    scheduleGlobalAlarm(context);
             }
         });
     }

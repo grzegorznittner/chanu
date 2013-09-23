@@ -644,7 +644,8 @@ public class ChanPost {
     {
         if (sticky > 0 && replies == 0)
             return context.getString(R.string.thread_is_sticky) + (closed > 0 ? " " + context.getString(R.string.thread_is_closed) : "");
-        String text;
+        String text = "";
+        /*
         if (showNumReplies) {
             if (replies > 0) {
                 String repliesStr =
@@ -671,6 +672,7 @@ public class ChanPost {
         else {
             text = "";
         }
+        */
         if (!boardLevel && resto == 0) {
             if (imagelimit == 1)
                 text += " " + context.getString(R.string.thread_has_imagelimit);
@@ -681,7 +683,7 @@ public class ChanPost {
             if (closed > 0)
                 text += " " + context.getString(R.string.thread_is_closed);
         }
-        return text;
+        return text.trim();
     }
 
     public void mergeIntoThreadList(List<ChanPost> threads) {

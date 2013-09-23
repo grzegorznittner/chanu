@@ -8,6 +8,7 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.SearchManager;
+import android.graphics.Typeface;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
@@ -54,6 +55,9 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     private static WeakReference<BoardActivity> allBoardsActivityRef = null;
     private static WeakReference<BoardActivity> watchlistActivityRef = null;
     private static WeakReference<BoardActivity> favoritesActivityRef = null;
+
+    protected static Typeface titleTypeface;
+    protected static final String TITLE_FONT = "fonts/Edmondsans-Bold.otf";
 
     protected AbstractBoardCursorAdapter adapter;
     protected View layout;
@@ -366,7 +370,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         contentFrame.addView(layout);
         int numColumns = (gridViewOptions & BoardGridViewer.SMALL_GRID) > 0
                 ? R.integer.BoardGridViewSmall_numColumns
-                : R.integer.BoardGridView_numColumns;
+                : R.integer.BoardGridViewSmall_numColumns;
+//                : R.integer.BoardGridView_numColumns;
         columnWidth = ChanGridSizer.getCalculatedWidth(getResources().getDisplayMetrics(),
                 getResources().getInteger(numColumns),
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
@@ -381,8 +386,14 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         ImageLoader imageLoader = ChanImageLoader.getInstance(getApplicationContext());
         absListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
         if (ChanBoard.isPopularBoard(boardCode) || !ChanBoard.isVirtualBoard(boardCode)) {
-            mPullToRefreshAttacher = new PullToRefreshAttacher(this);
-            mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
+            //try {
+                mPullToRefreshAttacher = new PullToRefreshAttacher(this);
+                mPullToRefreshAttacher.setRefreshableView(absListView, pullToRefreshListener);
+            //}
+            //catch (Error e) {
+            //    Log.e(TAG, "createAbsListView() error creating pull to refresh attacher", e);
+            //    mPullToRefreshAttacher = null;
+            //}
         }
         else {
             mPullToRefreshAttacher = null;
@@ -987,12 +998,23 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         if (DEBUG) Log.i(TAG, "displayTitleBar /" + boardCode + "/ title=" + title + " boardTitleBar=" + boardTitleBar);
         if (boardTitleBar == null)
             return;
+
         TextView boardTitle = (TextView)boardTitleBar.findViewById(R.id.board_title_text);
         ImageView boardIcon = (ImageView)boardTitleBar.findViewById(R.id.board_title_icon);
         if (DEBUG) Log.i(TAG, "displayTitleBar /" + boardCode + "/ title=" + title + " boardTitle=" + boardTitle + " boardIcon=" + boardIcon);
         if (boardTitle == null || boardIcon == null)
             return;
+
+        try {
+            if (titleTypeface == null)
+                titleTypeface = Typeface.createFromAsset(getAssets(), TITLE_FONT);
+            boardTitle.setTypeface(titleTypeface);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "displayTitleBar() exception making typeface", e);
+        }
         boardTitle.setText(title);
+
         boolean isDark = ThemeSelector.instance(getApplicationContext()).isDark();
         int drawableId = isDark ? lightIconId : darkIconId;
         int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
@@ -1000,6 +1022,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             boardIcon.setImageResource(drawableId);
             boardIcon.setAlpha(alpha);
         }
+
         boardTitleBar.setVisibility(View.VISIBLE);
         if (DEBUG) Log.i(TAG, "displayBoardTitle /" + boardCode + "/ title=" + title + " set to visible");
     }
@@ -1198,6 +1221,8 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         ActivityManager manager = (ActivityManager)getApplication().getSystemService( Activity.ACTIVITY_SERVICE );
         List<ActivityManager.RunningTaskInfo> tasks = manager.getRunningTasks(1);
         ActivityManager.RunningTaskInfo task = tasks != null && tasks.size() > 0 ? tasks.get(0) : null;
+        boolean hasFavorites = ChanBoard.hasFavorites(this);
+        String upBoardCode = hasFavorites ? ChanBoard.FAVORITES_BOARD_CODE : ChanBoard.ALL_BOARDS_BOARD_CODE;
         if (task != null) {
             if (DEBUG) Log.i(TAG, "navigateUp() top=" + task.topActivity + " base=" + task.baseActivity);
             if (task.baseActivity != null
@@ -1214,18 +1239,20 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 finish();
                 return;
             }
-            else if (task.baseActivity != null && tasks.size() == 1 && ChanBoard.ALL_BOARDS_BOARD_CODE.equals(boardCode)) {
-                if (DEBUG) Log.i(TAG, "navigateUp() with all boards at top of stack exits app, exiting");
+            else if (task.baseActivity != null && tasks.size() == 1 && upBoardCode.equals(boardCode))
+            {
+                if (DEBUG) Log.i(TAG, "navigateUp() with all boards or favorites at top of stack exits app, exiting");
                 finish();
                 return;
             }
 
         }
-        if (ChanBoard.ALL_BOARDS_BOARD_CODE.equals(boardCode)) {
+        if (upBoardCode.equals(boardCode))
+        {
             if (DEBUG) Log.i(TAG, "navigateUp() already at top level, ignoring back press");
             return;
         }
-        Intent intent = BoardActivity.createIntent(BoardActivity.this, ChanBoard.ALL_BOARDS_BOARD_CODE, "");
+        Intent intent = BoardActivity.createIntent(BoardActivity.this, upBoardCode, "");
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();

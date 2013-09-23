@@ -108,11 +108,12 @@ public class ChanThread extends ChanPost {
     }
 
     public static Object[] makeBoardRow(Context context, String boardCode, String boardName, int boardImageResourceId) {
+        String boardTitle = "/" + boardCode + "/" + ( boardName.isEmpty() ? "" : " " + boardName );
         return new Object[] {
                 boardCode.hashCode(),
                 boardCode,
                 0,
-                boardName,
+                boardTitle,
                 ChanBoard.getDescription(context, boardCode),
                 "",
                 "drawable://" + boardImageResourceId,

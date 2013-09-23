@@ -45,7 +45,8 @@
     <color name="PaletteYellowWhite">#ecebe7</color>
     <color name="PaletteDarkYellowWhite">#2c2b27</color>
     <color name="PaletteCardBg">#ffffff</color>
-    <color name="PaletteDarkCardBg">#000000</color>
+    <!-- <color name="PaletteDarkCardBg">#000000</color> -->
+    <color name="PaletteDarkCardBg">#252525</color>
     <color name="PaletteWhite">#f7f7f7</color>
     <color name="PaletteOffWhite">#e4e4e4</color>
     <color name="PaletteLightestGray">#ccc</color>
@@ -53,7 +54,8 @@
     <color name="PaletteMedGray">#666</color>
     <color name="PaletteDarkGray">#313b4b</color>
     <color name="PaletteBlack">#ff272727</color>
-    <color name="PalettePureBlack">#ff000000</color>
+    <!-- <color name="PalettePureBlack">#ff000000</color> -->
+    <color name="PalettePureBlack">#ff252525</color>
     <color name="PaletteBlackHalfOpacity">#802d2d2d</color>
     <color name="PaletteBlack34Opacity">#d02d2d2d</color>
     <color name="PaletteKambalaGrayBg">#dcdbe0</color>
@@ -67,14 +69,29 @@
 
     <!-- dark theme -->
 
-    <color name="DarkPaletteCardListBg">#2a2a2a</color>
-    <color name="DarkPaletteCardListBarBg">#0c0c0c</color>
-    <color name="DarkPaletteImagePlaceholder">#333333</color>
+    <color name="DarkPaletteCardListBg">#484848</color>
+    <color name="DarkPaletteCardListBarBg">#2f2f2f</color>
+    <color name="DarkPaletteImagePlaceholder">#2f2f2f</color>
     <color name="DarkPaletteDrawerBg">#202220</color>
     <color name="DarkPaletteDrawerUncheckedBg">#88202220</color>
     <color name="DarkPaletteThreadLine">#449def</color>
     <color name="DarkPaletteThreadListBarOverlayFg">#88ffffff</color>
 
     <color name="ad_background">#121212</color>
+
+    <!-- board code colors -->
+
+    <color name="PaletteBoardCodeText">#ffffff</color>
+    <color name="PaletteBoardColor0">#33B5E5</color>
+    <color name="PaletteBoardColor1">#AA66CC</color>
+    <color name="PaletteBoardColor2">#99CC00</color>
+    <color name="PaletteBoardColor3">#FFBB33</color>
+    <color name="PaletteBoardColor4">#FF4444</color>
+    <color name="PaletteBoardColor5">#0099CC</color>
+    <color name="PaletteBoardColor6">#9933CC</color>
+    <color name="PaletteBoardColor7">#669900</color>
+    <color name="PaletteBoardColor8">#FF8800</color>
+    <color name="PaletteBoardColor9">#CC0000</color>
+    <color name="PaletteBoardColor10">#CC0000</color>
 
 </resources>

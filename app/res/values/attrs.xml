@@ -63,5 +63,7 @@
     <attr name="themedStickyIcon" format="reference"/>
     <attr name="yesNoPreferenceStyle" format="reference" />
     <attr name="themedBoardGridTabletBackground" format="reference|color"/>
+    <attr name="themedNumRepliesIcon" format="reference" />
+    <attr name="themedNumImagesIcon" format="reference" />
 
 </resources>

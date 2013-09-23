@@ -2,11 +2,12 @@
 <resources>
 
     <!-- Font sizes -->
-    <dimen name="BoardTypeText">16sp</dimen>
+    <dimen name="BoardTypeText">18sp</dimen>
     <dimen name="WidgetConfigureOkButton">18sp</dimen>
     <dimen name="BoardSelectorOverlay">14sp</dimen>
+    <dimen name="BoardGridBoardCode">36sp</dimen>
     <dimen name="BoardGridSubject">14sp</dimen>
-    <dimen name="BoardGridInfo">12sp</dimen>
+    <dimen name="BoardGridInfo">14sp</dimen>
     <dimen name="BoardGridAction">12sp</dimen>
     <dimen name="BoardGridInfoPaddingBottom">4dp</dimen>
     <dimen name="BoardGridImagePaddingBottom">4dp</dimen>
@@ -41,6 +42,7 @@
 
     <!-- Padding & Margins -->
 
+    <dimen name="BoardGridItemSmallHeight">96dp</dimen>
     <dimen name="BoardGridViewTablet_image_width">0dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width">0dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterPadding">0dp</dimen>
