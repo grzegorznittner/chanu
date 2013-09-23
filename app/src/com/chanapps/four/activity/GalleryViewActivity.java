@@ -466,7 +466,7 @@ public class GalleryViewActivity extends AbstractGalleryActivity implements Chan
             	//}
                 return true;
             case R.id.download_all_images_to_gallery_menu:
-                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo, null);
+                ThreadImageDownloadService.startDownloadToGalleryFolder(getBaseContext(), boardCode, threadNo);
                 Toast.makeText(this, R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                 return true;
             //case R.id.view_image_gallery_menu:
