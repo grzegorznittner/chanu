@@ -264,7 +264,7 @@
     <dimen name="widget_twocol_inner_paddingLeft">108dp</dimen>
     <dimen name="widget_textSize">12sp</dimen>
 
-    <integer name="BoardGridView.maxLines">6</integer>
+    <integer name="BoardGridView.maxLines">5</integer>
     <dimen name="BoardGridView.halfSpacing">8dp</dimen>
     <dimen name="BoardGridView.spacing">16dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">16dp</dimen>
