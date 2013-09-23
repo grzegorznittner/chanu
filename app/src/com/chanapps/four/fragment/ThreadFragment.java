@@ -1349,7 +1349,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     return true;
                 case R.id.download_images_to_gallery_menu:
                     ThreadImageDownloadService.startDownloadToGalleryFolder(
-                            getActivityContext(), boardCode, threadNo, null, postNos);
+                            getActivityContext(), boardCode, threadNo, postNos);
                     Toast.makeText(getActivityContext(), R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                     return true;
                 case R.id.image_search_menu:
@@ -1471,7 +1471,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     return true;
                 case R.id.download_images_to_gallery_menu:
                     ThreadImageDownloadService.startDownloadToGalleryFolder(
-                            getActivityContext(), boardCode, threadNo, null, postNos);
+                            getActivityContext(), boardCode, threadNo, postNos);
                     Toast.makeText(getActivityContext(), R.string.download_all_images_notice, Toast.LENGTH_SHORT).show();
                     return true;
                 case R.id.image_search_menu:

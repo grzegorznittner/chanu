@@ -14,8 +14,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.text.Format;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -62,7 +60,6 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
     private static final String TARGET_TYPE = "ThreadImageDownloadService.targetType";
     private static final String START_POST_NO = "ThreadImageDownloadService.startPostNo";
     private static final String RESTART_COUNTER = "ThreadImageDownloadService.restartCounter";
-    private static final String TARGET_FOLDER = "ThreadImageDownloadService.folder";
     private static final String SCHEDULE_TIME = "ThreadImageDownloadService.startTime";
     private static final String POST_NOS = "ThreadImageDownloadService.postNos";
     
@@ -74,24 +71,19 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 
     public static void startDownloadToBoardFolder(Context context, String board, long threadNo) {
         //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.PRELOAD_ALL_IMAGES);
-        startDownload(context, board, threadNo, TargetType.TO_BOARD, 0, 0, null, new long[] {});
+        startDownload(context, board, threadNo, TargetType.TO_BOARD, 0, 0, new long[] {});
     }
     
     public static void startDownloadToGalleryFolder(Context context, String board, long threadNo) {
         //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.DOWNLOAD_ALL_IMAGES_TO_GALLERY);
-        startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, null, new long[] {});
+        startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, new long[] {});
     }
 
-    public static void startDownloadToGalleryFolder(Context context, String board, long threadNo, String galleryFolder) {
-        //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.DOWNLOAD_ALL_IMAGES_TO_GALLERY);
-        startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, galleryFolder, new long[] {});
-    }
-
-    public static void startDownloadToGalleryFolder(Context context, String board, long threadNo, String galleryFolder, long[] postNos) {
-        startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, galleryFolder, postNos);
+    public static void startDownloadToGalleryFolder(Context context, String board, long threadNo, long[] postNos) {
+        startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, postNos);
     }
     private static void startDownload(Context context, String board, long threadNo, TargetType targetType,
-    		long startPostNo, int restartCounter, String folder, long[] postNos) {
+    		long startPostNo, int restartCounter, long[] postNos) {
         if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") 
         		+ " all image download service for thread " + board + "/" + threadNo
         		+ (startPostNo == 0 ? "" : " from post " + startPostNo) + " " + targetType);
@@ -101,7 +93,6 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
         intent.putExtra(TARGET_TYPE, targetType.toString());
         intent.putExtra(START_POST_NO, startPostNo);
         intent.putExtra(RESTART_COUNTER, restartCounter);
-        intent.putExtra(TARGET_FOLDER, folder);
         intent.putExtra(SCHEDULE_TIME, Calendar.getInstance().getTimeInMillis());
         intent.putExtra(POST_NOS, postNos);
         context.startService(intent);
@@ -140,16 +131,15 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		startPostNo = intent.getLongExtra(START_POST_NO, 0);
 		restartCounter = intent.getIntExtra(RESTART_COUNTER, 0);
 		targetType = TargetType.valueOf(intent.getStringExtra(TARGET_TYPE));
-		targetFolder = intent.getStringExtra(TARGET_FOLDER);
 		scheduleTime = intent.getLongExtra(SCHEDULE_TIME, 0);
 		postNos = intent.getLongArrayExtra(POST_NOS);
 
 		if (NetworkProfile.Type.NO_CONNECTION == NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
-			startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter, targetFolder, postNos);
+			startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter, postNos);
 		}
 		
 		ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), board, threadNo);
-		if (targetType == TargetType.TO_GALLERY && targetFolder == null) {
+		if (targetType == TargetType.TO_GALLERY) {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 			DownloadImages downloadType = DownloadImages.valueOf(prefs.getString(
 					SettingsActivity.PREF_DOWNLOAD_IMAGES, DownloadImages.ALL_IN_ONE.toString()));
@@ -208,14 +198,14 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			}
 		} catch (Exception e) {
 			if (NetworkProfile.Type.NO_CONNECTION == NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
-				startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter, targetFolder, postNos);
+				startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter, postNos);
 			} else {
 	            Log.e(TAG, "Error in image download service", e);
 	            if (restartCounter > MAX_RESTARTS) {
 	            	NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
 	            	notifyDownloadError(thread);
 	            } else {
-	            	startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter + 1, targetFolder, postNos);
+	            	startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter + 1, postNos);
 	            }
 			}
 		}
