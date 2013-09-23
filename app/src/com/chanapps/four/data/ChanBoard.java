@@ -1105,6 +1105,7 @@ public class ChanBoard {
 
     public static boolean hasFavorites(Context context) {
         ChanBoard board = ChanFileStorage.loadBoardData(context, ChanBoard.FAVORITES_BOARD_CODE);
-        return (board != null && board.threads != null && board.threads.length > 0);
+        return (board != null && board.threads != null && !board.defData && board.threads.length > 0
+                && board.threads[0] != null && !board.threads[0].defData);
     }
 }
