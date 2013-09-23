@@ -9,10 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.*;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -46,7 +43,7 @@ import java.util.HashSet;
 public class ThreadSinglePopupDialogFragment extends DialogFragment implements ThreadViewable
 {
     public static final String TAG = ThreadSinglePopupDialogFragment.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String LAST_POSITION = "lastPosition";
 
@@ -94,10 +91,34 @@ public class ThreadSinglePopupDialogFragment extends DialogFragment implements T
                 //.setPositiveButton(R.string.thread_popup_reply, postReplyListener)
                 //.setNeutralButton(R.string.thread_popup_goto, null)
                 //.setNegativeButton(R.string.dialog_close, dismissListener)
+                //.setNegativeButton(R.string.dialog_close, dismissListener)
+                .setOnCancelListener(cancelListener)
+                .setOnKeyListener(keyListener)
                 .create();
         dialog.setCanceledOnTouchOutside(true);
         return dialog;
     }
+
+    protected DialogInterface.OnCancelListener cancelListener = new DialogInterface.OnCancelListener() {
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            if (DEBUG) Log.i(TAG, "cancelListener() onCancel()");
+            ThreadSinglePopupDialogFragment.this.dismiss();
+        }
+    };
+
+    protected DialogInterface.OnKeyListener keyListener = new DialogInterface.OnKeyListener() {
+        @Override
+        public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                if (DEBUG) Log.i(TAG, "keyListener() onKey() back pressed");
+                ThreadSinglePopupDialogFragment.this.dismiss();
+                //dialog.cancel();
+                return true;
+            }
+            return false;
+        }
+    };
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

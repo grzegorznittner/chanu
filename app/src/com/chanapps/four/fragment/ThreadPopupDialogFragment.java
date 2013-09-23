@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -40,7 +41,7 @@ import java.util.HashSet;
 public class ThreadPopupDialogFragment extends DialogFragment implements ThreadViewable
 {
     public static final String TAG = ThreadPopupDialogFragment.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String LAST_POSITION = "lastPosition";
     public static final String POPUP_TYPE = "popupType";
@@ -68,6 +69,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
 
     public ThreadPopupDialogFragment() {
         super();
+        if (DEBUG) Log.i(TAG, "ThreadPopupDialogFragment()");
     }
 
     public ThreadPopupDialogFragment(String boardCode, long threadNo, long postNo, int pos, PopupType popupType) {
@@ -77,6 +79,7 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
         this.postNo = postNo;
         this.pos = pos;
         this.popupType = popupType;
+        if (DEBUG) Log.i(TAG, "ThreadPopupDialogFragment() /" + boardCode + "/" + threadNo);
     }
 
     @Override
@@ -88,6 +91,10 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
             postNo = savedInstanceState.getLong(ChanPost.POST_NO);
             pos = savedInstanceState.getInt(LAST_POSITION);
             popupType = PopupType.valueOf(savedInstanceState.getString(POPUP_TYPE));
+            if (DEBUG) Log.i(TAG, "onCreateDialog() /" + boardCode + "/" + threadNo + " restored from bundle");
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "onCreateDialog() /" + boardCode + "/" + threadNo + " null bundle");
         }
         if (popupType == null)
             popupType = PopupType.SELF;
@@ -104,6 +111,8 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
                 //.setPositiveButton(R.string.thread_popup_reply, postReplyListener)
                 //.setNeutralButton(R.string.thread_popup_goto, null)
                 .setNegativeButton(R.string.dialog_close, dismissListener)
+                .setOnCancelListener(cancelListener)
+                .setOnKeyListener(keyListener)
                 .create();
         dialog.setCanceledOnTouchOutside(true);
         return dialog;
@@ -143,7 +152,29 @@ public class ThreadPopupDialogFragment extends DialogFragment implements ThreadV
     protected DialogInterface.OnClickListener dismissListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
+            if (DEBUG) Log.i(TAG, "dismissListener() onClick()");
             ThreadPopupDialogFragment.this.dismiss();
+        }
+    };
+
+    protected DialogInterface.OnCancelListener cancelListener = new DialogInterface.OnCancelListener() {
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            if (DEBUG) Log.i(TAG, "cancelListener() onCancel()");
+            ThreadPopupDialogFragment.this.dismiss();
+        }
+    };
+
+    protected DialogInterface.OnKeyListener keyListener = new DialogInterface.OnKeyListener() {
+        @Override
+        public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                if (DEBUG) Log.i(TAG, "keyListener() onKey() back pressed");
+                ThreadPopupDialogFragment.this.dismiss();
+                //dialog.cancel();
+                return true;
+            }
+            return false;
         }
     };
 
