@@ -369,7 +369,15 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     protected void setProgressFromThreadState(final ChanThread thread) {
         if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " listViewCount=" + (absListView == null ? 0 : absListView.getCount()));
-        if (!NetworkProfileManager.isConnected()) {
+        ThreadActivity activity = getActivity() instanceof ThreadActivity ? (ThreadActivity)getActivity() : null;
+        if (activity == null) {
+            if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " not attached to activity, exiting");
+            return;
+        }
+        else if (activity.getCurrentFragment() != this) {
+            if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " not the current fragment, exiting");
+        }
+        else if (!NetworkProfileManager.isConnected()) {
             if (DEBUG) Log.i(TAG, "setProgressFromThreadState /" + boardCode + "/" + threadNo + " no connection, setting load finished for thread=" + thread);
             setProgress(false);
         }
@@ -394,22 +402,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     public void scrollToPostAsync(final long scrollToPostNo) {
         if (DEBUG) Log.i(TAG, "scrollToPostAsync() postNo=" + scrollToPostNo);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                scrollToPost(scrollToPostNo, new Runnable() {
-                    @Override
-                    public void run() {
-                        if (absListView == null)
-                            return;
-                        View v = absListView.getSelectedView();
-                        if (v == null)
-                            return;
-                        v.setBackgroundResource(R.color.PaletteGreen);
-                    }
-                });
-            }
-        }).start();
+        scrollToPost(scrollToPostNo, null);
     }
 
     protected void scrollToPost(final long scrollToPostNo, final Runnable uiCallback) {
@@ -456,9 +449,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                         //absListView.setSelection(postPos);
                         SparseBooleanArray booleanArray = absListView.getCheckedItemPositions();
                         for (int i = 0; i < absListView.getCount(); i++)
-                            if (booleanArray.get(i, false))
+                            if (booleanArray.get(i, false) && i != postPos)
                                 absListView.setItemChecked(i, false);
-                        absListView.setItemChecked(postPos, true);
+                        if (!booleanArray.get(postPos, false))
+                            absListView.setItemChecked(postPos, true);
                         postNo = -1;
                     }
                     if (uiCallback != null)

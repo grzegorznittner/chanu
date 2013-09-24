@@ -21,6 +21,8 @@
 
             <View style="@style/ThreadListItemBarBackground"/>
 
+            <View style="@style/ThreadListItemBarHighlightBackground"/>
+
             <LinearLayout style="@style/ThreadListItemBarAgoWrapperTextOnly" android:id="@+id/list_item_ago_wrapper">
                 <TextView style="@style/ThreadListItemBarNo" android:id="@+id/list_item_header_bar_no"/>
                 <TextView style="@style/ThreadListItemBarAgo" android:id="@+id/list_item_header_bar_ago"/>

@@ -18,7 +18,10 @@
             >
 
         <FrameLayout style="@style/ThreadListItemBar">
+
             <View style="@style/ThreadListItemBarBackground"/>
+
+            <View style="@style/ThreadListItemBarHighlightBackground"/>
 
             <FrameLayout
                     style="@style/ThreadListItemLeftBarWrap" android:id="@+id/list_item_left_bar_wrapper"

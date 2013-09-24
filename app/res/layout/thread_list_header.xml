@@ -3,6 +3,8 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         style="@style/ThreadListHeaderLayout"
         android:id="@+id/list_item"
+        android:descendantFocusability="blocksDescendants"
+
         >
         <!--
         android:paddingLeft="@dimen/BoardGridView.spacing"
@@ -19,6 +21,8 @@
         <FrameLayout style="@style/ThreadListHeaderBar">
 
             <View style="@style/ThreadListItemBarBackground"/>
+
+            <View style="@style/ThreadListItemBarHighlightBackground"/>
 
             <LinearLayout style="@style/ThreadListItemBarAgoWrapperTextOnly" android:id="@+id/list_item_ago_wrapper">
                 <TextView style="@style/ThreadListItemBarNo" android:id="@+id/list_item_header_bar_no"/>
