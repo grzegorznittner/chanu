@@ -965,7 +965,7 @@ public class ThreadActivity
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
             int options = wideTablet ? 0 : BoardGridViewer.SMALL_GRID;
-            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null, null, options);
+            return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null, null, options, null);
         }
     };
 

@@ -58,7 +58,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     public static final String POST_NO = "postNo";
 
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
-    protected static final int DRAWABLE_ALPHA_DARK = 0xff;
+    protected static final int DRAWABLE_ALPHA_DARK = 0xee;
 
     public static final boolean DEBUG = true;
 

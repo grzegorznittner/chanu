@@ -50,7 +50,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     public static String topBoardCode = null;
 
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
-    protected static final int DRAWABLE_ALPHA_DARK = 0xff;
+    protected static final int DRAWABLE_ALPHA_DARK = 0xee;
 
     private static WeakReference<BoardActivity> allBoardsActivityRef = null;
     private static WeakReference<BoardActivity> watchlistActivityRef = null;
@@ -576,7 +576,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
             OnClickListener overflow = ChanBoard.META_BOARD_CODE.equals(boardCode) ? null : overflowListener;
             return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
-                    overlayListener, overflow, gridViewOptions);
+                    overlayListener, overflow, gridViewOptions, titleTypeface);
         }
     };
 

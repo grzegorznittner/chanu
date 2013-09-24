@@ -19,6 +19,9 @@
     <declare-styleable name="StretchyImageView">
     </declare-styleable>
 
+    <declare-styleable name="LetterSpacingTextView">
+    </declare-styleable>
+
     <declare-styleable name="IconPreferenceScreen">
         <attr name="icon" format="reference" />
     </declare-styleable>
@@ -65,5 +68,6 @@
     <attr name="themedBoardGridTabletBackground" format="reference|color"/>
     <attr name="themedNumRepliesIcon" format="reference" />
     <attr name="themedNumImagesIcon" format="reference" />
+    <attr name="themedThreadHeaderImageBg" format="reference|color" />
 
 </resources>

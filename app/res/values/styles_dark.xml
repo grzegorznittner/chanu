@@ -20,27 +20,29 @@
 <resources>
 
     <style name="Theme.Dark" parent="@android:style/Theme.Holo">
-    <!--
-        <item name="android:actionBarItemBackground">@drawable/selectable_background_Dark</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownListView.Dark</item>
-        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Dark</item>
-        <item name="android:actionDropDownStyle">@style/DropDownNav.Dark</item>
         <item name="android:actionBarStyle">@style/ActionBar.Solid.Dark</item>
-        <item name="android:actionModeBackground">@drawable/cab_background_top_Dark</item>
-        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_Dark</item>
-        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Dark</item>
-        <item name="android:actionBarWidgetTheme">@style/Theme.Dark.Widget</item>
-    -->
+        <!--
+            <item name="android:actionBarItemBackground">@drawable/selectable_background_Dark</item>
+            <item name="android:dropDownListViewStyle">@style/DropDownListView.Dark</item>
+            <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Dark</item>
+            <item name="android:actionDropDownStyle">@style/DropDownNav.Dark</item>
+            <item name="android:actionModeBackground">@drawable/cab_background_top_Dark</item>
+            <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_Dark</item>
+            <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Dark</item>
+            <item name="android:actionBarWidgetTheme">@style/Theme.Dark.Widget</item>
+        -->
     </style>
 
-    <!--
     <style name="ActionBar.Solid.Dark" parent="@android:style/Widget.Holo.ActionBar.Solid">
-        <item name="android:background">@drawable/ab_solid_Dark</item>
+        <item name="android:background">@color/DarkPaletteActionBarBg</item>
+        <!--
         <item name="android:backgroundStacked">@drawable/ab_stacked_solid_Dark</item>
         <item name="android:backgroundSplit">@drawable/ab_bottom_solid_Dark</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Dark</item>
+        -->
     </style>
 
+    <!--
     <style name="ActionBar.Transparent.Dark" parent="@android:style/Widget.Holo.ActionBar">
         <item name="android:background">@drawable/ab_transparent_Dark</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Dark</item>

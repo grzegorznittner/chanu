@@ -1,7 +1,9 @@
 package com.chanapps.four.activity;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -156,6 +158,14 @@ abstract public class
                         title.setVisibility(View.GONE);
                         divider.setVisibility(View.GONE);
                     }
+
+                    // set text color
+                    int textColor;
+                    if (type == BoardType.valueOfBoardCode(boardCode))
+                        textColor = R.color.PaletteWhite;
+                    else
+                        textColor = R.color.PaletteDrawerDividerText;
+                    text.setTextColor(getResources().getColor(textColor));
 
                     if (DEBUG) Log.i(TAG, "mViewBinder:setViewValue() item pos=" + pos + " checked=" + type.boardCode().equals(boardCode) + " type=" + type + " text=" + text + " item=" + item);
 

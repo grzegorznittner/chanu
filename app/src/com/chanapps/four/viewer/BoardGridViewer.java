@@ -3,6 +3,7 @@ package com.chanapps.four.viewer;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.LetterSpacingTextView;
 import com.chanapps.four.data.ChanBoard;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.loader.ChanImageLoader;
@@ -37,7 +39,7 @@ public class BoardGridViewer {
     private static ImageLoader imageLoader;
     private static DisplayImageOptions displayImageOptions;
 
-    protected static final int NUM_BOARD_CODE_COLORS = 5;
+    //protected static final int NUM_BOARD_CODE_COLORS = 5;
 
     public static void initStatics(Context context, boolean isDark) {
         imageLoader = ChanImageLoader.getInstance(context);
@@ -57,7 +59,8 @@ public class BoardGridViewer {
                                        int columnWidth, int columnHeight,
                                        View.OnClickListener overlayListener,
                                        View.OnClickListener overflowListener,
-                                       int options)
+                                       int options,
+                                       Typeface titleTypeface)
     {
         if (imageLoader == null)
             throw new IllegalStateException("Must call initStatics() before calling setViewValue()");
@@ -69,7 +72,7 @@ public class BoardGridViewer {
         setNumReplies(viewHolder, cursor);
         setNumImages(viewHolder, cursor);
         setCountryFlag(viewHolder, cursor);
-        setImage(viewHolder, cursor, flags, columnWidth, columnHeight, options);
+        setImage(viewHolder, cursor, flags, columnWidth, columnHeight, options, titleTypeface);
         return true;
     }
 
@@ -137,20 +140,33 @@ public class BoardGridViewer {
     }
 
     protected static boolean setImage(BoardGridViewHolder viewHolder, Cursor cursor, int flags,
-                                      int columnWidth, int columnHeight, int options) {
+                                      int columnWidth, int columnHeight, int options, Typeface titleTypeface) {
         ImageView iv = viewHolder.grid_item_thread_thumb;
         if (iv == null)
             return false;
         View item = viewHolder.grid_item;
-        TextView tv = viewHolder.grid_item_board_code;
-        String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
         sizeImage(iv, item, columnWidth, columnHeight, options);
+        String boardCode = cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE));
+        displayBoardCode(viewHolder, boardCode, titleTypeface);
         String url = imageUrl(iv, boardCode, cursor, flags);
         if (url != null && !url.isEmpty())
-            displayImage(iv, tv, url);
-        else
-            displayBoardCode(iv, tv, boardCode);
+            imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
         return true;
+    }
+
+    protected static final float BOARD_CODE_LETTER_SPACING = 1f;
+
+    protected static void displayBoardCode(BoardGridViewHolder viewHolder, String boardCode, Typeface titleTypeface) {
+        TextView tv = viewHolder.grid_item_board_code;
+        if (tv != null) {
+            String boardCodeTitle = "/" + boardCode + "/";
+            if (DEBUG) Log.i(TAG, "displayBoardCode() boardCodeTitle=" + boardCodeTitle);
+            if (titleTypeface != null)
+                tv.setTypeface(titleTypeface);
+            if (tv instanceof LetterSpacingTextView)
+                ((LetterSpacingTextView) tv).setLetterSpacing(BOARD_CODE_LETTER_SPACING);
+            tv.setText(boardCodeTitle);
+        }
     }
 
     protected static String imageUrl(ImageView iv, String boardCode, Cursor cursor, int flags) {
@@ -199,12 +215,15 @@ public class BoardGridViewer {
                 params.width = columnWidth; // force square
                 params.height = columnWidth; // force square
             }
+            /*
             ViewGroup.LayoutParams params2 = item.getLayoutParams();
             if (columnWidth > 0 && params2 != null) {
                 params2.width = columnWidth; // force rectangle
                 params2.height = (int)((double)columnWidth * 1.62d); // force rectangle
             }
+            */
         }
+        /*
         else {
             ViewGroup.LayoutParams params = iv.getLayoutParams();
             if (columnWidth > 0 && params != null) {
@@ -212,15 +231,10 @@ public class BoardGridViewer {
                 params.height = columnWidth; // force square
             }
         }
+        */
     }
 
-    protected static void displayImage(ImageView iv, TextView tv, String url) {
-        if (DEBUG) Log.i(TAG, "setImage() displaying url=" + url);
-        if (tv != null)
-            tv.setText("");
-        imageLoader.displayImage(url, iv, displayImageOptions, thumbLoadingListener);
-    }
-
+    /*
     protected static int colorIndex = -1;
 
     protected static void displayBoardCode(ImageView iv, TextView tv, String boardCode) {
@@ -246,7 +260,7 @@ public class BoardGridViewer {
         if (tv != null)
             tv.setText("/" + boardCode + "/");
     }
-
+    */
     protected static ImageLoadingListener thumbLoadingListener = new ImageLoadingListener() {
         @Override
         public void onLoadingStarted(String imageUri, View view) {
@@ -285,10 +299,12 @@ public class BoardGridViewer {
         TextView tv = viewHolder.grid_item_thread_info;
         if (tv == null)
             return false;
+        /*
         if ((options & SMALL_GRID) > 0) {
             tv.setText("");
             return true;
         }
+        */
         String s = (flags & ChanThread.THREAD_FLAG_BOARD) == 0
                 ? getBoardAbbrev(tv.getContext(), cursor, groupBoardCode)
                 : "";

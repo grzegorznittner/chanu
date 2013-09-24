@@ -7,6 +7,7 @@
     <color name="PaletteCardListBarBg">#f4f4f4</color>
     <color name="PaletteTitleBg">@color/PaletteCardListBg</color>
     <color name="PaletteTitleText">#313b4b</color>
+    <color name="PaletteBoardTitleTextColor">#222222</color>
     <color name="PaletteThreadLine">#ccc</color>
     <color name="PaletteThreadHeaderBg">#00000000</color>
     <color name="PaletteThreadHeaderImageBg">#333</color>
@@ -33,8 +34,8 @@
     <color name="PaletteSelectorHalf">@android:color/holo_blue_light</color>
     -->
     <color name="PaletteSelector">#33b5e5</color>
-    <color name="PaletteSelectorHalf">#8833b5e5</color>
-    <color name="PaletteSelectorFourth">#4433b5e5</color>
+    <color name="PaletteSelectorHalf">#33b5e5</color>
+    <!-- <color name="PaletteSelectorHalf">#8833b5e5</color> -->
     <!--<color name="PaletteThreadListBarOverlayBg">#88f4f4f4</color>-->
     <color name="PaletteThreadListBarOverlayFg">#88000000</color>
     <color name="PaletteThreadTitleSecondaryText">@color/PaletteLightGray</color>
@@ -51,7 +52,7 @@
     <color name="PaletteWhite">#f7f7f7</color>
     <color name="PaletteOffWhite">#e4e4e4</color>
     <color name="PaletteLightestGray">#ccc</color>
-    <color name="PaletteLightGray">#aaa</color>
+    <color name="PaletteLightGray">#aaaaaa</color>
     <color name="PaletteMedGray">#666</color>
     <color name="PaletteDarkGray">#313b4b</color>
     <color name="PaletteBlack">#ff272727</color>
@@ -70,19 +71,23 @@
 
     <!-- dark theme -->
 
+    <color name="DarkPaletteBoardTitleTextColor">#eeeeee</color>
     <color name="DarkPaletteCardListBg">#484848</color>
     <color name="DarkPaletteCardListBarBg">#2f2f2f</color>
     <color name="DarkPaletteImagePlaceholder">#2f2f2f</color>
     <color name="DarkPaletteDrawerBg">#202220</color>
     <color name="DarkPaletteDrawerUncheckedBg">#88202220</color>
-    <color name="DarkPaletteThreadLine">#449def</color>
+    <color name="DarkPaletteThreadLine">#44bdbdbd</color>
     <color name="DarkPaletteThreadListBarOverlayFg">#88ffffff</color>
+    <color name="DarkPaletteThreadHeaderImageBg">#222</color>
+    <color name="DarkPaletteActionBarBg">#222</color>
 
     <color name="ad_background">#121212</color>
 
-    <!-- board code colors -->
+    <color name="PaletteBoardCodeText">#eeeeee</color>
 
-    <color name="PaletteBoardCodeText">#ffffff</color>
+    <!-- board code colors -->
+    <!--
     <color name="PaletteBoardColor0">#33B5E5</color>
     <color name="PaletteBoardColor1">#AA66CC</color>
     <color name="PaletteBoardColor2">#99CC00</color>
@@ -94,5 +99,5 @@
     <color name="PaletteBoardColor8">#FF8800</color>
     <color name="PaletteBoardColor9">#CC0000</color>
     <color name="PaletteBoardColor10">#CC0000</color>
-
+    -->
 </resources>

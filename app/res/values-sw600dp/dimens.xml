@@ -1,9 +1,9 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
     <!-- Font sizes -->
-    <dimen name="BoardTypeText">18sp</dimen>
+    <dimen name="BoardTypeText">22sp</dimen>
     <dimen name="WidgetConfigureOkButton">22sp</dimen>
     <dimen name="BoardSelectorOverlay">18sp</dimen>
-    <dimen name="BoardGridBoardCode">36sp</dimen>
+    <dimen name="BoardGridBoardCode">22sp</dimen>
     <dimen name="BoardGridSubject">16sp</dimen>
     <dimen name="BoardGridInfo">14sp</dimen>
     <dimen name="BoardGridAction">18sp</dimen>
