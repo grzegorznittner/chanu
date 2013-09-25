@@ -39,6 +39,7 @@
     <!--<color name="PaletteThreadListBarOverlayBg">#88f4f4f4</color>-->
     <color name="PaletteThreadListBarOverlayFg">#88000000</color>
     <color name="PaletteThreadTitleSecondaryText">@color/PaletteLightGray</color>
+    <color name="PaletteBoardGridBoardCodeBg">@color/PaletteLightGray</color>
 
     <!-- pure colors -->
 
@@ -77,10 +78,14 @@
     <color name="DarkPaletteImagePlaceholder">#2f2f2f</color>
     <color name="DarkPaletteDrawerBg">#202220</color>
     <color name="DarkPaletteDrawerUncheckedBg">#88202220</color>
+    <!--
+    <color name="DarkPaletteDrawerUncheckedBg">#88303230</color>
+    -->
     <color name="DarkPaletteThreadLine">#44bdbdbd</color>
     <color name="DarkPaletteThreadListBarOverlayFg">#88ffffff</color>
     <color name="DarkPaletteThreadHeaderImageBg">#222</color>
     <color name="DarkPaletteActionBarBg">#222</color>
+    <color name="DarkPaletteBoardGridBoardCodeBg">#282828</color>
 
     <color name="ad_background">#121212</color>
 

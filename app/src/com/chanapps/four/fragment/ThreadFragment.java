@@ -1279,6 +1279,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     }
 
     public void onRefresh() {
+        if (DEBUG) Log.i(TAG, "onRefresh() /" + boardCode + "/" + threadNo);
         if (getActivity() != null)
             getActivity().invalidateOptionsMenu(); // in case spinner needs to be reset
         refreshThread();
@@ -1295,11 +1296,13 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             @Override
             public void run() {
                 ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
+                if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " checking status");
                 if (thread != null && thread.isDead) {
                     if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " found dead thread");
                 }
                 if (handler != null && getActivity() != null && getActivity().getLoaderManager() != null)
-                    handler.post(new Runnable() {
+                    if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " scheduling handler post");
+                handler.post(new Runnable() {
                         @Override
                         public void run() {
                             if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " restarting loader");
@@ -1652,6 +1655,5 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             activity.createSearchView(menu);
         super.onCreateOptionsMenu(menu, menuInflater);
     }
-
 
 }

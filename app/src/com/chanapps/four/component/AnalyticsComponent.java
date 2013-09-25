@@ -12,6 +12,8 @@ import com.google.ads.AdListener;
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Tracker;
+import com.google.analytics.tracking.android.Transaction;
 
 /**
 * Created with IntelliJ IDEA.
@@ -41,6 +43,20 @@ public class AnalyticsComponent {
                 .getDefaultSharedPreferences(activity)
                 .getBoolean(SettingsActivity.PREF_USE_GOOGLE_ANALYTICS, true))
             EasyTracker.getInstance().activityStop(activity);
+    }
+
+    public static void sendTransaction(Context context, Transaction trans) {
+        if (!PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(SettingsActivity.PREF_USE_GOOGLE_ANALYTICS, true))
+            return;
+        try {
+            Tracker tracker = EasyTracker.getTracker();
+            tracker.sendTransaction(trans);
+        }
+        catch (Exception e) {
+            Log.e(TAG, "sendTransaction() couldn't send to analytics trans=" + trans, e);
+        }
     }
 
 }

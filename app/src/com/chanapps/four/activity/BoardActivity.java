@@ -576,7 +576,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
             OnClickListener overflow = ChanBoard.META_BOARD_CODE.equals(boardCode) ? null : overflowListener;
             return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight,
-                    overlayListener, overflow, gridViewOptions, titleTypeface);
+                    overlayListener, overflow, gridViewOptions, null);
         }
     };
 

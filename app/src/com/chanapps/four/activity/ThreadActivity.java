@@ -50,7 +50,7 @@ public class ThreadActivity
 {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String BOARD_CODE = "boardCode";
     public static final String THREAD_NO = "threadNo";
@@ -340,6 +340,11 @@ public class ThreadActivity
 
     protected void createPagerAsync() {
         final ChanIdentifiedActivity activity = this;
+        if (mPager != null) {
+            if (DEBUG) Log.i(TAG, "createPagerAsync() pager already exists, exiting");
+            return;
+        }
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -457,6 +462,14 @@ public class ThreadActivity
         //}
         if (DEBUG) Log.i(TAG, "setCurrentItemToThreadAsync() /" + boardCode + "/" + threadNo + " selecting current item in pager");
         final ChanIdentifiedActivity activity = this;
+        ThreadFragment fragment = getCurrentFragment();
+        if (fragment != null) {
+            ChanActivityId aid = fragment.getChanActivityId();
+            if (aid != null && boardCode.equals(aid.boardCode) && threadNo == aid.threadNo) {
+                Log.i(TAG, "setCurrentItemToThreadAsync() already on thread, exiting");
+                return;
+            }
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {

@@ -69,5 +69,7 @@
     <attr name="themedNumRepliesIcon" format="reference" />
     <attr name="themedNumImagesIcon" format="reference" />
     <attr name="themedThreadHeaderImageBg" format="reference|color" />
+    <attr name="themedSpinnerTriangle" format="reference" />
+    <attr name="themedBoardGridBoardCodeBg" format="reference|color" />
 
 </resources>

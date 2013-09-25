@@ -13,6 +13,9 @@ import android.util.Log;
 import android.widget.Toast;
 import com.android.vending.billing.IInAppBillingService;
 import com.chanapps.four.activity.*;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Tracker;
+import com.google.analytics.tracking.android.Transaction;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,6 +40,7 @@ public class BillingComponent {
     //protected static final String NO_ADS_NONCONS_PRODUCT_ID = "android.test.purchased"; // test mode
     protected static final String PREF_PURCHASES = "purchasedProductIds";
     protected static final String LAST_PURCHASE_TOKEN = "lastPurchaseToken";
+    protected static final long PROKEY_COST_MICROS_USD = (long)(1.99 * 1000000L);
 
     protected static BillingComponent singleton;
     protected Context context;
@@ -311,13 +315,15 @@ public class BillingComponent {
         }
     }
 
+    protected static final int BILLING_RESPONSE_RESULT_OK = 0;
+
     public void processPurchaseResponse(Intent data, Handler handler) {
         if (data == null) {
             Log.e(TAG, "processPurchaseResponse null intent from response");
             makeToast(handler, R.string.purchase_error);
             return;
         }
-        int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+        int responseCode = data.getIntExtra("RESPONSE_CODE", BILLING_RESPONSE_RESULT_OK);
         if (responseCode != 0) {
             Log.e(TAG, "processPurchaseResponse non-zero response_code=" + responseCode);
             makeToast(handler, R.string.purchase_error);
@@ -329,6 +335,7 @@ public class BillingComponent {
             JSONObject jo = new JSONObject(purchaseData);
             String sku = jo.getString("productId");
             String purchaseToken = jo.getString("purchaseToken");
+            String orderId = jo.getString("orderId");
             if (sku == null || sku.isEmpty()) {
                 Log.e(TAG, "processPurchaseResponse invalid sku received");
                 makeToast(handler, R.string.purchase_error);
@@ -342,7 +349,7 @@ public class BillingComponent {
             }
             item.purchaseToken = purchaseToken;
             if (DEBUG) Log.i(TAG, "processPurchaseResponse recording purchase for sku=" + sku + " token=" + purchaseToken);
-            recordPurchase(item);
+            recordPurchase(item, orderId);
             makeToast(handler, R.string.purchase_success);
         }
         catch (JSONException e) {
@@ -362,10 +369,26 @@ public class BillingComponent {
             });
     }
 
-    protected void recordPurchase(NonConsumableItem item) {
+    protected void recordPurchase(NonConsumableItem item, String orderId) {
         purchases.add(item.productId);
         overwritePurchasedItems(purchases);
         PreferenceManager.getDefaultSharedPreferences(context).edit().putString(LAST_PURCHASE_TOKEN, item.purchaseToken).commit();
+        recordInGoogleAnalytics(item, orderId);
+    }
+
+    protected void recordInGoogleAnalytics(NonConsumableItem item, String orderId) {
+        Transaction trans = new Transaction.Builder(orderId, PROKEY_COST_MICROS_USD)
+                .setTotalTaxInMicros(0)
+                .setShippingCostInMicros(0)
+                .build();
+        Transaction.Item transItem = new Transaction.Item.Builder(
+                item.productId,
+                NO_ADS_NONCONS_PRODUCT_ID,
+                PROKEY_COST_MICROS_USD,
+                1L)
+                .build();
+        trans.addItem(transItem);
+        AnalyticsComponent.sendTransaction(context, trans);
     }
 
 }

@@ -161,7 +161,7 @@ public class MobileProfile extends AbstractNetworkProfile {
             if (DEBUG) Log.i(TAG, "Manual refresh board=" + boardCode);
             boolean canFetch = FetchPopularThreadsService.schedulePopularFetchService(context, true, false);
             if (!canFetch)
-                postStopMessage(handler, R.string.board_wait_to_refresh);
+                postStopMessage(handler, 0);
         }
     }
 
@@ -223,14 +223,14 @@ public class MobileProfile extends AbstractNetworkProfile {
             if (DEBUG) Log.i(TAG, "Manual refresh popular board=" + boardCode);
             boolean canFetch = FetchPopularThreadsService.schedulePopularFetchService(context, true, false);
             if (!canFetch)
-                postStopMessage(handler, R.string.board_wait_to_refresh);
+                postStopMessage(handler, 0);
         } else if (ChanBoard.isVirtualBoard(boardCode)) {
             if (DEBUG) Log.i(TAG, "Manual refresh non-popular virtual board=" + boardCode + ", skipping");
             postStopMessage(handler, 0);
         } else {
             boolean canFetch = FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false);
             if (!canFetch)
-                postStopMessage(handler, R.string.board_wait_to_refresh);
+                postStopMessage(handler, 0);
         }
         if (DEBUG) {
             UserStatistics userStats = NetworkProfileManager.instance().getUserStatistics();
@@ -377,7 +377,7 @@ public class MobileProfile extends AbstractNetworkProfile {
             else if (thread != null && thread.closed > 0)
                 msgId = R.string.thread_closed;
             else
-                msgId = R.string.board_wait_to_refresh;
+                msgId = 0;
             if (DEBUG) Log.i(TAG, "onThreadRefreshed skipping refresh reason=" + msgId);
             postStopMessage(handler, null);
         }
