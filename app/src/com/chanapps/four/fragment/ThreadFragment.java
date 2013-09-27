@@ -488,7 +488,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     }
                 });
         }
-        else if (postNo > 0) {
+        /*
+        else if (postNo > 0 && postNo != threadNo) {
             if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " scrolling to postNo=" + postNo);
             scrollToPost(postNo, new Runnable() {
                 @Override
@@ -513,6 +514,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     }
                 });
         }
+        */
         else {
             if (DEBUG) Log.i(TAG, "onThreadLoadFinished /" + boardCode + "/" + threadNo + " setting spinner from thread state");
             if (handler != null)
@@ -703,6 +705,13 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             activity.finish();
     }
 
+    protected void setActivityIdToFragment() {
+        if (!(getActivity() instanceof ThreadActivity))
+            return;
+        ThreadActivity ta = (ThreadActivity)getActivity();
+        ta.setChanActivityId(getChanActivityId());
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -711,6 +720,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 return true;
             case R.id.refresh_menu:
                 setProgress(true);
+                setActivityIdToFragment();
                 NetworkProfileManager.instance().manualRefresh(getChanActivity());
                 return true;
             case R.id.view_image_gallery_menu:

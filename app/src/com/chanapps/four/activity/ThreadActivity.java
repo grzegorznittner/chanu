@@ -22,7 +22,8 @@ import android.view.*;
 import android.widget.*;
 
 import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
-import com.chanapps.four.adapter.BoardGridSmallTabletColCursorAdapter;
+import com.chanapps.four.adapter.BoardGridCursorAdapter;
+import com.chanapps.four.adapter.BoardGridNarrowTabletCursorAdapter;
 import com.chanapps.four.component.*;
 import com.chanapps.four.data.*;
 import com.chanapps.four.data.LastActivity;
@@ -68,6 +69,7 @@ public class ThreadActivity
     protected long postNo; // for direct jumps from latest post / recent images
     protected PullToRefreshAttacher mPullToRefreshAttacher;
     protected boolean wideTablet;
+    protected boolean narrowTablet;
 
     //tablet layout
     protected AbstractBoardCursorAdapter adapterBoardsTablet;
@@ -140,6 +142,7 @@ public class ThreadActivity
         ThreadViewer.initStatics(getApplicationContext(), ThemeSelector.instance(getApplicationContext()).isDark());
 
         wideTablet = getResources().getBoolean(R.bool.wide_tablet);
+        narrowTablet = getResources().getBoolean(R.bool.narrow_tablet);
     }
 
     protected void createPager(final ChanBoard board) {
@@ -168,6 +171,10 @@ public class ThreadActivity
     protected void createPagerSync(final ChanBoard board) {
         if (onTablet())
             getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
+        if (mPager != null) {
+            if (DEBUG) Log.i(TAG, "createPagerSync() pager already exists, exiting");
+            return;
+        }
         mAdapter = new ThreadPagerAdapter(getSupportFragmentManager());
         mAdapter.setBoard(board);
         mAdapter.setQuery(query);
@@ -548,8 +555,16 @@ public class ThreadActivity
         searchMenuItem = menu.findItem(R.id.search_menu);
         SearchActivity.createSearchView(this, searchMenuItem);
     }
+
     public ChanActivityId getChanActivityId() {
         return new ChanActivityId(LastActivity.THREAD_ACTIVITY, boardCode, threadNo, postNo, query);
+    }
+
+    public void setChanActivityId(ChanActivityId aid) {
+        boardCode = aid.boardCode;
+        threadNo = aid.threadNo;
+        postNo = aid.postNo;
+        query = aid.text;
     }
 
     @Override
@@ -898,7 +913,10 @@ public class ThreadActivity
                 1,
                 getResources().getDimensionPixelSize(R.dimen.BoardGridView_spacing));
         columnHeight = 2 * columnWidth;
-        adapterBoardsTablet = new BoardGridSmallTabletColCursorAdapter(this, viewBinder);
+        if (narrowTablet)
+            adapterBoardsTablet = new BoardGridNarrowTabletCursorAdapter(this, viewBinder);
+        else
+            adapterBoardsTablet = new BoardGridCursorAdapter(this, viewBinder);
         boardGrid.setAdapter(adapterBoardsTablet);
         boardGrid.setOnItemClickListener(boardGridListener);
         boardGrid.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
@@ -977,7 +995,7 @@ public class ThreadActivity
     protected AbstractBoardCursorAdapter.ViewBinder viewBinder = new AbstractBoardCursorAdapter.ViewBinder() {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-            int options = wideTablet ? 0 : BoardGridViewer.SMALL_GRID;
+            int options = (wideTablet || narrowTablet) ? 0 : BoardGridViewer.SMALL_GRID;
             return BoardGridViewer.setViewValue(view, cursor, boardCode, columnWidth, columnHeight, null, null, options, null);
         }
     };

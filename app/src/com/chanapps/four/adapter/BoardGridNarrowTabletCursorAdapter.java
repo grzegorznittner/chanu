@@ -15,14 +15,14 @@ import com.chanapps.four.viewer.BoardGridViewHolder;
  * Time: 6:56 PM
  * To change this template use File | Settings | File Templates.
  */
-public class BoardGridSmallTabletColCursorAdapter extends AbstractBoardCursorAdapter {
+public class BoardGridNarrowTabletCursorAdapter extends AbstractBoardCursorAdapter {
 
     protected static final int TYPE_GRID_ITEM = 0;
     protected static final int TYPE_MAX_COUNT = 1;
 
-    public BoardGridSmallTabletColCursorAdapter(Context context, ViewBinder viewBinder) {
+    public BoardGridNarrowTabletCursorAdapter(Context context, ViewBinder viewBinder) {
         super(context,
-                R.layout.board_grid_item_small_tablet_col,
+                R.layout.board_grid_item_narrow_tablet,
                 viewBinder,
                 new String[]{
                         ChanThread.THREAD_SUBJECT,
@@ -47,7 +47,7 @@ public class BoardGridSmallTabletColCursorAdapter extends AbstractBoardCursorAda
     @Override
     protected View newView(ViewGroup parent, int tag, int position) {
         if (DEBUG) Log.d(TAG, "Creating " + tag + " layout for " + position);
-        View v = mInflater.inflate(R.layout.board_grid_item_small_tablet_col, parent, false);
+        View v = mInflater.inflate(R.layout.board_grid_item_narrow_tablet, parent, false);
         BoardGridViewHolder viewHolder = new BoardGridViewHolder(v);
         v.setTag(R.id.VIEW_TAG_TYPE, tag);
         v.setTag(R.id.VIEW_HOLDER, viewHolder);

@@ -26,7 +26,7 @@ public class ChanBoard {
 
 	public static final String TAG = ChanBoard.class.getSimpleName();
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private static final int NUM_DEFAULT_IMAGES_PER_BOARD = 3;
     private static final int NUM_RELATED_BOARDS = 3;
     //private static final int NUM_RELATED_THREADS = 3;
@@ -988,12 +988,22 @@ public class ChanBoard {
 
     public boolean isCurrent() {
         FetchParams params = NetworkProfileManager.instance().getCurrentProfile().getFetchParams();
+        long now = new Date().getTime();
+        long interval = Math.abs(now - lastFetched);
+        boolean current;
         if (lastFetched <= 0)
-            return false;
-        else if (Math.abs(new Date().getTime() - lastFetched) > params.refreshDelay)
-            return false;
+            current = false;
+        else if (interval > params.refreshDelay)
+            current = false;
         else
-            return true;
+            current = true;
+        if (DEBUG) Log.i(TAG, "isCurrent() /" + link + "/"
+                + " lastFetched=" + lastFetched
+                + " interval=" + interval
+                + " refreshDelay=" + params.refreshDelay
+                + " current=" + current
+        );
+        return current;
     }
 
     protected static final long SWAP_DELAY_MS = 300000L;

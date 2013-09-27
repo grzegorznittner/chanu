@@ -38,9 +38,9 @@
 
         <ImageView
                 android:id="@+id/grid_item_country_flag"
-                android:layout_width="16dp"
-                android:layout_height="18dp"
-                android:paddingBottom="8dp"
+                android:layout_width="@dimen/BoardGridItemCountryFlagWidth"
+                android:layout_height="@dimen/BoardGridItemCountryFlagHeight"
+                android:paddingBottom="@dimen/BoardGridItemCountryFlagPaddingBottom"
                 android:layout_marginBottom="@dimen/BoardGridView.spacing"
                 android:layout_marginLeft="@dimen/BoardGridView.spacing"
                 android:scaleType="fitXY"
@@ -64,12 +64,12 @@
 
         <ImageView
                 android:id="@+id/grid_item_num_replies_img"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginLeft="@dimen/BoardGridView.halfSpacing"
+                android:layout_width="@dimen/BoardGridItemNumRepliesImgWidth"
+                android:layout_height="@dimen/BoardGridItemNumRepliesImgHeight"
+                android:layout_marginLeft="@dimen/BoardGridItemNumRepliesSpacing"
                 android:layout_toRightOf="@+id/grid_item_num_replies_text"
                 android:layout_alignParentBottom="true"
-                android:paddingBottom="1dp"
+                android:paddingBottom="@dimen/BoardGridItemNumRepliesImgPaddingBottom"
                 android:src="?themedNumRepliesIcon"
                 android:scaleType="fitCenter"
                 />
@@ -78,7 +78,7 @@
                 android:id="@+id/grid_item_num_images_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/BoardGridView.spacing"
+                android:layout_marginLeft="@dimen/BoardGridView.halfSpacing"
                 android:layout_toRightOf="@+id/grid_item_num_replies_img"
                 android:layout_alignParentBottom="true"
                 android:paddingBottom="@dimen/BoardGridView.halfSpacing"
@@ -88,15 +88,54 @@
 
         <ImageView
                 android:id="@+id/grid_item_num_images_img"
-                android:layout_width="24dp"
-                android:layout_height="22dp"
-                android:layout_marginLeft="@dimen/BoardGridView.halfSpacing"
+                android:layout_width="@dimen/BoardGridItemNumImagesImgWidth"
+                android:layout_height="@dimen/BoardGridItemNumImagesImgHeight"
+                android:layout_marginLeft="@dimen/BoardGridItemNumRepliesSpacing"
                 android:layout_toRightOf="@+id/grid_item_num_images_text"
                 android:layout_alignParentBottom="true"
-                android:paddingBottom="4dp"
+                android:paddingBottom="@dimen/BoardGridItemNumImagesImgPaddingBottom"
                 android:scaleType="fitXY"
                 android:src="?themedNumImagesIcon"
                 />
+
+        <ImageView
+                android:id="@+id/grid_item_dead_icon"
+                android:layout_width="@dimen/BoardGridItemIconWidth"
+                android:layout_height="@dimen/BoardGridItemIconHeight"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
+                android:layout_toRightOf="@+id/grid_item_num_images_img"
+                android:layout_alignParentBottom="true"
+                android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
+                android:scaleType="fitCenter"
+                android:src="?themedDeadIcon"
+                android:visibility="visible"/>
+
+        <ImageView
+                android:id="@+id/grid_item_sticky_icon"
+                android:layout_width="@dimen/BoardGridItemIconWidth"
+                android:layout_height="@dimen/BoardGridItemIconHeight"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
+                android:layout_toRightOf="@+id/grid_item_dead_icon"
+                android:layout_alignParentBottom="true"
+                android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
+                android:scaleType="fitCenter"
+                android:src="?themedStickyIcon"
+                android:visibility="visible"/>
+
+        <ImageView
+                android:id="@+id/grid_item_closed_icon"
+                android:layout_width="@dimen/BoardGridItemIconWidth"
+                android:layout_height="@dimen/BoardGridItemIconHeight"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/BoardGridItemIconSpacing"
+                android:layout_toRightOf="@+id/grid_item_sticky_icon"
+                android:layout_alignParentBottom="true"
+                android:paddingBottom="@dimen/BoardGridItemIconPaddingBottom"
+                android:scaleType="fitCenter"
+                android:src="?themedClosedIcon"
+                android:visibility="visible"/>
 
         <TextView
                 android:id="@+id/grid_item_thread_info"

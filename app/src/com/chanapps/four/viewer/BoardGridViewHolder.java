@@ -25,6 +25,9 @@ public class BoardGridViewHolder {
     public ImageView grid_item_num_replies_img;
     public ImageView grid_item_num_images_img;
     public ImageView grid_item_overflow_icon;
+    public ImageView grid_item_dead_icon;
+    public ImageView grid_item_closed_icon;
+    public ImageView grid_item_sticky_icon;
 
     public BoardGridViewHolder(View item) {
         grid_item = (ViewGroup)item;
@@ -38,6 +41,9 @@ public class BoardGridViewHolder {
         grid_item_num_replies_img = (ImageView)item.findViewById(R.id.grid_item_num_replies_img);
         grid_item_num_images_img = (ImageView)item.findViewById(R.id.grid_item_num_images_img);
         grid_item_overflow_icon = (ImageView)item.findViewById(R.id.grid_item_overflow_icon);
+        grid_item_dead_icon = (ImageView)item.findViewById(R.id.grid_item_dead_icon);
+        grid_item_closed_icon = (ImageView)item.findViewById(R.id.grid_item_closed_icon);
+        grid_item_sticky_icon = (ImageView)item.findViewById(R.id.grid_item_sticky_icon);
     }
 
 }

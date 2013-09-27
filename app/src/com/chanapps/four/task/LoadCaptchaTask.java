@@ -3,6 +3,7 @@ package com.chanapps.four.task;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 import com.chanapps.four.activity.R;
+import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.Captcha;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -115,6 +117,8 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
                     Log.e(TAG, "Null bitmap loaded from recaptcha imageUrl=" + imageUrl);
                     return R.string.post_reply_captcha_error;
                 }
+                boolean invert = ThemeSelector.instance(context).isDark();
+                recaptchaBitmap = colorMap(recaptchaBitmap, invert);
                 return 0;
             }
         } catch (Exception e) {
@@ -150,5 +154,57 @@ public class LoadCaptchaTask extends AsyncTask<String, Void, Integer> {
             recaptchaButton.setVisibility(View.VISIBLE);
             Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    protected static final int CUTOFF = 200;
+
+    protected Bitmap colorMap(Bitmap src, boolean invert) {
+        Bitmap bmOut = Bitmap.createBitmap(src.getWidth(), src.getHeight(), src.getConfig());
+        // color info
+        int A, R, G, B;
+        int pixelColor;
+        // image size
+        int height = src.getHeight();
+        int width = src.getWidth();
+
+        // scan through every pixel
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                // get one pixel
+                pixelColor = src.getPixel(x, y);
+                // saving alpha channel
+                A = Color.alpha(pixelColor);
+                int r = Color.red(pixelColor);
+                int g = Color.green(pixelColor);
+                int b = Color.blue(pixelColor);
+                if (r >= CUTOFF && g >= CUTOFF && b >= CUTOFF) { // bg color
+                    int bgId = invert
+                            ? com.chanapps.four.activity.R.color.DarkPaletteCardListBg
+                            : com.chanapps.four.activity.R.color.PaletteCardListBg;
+                    int bgColor = context.getResources().getColor(bgId);
+                    R = Color.red(bgColor);
+                    G = Color.green(bgColor);
+                    B = Color.blue(bgColor);
+                }
+                else if (invert) {
+                    // inverting byte for each R/G/B channel
+                    R = 255 - r;
+                    G = 255 - g;
+                    B = 255 - b;
+                }
+                else {
+                    R = r;
+                    G = g;
+                    B = b;
+                }
+                // set newly-inverted pixel to output image
+                bmOut.setPixel(x, y, Color.argb(A, R, G, B));
+            }
+        }
+
+        // return final bitmap
+        return bmOut;
     }
 }

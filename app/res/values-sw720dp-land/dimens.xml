@@ -15,4 +15,6 @@
     <dimen name="BoardGridViewTablet_layout_width">432dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterPadding">400dp</dimen>
 
+    <bool name="narrow_tablet">false</bool>
+
 </resources>

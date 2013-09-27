@@ -54,7 +54,7 @@ public class ThreadViewer {
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static DisplayMetrics displayMetrics = null;
     private static Typeface subjectTypeface = null;
@@ -756,6 +756,24 @@ public class ThreadViewer {
     */
 
     public static Point sizeHeaderImage(final int tn_w, final int tn_h) {
+        Point baseBox = new Point(tn_w, tn_h);
+        //Point maxBox = new Point((int)(tn_w * MAX_HEADER_SCALE), (int)(tn_h * MAX_HEADER_SCALE));
+        Point cardBox = new Point(cardMaxImageWidth(), cardMaxImageHeight());
+        //baseBox <= scaleBox <= cardBox;
+
+        Point scaledBox = new Point(baseBox.x, baseBox.y);
+        if (baseBox.x > cardBox.x) { // downscale to fix x in card
+            double scale = (double)cardBox.x / (double)baseBox.x;
+            scaledBox.x = (int)(scale * scaledBox.x);
+            scaledBox.y = (int)(scale * scaledBox.y);
+        }
+        if (baseBox.y > cardBox.y) { // downscale to fit y in card
+            double scale = (double)cardBox.y / (double)baseBox.y;
+            scaledBox.x = (int)(scale * scaledBox.x);
+            scaledBox.y = (int)(scale * scaledBox.y);
+        }
+
+        /*
         Point imageSize = new Point();
         double aspectRatio = (double) tn_w / (double) tn_h;
         if (aspectRatio < 1) { // tall image, restrict by height
@@ -769,8 +787,10 @@ public class ThreadViewer {
             imageSize.x = (int)desiredWidth; // restrict by width normally
             imageSize.y = (int)(desiredWidth / aspectRatio);
         }
-        if (DEBUG) Log.v(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + imageSize.x + "x" + imageSize.y);
-        return imageSize;
+        */
+        
+        if (DEBUG) Log.v(TAG, "Input size=" + tn_w + "x" + tn_h + " output size=" + scaledBox.x + "x" + scaledBox.y);
+        return scaledBox;
     }
 
     public static int cardMaxImageWidth() {
@@ -784,14 +804,14 @@ public class ThreadViewer {
         return naiveMax;
     }
 
-    public static int cardMaxImageHeight() {
+    public static int   cardMaxImageHeight() {
         int naiveMax;
         //if (displayMetrics.widthPixels < displayMetrics.heightPixels) // portrait
             naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
         //else // landscape
         //    naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
             //naiveMax = displayMetrics.heightPixels - cardPaddingPx - cardPaddingPx;
-        naiveMax -= boardTabletViewWidthPx;
+        //naiveMax -= boardTabletViewWidthPx;
         return naiveMax;
     }
 

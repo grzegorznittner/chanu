@@ -10,6 +10,7 @@
 
     <bool name="wide_tablet">true</bool>
     <bool name="BoardGridView.abbrev">true</bool>
+    <bool name="narrow_tablet">false</bool>
 
     <dimen name="ad_layout_height">90dp</dimen>
 

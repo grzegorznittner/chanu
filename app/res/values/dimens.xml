@@ -344,6 +344,7 @@
 
     <bool name="wide_tablet">false</bool>
     <bool name="BoardGridView.abbrev">false</bool>
+    <bool name="narrow_tablet">true</bool>
 
     <dimen name="PostReplyRecaptcha.marginLeft">20dp</dimen>
     <dimen name="PostReplyRecaptcha.marginRight">20dp</dimen>
@@ -360,6 +361,22 @@
     <string name="list_item_ago_date_separator"></string>
 
     <integer name="PostReplyComment_minLines">4</integer>
+
+    <dimen name="BoardGridBoardCodePadding">2dp</dimen>
+    <dimen name="BoardGridItemCountryFlagWidth">16dp</dimen>
+    <dimen name="BoardGridItemCountryFlagHeight">18dp</dimen>
+    <dimen name="BoardGridItemCountryFlagPaddingBottom">8dp</dimen>
+    <dimen name="BoardGridItemNumRepliesSpacing">0dp</dimen>
+    <dimen name="BoardGridItemNumRepliesImgWidth">24dp</dimen>
+    <dimen name="BoardGridItemNumRepliesImgHeight">24dp</dimen>
+    <dimen name="BoardGridItemNumRepliesImgPaddingBottom">1dp</dimen>
+    <dimen name="BoardGridItemNumImagesImgWidth">24dp</dimen>
+    <dimen name="BoardGridItemNumImagesImgHeight">22dp</dimen>
+    <dimen name="BoardGridItemNumImagesImgPaddingBottom">4dp</dimen>
+    <dimen name="BoardGridItemIconWidth">16dp</dimen>
+    <dimen name="BoardGridItemIconHeight">21dp</dimen>
+    <dimen name="BoardGridItemIconPaddingBottom">5dp</dimen>
+    <dimen name="BoardGridItemIconSpacing">8dp</dimen>
 
     <!-- string pref values for arrays and static variables -->
     <string name="pref_download_images_all_in_chanu_folder_value">ALL_IN_ONE</string>

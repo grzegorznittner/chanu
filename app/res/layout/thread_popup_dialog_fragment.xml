@@ -25,7 +25,6 @@
     -->
     <FrameLayout
             style="@style/ThreadListLayout"
-            android:background="@color/PaletteTransparent"
             >
 
         <ListView
@@ -35,6 +34,7 @@
                 android:paddingBottom="0dp"
                 android:paddingLeft="0dp"
                 android:paddingRight="0dp"
+                android:dividerHeight="0dp"
                 />
          <!--
                          android:paddingTop="@dimen/BoardGridView.spacing"

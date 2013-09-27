@@ -7,6 +7,7 @@
 
     <dimen name="ad_layout_height">32dp</dimen>
     <bool name="BoardGridView.abbrev">false</bool>
+    <bool name="narrow_tablet">true</bool>
 
     <integer name="PostReplyComment_minLines">4</integer>
 </resources>

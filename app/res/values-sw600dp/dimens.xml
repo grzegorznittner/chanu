@@ -1,44 +1,46 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/com.chanapps.four.activity">
     <!-- Font sizes -->
     <dimen name="BoardTypeText">18sp</dimen>
-    <dimen name="WidgetConfigureOkButton">22sp</dimen>
-    <dimen name="BoardSelectorOverlay">18sp</dimen>
+    <dimen name="WidgetConfigureOkButton">18sp</dimen>
+    <dimen name="BoardSelectorOverlay">16sp</dimen>
     <dimen name="BoardGridBoardCode">@dimen/BoardTypeText</dimen>
-    <dimen name="BoardGridSubject">16sp</dimen>
+    <dimen name="BoardGridSubject">14sp</dimen>
     <dimen name="BoardGridInfo">14sp</dimen>
-    <dimen name="BoardGridAction">18sp</dimen>
-    <dimen name="BoardGridNumReplies">16sp</dimen>
-    <dimen name="BoardGridAbbrev">16sp</dimen>
-    <dimen name="BoardGridNumImages">16sp</dimen>
-    <dimen name="BoardGridTextImageOverlay">16sp</dimen>
-    <dimen name="BoardListTextImageTopOverlay">18sp</dimen>
-    <dimen name="BoardListTitle">18sp</dimen>
-    <dimen name="BoardListSubject">22sp</dimen>
-    <dimen name="BoardListHeadline">18sp</dimen>
-    <dimen name="ThreadListLayout">18sp</dimen>
+    <dimen name="BoardGridAction">16sp</dimen>
+    <dimen name="BoardGridNumReplies">14sp</dimen>
+    <dimen name="BoardGridAbbrev">14sp</dimen>
+    <dimen name="BoardGridNumImages">14sp</dimen>
+    <dimen name="BoardGridTextImageOverlay">14sp</dimen>
+    <dimen name="BoardListTextImageTopOverlay">16sp</dimen>
+    <dimen name="BoardListTitle">16sp</dimen>
+    <dimen name="BoardListSubject">18sp</dimen>
+    <dimen name="BoardListHeadline">16sp</dimen>
+    <dimen name="ThreadListLayout">16sp</dimen>
     <dimen name="ThreadListHeaderSubject">24sp</dimen>
-    <dimen name="ThreadListHeaderHead">18sp</dimen>
-    <dimen name="ThreadListHeaderLabel">16sp</dimen>
-    <dimen name="ThreadListHeaderExifText">18sp</dimen>
-    <dimen name="ThreadListHeaderFullText">18sp</dimen>
-    <dimen name="ThreadListHeaderTitle">18sp</dimen>
-    <dimen name="ThreadListItemSubject">18sp</dimen>
-    <dimen name="ThreadListItemHead">18sp</dimen>
-    <dimen name="ThreadListItemTitle">18sp</dimen>
-    <dimen name="ThreadListItemExifText">18sp</dimen>
-    <dimen name="ThreadListItemFullText">18sp</dimen>
-    <dimen name="PostReplyEditText">18sp</dimen>
-    <dimen name="PostReplyCheckbox">18sp</dimen>
-    <dimen name="PopupFullTextHeader">22sp</dimen>
-    <dimen name="PopupFullTextButton">22sp</dimen>
-    <dimen name="PopupFullTextView">22sp</dimen>
-    <dimen name="MessageText">18sp</dimen>
+    <dimen name="ThreadListHeaderHead">16sp</dimen>
+    <dimen name="ThreadListHeaderLabel">14sp</dimen>
+    <dimen name="ThreadListHeaderExifText">16sp</dimen>
+    <dimen name="ThreadListHeaderFullText">16sp</dimen>
+    <dimen name="ThreadListHeaderTitle">16sp</dimen>
+    <dimen name="ThreadListItemSubject">16sp</dimen>
+    <dimen name="ThreadListItemHead">16sp</dimen>
+    <dimen name="ThreadListItemTitle">16sp</dimen>
+    <dimen name="ThreadListItemExifText">16sp</dimen>
+    <dimen name="ThreadListItemFullText">16sp</dimen>
+    <dimen name="PostReplyEditText">16sp</dimen>
+    <dimen name="PostReplyCheckbox">16sp</dimen>
+    <dimen name="PopupFullTextHeader">18sp</dimen>
+    <dimen name="PopupFullTextButton">18sp</dimen>
+    <dimen name="PopupFullTextView">18sp</dimen>
+    <dimen name="MessageText">16sp</dimen>
 
     <!-- Padding & Margins -->
-
-    <dimen name="BoardGridItemSmallHeight">96dp</dimen>
+    <dimen name="BoardGridItemSmallHeight">104dp</dimen>
     <dimen name="BoardGridViewTablet_image_width">180dp</dimen>
+    <!--
     <dimen name="BoardGridViewTablet_layout_width">180dp</dimen>
+    -->
+    <dimen name="BoardGridViewTablet_layout_width">176dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterPadding">282dp</dimen>
     <dimen name="BoardGridViewTablet_layout_marginHeight_belowImage">160dp</dimen>
     <dimen name="BoardGridViewTablet_layout_width_afterTextPadding">140dp</dimen>
@@ -303,6 +305,7 @@
 
     <bool name="wide_tablet">false</bool>
     <bool name="BoardGridView.abbrev">true</bool>
+    <bool name="narrow_tablet">true</bool>
 
     <dimen name="PostReplyRecaptcha.marginLeft">28dp</dimen>
     <dimen name="PostReplyRecaptcha.marginRight">28dp</dimen>
@@ -319,4 +322,21 @@
     <string name="list_item_ago_date_separator">~</string>
 
     <integer name="PostReplyComment_minLines">6</integer>
+
+    <dimen name="BoardGridBoardCodePadding">4dp</dimen>
+    <dimen name="BoardGridItemCountryFlagWidth">17dp</dimen>
+    <dimen name="BoardGridItemCountryFlagHeight">22dp</dimen>
+    <dimen name="BoardGridItemCountryFlagPaddingBottom">10dp</dimen>
+    <dimen name="BoardGridItemNumRepliesSpacing">2dp</dimen>
+    <dimen name="BoardGridItemNumRepliesImgWidth">24dp</dimen>
+    <dimen name="BoardGridItemNumRepliesImgHeight">27dp</dimen>
+    <dimen name="BoardGridItemNumRepliesImgPaddingBottom">3dp</dimen>
+    <dimen name="BoardGridItemNumImagesImgWidth">24dp</dimen>
+    <dimen name="BoardGridItemNumImagesImgHeight">24dp</dimen>
+    <dimen name="BoardGridItemNumImagesImgPaddingBottom">6dp</dimen>
+    <dimen name="BoardGridItemIconWidth">18dp</dimen>
+    <dimen name="BoardGridItemIconHeight">24dp</dimen>
+    <dimen name="BoardGridItemIconPaddingBottom">7dp</dimen>
+    <dimen name="BoardGridItemIconSpacing">8dp</dimen>
+
 </resources>

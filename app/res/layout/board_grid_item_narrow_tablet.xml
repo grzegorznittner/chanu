@@ -1,0 +1,132 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/grid_item"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="?themedLargeCardBackground"
+             android:foreground="@drawable/board_grid_selector_bg"
+        >
+
+<RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+    <ImageView
+            android:id="@+id/grid_item_thread_thumb"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/thread_post_image"
+            android:visibility="gone"
+            android:background="@drawable/board_grid_selector_bg"
+            />
+
+    <TextView
+            android:id="@+id/grid_item_num_replies_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="7dp"
+            android:layout_toLeftOf="@+id/grid_item_num_replies_img"
+            android:paddingBottom="@dimen/BoardGridView.halfSpacing"
+            android:textColor="@color/PaletteLightGray"
+            android:textSize="@dimen/BoardGridInfo"
+            />
+
+    <ImageView
+            android:id="@+id/grid_item_num_replies_img"
+            android:layout_width="@dimen/BoardGridItemNumRepliesImgWidth"
+            android:layout_height="@dimen/BoardGridItemNumRepliesImgHeight"
+            android:layout_marginTop="6dp"
+            android:layout_marginRight="@dimen/BoardGridView.halfSpacing"
+            android:layout_alignParentRight="true"
+            android:src="?themedNumRepliesIcon"
+            android:scaleType="fitCenter"
+            />
+
+    <TextView
+            android:id="@+id/grid_item_num_images_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:layout_marginRight="@dimen/BoardGridView.halfSpacing"
+            android:layout_toLeftOf="@+id/grid_item_num_images_img"
+            android:layout_below="@+id/grid_item_num_replies_text"
+            android:paddingBottom="@dimen/BoardGridView.halfSpacing"
+            android:textColor="@color/PaletteLightGray"
+            android:textSize="@dimen/BoardGridInfo"
+            />
+
+    <ImageView
+            android:id="@+id/grid_item_num_images_img"
+            android:layout_width="@dimen/BoardGridItemNumImagesImgWidth"
+            android:layout_height="@dimen/BoardGridItemNumImagesImgHeight"
+            android:layout_marginRight="7dp"
+            android:layout_marginTop="2dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/grid_item_num_replies_text"
+            android:paddingBottom="@dimen/BoardGridItemNumImagesImgPaddingBottom"
+            android:scaleType="fitXY"
+            android:src="?themedNumImagesIcon"
+            />
+
+    <ImageView
+            android:id="@+id/grid_item_country_flag"
+            android:layout_width="@dimen/BoardGridItemCountryFlagWidth"
+            android:layout_height="@dimen/BoardGridItemCountryFlagHeight"
+            android:paddingBottom="@dimen/BoardGridItemCountryFlagPaddingBottom"
+            android:layout_marginTop="@dimen/BoardGridView.halfSpacing"
+            android:layout_marginRight="10dp"
+            android:scaleType="fitXY"
+            android:layout_below="@+id/grid_item_num_images_img"
+            android:layout_alignParentRight="true"
+            android:contentDescription="@string/thread_country_flag"
+            android:visibility="gone"
+            />
+
+    <TextView
+            android:id="@+id/grid_item_thread_subject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/grid_item_thread_thumb"
+            android:paddingLeft="@dimen/BoardGridView.spacing"
+            android:paddingRight="@dimen/BoardGridView.spacing"
+            android:paddingTop="@dimen/BoardGridView.halfSpacing"
+            android:paddingBottom="@dimen/BoardGridView.spacing"
+            android:textColor="?themedCardSubjectTextColor"
+            android:textSize="@dimen/BoardGridSubject"
+            android:visibility="gone"
+            android:ellipsize="end"
+            android:maxLines="@integer/BoardGridView.maxLines"
+            />
+
+    <TextView
+            android:id="@+id/grid_item_thread_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:paddingLeft="@dimen/BoardGridView.spacing"
+            android:paddingRight="@dimen/BoardGridView.spacing"
+            android:paddingBottom="@dimen/BoardGridView.halfSpacing"
+            android:textColor="@color/PaletteLightGray"
+            android:textSize="@dimen/BoardGridInfo"
+            android:maxLines="1"
+            android:visibility="gone"
+            />
+
+</RelativeLayout>
+
+<ImageView
+        android:id="@+id/grid_item_overflow_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_alignParentRight="true"
+        android:paddingRight="5dp"
+        android:paddingTop="4dp"
+        android:src="@drawable/card_overflow_icon"
+        android:background="@drawable/board_grid_selector_bg"
+        />
+
+</FrameLayout>
+

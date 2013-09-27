@@ -264,7 +264,7 @@
     <dimen name="widget_twocol_inner_paddingLeft">108dp</dimen>
     <dimen name="widget_textSize">12sp</dimen>
 
-    <integer name="BoardGridView.maxLines">5</integer>
+    <integer name="BoardGridView.maxLines">4</integer>
     <dimen name="BoardGridView.halfSpacing">8dp</dimen>
     <dimen name="BoardGridView.spacing">16dp</dimen>
     <dimen name="BoardGridViewTablet.spacing">16dp</dimen>
@@ -272,7 +272,8 @@
 
     <integer name="BoardGridView.numColumns">2</integer>
     <integer name="BoardGridViewSmall.numColumns">5</integer>
-    <dimen name="BoardGridTextHeight">160dp</dimen>
+    <!-- <dimen name="BoardGridTextHeight">160dp</dimen> -->
+    <dimen name="BoardGridTextHeight">120dp</dimen>
     <!--<dimen name="BoardGridTextHeightSmall">128dp</dimen>-->
 
     <dimen name="drawer_spacer_width">80dp</dimen>
@@ -282,6 +283,7 @@
 
     <bool name="wide_tablet">true</bool>
     <bool name="BoardGridView.abbrev">false</bool>
+    <bool name="narrow_tablet">false</bool>
 
     <dimen name="PostReplyRecaptcha.marginLeft">32dp</dimen>
     <dimen name="PostReplyRecaptcha.marginRight">32dp</dimen>
@@ -298,4 +300,21 @@
     <string name="list_item_ago_date_separator">~</string>
 
     <integer name="PostReplyComment_minLines">10</integer>
+
+    <dimen name="BoardGridBoardCodePadding">4dp</dimen>
+    <dimen name="BoardGridItemCountryFlagWidth">20dp</dimen>
+    <dimen name="BoardGridItemCountryFlagHeight">25dp</dimen>
+    <dimen name="BoardGridItemCountryFlagPaddingBottom">12dp</dimen>
+    <dimen name="BoardGridItemNumRepliesSpacing">4dp</dimen>
+    <dimen name="BoardGridItemNumRepliesImgWidth">30dp</dimen>
+    <dimen name="BoardGridItemNumRepliesImgHeight">33dp</dimen>
+    <dimen name="BoardGridItemNumRepliesImgPaddingBottom">4dp</dimen>
+    <dimen name="BoardGridItemNumImagesImgWidth">30dp</dimen>
+    <dimen name="BoardGridItemNumImagesImgHeight">29dp</dimen>
+    <dimen name="BoardGridItemNumImagesImgPaddingBottom">8dp</dimen>
+    <dimen name="BoardGridItemIconWidth">22dp</dimen>
+    <dimen name="BoardGridItemIconHeight">29dp</dimen>
+    <dimen name="BoardGridItemIconPaddingBottom">9dp</dimen>
+    <dimen name="BoardGridItemIconSpacing">12dp</dimen>
+
 </resources>

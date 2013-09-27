@@ -13,7 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.chanapps.four.activity.R;
 import com.chanapps.four.component.LetterSpacingTextView;
+import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.data.ChanBoard;
+import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.loader.ChanImageLoader;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -65,6 +67,7 @@ public class BoardGridViewer {
         if (imageLoader == null)
             throw new IllegalStateException("Must call initStatics() before calling setViewValue()");
         int flags = cursor.getInt(cursor.getColumnIndex(ChanThread.THREAD_FLAGS));
+        boolean isDark = ThemeSelector.instance(view.getContext()).isDark();
         BoardGridViewHolder viewHolder = (BoardGridViewHolder)view.getTag(R.id.VIEW_HOLDER);
         setItem(viewHolder, overlayListener, overflowListener);
         setGridSubject(viewHolder, cursor);
@@ -72,6 +75,7 @@ public class BoardGridViewer {
         setNumReplies(viewHolder, cursor);
         setNumImages(viewHolder, cursor);
         setCountryFlag(viewHolder, cursor);
+        setIcons(viewHolder, flags, isDark);
         setImage(viewHolder, cursor, flags, columnWidth, columnHeight, options, titleTypeface);
         return true;
     }
@@ -305,6 +309,10 @@ public class BoardGridViewer {
             return true;
         }
         */
+        if (cursor.getString(cursor.getColumnIndex(ChanThread.THREAD_BOARD_CODE)).equals(groupBoardCode)) {
+            tv.setText("");
+            return true;
+        }
         String s = (flags & ChanThread.THREAD_FLAG_BOARD) == 0
                 ? getBoardAbbrev(tv.getContext(), cursor, groupBoardCode)
                 : "";
@@ -357,4 +365,30 @@ public class BoardGridViewer {
         }        return true;
     }
 
+    protected static final int DRAWABLE_ALPHA_LIGHT = 0xaa;
+    protected static final int DRAWABLE_ALPHA_DARK = 0xee;
+
+    protected static boolean setIcons(BoardGridViewHolder viewHolder, int flags, boolean isDark) {
+        int alpha = isDark ? DRAWABLE_ALPHA_DARK : DRAWABLE_ALPHA_LIGHT;
+        if (viewHolder.grid_item_dead_icon != null) {
+            viewHolder.grid_item_dead_icon.setVisibility((flags & ChanThread.THREAD_FLAG_DEAD) > 0 ? View.VISIBLE : View.GONE);
+            viewHolder.grid_item_dead_icon.setAlpha(alpha);
+        }
+        if (viewHolder.grid_item_closed_icon != null) {
+            viewHolder.grid_item_closed_icon.setVisibility((flags & ChanThread.THREAD_FLAG_CLOSED) > 0 ? View.VISIBLE : View.GONE);
+            viewHolder.grid_item_closed_icon.setAlpha(alpha);
+        }
+        if (viewHolder.grid_item_sticky_icon != null) {
+            viewHolder.grid_item_sticky_icon.setVisibility((flags & ChanThread.THREAD_FLAG_STICKY) > 0 ? View.VISIBLE : View.GONE);
+            viewHolder.grid_item_sticky_icon.setAlpha(alpha);
+        }
+        if (DEBUG)
+            com.android.gallery3d.ui.Log.i(TAG, "setSubjectIcons()"
+                    + " dead=" + ((flags & ChanThread.THREAD_FLAG_DEAD) > 0)
+                    + " closed=" + ((flags & ChanThread.THREAD_FLAG_CLOSED) > 0)
+                    + " sticky=" + ((flags & ChanThread.THREAD_FLAG_STICKY) > 0)
+            );
+        return true;
+    }
+    
 }

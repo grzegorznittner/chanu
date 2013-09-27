@@ -20,7 +20,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/PaletteBoardCodeText"
                 android:background="?themedBoardGridBoardCodeBg"
-                android:padding="2dp"
+                android:padding="@dimen/BoardGridBoardCodePadding"
                 />
 
         <FrameLayout

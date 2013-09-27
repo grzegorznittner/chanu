@@ -27,28 +27,33 @@ public class SearchActivity extends Activity {
     protected String query;
 
     public static void createSearchView(final Activity activity, MenuItem searchMenuItem) {
-        SearchManager searchManager = (SearchManager)activity.getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView)searchMenuItem.getActionView();
-        if (searchView == null)
-            return;
-        searchView.setSubmitButtonEnabled(true);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if (DEBUG) android.util.Log.i(TAG, "SearchView.onQueryTextSubmit");
-                Intent intent = new Intent(activity, SearchActivity.class);
-                intent.putExtra(SearchManager.QUERY, query);
-                intent.setAction(Intent.ACTION_SEARCH);
-                activity.startActivity(intent);
-                return true;
-            }
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (DEBUG) android.util.Log.i(TAG, "SearchView.onQueryTextChange");
-                return false;
-            }
-        });
+        try {
+            SearchManager searchManager = (SearchManager)activity.getSystemService(Context.SEARCH_SERVICE);
+            SearchView searchView = (SearchView)searchMenuItem.getActionView();
+            if (searchView == null)
+                return;
+            searchView.setSubmitButtonEnabled(true);
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    if (DEBUG) android.util.Log.i(TAG, "SearchView.onQueryTextSubmit");
+                    Intent intent = new Intent(activity, SearchActivity.class);
+                    intent.putExtra(SearchManager.QUERY, query);
+                    intent.setAction(Intent.ACTION_SEARCH);
+                    activity.startActivity(intent);
+                    return true;
+                }
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    if (DEBUG) android.util.Log.i(TAG, "SearchView.onQueryTextChange");
+                    return false;
+                }
+            });
+        }
+        catch (Exception e) {
+            Log.e(TAG, "Exception creating search view", e);
+        }
         ActionBar actionBar = activity.getActionBar();
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setIcon(R.drawable.app_icon_actionbar);

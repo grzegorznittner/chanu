@@ -79,6 +79,13 @@
         <item name="android:background">?themedCardListBackground</item>
     </style>
 
+    <style name="ThreadListPopupLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
     <style name="BoardGridLayoutEmptyText" parent="AppTheme">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -198,7 +205,9 @@
     <style name="BoardGridViewTablet" parent="AppTheme">
         <item name="android:layout_width">@dimen/BoardGridViewTablet_layout_width</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingTop">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingBottom">@dimen/BoardGridView.spacing</item>
+        <item name="android:paddingLeft">@dimen/BoardGridView.spacing</item>
         <item name="android:clipToPadding">false</item>
         <item name="android:divider">@color/PaletteTransparent</item>
         <item name="android:dividerHeight">@dimen/BoardGridViewTablet.spacing</item>
@@ -1188,10 +1197,10 @@
         <item name="android:paddingTop">@dimen/WidgetConfigureOkButton_paddingTop</item>
         <item name="android:paddingBottom">@dimen/WidgetConfigureOkButton_paddingBottom</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">?themedCardSubjectTextColor</item>
+        <item name="android:background">?themedBoardGridBoardCodeBg</item>
         <item name="android:textSize">@dimen/WidgetConfigureOkButton</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">?themedCardListBackground</item>
+        <item name="android:textColor">@color/PaletteBoardCodeText</item>
         <item name="android:text">@string/done</item>
     </style>
 
