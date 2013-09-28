@@ -21,6 +21,7 @@ import com.chanapps.four.adapter.AbstractBoardCursorAdapter;
 import com.chanapps.four.adapter.ThreadListCursorAdapter;
 import com.chanapps.four.component.ActivityDispatcher;
 //import com.chanapps.four.component.AdComponent;
+import com.chanapps.four.component.ScrollerRunnable;
 import com.chanapps.four.component.ThemeSelector;
 import com.chanapps.four.component.ThreadViewable;
 import com.chanapps.four.data.*;
@@ -60,7 +61,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xee;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/#auto";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
@@ -297,8 +298,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             return;
         }
         NetworkProfile.Health health = NetworkProfileManager.instance().getCurrentProfile().getConnectionHealth();
-        if (health == NetworkProfile.Health.NO_CONNECTION || health == NetworkProfile.Health.BAD) {
-            if (DEBUG) Log.i(TAG, "tryFetchThread bad health, exiting");
+        if (health == NetworkProfile.Health.NO_CONNECTION) { // || health == NetworkProfile.Health.BAD) {
+            if (DEBUG) Log.i(TAG, "tryFetchThread no connection, exiting");
             final Context context = getActivityContext();
             if (handler != null && context != null && !warnedAboutNetworkDown()) {
                 warnedAboutNetworkDown(true);
@@ -402,7 +403,12 @@ public class ThreadFragment extends Fragment implements ThreadViewable
 
     public void scrollToPostAsync(final long scrollToPostNo) {
         if (DEBUG) Log.i(TAG, "scrollToPostAsync() postNo=" + scrollToPostNo);
-        scrollToPost(scrollToPostNo, null);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                scrollToPost(scrollToPostNo, null);
+            }
+        }).start();
     }
 
     protected void scrollToPost(final long scrollToPostNo, final Runnable uiCallback) {
@@ -425,40 +431,49 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         }
         final boolean hasPost = found;
         final int postPos = pos;
-        if (hasPost) {
-            if (DEBUG) Log.i(TAG, "scrollToPost() found postNo=" + scrollToPostNo + " at pos=" + pos);
-        }
-        else {
+        if (!hasPost) {
             if (DEBUG) Log.i(TAG, "scrollToPost() didn't find postNo=" + scrollToPostNo);
-        }
-        if (handler == null) {
-            if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " null handler, exiting");
             return;
         }
-        if (handler != null && (hasPost || uiCallback != null))
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (hasPost) {
-                        if (absListView == null) {
-                            if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " null list view, exiting");
-                            return;
-                        }
-                        if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " scrolling to pos=" + postPos + " on UI thread");
-                        absListView.smoothScrollToPosition(postPos);
-                        //absListView.setSelection(postPos);
-                        SparseBooleanArray booleanArray = absListView.getCheckedItemPositions();
-                        for (int i = 0; i < absListView.getCount(); i++)
-                            if (booleanArray.get(i, false) && i != postPos)
-                                absListView.setItemChecked(i, false);
-                        if (!booleanArray.get(postPos, false))
-                            absListView.setItemChecked(postPos, true);
-                        postNo = -1;
+        if (DEBUG) Log.i(TAG, "scrollToPost() found postNo=" + scrollToPostNo + " at pos=" + pos);
+
+        if (handler == null) {
+            if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " null handler, skipping highlight");
+            return;
+        }
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+        if (absListView == null) {
+                        if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " null list view, exiting");
+                        return;
                     }
-                    if (uiCallback != null)
-                        uiCallback.run();
-                }
-            });
+
+                    if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " scrolling to pos=" + postPos + " on UI thread");
+
+                    //(new ScrollerRunnable(absListView)).start(postPos);
+                    //absListView.smoothScrollToPosition(postPos);
+                absListView.setSelection(postPos);
+                //if (uiCallback != null)
+                //    uiCallback.run();
+            }
+        }, 100);
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " highlighting post pos=" + postPos);
+                SparseBooleanArray booleanArray = absListView.getCheckedItemPositions();
+                for (int i = 0; i < absListView.getCount(); i++)
+                    if (booleanArray.get(i, false) && i != postPos)
+                        absListView.setItemChecked(i, false);
+                if (!booleanArray.get(postPos, false))
+                    absListView.setItemChecked(postPos, true);
+                postNo = -1;
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        }, 150);
+
     }
 
     protected void selectCurrentThread(final ChanThread thread) {

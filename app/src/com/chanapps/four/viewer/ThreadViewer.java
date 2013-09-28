@@ -54,7 +54,7 @@ public class ThreadViewer {
     public static final String SUBJECT_FONT = "fonts/Roboto-BoldCondensed.ttf";
 
     private static final String TAG = ThreadViewer.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private static DisplayMetrics displayMetrics = null;
     private static Typeface subjectTypeface = null;

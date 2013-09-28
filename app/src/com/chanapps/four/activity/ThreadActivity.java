@@ -51,7 +51,7 @@ public class ThreadActivity
 {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final String BOARD_CODE = "boardCode";
     public static final String THREAD_NO = "threadNo";
@@ -366,9 +366,10 @@ public class ThreadActivity
                 }
                 else if (board.hasData() &&
                         (health == NetworkProfile.Health.NO_CONNECTION
-                                || health == NetworkProfile.Health.BAD
-                                || health == NetworkProfile.Health.VERY_SLOW
-                                || health == NetworkProfile.Health.SLOW))
+                        //        || health == NetworkProfile.Health.BAD
+                        //        || health == NetworkProfile.Health.VERY_SLOW
+                        //        || health == NetworkProfile.Health.SLOW
+                        ))
                 {
                     if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " board has old data but connection " + health + ", loading");
                     createPager(board);

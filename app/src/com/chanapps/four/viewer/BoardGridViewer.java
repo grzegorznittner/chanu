@@ -36,7 +36,7 @@ public class BoardGridViewer {
     public static final int SMALL_GRID = 0x01;
 
     private static String TAG = BoardGridViewer.class.getSimpleName();
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
 
     private static ImageLoader imageLoader;
     private static DisplayImageOptions displayImageOptions;

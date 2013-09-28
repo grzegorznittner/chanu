@@ -45,7 +45,7 @@ import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 public class BoardActivity extends AbstractDrawerActivity implements ChanIdentifiedActivity
 {
 	public static final String TAG = BoardActivity.class.getSimpleName();
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
     public static String topBoardCode = null;
 
@@ -469,9 +469,10 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
         }
         else if (board.hasData() &&
                 (health == NetworkProfile.Health.NO_CONNECTION
-                        || health == NetworkProfile.Health.BAD
-                        || health == NetworkProfile.Health.VERY_SLOW
-                        || health == NetworkProfile.Health.SLOW))
+                //        || health == NetworkProfile.Health.BAD
+                //        || health == NetworkProfile.Health.VERY_SLOW
+                //        || health == NetworkProfile.Health.SLOW
+                ))
         {
             if (DEBUG) Log.i(TAG, "startLoader /" + boardCode + "/ board has old data but connection " + health + ", loading immediately");
             if (adapter == null || adapter.getCount() == 0)

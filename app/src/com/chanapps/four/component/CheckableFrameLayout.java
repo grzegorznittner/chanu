@@ -20,7 +20,7 @@ import com.chanapps.four.activity.R;
 public class CheckableFrameLayout extends FrameLayout implements Checkable {
 
     private static final String TAG = CheckableFrameLayout.class.getSimpleName();
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     boolean isChecked = false;
 
