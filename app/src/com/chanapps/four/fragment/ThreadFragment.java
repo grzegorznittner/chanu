@@ -1325,9 +1325,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 if (thread != null && thread.isDead) {
                     if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " found dead thread");
                 }
-                if (handler != null && getActivity() != null && getActivity().getLoaderManager() != null)
+                if (handler != null && getActivity() != null && getActivity().getLoaderManager() != null) {
                     if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " scheduling handler post");
-                handler.post(new Runnable() {
+                    handler.post(new Runnable() {
                         @Override
                         public void run() {
                             if (DEBUG) Log.i(TAG, "refreshThread /" + boardCode + "/" + threadNo + " restarting loader");
@@ -1338,6 +1338,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                             }
                         }
                     });
+                }
             }
         }).start();
     }

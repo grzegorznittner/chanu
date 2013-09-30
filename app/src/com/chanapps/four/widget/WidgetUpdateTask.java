@@ -184,7 +184,7 @@ public class WidgetUpdateTask extends AsyncTask<Void, Void, Void> {
             boardTitle = board.getName(context);
         else
             boardTitle = board.getName(context) + " /" + board.link + "/";
-        Log.e(TAG, "bindClickTargets() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/"
+        if (DEBUG) Log.i(TAG, "bindClickTargets() id=" + widgetConf.appWidgetId + " /" + widgetConf.boardCode + "/"
                 + " boardTitle=" + boardTitle);
         int boardTitleColor = widgetConf.boardTitleColor;
         int boardTitleVisibility = widgetConf.showBoardTitle ? View.VISIBLE : View.GONE;

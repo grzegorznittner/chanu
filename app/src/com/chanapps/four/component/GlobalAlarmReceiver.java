@@ -28,13 +28,16 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
 
     private static final long WIDGET_UPDATE_INTERVAL_MS = AlarmManager.INTERVAL_FIFTEEN_MINUTES; // FIXME should be configurable
     //private static final long WIDGET_UPDATE_INTERVAL_MS = 60000; // 60 sec, just for testing
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     @Override
     public void onReceive(final Context context, Intent intent) { // when first boot up, default and then schedule for refresh
         String action = intent.getAction();
         if (DEBUG) Log.i(TAG, "Received action: " + action);
-        if (Intent.ACTION_BOOT_COMPLETED.equals(action) || GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION.equals(action)) {
+        if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
+            scheduleGlobalAlarm(context);
+        }
+        else if (GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION.equals(action)) {
             /* use this when you screw up widgets and need to reset
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
             editor.remove(SettingsActivity.PREF_WIDGET_BOARDS);
@@ -44,7 +47,6 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
                 @Override
                 public void run() {
                     updateAndFetch(context);
-                    scheduleGlobalAlarm(context);
                 }
             }).start();
         } else {
@@ -67,7 +69,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
                 && currentProfile.getConnectionHealth() != NetworkProfile.Health.SLOW) {
             if (DEBUG) Log.i(TAG, "fetchAll fetching widgets, watchlists, and uncached boards");
             //fetchWatchlistThreads(context);
-            fetchFavoriteBoards(context);
+            //fetchFavoriteBoards(context);
             WidgetProviderUtils.fetchAllWidgets(context);
             //ChanBoard.preloadUncachedBoards(context);
         } else {
@@ -93,14 +95,18 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
         }
     }
 
-    private static void scheduleGlobalAlarm(Context context) {
+    public static void scheduleGlobalAlarm(Context context) {
         if (DEBUG) Log.i(TAG, "scheduleGlobalAlarm interval ms=" + WIDGET_UPDATE_INTERVAL_MS);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        long scheduleAt = SystemClock.elapsedRealtime() + WIDGET_UPDATE_INTERVAL_MS / 2; // at least wait a while before scheduling
+        long currentElapsed = SystemClock.elapsedRealtime();
+        long scheduleAt = currentElapsed + WIDGET_UPDATE_INTERVAL_MS / 2; // at least wait a while before scheduling
         PendingIntent pendingIntent = getPendingIntentForGlobalAlarm(context);
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, scheduleAt, WIDGET_UPDATE_INTERVAL_MS, pendingIntent);
         if (DEBUG)
-            Log.i(TAG, "Scheduled UpdateWidgetService at t=" + scheduleAt + " repeating every delta=" + WIDGET_UPDATE_INTERVAL_MS + "ms");
+            Log.i(TAG, "scheduleGlobalAlarm currentElapsed=" + currentElapsed
+                    + " scheduled GlobalAlarmReceiver"
+                    + " scheduleAt=" + scheduleAt
+                    + " repeating every delta=" + WIDGET_UPDATE_INTERVAL_MS + "ms");
     }
 
     private static PendingIntent getPendingIntentForGlobalAlarm(Context context) {

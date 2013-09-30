@@ -30,6 +30,7 @@ import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.fragment.*;
 import com.chanapps.four.loader.BoardCursorLoader;
 import com.chanapps.four.loader.ChanImageLoader;
+import com.chanapps.four.service.FetchChanDataService;
 import com.chanapps.four.service.NetworkProfileManager;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.viewer.BoardGridViewer;
@@ -51,7 +52,7 @@ public class ThreadActivity
 {
 
     public static final String TAG = ThreadActivity.class.getSimpleName();
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String BOARD_CODE = "boardCode";
     public static final String THREAD_NO = "threadNo";
@@ -360,15 +361,15 @@ public class ThreadActivity
                 if (mAdapter != null && mAdapter.getCount() > 0 && board.hasData() && board.isCurrent()) {
                     if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " adapter already loaded, skipping");
                 }
-                else if (board.hasData() && board.isCurrent()) {
+                else if (board.hasData()) { // && board.isCurrent()) {
                     if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " board has current data, loading");
                     createPager(board);
                 }
                 else if (board.hasData() &&
                         (health == NetworkProfile.Health.NO_CONNECTION
-                        //        || health == NetworkProfile.Health.BAD
-                        //        || health == NetworkProfile.Health.VERY_SLOW
-                        //        || health == NetworkProfile.Health.SLOW
+                                //        || health == NetworkProfile.Health.BAD
+                                //        || health == NetworkProfile.Health.VERY_SLOW
+                                //        || health == NetworkProfile.Health.SLOW
                         ))
                 {
                     if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " board has old data but connection " + health + ", loading");
@@ -391,6 +392,7 @@ public class ThreadActivity
                     }
                     */
                 }
+
                 else {
                     /*
                     if (DEBUG) Log.i(TAG, "onStart() /" + boardCode + "/" + threadNo + " non-current board data, loading");
@@ -398,7 +400,8 @@ public class ThreadActivity
                         getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
                     createPager();
                     */
-                    if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " non-current board data, manual refreshing");
+                    //if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " non-current board data, manual refreshing");
+                    if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " no board data, priority refreshing board");
                     if (handler != null)
                         handler.post(new Runnable() {
                             @Override
@@ -406,12 +409,12 @@ public class ThreadActivity
                                 setProgress(true);
                             }
                         });
-                    NetworkProfileManager.instance().manualRefresh(activity);
+                    FetchChanDataService.scheduleBoardFetch(ThreadActivity.this, boardCode, true, false);
                     refreshing = true;
                 }
-                }
-            }).start();
-        }
+            }
+        }).start();
+    }
 
     public boolean refreshing = false;
 

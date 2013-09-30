@@ -31,7 +31,7 @@ import com.chanapps.four.service.profile.NetworkProfile.Failure;
  */
 public class FetchChanDataService extends BaseChanService implements ChanIdentifiedService {
 	private static final String TAG = FetchChanDataService.class.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
     public static final String SECONDARY_THREAD_NO = "secondaryThreadNo";
 
     private String boardCode;
@@ -92,7 +92,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
             if (DEBUG) Log.i(TAG, "scheduleThreadFetch /" + boardCode + "/" + threadNo + " exiting due to dead thread");
             return false;
         }
-        if (DEBUG) Log.i(TAG, "Start chan fetch service for " + boardCode + "/" + threadNo
+        if (DEBUG) Log.i(TAG, "Start chan fetch thread service for " + boardCode + "/" + threadNo
                 + " priority=" + priority + " background=" + backgroundLoad);
         if (boardCode == null || threadNo == 0) {
         	Log.e(TAG, "Wrong params passed, boardCode: " + boardCode + " threadNo: " + threadNo,
@@ -222,7 +222,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
 				if (DEBUG) Log.i(TAG, "Fetching board " + boardCode + " page " + pageNo);
 			}
 			
-    		long startTime = Calendar.getInstance().getTimeInMillis();
+    		final long startTime = new Date().getTime();
             tc = (HttpURLConnection) chanApi.openConnection();
             FetchParams fetchParams = NetworkProfileManager.instance().getFetchParams();
             tc.setReadTimeout(fetchParams.readTimeout);
@@ -257,9 +257,11 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                 board.lastFetched = new Date().getTime();
                 long fileSize = ChanFileStorage.storeBoardFile(getBaseContext(), boardCode, pageNo,
                         new InputStreamReader(tc.getInputStream()));
-            	int fetchTime = (int)(board.lastFetched - startTime);
+            	long fetchTime = board.lastFetched - startTime;
+                long storeTime = new Date().getTime() - board.lastFetched;
                 
-                if (DEBUG) Log.w(TAG, "Fetched and stored " + chanApi + " in " + fetchTime + "ms, size " + fileSize);
+                if (DEBUG) Log.w(TAG, "Fetched " + chanApi + " in " + fetchTime + "ms, stored in " + storeTime + "ms, "
+                        + "stored fileSize=" + fileSize/1024 + "KB");
                 if (DEBUG) Log.i(TAG, "Calling finishedFetchingData priority=" + priority);
                 /*
                 final ChanActivityId activityId = getChanActivityId();
@@ -275,7 +277,7 @@ public class FetchChanDataService extends BaseChanService implements ChanIdentif
                     }
                 };
                 */
-                NetworkProfileManager.instance().finishedFetchingData(this, fetchTime, (int)fileSize);
+                NetworkProfileManager.instance().finishedFetchingData(this, (int)fetchTime, (int)fileSize);
             }
         } catch (IOException e) {
             //toastUI(R.string.board_service_couldnt_read);

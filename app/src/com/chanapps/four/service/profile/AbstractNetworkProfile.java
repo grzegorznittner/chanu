@@ -26,7 +26,7 @@ import com.chanapps.four.widget.WidgetProviderUtils;
  */
 public abstract class AbstractNetworkProfile implements NetworkProfile {
 	private static final String TAG = "AbstractNetworkProfile";
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	protected int usageCounter = 0;
 	
@@ -129,13 +129,17 @@ public abstract class AbstractNetworkProfile implements NetworkProfile {
 		usageCounter++;
         CleanUpService.startService(context);
         NetworkProfileManager.NetworkBroadcastReceiver.checkNetwork(context);
+        if (DEBUG) Log.i(TAG, "onApplicationStart scheduling global alarm");
+        WidgetProviderUtils.scheduleGlobalAlarm(context);
+        /*
         Health health = getConnectionHealth();
-        if (health != Health.NO_CONNECTION && health != Health.BAD && health != Health.VERY_SLOW) {
-            WidgetProviderUtils.asyncUpdateWidgetsAndWatchlist(context);
+        if (health != Health.NO_CONNECTION && health != Health.BAD && health != Health.VERY_SLOW && health != Health.SLOW) {
+            WidgetProviderUtils.asyncUpdateWidgetsAndWatchlist(context); // this also schedules alarm
         } else {
             makeHealthStatusToast(context, health);
+            WidgetProviderUtils.scheduleGlobalAlarm(context);
         }
-        WidgetProviderUtils.scheduleGlobalAlarm(context);
+        */
     }
 
 	@Override

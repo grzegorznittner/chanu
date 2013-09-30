@@ -21,7 +21,7 @@ import com.chanapps.four.widget.WidgetProviderUtils;
 
 public class MobileProfile extends AbstractNetworkProfile {
     private static final String TAG = MobileProfile.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private String networkType = "3G";
 
@@ -347,21 +347,25 @@ public class MobileProfile extends AbstractNetworkProfile {
         }
 
         boolean threadScheduled = false;
+        /*
         if (!ChanBoard.boardNeedsRefresh(context, boardCode, false)) {
             if (DEBUG) Log.i(TAG, "onThreadRefreshed board already loaded for thread, skipping load");
         }
-        else if (!ChanBoard.boardHasData(context, boardCode)) {
+        else
+        */
+        if (!ChanBoard.boardHasData(context, boardCode)) {
             if (DEBUG) Log.i(TAG, "onThreadRefreshed no board data priority fetch /" + boardCode + "/");
             if (FetchChanDataService.scheduleBoardFetch(context, boardCode, true, false, threadNo)) {
                 startProgress(NetworkProfileManager.instance().getActivity().getChanHandler());
                 threadScheduled = true;
             }
         }
+        /*
         else {
             if (DEBUG) Log.i(TAG, "onThreadRefreshed normal fetch /" + boardCode + "/");
             FetchChanDataService.scheduleBoardFetch(context, boardCode, false, false);
         }
-
+        */
         if (threadScheduled) {
             Log.i(TAG, "onThreadRefreshed thread update scheduled after board fetch, exiting");
             return;
@@ -502,7 +506,7 @@ public class MobileProfile extends AbstractNetworkProfile {
         final ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
         Handler handler = activity == null ? null : activity.getChanHandler();
         if (DEBUG) Log.i(TAG, "Board /" + data.boardCode + "/ loaded, activity=" + activity + " lastActivity=" + data.activity);
-        if (handler != null && activity instanceof ThreadActivity && handler != null && data.secondaryThreadNo <= 0) { // refresh view pager
+        if (handler != null && activity instanceof ThreadActivity && data.secondaryThreadNo <= 0) { // refresh view pager
             handler.post(new Runnable() {
                 @Override
                 public void run() {

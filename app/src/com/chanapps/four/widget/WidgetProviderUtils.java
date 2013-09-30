@@ -39,7 +39,7 @@ import java.util.*;
 public final class WidgetProviderUtils {
 
     public static final String TAG = WidgetProviderUtils.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     public static final String WIDGET_PROVIDER_UTILS = "com.chanapps.four.widget.WidgetProviderUtils";
 
     public static Set<String> getActiveWidgetPref(Context context) {
@@ -198,22 +198,25 @@ public final class WidgetProviderUtils {
                 boolean hasWatchlist = (board != null && board.threads != null && board.threads.length > 0);
                 if (hasWatchlist)
                     GlobalAlarmReceiver.fetchWatchlistThreads(context);
-                */
 
                 boolean hasFavorites = ChanBoard.hasFavorites(context);
                 if (hasFavorites)
                     GlobalAlarmReceiver.fetchFavoriteBoards(context);
+                */
 
-                if (hasWidgets || hasFavorites)
-                    scheduleGlobalAlarm(context);
+                //if (hasWidgets) // || hasFavorites)
+                scheduleGlobalAlarm(context); // always schedule in case widgets are added in the future
             }
         });
     }
 
     public static void scheduleGlobalAlarm(final Context context) { // will reschedule if not already scheduled
+        GlobalAlarmReceiver.scheduleGlobalAlarm(context);
+        /*
         Intent intent = new Intent(context, GlobalAlarmReceiver.class);
         intent.setAction(GlobalAlarmReceiver.GLOBAL_ALARM_RECEIVER_SCHEDULE_ACTION);
         context.startService(intent);
+        */
         if (DEBUG) Log.i(TAG, "Scheduled global alarm");
     }
 
