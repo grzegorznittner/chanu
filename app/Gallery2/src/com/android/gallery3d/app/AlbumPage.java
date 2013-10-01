@@ -511,6 +511,10 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
         } else if (item.getItemId() == R.id.action_download) {
         	ArrayList<Path> ids = mSelectionManager.getSelected(true);
         	ThreadImageDownloadService.startDownloadImagesFromGallery(mActivity.getAndroidContext(), mMediaSetPath, ids);
+            Toast.makeText(mActivity.getAndroidContext(),
+                    com.chanapps.four.activity.R.string.download_all_images_notice,
+                    Toast.LENGTH_SHORT)
+                    .show();
             return true;
         } else { 
             return false;

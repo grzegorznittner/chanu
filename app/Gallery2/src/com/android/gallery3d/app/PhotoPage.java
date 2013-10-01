@@ -552,8 +552,14 @@ public class PhotoPage extends ActivityState
             }
             return true;
         } else if (action == R.id.action_download) {
-        	ArrayList<Path> ids = mSelectionManager.getSelected(true);
-        	ThreadImageDownloadService.startDownloadImagesFromGallery(mActivity.getAndroidContext(), mMediaSet.getPath(), ids);
+            mSelectionManager.toggle(path);
+            ArrayList<Path> ids = mSelectionManager.getSelected(true);
+            ThreadImageDownloadService.startDownloadImagesFromGallery(mActivity.getAndroidContext(), mMediaSet.getPath(), ids);
+            mSelectionManager.toggle(path);
+            Toast.makeText(mActivity.getAndroidContext(),
+                    com.chanapps.four.activity.R.string.download_all_images_notice,
+                    Toast.LENGTH_SHORT)
+                    .show();
             return true;
         } else if (action == R.id.action_setas || action == R.id.action_confirm_delete || action == R.id.action_rotate_ccw
         		 || action == R.id.action_rotate_cw || action == R.id.action_show_on_map || action == R.id.action_edit) {
