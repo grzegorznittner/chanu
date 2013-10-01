@@ -28,7 +28,7 @@ public class GlobalAlarmReceiver extends BroadcastReceiver {
 
     private static final long WIDGET_UPDATE_INTERVAL_MS = AlarmManager.INTERVAL_FIFTEEN_MINUTES; // FIXME should be configurable
     //private static final long WIDGET_UPDATE_INTERVAL_MS = 60000; // 60 sec, just for testing
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     @Override
     public void onReceive(final Context context, Intent intent) { // when first boot up, default and then schedule for refresh

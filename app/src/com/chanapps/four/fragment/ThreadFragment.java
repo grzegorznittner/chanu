@@ -63,7 +63,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xee;
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/#auto";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
@@ -791,9 +791,15 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 removeFromWatchlist();
                 return true;
             case R.id.scroll_to_bottom_menu:
-                int n = adapter.getCount() - 1;
+                final int n = adapter == null ? -1 : (adapter.getCount() - 1);
                 if (DEBUG) Log.i(TAG, "jumping to item n=" + n);
-                absListView.setSelection(n);
+                if (handler != null && n >= 0)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            absListView.setSelection(n);
+                        }
+                    });
                 return true;
             case R.id.post_reply_all_menu:
                 long[] postNos = { threadNo };
