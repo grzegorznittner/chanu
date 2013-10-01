@@ -244,7 +244,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 				if (post.tim != 0) {
 					fileLength = downloadImage(post);
 					if (fileLength > 0 && targetType == TargetType.TO_GALLERY) {
-						Uri uri = ChanFileStorage.getLocalImageUri(getBaseContext(), post);
+						Uri uri = ChanFileStorage.getMediaVisibleLocalImageUri(getBaseContext(), post);
 						File imageFile = new File(URI.create(uri.toString()));
 						storeImageInGallery(imageFile, post.imageName());
 					}
