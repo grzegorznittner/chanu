@@ -165,6 +165,13 @@
                     android:summaryOff="@string/pref_use_google_analytics_summ_off"
                     android:defaultValue="true" />
 
+            <CheckBoxPreference
+                    android:key="pref_autoupdate_threads"
+                    android:title="@string/pref_autoupdate_threads"
+                    android:summaryOn="@string/pref_autoupdate_threads_summ_on"
+                    android:summaryOff="@string/pref_autoupdate_threads_summ_off"
+                    android:defaultValue="true" />
+
             <!--
             <CheckBoxPreference
                     android:key="pref_show_nsfw_boards"

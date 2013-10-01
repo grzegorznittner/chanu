@@ -36,6 +36,7 @@ public class SettingsActivity extends Activity implements ChanIdentifiedActivity
     //public static final String PREF_START_WITH_FAVORITES = "pref_start_with_favorites";
     public static final String PREF_USE_FRIENDLY_IDS = "pref_use_friendly_ids";
     public static final String PREF_USE_GOOGLE_ANALYTICS = "pref_use_google_analytics";
+    public static final String PREF_AUTOUPDATE_THREADS = "pref_autoupdate_threads";
     public static final String PREF_THEME = "pref_theme";
     public static final String PREF_AUTOLOAD_IMAGES = "pref_autoload_images";
     public static final String PREF_DOWNLOAD_IMAGES = "pref_download_images";

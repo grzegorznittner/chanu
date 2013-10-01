@@ -522,6 +522,9 @@
     <string name="pref_use_google_analytics">Google Analytics</string>
     <string name="pref_use_google_analytics_summ_on">Send anonymous usage data</string>
     <string name="pref_use_google_analytics_summ_off">Don\'t send anonymous usage data</string>
+    <string name="pref_autoupdate_threads">Auto-Update Threads</string>
+    <string name="pref_autoupdate_threads_summ_on">Refresh threads every 30 seconds</string>
+    <string name="pref_autoupdate_threads_summ_off">Don\'t automatically refresh threads</string>
     <string name="pref_automatically_manage_watchlist">Auto-Manage Watchlist</string>
     <string name="pref_automatically_manage_watchlist_summ_on">Add and remove threads automatically</string>
     <string name="pref_automatically_manage_watchlist_summ_off">Manually add and remove threads</string>

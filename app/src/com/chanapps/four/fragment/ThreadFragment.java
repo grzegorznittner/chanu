@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -61,7 +63,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xee;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/#auto";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
@@ -362,8 +364,39 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             public void run() {
                 final ChanThread thread = ChanFileStorage.loadThreadData(getActivityContext(), boardCode, threadNo);
                 selectCurrentThread(thread);
+                scheduleAutoUpdate();
             }
         }).start();
+    }
+
+    protected static final int AUTOUPDATE_THREAD_DELAY_MS = 30000;
+
+    protected void scheduleAutoUpdate() {
+        if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() checking /" + boardCode + "/" + threadNo);
+        Context context = getActivityContext();
+        if (context == null)
+            return;
+        boolean autoUpdate = PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(SettingsActivity.PREF_AUTOUPDATE_THREADS, true);
+        if (!autoUpdate)
+            return;
+        if (handler != null) {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() auto refreshing /" + boardCode + "/" + threadNo);
+                    manualRefresh();
+                    if (handler != null) {
+                        if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() scheduling next auto refresh /" + boardCode + "/" + threadNo);
+                        scheduleAutoUpdate();
+                    }
+                }
+            }, AUTOUPDATE_THREAD_DELAY_MS);
+        }
+        else {
+            if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() null handler exiting /" + boardCode + "/" + threadNo);
+        }
     }
 
     protected static final int FROM_BOARD_THREAD_ADAPTER_COUNT = 5; // thread header + related title + 3 related boards
@@ -727,6 +760,12 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         ta.setChanActivityId(getChanActivityId());
     }
 
+    protected void manualRefresh() {
+        setProgress(true);
+        setActivityIdToFragment();
+        NetworkProfileManager.instance().manualRefresh(getChanActivity());
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -734,9 +773,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 navigateUp();
                 return true;
             case R.id.refresh_menu:
-                setProgress(true);
-                setActivityIdToFragment();
-                NetworkProfileManager.instance().manualRefresh(getChanActivity());
+                manualRefresh();
                 return true;
             case R.id.view_image_gallery_menu:
                 GalleryViewActivity.startAlbumViewActivity(getActivityContext(), boardCode, threadNo);
