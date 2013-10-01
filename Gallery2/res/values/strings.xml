@@ -131,6 +131,7 @@
   <string name="settings">Settings</string>
   <string name="add_account">Add account</string>
   <string name="download">Download</string>
+  <string name="download_all_images_notice">You will be notified when download finishes</string>
 
     <plurals name="number_of_items_selected">
         <item quantity="zero">%1$d item selected</item>
