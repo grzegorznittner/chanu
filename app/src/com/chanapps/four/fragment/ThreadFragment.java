@@ -379,8 +379,14 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         boolean autoUpdate = PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getBoolean(SettingsActivity.PREF_AUTOUPDATE_THREADS, true);
-        if (!autoUpdate)
+        if (!autoUpdate) {
+            if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() autoupdate disabled, exiting /" + boardCode + "/" + threadNo);
             return;
+        }
+        if (getActivity() != null && ((ThreadActivity)getActivity()).getCurrentFragment() != this) {
+            if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() not current fragment, exiting /" + boardCode + "/" + threadNo);
+            return;
+        }
         if (handler != null) {
             handler.postDelayed(new Runnable() {
                 @Override

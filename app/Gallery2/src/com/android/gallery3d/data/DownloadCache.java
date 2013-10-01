@@ -32,8 +32,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import com.nostra13.universalimageloader.utils.L;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -348,6 +350,13 @@ public class DownloadCache {
             try {
                 URL url = new URL(mUrl);
                 tempFile = File.createTempFile("cache", ".tmp", mRoot);
+                try {
+                    File f = new File(mRoot, ".nomedia");
+                    if (!f.exists())
+                        f.createNewFile();
+                } catch (IOException e) {
+                    L.i("Can't create \".nomedia\" file in gallery cache directory " + mRoot);
+                }
                 // download from url to tempFile
                 jc.setMode(ThreadPool.MODE_NETWORK);
                 boolean downloaded = DownloadUtils.requestDownload(jc, url, tempFile);

@@ -99,11 +99,13 @@ public final class StorageUtils {
 				L.w("Unable to create external cache directory");
 				return null;
 			}
-			try {
-				new File(appCacheDir, ".nomedia").createNewFile();
-			} catch (IOException e) {
-				L.i("Can't create \".nomedia\" file in application external cache directory");
-			}
+            try {
+                File f = new File(appCacheDir, ".nomedia");
+                if (!f.exists())
+                    f.createNewFile();
+            } catch (IOException e) {
+                L.i("Can't create \".nomedia\" file in app external cache dir " + appCacheDir);
+            }
 		}
 		return appCacheDir;
 	}

@@ -115,7 +115,7 @@ public class WebImageDialogFragment extends DialogFragment {
             return;
         }
         String postExt = "_downloaded_" + UUID.randomUUID() + ".jpg"; // correct?
-        fullImageUri = ChanFileStorage.getLocalImageUri(urlTextView.getContext(), boardCode, threadNo, postExt);
+        fullImageUri = ChanFileStorage.getHiddenLocalImageUri(urlTextView.getContext(), boardCode, threadNo, postExt);
         fullImagePath = (new File(URI.create(fullImageUri.toString()))).getAbsolutePath();
         DisplayImageOptions options = (new DisplayImageOptions.Builder())
                 .cacheOnDisc()

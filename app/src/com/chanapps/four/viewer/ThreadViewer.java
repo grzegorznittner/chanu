@@ -972,7 +972,7 @@ public class ThreadViewer {
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
         long postNo = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         String ext = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXT));
-        Uri uri = ChanFileStorage.getLocalImageUri(context, boardCode, postNo, ext);
+        Uri uri = ChanFileStorage.getHiddenLocalImageUri(context, boardCode, postNo, ext);
         File localImage = new File(URI.create(uri.toString()));
         if (localImage != null && localImage.exists() && localImage.canRead() && localImage.length() > 0)
             return localImage;

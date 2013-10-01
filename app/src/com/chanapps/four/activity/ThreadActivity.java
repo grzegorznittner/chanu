@@ -1039,14 +1039,26 @@ public class ThreadActivity
     };
 
     public void notifyBoardChanged() {
-        if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/ recreating pager");
+        if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/");
         new Thread(new Runnable() {
             @Override
             public void run() {
                 ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-                if (board.defData)
+                if (board.defData) {
+                    if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/ couldn't load board, exiting");
                     return;
-                createPagerAndSetCurrentItemAsync(board);
+                }
+                if (mPager != null && mPager.getAdapter() != null && mAdapter != null && mAdapter.getCount() > 0) {
+                    if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/ pager already filled, restarting loader");
+                    if (onTablet())
+                        getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
+                    mAdapter.setQuery(query);
+                    mAdapter.setBoard(board);
+                }
+                else {
+                    if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/ creating pager");
+                    createPagerAndSetCurrentItemAsync(board);
+                }
             }
         }).start();
     }

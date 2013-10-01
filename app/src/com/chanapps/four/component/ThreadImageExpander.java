@@ -56,7 +56,7 @@ public class ThreadImageExpander {
         long postId = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
         String boardCode = cursor.getString(cursor.getColumnIndex(ChanPost.POST_BOARD_CODE));
         String postExt = cursor.getString(cursor.getColumnIndex(ChanPost.POST_EXT));
-        Uri uri = ChanFileStorage.getLocalImageUri(viewHolder.list_item.getContext(), boardCode, postId, postExt);
+        Uri uri = ChanFileStorage.getHiddenLocalImageUri(viewHolder.list_item.getContext(), boardCode, postId, postExt);
 
         postW = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_W));
         postH = cursor.getInt(cursor.getColumnIndex(ChanPost.POST_H));

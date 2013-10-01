@@ -10,6 +10,7 @@ import java.util.*;
 
 import com.chanapps.four.service.BoardParserService;
 import com.chanapps.four.widget.WidgetProviderUtils;
+import com.nostra13.universalimageloader.utils.L;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -24,7 +25,7 @@ import com.nostra13.universalimageloader.utils.StorageUtils;
 
 public class ChanFileStorage {
     private static final String TAG = ChanFileStorage.class.getSimpleName();
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final int MAX_BOARDS_IN_CACHE = 100;
     private static final int MAX_THREADS_IN_CACHE = 200;
@@ -79,6 +80,39 @@ public class ChanFileStorage {
     public static File getBoardCacheDirectory(Context context, String boardCode) {
         String cacheDir = getRootCacheDirectory(context) + FILE_SEP + boardCode;
         File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+        return boardDir;
+    }
+
+    public static File getHiddenBoardCacheDirectory(Context context, String boardCode) {
+        String cacheDir = getRootCacheDirectory(context) + FILE_SEP + boardCode; // unix hack
+        final File boardDir = StorageUtils.getOwnCacheDirectory(context, cacheDir);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!boardDir.exists()) {
+                    if (!boardDir.mkdirs()) {
+                        Log.e(TAG, "couldn't create board cache directory " + boardDir);
+                        return;
+                    }
+                    if (DEBUG) Log.i(TAG, "created board cache directory " + boardDir);
+                }
+                try {
+                    File f = new File(boardDir, ".nomedia");
+                    if (!f.exists()) {
+                        if (!f.createNewFile()) {
+                            Log.e(TAG, "couldn't create .nomedia in board cache directory " + boardDir);
+                            return;
+                        }
+                        if (DEBUG) Log.i(TAG, "created .nomedia in board cache directory " + boardDir);
+                    }
+                    else {
+                        if (DEBUG) Log.i(TAG, "file .nomedia already exists in board cache directory " + boardDir);
+                    }
+                } catch (IOException e) {
+                    L.i("Can't create \".nomedia\" file in board cache dir " + boardDir);
+                }
+            }
+        }).start();
         return boardDir;
     }
 
@@ -602,11 +636,11 @@ public class ChanFileStorage {
         return post.board + "_" + post.imageName();
     }
 
-    public static Uri getLocalImageUri(Context context, String boardCode, long postNo, String ext) {
-        return Uri.parse("file://" + getBoardCacheDirectory(context, boardCode) + FILE_SEP + postNo + ext);
+    public static Uri getHiddenLocalImageUri(Context context, String boardCode, long postNo, String ext) {
+        return Uri.parse("file://" + getHiddenBoardCacheDirectory(context, boardCode) + FILE_SEP + postNo + ext);
     }
 
-    public static Uri getLocalImageUri(Context context, ChanPost post) {
+    public static Uri getMediaVisibleLocalImageUri(Context context, ChanPost post) {
         return Uri.parse("file://" + getBoardCacheDirectory(context, post.board) + FILE_SEP + post.imageName());
     }
 
