@@ -21,6 +21,9 @@
             android:showAsAction="always|withText"
             android:visible="false" />
             -->
+    <item android:id="@+id/action_download"
+            android:title="@string/download"
+            android:showAsAction="never" />
     <item android:id="@+id/action_share"
             android:icon="@drawable/ic_menu_share_holo_light"
             android:title="@string/share"

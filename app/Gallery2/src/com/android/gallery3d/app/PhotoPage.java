@@ -16,6 +16,8 @@
 
 package com.android.gallery3d.app;
 
+import java.util.ArrayList;
+
 import android.app.ActionBar;
 import android.app.ActionBar.OnMenuVisibilityListener;
 import android.app.Activity;
@@ -68,6 +70,7 @@ import com.chanapps.four.data.LastActivity;
 import com.chanapps.four.gallery3d.R;
 import com.chanapps.four.service.ImageDownloadService;
 import com.chanapps.four.service.NetworkProfileManager;
+import com.chanapps.four.service.ThreadImageDownloadService;
 
 public class PhotoPage extends ActivityState
         implements PhotoView.PhotoTapListener, FilmStripView.Listener,
@@ -547,6 +550,10 @@ public class PhotoPage extends ActivityState
             } else {
                 showDetails(currentIndex);
             }
+            return true;
+        } else if (action == R.id.action_download) {
+        	ArrayList<Path> ids = mSelectionManager.getSelected(true);
+        	ThreadImageDownloadService.startDownloadImagesFromGallery(mActivity.getAndroidContext(), mMediaSet.getPath(), ids);
             return true;
         } else if (action == R.id.action_setas || action == R.id.action_confirm_delete || action == R.id.action_rotate_ccw
         		 || action == R.id.action_rotate_cw || action == R.id.action_show_on_map || action == R.id.action_edit) {

@@ -14,12 +14,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import android.app.Notification;
 import android.app.Notification.Builder;
@@ -35,6 +37,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.android.gallery3d.data.Path;
 import com.chanapps.four.activity.ChanActivityId;
 import com.chanapps.four.activity.ChanIdentifiedService;
 import com.chanapps.four.activity.GalleryViewActivity;
@@ -47,6 +50,7 @@ import com.chanapps.four.data.ChanFileStorage;
 import com.chanapps.four.data.ChanPost;
 import com.chanapps.four.data.ChanThread;
 import com.chanapps.four.data.FetchParams;
+import com.chanapps.four.gallery.ChanOffLineSource;
 import com.chanapps.four.service.profile.NetworkProfile;
 import com.chanapps.four.service.profile.NetworkProfile.Failure;
 
@@ -62,6 +66,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
     private static final String RESTART_COUNTER = "ThreadImageDownloadService.restartCounter";
     private static final String SCHEDULE_TIME = "ThreadImageDownloadService.startTime";
     private static final String POST_NOS = "ThreadImageDownloadService.postNos";
+    private static final String FILE_NAMES = "ThreadImageDownloadService.fileNames";
     
     private static final String CHANU_FOLDER = "chanu" + File.separator;
 
@@ -71,19 +76,59 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 
     public static void startDownloadToBoardFolder(Context context, String board, long threadNo) {
         //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.PRELOAD_ALL_IMAGES);
-        startDownload(context, board, threadNo, TargetType.TO_BOARD, 0, 0, new long[] {});
+        startDownload(context, board, threadNo, TargetType.TO_BOARD, 0, 0, new long[] {}, null);
     }
     
     public static void startDownloadToGalleryFolder(Context context, String board, long threadNo) {
         //NetworkProfileManager.instance().getUserStatistics().featureUsed(UserStatistics.ChanFeature.DOWNLOAD_ALL_IMAGES_TO_GALLERY);
-        startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, new long[] {});
+        startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, new long[] {}, null);
     }
 
     public static void startDownloadToGalleryFolder(Context context, String board, long threadNo, long[] postNos) {
-        startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, postNos);
+        startDownload(context, board, threadNo, TargetType.TO_GALLERY, 0, 0, postNos, null);
     }
+    
+    public static void startCopyCacheToGalleryFolder(Context context, String board, String[] fileNames) {
+        startDownload(context, board, 0, TargetType.TO_GALLERY, 0, 0, null, fileNames);
+    }
+    
+    public static void startDownloadImagesFromGallery(Context context, Path mMediaSetPath, ArrayList<Path> ids) {
+		String[] mMediaSet = mMediaSetPath.split();
+		if (mMediaSet[0].equals(ChanOffLineSource.SOURCE_PREFIX)) {
+			if (ids == null || ids.size() == 0) {
+				if (DEBUG) Log.w(TAG, "Download images from gallery " + mMediaSetPath + ", all images");
+				ThreadImageDownloadService.startCopyCacheToGalleryFolder(context, mMediaSet[1], null);
+			} else {
+				String[] fileNames = new String[ids.size()];
+				int i = 0;
+				for (Path path : ids) {
+					fileNames[i++] = path.split()[2];
+					if (DEBUG) Log.w(TAG, "   filename: " + fileNames[i-1] + ", path: " + ids);
+				}
+				if (DEBUG) Log.w(TAG, "Download images from gallery " + mMediaSetPath + ", num images: " + fileNames.length);
+				ThreadImageDownloadService.startCopyCacheToGalleryFolder(context, mMediaSet[1], fileNames);
+			}
+		} else {
+			long threadId = NumberUtils.toLong(mMediaSet[2], 0);
+			if (ids == null || ids.size() == 0) {
+				if (DEBUG) Log.w(TAG, "Download images from gallery " + mMediaSetPath + ", all images");
+				ThreadImageDownloadService.startDownloadToGalleryFolder(context, mMediaSet[1], threadId);
+			} else {
+				long[] fileNames = new long[ids.size()];
+				int i = 0;
+				for (Path path : ids) {
+					fileNames[i++] = NumberUtils.toLong(path.split()[3], 0);
+				}
+				if (DEBUG) Log.w(TAG, "Download images from gallery " + mMediaSetPath + ", num images: " + fileNames.length);
+				ThreadImageDownloadService.startDownloadToGalleryFolder(context, mMediaSet[1], threadId, fileNames);
+			}
+		}
+	}
+
+
+    
     private static void startDownload(Context context, String board, long threadNo, TargetType targetType,
-    		long startPostNo, int restartCounter, long[] postNos) {
+    		long startPostNo, int restartCounter, long[] postNos, String[] fileNames) {
         if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") 
         		+ " all image download service for thread " + board + "/" + threadNo
         		+ (startPostNo == 0 ? "" : " from post " + startPostNo) + " " + targetType);
@@ -95,6 +140,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
         intent.putExtra(RESTART_COUNTER, restartCounter);
         intent.putExtra(SCHEDULE_TIME, Calendar.getInstance().getTimeInMillis());
         intent.putExtra(POST_NOS, postNos);
+        intent.putExtra(FILE_NAMES, fileNames);
         context.startService(intent);
     }
     /*
@@ -123,6 +169,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
     private String targetFolder = null;
     private long scheduleTime = 0;
     private long[] postNos = {};
+    private String[] fileNames = {};
 	
 	@Override
 	protected void onHandleIntent(Intent intent) {
@@ -133,12 +180,102 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		targetType = TargetType.valueOf(intent.getStringExtra(TARGET_TYPE));
 		scheduleTime = intent.getLongExtra(SCHEDULE_TIME, 0);
 		postNos = intent.getLongArrayExtra(POST_NOS);
+		fileNames = intent.getStringArrayExtra(FILE_NAMES);
 
 		if (NetworkProfile.Type.NO_CONNECTION == NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
-			startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter, postNos);
+			startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter, postNos, fileNames);
 		}
 		
 		ChanThread thread = ChanFileStorage.loadThreadData(getBaseContext(), board, threadNo);
+		targetFolder = determineDownloadFolder(thread);
+		
+		try {
+			if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") 
+	        		+ " handling all image download service for thread " + board + "/" + threadNo
+	        		+ ((postNos != null && postNos.length == 0) ? "" : " for posts " + Arrays.toString(postNos))
+	        		+ ((fileNames != null && fileNames.length == 0) ? "" : " for filenames " + Arrays.toString(fileNames))
+	        		+ (startPostNo == 0 ? "" : " from post " + startPostNo)
+	        		+ (restartCounter > 0 ? ", restarted " + restartCounter + " time(s)." : ""));
+
+			if (threadNo != 0) {
+				downloadImages(thread);
+			} else {
+				downloadImagesFromCache(board);
+			}
+			
+			if (startPostNo != 0 || threadNo == 0) {
+				if (targetType == TargetType.TO_GALLERY) {
+					new MultipleFileMediaScanner(getApplicationContext(), targetType, thread, board, threadNo, fileNames, targetFolder);
+				} else {
+					notifyDownloadFinished(getApplicationContext(), targetType, thread, board, threadNo, targetFolder);
+				}
+			}
+		} catch (Exception e) {
+			if (NetworkProfile.Type.NO_CONNECTION == NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
+				startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter, postNos, fileNames);
+			} else {
+	            Log.e(TAG, "Error in image download service", e);
+	            if (restartCounter > MAX_RESTARTS) {
+	            	NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
+	            	notifyDownloadError(thread);
+	            } else {
+	            	startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter + 1, postNos, fileNames);
+	            }
+			}
+		}
+	}
+
+	private void downloadImages(ChanThread thread) throws IOException, MalformedURLException, FileNotFoundException, InterruptedException {
+        // be efficient
+        Set<Long> postNoSet = new HashSet<Long>(postNos.length);
+        for (int i = 0; i < postNos.length; i++) {
+        	if (postNos[i] != 0) {
+        		postNoSet.add(postNos[i]);
+        	}
+        }
+
+		boolean startPointFound = startPostNo == 0;
+		int fileLength = 0;
+		for (ChanPost post : thread.posts) {
+		    if (postNos.length != 0 && !postNoSet.contains(post.no)) // only download selected posts
+		        continue;
+			if (startPointFound || post.no == startPostNo) {
+				startPointFound = true;
+				if (post.tim != 0) {
+					fileLength = downloadImage(post);
+					if (fileLength > 0 && targetType == TargetType.TO_GALLERY) {
+						Uri uri = ChanFileStorage.getLocalImageUri(getBaseContext(), post);
+						File imageFile = new File(URI.create(uri.toString()));
+						storeImageInGallery(imageFile, post.imageName());
+					}
+				}
+				startPostNo = post.no;  // setting last fetched image no
+			}
+		}
+	}
+
+	private void downloadImagesFromCache(String board) throws IOException, MalformedURLException, FileNotFoundException, InterruptedException {
+		File boardCacheFolder = ChanFileStorage.getBoardCacheDirectory(getBaseContext(), board);
+		if (fileNames == null || fileNames.length == 0) {
+			// store all images from cache into gallery
+			fileNames = boardCacheFolder.list();
+		}
+		for (String fileName : fileNames) {
+			if (fileName.endsWith(".gif") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png")) {
+				File imageFile = new File(boardCacheFolder, fileName);
+				if (imageFile.exists() && targetType == TargetType.TO_GALLERY) {
+					storeImageInGallery(imageFile, fileName);
+					if (DEBUG) Log.w(TAG, "Image " + imageFile.getAbsolutePath() + " copied to gallery.");
+				} else {
+					if (DEBUG) Log.w(TAG, "Image " + imageFile.getAbsolutePath() + " will not be copied to gallery. It doesn't exist!");
+				}
+			} else {
+				if (DEBUG) Log.w(TAG, "Image " + board + "/" + fileName + " will not be copied to gallery. It doesn't have image extension!");
+			}
+		}
+	}
+
+	private String determineDownloadFolder(ChanThread thread) {
 		if (targetType == TargetType.TO_GALLERY) {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 			DownloadImages downloadType = DownloadImages.valueOf(prefs.getString(
@@ -146,69 +283,21 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 
 			switch(downloadType) {
 			case ALL_IN_ONE:
-				targetFolder = "";
-				break;
+				return "";
 			case PER_BOARD:
-				targetFolder = "board_" + thread.board;
-				break;
+				return "board_" + board;
 			case PER_THREAD:
 //				Format formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 //				String now = formatter.format(scheduleTime);
-				targetFolder = "board_" + thread.board + "_" + thread.no;
-				break;
-			}
-		}
-		
-		try {
-			if (DEBUG) Log.i(TAG, (restartCounter > 0 ? "Restart " : "Start") 
-	        		+ " handling all image download service for thread " + board + "/" + threadNo
-	        		+ (postNos.length == 0 ? "" : " for posts " + Arrays.toString(postNos))
-	        		+ (startPostNo == 0 ? "" : " from post " + startPostNo)
-	        		+ (restartCounter > 0 ? ", restarted " + restartCounter + " time(s)." : ""));
-
-            // be efficient
-            Set<Long> postNoSet = new HashSet<Long>(postNos.length);
-            for (int i = 0; i < postNos.length; i++)
-                postNoSet.add(postNos[i]);
-
-			boolean startPointFound = startPostNo == 0;
-			int fileLength = 0;
-			for (ChanPost post : thread.posts) {
-                if (postNos.length != 0 && !postNoSet.contains(post.no)) // only download selected posts
-                    continue;
-				if (startPointFound || post.no == startPostNo) {
-					startPointFound = true;
-					if (post.tim != 0) {
-						fileLength = downloadImage(post);
-						if (fileLength > 0 && targetType == TargetType.TO_GALLERY) {
-							storeImageInGallery(post);
-						}
-					}
-					startPostNo = post.no;  // setting last fetched image no
-				}
-			}
-			if (startPostNo != 0) {
-				if (targetType == TargetType.TO_GALLERY) {
-					new MultipleFileMediaScanner(getApplicationContext(), targetType, thread, board, threadNo, targetFolder);
+				if (thread != null) {
+					return "board_" + thread.board + "_" + thread.no;
 				} else {
-					notifyDownloadFinished(getApplicationContext(), targetType, thread, board, threadNo, targetFolder);
+					// offline mode doesn't provide thread info so download defaults to PER_BOARD
+					return "board_" + board;
 				}
-			} else {
-                if (DEBUG) Log.w(TAG, "No images to download for thread " + board + "/" + threadNo);
-			}
-		} catch (Exception e) {
-			if (NetworkProfile.Type.NO_CONNECTION == NetworkProfileManager.instance().getCurrentProfile().getConnectionType()) {
-				startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter, postNos);
-			} else {
-	            Log.e(TAG, "Error in image download service", e);
-	            if (restartCounter > MAX_RESTARTS) {
-	            	NetworkProfileManager.instance().failedFetchingData(this, Failure.NETWORK);
-	            	notifyDownloadError(thread);
-	            } else {
-	            	startDownload(getBaseContext(), board, threadNo, targetType, startPostNo, restartCounter + 1, postNos);
-	            }
 			}
 		}
+		return "board_" + board;
 	}
 
 	private int downloadImage(ChanPost post) throws IOException, MalformedURLException, FileNotFoundException, InterruptedException {
@@ -245,20 +334,20 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		}
 	}
 	
-	private void storeImageInGallery(ChanPost post) throws IOException {
+	private void storeImageInGallery(File imageFile, String galleryImageName) throws IOException {
 		InputStream in = null;
 		OutputStream out = null;
 		try {
-			Uri uri = ChanFileStorage.getMediaVisibleLocalImageUri(getBaseContext(), post);
-			File imageFile = new File(URI.create(uri.toString()));
-			
-			in = new FileInputStream(imageFile);
 			File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 
 					CHANU_FOLDER + targetFolder);
 			if (!galleryFolder.exists() || !galleryFolder.isDirectory()) {
 				galleryFolder.mkdirs();
 			}
-			File galleryFile = new File(galleryFolder, post.imageName());
+			File galleryFile = new File(galleryFolder, galleryImageName);
+			if (imageFile.length() == galleryFile.length() && imageFile.lastModified() < galleryFile.lastModified()) {
+				return;
+			}
+			in = new FileInputStream(imageFile);
 			out = new FileOutputStream(galleryFile);
 			IOUtils.copy(in, out);
 			IOUtils.closeQuietly(out);
@@ -381,6 +470,7 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 		private ChanThread thread;
 		private String board = null;
 	    private long threadNo = 0;
+	    private String[] filenames;
 	    private TargetType targetType = null;
 	    private String targetFolder = null;
 	    private String firstImage = null;
@@ -388,27 +478,42 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 	    private int scansScheduled = 0;
 
 		public MultipleFileMediaScanner(Context context, TargetType targetType, ChanThread thread,
-				String board, long threadNo, String targetFolder) {
+				String board, long threadNo, String filenames[], String targetFolder) {
 			this.context = context;
 		    this.thread = thread;
 		    this.board = board;
 		    this.threadNo = threadNo;
+		    this.filenames = filenames;
 		    this.targetFolder = targetFolder;
 		    this.targetType = targetType;
 		    scannerConn = new MediaScannerConnection(context, this);
 		    scannerConn.connect();
 		}
-
+		
 		@Override
 		public void onMediaScannerConnected() {
 			File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 
 					CHANU_FOLDER + targetFolder);
-			for (ChanPost post : thread.posts) {
-				if (post.tim != 0) {
-					File image = new File(galleryFolder, post.imageName());
+			if (threadNo > 0) {
+				for (ChanPost post : thread.posts) {
+					if (post.tim != 0) {
+						File image = new File(galleryFolder, post.imageName());
+						if (image.exists()) {
+							scansScheduled++;
+	                        if (DEBUG) Log.w(TAG, "Schedulling scan: " + image.getAbsolutePath() + " counter=" + scansScheduled);
+							scannerConn.scanFile(image.getAbsolutePath(), null);
+							if (firstImage == null) {
+								firstImage = image.getAbsolutePath();
+							}
+						}
+					}
+				}
+			} else {
+				for (String filename : filenames) {
+					File image = new File(galleryFolder, filename);
 					if (image.exists()) {
 						scansScheduled++;
-                        if (DEBUG) Log.i(TAG, "Schedulling scan: " + image.getAbsolutePath() + " counter=" + scansScheduled);
+                        if (DEBUG) Log.w(TAG, "Schedulling scan: " + image.getAbsolutePath() + " counter=" + scansScheduled);
 						scannerConn.scanFile(image.getAbsolutePath(), null);
 						if (firstImage == null) {
 							firstImage = image.getAbsolutePath();
@@ -425,7 +530,9 @@ public class ThreadImageDownloadService extends BaseChanService implements ChanI
 			if (scansScheduled <= 0) {
 				File galleryFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), 
 						CHANU_FOLDER + targetFolder);
-				notifyDownloadFinished(context, targetType, thread, board, threadNo, firstImage);
+				if (threadNo > 0) {
+					notifyDownloadFinished(context, targetType, thread, board, threadNo, firstImage);
+				}
 				scannerConn.disconnect();
 			}
 		}

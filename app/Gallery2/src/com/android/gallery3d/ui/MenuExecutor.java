@@ -17,6 +17,7 @@
 package com.android.gallery3d.ui;
 
 import com.chanapps.four.gallery3d.R;
+import com.chanapps.four.service.ThreadImageDownloadService;
 import com.android.gallery3d.app.CropImage;
 import com.android.gallery3d.app.GalleryActivity;
 import com.android.gallery3d.common.Utils;
@@ -156,6 +157,7 @@ public class MenuExecutor {
         boolean supportInfo = (supported & MediaObject.SUPPORT_INFO) != 0;
         boolean supportImport = (supported & MediaObject.SUPPORT_IMPORT) != 0;
 
+        setMenuItemVisibility(menu, R.id.action_download, true);
         setMenuItemVisibility(menu, R.id.action_delete, supportDelete);
         setMenuItemVisibility(menu, R.id.action_rotate_ccw, supportRotate);
         setMenuItemVisibility(menu, R.id.action_rotate_cw, supportRotate);
@@ -184,6 +186,12 @@ public class MenuExecutor {
             } else {
                 mSelectionManager.selectAll();
             }
+            return true;
+        } else if (action == R.id.action_download) {
+        	ArrayList<Path> ids = mSelectionManager.getSelected(true);
+        	if (ids != null && ids.size() > 0) {
+        		ThreadImageDownloadService.startDownloadImagesFromGallery(mActivity.getAndroidContext(), ids.get(0), ids);
+        	}
             return true;
         } else if (action == R.id.action_crop) {
             Path path = getSingleSelectedPath();

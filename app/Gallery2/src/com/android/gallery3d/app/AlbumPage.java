@@ -31,7 +31,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.chanapps.four.gallery.ChanOffLineAlbum;
+import com.chanapps.four.gallery.ChanOffLineSource;
 import com.chanapps.four.gallery3d.R;
+import com.chanapps.four.service.ThreadImageDownloadService;
 import com.android.gallery3d.common.Utils;
 import com.android.gallery3d.data.DataManager;
 import com.android.gallery3d.data.MediaDetails;
@@ -49,6 +52,7 @@ import com.android.gallery3d.ui.GLCanvas;
 import com.android.gallery3d.ui.GLView;
 import com.android.gallery3d.ui.GridDrawer;
 import com.android.gallery3d.ui.HighlightDrawer;
+import com.android.gallery3d.ui.Log;
 import com.android.gallery3d.ui.PositionProvider;
 import com.android.gallery3d.ui.PositionRepository;
 import com.android.gallery3d.ui.PositionRepository.Position;
@@ -58,7 +62,10 @@ import com.android.gallery3d.ui.StaticBackground;
 import com.android.gallery3d.util.Future;
 import com.android.gallery3d.util.GalleryUtils;
 
+import java.util.ArrayList;
 import java.util.Random;
+
+import org.apache.commons.lang3.math.NumberUtils;
 
 public class AlbumPage extends ActivityState implements GalleryActionBar.ClusterRunner,
         SelectionManager.SelectionListener, MediaSet.SyncListener {
@@ -500,6 +507,10 @@ public class AlbumPage extends ActivityState implements GalleryActionBar.Cluster
             } else {
                 showDetails();
             }
+            return true;
+        } else if (item.getItemId() == R.id.action_download) {
+        	ArrayList<Path> ids = mSelectionManager.getSelected(true);
+        	ThreadImageDownloadService.startDownloadImagesFromGallery(mActivity.getAndroidContext(), mMediaSetPath, ids);
             return true;
         } else { 
             return false;
