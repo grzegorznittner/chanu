@@ -63,7 +63,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected static final int DRAWABLE_ALPHA_LIGHT = 0xc2;
     protected static final int DRAWABLE_ALPHA_DARK = 0xee;
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final String GOOGLE_TRANSLATE_ROOT = "http://translate.google.com/#auto";
     public static final int MAX_HTTP_GET_URL_LEN = 2000;
@@ -388,22 +388,25 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             return;
         }
         if (handler != null) {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() auto refreshing /" + boardCode + "/" + threadNo);
-                    manualRefresh();
-                    if (handler != null) {
-                        if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() scheduling next auto refresh /" + boardCode + "/" + threadNo);
-                        scheduleAutoUpdate();
-                    }
-                }
-            }, AUTOUPDATE_THREAD_DELAY_MS);
+            handler.removeCallbacks(autoUpdateRunnable); // deschedule any current updates
+            handler.postDelayed(autoUpdateRunnable, AUTOUPDATE_THREAD_DELAY_MS);
         }
         else {
             if (DEBUG) Log.i(TAG, "scheduleAutoUpdate() null handler exiting /" + boardCode + "/" + threadNo);
         }
     }
+
+    protected final Runnable autoUpdateRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (DEBUG) Log.i(TAG, "autoUpdateRunnable auto refreshing /" + boardCode + "/" + threadNo);
+            manualRefresh();
+            if (handler != null) {
+                if (DEBUG) Log.i(TAG, "autoUpdateRunnable scheduling next auto refresh /" + boardCode + "/" + threadNo);
+                scheduleAutoUpdate();
+            }
+        }
+    };
 
     protected static final int FROM_BOARD_THREAD_ADAPTER_COUNT = 5; // thread header + related title + 3 related boards
 
@@ -483,25 +486,30 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-        if (absListView == null) {
-                        if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " null list view, exiting");
-                        return;
-                    }
+                if (absListView == null) {
+                    if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " null list view, exiting");
+                    return;
+                }
 
-                    if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " scrolling to pos=" + postPos + " on UI thread");
+                if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " scrolling to pos=" + postPos + " on UI thread");
 
-                    //(new ScrollerRunnable(absListView)).start(postPos);
-                    //absListView.smoothScrollToPosition(postPos);
+                //(new ScrollerRunnable(absListView)).start(postPos);
+                //absListView.smoothScrollToPosition(postPos);
+                absListView.requestFocusFromTouch();
                 absListView.setSelection(postPos);
                 //if (uiCallback != null)
                 //    uiCallback.run();
             }
         }, 100);
 
+        /*
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (DEBUG) Log.i(TAG, "scrollToPost() postNo=" + scrollToPostNo + " highlighting post pos=" + postPos);
+                if (absListView != null)
+                    absListView.setSelection(postPos);
+
                 SparseBooleanArray booleanArray = absListView.getCheckedItemPositions();
                 for (int i = 0; i < absListView.getCount(); i++)
                     if (booleanArray.get(i, false) && i != postPos)
@@ -509,10 +517,9 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 if (!booleanArray.get(postPos, false))
                     absListView.setItemChecked(postPos, true);
                 postNo = -1;
-                //To change body of implemented methods use File | Settings | File Templates.
             }
         }, 150);
-
+        */
     }
 
     protected void selectCurrentThread(final ChanThread thread) {
@@ -767,6 +774,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     }
 
     protected void manualRefresh() {
+        if (handler != null)
+            handler.removeCallbacks(autoUpdateRunnable); // deschedule autoupdates while refreshing
         setProgress(true);
         setActivityIdToFragment();
         NetworkProfileManager.instance().manualRefresh(getChanActivity());
@@ -1088,7 +1097,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             if (itemView == null)
                 return false;
 
-            absListView.setItemChecked(pos, true);
+            //absListView.setItemChecked(pos, true);
 
             if (actionMode == null) {
                 if (DEBUG) Log.i(TAG, "starting action mode...");

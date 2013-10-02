@@ -57,6 +57,7 @@ abstract public class
 
     @Override
     public void onConfigurationChanged(Configuration config) {
+        super.onConfigurationChanged(config);
         mDrawerToggle.onConfigurationChanged(config);
     }
 

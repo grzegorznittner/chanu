@@ -964,7 +964,14 @@ public class ThreadActivity
             }
             if (found) {
                 if (DEBUG) Log.i(TAG, "onBoardsTabletLoadFinished threadNo=" + threadNo + " pos=" + pos);
-                boardGrid.setSelection(pos);
+                final int selectedPos = pos;
+                if (handler != null)
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            boardGrid.setSelection(selectedPos);
+                        }
+                    });
             }
             else {
                 if (DEBUG) Log.i(TAG, "onBoardsTabletLoadFinished threadNo=" + threadNo + " thread not found");
