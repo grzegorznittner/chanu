@@ -183,6 +183,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         else {
             if (DEBUG) Log.i(TAG, "onStart /" + boardCode + "/" + threadNo + " no thread found, skipping loader");
         }
+        scheduleAutoUpdate();
     }
 
     protected void restartIfDeadAsync() {

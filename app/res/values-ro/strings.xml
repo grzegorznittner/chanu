@@ -610,8 +610,8 @@
     <string name="pref_about_title">Chanu</string>
     <string name="pref_about_title_sum">4chan Reloaded</string>
     <string name="pref_about_application_category">Application</string>
-    <string name="pref_about_application_version">Version 1.25 RC1</string>
-    <string name="pref_about_application_version_sum">Released 13 Sep 2013</string>
+    <string name="pref_about_application_version">Version %1$s</string>
+    <string name="pref_about_application_version_sum">Released %1$s</string>
     <string name="pref_about_application_rate">Rate Us</string>
     <string name="pref_about_application_rate_sum">Visit Chanu on Google Play</string>
     <string name="pref_about_data_category">Uses</string>

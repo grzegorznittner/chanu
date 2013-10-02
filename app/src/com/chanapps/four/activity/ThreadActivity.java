@@ -1050,7 +1050,7 @@ public class ThreadActivity
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
+                final ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
                 if (board.defData) {
                     if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/ couldn't load board, exiting");
                     return;
@@ -1059,8 +1059,14 @@ public class ThreadActivity
                     if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/ pager already filled, restarting loader");
                     if (onTablet())
                         getSupportLoaderManager().initLoader(LOADER_ID, null, loaderCallbacks); // board loader for tablet view
-                    mAdapter.setQuery(query);
-                    mAdapter.setBoard(board);
+                    if (handler != null)
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mAdapter.setQuery(query);
+                                mAdapter.setBoard(board);
+                            }
+                        });
                 }
                 else {
                     if (DEBUG) Log.i(TAG, "notifyBoardChanged() /" + boardCode + "/ creating pager");
