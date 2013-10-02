@@ -25,7 +25,7 @@ import com.android.gallery3d.ui.PositionRepository.Position;
 public class AlbumView extends SlotView {
     @SuppressWarnings("unused")
     private static final String TAG = "AlbumView";
-    private static final int CACHE_SIZE = 64;
+    private static final int CACHE_SIZE = 128;
 
     private int mVisibleStart = 0;
     private int mVisibleEnd = 0;

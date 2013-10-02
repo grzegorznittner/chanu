@@ -29,7 +29,7 @@ import java.util.Random;
 public class AlbumSetView extends SlotView {
     @SuppressWarnings("unused")
     private static final String TAG = "AlbumSetView";
-    private static final int CACHE_SIZE = 32;
+    private static final int CACHE_SIZE = 64;
     private static final float PHOTO_DISTANCE = 35f;
 
     private int mVisibleStart;
