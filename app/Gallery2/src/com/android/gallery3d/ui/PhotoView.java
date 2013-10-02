@@ -16,21 +16,19 @@
 
 package com.android.gallery3d.ui;
 
-import com.chanapps.four.gallery3d.R;
-import com.android.gallery3d.app.GalleryActivity;
-import com.android.gallery3d.common.Utils;
-import com.android.gallery3d.data.Path;
-import com.android.gallery3d.ui.PositionRepository.Position;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.RectF;
 import android.os.Message;
-import android.os.SystemClock;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+
+import com.android.gallery3d.app.GalleryActivity;
+import com.android.gallery3d.data.Path;
+import com.android.gallery3d.ui.PositionRepository.Position;
+import com.chanapps.four.gallery3d.R;
 
 public class PhotoView extends GLView {
     @SuppressWarnings("unused")
