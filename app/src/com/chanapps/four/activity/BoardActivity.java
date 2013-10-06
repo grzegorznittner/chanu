@@ -877,7 +877,6 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
     public void refresh(final String refreshMessage) {
         if (DEBUG) Log.i(TAG, "refresh() /" + boardCode + "/ msg=" + refreshMessage);
         ChanBoard board = ChanFileStorage.loadBoardData(getApplicationContext(), boardCode);
-        invalidateOptionsMenu(); // in case spinner needs to be reset
         if (board == null) {
             board = ChanBoard.getBoardByCode(getApplicationContext(), boardCode);
         }
@@ -885,6 +884,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    invalidateOptionsMenu(); // in case spinner needs to be reset
                     if (DEBUG) Log.i(TAG, "refresh() /" + boardCode + "/ msg=" + refreshMessage + " restarting loader");
                     getSupportLoaderManager().restartLoader(0, null, loaderCallbacks);
                     if (refreshMessage != null)

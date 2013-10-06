@@ -32,7 +32,7 @@ abstract public class
 {
     protected static final String TAG = AbstractBoardSpinnerActivity.class.getSimpleName();
     protected static final boolean DEBUG = false;
-    protected static final boolean DEVELOPER_MODE = false;
+    protected static final boolean DEVELOPER_MODE = true;
 
     protected static final String BOARD_CODE_PATTERN = "/([^/]*)/.*";
 

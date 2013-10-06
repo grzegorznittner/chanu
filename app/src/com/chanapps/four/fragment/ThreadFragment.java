@@ -1345,10 +1345,13 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             intent.putExtra(Intent.EXTRA_TEXT, extraText);
             intent.setType("image/jpeg");
             setShareIntent(intent);
+            /*
+            // causes images to show up in the gallery, so ignoring for now
             if (missingPaths.size() > 0) {
                 if (DEBUG) Log.i(TAG, "launching scanner for missing paths count=" + missingPaths.size());
                 asyncUpdateSharedIntent(missingPaths);
             }
+            */
         }
     }
 
@@ -1359,7 +1362,8 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             paths[i] = pathList.get(i);
             types[i] = "image/jpeg";
         }
-        MediaScannerConnection.scanFile(getActivityContext(), paths, types, mediaScannerListener);
+        //MediaScannerConnection.scanFile(getActivityContext(), paths, types, mediaScannerListener);
+        // don't do it, it causes images to show up in gallery every time you click overflow menu
     }
 
     public void onRefresh() {
@@ -1442,6 +1446,10 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected View.OnClickListener overflowListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            if (v == null)
+                return;
+            if (absListView == null)
+                return;
             int pos = absListView.getPositionForView(v);
             if (pos >= 0) {
                 absListView.setItemChecked(pos, true);
@@ -1455,6 +1463,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             popup.setOnDismissListener(popupDismissListener);
             MenuItem shareItem = popup.getMenu().findItem(R.id.thread_context_share_action_menu);
             shareActionProvider = shareItem == null ? null : (ShareActionProvider) shareItem.getActionProvider();
+            if (DEBUG) Log.i(TAG, "overflowListener.onClick() popup called shareActionProvider=" + shareActionProvider);
             popup.show();
         }
     };
