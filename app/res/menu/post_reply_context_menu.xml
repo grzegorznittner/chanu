@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:id="@+id/post_reply_quote_menu"
+          android:title="@string/post_reply_all_quote_menu"
+          android:icon="@drawable/social_chat"
+            />
+
     <item android:id="@+id/post_reply_web_menu"
           android:title="@string/post_reply_web_menu"
           android:icon="@drawable/location_web_site"

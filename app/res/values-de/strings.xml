@@ -139,8 +139,12 @@
   <string name="thread_reply_menu">Auf den Thread antworten</string>
   <string name="post_reply_menu">Auf den Thread antworten</string>
   <string name="post_reply_quote_menu">Antworte mit Zitat</string>
+  <string name="post_reply_all_menu">Antworten</string>
+  <!--
   <string name="post_reply_all_menu">Auf den Beitrag antworten</string>
   <string name="post_reply_all_quote_menu">Mit zitiertem Beitrag Antworten</string>
+    -->
+  <string name="post_reply_all_quote_menu">Zitiertem Beitrag</string>
   <string name="go_to_link_menu">Gehe zu Link</string>
   <string name="go_to_link_not_found">Keine Links im Beitrag gefunden</string>
   <string name="select_text_menu">Text markieren</string>
@@ -153,8 +157,9 @@
   <string name="block_posts_menu">Beitrag blockieren</string>
   <string name="translate_posts_menu">Beitrag übersetzen</string>
   <string name="translate_no_text">Kein Text für eine Übersetzung gefunden</string>
-  <string name="share_image">Bild teilen</string>
-  <string name="share_text">Beitrag teilen</string>
+  <string name="share_image">Teilen</string>
+  <string name="share_thread">Teilen</string>
+  <string name="share_text">Teilen</string>
   <string name="share_text_default">Thread /</string>
   <string name="share_text_empty">Kein Text zum Teilen gefunden</string>
   <string name="toggle_image_only_menu">Nur Bilder ein/aus</string>

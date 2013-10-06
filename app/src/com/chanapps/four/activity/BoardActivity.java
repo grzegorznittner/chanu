@@ -682,7 +682,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                     new PickNewThreadBoardDialogFragment(handler)
                             .show(getFragmentManager(), PickNewThreadBoardDialogFragment.TAG);
                 else
-                    PostReplyActivity.startActivity(this, boardCode, 0, 0, "");
+                    PostReplyActivity.startActivity(this, boardCode, 0, 0, "", "");
                 return true;
             case R.id.offline_board_view_menu:
             	GalleryViewActivity.startOfflineAlbumViewActivity(this, boardCode);
@@ -1195,7 +1195,7 @@ public class BoardActivity extends AbstractDrawerActivity implements ChanIdentif
                 return;
             }
             else if ((flags & ChanThread.THREAD_FLAG_BUTTON) > 0) {
-                PostReplyActivity.startActivity(BoardActivity.this, boardCode, 0, 0, "");
+                PostReplyActivity.startActivity(BoardActivity.this, boardCode, 0, 0, "", "");
                 return;
             }
             else if ((flags & ChanThread.THREAD_FLAG_BOARD) > 0) {

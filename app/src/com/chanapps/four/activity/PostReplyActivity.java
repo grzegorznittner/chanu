@@ -15,6 +15,7 @@ import android.os.*;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
+import android.text.Editable;
 import android.util.Log;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
@@ -60,9 +61,12 @@ public class PostReplyActivity
     public static final String THREAD_NO = "postReplyThreadNo";
     public static final String POST_NO = "postReplyPostNo";
     public static final String TEXT = "text";
+    public static final String REPLY_TEXT = "replyText";
+    public static final String POST_REPLY_TEXT = "postReplyText";
+    public static final String QUOTE_TEXT = "quoteText";
+    public static final String POST_REPLY_QUOTE_TEXT = "postReplyQuoteText";
     public static final String POST_REPLY_IMAGE_URL = "postReplyImageUrl";
     public static final String SUBJECT = "postReplySubject";
-    public static final String POST_REPLY_TEXT = "postReplyText";
     public static final String SPOILER = "postReplySpoiler";
     public static final String IMAGE_PATH = "postReplyImagePath";
     public static final String CONTENT_TYPE = "postReplyContentType";
@@ -78,7 +82,8 @@ public class PostReplyActivity
             POST_REPLY_IMAGE_URL,
             IMAGE_PATH,
             CONTENT_TYPE,
-            ORIENTATION
+            ORIENTATION,
+            POST_REPLY_QUOTE_TEXT
     };
 
     public static final int POST_FINISHED = 0x01;
@@ -143,18 +148,24 @@ public class PostReplyActivity
     protected boolean showPassEnable = true;
     protected boolean showPassDisable = false;
 
+    protected String replyText = "";
+    protected String quoteText = "";
 
-    public static void startActivity(Context context, String boardCode, long threadNo, long postNo, String replyText) {
-        Intent intent = createIntent(context, boardCode, threadNo, postNo, replyText);
+    public static void startActivity(Context context, String boardCode, long threadNo, long postNo,
+                                     String replyText, String quoteText) {
+        Intent intent = createIntent(context, boardCode, threadNo, postNo, replyText, quoteText);
         context.startActivity(intent);
     }
 
-    public static Intent createIntent(Context context, String boardCode, long threadNo, long postNo, String replyText) {
+    public static Intent createIntent(Context context, String boardCode, long threadNo, long postNo,
+                                      String replyText, String quoteText) {
         Intent replyIntent = new Intent(context, PostReplyActivity.class);
         replyIntent.putExtra(ChanBoard.BOARD_CODE, boardCode);
         replyIntent.putExtra(ChanThread.THREAD_NO, threadNo);
         replyIntent.putExtra(ChanPost.POST_NO, postNo);
         replyIntent.putExtra(TEXT, replyText);
+        replyIntent.putExtra(REPLY_TEXT, replyText);
+        replyIntent.putExtra(QUOTE_TEXT, quoteText);
         return replyIntent;
     }
 
@@ -330,6 +341,10 @@ public class PostReplyActivity
             subjectText.setText(intent.getStringExtra(SUBJECT));
         if (intent.hasExtra(TEXT))
             setMessage(intent.getStringExtra(TEXT));
+        if (intent.hasExtra(REPLY_TEXT))
+            replyText = intent.getStringExtra(REPLY_TEXT);
+        if (intent.hasExtra(QUOTE_TEXT))
+            quoteText = intent.getStringExtra(QUOTE_TEXT);
         if (intent.hasExtra(SPOILER))
             spoilerCheckbox.setChecked(intent.getBooleanExtra(SPOILER, false));
         // these are just reset
@@ -342,7 +357,10 @@ public class PostReplyActivity
         if (DEBUG) Log.i(TAG, "setIntent() intent has /" + boardCode + "/" + threadNo + ":" + postNo
                 + " imageUri=" + imageUri
                 + " combinedSubCom=" + intent.getStringExtra(SUBJECT)
-                + " text=" + intent.getStringExtra(TEXT));
+                + " text=" + intent.getStringExtra(TEXT)
+                + " replyText=" + intent.getStringExtra(REPLY_TEXT)
+                + " quoteText=" + intent.getStringExtra(QUOTE_TEXT)
+        );
         /*
         Bundle bundle = loadBundleFromPrefs();
         if (bundle != null
@@ -369,6 +387,10 @@ public class PostReplyActivity
             subjectText.setText(bundle.getString(SUBJECT));
         if (bundle.containsKey(TEXT))
             setMessage(bundle.getString(TEXT));
+        if (bundle.containsKey(REPLY_TEXT))
+            replyText = bundle.getString(REPLY_TEXT);
+        if (bundle.containsKey(QUOTE_TEXT))
+            quoteText = bundle.getString(QUOTE_TEXT);
         if (bundle.containsKey(SPOILER))
             spoilerCheckbox.setChecked(bundle.getBoolean(SPOILER, false));
         if (bundle.containsKey(POST_REPLY_IMAGE_URL))
@@ -398,6 +420,8 @@ public class PostReplyActivity
         bundle.putLong(ChanPost.POST_NO, postNo);
         bundle.putString(SUBJECT, subjectText.getText().toString());
         bundle.putString(TEXT, messageText.getText().toString());
+        bundle.putString(REPLY_TEXT, replyText);
+        bundle.putString(QUOTE_TEXT, quoteText);
         bundle.putBoolean(SPOILER, spoilerCheckbox.isChecked());
         if (imageUri != null)
             bundle.putString(POST_REPLY_IMAGE_URL, imageUri.toString());
@@ -420,6 +444,8 @@ public class PostReplyActivity
         editor.putString(IMAGE_PATH, imagePath);
         editor.putString(CONTENT_TYPE, contentType);
         editor.putString(ORIENTATION, orientation);
+        editor.putString(POST_REPLY_QUOTE_TEXT, quoteText);
+        editor.putString(REPLY_TEXT, replyText);
         editor.commit();
         if (DEBUG) Log.i(TAG, "saveBundleToPrefs bundle=" + bundle);
     }
@@ -432,6 +458,8 @@ public class PostReplyActivity
         bundle.putLong(ChanPost.POST_NO, prefs.getLong(POST_NO, 0));
         bundle.putString(SUBJECT, prefs.getString(SUBJECT, null));
         bundle.putString(TEXT, prefs.getString(POST_REPLY_TEXT, null));
+        bundle.putString(REPLY_TEXT, prefs.getString(REPLY_TEXT, null));
+        bundle.putString(QUOTE_TEXT, prefs.getString(POST_REPLY_QUOTE_TEXT, null));
         bundle.putBoolean(SPOILER, prefs.getBoolean(SPOILER, false));
         bundle.putString(POST_REPLY_IMAGE_URL, prefs.getString(POST_REPLY_IMAGE_URL, null));
         bundle.putString(IMAGE_PATH, prefs.getString(IMAGE_PATH, null));
@@ -1528,6 +1556,9 @@ public class PostReplyActivity
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
+                case R.id.post_reply_quote_menu:
+                    insertQuote();
+                    return true;
                 case R.id.post_reply_web_menu:
                     (new WebImageDialogFragment(boardCode, threadNo))
                             .show(getSupportFragmentManager(), WebImageDialogFragment.TAG);
@@ -1551,5 +1582,25 @@ public class PostReplyActivity
             }
         }
     };
+
+    protected void insertQuote() {
+        if (messageText == null)
+            return;
+        Editable t = messageText.getText();
+        if (t == null)
+            return;
+        String s = t.subSequence(0, t.length()).toString();
+        if (DEBUG) Log.i(TAG, "insertQuote text=" + s + " replyText=" + replyText + " quoteText=" + quoteText);
+        int st;
+        if (quoteText != null && !quoteText.isEmpty() && (st = s.indexOf(quoteText)) >= 0) {
+            // ignore, quote is already there
+        }
+        else if (replyText != null && !replyText.isEmpty() && (st = s.indexOf(replyText)) >= 0) {
+            t.replace(st, replyText.length(), quoteText);
+        }
+        else {
+            t.insert(0, quoteText);
+        }
+    }
 
 }

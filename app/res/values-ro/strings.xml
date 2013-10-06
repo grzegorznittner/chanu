@@ -168,8 +168,9 @@
     <string name="block_posts_menu">Blochează postare</string>
     <string name="translate_posts_menu">Tradu postare</string>
     <string name="translate_no_text">Nici un text găsit pentru traducere</string>
-    <string name="share_image">Share post</string>
-    <string name="share_text">Share post</string>
+    <string name="share_image">Share</string>
+    <string name="share_thread">Share</string>
+    <string name="share_text">Share</string>
     <string name="share_text_default">Fir de discuții /</string>
     <string name="share_text_empty">Nici un text găsit pentru pentru share</string>
     <string name="toggle_image_only_menu">Comută doar imagini</string>

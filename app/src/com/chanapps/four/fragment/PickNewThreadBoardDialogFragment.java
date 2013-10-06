@@ -62,7 +62,7 @@ public class PickNewThreadBoardDialogFragment extends ListDialogFragment {
                         if (DEBUG) Log.i(TAG, "Picked board=" + boardCode);
                         ChanIdentifiedActivity activity = NetworkProfileManager.instance().getActivity();
                         dismiss();
-                        PostReplyActivity.startActivity((Activity) activity, boardCode, 0, 0, "");
+                        PostReplyActivity.startActivity((Activity) activity, boardCode, 0, 0, "", "");
                     }
                 }, new Dialog.OnCancelListener() {
                     public void onCancel(DialogInterface dialog) {

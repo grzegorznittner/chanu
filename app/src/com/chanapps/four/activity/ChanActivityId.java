@@ -155,6 +155,7 @@ public class ChanActivityId implements Serializable {
                         boardCode,
                         threadNo,
                         postNo,
+                        text,
                         text);
             case THREAD_ACTIVITY:
                 return ThreadActivity.createIntent(

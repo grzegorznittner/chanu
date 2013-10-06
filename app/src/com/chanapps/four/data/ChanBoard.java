@@ -1036,7 +1036,6 @@ public class ChanBoard {
     private static void initBoardDrawables() {
         boardDrawables.clear();
         boardDrawables.put("a", new int[]{ R.drawable.a, R.drawable.a_2, R.drawable.a_3 } );
-        boardDrawables.put("a", new int[]{ R.drawable.a, R.drawable.a_2, R.drawable.a_3 } );
         boardDrawables.put("c", new int[]{ R.drawable.c, R.drawable.c_2, R.drawable.c_3 } );
         boardDrawables.put("w", new int[]{ R.drawable.w, R.drawable.w_2, R.drawable.w_3 } );
         boardDrawables.put("m", new int[]{ R.drawable.m, R.drawable.m_2, R.drawable.m_3 } );

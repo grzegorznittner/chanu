@@ -82,6 +82,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected long postNo; // for direct jumps from latest post / recent images
     protected String imageUrl;
     protected boolean shouldPlayThread = false;
+    protected ShareActionProvider shareActionProviderOP = null;
     protected ShareActionProvider shareActionProvider = null;
     protected Map<String, Uri> checkedImageUris = new HashMap<String, Uri>(); // used for tracking what's in the media store
     protected ActionMode actionMode = null;
@@ -356,6 +357,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     protected void onThreadLoadFinished(Cursor data) {
         adapter.swapCursor(data);
         // retry load if maybe data wasn't there yet
+        setupShareActionProviderOPMenu(menu);
         selectCurrentThreadAsync();
     }
 
@@ -637,16 +639,18 @@ public class ThreadFragment extends Fragment implements ThreadViewable
     };
     */
 
-    private void postReply(long postNos[]) {
+    private String replyText(long postNos[]) {
         String replyText = "";
         for (long postNo : postNos) {
             replyText += ">>" + postNo + "\n";
         }
-        postReply(replyText);
+        return replyText;
     }
 
-    private void postReply(String replyText) {
-        PostReplyActivity.startActivity(getActivityContext(), boardCode, threadNo, 0, ChanPost.planifyText(replyText));
+    private void postReply(String replyText, String quotesText) {
+        PostReplyActivity.startActivity(getActivityContext(), boardCode, threadNo, 0,
+                ChanPost.planifyText(replyText),
+                ChanPost.planifyText(quotesText));
     }
 
     protected View.OnClickListener imagesOnClickListener = new View.OnClickListener() {
@@ -698,6 +702,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             }
         setDeadStatusAsync();
         setWatchMenuAsync();
+        setupShareActionProviderOPMenu(menu);
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -748,6 +753,17 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                     });
             }
         }).start();
+    }
+
+    protected void setupShareActionProviderOPMenu(final Menu menu) {
+        SparseBooleanArray postPos = new SparseBooleanArray(absListView == null ? 1 : absListView.getCount());
+        postPos.put(0, true); // only share OP
+        updateSharedIntent(shareActionProviderOP, postPos);
+        if (menu == null)
+            return;
+        MenuItem shareItem = menu.findItem(R.id.thread_share_menu);
+        shareActionProviderOP = shareItem == null ? null : (ShareActionProvider) shareItem.getActionProvider();
+        if (DEBUG) Log.i(TAG, "setupShareActionProviderOP() shareActionProviderOP=" + shareActionProviderOP);
     }
 
     protected boolean undead() {
@@ -813,13 +829,13 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 return true;
             case R.id.post_reply_all_menu:
                 long[] postNos = { threadNo };
-                postReply(postNos);
+                postReply(replyText(postNos), selectQuoteText(0));
                 return true;
+            /*
             case R.id.post_reply_all_quote_menu:
                 String quotesText = selectQuoteText(0);
                 postReply(quotesText);
                 return true;
-            /*
             case R.id.download_all_images_menu:
                 ThreadImageDownloadService.startDownloadToBoardFolder(getActivityContext(), boardCode, threadNo);
                 Toast.makeText(getActivityContext(), R.string.download_all_images_notice_prefetch, Toast.LENGTH_SHORT).show();
@@ -1107,7 +1123,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             }
             else {
                 if (DEBUG) Log.i(TAG, "action mode already started, updating share intent");
-                updateSharedIntent();
+                updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
             }
             return true;
         }
@@ -1277,40 +1293,45 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         return true;
     }
 
-    private void setShareIntent(final Intent intent) {
+    private void setShareIntent(final ShareActionProvider provider, final Intent intent) {
         if (ActivityDispatcher.onUIThread())
             synchronized (this) {
-                if (shareActionProvider != null && intent != null)
-                    shareActionProvider.setShareIntent(intent);
+                if (provider != null && intent != null)
+                    provider.setShareIntent(intent);
             }
         else if (handler != null)
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     synchronized (this) {
-                        if (shareActionProvider != null && intent != null)
-                            shareActionProvider.setShareIntent(intent);
+                        if (provider != null && intent != null)
+                            provider.setShareIntent(intent);
                     }
                 }
             });
     }
 
-    public void updateSharedIntent() {
-        SparseBooleanArray postPos = absListView.getCheckedItemPositions();
+    protected void updateSharedIntent(ShareActionProvider provider, SparseBooleanArray postPos) {
         if (postPos == null)
             return;
         if (DEBUG) Log.i(TAG, "updateSharedIntent() checked count=" + postPos.size());
-        String linkUrl = (postNo > 0 && postNo != threadNo)
-                ? ChanPost.postUrl(boardCode, threadNo, postNo)
-                : ChanThread.threadUrl(boardCode, threadNo);
-        String text = selectText(postPos);
-        String extraText = linkUrl + (text.isEmpty() ? "" : "\n\n" + text);
-        ArrayList<String> paths = new ArrayList<String>();
+        if (postPos.size() < 1)
+            return;
         Cursor cursor = adapter.getCursor();
+        if (cursor == null)
+            return;
+
+        // construct paths and add files
+        ArrayList<String> paths = new ArrayList<String>();
+        long firstPost = -1;
         ImageLoader imageLoader = ChanImageLoader.getInstance(getActivityContext());
-        for (int i = 0; i < absListView.getCount(); i++) {
-            if (!postPos.get(i) || !cursor.moveToPosition(i))
+        for (int i = 0; i < cursor.getCount(); i++) {
+            if (!postPos.get(i))
                 continue;
+            if (!cursor.moveToPosition(i))
+                continue;
+            if (firstPost == -1)
+                firstPost = cursor.getLong(cursor.getColumnIndex(ChanPost.POST_ID));
             File file = ThreadViewer.fullSizeImageFile(getActivityContext(), cursor); // try for full size first
             if (file == null) { // if can't find it, fall back to thumbnail
                 String url = cursor.getString(cursor.getColumnIndex(ChanPost.POST_IMAGE_URL)); // thumbnail
@@ -1321,12 +1342,22 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 continue;
             paths.add(file.getAbsolutePath());
         }
+
+        // set share text
+        if (DEBUG) Log.i(TAG, "updateSharedIntent() found postNo=" + firstPost + " for threadNo=" + threadNo);
+        String linkUrl = (firstPost > 0 && firstPost != threadNo)
+                ? ChanPost.postUrl(boardCode, threadNo, firstPost)
+                : ChanThread.threadUrl(boardCode, threadNo);
+        String text = selectText(postPos);
+        String extraText = linkUrl + (text.isEmpty() ? "" : "\n\n" + text);
+
+        // create intent
         Intent intent;
         if (paths.size() == 0) {
             intent = new Intent(Intent.ACTION_SEND);
             intent.putExtra(Intent.EXTRA_TEXT, extraText);
             intent.setType("text/html");
-            setShareIntent(intent);
+            setShareIntent(provider, intent);
         } else {
             ArrayList<Uri> uris = new ArrayList<Uri>();
             ArrayList<String> missingPaths = new ArrayList<String>();
@@ -1344,7 +1375,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
             intent.putExtra(Intent.EXTRA_TEXT, extraText);
             intent.setType("image/jpeg");
-            setShareIntent(intent);
+            setShareIntent(provider, intent);
             /*
             // causes images to show up in the gallery, so ignoring for now
             if (missingPaths.size() > 0) {
@@ -1455,7 +1486,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
                 absListView.setItemChecked(pos, true);
                 postNo = absListView.getItemIdAtPosition(pos);
             }
-            updateSharedIntent();
+            updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
             PopupMenu popup = new PopupMenu(getActivityContext(), v);
             int menuId = undead() ? R.menu.thread_context_menu : R.menu.thread_dead_context_menu;
             popup.inflate(menuId);
@@ -1480,12 +1511,14 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             switch (item.getItemId()) {
                 case R.id.post_reply_all_menu:
                     if (DEBUG) Log.i(TAG, "Post nos: " + Arrays.toString(postNos));
-                    postReply(postNos);
+                    postReply(replyText(postNos), selectQuoteText(postPos));
                     return true;
+                /*
                 case R.id.post_reply_all_quote_menu:
                     String quotesText = selectQuoteText(postPos);
                     postReply(quotesText);
                     return true;
+                    */
                 case R.id.copy_text_menu:
                     String selectText = selectText(postPos);
                     copyToClipboard(selectText);
@@ -1586,7 +1619,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             if (DEBUG) Log.i(TAG, "onPrepareActionMode");
-            updateSharedIntent();
+            updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
             return true;
         }
 
@@ -1602,12 +1635,14 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             switch (item.getItemId()) {
                 case R.id.post_reply_all_menu:
                     if (DEBUG) Log.i(TAG, "Post nos: " + Arrays.toString(postNos));
-                    postReply(postNos);
+                    postReply(replyText(postNos), selectQuoteText(postPos));
                     return true;
+                /*
                 case R.id.post_reply_all_quote_menu:
                     String quotesText = selectQuoteText(postPos);
                     postReply(quotesText);
                     return true;
+                */
                 case R.id.copy_text_menu:
                     String selectText = selectText(postPos);
                     copyToClipboard(selectText);
@@ -1671,7 +1706,7 @@ public class ThreadFragment extends Fragment implements ThreadViewable
             if (uri == null)
                 uri = Uri.parse(path);
             checkedImageUris.put(path, uri);
-            updateSharedIntent();
+            updateSharedIntent(shareActionProvider, absListView.getCheckedItemPositions());
         }
     };
 

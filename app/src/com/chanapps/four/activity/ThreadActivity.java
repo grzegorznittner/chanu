@@ -535,17 +535,19 @@ public class ThreadActivity
         AnalyticsComponent.onStop(this);
     }
 
+    /*
     private void postReply(long postNos[]) {
         String replyText = "";
         for (long postNo : postNos) {
             replyText += ">>" + postNo + "\n";
         }
-        postReply(replyText);
+        postReply(replyText, String quoteText);
     }
 
-    private void postReply(String replyText) {
-        PostReplyActivity.startActivity(this, boardCode, threadNo, 0, ChanPost.planifyText(replyText));
+    private void postReply(String replyText, String quoteText) {
+        PostReplyActivity.startActivity(this, boardCode, threadNo, 0, ChanPost.planifyText(replyText), ChanPost.planifyText(quoteText));
     }
+    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) { // menu creation handled at fragment level instead
